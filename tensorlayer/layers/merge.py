@@ -18,7 +18,7 @@ class ConcatLayer(Layer):
 
     Parameters
     ----------
-    layers : list of :class:`Layer`
+    prev_layer : list of :class:`Layer`
         List of layers to concatenate.
     concat_dim : int
         The dimension to concatenate.
@@ -55,12 +55,12 @@ class ConcatLayer(Layer):
 
     def __init__(
             self,
-            layers,
+            prev_layer=None,
             concat_dim=-1,
             name='concat_layer',
     ):
 
-        self.prev_layer = layers
+        self.prev_layer = prev_layer
         self.concat_dim = concat_dim
         self.name = name
 
@@ -100,7 +100,7 @@ class ElementwiseLayer(Layer):
 
     Parameters
     ----------
-    layers : list of :class:`Layer`
+    prev_layer : list of :class:`Layer`
         The list of layers to combine.
     combine_fn : a TensorFlow element-wise combine function
         e.g. AND is ``tf.minimum`` ;  OR is ``tf.maximum`` ; ADD is ``tf.add`` ; MUL is ``tf.multiply`` and so on.
@@ -132,13 +132,13 @@ class ElementwiseLayer(Layer):
 
     def __init__(
             self,
-            layers,
+            prev_layer=None,
             combine_fn=tf.minimum,
             act=None,
             name='elementwise_layer',
     ):
 
-        self.prev_layer = layers
+        self.prev_layer = prev_layer
         self.combine_fn = combine_fn
         self.act = act
         self.name = name

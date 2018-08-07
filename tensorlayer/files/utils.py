@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+# import ast
 import sys
 import gzip
 import math
@@ -1907,10 +1908,10 @@ def save_graph(network=None, name='graph.pkl'):
 
     Examples
     --------
-    - Save the architecture
+    Save the architecture
     >>> tl.files.save_graph(net_test, 'graph.pkl')
 
-    - Load the architecture in another script (no parameters restore)
+    Load the architecture in another script (no parameters restore)
     >>> net = tl.files.load_graph('graph.pkl')
     """
     logging.info("[*] Saving TL graph into {}".format(name))
@@ -1925,16 +1926,20 @@ def _graph2net(graphs):
     """ Inputs graphs, returns network. """
     input_list = list()
     layer_dict = dict()
-    ## loop every layers
+    # loop every layers
     for graph in graphs:
-        ## get current layer class
+        # get current layer class
         name, layer_kwargs = graph
+        layer_kwargs = dict(
+            layer_kwargs
+        )  # when InputLayer is used for twice, if we "pop" elements, the second time to use it will have error.
+
         layer_class = layer_kwargs.pop('class')  # class of current layer
         prev_layer = layer_kwargs.pop(
             'prev_layer'
         )  # name of previous layer : str =one layer   list of str = multiple layers
 
-        ## convert function dictionary into real function
+        # convert function dictionary into real function
         for key in layer_kwargs:  # set input placeholder into the lastest layer
             fn_dict = layer_kwargs[key]
             if key in ['act']:
@@ -1946,15 +1951,18 @@ def _graph2net(graphs):
                 # print(key, layer_kwargs[key])
         # print(name, prev_layer, layer_class, layer_kwargs)
 
-        if layer_class == 'placeholder':  ## create placeholder
-            dtype = layer_kwargs.pop('dtype')
-            shape = layer_kwargs.pop('shape')
-            _placeholder = tf.placeholder(eval('tf.' + dtype), shape, name=name.split(':')[0])  #globals()['tf.'+dtype]
-            # input_dict.update({name: _placeholder})
-            input_list.append((name, _placeholder))
-        else:  ## create network
+        if layer_class == 'placeholder':  # create placeholder
+            if name not in input_list:  # if placeholder is not exist
+                dtype = layer_kwargs.pop('dtype')
+                shape = layer_kwargs.pop('shape')
+                _placeholder = tf.placeholder(eval('tf.' + dtype), shape,
+                                              name=name.split(':')[0])  # globals()['tf.'+dtype]
+                # _placeholder = tf.placeholder(ast.literal_eval('tf.' + dtype), shape, name=name.split(':')[0])
+                # input_dict.update({name: _placeholder})
+                input_list.append((name, _placeholder))
+        else:  # create network
             if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
-                raise NotImplementedError("graph does not support this layer at the moment:{}" % layer_class)
+                raise NotImplementedError("TL graph does not support this layer at the moment: %s" % (layer_class))
             else:  # normal layers e.g. Conv2d
                 try:  # if previous layer is layer
                     net = layer_dict[prev_layer]
@@ -1968,14 +1976,15 @@ def _graph2net(graphs):
                 net = eval('tl.layers.' + layer_class)(**layer_kwargs)
                 layer_dict.update({name: net})
 
-    ## rename placeholder e.g. x:0 --> x
+    # rename placeholder e.g. x:0 --> x
     for i, (n, t) in enumerate(input_list):
         n_new = n.replace(':', '')
         if n_new[-1] == '0':
             n_new = n_new[:-1]
         input_list[i] = (n_new, t)
+        # print(n_new, t)
 
-    ## put placeholder into network attributes
+    # put placeholder into network attributes
     for n, t in input_list:
         # print(name, n, t)
         layer_dict[name].__dict__.update({n: t})
@@ -1984,7 +1993,7 @@ def _graph2net(graphs):
     #     layer_dict[name].globals()[key] = input_dict[key]
     #     logging.info("  attributes: {:3} {:15} {:15}".format(n, input_dict[key].get_shape().as_list(), input_dict[key].dtype.name))
     logging.info("[*] Load graph finished")
-    ## return the lastest layer as network
+    # return the lastest layer as network
     return layer_dict[name]
 
 
@@ -2025,11 +2034,11 @@ def save_graph_and_params(network=None, name='model', sess=None):
 
     Examples
     ---------
-    - Save architecture and parameters
+    Save architecture and parameters
 
     >>> tl.files.save_graph_and_params(net, 'model', sess)
 
-    - Load archtecture and parameters
+    Load archtecture and parameters
 
     >>> net = tl.files.load_graph_and_params('model', sess)
     """

@@ -166,6 +166,16 @@ class BaseLayer(object):
             n_params = n_params + n
         return n_params
 
+    def get_all_params(self, session=None):
+        """Return the parameters in a list of array. """
+        _params = []
+        for p in self.all_params:
+            if session is None:
+                _params.append(p.eval())
+            else:
+                _params.append(session.run(p))
+        return _params
+
     def __str__(self):
         return "  Last layer is: %s (%s) %s" % (self.__class__.__name__, self.name, self.outputs.get_shape().as_list())
 
@@ -215,18 +225,22 @@ class BaseLayer(object):
 
         for arg in args:
 
-            ## some args dont need to be saved into the graph. e.g. the input placeholder
-            if values[arg] is not None and arg not in ['self', 'prev_layer', 'inputs']:
+            # some args dont need to be saved into the graph. e.g. the input placeholder
+            if values[arg] is None or arg in ['self', 'prev_layer', 'inputs']:
+                continue
 
+            else:
                 val = values[arg]
 
-                ## change function (e.g. act) into dictionary of module path and function name
+                # change function (e.g. act) into dictionary of module path and function name
                 if inspect.isfunction(val):
                     params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
-                ## ignore more args e.g. TF class
+
+                # ignore more args e.g. TF class
                 elif arg.endswith('init'):
                     continue
-                ## for other data type, save them directly
+
+                # for other data type, save them directly
                 else:
                     params[arg] = val
 
@@ -295,14 +309,6 @@ class BaseLayer(object):
 
         return args if args is not None else {}
 
-    # def __getstate__(self): # pickle save
-    #     return {'version': 0.1,
-    #             # 'outputs': self.outputs,
-    #             }
-    #
-    # def __setstate__(self, state): # pickle restore
-    #     self.outputs = state['outputs']
-
 
 class Layer(BaseLayer):
 
@@ -367,14 +373,16 @@ class Layer(BaseLayer):
         self.is_setup = True
         logging.info(str(self))
 
-        ## TL Graph
+        # TL Graph
         if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
             _list = []
+
             for layer in prev_layer:
                 _list.append(layer.name)
+
             self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': _list})
 
-        elif prev_layer is None:  #
+        elif prev_layer is None:
             self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': None})
 
         else:  # normal layers e.g. Conv2d
@@ -389,7 +397,7 @@ class Layer(BaseLayer):
         # print(self.layer_args)
 
         self.graph.update(self.layer_args)
-        # print(self.graph)
+
         self._add_graphs((self.name, self.graph))
 
     @protected_method
@@ -432,8 +440,7 @@ class Layer(BaseLayer):
                     self.inputs.name,  # .split(':')[0],
                     {
                         'shape': self.inputs.get_shape().as_list(),
-                        'dtype': self.inputs.dtype.name,
-                        'class': 'placeholder',
+                        'dtype': self.inputs.dtype.name, 'class': 'placeholder',
                         'prev_layer': None
                     }
                 )
@@ -477,3 +484,11 @@ class Layer(BaseLayer):
             else:
                 _params.append(session.run(p))
         return _params
+
+    # def __getstate__(self): # pickle save
+    #     return {'version': 0.1,
+    #             # 'outputs': self.outputs,
+    #             }
+    #
+    # def __setstate__(self, state): # pickle restore
+    #     self.outputs = state['outputs']

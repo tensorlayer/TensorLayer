@@ -86,23 +86,23 @@ class TensorHub(object):
         print(self._s)
 
     def __str__(self):
-        """ Print information of databset. """
+        """Print information of databset."""
         return self._s
 
     def _fill_project_info(self, args):
-        """ Fill in project_name for all studies, architectures and parameters. """
+        """Fill in project_name for all studies, architectures and parameters."""
         return args.update({'project_name': self.project_name})
 
     @staticmethod
     def _serialization(ps):
-        """ Serialize data. """
-        return pickle.dumps(ps, protocol=pickle.HIGHEST_PROTOCOL)  #protocol=2)
+        """Serialize data."""
+        return pickle.dumps(ps, protocol=pickle.HIGHEST_PROTOCOL)  # protocol=2)
         # with open('_temp.pkl', 'wb') as file:
         #     return pickle.dump(ps, file, protocol=pickle.HIGHEST_PROTOCOL)
 
     @staticmethod
     def _deserialization(ps):
-        """ Deseralize data. """
+        """Deseralize data."""
         return pickle.loads(ps)
 
     # =========================== MODELS ================================
@@ -120,21 +120,21 @@ class TensorHub(object):
 
         Examples
         ---------
-        - Save model architecture and parameters into database.
+        Save model architecture and parameters into database.
         >>> db.save_model(net, accuracy=0.8, loss=2.3, name='second_model')
 
-        - Load one model with parameters from database (run this in other script)
+        Load one model with parameters from database (run this in other script)
         >>> net = db.find_top_model(sess=sess, accuracy=0.8, loss=2.3)
 
-        - Find and load the latest model.
+        Find and load the latest model.
         >>> net = db.find_top_model(sess=sess, sort=[("time", pymongo.DESCENDING)])
         >>> net = db.find_top_model(sess=sess, sort=[("time", -1)])
 
-        - Find and load the oldest model.
+        Find and load the oldest model.
         >>> net = db.find_top_model(sess=sess, sort=[("time", pymongo.ASCENDING)])
         >>> net = db.find_top_model(sess=sess, sort=[("time", 1)])
 
-        - Get model information
+        Get model information
         >>> net._accuracy
         ... 0.8
 
@@ -263,9 +263,10 @@ class TensorHub(object):
 
         Examples
         ----------
-        - Save dataset
+        Save dataset
         >>> db.save_dataset([X_train, y_train, X_test, y_test], 'mnist', description='this is a tutorial')
-        - Get dataset
+
+        Get dataset
         >>> dataset = db.find_top_dataset('mnist')
 
         Returns
@@ -306,9 +307,10 @@ class TensorHub(object):
 
         Examples
         ---------
-        - Save dataset
+        Save dataset
         >>> db.save_dataset([X_train, y_train, X_test, y_test], 'mnist', description='this is a tutorial')
-        - Get dataset
+
+        Get dataset
         >>> dataset = db.find_top_dataset('mnist')
         >>> datasets = db.find_datasets('mnist')
 
@@ -473,14 +475,14 @@ class TensorHub(object):
 
         Examples
         ---------
-        - Save training log
+        Save training log
         >>> db.save_training_log(accuracy=0.33)
         >>> db.save_training_log(accuracy=0.44)
 
-        - Delete logs that match the requirement
+        Delete logs that match the requirement
         >>> db.delete_training_log(accuracy=0.33)
 
-        - Delete all logs
+        Delete all logs
         >>> db.delete_training_log()
         """
         self._fill_project_info(kwargs)
@@ -547,14 +549,14 @@ class TensorHub(object):
 
         Examples
         -----------
-        - Uploads a task
+        Uploads a task
         >>> db.create_task(task_name='mnist', script='example/tutorial_mnist_simple.py', description='simple tutorial')
 
-        - Finds and runs the latest task
+        Finds and runs the latest task
         >>> db.run_top_task(sess=sess, sort=[("time", pymongo.DESCENDING)])
         >>> db.run_top_task(sess=sess, sort=[("time", -1)])
 
-        - Finds and runs the oldest task
+        Finds and runs the oldest task
         >>> db.run_top_task(sess=sess, sort=[("time", pymongo.ASCENDING)])
         >>> db.run_top_task(sess=sess, sort=[("time", 1)])
 
@@ -593,7 +595,7 @@ class TensorHub(object):
 
         Examples
         ---------
-        - Monitors the database and pull tasks to run
+        Monitors the database and pull tasks to run
         >>> while True:
         >>>     print("waiting task from distributor")
         >>>     db.run_top_task(task_name='mnist', sort=[("time", -1)])
@@ -695,7 +697,8 @@ class TensorHub(object):
 
         Examples
         ---------
-        - Wait until all tasks finish in user's local console
+        Wait until all tasks finish in user's local console
+
         >>> while not db.check_unfinished_task():
         >>>     time.sleep(1)
         >>> print("all tasks finished")
