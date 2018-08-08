@@ -61,7 +61,7 @@ Secondly, we freeze the graph. Thus here we build the free_graph tool in TensorL
     --output_graph=/root/frozen_graph.pb \
     --output_node_names=output/bias_add\
     --input_binary=True
-    
+
 note:
 input_graph is the path of your proto file
 input_checkpoint is the path of your checkpoint file
@@ -286,7 +286,7 @@ def convert_model_to_onnx(frozen_graph_path, end_node_names, onnx_output_path):
     frozen_graph_path : string
         the path where your frozen graph file save.
     end_node_names : string
-        the name of the end node in your graph you want to get in your proto buff  
+        the name of the end node in your graph you want to get in your proto buff
     onnx_output_path : string
         the path where you want to save the onnx file.
 
