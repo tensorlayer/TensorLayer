@@ -16,7 +16,7 @@ Caffe2, PyTorch, Microsoft Cognitive Toolkit, Apache MXNet and other tools are d
 
 To run this script, you shall have the following pre-requisites:
 ----------------------------
-- Install ONNX and onnx-tf package : 
+- Install ONNX and onnx-tf package:
 >>> pip install onnx
 >>> pip install onnx-tf
 Note: When installing in a non-Anaconda environment, make sure to install the Protobuf compiler before running the pip installation of onnx. For example, on Ubuntu:
@@ -38,10 +38,10 @@ Tutorial structure
 1.Training
 ----------
 Firstly, we can initiate the training script by issuing the command on your terminal.
->>>python tutorial_work_with_onnx.py 
+>>>python tutorial_work_with_onnx.py
  Shortly, we should obtain a trained MNIST model. The training process needs no special instrumentation. However, to successfully convert the trained model, onnx-tensorflow requires three pieces of information, all of which can be obtained after training is complete:
- 
-- Graph definition: 
+
+- Graph definition:
 You need to obtain information about the graph definition in the form of GraphProto. The easiest way to achieve this is to use the following snippet of code as shown in the example training script:
 >>>with open("graph.proto", "wb") as file:
 >>> graph = tf.get_default_graph().as_graph_def(add_shapes=True)
@@ -54,7 +54,7 @@ This code is under the code where you call your architecture in your function
 
 2.Graph Freezing
 ----------------
-Secondly, we freeze the graph. Thus here we build the free_graph tool in TensorLayer source folder and execute it with the information about where the GraphProto is, where the checkpoint file is and where to put the freozen graph. 
+Secondly, we freeze the graph. Thus here we build the free_graph tool in TensorLayer source folder and execute it with the information about where the GraphProto is, where the checkpoint file is and where to put the freozen graph.
 >>>python3 -m tensorflow.python.tools.freeze_graph \
     --input_graph=/root/graph.proto \
     --input_checkpoint=/root/model/model.ckpt \
@@ -62,7 +62,7 @@ Secondly, we freeze the graph. Thus here we build the free_graph tool in TensorL
     --output_node_names=output/bias_add\
     --input_binary=True
     
-note: 
+note:
 input_graph is the path of your proto file
 input_checkpoint is the path of your checkpoint file
 output_graph is the path where you want to put
@@ -105,7 +105,7 @@ In this tutorial, we continue our demonstration by performing inference using th
 >>>model = onnx.load('mnist.onnx')
 >>>tf_rep = prepare(model)
 >>>#Image Path
->>>img = np.load("./assets/image.npz") 
+>>>img = np.load("./assets/image.npz")
 >>>output = tf_rep.run(img.reshape([1, 784]))
 >>>print "The digit is classified as ", np.argmax(output)
 
@@ -261,7 +261,7 @@ def freeze_graph(graph_path, checkpoint_path, output_path, end_node_names, is_bi
     output_path : string
         the path where you want to save the output proto buff
     end_node_names : string
-        the name of the end node in your graph you want to get in your proto buff  
+        the name of the end node in your graph you want to get in your proto buff
     is_binary_graph : boolean
         declare your file whether is a binary graph
 
@@ -308,7 +308,7 @@ def convert_onnx_to_model(onnx_input_path):
     """Reimplementation of the TensorFlow-onnx official tutorial convert the onnx file to specific: model
 
     Parameters
-    ----------- 
+    -----------
     onnx_input_path : string
     the path where you save the onnx file.
 
