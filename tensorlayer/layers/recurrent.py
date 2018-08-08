@@ -1593,7 +1593,8 @@ class Seq2Seq(Layer):
             return_seq_2d=False,
             name='seq2seq',
     ):
-        super(Seq2Seq, self).__init__(prev_layer=None, cell_init_args=cell_init_args, name=name)
+        super(Seq2Seq,
+              self).__init__(prev_layer=[net_encode_in, net_decode_in], cell_init_args=cell_init_args, name=name)
 
         if self.cell_init_args:
             self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True,

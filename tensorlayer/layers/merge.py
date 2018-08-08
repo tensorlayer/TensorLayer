@@ -18,7 +18,7 @@ class ConcatLayer(Layer):
 
     Parameters
     ----------
-    layers : list of :class:`Layer`
+    prev_layer : list of :class:`Layer`
         List of layers to concatenate.
     concat_dim : int
         The dimension to concatenate.
@@ -55,12 +55,12 @@ class ConcatLayer(Layer):
 
     def __init__(
             self,
-            layers,
+            prev_layer,
             concat_dim=-1,
             name='concat_layer',
     ):
 
-        super(ConcatLayer, self).__init__(prev_layer=layers, name=name)
+        super(ConcatLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info("ConcatLayer %s: axis: %d" % (self.name, concat_dim))
 
@@ -75,7 +75,7 @@ class ElementwiseLayer(Layer):
 
     Parameters
     ----------
-    layers : list of :class:`Layer`
+    prev_layer : list of :class:`Layer`
         The list of layers to combine.
     combine_fn : a TensorFlow element-wise combine function
         e.g. AND is ``tf.minimum`` ;  OR is ``tf.maximum`` ; ADD is ``tf.add`` ; MUL is ``tf.multiply`` and so on.
@@ -107,20 +107,21 @@ class ElementwiseLayer(Layer):
 
     def __init__(
             self,
-            layers,
+            prev_layer,
             combine_fn=tf.minimum,
             act=None,
             name='elementwise_layer',
     ):
 
-        super(ElementwiseLayer, self).__init__(prev_layer=layers, act=act, name=name)
+        super(ElementwiseLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
         logging.info(
-            "ElementwiseLayer %s: size: %s fn: %s" % (self.name, layers[0].outputs.get_shape(), combine_fn.__name__)
+            "ElementwiseLayer %s: size: %s fn: %s" %
+            (self.name, prev_layer[0].outputs.get_shape(), combine_fn.__name__)
         )
 
-        self.outputs = layers[0].outputs
+        self.outputs = prev_layer[0].outputs
 
-        for l in layers[1:]:
+        for l in prev_layer[1:]:
             self.outputs = combine_fn(self.outputs, l.outputs, name=name)
 
         self.outputs = self._apply_activation(self.outputs)
