@@ -95,6 +95,7 @@ To release a new version, please update the changelog as followed:
   - `tutorial_models_vgg16` and `tutorial_models_vgg19` has been changed the input scale from [0,255] to [0,1](PR #710)
   - `tutorial_mnist_distributed_trainer.py` and `tutorial_cifar10_distributed_trainer.py` are added to explain the uses of Distributed Trainer (PR #700)
   - add `tutorial_quanconv_cifar10.py` and `tutorial_quanconv_mnist.py` (PR #735)
+  - add `tutorial_work_with_onnx.py`(PR #775)
 ### Changed
   - function minibatches changed to avoid wasting samples.(PR #762)
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
@@ -119,8 +120,8 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Dependencies Update
-- tensorflow>=1.8,<1.9 => tensorflow>=1.6,<1.10 (PR #739)
-- tensorflow-gpu>=1.8,<1.9 => tensorflow-gpu>=1.6,<1.10 (PR #739)
+- tensorflow>=1.8,<1.9 => tensorflow>=1.6,<1.11 (PR #739 and PR #755)
+- tensorflow-gpu>=1.8,<1.9 => tensorflow-gpu>=1.6,<1.11 (PR #739 and PR #755)
 - pymongo>=3.6,<3.7 => pymongo>=3.6,<3.8 (PR #750)
 - numpy>=1.14,<1.15 => numpy>=1.14,<1.16 (PR #754)
 - tqdm>=4.23,<4.24 => tqdm>=4.23,<4.25 (PR #755)
@@ -130,7 +131,7 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 - @DEKHTIARJonathan: #739 #747 #750 #754 #755
 - @lgarithm: #705 #700
-- @OwenLiuzZ: #698 #710 #776
+- @OwenLiuzZ: #698 #710 #775 #776
 - @zsdonghao: #711 #712 #734 #736 #737 #700 #751
 - @luomai: #700 #751 #766
 - @XJTUWYD: #735
