@@ -3,8 +3,8 @@
 ## Continuous integration
 
 We appreciate contributions
-either by adding / improving examples or extending / fixing the core library. 
-To make your contributions, you would need to follow the [pep8](https://www.python.org/dev/peps/pep-0008/) coding style and [numpydoc](https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt) document style.
+either by adding / improving examples or extending / fixing the core library.
+To make your contributions, you would need to follow the [pep8](https://www.python.org/dev/peps/pep-0008/) coding style and [numpydoc](https://numpydoc.readthedocs.io/en/latest/) document style.
 We rely on Continuous Integration (CI) for checking push commits.
 The following tools are used to ensure that your commits can pass through the CI test:
 
@@ -14,7 +14,7 @@ The following tools are used to ensure that your commits can pass through the CI
 
 You can simply run
 
-```
+```bash
 make format
 ```
 
@@ -33,7 +33,7 @@ pip install virtualenv
 # Then create a virtualenv called `venv`
 virtualenv venv
 
-# Activate the virtualenv  
+# Activate the virtualenv
 
 ## Linux:
 source venv/bin/activate
@@ -53,5 +53,5 @@ pip install -e .[all_gpu_dev] --upgrade
 Launching the unittest:
 
 ```bash
-$ pytest
+pytest
 ```

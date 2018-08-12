@@ -5,6 +5,7 @@
 from __future__ import absolute_import
 
 import os
+from distutils.version import LooseVersion
 
 if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
 
@@ -17,7 +18,7 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
             " - `pip install --upgrade tensorflow-gpu`"
         )
 
-    if tensorflow.__version__ < "1.6.0" and os.environ.get('READTHEDOCS', None) != 'True':
+    if LooseVersion(tensorflow.__version__) < LooseVersion("1.6.0") and os.environ.get('READTHEDOCS', None) != 'True':
         raise RuntimeError(
             "TensorLayer does not support Tensorflow version older than 1.6.0.\n"
             "Please update Tensorflow with:\n"
@@ -30,7 +31,6 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     from tensorlayer import activation
     from tensorlayer import array_ops
     from tensorlayer import cost
-    from tensorlayer import db
     from tensorlayer import decorators
     from tensorlayer import files
     from tensorlayer import initializers
@@ -41,12 +41,13 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     from tensorlayer import models
     from tensorlayer import optimizers
     from tensorlayer import rein
-    from tensorlayer import utils
 
     # Lazy Imports
+    db = LazyImport("tensorlayer.db")
     distributed = LazyImport("tensorlayer.distributed")
     nlp = LazyImport("tensorlayer.nlp")
     prepro = LazyImport("tensorlayer.prepro")
+    utils = LazyImport("tensorlayer.utils")
     visualize = LazyImport("tensorlayer.visualize")
 
     # alias
@@ -61,16 +62,17 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     global_dict = {}
 
 # Use the following formatting: (major, minor, patch, prerelease)
-VERSION = (1, 9, 0, "")
+VERSION = (1, 9, 1, "")
 __shortversion__ = '.'.join(map(str, VERSION[:3]))
 __version__ = '.'.join(map(str, VERSION[:3])) + "".join(VERSION[3:])
 
 __package_name__ = 'tensorlayer'
 __contact_names__ = 'TensorLayer Contributors'
-__contact_emails__ = 'hao.dong11@imperial.ac.uk'
+__contact_emails__ = 'tensorlayer@gmail.com'
 __homepage__ = 'http://tensorlayer.readthedocs.io/en/latest/'
 __repository_url__ = 'https://github.com/tensorlayer/tensorlayer'
 __download_url__ = 'https://github.com/tensorlayer/tensorlayer'
 __description__ = 'Reinforcement Learning and Deep Learning Library for Researcher and Engineer.'
 __license__ = 'apache'
-__keywords__ = 'deep learning, machine learning, computer vision, nlp, supervised learning, unsupervised learning, reinforcement learning, tensorflow'
+__keywords__ = 'deep learning, machine learning, computer vision, nlp, '
+__keywords__ += 'supervised learning, unsupervised learning, reinforcement learning, tensorflow'

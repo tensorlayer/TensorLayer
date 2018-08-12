@@ -1,5 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
+import inspect
 import six
 
 from abc import ABCMeta, abstractmethod
@@ -62,6 +64,8 @@ class Layer(object):
         Print all outputs of all layers of this network.
     count_params()
         Return the number of parameters of this network.
+    get_all_params()
+        Return the parameters in a list of array.
 
     Examples
     ---------
@@ -112,10 +116,13 @@ class Layer(object):
 
         self.inputs = None
         self.outputs = None
-
+        self.graph = {}
         self.all_layers = list()
         self.all_params = list()
         self.all_drop = dict()
+        self.all_graphs = list()
+
+        self.layer_args = self._get_init_args(skip=4)
 
         if name is None:
             raise ValueError('Layer must have a name.')
@@ -139,6 +146,7 @@ class Layer(object):
             self._add_layers(prev_layer.all_layers)
             self._add_params(prev_layer.all_params)
             self._add_dropout_layers(prev_layer.all_drop)
+            self._add_graphs(prev_layer.all_graphs)
 
         elif isinstance(prev_layer, list):
             # 2. for layer have multiply inputs i.e. ConcatLayer
@@ -148,6 +156,7 @@ class Layer(object):
             self._add_layers(sum([l.all_layers for l in prev_layer], []))
             self._add_params(sum([l.all_params for l in prev_layer], []))
             self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
+            self._add_graphs(sum([l.all_graphs for l in prev_layer], []))
 
         elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
             if self.__class__.__name__ not in ['InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer',
@@ -156,14 +165,41 @@ class Layer(object):
 
             self.inputs = prev_layer
 
+            self._add_graphs((self.inputs.name, #.split(':')[0],
+                {'shape': self.inputs.get_shape().as_list(),
+                'dtype': self.inputs.dtype.name, 'class': 'placeholder',
+                'prev_layer': None}))
+
         elif prev_layer is not None:
             # 4. tl.models
             self._add_layers(prev_layer.all_layers)
             self._add_params(prev_layer.all_params)
             self._add_dropout_layers(prev_layer.all_drop)
+            self._add_graphs(prev_layer.all_graphs)
 
             if hasattr(prev_layer, "outputs"):
                 self.inputs = prev_layer.outputs
+
+        ## TL Graph
+        if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
+            _list = []
+            for layer in prev_layer:
+                _list.append(layer.name)
+            self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': _list})
+        elif prev_layer is None:  #
+            self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': None})
+        else:  # normal layers e.g. Conv2d
+            self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer.name})
+        # if act:  ## convert activation from function to string
+        #     try:
+        #         act = act.__name__
+        #     except:
+        #         pass
+        #     self.graph.update({'act': act})
+        # print(self.layer_args)
+        self.graph.update(self.layer_args)
+        # print(self.graph)
+        self._add_graphs((self.name, self.graph))
 
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""
@@ -196,7 +232,7 @@ class Layer(object):
             )
 
     def count_params(self):
-        """Return the number of parameters in the network"""
+        """Returns the number of parameters in the network"""
         n_params = 0
         for _i, p in enumerate(self.all_params):
             n = 1
@@ -211,6 +247,16 @@ class Layer(object):
             n_params = n_params + n
         return n_params
 
+    def get_all_params(self, session=None):
+        """Return the parameters in a list of array. """
+        _params = []
+        for p in self.all_params:
+            if session is None:
+                _params.append(p.eval())
+            else:
+                _params.append(session.run(p))
+        return _params
+
     def __str__(self):
         return "  Last layer is: %s (%s) %s" % (self.__class__.__name__, self.name, self.outputs.get_shape().as_list())
 
@@ -218,6 +264,7 @@ class Layer(object):
 
         net_new = Layer(prev_layer=None, name=self.name)
 
+        net_new.name = self.name + '_indexing'
         net_new.inputs = self.inputs
         net_new.outputs = self.outputs[key]
 
@@ -225,7 +272,7 @@ class Layer(object):
         net_new._add_layers(net_new.outputs)
 
         net_new._add_params(self.all_params)
-
+        net_new._add_graphs(self.all_graphs)
         net_new._add_dropout_layers(self.all_drop)
 
         return net_new
@@ -242,6 +289,37 @@ class Layer(object):
 
     def __len__(self):
         return len(self.all_layers)
+
+    @protected_method
+    def _get_init_args(self, skip=4):
+        """Get all arguments of current layer for saving the graph. """
+        stack = inspect.stack()
+
+        if len(stack) < skip + 1:
+            raise ValueError("The length of the inspection stack is shorter than the requested start position.")
+
+        args, _, _, values = inspect.getargvalues(stack[skip][0])
+
+        params = {}
+
+        for arg in args:
+
+            ## some args dont need to be saved into the graph. e.g. the input placeholder
+            if values[arg] is not None and arg not in ['self', 'prev_layer', 'inputs']:
+
+                val = values[arg]
+
+                ## change function (e.g. act) into dictionary of module path and function name
+                if inspect.isfunction(val):
+                    params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
+                ## ignore more args e.g. TF class
+                elif arg.endswith('init'):
+                    continue
+                ## for other data type, save them directly
+                else:
+                    params[arg] = val
+
+        return params
 
     @protected_method
     def _add_layers(self, layers):
@@ -270,6 +348,17 @@ class Layer(object):
         self.all_params = list_remove_repeat(self.all_params)
 
     @protected_method
+    def _add_graphs(self, graphs):
+
+        if isinstance(graphs, list):
+            self.all_graphs.extend(list(graphs))
+
+        else:
+            self.all_graphs.append(graphs)
+
+        # self.all_graphs = list_remove_repeat(self.all_graphs) # cannot repeat
+
+    @protected_method
     def _add_dropout_layers(self, drop_layers):
         if isinstance(drop_layers, dict) or isinstance(drop_layers, list):
             self.all_drop.update(dict(drop_layers))
@@ -295,3 +384,11 @@ class Layer(object):
             )
 
         return args if args is not None else {}
+
+    # def __getstate__(self): # pickle save
+    #     return {'version': 0.1,
+    #             # 'outputs': self.outputs,
+    #             }
+    #
+    # def __setstate__(self, state): # pickle restore
+    #     self.outputs = state['outputs']
