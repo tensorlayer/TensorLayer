@@ -17,6 +17,7 @@ __all__ = [
     'MeanPool2d',
     'MaxPool3d',
     'MeanPool3d',
+    'CornerPool',
     'GlobalMaxPool1d',
     'GlobalMeanPool1d',
     'GlobalMaxPool2d',
@@ -335,6 +336,46 @@ class MeanPool3d(Layer):
 
         self._add_layers(self.outputs)
 
+class CornerPool(Layer):
+    """The :class:`CornerPool` class is 2D corner pool, see `here <https://arxiv.org/abs/1808.01244/>`__.
+
+    Parameters
+    --------------
+    prev_layer : :class:`Layer`
+        Previous layer.
+    filter_size : int
+        The filter size.
+    mode:str
+        BottomRight for the top left corner,
+        TopLeft for the bottom right corner.
+    name : str
+        A unique layer name.
+    """
+
+    def __init__(
+        self,
+        prev_layer = None,
+        filter_size=(3,3),
+        mode='BottomRight',
+        name ='cornerpool_layer',
+    ):
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
+        if mode=='BottomRight':
+            temp_bottom=tf.keras.layers.ZeroPadding2D(padding=((0, filter_size[0]-1), (0,  0)))(self.inputs)
+            temp_right=tf.keras.layers.ZeroPadding2D(padding=((0,0), (0,  filter_size[1]-1)))(self.inputs)
+            temp_bottom=tf.layers.max_pooling2d(temp_bottom, (filter_size[0],1), (1,1), padding='valid', data_format='channels_last')
+            temp_right=tf.layers.max_pooling2d(temp_right, (1,filter_size[1]), (1,1), padding='valid', data_format='channels_last')
+            self.outputs=tf.add(temp_bottom,temp_right,name=name)
+        elif mode=='TopLeft':
+            temp_top=tf.keras.layers.ZeroPadding2D(padding=((filter_size[0]-1,0), (0,0)))(self.inputs)
+            temp_left=tf.keras.layers.ZeroPadding2D(padding=((0,0), (filter_size[1]-1,0)))(self.inputs)
+            temp_top=tf.layers.max_pooling2d(temp_top, (filter_size[0],1), (1,1), padding='valid', data_format='channels_last')
+            temp_left=tf.layers.max_pooling2d(temp_left, (1,filter_size[1]), (1,1), padding='valid', data_format='channels_last')
+            self.outputs=tf.add(temp_top,temp_left,name=name)
+        else:
+            raise AssertionError("Mode should be of 'BottomRight'and'TopLeft' ")
+        self._add_layers(self.outputs)
 
 class GlobalMaxPool1d(Layer):
     """The :class:`GlobalMaxPool1d` class is a 1D Global Max Pooling layer.
