@@ -74,12 +74,19 @@ To release a new version, please update the changelog as followed:
   - Add `tl.logging.contrib.hyperdash` (PR #739)
   - Add `tl.distributed.trainer` (PR #700)
   - Add `prefetch_buffer_size` to the `tl.distributed.trainer` (PR #766)
+  - Add `tl.db.TensorHub` (PR ＃751)
+  - Add `tl.files.save_graph` (PR ＃751)
+  - Add `tl.files.load_graph_` (PR ＃751)
+  - Add `tl.files.save_graph_and_params` (PR ＃751)
+  - Add `tl.files.load_graph_and_params` (PR ＃751)
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
+  - Update database (PR ＃751)
 - Layer:
   - Release SwitchNormLayer (PR #737)
   - Release QuanConv2d, QuanConv2dWithBN, QuanDenseLayer, QuanDenseLayerWithBN (PR#735)
+  - Update Core Layer to support graph (PR ＃751)
 - Setup:
   - Creation of installation flaggs `all_dev`, `all_cpu_dev`, and `all_gpu_dev` (PR #739)
 - Tutorials:
@@ -88,6 +95,7 @@ To release a new version, please update the changelog as followed:
   - `tutorial_models_vgg16` and `tutorial_models_vgg19` has been changed the input scale from [0,255] to [0,1](PR #710)
   - `tutorial_mnist_distributed_trainer.py` and `tutorial_cifar10_distributed_trainer.py` are added to explain the uses of Distributed Trainer (PR #700)
   - add `tutorial_quanconv_cifar10.py` and `tutorial_quanconv_mnist.py` (PR #735)
+  - add `tutorial_work_with_onnx.py`(PR #775)
 ### Changed
   - function minibatches changed to avoid wasting samples.(PR #762)
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
@@ -106,6 +114,7 @@ To release a new version, please update the changelog as followed:
 - missing import in tl.prepro (PR #712)
 - Dockerfiles import error fixed - issue #733 (PR #747)
 - Fix a typo in `absolute_difference_error` in file: `tensorlayer/cost.py` - Issue #753 (PR #759)
+- Fix the bug of scaling the learning rate of trainer (PR #776)
 
 ### Security
 
@@ -119,9 +128,9 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 - @DEKHTIARJonathan: #739 #747 #750 #754
 - @lgarithm: #705 #700
-- @OwenLiuzZ: #698 #710
-- @zsdonghao: #711 #712 #734 #736 #737 #700
-- @luomai: #700 #766
+- @OwenLiuzZ: #698 #710 #775 #776
+- @zsdonghao: #711 #712 #734 #736 #737 #700 #751
+- @luomai: #700 #751 #766
 - @XJTUWYD: #735
 - @mutewall: #735
 - @thangvubk: #759

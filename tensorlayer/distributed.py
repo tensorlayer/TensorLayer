@@ -140,7 +140,7 @@ class Trainer(object):
 
         # Adjust learning rate based on number of GPUs.
         lr = optimizer_args['learning_rate']
-        optimizer_args['learning_rate'] = scaling_learning_rate if lr * hvd.size() else lr
+        optimizer_args['learning_rate'] = lr * hvd.size() if scaling_learning_rate else lr
         opt = optimizer(**optimizer_args)
 
         # Add Horovod Distributed Optimizer.
