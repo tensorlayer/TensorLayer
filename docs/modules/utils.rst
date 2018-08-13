@@ -14,6 +14,10 @@ API - Utility
    dict_to_one
    list_string_to_dict
    flatten_list
+   exit_tensorflow
+   open_tensorboard
+   clear_all_placeholder_variables
+   set_gpu_fraction
 
 Training, testing and predicting
 ----------------------------------
@@ -56,3 +60,19 @@ Convert list of string to dictionary
 Flatten a list
 ^^^^^^^^^^^^^^^^^^^
 .. autofunction:: flatten_list
+
+Close TF session and associated processes
+-----------------------------------------
+.. autofunction:: exit_tensorflow
+
+Open TensorBoard
+----------------
+.. autofunction:: open_tensorboard
+
+Clear TensorFlow placeholder
+----------------------------
+.. autofunction:: clear_all_placeholder_variables
+
+Set GPU functions
+-----------------
+.. autofunction:: set_gpu_fraction

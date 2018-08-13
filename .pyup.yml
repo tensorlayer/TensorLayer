@@ -1,0 +1,75 @@
+############################################################################
+#     see https://pyup.io/docs/configuration/ for all available options    #
+############################################################################
+
+# configure updates globally
+# default: all
+# allowed: all, insecure, False
+update: all
+
+# configure dependency pinning globally
+# default: True
+# allowed: True, False
+pin: False
+
+# set the default branch
+# default: empty, the default branch on GitHub
+branch: master
+
+# update schedule
+# default: empty
+# allowed: "every day", "every week", ..
+schedule: "every day"
+
+# search for requirement files
+# default: True
+# allowed: True, False
+search: False
+
+# Specify requirement files by hand, default is empty
+# default: empty
+# allowed: list
+requirements:
+    # Requirements for the library
+    - requirements/requirements.txt
+
+    # Requirements for the development
+    - requirements/requirements_tf_cpu.txt
+
+    # Requirements for the development
+    - requirements/requirements_tf_gpu.txt
+
+    # Not necessary, but recommended libraries
+    - requirements/requirements_extra.txt
+
+    # Requirements for contrib loggers
+    - requirements_contrib_loggers.txt
+
+    # Requirements for the db
+    - requirements/requirements_db.txt
+
+    # Requirements for the development
+    - requirements/requirements_dev.txt
+
+    # Requirements for building docs
+    - requirements/requirements_doc.txt
+
+    # Requirements for running unittests
+    - requirements/requirements_test.txt
+
+# add a label to pull requests, default is not set
+# requires private repo permissions, even on public repos
+# default: empty
+#label_prs: update
+
+# configure the branch prefix the bot is using
+# default: pyup-
+branch_prefix: pyup-
+
+# set a global prefix for PRs
+# default: empty
+pr_prefix: "PyUP - Dependency Update"
+
+# allow to close stale PRs
+# default: True
+close_prs: True

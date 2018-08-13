@@ -1,8 +1,10 @@
-API - Distribution (alpha)
+API - Distributed Training
 =============================
 
+(Alpha release - usage might change later)
+
 Helper sessions and methods to run a distributed training.
-Check this `minst example <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py>`_.
+Check this `minst example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_distributed.py>`_.
 
 .. automodule:: tensorlayer.distributed
 
@@ -11,18 +13,21 @@ Check this `minst example <https://github.com/zsdonghao/tensorlayer/blob/master/
    TaskSpecDef
    TaskSpec
    DistributedSession
+   StopAtTimeHook
+   LoadCheckpoint
 
 
 Distributed training
-----------------------
+--------------------
+
 
 TaskSpecDef
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^
 
 .. autofunction:: TaskSpecDef
 
 Create TaskSpecDef from environment variables
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autofunction:: TaskSpec
 
@@ -47,6 +52,7 @@ is done after creating the shards:
   from tensorflow.contrib.data import Dataset
 
   task_spec = TaskSpec()
+  task_spec.create_server()
   files_dataset = Dataset.list_files(files_pattern)
   dataset = TextLineDataset(files_dataset)
   dataset = dataset.map(your_python_map_function, num_threads=4)
@@ -137,6 +143,7 @@ You can use one of the workers to run an evaluation for the saved checkpoints:
   if task_spec.is_evaluator():
         Evaluator().run_evaluation()
   else:
+        task_spec.create_server()
         # run normal training
 
 
@@ -149,11 +156,11 @@ to do some operations in the sessions. We added more to help with common operati
 
 
 Stop after maximum time
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autofunction:: StopAtTimeHook
 
 Initialize network with checkpoint
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autofunction:: LoadCheckpoint

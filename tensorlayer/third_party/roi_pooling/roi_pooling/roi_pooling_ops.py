@@ -1,11 +1,13 @@
+import os
+
 import tensorflow as tf
 from tensorflow.python.framework import ops
-import os
 
 module_path = os.path.realpath(__file__)
 module_dir = os.path.dirname(module_path)
 lib_path = os.path.join(module_dir, 'roi_pooling.so')
 roi_pooling_module = tf.load_op_library(lib_path)
+
 
 def roi_pooling(input, rois, pool_height, pool_width):
     """
@@ -29,10 +31,10 @@ def _RoiPoolingGrad(op, *grads):
     orig_argmax_output = op.outputs[1]
 
     orig_output_grad = grads[0]
-    output_grad = roi_pooling_module.roi_pooling_grad(orig_inputs, orig_rois, orig_output,
-                                                      orig_argmax_output, orig_output_grad,
-                                                      pool_height=op.get_attr('pool_height'),
-                                                      pool_width=op.get_attr('pool_width'))
+    output_grad = roi_pooling_module.roi_pooling_grad(
+        orig_inputs, orig_rois, orig_output, orig_argmax_output, orig_output_grad,
+        pool_height=op.get_attr('pool_height'), pool_width=op.get_attr('pool_width')
+    )
     return [output_grad, None]
 
 
@@ -47,5 +49,4 @@ def _RoiPoolingShape(op):
     pool_width = op.get_attr('pool_width')
 
     #TODO: check the width/hegiht order
-    return [tf.TensorShape([n_rois, n_channels, pool_width, pool_height]),
-            tf.TensorShape(None)]
+    return [tf.TensorShape([n_rois, n_channels, pool_width, pool_height]), tf.TensorShape(None)]

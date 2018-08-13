@@ -1,0 +1,39 @@
+filename: CHANGELOG.md
+include:
+  # Folders
+  - /^.github\//
+  - /^docs\//
+  - /^example\//
+  - /^tensorlayer\//
+  - /^tests\//
+
+  # Python Package Files
+  - setup.py
+  - setup.cfg
+  - pytest.ini
+
+  # Dependency Files
+  - requirements.txt
+  - requirements_db.txt
+  - requirements_dev.txt
+  - requirements_tf_cpu.txt
+  - requirements_tf_gpu.txt
+
+  # Configuration Files
+  - .travis.yml
+  - .readthedocs.yml
+  - .pyup.yml
+
+  # Docker Files
+  - Dockerfile
+  - Dockerfile.gpu
+  - .dockerignore
+
+  # Text Files
+  - README.md
+  - LICENSE.rst
+  - CHANGELOG.md
+  - CONTRIBUTING.md
+
+  # Github Files
+  - .gitignore

@@ -1,0 +1,616 @@
+version: 2
+
+jobs:
+
+  ###################################################################################
+  #  TEST BUILDS with TensorLayer installed from Source - NOT PUSHED TO DOCKER HUB  #
+  ###################################################################################
+
+  test_sources_py2_cpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: TEST BUILD - Build Docker Image Python 2 CPU with Tensorlayer installed from Source
+          command: |
+            cd docker
+            docker build -t latest_py2_cpu . --build-arg TF_CONTAINER_VERSION="latest"
+
+  test_sources_py2_gpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: TEST BUILD - Build Docker Image Python 2 GPU with Tensorlayer installed from Source
+          command: |
+            cd docker
+            docker build -t latest_py2_gpu . --build-arg TF_CONTAINER_VERSION="latest-gpu"
+
+  test_sources_py3_cpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: TEST BUILD - Build Docker Image Python 3 CPU with Tensorlayer installed from Source
+          command: |
+            cd docker
+            docker build -t latest_py3_cpu . --build-arg TF_CONTAINER_VERSION="latest-py3"
+
+  test_sources_py3_gpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: TEST BUILD - Build Docker Image Python 3 GPU with Tensorlayer installed from Source
+          command: |
+            cd docker
+            docker build -t latest_py3_gpu . --build-arg TF_CONTAINER_VERSION="latest-gpu-py3"
+
+  ###################################################################################
+  #       NIGHTLY BUILDS from TensorLayer Master Branch installed from Source       #
+  ###################################################################################
+
+  nightly_sources_py2_cpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: NIGHTLY BUILD - Build Docker Image Python 2 CPU with Tensorlayer installed from Source
+          command: |
+            cd docker
+
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+            VERSION_PREFIX="nightly"
+            echo VERSION_PREFIX="$VERSION_PREFIX"
+
+            docker build -t latest_py2_cpu . --build-arg TF_CONTAINER_VERSION="latest"
+
+            # ============== Nightly Python2 CPU Containers ==============
+
+            CONTAINER_TAG="$VERSION_PREFIX"
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-cpu
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-py2
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-cpu-py2
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-py2-cpu
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+  nightly_sources_py2_gpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: NIGHTLY BUILD - Build Docker Image Python 2 GPU with Tensorlayer installed from Source
+          command: |
+            cd docker
+
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+            VERSION_PREFIX="nightly"
+            echo VERSION_PREFIX="$VERSION_PREFIX"
+
+            docker build -t latest_py2_gpu . --build-arg TF_CONTAINER_VERSION="latest-gpu"
+
+            # ============== Nightly Python2 GPU Containers ==============
+
+            CONTAINER_TAG="$VERSION_PREFIX"-gpu
+            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-gpu-py2
+            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-py2-gpu
+            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+  nightly_sources_py3_cpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: NIGHTLY BUILD - Build Docker Image Python 3 CPU with Tensorlayer installed from Source
+          command: |
+            cd docker
+
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+            VERSION_PREFIX="nightly"
+            echo VERSION_PREFIX="$VERSION_PREFIX"
+
+            docker build -t latest_py3_cpu . --build-arg TF_CONTAINER_VERSION="latest-py3"
+
+            # ============== Nightly Python3 CPU Containers ==============
+
+            CONTAINER_TAG="$VERSION_PREFIX"-py3
+            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-cpu-py3
+            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-py3-cpu
+            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+  nightly_sources_py3_gpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: NIGHTLY BUILD - Build Docker Image Python 3 GPU with Tensorlayer installed from Source
+          command: |
+            cd docker
+
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+            VERSION_PREFIX="nightly"
+            echo VERSION_PREFIX="$VERSION_PREFIX"
+
+            docker build -t latest_py3_gpu . --build-arg TF_CONTAINER_VERSION="latest-gpu-py3"
+
+            # ============== Nightly Python3 GPU Containers ==============
+
+            CONTAINER_TAG="$VERSION_PREFIX"-gpu-py3
+            docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-py3-gpu
+            docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+  ###################################################################################
+  #                 TAGS BUILDS with TensorLayer installed from PyPI                #
+  ###################################################################################
+
+  build_pypi_py2_cpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: RELEASE BUILD - Build Docker Image Python 2 CPU with Tensorlayer installed from PyPI
+          command: |
+            cd docker
+
+            apk add --update py-pip
+
+            python -m pip install --upgrade pip
+            pip install --upgrade requests
+
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 1)"
+            echo TL_VERSION="$TL_VERSION"
+
+            VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
+            echo VERSION_PREFIX="$VERSION_PREFIX"
+
+            docker build -t latest_py2_cpu . --build-arg TL_VERSION="$TL_VERSION" --build-arg TF_CONTAINER_VERSION="latest"
+
+            # ============== Latest Python2 CPU Containers ==============
+
+            CONTAINER_TAG="$VERSION_PREFIX"
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-cpu
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-py2
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-cpu-py2
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-py2-cpu
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            # ============== Tag Python2 CPU Containers ==============
+
+            CONTAINER_TAG="$TL_VERSION"
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$TL_VERSION"-cpu
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$TL_VERSION"-py2
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$TL_VERSION"-cpu-py2
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$TL_VERSION"-py2-cpu
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+  build_pypi_py2_gpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: RELEASE BUILD - Build Docker Image Python 2 GPU with Tensorlayer installed from PyPI
+          command: |
+            cd docker
+
+            apk add --update py-pip
+
+            python -m pip install --upgrade pip
+            pip install --upgrade requests
+
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 1)"
+            echo TL_VERSION="$TL_VERSION"
+
+            VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
+            echo VERSION_PREFIX="$VERSION_PREFIX"
+
+            docker build -t latest_py2_gpu . --build-arg TL_VERSION="$TL_VERSION" --build-arg TF_CONTAINER_VERSION="latest-gpu"
+
+            # ============== Latest Python2 GPU Containers ==============
+
+            CONTAINER_TAG="$VERSION_PREFIX"-gpu
+            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-gpu-py2
+            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-py2-gpu
+            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            # ============== Tag Python2 GPU Containers ==============
+
+            CONTAINER_TAG="$TL_VERSION"-gpu
+            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$TL_VERSION"-gpu-py2
+            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$TL_VERSION"-py2-gpu
+            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+  build_pypi_py3_cpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: RELEASE BUILD - Build Docker Image Python 3 CPU with Tensorlayer installed from PyPI
+          command: |
+            cd docker
+
+            apk add --update py-pip
+
+            python -m pip install --upgrade pip
+            pip install --upgrade requests
+
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 1)"
+            echo TL_VERSION="$TL_VERSION"
+
+            VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
+            echo VERSION_PREFIX="$VERSION_PREFIX"
+
+            docker build -t latest_py3_cpu . --build-arg TL_VERSION="$TL_VERSION" --build-arg TF_CONTAINER_VERSION="latest-py3"
+
+            # ============== Latest Python3 CPU Containers ==============
+
+            CONTAINER_TAG="$VERSION_PREFIX"-py3
+            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-cpu-py3
+            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-py3-cpu
+            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            # ============== Tag Python3 CPU Containers ==============
+
+            CONTAINER_TAG="$TL_VERSION"-py3
+            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$TL_VERSION"-cpu-py3
+            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$TL_VERSION"-py3-cpu
+            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+  build_pypi_py3_gpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: RELEASE BUILD - Build Docker Image Python 3 GPU with Tensorlayer installed from PyPI
+          command: |
+            cd docker
+
+            apk add --update py-pip
+
+            python -m pip install --upgrade pip
+            pip install --upgrade requests
+
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 1)"
+            echo TL_VERSION="$TL_VERSION"
+
+            VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
+            echo VERSION_PREFIX="$VERSION_PREFIX"
+
+            docker build -t latest_py3_gpu . --build-arg TL_VERSION="$TL_VERSION" --build-arg TF_CONTAINER_VERSION="latest-gpu-py3"
+
+            # ============== Latest Python3 GPU Containers ==============
+
+            CONTAINER_TAG="$VERSION_PREFIX"-gpu-py3
+            docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-py3-gpu
+            docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            # ============== Tag Python3 GPU Containers ==============
+
+            CONTAINER_TAG="$TL_VERSION"-gpu-py3
+            docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$TL_VERSION"-py3-gpu
+            docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+  init_tag_build:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: Init Tag Deploy Build
+          command: |
+            echo "start tag workflow"
+
+###################################################################################
+###################################################################################
+###################################################################################
+#                               CircleCI WORKFLOWS                                #
+###################################################################################
+###################################################################################
+###################################################################################
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+
+      ###################################################################################
+      #  TEST BUILDS with TensorLayer installed from Source - NOT PUSHED TO DOCKER HUB  #
+      ###################################################################################
+
+      - test_sources_py2_cpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              ignore: master
+
+      - test_sources_py2_gpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              ignore: master
+
+      - test_sources_py3_cpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              ignore: master
+
+      - test_sources_py3_gpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              ignore: master
+
+      ###################################################################################
+      #           MASTER BRANCH BUILDS with TensorLayer installed from Source           #
+      ###################################################################################
+
+      - nightly_sources_py2_cpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              only: master
+
+      - nightly_sources_py2_gpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              only: master
+
+      - nightly_sources_py3_cpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              only: master
+
+      - nightly_sources_py3_gpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              only: master
+
+      ###################################################################################
+      #                 TAGS BUILDS with TensorLayer installed from PyPI                #
+      ###################################################################################
+
+      - init_tag_build:
+          filters:
+            tags:
+              only: /\d+\.\d+(\.\d+)?(\S*)?$/
+            branches:
+              ignore: /.*/
+
+      - hold:
+          type: approval
+          requires:
+            - init_tag_build
+          filters:
+            tags:
+              only: /\d+\.\d+(\.\d+)?(\S*)?$/
+            branches:
+              ignore: /.*/
+
+      - build_pypi_py2_cpu:
+          requires:
+            - hold
+          filters:
+            tags:
+              only: /\d+\.\d+(\.\d+)?(\S*)?$/
+            branches:
+              ignore: /.*/
+
+      - build_pypi_py2_gpu:
+          requires:
+            - hold
+          filters:
+            tags:
+              only: /\d+\.\d+(\.\d+)?(\S*)?$/
+            branches:
+              ignore: /.*/
+
+      - build_pypi_py3_cpu:
+          requires:
+            - hold
+          filters:
+            tags:
+              only: /\d+\.\d+(\.\d+)?(\S*)?$/
+            branches:
+              ignore: /.*/
+
+      - build_pypi_py3_gpu:
+          requires:
+            - hold
+          filters:
+            tags:
+              only: /\d+\.\d+(\.\d+)?(\S*)?$/
+            branches:
+              ignore: /.*/
