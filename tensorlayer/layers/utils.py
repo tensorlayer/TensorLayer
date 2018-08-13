@@ -39,7 +39,8 @@ def cabs(x):
     return tf.minimum(1.0, tf.abs(x), name='cabs')
 
 
-@deprecated(date="2018-06-30", instructions="TensorLayer relies on TensorFlow to check naming")
+# TODO: Fix
+# @deprecated(date="2018-06-30", instructions="TensorLayer relies on TensorFlow to check naming")
 def clear_layers_name():
     logging.warning('this method is DEPRECATED and has no effect, please remove it from your code.')
 
@@ -197,7 +198,8 @@ def get_variables_with_name(name=None, train_only=True, verbose=False):
     return d_vars
 
 
-@deprecated(date="2018-09-30", instructions="This API is deprecated in favor of `tf.global_variables_initializer`")
+# TODO: Fix
+# @deprecated(date="2018-09-30", instructions="This API is deprecated in favor of `tf.global_variables_initializer`")
 def initialize_global_variables(sess):
     """Initialize the global variables of TensorFlow.
 
@@ -379,7 +381,8 @@ def quantize_weight_overflow(x, bitW):
     return _quantize_overflow(x, bitW)
 
 
-@deprecated(date="2018-06-30", instructions="TensorLayer relies on TensorFlow to check name reusing")
+# TODO: Fix
+# @deprecated(date="2018-06-30", instructions="TensorLayer relies on TensorFlow to check name reusing")
 def set_name_reuse(enable=True):
     logging.warning('this method is DEPRECATED and has no effect, please remove it from your code.')
 

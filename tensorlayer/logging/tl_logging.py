@@ -114,7 +114,8 @@ def fatal(msg, *args, **kwargs):
     _get_logger().fatal("FATAL: %s" % msg, *args, **kwargs)
 
 
-@deprecated(date="2018-09-30", instructions="This API is deprecated. Please use as `tl.logging.warning`")
+# TODO: Fix
+# @deprecated(date="2018-09-30", instructions="This API is deprecated. Please use as `tl.logging.warning`")
 def warn(msg, *args, **kwargs):
     warning(msg, *args, **kwargs)
 

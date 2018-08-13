@@ -44,8 +44,8 @@ def ramp(x, v_min=0, v_max=1, name=None):
     """
     return tf.clip_by_value(x, clip_value_min=v_min, clip_value_max=v_max, name=name)
 
-
-@deprecated(date="2018-09-30", instructions="This API is deprecated. Please use as `tf.nn.leaky_relu`")
+# TODO: Fix
+# @deprecated(date="2018-09-30", instructions="This API is deprecated. Please use as `tf.nn.leaky_relu`")
 def leaky_relu(x, alpha=0.2, name="leaky_relu"):
     """leaky_relu can be used through its shortcut: :func:`tl.act.lrelu`.
 
@@ -302,7 +302,8 @@ def hard_tanh(x, name='htanh'):
     return tf.clip_by_value(x, -1, 1, name=name)
 
 
-@deprecated(date="2018-06-30", instructions="This API will be deprecated soon as tf.nn.softmax can do the same thing")
+# TODO: Fix
+# @deprecated(date="2018-06-30", instructions="This API will be deprecated soon as tf.nn.softmax can do the same thing")
 def pixel_wise_softmax(x, name='pixel_wise_softmax'):
     """Return the softmax outputs of images, every pixels have multiple label, the sum of a pixel is 1.
 
