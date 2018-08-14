@@ -34,33 +34,6 @@ def get_heatmap(annos,height,width):
 
     return joints_heatmap.astype(np.float16)
 
-def cal_heatmap(heatmap, plane_idx, center, sigma):
-    center_x, center_y = center
-    _, height, width = heatmap.shape[:3]
-    # exp(-th) ~0.01
-    th = 4.6052
-    delta = math.sqrt(th * 2)
-
-    # give the area of gaussian heatmap
-    x0 = int(max(0, center_x - delta * sigma))
-    y0 = int(max(0, center_y - delta * sigma))
-
-    x1 = int(min(width, center_x + delta * sigma))
-    y1 = int(min(height, center_y + delta * sigma))
-
-    # compute gaussian kernal
-    for y in range(y0, y1):
-        for x in range(x0, x1):
-            d = (x - center_x) ** 2 + (y - center_y) ** 2
-            exp = d / 2.0 / sigma / sigma
-            # heat is so low
-            if exp > th:
-                continue
-            # compare heat of index between different people and never exceed 1.0
-            heatmap[plane_idx][y][x] = max(heatmap[plane_idx][y][x], math.exp(-exp))
-            heatmap[plane_idx][y][x] = min(heatmap[plane_idx][y][x], 1.0)
-
-    return heatmap
 def put_heatmap(heatmap, plane_idx, center, sigma):
 
     center_x, center_y = center
@@ -87,23 +60,6 @@ def put_heatmap(heatmap, plane_idx, center, sigma):
     arr_exp[arr_sum > th] = 0
     heatmap[plane_idx, y0:y1 + 1, x0:x1 + 1] = np.maximum(arr_heatmap, arr_exp)
     return heatmap
-    ## slow - loops
-    # for y in range(y0, y1 + 1):  # y0 to y1 include
-    #     y_factor = (y - center_y) ** 2
-    #     for x in range(x0, x1 + 1):
-    #         # d = (x - center_x) ** 2 + (y - center_y) ** 2
-    #         d = (x - center_x) ** 2 + y_factor
-    #         # exp = d / 2.0 / sigma / sigma
-    #         exp = d * exp_factor
-    #         if exp > th:  # math.exp(-exp))
-    #             continue
-    #         val1 = math.exp(-exp)
-    #         mat_val = heatmap[plane_idx, y, x]
-    #         val2 = max(mat_val, val1)  # heatmap initilized to zero, cant be bigger then 1
-    #         heatmap[plane_idx, y, x] = val2
-    #         # heatmap[plane_idx][y][x] = max(heatmap[plane_idx][y][x], math.exp(-exp))
-    #         # heatmap[plane_idx][y][x] = min(heatmap[plane_idx][y][x], 1.0)
-    # arr_heatmap2 = heatmap[plane_idx, y0:y1 + 1, x0:x1 + 1]
 
 def get_vectormap(annos,height,width):
 
@@ -153,15 +109,10 @@ def get_vectormap(annos,height,width):
 
 def cal_vectormap(vectormap, countmap, i, v_start, v_end):
     _, height, width = vectormap.shape[:3]
-    # import copy
-    # vectormap2=copy.deepcopy(vectormap)
-    # vectormap3=copy.deepcopy(vectormap)
-    # countmap2 = copy.deepcopy(countmap)
+
     threshold = 8
-    # print(' v_start, v_end', v_start, v_end)
     vector_x = v_end[0] - v_start[0]
     vector_y = v_end[1] - v_start[1]
-    # print('Vec1', i)
     length = math.sqrt(vector_x ** 2 + vector_y ** 2)
     if length == 0:
         return vectormap
@@ -193,11 +144,11 @@ def cal_vectormap(vectormap, countmap, i, v_start, v_end):
 def fast_vectormap(vectormap, countmap, i, v_start, v_end):
     _, height, width = vectormap.shape[:3]
     _, height, width = vectormap.shape[:3]
-    # print(' v_start, v_end', v_start, v_end)
+
     threshold = 8
     vector_x = v_end[0] - v_start[0]
     vector_y = v_end[1] - v_start[1]
-    # print('Vec2', i)
+
     length = math.sqrt(vector_x ** 2 + vector_y ** 2)
     if length == 0:
         return vectormap
@@ -214,24 +165,11 @@ def fast_vectormap(vectormap, countmap, i, v_start, v_end):
     x_vec = (np.arange(min_x, max_x) - v_start[0])*norm_y
     y_vec = (np.arange(min_y, max_y) - v_start[1])*norm_x
 
-
-
     xv, yv = np.meshgrid(x_vec, y_vec)
 
     dist_matrix=abs(xv-yv)
     filter_matrix=np.where(dist_matrix>threshold,0,1)
-
-    # print('para',min_y,max_y, min_x, max_x,v_start,v_end)
     countmap[i, min_y: max_y, min_x: max_x]+=filter_matrix
-
-    # norm_x_map =filter_matrix*norm_x
-    # norm_y_map =filter_matrix*norm_y
-
-    # padholder=np.zeros((height,width))
-    # padholder[min_y: max_y, min_x: max_x]=filter_matrix
-    # vectormap[i * 2 + 0, padholder.astype(bool)] = norm_x
-    # vectormap[i * 2 + 1, padholder.astype(bool)] = norm_y
-
     for y in range(max_y-min_y):
         for x in range(max_x-min_x):
             if filter_matrix[y,x]!=0:

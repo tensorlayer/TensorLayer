@@ -1,24 +1,15 @@
 from pycocotools.coco import COCO
-import skimage.io as io
 import numpy as np
 import matplotlib.pyplot as plt
 import os
 from scipy.spatial.distance import cdist
 from pycocotools.coco import maskUtils
 class CocoMeta:
-    # limb = list(zip(
-    #     [1, 8,  9,  1, 11, 12, 1, 2, 3,  2, 1, 5, 6,  5, 1,  0,  0, 14, 15],
-    #     [8, 9, 10, 11, 12, 13, 2, 3, 4, 16, 5, 6, 7, 17, 0, 14, 15, 16, 17]
-    # ))
-
     limb = list(zip(
         [2, 9,  10,  2, 12, 13, 2, 3, 4, 3,  2, 6, 7, 6,  2, 1,  1,  15, 16],
         [9, 10, 11, 12, 13, 14, 3, 4, 5, 17, 6, 7, 8, 18, 1, 15, 16, 17, 18]
     ))
-#     limb = [
-#     (1, 2), (1, 5), (2, 3), (3, 4), (5, 6), (6, 7), (1, 8), (8, 9), (9, 10), (1, 11),
-#     (11, 12), (12, 13), (1, 0), (0, 14), (14, 16), (0, 15), (15, 17), (2, 16), (5, 17)
-# ]
+
     def __init__(self, idx, img_url, img_meta, annotations,masks):
         self.idx = idx
         self.img_url = img_url
@@ -63,8 +54,6 @@ class CocoMeta:
             self.joint_list.append(new_joint)
 
 class PoseInfo:
-    # metas = []
-    # metas_test=[]
     def __init__(self, data_dir, data_type, anno_path):
         self.metas=[]
         self.data_dir = data_dir
@@ -106,8 +95,8 @@ class PoseInfo:
             # sort from the biggest person to the smallest one
             persons_ids = np.argsort([-a['area'] for a in anns], kind='mergesort')
 
-            for id in list(persons_ids):
-                person_meta = anns[id]
+            for p_id in list(persons_ids):
+                person_meta = anns[p_id]
 
                 if person_meta["iscrowd"]:
                     masks.append(self.coco.annToRLE(person_meta))
@@ -115,7 +104,6 @@ class PoseInfo:
 
                 # skip this person if parts number is too low or if
                 # segmentation area is too small
-
                 if person_meta["num_keypoints"] < 5 or person_meta["area"] < 32 * 32:
                     masks.append(self.coco.annToRLE(person_meta))
                     continue
@@ -124,7 +112,6 @@ class PoseInfo:
                                  person_meta["bbox"][1] + person_meta["bbox"][3] / 2]
 
                 # skip this person if the distance to existing person is too small
-
                 too_close = False
                 for pc in prev_center:
                     a = np.expand_dims(pc[:2], axis=0)
@@ -169,15 +156,6 @@ class PoseInfo:
 def output_figure(index,df_val):
 
     path = df_val.metas[index].img_url
-    print(path)
-    # I = io.imread(path)
-    # plt.imshow(I)
-
-    # hm = df_val.get_maps(index)
-    # hm = hm * 255
-    # hm = hm.astype(np.int)
-    # tmp = np.amax(hm, axis=2)
-    # plt.imshow(tmp, cmap=plt.cm.gray, alpha=0.4)
 
     vectmap = df_val.get_vectors(index)
     tmp2 = vectmap.transpose((2, 0, 1))
