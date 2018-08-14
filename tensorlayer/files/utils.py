@@ -946,6 +946,7 @@ def download_file_from_google_drive(ID, destination):
         The destination for save file.
 
     """
+
     def save_response_content(response, destination, chunk_size=32 * 1024):
         total_size = int(response.headers.get('content-length', 0))
         with open(destination, "wb") as f:
@@ -2251,6 +2252,7 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
     ...                                             extract=True)
 
     """
+
     # We first define a download function, supporting both Python 2 and 3.
     def _download(filename, working_directory, url_source):
 
@@ -2311,6 +2313,7 @@ def natural_keys(text):
     - `link <http://nedbatchelder.com/blog/200712/human_sorting.html>`__
 
     """
+
     # - alist.sort(key=natural_keys) sorts in human order
     # http://nedbatchelder.com/blog/200712/human_sorting.html
     # (See Toothy's implementation in the comments)

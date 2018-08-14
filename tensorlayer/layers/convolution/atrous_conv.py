@@ -129,7 +129,7 @@ class AtrousConv2dLayer(Layer):
     ):
 
         super(AtrousConv2dLayer, self
-              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
             "AtrousConv2dLayer %s: n_filter: %d filter_size: %s rate: %d pad: %s act: %s" % (
@@ -205,7 +205,7 @@ class AtrousDeConv2dLayer(Layer):
     ):
 
         super(AtrousDeConv2dLayer, self
-              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
             "AtrousDeConv2dLayer %s: shape: %s output_shape: %s rate: %d pad: %s act: %s" % (

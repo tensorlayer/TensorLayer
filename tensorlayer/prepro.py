@@ -179,6 +179,7 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     - `run with limited queue <http://effbot.org/librarybook/queue.htm>`__
 
     """
+
     def apply_fn(results, i, data, kwargs):
         results[i] = fn(data, **kwargs)
 

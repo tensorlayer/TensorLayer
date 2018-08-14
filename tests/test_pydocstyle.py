@@ -44,6 +44,9 @@ class PyDOC_Style_Test(unittest.TestCase):
             'D105',  # Missing docstring in magic method
             'D104',  # Missing docstring in public package
             'D302',  # Use u"""for Unicode docstrings
+
+            # Rules that has conflict with yapf
+            'D202',  # No blank lines allowed after function docstring
         ]
 
         for filename in testing.list_all_py_files():
