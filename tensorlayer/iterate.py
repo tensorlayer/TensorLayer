@@ -45,7 +45,6 @@ def minibatches(inputs=None, targets=None, batch_size=None, allow_dynamic_batch_
     into (1000, 180) and feed to ``inputs``. After getting a batch, you can split it back into X1 and X2.
 
     """
-
     if len(inputs) != len(targets):
         raise AssertionError("The length of inputs and targets should be equal")
 
@@ -66,7 +65,7 @@ def minibatches(inputs=None, targets=None, batch_size=None, allow_dynamic_batch_
             excerpt = indices[start_idx:end_idx]
         else:
             excerpt = slice(start_idx, end_idx)
-        if (isinstance(inputs, list) or isinstance(targets, list)) and (shuffle ==True):
+        if (isinstance(inputs, list) or isinstance(targets, list)) and (shuffle == True):
             # zsdonghao: for list indexing when shuffle==True
             yield [inputs[i] for i in excerpt], [targets[i] for i in excerpt]
         else:
@@ -123,7 +122,6 @@ def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
     ['e' 'e']] [3 4]
 
     """
-
     if len(inputs) != len(targets):
         raise AssertionError("The length of inputs and targets should be equal")
 
@@ -193,7 +191,6 @@ def seq_minibatches2(inputs, targets, batch_size, num_steps):
     -----
     - Hint, if the input data are images, you can modify the source code `data = np.zeros([batch_size, batch_len)` to `data = np.zeros([batch_size, batch_len, inputs.shape[1], inputs.shape[2], inputs.shape[3]])`.
     """
-
     if len(inputs) != len(targets):
         raise AssertionError("The length of inputs and targets should be equal")
 

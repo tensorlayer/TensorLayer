@@ -230,8 +230,7 @@ class Layer(object):
         logging.info("  num of params: %d" % self.count_params())
 
     def print_layers(self):
-        """Print all info of layers in the network"""
-
+        """Print all info of layers in the network."""
         for i, layer in enumerate(self.all_layers):
             # logging.info("  layer %d: %s" % (i, str(layer)))
             logging.info(
@@ -239,7 +238,7 @@ class Layer(object):
             )
 
     def count_params(self):
-        """Returns the number of parameters in the network"""
+        """Returns the number of parameters in the network."""
         n_params = 0
         for _i, p in enumerate(self.all_params):
             n = 1

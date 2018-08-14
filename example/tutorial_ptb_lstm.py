@@ -132,7 +132,6 @@ def main(_):
     reasons, we will process data in mini-batches of size batch_size.
 
     """
-
     if FLAGS.model == "small":
         init_scale = 0.1
         learning_rate = 1.0

@@ -93,7 +93,6 @@ def flatten_reshape(variable, name='flatten'):
     >>> print(network.get_shape()[:].as_list()[1:])
     >>> [None, 123008]
     """
-
     dim = 1
     for d in variable.get_shape()[1:].as_list():
         dim *= d
@@ -231,7 +230,6 @@ def initialize_rnn_state(state, feed_dict=None):
         The TensorFlow's RNN state.
 
     """
-
     if isinstance(state, LSTMStateTuple):
         c = state.c.eval(feed_dict=feed_dict)
         h = state.h.eval(feed_dict=feed_dict)

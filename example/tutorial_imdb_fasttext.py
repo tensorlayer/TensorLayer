@@ -97,7 +97,6 @@ class FastTextClassifier(object):
 
 def augment_with_ngrams(unigrams, unigram_vocab_size, n_buckets, n=2):
     """Augment unigram features with hashed n-gram features."""
-
     def get_ngrams(n):
         return list(zip(*[unigrams[i:] for i in range(n)]))
 

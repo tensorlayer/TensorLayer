@@ -6,7 +6,6 @@ import inspect
 
 def private_method(func):
     """Decorator for making an instance method private."""
-
     def func_wrapper(*args, **kwargs):
         """Decorator wrapper function."""
         outer_frame = inspect.stack()[1][0]
@@ -20,7 +19,6 @@ def private_method(func):
 
 def protected_method(func):
     """Decorator for making an instance method private."""
-
     def func_wrapper(*args, **kwargs):
         """Decorator wrapper function."""
         outer_frame = inspect.stack()[1][0]

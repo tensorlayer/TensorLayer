@@ -44,7 +44,6 @@ def add_notice_to_docstring(doc, no_doc_str, notice):
 
 def _add_deprecated_function_notice_to_docstring(doc, date, instructions):
     """Adds a deprecation notice to a docstring for deprecated functions."""
-
     if instructions:
         deprecation_message = """
             .. warning::

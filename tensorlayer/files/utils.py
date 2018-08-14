@@ -336,7 +336,6 @@ def load_cropped_svhn(path='data', include_extra=True):
     >>> tl.vis.save_images(X_train[0:100], [10, 10], 'svhn.png')
 
     """
-
     start_time = time.time()
 
     path = os.path.join(path, 'cropped_svhn')
@@ -818,7 +817,6 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     >>> images = tl.files.load_flickr1M_dataset(tag='zebra')
 
     """
-
     path = os.path.join(path, 'flickr1M')
     logging.info("[Flickr1M] using {}% of images = {}".format(size * 10, size * 100000))
     images_zip = [
@@ -948,7 +946,6 @@ def download_file_from_google_drive(ID, destination):
         The destination for save file.
 
     """
-
     def save_response_content(response, destination, chunk_size=32 * 1024):
         total_size = int(response.headers.get('content-length', 0))
         with open(destination, "wb") as f:
@@ -2254,7 +2251,6 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
     ...                                             extract=True)
 
     """
-
     # We first define a download function, supporting both Python 2 and 3.
     def _download(filename, working_directory, url_source):
 
@@ -2315,7 +2311,6 @@ def natural_keys(text):
     - `link <http://nedbatchelder.com/blog/200712/human_sorting.html>`__
 
     """
-
     # - alist.sort(key=natural_keys) sorts in human order
     # http://nedbatchelder.com/blog/200712/human_sorting.html
     # (See Toothy's implementation in the comments)

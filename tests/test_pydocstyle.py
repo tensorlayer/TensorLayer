@@ -32,18 +32,15 @@ class PyDOC_Style_Test(unittest.TestCase):
 
         # TODO: fix all violations to make it empty
         _disabled_checks = [
-            'D202',  # No blank lines allowed after function docstring
             'D205',  # 1 blank line required between summary line and description
             'D102',  # Missing docstring in public method
             'D400',  # First line should end with a period
-            'D205',  # 1 blank line required between summary line and description
             'D100',  # Missing docstring in public module
             'D107',  # Missing docstring in __init__
             'D103',  # Missing docstring in public function
             'D401',  # First line should be in imperative mood
             'D101',  # Missing docstring in public class
             'D413',  # Missing blank line after last section
-            'D202',  # No blank lines allowed after function docstring
             'D105',  # Missing docstring in magic method
             'D104',  # Missing docstring in public package
             'D302',  # Use u"""for Unicode docstrings
