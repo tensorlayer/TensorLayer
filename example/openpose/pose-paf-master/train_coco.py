@@ -14,24 +14,28 @@ COCO  : https://github.com/ZheC/Realtime_Multi-Person_Pose_Estimation/blob/maste
 Visualize Caffe model : http://ethereon.github.io/netscope/#/editor
 
 """
-
-import pprint, time
 import numpy as np
 import tensorflow as tf
 import cv2
-from tensorlayer.layers import (Conv2d, ConcatLayer)
 import tensorlayer as tl
 from vgg_model import model
 import time
 import _pickle as cPickle
 from data_process import PoseInfo
-from tf_data_aug import crop_meta_image,_resize_image,pose_rotation,random_flip,pose_random_scale
+from tf_data_aug import crop_meta_image,resize_image,pose_rotation,random_flip,pose_random_scale
 from faster_map_cal import get_vectormap, get_heatmap
 from pycocotools.coco import maskUtils
+import argparse
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
+parser = argparse.ArgumentParser(description='Training codes for Openpose using Tensorflow')
+parser.add_argument('--model', default='personlab_resnet101', help='model name')
+parser.add_argument('--datapath', type=str, default='/data/public/rw/coco/annotations')
+parser.add_argument('--imgpath', type=str, default='/data/public/rw/coco/')
+parser.add_argument('--save_interval', type=int, default=5000)
+args = parser.parse_args()
 
 data_dir = '/home/hao/Workspace/yuding/coco_dataset'
 data_type = 'train'
@@ -49,12 +53,12 @@ def generator():
     assert len(inputs) == len(targets)
     for _input, _target in zip(inputs, targets):
         yield _input.encode('utf-8'), cPickle.dumps(_target)
-def _data_aug_fn(image, input):
-    input = cPickle.loads(input)
-    input = list(input)
+def _data_aug_fn(image, ground_truth):
+    ground_truth = cPickle.loads(ground_truth)
+    ground_truth = list(ground_truth)
 
-    annos= input[0]
-    mask = input[1]
+    annos= ground_truth[0]
+    mask = ground_truth[1]
     h_mask, w_mask, _ = np.shape(image)
     # mask
     mask_miss = np.ones((h_mask, w_mask), dtype=np.uint8)
@@ -89,8 +93,8 @@ def _data_aug_fn(image, input):
     mask_miss = np.array(mask_miss, dtype=np.float32)
     return image, resultmap, mask_miss
 
-def _map_fn(list, annos):
-    image = tf.read_file(list)
+def _map_fn(img_list, annos):
+    image = tf.read_file(img_list)
     image = tf.image.decode_jpeg(image, channels=3)
     image = tf.image.convert_image_dtype(image, dtype=tf.float32)
     image, resultmap, mask = tf.py_func(_data_aug_fn, [image, annos], [tf.float32, tf.float32, tf.float32])
@@ -203,7 +207,8 @@ with tf.Session(config=config) as sess:
 
         for ix, ll in enumerate(loss_ll):
             print('Network#',ix,'For Branch',ix%2+1,'Loss:',ll)
-        if gs_num!=0 and gs_num % 5000 == 0:
+
+        if gs_num!=0 and gs_num % args.save_interval == 0:
             ticks = time.time()
             print('Saved time:',ticks)
             np.save('/home/hao/Workspace/yuding/pose-paf-master/val/image' + str(gs_num) + '.npy', x_)

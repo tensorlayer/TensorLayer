@@ -1,13 +1,6 @@
-from pycocotools.coco import COCO
-import numpy as np
-import skimage.io as io
-import matplotlib.pyplot as plt
-import pylab
 import math
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
-import os
 
 def get_heatmap(annos,height,width):
     # 19 for coco, 15 for MPII
