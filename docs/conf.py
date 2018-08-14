@@ -71,7 +71,6 @@ autodoc_mock_imports = [
     'sklearn',
     'tensorflow',
     'tqdm',
-    'wrapt',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

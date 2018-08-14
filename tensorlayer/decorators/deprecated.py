@@ -5,9 +5,8 @@ import inspect
 import sys
 import functools
 
-from tensorflow.python.util import decorator_utils
-
-from tensorflow.python.util.deprecation import _validate_deprecation_args
+from tensorlayer.decorators.utils import decorator_utils
+from tensorlayer.decorators.utils.deprecation_utils import _validate_deprecation_args
 
 import wrapt
 
@@ -69,7 +68,7 @@ def deprecated(wrapped=None, date='', instructions='', warn_once=True):
         return functools.partial(deprecated, date=date, instructions=instructions, warn_once=warn_once)
 
     @wrapt.decorator
-    def deprecated_wrapper(wrapped, instance=None, args=None, kwargs=None):
+    def wrapper(wrapped, instance=None, args=None, kwargs=None):
 
         _validate_deprecation_args(date, instructions)
 
@@ -94,7 +93,7 @@ def deprecated(wrapped=None, date='', instructions='', warn_once=True):
 
         return wrapped(*args, **kwargs)
 
-    decorated = deprecated_wrapper(wrapped)
+    decorated = wrapper(wrapped)
 
     if sys.version_info > (3, 0):  # docstring can only be edited with Python 3
         wrapt.FunctionWrapper.__setattr__(

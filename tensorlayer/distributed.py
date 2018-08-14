@@ -246,8 +246,7 @@ class Trainer(object):
                 logging.info(log_str)
 
 
-# TODO: Fix
-# @deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 class TaskSpecDef(object):
     """Specification for a distributed task.
 
@@ -383,8 +382,7 @@ class TaskSpecDef(object):
         )
 
 
-# TODO: Fix
-# @deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 def create_task_spec_def():
     """Returns the a :class:`TaskSpecDef` based on the environment variables for distributed training.
 
@@ -414,8 +412,7 @@ def create_task_spec_def():
         raise Exception('You need to setup TF_CONFIG or JOB_NAME to define the task.')
 
 
-# TODO: Fix
-# @deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 def create_distributed_session(
         task_spec=None, checkpoint_dir=None, scaffold=None, hooks=None, chief_only_hooks=None, save_checkpoint_secs=600,
         save_summaries_steps=object(), save_summaries_secs=object(), config=None, stop_grace_period_secs=120,
@@ -512,8 +509,7 @@ def create_distributed_session(
     )
 
 
-# TODO: Fix
-# @deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 class StopAtTimeHook(session_run_hook.SessionRunHook):
     """Hook that requests stop after a specified time.
 
@@ -536,8 +532,7 @@ class StopAtTimeHook(session_run_hook.SessionRunHook):
             run_context.request_stop()
 
 
-# TODO: Fix
-# @deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 class LoadCheckpoint(session_run_hook.SessionRunHook):
     """Hook that loads a checkpoint after the session is created.
 
