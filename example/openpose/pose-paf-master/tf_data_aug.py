@@ -102,9 +102,6 @@ def crop_meta_image(image,annos,mask):
     return image,annos,mask
 
 def _resize_image(image,annos,mask,_target_width,_target_height):
-    # _target_height=368
-    # _target_width =368
-
     #original image
     y,x,_=np.shape(image)
 
@@ -113,8 +110,6 @@ def _resize_image(image,annos,mask,_target_width,_target_height):
 
     new_joints=[]
     # update meta
-    # meta.height=_target_height
-    # meta.width =_target_width
     for people in annos:
         new_keypoints=[]
         for keypoints in people:
@@ -152,6 +147,31 @@ def _rotate_coord(shape, newxy, point, angle):
     qy += oy - new_y
 
     return int(qx + 0.5), int(qy + 0.5)
+def largest_rotated_rect(w, h, angle):
+    """
+    Get largest rectangle after rotation.
+    http://stackoverflow.com/questions/16702966/rotate-image-and-crop-out-black-borders
+    """
+    angle = angle / 180.0 * math.pi
+    if w <= 0 or h <= 0:
+        return 0, 0
+
+    width_is_longer = w >= h
+    side_long, side_short = (w, h) if width_is_longer else (h, w)
+
+    # since the solutions for angle, -angle and 180-angle are all the same,
+    # if suffices to look at the first quadrant and the absolute values of sin,cos:
+    sin_a, cos_a = abs(math.sin(angle)), abs(math.cos(angle))
+    if side_short <= 2. * sin_a * cos_a * side_long:
+        # half constrained case: two crop corners touch the longer side,
+        #   the other two corners are on the mid-line parallel to the longer line
+        x = 0.5 * side_short
+        wr, hr = (x / sin_a, x / cos_a) if width_is_longer else (x / cos_a, x / sin_a)
+    else:
+        # fully constrained case: crop touches all 4 sides
+        cos_2a = cos_a * cos_a - sin_a * sin_a
+        wr, hr = (w * cos_a - h * sin_a) / cos_2a, (h * cos_a - w * sin_a) / cos_2a
+    return int(np.round(wr)), int(np.round(hr))
 
 def pose_rotation(image,annos,mask):
     img_shape=np.shape(image)
@@ -165,14 +185,13 @@ def pose_rotation(image,annos,mask):
     ret = cv2.warpAffine(img, rot_m, img.shape[1::-1], flags=cv2.INTER_AREA, borderMode=cv2.BORDER_CONSTANT)
     if img.ndim == 3 and ret.ndim == 2:
         ret = ret[:, :, np.newaxis]
-    neww, newh = RotationAndCropValid.largest_rotated_rect(ret.shape[1], ret.shape[0], deg)
+    neww, newh = largest_rotated_rect(ret.shape[1], ret.shape[0], deg)
     neww = min(neww, ret.shape[1])
     newh = min(newh, ret.shape[0])
     newx = int(center[0] - neww * 0.5)
     newy = int(center[1] - newh * 0.5)
     # print(ret.shape, deg, newx, newy, neww, newh)
     img = ret[newy:newy + newh, newx:newx + neww]
-
     # adjust meta data
     adjust_joint_list = []
     for joint in annos:
@@ -182,13 +201,8 @@ def pose_rotation(image,annos,mask):
                 adjust_joint.append((-1000, -1000))
                 continue
 
-            # if point[0] <= 0 or point[1] <= 0:
-            #     adjust_joint.append((-1, -1))
-            #     continue
             x, y = _rotate_coord((width, height), (newx, newy), point, deg)
-            # if x > neww or y > newh:
-            #     adjust_joint.append((-1000, -1000))
-            #     continue
+
             if x>neww-1 or y>newh-1:
                 adjust_joint.append((-1000, -1000))
                 continue
