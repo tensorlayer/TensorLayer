@@ -13,12 +13,7 @@ They replace the following imports:
 import sys
 import re
 
-__all__ = [
-    "add_deprecation_notice_to_docstring",
-    "get_qualified_name",
-    "validate_deprecation_args"
-
-]
+__all__ = ["add_deprecation_notice_to_docstring", "get_qualified_name", "validate_deprecation_args"]
 
 
 def add_deprecation_notice_to_docstring(doc, date, instructions):
