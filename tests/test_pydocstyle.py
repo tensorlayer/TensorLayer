@@ -51,9 +51,7 @@ class PyDOC_Style_Test(unittest.TestCase):
             'D301',  # Use r""" if any backslashes in a docstring
             'D207',  # Docstring is under-indented
             'D403',  # First word of the first line should be properly capitalized
-            'D204',  # 1 blank line required after class docstring
             'D104',  # Missing docstring in public package
-            # 'D412',  # No blank lines allowed between a section header and its content
         ]
 
         for filename in testing.list_all_py_files():

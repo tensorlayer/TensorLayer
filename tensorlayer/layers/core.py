@@ -108,6 +108,7 @@ class Layer(object):
     Tensor("d2/Identity:0", shape=(?, 80), dtype=float32)
 
     """
+
     # Added to allow auto-completion
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
