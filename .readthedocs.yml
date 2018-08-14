@@ -9,10 +9,6 @@ formats:
 
 python:
     version: 3.6
-    pip_install: true
-    extra_requirements:
-        - db
-        - dev
-        - doc
-        - extra
-        - test
+    
+requirements_file: 
+    requirements/requirements_doc.txt
