@@ -32,11 +32,8 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
             " - `pip install --upgrade tensorflow-gpu`"
         )
 
-    if (
-            "SPHINXBUILD" not in os.environ and
-            "READTHEDOCS" not in os.environ and
-            LooseVersion(tensorflow.__version__) < LooseVersion("1.6.0")
-    ):
+    if ("SPHINXBUILD" not in os.environ and "READTHEDOCS" not in os.environ and
+            LooseVersion(tensorflow.__version__) < LooseVersion("1.6.0")):
         raise RuntimeError(
             "TensorLayer does not support Tensorflow version older than 1.6.0.\n"
             "Please update Tensorflow with:\n"

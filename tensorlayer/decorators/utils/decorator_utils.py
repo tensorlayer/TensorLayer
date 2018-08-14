@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-
 """Utility functions for writing decorators (which modify docstrings)."""
 from __future__ import absolute_import
 from __future__ import division
@@ -73,8 +72,7 @@ def _normalize_docstring(docstring):
     return '\n'.join(trimmed)
 
 
-def add_notice_to_docstring(
-        doc, instructions, no_doc_str, suffix_str, notice):
+def add_notice_to_docstring(doc, instructions, no_doc_str, suffix_str, notice):
     """Adds a deprecation notice to a docstring."""
     if not doc:
         lines = [no_doc_str]
@@ -99,13 +97,13 @@ def add_notice_to_docstring(
 def validate_callable(func, decorator_name):
     if not hasattr(func, '__call__'):
         raise ValueError(
-                '%s is not a function. If this is a property, make sure'
-                ' @property appears before @%s in your source code:'
-                '\n\n@property\n@%s\ndef method(...)' % (
-                        func, decorator_name, decorator_name))
+            '%s is not a function. If this is a property, make sure'
+            ' @property appears before @%s in your source code:'
+            '\n\n@property\n@%s\ndef method(...)' % (func, decorator_name, decorator_name)
+        )
 
 
-class classproperty(object):    # pylint: disable=invalid-name
+class classproperty(object):  # pylint: disable=invalid-name
     """Class property decorator.
 
     Example usage:

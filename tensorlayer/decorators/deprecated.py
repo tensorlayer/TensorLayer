@@ -5,7 +5,8 @@ import inspect
 import sys
 import functools
 
-from tensorlayer.decorators.utils import decorator_utils
+from tensorlayer.decorators.utils.decorator_utils import get_qualified_name
+from tensorlayer.decorators.utils.decorator_utils import _normalize_docstring
 from tensorlayer.decorators.utils.deprecation_utils import _validate_deprecation_args
 
 import wrapt
@@ -25,7 +26,7 @@ def add_notice_to_docstring(doc, no_doc_str, notice):
         lines = [no_doc_str]
 
     else:
-        lines = decorator_utils._normalize_docstring(doc).splitlines()
+        lines = _normalize_docstring(doc).splitlines()
 
     notice = [''] + notice
 
@@ -74,7 +75,7 @@ def deprecated(wrapped=None, date='', instructions='', warn_once=True):
 
         if _PRINT_DEPRECATION_WARNINGS:
 
-            class_or_func_name = decorator_utils.get_qualified_name(wrapped)
+            class_or_func_name = get_qualified_name(wrapped)
 
             if class_or_func_name not in _PRINTED_WARNING:
                 if warn_once:
