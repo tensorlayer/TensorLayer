@@ -23,7 +23,7 @@ from .dataset_loaders.nietzsche_dataset import *
 from .dataset_loaders.ptb_dataset import *
 from .dataset_loaders.voc_dataset import *
 from .dataset_loaders.wmt_en_fr_dataset import *
-
+from .dataset_loaders.coco_dataset import *
 from .utils import *
 
 __all__ = [
@@ -42,6 +42,7 @@ __all__ = [
     'load_ptb_dataset',
     'load_voc_dataset',
     'load_wmt_en_fr_dataset',
+    'load_coco_pose_dataset',
 
     # Util Functions
     'assign_params',

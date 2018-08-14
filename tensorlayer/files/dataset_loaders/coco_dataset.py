@@ -1,8 +1,58 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
+from tensorlayer import logging
+from tensorlayer.files.utils import del_file
+from tensorlayer.files.utils import folder_exists
+from tensorlayer.files.utils import load_file_list
+from tensorlayer.files.utils import maybe_download_and_extract
+
 from pycocotools.coco import COCO
 import numpy as np
 import os
 from scipy.spatial.distance import cdist
 from pycocotools.coco import maskUtils
+
+__all__ = ['load_coco_pose_dataset']
+def load_coco_pose_dataset(data_dir,data_type):
+    """Load COCO Human Pose Dataset.
+
+    COCO database structure:
+
+    -cocodataset:
+        -images:
+            -train2014: xxxxxxxx.jpg
+            -val2014: xxxxxxxx.jpg
+        -annotations: coco_keypoint.json
+
+    Parameters
+    -----------
+    data_dir : path for cocodataset
+        The path that the data is downloaded to.
+    data_type: train or val data
+        If True, only return the peoples contain 16 pose keypoints. (Usually be used for single person pose estimation)
+
+    Returns
+    ----------
+    coco database object
+    -using object.get_image_list() to get the list of image url
+    -using object.get_joint_list() to get the list of every keypoint info of image
+    -using object.get_mask() to get the list of mask of image
+
+    Examples
+    --------
+    >>>data_dir = '/home/hao/Workspace/yuding/coco_dataset'
+    >>>data_type = 'train'
+    >>>anno_path = '{}/annotations/person_keypoints_{}2014.json'.format(data_dir, data_type)
+    >>>df_val = PoseInfo(data_dir, data_type, anno_path)
+
+    References
+    -----------
+    - `MPII Human Pose Dataset. CVPR 14 <http://human-pose.mpi-inf.mpg.de>`__
+    """
+    anno_path = '{}/annotations/person_keypoints_{}2014.json'.format(data_dir, data_type)
+    df_val = PoseInfo(data_dir, data_type, anno_path)
+    return df_val
+
 class CocoMeta:
     limb = list(zip(
         [2, 9,  10,  2, 12, 13, 2, 3, 4, 3,  2, 6, 7, 6,  2, 1,  1,  15, 16],
@@ -153,19 +203,4 @@ class PoseInfo:
             mask_list.append(meta.masks)
         return mask_list
 
-if __name__ == '__main__':
-    data_dir = '/Users/Joel/Desktop/coco'
-    data_type = 'val'
-    anno_path = '{}/annotations/person_keypoints_{}2014.json'.format(data_dir, data_type)
-    df_val = PoseInfo(data_dir, data_type, anno_path)
 
-    for i in range(50):
-        meta=df_val.metas[i]
-        mask_sig= meta.masks
-        print('shape of np mask is ',np.shape (mask_sig),type(mask_sig))
-        if mask_sig is not []:
-            mask_miss = np.ones((meta.height, meta.width), dtype=np.uint8)
-            for seg in mask_sig:
-                bin_mask = maskUtils.decode(seg)
-                bin_mask = np.logical_not(bin_mask)
-                mask_miss = np.bitwise_and(mask_miss, bin_mask)

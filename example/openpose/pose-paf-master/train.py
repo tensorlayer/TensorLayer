@@ -29,10 +29,14 @@ from faster_map_cal import get_vectormap, get_heatmap
 from pycocotools.coco import maskUtils
 import os
 
+
+data_dir = '/Users/Joel/Desktop/coco'
+data_type = 'train'
+tl.files.load_coco_pose_dataset(data_dir,data_type)
+
+exit(0)
+
 parser = argparse.ArgumentParser(description='Training codes for Openpose using Tensorflow')
-parser.add_argument('--model', default='personlab_resnet101', help='model name')
-parser.add_argument('--datapath', type=str, default='/data/public/rw/coco/annotations')
-parser.add_argument('--imgpath', type=str, default='/data/public/rw/coco/')
 parser.add_argument('--save_interval', type=int, default=5000)
 args = parser.parse_args()
 
@@ -71,6 +75,7 @@ def _data_aug_fn(image, ground_truth):
         mask_miss = np.bitwise_and(mask_miss, bin_mask)
 
     # image process
+
     image, annos, mask_miss = pose_random_scale(image, annos, mask_miss)
     image, annos, mask_miss = pose_rotation(image, annos, mask_miss)
     image, annos, mask_miss = random_flip(image, annos, mask_miss)
@@ -214,7 +219,7 @@ with tf.Session(config=config) as sess:
 
         for ix, ll in enumerate(loss_ll):
             print('Network#',ix,'For Branch',ix%2+1,'Loss:',ll)
-        if gs_num!=0 and gs_num % 5000 == 0:
+        if gs_num!=0 and gs_num % args.save_interval == 0:
             ticks = time.time()
             print('Saved time:',ticks)
             np.save('/home/hao/Workspace/yuding/pose-paf-master/val/image' + str(gs_num) + '.npy', x_)

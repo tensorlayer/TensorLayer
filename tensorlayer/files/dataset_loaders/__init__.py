@@ -1,6 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-
+from .coco_dataset import *
 from .celebA_dataset import *
 from .cifar10_dataset import *
 from .cyclegan_dataset import *
@@ -31,4 +31,5 @@ __all__ = [
     'load_ptb_dataset',
     'load_voc_dataset',
     'load_wmt_en_fr_dataset',
+    'load_coco_pose_dataset',
 ]
