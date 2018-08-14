@@ -25,41 +25,41 @@ import tensorlayer as tl
 
 def _int64_feature(value):
     """Wrapper for inserting an int64 Feature into a SequenceExample proto,
-  e.g, An integer label.
-  """
+    e.g, An integer label.
+    """
     return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
 
 
 def _bytes_feature(value):
     """Wrapper for inserting a bytes Feature into a SequenceExample proto,
-  e.g, an image in byte
-  """
+    e.g, an image in byte
+    """
     # return tf.train.Feature(bytes_list=tf.train.BytesList(value=[str(value)]))
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
 
 def _int64_feature_list(values):
     """Wrapper for inserting an int64 FeatureList into a SequenceExample proto,
-  e.g, sentence in list of ints
-  """
+    e.g, sentence in list of ints
+    """
     return tf.train.FeatureList(feature=[_int64_feature(v) for v in values])
 
 
 def _bytes_feature_list(values):
     """Wrapper for inserting a bytes FeatureList into a SequenceExample proto,
-  e.g, sentence in list of bytes
-  """
+    e.g, sentence in list of bytes
+    """
     return tf.train.FeatureList(feature=[_bytes_feature(v) for v in values])
 
 
-## 1. Save data into TFRecord =====================================================
+# 1. Save data into TFRecord =====================================================
 cwd = os.getcwd()
 IMG_DIR = cwd + '/data/cat/'
 SEQ_FIR = cwd + '/data/cat_caption.json'
 VOC_FIR = cwd + '/vocab.txt'
 # read image captions from JSON
 with tf.gfile.FastGFile(SEQ_FIR, "r") as f:
-    caption_data = json.loads(str(f.read()))  #, encoding = "utf-8"))
+    caption_data = json.loads(str(f.read()))  # , encoding = "utf-8"))
 
 processed_capts, img_capts = [], []
 for idx in range(len(caption_data['images'])):
@@ -85,7 +85,7 @@ for idx in range(len(caption_data['images'])):
     # tl.visualize.frame(I=img, second=0.2, saveable=False, name=img_name, fig_idx=12234)
     img_raw = img.tobytes()
     img_capt_b = [v.encode() for v in img_capt.split(' ')]
-    context = tf.train.Features(feature={  #  Non-serial data uses Feature
+    context = tf.train.Features(feature={  # Non-serial data uses Feature
         "image/img_raw": _bytes_feature(img_raw),
     })
     feature_lists = tf.train.FeatureLists(
@@ -97,7 +97,7 @@ for idx in range(len(caption_data['images'])):
     writer.write(sequence_example.SerializeToString())  # Serialize To String
 writer.close()
 
-## 2. Simple read one image =======================================================
+# 2. Simple read one image =======================================================
 filename_queue = tf.train.string_input_producer(["train.cat_caption"])
 reader = tf.TFRecordReader()
 _, serialized_example = reader.read(filename_queue)  # return the file and the name of file
@@ -117,24 +117,24 @@ c = tf.contrib.learn.run_n(sequence_features, n=1, feed_dict=None)
 print(c[0])
 
 
-## 3. Prefetch serialized SequenceExample protos ==================================
+# 3. Prefetch serialized SequenceExample protos ==================================
 def distort_image(image, thread_id):
     """Perform random distortions on an image.
-  Args:
-    image: A float32 Tensor of shape [height, width, 3] with values in [0, 1).
-    thread_id: Preprocessing thread id used to select the ordering of color
-      distortions. There should be a multiple of 2 preprocessing threads.
-  Returns:````
-    distorted_image: A float32 Tensor of shape [height, width, 3] with values in
-      [0, 1].
-  """
+    Args:
+        image: A float32 Tensor of shape [height, width, 3] with values in [0, 1).
+        thread_id: Preprocessing thread id used to select the ordering of color
+        distortions. There should be a multiple of 2 preprocessing threads.
+    Returns:````
+        distorted_image: A float32 Tensor of shape [height, width, 3] with values in
+        [0, 1].
+    """
     # Randomly flip horizontally.
-    with tf.name_scope("flip_horizontal"):  #, values=[image]): # DH MOdify
+    with tf.name_scope("flip_horizontal"):  # , values=[image]): # DH MOdify
         # with tf.name_scope("flip_horizontal", values=[image]):
         image = tf.image.random_flip_left_right(image)
     # Randomly distort the colors based on thread id.
     color_ordering = thread_id % 2
-    with tf.name_scope("distort_color"):  #, values=[image]): # DH MOdify
+    with tf.name_scope("distort_color"):  # , values=[image]): # DH MOdify
         # with tf.name_scope("distort_color", values=[image]): # DH MOdify
         if color_ordering == 0:
             image = tf.image.random_brightness(image, max_delta=32. / 255.)
@@ -229,33 +229,33 @@ def distort_image(image, thread_id):
 
 
 def prefetch_input_data(
-        reader, file_pattern, is_training, batch_size, values_per_shard, input_queue_capacity_factor=16,
-        num_reader_threads=1, shard_queue_name="filename_queue", value_queue_name="input_queue"
+    reader, file_pattern, is_training, batch_size, values_per_shard, input_queue_capacity_factor=16,
+    num_reader_threads=1, shard_queue_name="filename_queue", value_queue_name="input_queue"
 ):
     """Prefetches string values from disk into an input queue.
 
-  In training the capacity of the queue is important because a larger queue
-  means better mixing of training examples between shards. The minimum number of
-  values kept in the queue is values_per_shard * input_queue_capacity_factor,
-  where input_queue_memory factor should be chosen to trade-off better mixing
-  with memory usage.
+    In training the capacity of the queue is important because a larger queue
+    means better mixing of training examples between shards. The minimum number of
+    values kept in the queue is values_per_shard * input_queue_capacity_factor,
+    where input_queue_memory factor should be chosen to trade-off better mixing
+    with memory usage.
 
-  Args:
-    reader: Instance of tf.ReaderBase.
-    file_pattern: Comma-separated list of file patterns (e.g.
-        /tmp/train_data-?????-of-00100).
-    is_training: Boolean; whether prefetching for training or eval.
-    batch_size: Model batch size used to determine queue capacity.
-    values_per_shard: Approximate number of values per shard.
-    input_queue_capacity_factor: Minimum number of values to keep in the queue
-      in multiples of values_per_shard. See comments above.
-    num_reader_threads: Number of reader threads to fill the queue.
-    shard_queue_name: Name for the shards filename queue.
-    value_queue_name: Name for the values input queue.
+    Args:
+        reader: Instance of tf.ReaderBase.
+        file_pattern: Comma-separated list of file patterns (e.g.
+            /tmp/train_data-?????-of-00100).
+        is_training: Boolean; whether prefetching for training or eval.
+        batch_size: Model batch size used to determine queue capacity.
+        values_per_shard: Approximate number of values per shard.
+        input_queue_capacity_factor: Minimum number of values to keep in the queue
+        in multiples of values_per_shard. See comments above.
+        num_reader_threads: Number of reader threads to fill the queue.
+        shard_queue_name: Name for the shards filename queue.
+        value_queue_name: Name for the values input queue.
 
-  Returns:
-    A Queue containing prefetched string values.
-  """
+    Returns:
+        A Queue containing prefetched string values.
+    """
     data_files = []
     for pattern in file_pattern.split(","):
         data_files.extend(tf.gfile.Glob(pattern))
@@ -367,59 +367,59 @@ coord.join(threads)
 sess.close()
 
 
-## 4. Prefetch serialized SequenceExample protos. Create MASK and TARGET =======
+# 4. Prefetch serialized SequenceExample protos. Create MASK and TARGET =======
 def batch_with_dynamic_pad(images_and_captions, batch_size, queue_capacity, add_summaries=True):
     """Batches input images and captions.
 
-  This function splits the caption into an input sequence and a target sequence,
-  where the target sequence is the input sequence right-shifted by 1. Input and
-  target sequences are batched and padded up to the maximum length of sequences
-  in the batch. A mask is created to distinguish real words from padding words.
+    This function splits the caption into an input sequence and a target sequence,
+    where the target sequence is the input sequence right-shifted by 1. Input and
+    target sequences are batched and padded up to the maximum length of sequences
+    in the batch. A mask is created to distinguish real words from padding words.
 
-  Example:
-    Actual captions in the batch ('-' denotes padded character):
-      [
-        [ 1 2 5 4 5 ],
-        [ 1 2 3 4 - ],
-        [ 1 2 3 - - ],
-      ]
+    Example:
+        Actual captions in the batch ('-' denotes padded character):
+        [
+            [ 1 2 5 4 5 ],
+            [ 1 2 3 4 - ],
+            [ 1 2 3 - - ],
+        ]
 
-    input_seqs:
-      [
-        [ 1 2 3 4 ],
-        [ 1 2 3 - ],
-        [ 1 2 - - ],
-      ]
+        input_seqs:
+        [
+            [ 1 2 3 4 ],
+            [ 1 2 3 - ],
+            [ 1 2 - - ],
+        ]
 
-    target_seqs:
-      [
-        [ 2 3 4 5 ],
-        [ 2 3 4 - ],
-        [ 2 3 - - ],
-      ]
+        target_seqs:
+        [
+            [ 2 3 4 5 ],
+            [ 2 3 4 - ],
+            [ 2 3 - - ],
+        ]
 
-    mask:
-      [
-        [ 1 1 1 1 ],
-        [ 1 1 1 0 ],
-        [ 1 1 0 0 ],
-      ]
+        mask:
+        [
+            [ 1 1 1 1 ],
+            [ 1 1 1 0 ],
+            [ 1 1 0 0 ],
+        ]
 
-  Args:
-    images_and_captions: A list of pairs [image, caption], where image is a
-      Tensor of shape [height, width, channels] and caption is a 1-D Tensor of
-      any length. Each pair will be processed and added to the queue in a
-      separate thread.
-    batch_size: Batch size.
-    queue_capacity: Queue capacity.
-    add_summaries: If true, add caption length summaries.
+    Args:
+        images_and_captions: A list of pairs [image, caption], where image is a
+        Tensor of shape [height, width, channels] and caption is a 1-D Tensor of
+        any length. Each pair will be processed and added to the queue in a
+        separate thread.
+        batch_size: Batch size.
+        queue_capacity: Queue capacity.
+        add_summaries: If true, add caption length summaries.
 
-  Returns:
-    images: A Tensor of shape [batch_size, height, width, channels].
-    input_seqs: An int32 Tensor of shape [batch_size, padded_length].
-    target_seqs: An int32 Tensor of shape [batch_size, padded_length].
-    mask: An int32 0/1 Tensor of shape [batch_size, padded_length].
-  """
+    Returns:
+        images: A Tensor of shape [batch_size, height, width, channels].
+        input_seqs: An int32 Tensor of shape [batch_size, padded_length].
+        target_seqs: An int32 Tensor of shape [batch_size, padded_length].
+        mask: An int32 0/1 Tensor of shape [batch_size, padded_length].
+    """
     enqueue_list = []
     for image, caption in images_and_captions:
         caption_length = tf.shape(caption)[0]

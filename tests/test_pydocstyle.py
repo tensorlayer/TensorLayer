@@ -49,7 +49,6 @@ class PyDOC_Style_Test(unittest.TestCase):
             'D200',  # One-line docstring should fit on one line with quotes
             'D105',  # Missing docstring in magic method
             'D301',  # Use r""" if any backslashes in a docstring
-            'D207',  # Docstring is under-indented
             'D104',  # Missing docstring in public package
         ]
 
