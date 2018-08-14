@@ -50,7 +50,6 @@ class PyDOC_Style_Test(unittest.TestCase):
             'D105',  # Missing docstring in magic method
             'D301',  # Use r""" if any backslashes in a docstring
             'D207',  # Docstring is under-indented
-            'D403',  # First word of the first line should be properly capitalized
             'D104',  # Missing docstring in public package
         ]
 
