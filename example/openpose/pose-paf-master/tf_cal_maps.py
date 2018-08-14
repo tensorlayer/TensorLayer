@@ -2,7 +2,8 @@ import math
 import numpy as np
 import cv2
 
-def get_heatmap(annos,height,width):
+
+def get_heatmap(annos, height, width):
     # 19 for coco, 15 for MPII
     num_joints = 19
 
@@ -14,14 +15,13 @@ def get_heatmap(annos,height,width):
         # generate heatmap for every keypoints
         # loop through all people and keep the maximum
         for i, points in enumerate(joint):
-            joints_heatmap=cal_heatmap(joints_heatmap, i, points, 8.0)
+            joints_heatmap = cal_heatmap(joints_heatmap, i, points, 8.0)
 
     # 0: joint index, 1:y, 2:x
     joints_heatmap = joints_heatmap.transpose((1, 2, 0))
 
     # background
     joints_heatmap[:, :, -1] = np.clip(1 - np.amax(joints_heatmap, axis=2), 0.0, 1.0)
-
 
     mapholder = []
     for i in range(0, 19):
@@ -50,7 +50,7 @@ def cal_heatmap(heatmap, plane_idx, center, sigma):
     # compute gaussian kernal
     for y in range(y0, y1):
         for x in range(x0, x1):
-            d = (x - center_x) ** 2 + (y - center_y) ** 2
+            d = (x - center_x)**2 + (y - center_y)**2
             exp = d / 2.0 / sigma / sigma
             # heat is so low
             if exp > th:
@@ -62,22 +62,23 @@ def cal_heatmap(heatmap, plane_idx, center, sigma):
     return heatmap
 
 
-
-def get_vectormap(annos,height,width):
+def get_vectormap(annos, height, width):
 
     num_joints = 19
 
-    limb = list(zip(
-        [2, 9, 10, 2, 12, 13, 2, 3, 4, 3, 2, 6, 7, 6, 2, 1, 1, 15, 16],
-        [9, 10, 11, 12, 13, 14, 3, 4, 5, 17, 6, 7, 8, 18, 1, 15, 16, 17, 18]
-    ))
+    limb = list(
+        zip(
+            [2, 9, 10, 2, 12, 13, 2, 3, 4, 3, 2, 6, 7, 6, 2, 1, 1, 15, 16],
+            [9, 10, 11, 12, 13, 14, 3, 4, 5, 17, 6, 7, 8, 18, 1, 15, 16, 17, 18]
+        )
+    )
 
     vectormap = np.zeros((num_joints * 2, height, width), dtype=np.float32)
     counter = np.zeros((num_joints, height, width), dtype=np.int16)
 
     for joint in annos:
-        if len(joint)!=19:
-            print('THE LENGTH IS NOT 19 ERROR:',len(joint))
+        if len(joint) != 19:
+            print('THE LENGTH IS NOT 19 ERROR:', len(joint))
         for i, (a, b) in enumerate(limb):
             a -= 1
             b -= 1
@@ -87,7 +88,7 @@ def get_vectormap(annos,height,width):
             # exclude invisible or unmarked point
             if v_start[0] < -100 or v_start[1] < -100 or v_end[0] < -100 or v_end[1] < -100:
                 continue
-            vectormap, counter=cal_vectormap(vectormap, counter, i, v_start, v_end)
+            vectormap, counter = cal_vectormap(vectormap, counter, i, v_start, v_end)
 
     vectormap = vectormap.transpose((1, 2, 0))
     # normalize the PAF (otherwise longer limb gives stronger absolute strength)
@@ -102,12 +103,13 @@ def get_vectormap(annos,height,width):
 
     mapholder = []
     for i in range(0, 38):
-        a = cv2.resize(np.array(vectormap[:, :, i]), (46, 46),interpolation=cv2.INTER_AREA)
+        a = cv2.resize(np.array(vectormap[:, :, i]), (46, 46), interpolation=cv2.INTER_AREA)
         mapholder.append(a)
     mapholder = np.array(mapholder)
     vectormap = mapholder.transpose(1, 2, 0)
 
     return vectormap.astype(np.float16)
+
 
 def cal_vectormap(vectormap, countmap, i, v_start, v_end):
     _, height, width = vectormap.shape[:3]
@@ -115,10 +117,9 @@ def cal_vectormap(vectormap, countmap, i, v_start, v_end):
     vector_x = v_end[0] - v_start[0]
     vector_y = v_end[1] - v_start[1]
 
-    length = math.sqrt(vector_x ** 2 + vector_y ** 2)
+    length = math.sqrt(vector_x**2 + vector_y**2)
     if length == 0:
-        return vectormap,countmap
-
+        return vectormap, countmap
 
     min_x = max(0, int(min(v_start[0], v_end[0]) - threshold))
     min_y = max(0, int(min(v_start[1], v_end[1]) - threshold))
@@ -142,4 +143,4 @@ def cal_vectormap(vectormap, countmap, i, v_start, v_end):
             vectormap[i * 2 + 0][y][x] = norm_x
             vectormap[i * 2 + 1][y][x] = norm_y
 
-    return vectormap,countmap
+    return vectormap, countmap

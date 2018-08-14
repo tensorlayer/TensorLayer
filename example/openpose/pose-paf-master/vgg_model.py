@@ -8,10 +8,12 @@ __all__ = ['model']
 _init_xavier = tf.contrib.layers.xavier_initializer()
 _init_norm = tf.truncated_normal_initializer(stddev=0.01)
 _b_initer = tf.constant_initializer(value=0.0)
+
 # _init_norm = tf.contrib.layers.xavier_initializer()
 # _b_initer = tf.contrib.layers.xavier_initializer()
 
-def _stage(cnn, b1, b2, n_pos,maskInput1,maskInput2, name='stageX'):
+
+def _stage(cnn, b1, b2, n_pos, maskInput1, maskInput2, name='stageX'):
     with tf.variable_scope(name):
         net = ConcatLayer([cnn, b1, b2], -1, name='concat')
         with tf.variable_scope("branch1"):
@@ -37,12 +39,8 @@ def _stage(cnn, b1, b2, n_pos,maskInput1,maskInput2, name='stageX'):
 
 def vgg_network(x):
     red, green, blue = tf.split(axis=3, num_or_size_splits=3, value=x)
-    bgr = tf.concat(axis=3, values=[
-        blue ,
-        green ,
-        red 
-    ])
-    bgr=bgr-0.5
+    bgr = tf.concat(axis=3, values=[blue, green, red])
+    bgr = bgr - 0.5
     # input layer
     net_in = InputLayer(bgr, name='input')
     # conv1
@@ -62,15 +60,26 @@ def vgg_network(x):
     # conv4
     net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1')
     net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2')
-    net = Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                 W_init=_init_norm, b_init=_b_initer, name='conv4_3')
-    net = Conv2d(net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                 W_init=_init_norm, b_init=_b_initer, name='conv4_4')
+    net = Conv2d(
+        net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', W_init=_init_norm,
+        b_init=_b_initer, name='conv4_3'
+    )
+    net = Conv2d(
+        net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', W_init=_init_norm,
+        b_init=_b_initer, name='conv4_4'
+    )
 
     return net
 
 
-def model(x, n_pos, mask_miss1,mask_miss2,is_train=False, reuse=None,):
+def model(
+        x,
+        n_pos,
+        mask_miss1,
+        mask_miss2,
+        is_train=False,
+        reuse=None,
+):
     b1_list = []
     b2_list = []
     with tf.variable_scope('model', reuse):
@@ -81,35 +90,43 @@ def model(x, n_pos, mask_miss1,mask_miss2,is_train=False, reuse=None,):
             # stage 1
             with tf.variable_scope("stage1"):
                 with tf.variable_scope("branch1"):
-                    b1 = Conv2d(cnn, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', W_init=_init_norm, b_init=_b_initer,
-                                name='c1')
-                    b1 = Conv2d(b1, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', W_init=_init_norm, b_init=_b_initer,
-                                name='c2')
-                    b1 = Conv2d(b1, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', W_init=_init_norm, b_init=_b_initer,
-                                name='c3')
-                    b1 = Conv2d(b1, 512, (1, 1), (1, 1), tf.nn.relu, 'VALID', W_init=_init_norm, b_init=_b_initer,
-                                name='c4')
-                    b1 = Conv2d(b1, n_pos, (1, 1), (1, 1), None, 'VALID', W_init=_init_norm, b_init=_b_initer,
-                                name='confs')
-                    b1.outputs=b1.outputs*mask_miss1
+                    b1 = Conv2d(
+                        cnn, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', W_init=_init_norm, b_init=_b_initer, name='c1'
+                    )
+                    b1 = Conv2d(
+                        b1, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', W_init=_init_norm, b_init=_b_initer, name='c2'
+                    )
+                    b1 = Conv2d(
+                        b1, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', W_init=_init_norm, b_init=_b_initer, name='c3'
+                    )
+                    b1 = Conv2d(
+                        b1, 512, (1, 1), (1, 1), tf.nn.relu, 'VALID', W_init=_init_norm, b_init=_b_initer, name='c4'
+                    )
+                    b1 = Conv2d(
+                        b1, n_pos, (1, 1), (1, 1), None, 'VALID', W_init=_init_norm, b_init=_b_initer, name='confs'
+                    )
+                    b1.outputs = b1.outputs * mask_miss1
                 with tf.variable_scope("branch2"):
-                    b2 = Conv2d(cnn, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', W_init=_init_norm, b_init=_b_initer,
-                                name='c1')
-                    b2 = Conv2d(b2, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', W_init=_init_norm, b_init=_b_initer,
-                                name='c2')
-                    b2 = Conv2d(b2, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', W_init=_init_norm, b_init=_b_initer,
-                                name='c3')
-                    b2 = Conv2d(b2, 512, (1, 1), (1, 1), tf.nn.relu, 'VALID', W_init=_init_norm, b_init=_b_initer,
-                                name='c4')
+                    b2 = Conv2d(
+                        cnn, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', W_init=_init_norm, b_init=_b_initer, name='c1'
+                    )
+                    b2 = Conv2d(
+                        b2, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', W_init=_init_norm, b_init=_b_initer, name='c2'
+                    )
+                    b2 = Conv2d(
+                        b2, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', W_init=_init_norm, b_init=_b_initer, name='c3'
+                    )
+                    b2 = Conv2d(
+                        b2, 512, (1, 1), (1, 1), tf.nn.relu, 'VALID', W_init=_init_norm, b_init=_b_initer, name='c4'
+                    )
                     b2 = Conv2d(b2, 38, (1, 1), (1, 1), None, 'VALID', W_init=_init_norm, b_init=_b_initer, name='pafs')
-                    b2.outputs=b2.outputs*mask_miss2
+                    b2.outputs = b2.outputs * mask_miss2
                 b1_list.append(b1)
                 b2_list.append(b2)
             # stage 2~6
             for i in range(2, 7):
-                b1, b2 = _stage(cnn, b1_list[-1], b2_list[-1], n_pos,mask_miss1, mask_miss2, name='stage%d' % i)
+                b1, b2 = _stage(cnn, b1_list[-1], b2_list[-1], n_pos, mask_miss1, mask_miss2, name='stage%d' % i)
                 b1_list.append(b1)
                 b2_list.append(b2)
         net = tl.layers.merge_networks([b1_list[-1], b2_list[-1]])
         return cnn, b1_list, b2_list, net
-

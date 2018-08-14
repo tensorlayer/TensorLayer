@@ -6,30 +6,31 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tensorpack.dataflow.imgaug.geometry import RotationAndCropValid
 
-def crop_meta_image(image,annos,mask):
-    _target_height=368
-    _target_width =368
-    if len(np.shape(image))==2:
-        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-    height,width,_=np.shape(image)
-    # print("the size of original img is:", height, width)
-    if height<=width:
-        ratio=_target_height/height
-        new_width=int(ratio*width)
-        if height==width:
-            new_width=_target_height
 
-        image,annos,mask=_resize_image(image,annos,mask,new_width,_target_height)
+def crop_meta_image(image, annos, mask):
+    _target_height = 368
+    _target_width = 368
+    if len(np.shape(image)) == 2:
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    height, width, _ = np.shape(image)
+    # print("the size of original img is:", height, width)
+    if height <= width:
+        ratio = _target_height / height
+        new_width = int(ratio * width)
+        if height == width:
+            new_width = _target_height
+
+        image, annos, mask = _resize_image(image, annos, mask, new_width, _target_height)
 
         for i in annos:
             if len(i) is not 19:
                 print('Joints of person is not 19 ERROR FROM RESIZE')
 
-        if new_width>_target_width:
-            crop_range_x=np.random.randint(0, new_width-_target_width)
+        if new_width > _target_width:
+            crop_range_x = np.random.randint(0, new_width - _target_width)
         else:
-            crop_range_x=0
-        image= image[:, crop_range_x:crop_range_x + 368,:]
+            crop_range_x = 0
+        image = image[:, crop_range_x:crop_range_x + 368, :]
         mask = mask[:, crop_range_x:crop_range_x + 368]
         # joint_list= []
         new_joints = []
@@ -41,12 +42,12 @@ def crop_meta_image(image,annos,mask):
                 if keypoints[0] < -10 or keypoints[1] < -10:
                     new_keypoints.append((-1000, -1000))
                     continue
-                top=crop_range_x+367
-                if keypoints[0]>=crop_range_x and keypoints[0]<= top:
+                top = crop_range_x + 367
+                if keypoints[0] >= crop_range_x and keypoints[0] <= top:
                     # pts = (keypoints[0]-crop_range_x, keypoints[1])
-                    pts = (int(keypoints[0] - crop_range_x),int(keypoints[1]))
+                    pts = (int(keypoints[0] - crop_range_x), int(keypoints[1]))
                 else:
-                    pts= (-1000,-1000)
+                    pts = (-1000, -1000)
                 new_keypoints.append(pts)
 
             new_joints.append(new_keypoints)
@@ -54,10 +55,10 @@ def crop_meta_image(image,annos,mask):
                 print('1:The Length of joints list should be 0 or 19 but actually:', len(new_keypoints))
         annos = new_joints
 
-    if height>width:
+    if height > width:
         ratio = _target_width / width
         new_height = int(ratio * height)
-        image,annos,mask = _resize_image(image,annos,mask,_target_width, new_height)
+        image, annos, mask = _resize_image(image, annos, mask, _target_width, new_height)
 
         for i in annos:
             if len(i) is not 19:
@@ -84,11 +85,11 @@ def crop_meta_image(image,annos,mask):
                 bot = crop_range_y + 367
                 if keypoints[1] >= crop_range_y and keypoints[1] <= bot:
                     # pts = (keypoints[0], keypoints[1]-crop_range_y)
-                    pts = (int(keypoints[0]), int (keypoints[1] - crop_range_y))
+                    pts = (int(keypoints[0]), int(keypoints[1] - crop_range_y))
                     # if pts[0]>367 or pts[1]>367:
                     #     print('Error2')
                 else:
-                    pts =(-1000,-1000)
+                    pts = (-1000, -1000)
 
                 new_keypoints.append(pts)
 
@@ -99,40 +100,42 @@ def crop_meta_image(image,annos,mask):
         annos = new_joints
 
     # mask = cv2.resize(mask, (46, 46), interpolation=cv2.INTER_AREA)
-    return image,annos,mask
+    return image, annos, mask
 
-def _resize_image(image,annos,mask,_target_width,_target_height):
+
+def _resize_image(image, annos, mask, _target_width, _target_height):
     # _target_height=368
     # _target_width =368
 
     #original image
-    y,x,_=np.shape(image)
+    y, x, _ = np.shape(image)
 
-    ratio_y= _target_height/y
-    ratio_x= _target_width/x
+    ratio_y = _target_height / y
+    ratio_x = _target_width / x
 
-    new_joints=[]
+    new_joints = []
     # update meta
     # meta.height=_target_height
     # meta.width =_target_width
     for people in annos:
-        new_keypoints=[]
+        new_keypoints = []
         for keypoints in people:
-            if keypoints[0]<0 or keypoints[1]<0:
+            if keypoints[0] < 0 or keypoints[1] < 0:
                 new_keypoints.append((-1000, -1000))
                 continue
-            pts = (int(keypoints[0] * ratio_x+0.5), int(keypoints[1] * ratio_y+0.5))
-            if pts[0] > _target_width-1 or pts[1] > _target_height-1:
+            pts = (int(keypoints[0] * ratio_x + 0.5), int(keypoints[1] * ratio_y + 0.5))
+            if pts[0] > _target_width - 1 or pts[1] > _target_height - 1:
                 new_keypoints.append((-1000, -1000))
                 continue
 
             new_keypoints.append(pts)
         new_joints.append(new_keypoints)
-    annos=new_joints
+    annos = new_joints
 
     new_image = cv2.resize(image, (_target_width, _target_height), interpolation=cv2.INTER_AREA)
     new_mask = cv2.resize(mask, (_target_width, _target_height), interpolation=cv2.INTER_AREA)
-    return new_image,annos,new_mask
+    return new_image, annos, new_mask
+
 
 def _rotate_coord(shape, newxy, point, angle):
     angle = -1 * angle / 180.0 * math.pi
@@ -153,14 +156,15 @@ def _rotate_coord(shape, newxy, point, angle):
 
     return int(qx + 0.5), int(qy + 0.5)
 
-def pose_rotation(image,annos,mask):
-    img_shape=np.shape(image)
-    height  = img_shape[0]
-    width   = img_shape[1]
+
+def pose_rotation(image, annos, mask):
+    img_shape = np.shape(image)
+    height = img_shape[0]
+    width = img_shape[1]
     deg = random.uniform(-15.0, 15.0)
 
     img = image
-    center = (img.shape[1] * 0.5, img.shape[0] * 0.5)       # x, y
+    center = (img.shape[1] * 0.5, img.shape[0] * 0.5)  # x, y
     rot_m = cv2.getRotationMatrix2D((int(center[0]), int(center[1])), deg, 1)
     ret = cv2.warpAffine(img, rot_m, img.shape[1::-1], flags=cv2.INTER_AREA, borderMode=cv2.BORDER_CONSTANT)
     if img.ndim == 3 and ret.ndim == 2:
@@ -189,7 +193,7 @@ def pose_rotation(image,annos,mask):
             # if x > neww or y > newh:
             #     adjust_joint.append((-1000, -1000))
             #     continue
-            if x>neww-1 or y>newh-1:
+            if x > neww - 1 or y > newh - 1:
                 adjust_joint.append((-1000, -1000))
                 continue
             if x < 0 or y < 0:
@@ -214,38 +218,41 @@ def pose_rotation(image,annos,mask):
     # print(ret.shape, deg, newx, newy, neww, newh)
     msk = ret[newy:newy + newh, newx:newx + neww]
     return img, joint_list, msk
-def random_flip(image,annos,mask_miss):
-    flip_list=[0, 1, 5, 6, 7, 2, 3, 4, 11, 12, 13, 8, 9, 10, 15, 14, 17, 16, 18]
+
+
+def random_flip(image, annos, mask_miss):
+    flip_list = [0, 1, 5, 6, 7, 2, 3, 4, 11, 12, 13, 8, 9, 10, 15, 14, 17, 16, 18]
     prob = random.uniform(0, 1.0)
     if prob > 0.5:
-        return image,annos,mask_miss
+        return image, annos, mask_miss
 
     _, width, _ = np.shape(image)
     image = cv2.flip(image, 1)
-    mask_miss=cv2.flip(mask_miss,1)
+    mask_miss = cv2.flip(mask_miss, 1)
     new_joints = []
     for people in annos:
         new_keypoints = []
         for k in flip_list:
-            point=people[k]
+            point = people[k]
             if point[0] < 0 or point[1] < 0:
                 new_keypoints.append((-1000, -1000))
                 continue
-            if point[0]>image.shape[1]-1 or point[1]>image.shape[0]-1:
+            if point[0] > image.shape[1] - 1 or point[1] > image.shape[0] - 1:
                 new_keypoints.append((-1000, -1000))
                 continue
-            if (width - point[0])>image.shape[1]-1:
+            if (width - point[0]) > image.shape[1] - 1:
                 new_keypoints.append((-1000, -1000))
                 continue
             new_keypoints.append((width - point[0], point[1]))
         new_joints.append(new_keypoints)
-    annos=new_joints
+    annos = new_joints
 
     return image, annos, mask_miss
 
-def pose_random_scale(image,annos,mask_miss):
-    height=image.shape[0]
-    width =image.shape[1]
+
+def pose_random_scale(image, annos, mask_miss):
+    height = image.shape[0]
+    width = image.shape[1]
     scalew = np.random.uniform(0.8, 1.2)
     scaleh = np.random.uniform(0.8, 1.2)
     # scalew =scaleh=np.random.uniform(0.5, 1.1)
@@ -256,7 +263,7 @@ def pose_random_scale(image,annos,mask_miss):
     newh = int(height * scaleh)
 
     dst = cv2.resize(image, (neww, newh), interpolation=cv2.INTER_AREA)
-    mask_miss=cv2.resize(mask_miss, (neww, newh), interpolation=cv2.INTER_AREA)
+    mask_miss = cv2.resize(mask_miss, (neww, newh), interpolation=cv2.INTER_AREA)
     # adjust meta data
     adjust_joint_list = []
     for joint in annos:
@@ -271,22 +278,23 @@ def pose_random_scale(image,annos,mask_miss):
             #     continue
             adjust_joint.append((int(point[0] * scalew + 0.5), int(point[1] * scaleh + 0.5)))
         adjust_joint_list.append(adjust_joint)
-    return dst,adjust_joint_list,mask_miss
-def pose_resize_shortestedge_random(image,annos, mask):
+    return dst, adjust_joint_list, mask_miss
+
+
+def pose_resize_shortestedge_random(image, annos, mask):
 
     _target_height = 368
     _target_width = 368
 
-    if len(np.shape(image))==2:
+    if len(np.shape(image)) == 2:
         image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-    height,width,_=np.shape(image)
-
+    height, width, _ = np.shape(image)
 
     ratio_w = _target_width / width
     ratio_h = _target_height / height
     ratio = min(ratio_w, ratio_h)
     target_size = int(min(width * ratio + 0.5, height * ratio + 0.5))
-    random_target=random.uniform(0.95, 1.6)
+    random_target = random.uniform(0.95, 1.6)
     # random_target=1.1318003767113862
     target_size = int(target_size * random_target)
     # target_size = int(min(_network_w, _network_h) * random.uniform(0.7, 1.5))
@@ -294,10 +302,10 @@ def pose_resize_shortestedge_random(image,annos, mask):
     return pose_resize_shortestedge(image, annos, mask, target_size)
 
 
-def pose_resize_shortestedge(image, annos,mask,target_size):
+def pose_resize_shortestedge(image, annos, mask, target_size):
     _target_height = 368
     _target_width = 368
-    img=image
+    img = image
     height, width, _ = np.shape(image)
 
     # adjust image
@@ -316,7 +324,7 @@ def pose_resize_shortestedge(image, annos,mask,target_size):
         mw = (_target_width - neww) % 2
         mh = (_target_height - newh) % 2
         color = np.random.uniform(0.0, 1.0)
-        dst = cv2.copyMakeBorder(dst, ph, ph + mh, pw, pw + mw, cv2.BORDER_CONSTANT, value=(0,0 ,color))
+        dst = cv2.copyMakeBorder(dst, ph, ph + mh, pw, pw + mw, cv2.BORDER_CONSTANT, value=(0, 0, color))
         mask = cv2.copyMakeBorder(mask, ph, ph + mh, pw, pw + mw, cv2.BORDER_CONSTANT, value=1)
     # adjust meta data
     adjust_joint_list = []
@@ -331,17 +339,18 @@ def pose_resize_shortestedge(image, annos,mask,target_size):
             #     continue
             adjust_joint.append((int(point[0] * scale + 0.5) + pw, int(point[1] * scale + 0.5) + ph))
         adjust_joint_list.append(adjust_joint)
-    return dst,adjust_joint_list,mask
+    return dst, adjust_joint_list, mask
 
-def pose_crop_random(image,annos,mask):
+
+def pose_crop_random(image, annos, mask):
 
     _target_height = 368
     _target_width = 368
     target_size = (_target_width, _target_height)
 
-    if len(np.shape(image))==2:
+    if len(np.shape(image)) == 2:
         image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-    height,width,_=np.shape(image)
+    height, width, _ = np.shape(image)
 
     for _ in range(50):
         x = random.randrange(0, width - target_size[0]) if width > target_size[0] else 0
@@ -352,15 +361,15 @@ def pose_crop_random(image,annos,mask):
             if x <= joint[0][0] < x + target_size[0] and y <= joint[0][1] < y + target_size[1]:
                 break
 
-    return pose_crop(image,annos,mask, x, y, target_size[0], target_size[1])
+    return pose_crop(image, annos, mask, x, y, target_size[0], target_size[1])
 
 
-def pose_crop(image,annos,mask, x, y, w, h):
+def pose_crop(image, annos, mask, x, y, w, h):
     # adjust image
     target_size = (w, h)
 
     img = image
-    resized = img[y:y+target_size[1], x:x+target_size[0], :]
+    resized = img[y:y + target_size[1], x:x + target_size[0], :]
     resized_mask = mask[y:y + target_size[1], x:x + target_size[0]]
     # adjust meta data
     adjust_joint_list = []
@@ -383,13 +392,14 @@ def pose_crop(image,annos,mask, x, y, w, h):
             adjust_joint.append((new_x, new_y))
         adjust_joint_list.append(adjust_joint)
 
-    return resized,adjust_joint_list,resized_mask
+    return resized, adjust_joint_list, resized_mask
+
+
 def drawing(image, annos):
     plt.imshow(image)
     for j in annos:
         for i in j:
-            if i[0]>0 and i[1]>0:
-                plt.scatter(i[0],i[1])
-    plt.savefig('fig/'+str(i)+'.jpg', dpi=100)
+            if i[0] > 0 and i[1] > 0:
+                plt.scatter(i[0], i[1])
+    plt.savefig('fig/' + str(i) + '.jpg', dpi=100)
     plt.show()
-
