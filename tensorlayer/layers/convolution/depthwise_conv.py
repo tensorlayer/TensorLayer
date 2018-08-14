@@ -91,7 +91,7 @@ class DepthwiseConv2d(Layer):
             name='depthwise_conv2d',
     ):
         super(DepthwiseConv2d, self
-              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
             "DepthwiseConv2d %s: shape: %s strides: %s pad: %s act: %s" % (

@@ -105,7 +105,7 @@ def read_and_decode(filename, is_train=None):
     img = tf.decode_raw(features['img_raw'], tf.float32)
     img = tf.reshape(img, [32, 32, 3])
     # img = tf.cast(img, tf.float32) #* (1. / 255) - 0.5
-    if is_train == True:
+    if is_train ==True:
         # 1. Randomly crop a [height, width] section of the image.
         img = tf.random_crop(img, [24, 24, 3])
 
