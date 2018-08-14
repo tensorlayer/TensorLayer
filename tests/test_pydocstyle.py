@@ -55,7 +55,7 @@ class PyDOC_Style_Test(unittest.TestCase):
             'D104',  # Missing docstring in public package
             'D412',  # No blank lines allowed between a section header and its content
             'D402',  # First line should not be the function's "signature"
-            'D300',  # Use """triple double quotes"""
+            # 'D300',  # Use """triple double quotes"""
             # 'D208',  # Docstring is over-indented
         ]
 
