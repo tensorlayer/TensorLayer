@@ -14,19 +14,22 @@ COCO  : https://github.com/ZheC/Realtime_Multi-Person_Pose_Estimation/blob/maste
 Visualize Caffe model : http://ethereon.github.io/netscope/#/editor
 
 """
-import numpy as np
-import tensorflow as tf
 import cv2
-import tensorlayer as tl
-from vgg_model import model
+import numpy as np
 import time
 import _pickle as cPickle
+import tensorflow as tf
+import argparse
+import os
+
+import tensorlayer as tl
+from models import model
+
 from data_process import PoseInfo
 from tf_data_aug import crop_meta_image, resize_image, pose_rotation, random_flip, pose_random_scale
 from faster_map_cal import get_vectormap, get_heatmap
 from pycocotools.coco import maskUtils
-import argparse
-import os
+
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
@@ -49,6 +52,7 @@ targets = list(zip(objs_info_list, mask_list))
 
 
 def generator():
+    """ Generates TensorFlow dataset. """
     inputs = imgs_file_list
     targets = list(zip(objs_info_list, mask_list))
     assert len(inputs) == len(targets)
@@ -57,6 +61,7 @@ def generator():
 
 
 def _data_aug_fn(image, ground_truth):
+    """ Data augmentation using Python APIs. """
     ground_truth = cPickle.loads(ground_truth)
     ground_truth = list(ground_truth)
 
@@ -98,6 +103,15 @@ def _data_aug_fn(image, ground_truth):
 
 
 def _map_fn(img_list, annos):
+    """ Get data and perform data augmentation.
+
+    Parameters
+    -----------
+    img_list : list of string
+        XXX
+    annos : xx
+        XXX
+    """
     image = tf.read_file(img_list)
     image = tf.image.decode_jpeg(image, channels=3)
     image = tf.image.convert_image_dtype(image, dtype=tf.float32)
@@ -106,17 +120,19 @@ def _map_fn(img_list, annos):
     return image, resultmap, mask
 
 
+# number of keypoints
 # MPII 16  COCO 19
-n_pos = 19
-n_epoch = 80
-batch_size = 10
-# learning_rate = 0.00001  # reduce it if your GPU memory is small
+n_pos = 19  # number of pose keypoints
+n_epoch = 80  # number of training epoch
+batch_size = 10  # batch size (reduce it if your GPU memory is small)
+# learning_rate = 0.00001
 
-x = tf.placeholder(tf.float32, [None, 368, 368, 3],
-                   "image")  # for tl.models.MobileNetV1, value [0, 1]; for VGG19 value [0, 255]
+x = tf.placeholder(tf.float32, [None, 368, 368, 3], "image")
+# confidence maps
 confs = tf.placeholder(tf.float32, [None, 46, 46, n_pos], "confidence_maps")
-pafs = tf.placeholder(tf.float32, [None, 46, 46, n_pos * 2], "pafs")  # x2 for x and y axises
-img_mask1 = tf.placeholder(tf.float32, [None, 46, 46, 19], 'img_mask1')
+# part affinity fields (PAF) x2 for x and y axises
+pafs = tf.placeholder(tf.float32, [None, 46, 46, n_pos * 2], "pafs")
+img_mask1 = tf.placeholder(tf.float32, [None, 46, 46, 19], 'img_mask1')  #
 img_mask2 = tf.placeholder(tf.float32, [None, 46, 46, 38], 'img_mask2')
 init = tf.global_variables_initializer()
 
@@ -126,14 +142,14 @@ cnn, b1_list, b2_list, net = model(x, n_pos, img_mask1, img_mask2, False, False)
 
 dataset = tf.data.Dataset().from_generator(generator, output_types=(tf.string, tf.string))
 dataset = dataset.map(_map_fn, num_parallel_calls=7)
-#顺序可能会有尾巴
+# 顺序可能会有尾巴
 dataset = dataset.repeat(n_epoch)
 dataset = dataset.batch(batch_size)
 dataset = dataset.prefetch(buffer_size=8)
 iterator = dataset.make_one_shot_iterator()
 one_element = iterator.get_next()
 
-# define loss
+# define loss function
 losses = []
 stage_losses = []
 L2 = 0.0

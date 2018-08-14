@@ -5,9 +5,27 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from tensorpack.dataflow.imgaug.geometry import RotationAndCropValid
+"""
+Joel
+关于API命名请见：
+https://tensorlayer.readthedocs.io/en/latest/modules/prepro.html#tutorial-for-image-aug
+
+https://zhuanlan.zhihu.com/p/31466173
+
+如果API是pose的，以pose开头，如果只能用于coco数据集的，就以pose_coco开头
+
+"""
 
 
-def crop_meta_image(image, annos, mask):
+def crop_meta_image(
+        image, annos, mask
+):  # HAO DONG: change to pose_coco_crop?  or pose_crop if it works for other format?
+    """
+
+    Parameters
+    -----------
+
+    """
     _target_height = 368
     _target_width = 368
     if len(np.shape(image)) == 2:
@@ -103,7 +121,15 @@ def crop_meta_image(image, annos, mask):
     return image, annos, mask
 
 
-def _resize_image(image, annos, mask, _target_width, _target_height):
+def _resize_image(
+        image, annos, mask, _target_width, _target_height
+):  # HAO DONG : pose_coco_imresize  or pose_imresize ?
+    """
+
+    Parameters
+    -----------
+
+    """
     # _target_height=368
     # _target_width =368
 
@@ -137,7 +163,13 @@ def _resize_image(image, annos, mask, _target_width, _target_height):
     return new_image, annos, new_mask
 
 
-def _rotate_coord(shape, newxy, point, angle):
+def _rotate_coord(shape, newxy, point, angle):  # HAO DONG : pose_coco_xxx ?
+    """
+
+    Parameters
+    -----------
+
+    """
     angle = -1 * angle / 180.0 * math.pi
 
     ox, oy = shape
@@ -157,7 +189,13 @@ def _rotate_coord(shape, newxy, point, angle):
     return int(qx + 0.5), int(qy + 0.5)
 
 
-def pose_rotation(image, annos, mask):
+def pose_rotation(image, annos, mask):  # HAO DONG : pose_coco_xxx ?
+    """
+
+    Parameters
+    -----------
+
+    """
     img_shape = np.shape(image)
     height = img_shape[0]
     width = img_shape[1]
@@ -220,7 +258,15 @@ def pose_rotation(image, annos, mask):
     return img, joint_list, msk
 
 
-def random_flip(image, annos, mask_miss):
+def random_flip(image, annos, mask_miss):  # HAO DONG: pose_coco_flip ?
+    """
+
+    where is the is_random argment?
+
+    Parameters
+    -----------
+
+    """
     flip_list = [0, 1, 5, 6, 7, 2, 3, 4, 11, 12, 13, 8, 9, 10, 15, 14, 17, 16, 18]
     prob = random.uniform(0, 1.0)
     if prob > 0.5:
@@ -250,7 +296,13 @@ def random_flip(image, annos, mask_miss):
     return image, annos, mask_miss
 
 
-def pose_random_scale(image, annos, mask_miss):
+def pose_random_scale(image, annos, mask_miss):  # HAO DONG: change to ?
+    """
+
+    Parameters
+    -----------
+
+    """
     height = image.shape[0]
     width = image.shape[1]
     scalew = np.random.uniform(0.8, 1.2)
@@ -282,7 +334,12 @@ def pose_random_scale(image, annos, mask_miss):
 
 
 def pose_resize_shortestedge_random(image, annos, mask):
+    """
 
+    Parameters
+    -----------
+
+    """
     _target_height = 368
     _target_width = 368
 
@@ -303,6 +360,12 @@ def pose_resize_shortestedge_random(image, annos, mask):
 
 
 def pose_resize_shortestedge(image, annos, mask, target_size):
+    """
+
+    Parameters
+    -----------
+
+    """
     _target_height = 368
     _target_width = 368
     img = image
@@ -343,7 +406,12 @@ def pose_resize_shortestedge(image, annos, mask, target_size):
 
 
 def pose_crop_random(image, annos, mask):
+    """
 
+    Parameters
+    -----------
+
+    """
     _target_height = 368
     _target_width = 368
     target_size = (_target_width, _target_height)
@@ -365,6 +433,12 @@ def pose_crop_random(image, annos, mask):
 
 
 def pose_crop(image, annos, mask, x, y, w, h):
+    """
+
+    Parameters
+    -----------
+
+    """
     # adjust image
     target_size = (w, h)
 
@@ -395,7 +469,15 @@ def pose_crop(image, annos, mask, x, y, w, h):
     return resized, adjust_joint_list, resized_mask
 
 
-def drawing(image, annos):
+def drawing(
+        image, annos
+):  #  see https://tensorlayer.readthedocs.io/en/latest/modules/prepro.html#tutorial-for-image-aug
+    """
+
+    Parameters
+    -----------
+
+    """
     plt.imshow(image)
     for j in annos:
         for i in j:

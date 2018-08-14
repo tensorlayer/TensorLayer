@@ -4,6 +4,18 @@ import cv2
 
 
 def get_heatmap(annos, height, width):
+    """
+
+    Parameters
+    -----------
+
+
+    Returns
+    --------
+
+
+    """
+
     # 19 for coco, 15 for MPII
     num_joints = 19
 
@@ -34,6 +46,18 @@ def get_heatmap(annos, height, width):
 
 
 def cal_heatmap(heatmap, plane_idx, center, sigma):
+    """
+
+    Parameters
+    -----------
+
+
+    Returns
+    --------
+
+
+    """
+
     center_x, center_y = center
     _, height, width = heatmap.shape[:3]
     # exp(-th) ~0.01
@@ -63,6 +87,17 @@ def cal_heatmap(heatmap, plane_idx, center, sigma):
 
 
 def get_vectormap(annos, height, width):
+    """
+
+    Parameters
+    -----------
+
+
+    Returns
+    --------
+
+
+    """
 
     num_joints = 19
 
@@ -71,7 +106,7 @@ def get_vectormap(annos, height, width):
             [2, 9, 10, 2, 12, 13, 2, 3, 4, 3, 2, 6, 7, 6, 2, 1, 1, 15, 16],
             [9, 10, 11, 12, 13, 14, 3, 4, 5, 17, 6, 7, 8, 18, 1, 15, 16, 17, 18]
         )
-    )
+    )  # 这是什么？ TODO
 
     vectormap = np.zeros((num_joints * 2, height, width), dtype=np.float32)
     counter = np.zeros((num_joints, height, width), dtype=np.int16)
@@ -112,6 +147,18 @@ def get_vectormap(annos, height, width):
 
 
 def cal_vectormap(vectormap, countmap, i, v_start, v_end):
+    """
+
+    Parameters
+    -----------
+
+
+    Returns
+    --------
+
+
+    """
+
     _, height, width = vectormap.shape[:3]
     threshold = 8
     vector_x = v_end[0] - v_start[0]
