@@ -224,8 +224,8 @@ def fast_vectormap(vectormap, countmap, i, v_start, v_end):
     # print('para',min_y,max_y, min_x, max_x,v_start,v_end)
     countmap[i, min_y: max_y, min_x: max_x]+=filter_matrix
 
-    norm_x_map =filter_matrix*norm_x
-    norm_y_map =filter_matrix*norm_y
+    # norm_x_map =filter_matrix*norm_x
+    # norm_y_map =filter_matrix*norm_y
 
     # padholder=np.zeros((height,width))
     # padholder[min_y: max_y, min_x: max_x]=filter_matrix

@@ -1,16 +1,10 @@
 from pycocotools.coco import COCO
-import numpy as np
 import skimage.io as io
-import matplotlib.pyplot as plt
-import pylab
-import math
 import numpy as np
-import cv2
 import matplotlib.pyplot as plt
 import os
 from scipy.spatial.distance import cdist
 from pycocotools.coco import maskUtils
-import tensorflow as tf
 class CocoMeta:
     # limb = list(zip(
     #     [1, 8,  9,  1, 11, 12, 1, 2, 3,  2, 1, 5, 6,  5, 1,  0,  0, 14, 15],
@@ -69,9 +63,10 @@ class CocoMeta:
             self.joint_list.append(new_joint)
 
 class PoseInfo:
-    metas = []
-    metas_test=[]
+    # metas = []
+    # metas_test=[]
     def __init__(self, data_dir, data_type, anno_path):
+        self.metas=[]
         self.data_dir = data_dir
         self.data_type = data_type
         self.image_base_dir = '{}/images/{}2014/'.format(data_dir,data_type)
@@ -90,15 +85,14 @@ class PoseInfo:
     def get_image_annos(self):
 
         images_ids = self.coco.getImgIds()
-
-        for idx in range(len(images_ids)):
+        len_imgs=len(images_ids)
+        for idx in range(len_imgs):
 
             images_info = self.coco.loadImgs(images_ids[idx])
             image_path = self.image_base_dir + images_info[0]['file_name']
             # filter that some images might not in the list
             if not os.path.exists(image_path):
                 continue
-            id = images_info[0]['id']
 
             annos_ids = self.coco.getAnnIds(imgIds=images_ids[idx])
             annos_info = self.coco.loadAnns(annos_ids)
@@ -158,25 +152,25 @@ class PoseInfo:
     def load_images(self):
         pass
     def get_image_list(self):
-        list=[]
+        img_list=[]
         for meta in self.metas:
-            list.append(meta.img_url)
-        return list
+            img_list.append(meta.img_url)
+        return img_list
     def get_joint_list(self):
-        list=[]
+        joint_list=[]
         for meta in self.metas:
-            list.append(meta.joint_list)
-        return list
+            joint_list.append(meta.joint_list)
+        return joint_list
     def get_mask(self):
-        list =[]
+        mask_list =[]
         for meta in self.metas:
-            list.append(meta.masks)
-        return list
+            mask_list.append(meta.masks)
+        return mask_list
 def output_figure(index,df_val):
 
     path = df_val.metas[index].img_url
     print(path)
-    I = io.imread(path)
+    # I = io.imread(path)
     # plt.imshow(I)
 
     # hm = df_val.get_maps(index)

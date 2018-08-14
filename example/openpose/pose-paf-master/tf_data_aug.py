@@ -1,18 +1,11 @@
 import math
+#######
 import random
-from data_process import PoseInfo
 import cv2
 import numpy as np
-import skimage.io as io
 import matplotlib.pyplot as plt
-from tf_cal_maps import get_heatmap,get_vectormap
-from faster_map_cal import get_vectormap as get_vectormap2
-from faster_map_cal import get_heatmap as get_heatmap2
-from numpy import linalg as LA
-from pycocotools.coco import maskUtils
 from tensorpack.dataflow.imgaug.geometry import RotationAndCropValid
-import time
-import tensorflow as tf
+
 def crop_meta_image(image,annos,mask):
     _target_height=368
     _target_width =368
@@ -38,7 +31,7 @@ def crop_meta_image(image,annos,mask):
             crop_range_x=0
         image= image[:, crop_range_x:crop_range_x + 368,:]
         mask = mask[:, crop_range_x:crop_range_x + 368]
-        joint_list= []
+        # joint_list= []
         new_joints = []
         #annos-pepople-joints (must be 19 or [])
         for people in annos:
@@ -400,92 +393,3 @@ def drawing(image, annos):
     plt.savefig('fig/'+str(i)+'.jpg', dpi=100)
     plt.show()
 
-if __name__ == '__main__':
-    data_dir = '/Users/Joel/Desktop/coco'
-    data_type = 'val'
-    anno_path = '{}/annotations/person_keypoints_{}2014.json'.format(data_dir, data_type)
-    df_val = PoseInfo(data_dir, data_type, anno_path)
-
-    for i in range (1050,1102):
-        print('Img index',i)
-        meta=df_val.metas[i]
-
-        annos=meta.joint_list
-        image=io.imread(meta.img_url)
-        mask=meta.masks
-        if len(image.shape)<3:
-            image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-
-        h_mask = np.shape(image)[0]
-        w_mask = np.shape(image)[1]
-
-        mask_miss = np.ones((h_mask, w_mask), dtype=np.uint8)
-        for seg in mask:
-            bin_mask = maskUtils.decode(seg)
-            bin_mask = np.logical_not(bin_mask)
-            mask_miss = np.bitwise_and(mask_miss, bin_mask)
-
-        image, annos, mask_miss = pose_random_scale(image, annos, mask_miss)
-        image, annos, mask_miss = pose_rotation(image, annos, mask_miss)
-        image, annos, mask_miss = random_flip(image, annos, mask_miss)
-        image, annos, mask_miss = pose_resize_shortestedge_random(image, annos, mask_miss)
-        image, annos, mask_miss = pose_crop_random(image, annos, mask_miss)
-        for people in annos:
-            for idx, jo in enumerate(people):
-                if -1000 < jo[0] < 0 or -1000 < jo[1] < 0:
-                    print('Err4 here')
-        # plt.figure()
-        # plt.imshow(image)
-        # plt.imshow(mask_miss,alpha=0.3)
-
-        # for people in annos:
-        #     for idx,jo in enumerate(people):
-        #
-        #         if -100 < jo[0]  or -100 < jo[1]:
-        #             plt.plot(jo[0],jo[1], '*')
-        # plt.savefig('test_img/'+str(i)+".png")
-        # plt.show()
-        # plt.cla
-
-        height, width, _ = np.shape(image)
-
-        heatmap = get_heatmap2(annos, height, width)
-        vectormap = get_vectormap2(annos, height, width)
-        # show network output
-        fig = plt.figure(figsize=(8, 8))
-        a = fig.add_subplot(2, 3, 1)
-        plt.imshow(image)
-        for people in annos:
-            for idx,jo in enumerate(people):
-                if jo[0]>0 and jo[1]>0 :
-                    plt.plot(jo[0],jo[1], '*')
-
-        a = fig.add_subplot(2, 3, 2)
-        a.set_title('Vectormap-1')
-        tmp2 = vectormap.transpose((2, 0, 1))
-        tmp2_odd = np.amax(np.absolute(tmp2[::2, :, :]), axis=0)
-        tmp2_even = np.amax(np.absolute(tmp2[1::2, :, :]), axis=0)
-
-        tmp2_odd = tmp2_odd * 255
-        tmp2_odd = tmp2_odd.astype(np.int)
-        plt.imshow(image)
-        plt.imshow(tmp2_odd, alpha=0.3)
-
-        tmp2_even = tmp2_even * 255
-        tmp2_even = tmp2_even.astype(np.int)
-        plt.imshow(tmp2_even, alpha=0.3)
-
-        a = fig.add_subplot(2, 3, 3)
-        tmp=heatmap
-        tmp=np.amax(heatmap[:,:,:-1],axis=2)
-
-        tmp = tmp * 255
-        tmp = tmp.astype(np.int)
-        plt.imshow(image)
-        plt.imshow(tmp, alpha=0.3)
-
-        a = fig.add_subplot(2, 3, 4)
-        plt.imshow(mask_miss)
-        plt.savefig('test_img/'+str(i)+".png")
-        plt.show()
-        plt.cla
