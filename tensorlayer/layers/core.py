@@ -255,7 +255,7 @@ class Layer(object):
         return n_params
 
     def get_all_params(self, session=None):
-        """Return the parameters in a list of array. """
+        """Return the parameters in a list of array."""
         _params = []
         for p in self.all_params:
             if session is None:
@@ -299,7 +299,7 @@ class Layer(object):
 
     @protected_method
     def _get_init_args(self, skip=4):
-        """Get all arguments of current layer for saving the graph. """
+        """Get all arguments of current layer for saving the graph."""
         stack = inspect.stack()
 
         if len(stack) < skip + 1:

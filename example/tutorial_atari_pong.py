@@ -1,6 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-""" Monte-Carlo Policy Network π(a|s)  (REINFORCE).
+"""Monte-Carlo Policy Network π(a|s)  (REINFORCE).
 
 To understand Reinforcement Learning, we let computer to learn how to play
 Pong game from the original screen inputs. Before we start, we highly recommend

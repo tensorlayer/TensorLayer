@@ -44,10 +44,9 @@ class PyDOC_Style_Test(unittest.TestCase):
             'D101',  # Missing docstring in public class
             'D413',  # Missing blank line after last section
             'D202',  # No blank lines allowed after function docstring
-            'D210',  # No whitespaces allowed surrounding docstring text
             'D105',  # Missing docstring in magic method
             'D104',  # Missing docstring in public package
-            'D302',  # Use u""" for Unicode docstrings
+            'D302',  # Use u"""for Unicode docstrings
         ]
 
         for filename in testing.list_all_py_files():

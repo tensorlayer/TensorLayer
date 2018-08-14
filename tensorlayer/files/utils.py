@@ -1923,7 +1923,7 @@ def save_graph(network=None, name='graph.pkl'):
 
 
 def _graph2net(graphs):
-    """ Inputs graphs, returns network. """
+    """Inputs graphs, returns network."""
     input_list = list()
     layer_dict = dict()
     # loop every layers

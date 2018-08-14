@@ -50,7 +50,7 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 model_file_name = "./model_cifar10_tfrecord.ckpt"
 resume = False  # load model, resume from previous checkpoint?
 
-## Download data, and convert to TFRecord format, see ```tutorial_tfrecord.py```
+# Download data, and convert to TFRecord format, see ```tutorial_tfrecord.py```
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
 
 print('X_train.shape', X_train.shape)  # (50000, 32, 32, 3)
@@ -61,7 +61,7 @@ print('X %s   y %s' % (X_test.dtype, y_test.dtype))
 
 
 def data_to_tfrecord(images, labels, filename):
-    """ Save data into TFRecord """
+    """Save data into TFRecord."""
     if os.path.isfile(filename):
         print("%s exists" % filename)
         return
@@ -70,11 +70,11 @@ def data_to_tfrecord(images, labels, filename):
     writer = tf.python_io.TFRecordWriter(filename)
     for index, img in enumerate(images):
         img_raw = img.tobytes()
-        ## Visualize a image
+        # Visualize a image
         # tl.visualize.frame(np.asarray(img, dtype=np.uint8), second=1, saveable=False, name='frame', fig_idx=1236)
         label = int(labels[index])
         # print(label)
-        ## Convert the bytes back to image as follow:
+        # Convert the bytes back to image as follow:
         # image = Image.frombytes('RGB', (32, 32), img_raw)
         # image = np.fromstring(img_raw, np.float32)
         # image = image.reshape([32, 32, 3])
@@ -92,7 +92,7 @@ def data_to_tfrecord(images, labels, filename):
 
 
 def read_and_decode(filename, is_train=None):
-    """ Return tensor to read from TFRecord """
+    """Return tensor to read from TFRecord."""
     filename_queue = tf.train.string_input_producer([filename])
     reader = tf.TFRecordReader()
     _, serialized_example = reader.read(filename_queue)
@@ -106,7 +106,7 @@ def read_and_decode(filename, is_train=None):
     img = tf.decode_raw(features['img_raw'], tf.float32)
     img = tf.reshape(img, [32, 32, 3])
     # img = tf.cast(img, tf.float32) #* (1. / 255) - 0.5
-    if is_train ==True:
+    if is_train == True:
         # 1. Randomly crop a [height, width] section of the image.
         img = tf.random_crop(img, [24, 24, 3])
 
@@ -136,7 +136,7 @@ def read_and_decode(filename, is_train=None):
     return img, label
 
 
-## Save data into TFRecord files
+# Save data into TFRecord files
 data_to_tfrecord(images=X_train, labels=y_train, filename="train.cifar10")
 data_to_tfrecord(images=X_test, labels=y_test, filename="test.cifar10")
 
@@ -159,7 +159,7 @@ with tf.device('/cpu:0'):
     )
 
     def model(x_crop, y_, reuse):
-        """ For more simplified CNN APIs, check tensorlayer.org """
+        """For more simplified CNN APIs, check tensorlayer.org."""
         with tf.variable_scope("model", reuse=reuse):
             net = tl.layers.InputLayer(x_crop, name='input')
             net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn1')
@@ -191,8 +191,8 @@ with tf.device('/cpu:0'):
 
             return net, cost, acc
 
-    ## You can also use placeholder to feed_dict in data after using
-    ## val, l = sess.run([x_train_batch, y_train_batch]) to get the data
+    # You can also use placeholder to feed_dict in data after using
+    # val, l = sess.run([x_train_batch, y_train_batch]) to get the data
     # x_crop = tf.placeholder(tf.float32, shape=[batch_size, 24, 24, 3])
     # y_ = tf.placeholder(tf.int32, shape=[batch_size,])
     # cost, acc, network = model(x_crop, y_, None)
@@ -201,7 +201,7 @@ with tf.device('/cpu:0'):
         network, cost, acc, = model(x_train_batch, y_train_batch, False)
         _, cost_test, acc_test = model(x_test_batch, y_test_batch, True)
 
-    ## train
+    # train
     n_epoch = 50000
     learning_rate = 0.0001
     print_freq = 1
@@ -231,7 +231,7 @@ with tf.device('/cpu:0'):
         start_time = time.time()
         train_loss, train_acc, n_batch = 0, 0, 0
         for s in range(n_step_epoch):
-            ## You can also use placeholder to feed_dict in data after using
+            # You can also use placeholder to feed_dict in data after using
             # val, l = sess.run([x_train_batch, y_train_batch])
             # tl.visualize.images2d(val, second=3, saveable=False, name='batch', dtype=np.uint8, fig_idx=2020121)
             # err, ac, _ = sess.run([cost, acc, train_op], feed_dict={x_crop: val, y_: l})
