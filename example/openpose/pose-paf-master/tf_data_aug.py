@@ -1,10 +1,8 @@
 import math
-#######
 import random
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
-from tensorpack.dataflow.imgaug.geometry import RotationAndCropValid
+
 
 def crop_meta_image(image,annos,mask):
     _target_height=368
@@ -147,7 +145,7 @@ def _rotate_coord(shape, newxy, point, angle):
     qy += oy - new_y
 
     return int(qx + 0.5), int(qy + 0.5)
-def largest_rotated_rect(w, h, angle):
+def _largest_rotated_rect(w, h, angle):
     """
     Get largest rectangle after rotation.
     http://stackoverflow.com/questions/16702966/rotate-image-and-crop-out-black-borders
@@ -185,7 +183,7 @@ def pose_rotation(image,annos,mask):
     ret = cv2.warpAffine(img, rot_m, img.shape[1::-1], flags=cv2.INTER_AREA, borderMode=cv2.BORDER_CONSTANT)
     if img.ndim == 3 and ret.ndim == 2:
         ret = ret[:, :, np.newaxis]
-    neww, newh = largest_rotated_rect(ret.shape[1], ret.shape[0], deg)
+    neww, newh = _largest_rotated_rect(ret.shape[1], ret.shape[0], deg)
     neww = min(neww, ret.shape[1])
     newh = min(newh, ret.shape[0])
     newx = int(center[0] - neww * 0.5)
@@ -220,7 +218,7 @@ def pose_rotation(image,annos,mask):
     ret = cv2.warpAffine(msk, rot_m, msk.shape[1::-1], flags=cv2.INTER_AREA, borderMode=cv2.BORDER_CONSTANT)
     if msk.ndim == 3 and msk.ndim == 2:
         ret = ret[:, :, np.newaxis]
-    neww, newh = RotationAndCropValid.largest_rotated_rect(ret.shape[1], ret.shape[0], deg)
+    neww, newh = _largest_rotated_rect(ret.shape[1], ret.shape[0], deg)
     neww = min(neww, ret.shape[1])
     newh = min(newh, ret.shape[0])
     newx = int(center[0] - neww * 0.5)
@@ -398,12 +396,3 @@ def pose_crop(image,annos,mask, x, y, w, h):
         adjust_joint_list.append(adjust_joint)
 
     return resized,adjust_joint_list,resized_mask
-def drawing(image, annos):
-    plt.imshow(image)
-    for j in annos:
-        for i in j:
-            if i[0]>0 and i[1]>0:
-                plt.scatter(i[0],i[1])
-    plt.savefig('fig/'+str(i)+'.jpg', dpi=100)
-    plt.show()
-

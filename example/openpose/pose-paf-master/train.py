@@ -30,12 +30,6 @@ from pycocotools.coco import maskUtils
 import os
 
 
-data_dir = '/Users/Joel/Desktop/coco'
-data_type = 'train'
-tl.files.load_coco_pose_dataset(data_dir,data_type)
-
-exit(0)
-
 parser = argparse.ArgumentParser(description='Training codes for Openpose using Tensorflow')
 parser.add_argument('--save_interval', type=int, default=5000)
 args = parser.parse_args()
