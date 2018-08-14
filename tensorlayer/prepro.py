@@ -1371,7 +1371,7 @@ def imresize(x, size=None, interp='bicubic', mode=None):
 
 
 # value scale
-def pixel_value_scale(im, val=0.9, clip=(-np.inf, np.inf), is_random=False):
+def pixel_value_scale(im, val=0.9, clip=None, is_random=False):
     """Scales each value in the pixels of the image.
 
     Parameters
@@ -1403,6 +1403,9 @@ def pixel_value_scale(im, val=0.9, clip=(-np.inf, np.inf), is_random=False):
     >>> im = pixel_value_scale(im, 0.9, [0, 255], is_random=False)
 
     """
+
+    clip = clip if clip is not None else (-np.inf, np.inf)
+
     if is_random:
         scale = 1 + np.random.uniform(-val, val)
         im = im * scale

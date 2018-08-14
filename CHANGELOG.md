@@ -101,7 +101,8 @@ To release a new version, please update the changelog as followed:
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
   - Dockerfiles merged and refactored into one file (PR #747)
   - LazyImports move to the most **top level** imports as possible (PR #739)
-  - some new test functions have been added in `test_layers_convolution.py`, `test_layers_normalization.py`, `test_layers_core.py` (PR #735)  
+  - some new test functions have been added in `test_layers_convolution.py`, `test_layers_normalization.py`, `test_layers_core.py` (PR #735)
+  - documentation now uses mock imports reducing the number of dependencies to compile the documentation (PR #785)
 
 ### Deprecated
   - `tl.logging.warn` has been deprecated in favor of `tl.logging.warning` (PR #739)
