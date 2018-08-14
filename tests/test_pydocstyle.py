@@ -1,6 +1,5 @@
 #!/usr/bin/env pytest
 
-
 import os
 import unittest
 
@@ -68,8 +67,7 @@ class PyDOC_Style_Test(unittest.TestCase):
                 p = lookup_error_params(code)
                 print('%s %8d %s' % (code, n, p.short_desc))
 
-            raise Exception('PyDoc Coding Style: %d violations have been found' %
-                            (len(self.violations)))
+            raise Exception('PyDoc Coding Style: %d violations have been found' % (len(self.violations)))
 
 
 if __name__ == '__main__':

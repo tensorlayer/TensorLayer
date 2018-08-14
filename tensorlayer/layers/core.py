@@ -165,10 +165,17 @@ class Layer(object):
 
             self.inputs = prev_layer
 
-            self._add_graphs((self.inputs.name,  # .split(':')[0],
-                              {'shape': self.inputs.get_shape().as_list(),
-                               'dtype': self.inputs.dtype.name, 'class': 'placeholder',
-                               'prev_layer': None}))
+            self._add_graphs(
+                (
+                    self.inputs.name,  # .split(':')[0],
+                    {
+                        'shape': self.inputs.get_shape().as_list(),
+                        'dtype': self.inputs.dtype.name,
+                        'class': 'placeholder',
+                        'prev_layer': None
+                    }
+                )
+            )
 
         elif prev_layer is not None:
             # 4. tl.models
