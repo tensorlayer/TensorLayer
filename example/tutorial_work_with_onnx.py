@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
+r"""
 Play with ONNX models in TensorLayer.
 
 This tutorial is corresponding to the onnx-tf tutorial:

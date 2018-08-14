@@ -16,7 +16,8 @@ from tensorflow.python.training import optimizer
 
 
 class AMSGrad(optimizer.Optimizer):
-    """Implementation of the AMSGrad optimization algorithm.\n
+    """Implementation of the AMSGrad optimization algorithm.
+
     See: `On the Convergence of Adam and Beyond - [Reddi et al., 2018] <https://openreview.net/pdf?id=ryQu7f-RZ>`__.
 
     Parameters

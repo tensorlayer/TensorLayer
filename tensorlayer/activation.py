@@ -224,7 +224,7 @@ def _sign_grad(unused_op, grad):
 
 
 def sign(x):
-    """Sign function.
+    r"""Sign function.
 
     Clip and binarize tensor using the straight through estimator (STE) for the gradient, usually be used for
     quantizing values in `Binarized Neural Networks`: https://arxiv.org/abs/1602.02830.

@@ -2285,7 +2285,7 @@ def obj_box_coord_upleft_to_centroid(coord):
 
 
 def parse_darknet_ann_str_to_list(annotations):
-    """Input string format of class, x, y, w, h, return list of list format.
+    r"""Input string format of class, x, y, w, h, return list of list format.
 
     Parameters
     -----------
