@@ -47,6 +47,7 @@ class PyDOC_Style_Test(unittest.TestCase):
             'D210',  # No whitespaces allowed surrounding docstring text
             'D105',  # Missing docstring in magic method
             'D104',  # Missing docstring in public package
+            'D302',  # Use u""" for Unicode docstrings
         ]
 
         for filename in testing.list_all_py_files():
