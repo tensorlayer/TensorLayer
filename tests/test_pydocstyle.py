@@ -46,7 +46,6 @@ class PyDOC_Style_Test(unittest.TestCase):
             'D413',  # Missing blank line after last section
             'D202',  # No blank lines allowed after function docstring
             'D210',  # No whitespaces allowed surrounding docstring text
-            'D200',  # One-line docstring should fit on one line with quotes
             'D105',  # Missing docstring in magic method
             'D104',  # Missing docstring in public package
         ]

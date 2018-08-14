@@ -1,7 +1,5 @@
-"""
-Sample task script.
+"""Sample task script."""
 
-"""
 import tensorflow as tf
 import tensorlayer as tl
 
@@ -58,8 +56,8 @@ train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=
 tl.layers.initialize_global_variables(sess)
 
 # train the network
-tl.utils.fit(sess, net_train, train_op, cost, X_train, y_train, x, y_, acc=acc, batch_size=500, \
-    n_epoch=1, print_freq=5, X_val=X_val, y_val=y_val, eval_train=False)
+tl.utils.fit(sess, net_train, train_op, cost, X_train, y_train, x, y_, acc=acc, batch_size=500,
+             n_epoch=1, print_freq=5, X_val=X_val, y_val=y_val, eval_train=False)
 
 # evaluation and save result that match the result_key
 test_accuracy = tl.utils.test(sess, net_test, acc_test, X_test, y_test, x, y_, batch_size=None, cost=cost_test)
