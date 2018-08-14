@@ -18,10 +18,6 @@ Get layers with name
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: get_layers_with_name
 
-Enable layer name reuse
-^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: set_name_reuse
-
 Print variables
 ^^^^^^^^^^^^^^^^^^
 .. autofunction:: print_all_variables
@@ -243,14 +239,18 @@ Layer list
 
    SlimNetsLayer
 
+   SignLayer
+   ScaleLayer
    BinaryDenseLayer
    BinaryConv2d
    TernaryDenseLayer
    TernaryConv2d
    DorefaDenseLayer
    DorefaConv2d
-   SignLayer
-   ScaleLayer
+   QuanDenseLayer
+   QuanDenseLayerWithBN
+   QuanConv2d
+   QuanConv2dWithBN
 
    PReluLayer
    PRelu6Layer
@@ -287,8 +287,8 @@ The following is an example implementation of a layer that multiplies its input 
           layer = None,
           name ='double_layer',
       ):
-          # check layer name (fixed)
-          Layer.__init__(self, layer=layer, name=name)
+          # manage layer (fixed)
+          super(DoubleLayer, self).__init__(prev_layer=prev_layer, name=name)
 
           # the input of this layer is the output of previous layer (fixed)
           self.inputs = layer.outputs
@@ -297,8 +297,7 @@ The following is an example implementation of a layer that multiplies its input 
           self.outputs = self.inputs * 2
 
           # update layer (customized)
-          self.all_layers.append(self.outputs)
-
+          self._add_layers(self.outputs)
 
 Your Dense Layer
 ^^^^^^^^^^^^^^^^
@@ -318,8 +317,8 @@ At the end, for a layer with parameters, we also append the parameters into ``al
         act = tf.nn.relu,
         name ='simple_dense',
     ):
-        # check layer name (fixed)
-        Layer.__init__(self, layer=layer, name=name)
+        # manage layer (fixed)
+        super(MyDenseLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
         # the input of this layer is the output of previous layer (fixed)
         self.inputs = layer.outputs
@@ -334,56 +333,11 @@ At the end, for a layer with parameters, we also append the parameters into ``al
             W = tf.get_variable(name='W', shape=(n_in, n_units))
             b = tf.get_variable(name='b', shape=(n_units))
             # tensor operation
-            self.outputs = act(tf.matmul(self.inputs, W) + b)
+            self.outputs = self._apply_activation(tf.matmul(self.inputs, W) + b)
 
         # update layer (customized)
-        self.all_layers.extend( [self.outputs] )
-        self.all_params.extend( [W, b] )
-
-
-Modifying Pre-train Behaviour
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Greedy layer-wise pretraining is an important task for deep neural network
-initialization, while there are many kinds of pre-training methods according
-to different network architectures and applications.
-
-For example, the pre-train process of `Vanilla Sparse Autoencoder <http://deeplearning.stanford.edu/wiki/index.php/Autoencoders_and_Sparsity>`_
-can be implemented by using KL divergence (for sigmoid) as the following code,
-but for `Deep Rectifier Network <http://www.jmlr.org/proceedings/papers/v15/glorot11a/glorot11a.pdf>`_,
-the sparsity can be implemented by using the L1 regularization of activation output.
-
-.. code-block:: python
-
-  # Vanilla Sparse Autoencoder
-  beta = 4
-  rho = 0.15
-  p_hat = tf.reduce_mean(activation_out, reduction_indices = 0)
-  KLD = beta * tf.reduce_sum( rho * tf.log(tf.div(rho, p_hat))
-          + (1- rho) * tf.log((1- rho)/ (tf.sub(float(1), p_hat))) )
-
-
-There are many pre-train methods, for this reason, TensorLayer provides a simple way to modify or design your
-own pre-train method. For Autoencoder, TensorLayer uses ``ReconLayer.__init__()``
-to define the reconstruction layer and cost function, to define your own cost
-function, just simply modify the ``self.cost`` in ``ReconLayer.__init__()``.
-To creat your own cost expression please read `Tensorflow Math <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html>`_.
-By default, ``ReconLayer`` only updates the weights and biases of previous 1
-layer by using ``self.train_params = self.all _params[-4:]``, where the 4
-parameters are ``[W_encoder, b_encoder, W_decoder, b_decoder]``, where
-``W_encoder, b_encoder`` belong to previous DenseLayer, ``W_decoder, b_decoder``
-belong to this ReconLayer.
-In addition, if you want to update the parameters of previous 2 layers at the same time, simply modify ``[-4:]`` to ``[-6:]``.
-
-
-.. code-block:: python
-
-  ReconLayer.__init__(...):
-      ...
-      self.train_params = self.all_params[-4:]
-      ...
-  	self.cost = mse + L1_a + L2_w
-
+        self._add_layers(self.outputs)
+        self._add_params([W, b])
 
 .. -----------------------------------------------------------
 ..                        Basic Layers
@@ -526,15 +480,6 @@ AtrousDeConv2dLayer
 """""""""""""""""""""
 .. autoclass:: AtrousDeConv2dLayer
 
-
-Binary (De)Convolutions
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-BinaryConv2d
-"""""""""""""""""""""
-.. autoclass:: BinaryConv2d
-
-
 Deformable Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -549,14 +494,6 @@ Depthwise Convolutions
 DepthwiseConv2d
 """""""""""""""""""""
 .. autoclass:: DepthwiseConv2d
-
-
-DoReFa Convolutions
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-DorefaConv2d
-"""""""""""""""""""""
-.. autoclass:: DorefaConv2d
 
 
 Group Convolutions
@@ -591,15 +528,6 @@ SubpixelConv2d
 .. autoclass:: SubpixelConv2d
 
 
-Ternary Convolutions
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-TernaryConv2d
-"""""""""""""""""""""
-.. autoclass:: TernaryConv2d
-
-
-
 .. -----------------------------------------------------------
 ..                        Dense Layers
 .. -----------------------------------------------------------
@@ -607,25 +535,14 @@ TernaryConv2d
 Dense Layers
 -------------
 
-Binary Dense Layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: BinaryDenseLayer
-
 Dense Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DenseLayer
-
-DoReFa Dense Layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: DorefaDenseLayer
 
 Drop Connect Dense Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DropconnectDenseLayer
 
-Ternary Dense Layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: TernaryDenseLayer
 
 .. -----------------------------------------------------------
 ..                       Dropout Layer
@@ -666,16 +583,8 @@ see `Slim-model <https://github.com/tensorflow/models/tree/master/research/slim>
 
 .. autoclass:: SlimNetsLayer
 
-Keras Layer
-^^^^^^^^^^^^^^^^^^^
-Yes ! Keras models can be connected into TensorLayer!
-see `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`_ .
 
-.. autoclass:: KerasLayer
 
-Estimator Layer
-^^^^^^^^^^^^^^^^^^^
-.. autoclass:: EstimatorLayer
 
 .. -----------------------------------------------------------
 ..                    Flow Control Layer
@@ -805,7 +714,7 @@ Padding layer for any modes.
 ..                     Pooling Layers
 .. -----------------------------------------------------------
 
-Padding Layers
+Pooling Layers
 ------------------------
 
 Pool Layer (Expert API)
@@ -882,15 +791,63 @@ Scale
 ^^^^^^^^^^^^^^
 .. autoclass:: ScaleLayer
 
-Binary
-^^^^^^^^^^^^^^
+Binary Dense Layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: BinaryDenseLayer
 
-see Convolutional and Dense APIs.
+Binary (De)Convolutions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Ternary
-^^^^^^^^^^^^^^
+BinaryConv2d
+"""""""""""""""""""""
+.. autoclass:: BinaryConv2d
 
-see Convolutional and Dense APIs.
+Ternary Dense Layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: TernaryDenseLayer
+
+Ternary Convolutions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+TernaryConv2d
+"""""""""""""""""""""
+.. autoclass:: TernaryConv2d
+
+DoReFa Convolutions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+DorefaConv2d
+"""""""""""""""""""""
+.. autoclass:: DorefaConv2d
+
+DoReFa Convolutions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+DorefaConv2d
+"""""""""""""""""""""
+.. autoclass:: DorefaConv2d
+
+Quantization Dense Layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+QuanDenseLayer
+"""""""""""""""""""""
+.. autoclass:: QuanDenseLayer
+
+QuanDenseLayerWithBN
+""""""""""""""""""""""""""""""""""""
+.. autoclass:: QuanDenseLayerWithBN
+
+Quantization Convolutions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Quantization
+"""""""""""""""""""""
+.. autoclass:: QuanConv2d
+
+QuanConv2dWithBN
+"""""""""""""""""""""
+.. autoclass:: QuanConv2dWithBN
 
 DoReFa
 ^^^^^^^^^^^^^^
