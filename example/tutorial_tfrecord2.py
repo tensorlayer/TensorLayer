@@ -13,12 +13,10 @@ More:
 
 import os
 import numpy as np
-# import matplotlib
-# matplotlib.use('GTK')
 import tensorflow as tf
 import tensorlayer as tl
 
-## Download data, and convert to TFRecord format, see ```tutorial_tfrecord.py```
+# Download data, and convert to TFRecord format, see ```tutorial_tfrecord.py```
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
 
 X_train = np.asarray(X_train, dtype=np.float32)
@@ -36,11 +34,11 @@ cwd = os.getcwd()
 writer = tf.python_io.TFRecordWriter("train.cifar10")
 for index, img in enumerate(X_train):
     img_raw = img.tobytes()
-    ## Visualize a image
+    # Visualize a image
     # tl.visualize.frame(np.asarray(img, dtype=np.uint8), second=1, saveable=False, name='frame', fig_idx=1236)
     label = int(y_train[index])
     # print(label)
-    ## Convert the bytes back to image as follow:
+    # Convert the bytes back to image as follow:
     # image = Image.frombytes('RGB', (32, 32), img_raw)
     # image = np.fromstring(img_raw, np.float32)
     # image = image.reshape([32, 32, 3])
@@ -57,7 +55,7 @@ for index, img in enumerate(X_train):
 writer.close()
 
 
-## Read Data by Queue and Thread =======================================
+# Read Data by Queue and Thread =======================================
 def read_and_decode(filename):
     filename_queue = tf.train.string_input_producer([filename])
     reader = tf.TFRecordReader()
@@ -78,10 +76,11 @@ def read_and_decode(filename):
 
 img, label = read_and_decode("train.cifar10")
 
-## Use shuffle_batch or batch
+# Use shuffle_batch or batch
 # see https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#shuffle_batch
-img_batch, label_batch = tf.train.shuffle_batch([img, label], batch_size=4, capacity=50000, \
-    min_after_dequeue=10000, num_threads=1)
+img_batch, label_batch = tf.train.shuffle_batch(
+    [img, label], batch_size=4, capacity=50000, min_after_dequeue=10000, num_threads=1
+)
 
 print("img_batch   : %s" % img_batch.shape)
 print("label_batch : %s" % label_batch.shape)

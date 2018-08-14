@@ -164,10 +164,7 @@ class ReconLayer(DenseLayer):
                                                use_locking=False).minimize(self.cost, var_list=self.train_params)
         # self.train_op = tf.train.GradientDescentOptimizer(1.0).minimize(self.cost, var_list=self.train_params)
 
-    def pretrain(
-            self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True,
-            save_name='w1pre_'
-    ):
+    def pretrain(self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10):
         # ====================================================
         #
         # You need to modify the cost function in __init__() so as to
@@ -212,14 +209,3 @@ class ReconLayer(DenseLayer):
                     val_loss += err
                     n_batch += 1
                 logging.info("   val loss: %f" % (val_loss / n_batch))
-                if save:
-                    try:
-                        visualize.draw_weights(
-                            self.train_params[0].eval(), second=10, saveable=True, shape=[28, 28],
-                            name=save_name + str(epoch + 1), fig_idx=2012
-                        )
-                        files.save_npz([self.all_params[0]], name=save_name + str(epoch + 1) + '.npz')
-                    except Exception:
-                        raise Exception(
-                            "You should change the visualize.W() in ReconLayer.pretrain(), if you want to save the feature images for different dataset"
-                        )

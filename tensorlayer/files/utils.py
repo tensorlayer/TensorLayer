@@ -28,14 +28,6 @@ if sys.version_info[0] == 2:
 else:
     from urllib.request import urlretrieve
 
-# Fix error on OSX, as suggested by: https://stackoverflow.com/a/48374671
-# See: https://docs.python.org/3/library/sys.html#sys.platform
-if sys.platform.startswith('darwin'):
-    import matplotlib
-    matplotlib.use('TkAgg')
-
-import matplotlib.pyplot as plt
-
 import scipy.io as sio
 import numpy as np
 
@@ -65,7 +57,6 @@ __all__ = [
     'load_npz',
     'maybe_download_and_extract',
     'natural_keys',
-    'npz_to_W_pdf',
     'read_file',
     'save_any_to_npy',
     'save_ckpt',
@@ -194,7 +185,7 @@ def _load_mnist_dataset(shape, path, name='mnist', url='http://yann.lecun.com/ex
     return X_train, y_train, X_val, y_val, X_test, y_test
 
 
-def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
+def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data'):
     """Load CIFAR-10 dataset.
 
     It consists of 60000 32x32 colour images in 10 classes, with
@@ -272,37 +263,6 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
         X_train = X_train.reshape(shape)
 
     y_train = np.array(y_train)
-
-    if plotable:
-        logging.info('\nCIFAR-10')
-        fig = plt.figure(1)
-
-        logging.info('Shape of a training image: X_train[0] %s' % X_train[0].shape)
-
-        plt.ion()  # interactive mode
-        count = 1
-        for _ in range(10):  # each row
-            for _ in range(10):  # each column
-                _ = fig.add_subplot(10, 10, count)
-                if shape == (-1, 3, 32, 32):
-                    # plt.imshow(X_train[count-1], interpolation='nearest')
-                    plt.imshow(np.transpose(X_train[count - 1], (1, 2, 0)), interpolation='nearest')
-                    # plt.imshow(np.transpose(X_train[count-1], (2, 1, 0)), interpolation='nearest')
-                elif shape == (-1, 32, 32, 3):
-                    plt.imshow(X_train[count - 1], interpolation='nearest')
-                    # plt.imshow(np.transpose(X_train[count-1], (1, 0, 2)), interpolation='nearest')
-                else:
-                    raise Exception("Do not support the given 'shape' to plot the image examples")
-                plt.gca().xaxis.set_major_locator(plt.NullLocator())  # 不显示刻度(tick)
-                plt.gca().yaxis.set_major_locator(plt.NullLocator())
-                count = count + 1
-        plt.draw()  # interactive mode
-        plt.pause(3)  # interactive mode
-
-        logging.info("X_train: %s" % X_train.shape)
-        logging.info("y_train: %s" % y_train.shape)
-        logging.info("X_test:  %s" % X_test.shape)
-        logging.info("y_test:  %s" % y_test.shape)
 
     X_train = np.asarray(X_train, dtype=np.float32)
     X_test = np.asarray(X_test, dtype=np.float32)
@@ -2323,28 +2283,3 @@ def natural_keys(text):
         return int(text) if text.isdigit() else text
 
     return [atoi(c) for c in re.split('(\d+)', text)]
-
-
-# Visualizing npz files
-def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
-    r"""Convert the first weight matrix of `.npz` file to `.pdf` by using `tl.visualize.W()`.
-
-    Parameters
-    ----------
-    path : str
-        A folder path to `npz` files.
-    regx : str
-        Regx for the file name.
-
-    Examples
-    ---------
-    Convert the first weight matrix of w1_pre...npz file to w1_pre...pdf.
-
-    >>> tl.files.npz_to_W_pdf(path='/Users/.../npz_file/', regx='w1pre_[0-9]+\.(npz)')
-
-    """
-    file_list = load_file_list(path=path, regx=regx)
-    for f in file_list:
-        W = load_npz(path, f)[0]
-        logging.info("%s --> %s" % (f, f.split('.')[0] + '.pdf'))
-        visualize.draw_weights(W, second=10, saveable=True, name=f.split('.')[0], fig_idx=2012)

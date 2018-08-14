@@ -119,13 +119,6 @@ def main_test_layers(model='relu'):
                 n_batch += 1
             print("   val loss: %f" % (val_loss / n_batch))
             print("   val acc: %f" % (val_acc / n_batch))
-            # try:
-            #     # You can visualize the weight of 1st hidden layer as follow.
-            #     tl.vis.draw_weights(net.all_params[0].eval(), second=10, saveable=True, shape=[28, 28], name='w1_' + str(epoch + 1), fig_idx=2012)
-            #     # You can also save the weight of 1st hidden layer to .npz file.
-            #     # tl.files.save_npz([net.all_params[0]] , name='w1'+str(epoch+1)+'.npz')
-            # except:  # pylint: disable=bare-except
-            #     print("You should change vis.draw_weights(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
@@ -178,14 +171,14 @@ def main_test_denoise_AE(model='relu'):
         net = tl.layers.DenseLayer(net, n_units=196, act=tf.nn.sigmoid, name='sigmoid1')
         recon_layer1 = tl.layers.ReconLayer(net, x_recon=x, n_units=784, act=tf.nn.sigmoid, name='recon_layer1')
 
-    ## ready to train
+    # ready to train
     tl.layers.initialize_global_variables(sess)
 
-    ## print all params
+    # print all params
     print("All net Params")
     net.print_params()
 
-    ## pretrain
+    # pretrain
     print("Pre-train Layer 1")
     recon_layer1.pretrain(
         sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=200, batch_size=128, print_freq=10,
@@ -311,11 +304,6 @@ def main_test_stacked_denoise_AE(model='relu'):
                 n_batch += 1
             print("   val loss: %f" % (val_loss / n_batch))
             print("   val acc: %f" % (val_acc / n_batch))
-            # try:
-            #     # visualize the 1st hidden layer during fine-tune
-            #     tl.vis.draw_weights(net.all_params[0].eval(), second=10, saveable=True, shape=[28, 28], name='w1_' + str(epoch + 1), fig_idx=2012)
-            # except:  # pylint: disable=bare-except
-            #     print("You should change vis.draw_weights(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
@@ -365,7 +353,7 @@ def main_test_cnn_layer():
     y_ = tf.placeholder(tf.int64, shape=[batch_size])
 
     net = tl.layers.InputLayer(x, name='input')
-    ## Professional conv API for tensorflow expert
+    # Professional conv API for tensorflow expert
     # net = tl.layers.Conv2dLayer(net,
     #                     act = tf.nn.relu,
     #                     shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
@@ -390,12 +378,12 @@ def main_test_cnn_layer():
     #                     padding='SAME',
     #                     pool = tf.nn.max_pool,
     #                     name ='pool2',)   # output: (?, 7, 7, 64)
-    ## Simplified conv API (the same with the above layers)
+    # Simplified conv API (the same with the above layers)
     net = tl.layers.Conv2d(net, 32, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn1')
     net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
     net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn2')
     net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
-    ## end of conv
+    # end of conv
     net = tl.layers.FlattenLayer(net, name='flatten')
     net = tl.layers.DropoutLayer(net, keep=0.5, name='drop1')
     net = tl.layers.DenseLayer(net, 256, act=tf.nn.relu, name='relu1')
@@ -455,10 +443,6 @@ def main_test_cnn_layer():
                 n_batch += 1
             print("   val loss: %f" % (val_loss / n_batch))
             print("   val acc: %f" % (val_acc / n_batch))
-            # try:
-            #     tl.vis.CNN2d(net.all_params[0].eval(), second=10, saveable=True, name='cnn1_' + str(epoch + 1), fig_idx=2012)
-            # except:  # pylint: disable=bare-except
-            #     print("You should change vis.CNN(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0

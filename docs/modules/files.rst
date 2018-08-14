@@ -54,8 +54,6 @@ Load benchmark dataset, save and restore model, save and load variables.
 
    natural_keys
 
-   npz_to_W_pdf
-
 
 Load dataset functions
 ------------------------
@@ -271,7 +269,3 @@ Sort
 List of string with number in human order
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: natural_keys
-
-Visualizing npz file
-----------------------
-.. autofunction:: npz_to_W_pdf
