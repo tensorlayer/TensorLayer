@@ -69,7 +69,6 @@ class Layer(object):
 
     Examples
     ---------
-
     - Define model
 
     >>> import tensorflow as tf
@@ -165,10 +164,10 @@ class Layer(object):
 
             self.inputs = prev_layer
 
-            self._add_graphs((self.inputs.name, #.split(':')[0],
-                {'shape': self.inputs.get_shape().as_list(),
-                'dtype': self.inputs.dtype.name, 'class': 'placeholder',
-                'prev_layer': None}))
+            self._add_graphs((self.inputs.name,  # .split(':')[0],
+                              {'shape': self.inputs.get_shape().as_list(),
+                               'dtype': self.inputs.dtype.name, 'class': 'placeholder',
+                               'prev_layer': None}))
 
         elif prev_layer is not None:
             # 4. tl.models
@@ -180,7 +179,7 @@ class Layer(object):
             if hasattr(prev_layer, "outputs"):
                 self.inputs = prev_layer.outputs
 
-        ## TL Graph
+        # TL Graph
         if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
             _list = []
             for layer in prev_layer:
@@ -304,18 +303,18 @@ class Layer(object):
 
         for arg in args:
 
-            ## some args dont need to be saved into the graph. e.g. the input placeholder
+            # some args dont need to be saved into the graph. e.g. the input placeholder
             if values[arg] is not None and arg not in ['self', 'prev_layer', 'inputs']:
 
                 val = values[arg]
 
-                ## change function (e.g. act) into dictionary of module path and function name
+                # change function (e.g. act) into dictionary of module path and function name
                 if inspect.isfunction(val):
                     params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
-                ## ignore more args e.g. TF class
+                # ignore more args e.g. TF class
                 elif arg.endswith('init'):
                     continue
-                ## for other data type, save them directly
+                # for other data type, save them directly
                 else:
                     params[arg] = val
 

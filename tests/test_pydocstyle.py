@@ -53,10 +53,7 @@ class PyDOC_Style_Test(unittest.TestCase):
             'D403',  # First word of the first line should be properly capitalized
             'D204',  # 1 blank line required after class docstring
             'D104',  # Missing docstring in public package
-            'D412',  # No blank lines allowed between a section header and its content
-            # 'D402',  # First line should not be the function's "signature"
-            # 'D300',  # Use """triple double quotes"""
-            # 'D208',  # Docstring is over-indented
+            # 'D412',  # No blank lines allowed between a section header and its content
         ]
 
         for filename in testing.list_all_py_files():
