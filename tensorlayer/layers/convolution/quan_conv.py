@@ -187,8 +187,8 @@ class QuantizedConv2d(Layer):
             weight_matrix = quantize_weight_overflow(weight_matrix, self.bitW)
 
             self.outputs = tf.nn.conv2d(
-                quantized_inputs, weight_matrix, strides=strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
-                data_format=self.data_format
+                quantized_inputs, weight_matrix, strides=strides, padding=self.padding,
+                use_cudnn_on_gpu=self.use_cudnn_on_gpu, data_format=self.data_format
             )
 
             if self.b_init:

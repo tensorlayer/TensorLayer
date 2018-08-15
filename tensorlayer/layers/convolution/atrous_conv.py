@@ -303,8 +303,7 @@ class AtrousDeConv2dLayer(Layer):
             )
 
             self.out_shape = compute_deconv2d_output_shape(
-                self.inputs, self.shape[0], self.shape[1], 1, 1, self.shape[2], padding=self.padding,
-                data_format="NHWC"
+                self.inputs, self.shape[0], self.shape[1], 1, 1, self.shape[2], padding=self.padding, data_format="NHWC"
             )
 
             self.outputs = tf.nn.atrous_conv2d_transpose(

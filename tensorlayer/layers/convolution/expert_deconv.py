@@ -174,8 +174,8 @@ class DeConv2dLayer(Layer):
             )
 
             self.out_shape = compute_deconv2d_output_shape(
-                self.inputs, self.shape[0], self.shape[1], self.strides[1], self.strides[2],
-                self.shape[2], padding=self.padding, data_format=self.data_format
+                self.inputs, self.shape[0], self.shape[1], self.strides[1], self.strides[2], self.shape[2],
+                padding=self.padding, data_format=self.data_format
             )
 
             self.outputs = tf.nn.conv2d_transpose(

@@ -174,8 +174,8 @@ class BinaryConv2d(Layer):
             weight_matrix = quantize(weight_matrix)
 
             self.outputs = tf.nn.conv2d(
-                self.inputs, weight_matrix, strides=strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
-                data_format=self.data_format
+                self.inputs, weight_matrix, strides=strides, padding=self.padding,
+                use_cudnn_on_gpu=self.use_cudnn_on_gpu, data_format=self.data_format
             )
 
             if self.b_init:

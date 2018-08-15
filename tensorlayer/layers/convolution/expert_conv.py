@@ -123,8 +123,8 @@ class Conv1dLayer(Layer):
             )
 
             self.outputs = tf.nn.conv1d(
-                self.inputs, weight_matrix, stride=self.stride, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
-                data_format=self.data_format
+                self.inputs, weight_matrix, stride=self.stride, padding=self.padding,
+                use_cudnn_on_gpu=self.use_cudnn_on_gpu, data_format=self.data_format
             )
 
             if self.b_init:
@@ -280,8 +280,8 @@ class Conv2dLayer(Layer):
             )
 
             self.outputs = tf.nn.conv2d(
-                self.inputs, weight_matrix, strides=self.strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
-                data_format=self.data_format
+                self.inputs, weight_matrix, strides=self.strides, padding=self.padding,
+                use_cudnn_on_gpu=self.use_cudnn_on_gpu, data_format=self.data_format
             )
 
             if self.b_init:

@@ -231,8 +231,8 @@ class QuantizedConv2dWithBN(Layer):
             )
 
             conv_out = tf.nn.conv2d(
-                self.inputs, weight_matrix, strides=strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
-                data_format=self.data_format
+                self.inputs, weight_matrix, strides=strides, padding=self.padding,
+                use_cudnn_on_gpu=self.use_cudnn_on_gpu, data_format=self.data_format
             )
 
             para_bn_shape = conv_out.get_shape()[-1:]
@@ -291,8 +291,8 @@ class QuantizedConv2dWithBN(Layer):
             weight_matrix = quantize_weight_overflow(_w_fold, self.bitW)
 
             conv_fold_out = tf.nn.conv2d(
-                quantized_inputs, weight_matrix, strides=strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
-                data_format=self.data_format
+                quantized_inputs, weight_matrix, strides=strides, padding=self.padding,
+                use_cudnn_on_gpu=self.use_cudnn_on_gpu, data_format=self.data_format
             )
 
             self.outputs = tf.nn.bias_add(conv_fold_out, _bias_fold, name='bn_bias_add')

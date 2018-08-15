@@ -105,7 +105,9 @@ class DenseLayer(Layer):
         n_in = int(self.inputs.get_shape()[-1])
 
         with tf.variable_scope(self.name):
-            weight_matrix = self._get_tf_variable(name='W', shape=(n_in, self.n_units), initializer=self.W_init, **self.W_init_args)
+            weight_matrix = self._get_tf_variable(
+                name='W', shape=(n_in, self.n_units), initializer=self.W_init, **self.W_init_args
+            )
 
             self.outputs = tf.matmul(self.inputs, weight_matrix)
 

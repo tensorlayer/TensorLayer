@@ -25,17 +25,22 @@ class Layer_Convolution_2D_Test(unittest.TestCase):
             name='conv2dlayer'
         )
 
-        cls.n2 = tl.layers.Conv2d(cls.n1, n_filter=32, filter_size=(3, 3), strides=(2, 2), padding='valid', act=None, name='conv2d')
+        cls.n2 = tl.layers.Conv2d(
+            cls.n1, n_filter=32, filter_size=(3, 3), strides=(2, 2), padding='valid', act=None, name='conv2d'
+        )
 
         cls.n3 = tl.layers.Conv2d(
-            cls.n2, n_filter=32, filter_size=(3, 3), strides=(2, 2), padding='valid', act=tf.nn.relu, b_init=None, name='conv2d_no_bias'
+            cls.n2, n_filter=32, filter_size=(3, 3), strides=(2, 2), padding='valid', act=tf.nn.relu, b_init=None,
+            name='conv2d_no_bias'
         )
 
         cls.n4 = tl.layers.DeConv2dLayer(
             cls.n3, shape=(5, 5, 32, 32), strides=(1, 2, 2, 1), padding='valid', name='deconv2dlayer'
         )
 
-        cls.n5 = tl.layers.DeConv2d(cls.n4, n_filter=32, filter_size=(3, 3), strides=(2, 2), padding='valid', name='DeConv2d')
+        cls.n5 = tl.layers.DeConv2d(
+            cls.n4, n_filter=32, filter_size=(3, 3), strides=(2, 2), padding='valid', name='DeConv2d'
+        )
 
         cls.n6 = tl.layers.DepthwiseConv2d(
             cls.n5, shape=(3, 3), strides=(2, 2), act=tf.nn.relu, depth_multiplier=2, name='depthwise'

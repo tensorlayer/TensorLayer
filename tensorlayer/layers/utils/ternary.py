@@ -19,8 +19,7 @@ def compute_alpha(x):
     alpha_array_abs = tf.abs(alpha_array)
 
     alpha_array_abs1 = tf.where(
-        tf.greater(alpha_array_abs, 0), tf.ones_like(alpha_array_abs, x.dtype),
-        tf.zeros_like(alpha_array_abs, x.dtype)
+        tf.greater(alpha_array_abs, 0), tf.ones_like(alpha_array_abs, x.dtype), tf.zeros_like(alpha_array_abs, x.dtype)
     )
 
     alpha_sum = tf.reduce_sum(alpha_array_abs)

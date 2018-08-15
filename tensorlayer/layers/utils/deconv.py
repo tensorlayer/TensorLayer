@@ -3,14 +3,12 @@
 
 import tensorflow as tf
 
-__all__ = [
-    'compute_deconv2d_output_shape',
-    'compute_deconv3d_output_shape'
-]
+__all__ = ['compute_deconv2d_output_shape', 'compute_deconv3d_output_shape']
 
 
-def compute_deconv2d_output_shape(input, filter_size_h, filter_size_w,
-    stride_h, stride_w, num_outputs, padding='SAME', data_format='NHWC'):
+def compute_deconv2d_output_shape(
+        input, filter_size_h, filter_size_w, stride_h, stride_w, num_outputs, padding='SAME', data_format='NHWC'
+):
 
     #calculation of the output_shape:
     if data_format == "NHWC":
@@ -29,12 +27,12 @@ def compute_deconv2d_output_shape(input, filter_size_h, filter_size_w,
         raise ValueError("unknown data_format")
 
     if padding == 'VALID':
-        output_size_h = (input_size_h - 1)*stride_h + filter_size_h
-        output_size_w = (input_size_w - 1)*stride_w + filter_size_w
+        output_size_h = (input_size_h - 1) * stride_h + filter_size_h
+        output_size_w = (input_size_w - 1) * stride_w + filter_size_w
 
     elif padding == 'SAME':
-        output_size_h = (input_size_h - 1)*stride_h + 1
-        output_size_w = (input_size_w - 1)*stride_w + 1
+        output_size_h = (input_size_h - 1) * stride_h + 1
+        output_size_w = (input_size_w - 1) * stride_w + 1
     else:
         raise ValueError("unknown padding")
 
@@ -45,7 +43,10 @@ def compute_deconv2d_output_shape(input, filter_size_h, filter_size_w,
         return [tf.shape(input)[0], num_outputs, output_size_h, output_size_w]
 
 
-def compute_deconv3d_output_shape(input, filter_size_d, filter_size_h, filter_size_w, stride_d, stride_h, stride_w, num_outputs, padding='SAME', data_format='NDHWC'):
+def compute_deconv3d_output_shape(
+        input, filter_size_d, filter_size_h, filter_size_w, stride_d, stride_h, stride_w, num_outputs, padding='SAME',
+        data_format='NDHWC'
+):
 
     if data_format == "NDHWC":
         input_channel_size = input.get_shape().as_list()[3]
@@ -65,14 +66,14 @@ def compute_deconv3d_output_shape(input, filter_size_d, filter_size_h, filter_si
         raise ValueError("unknown data_format")
 
     if padding == 'VALID':
-        output_size_d = (input_size_d - 1)*stride_d + filter_size_d
-        output_size_h = (input_size_h - 1)*stride_h + filter_size_h
-        output_size_w = (input_size_w - 1)*stride_w + filter_size_w
+        output_size_d = (input_size_d - 1) * stride_d + filter_size_d
+        output_size_h = (input_size_h - 1) * stride_h + filter_size_h
+        output_size_w = (input_size_w - 1) * stride_w + filter_size_w
 
     elif padding == 'SAME':
-        output_size_d = (input_size_d - 1)*stride_d + 1
-        output_size_h = (input_size_h - 1)*stride_h + 1
-        output_size_w = (input_size_w - 1)*stride_w + 1
+        output_size_d = (input_size_d - 1) * stride_d + 1
+        output_size_h = (input_size_h - 1) * stride_h + 1
+        output_size_w = (input_size_w - 1) * stride_w + 1
 
     else:
         raise ValueError("unknown padding")

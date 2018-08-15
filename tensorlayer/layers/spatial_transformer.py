@@ -86,7 +86,6 @@ class SpatialTransformer2dAffineLayer(Layer):
         input_layer = self.inputs[0].outputs
         theta_layer = self.inputs[1]
 
-
         with tf.variable_scope(self.name) as vs:
 
             # 1. make the localisation network to [batch, 6] via Flatten and Dense.
