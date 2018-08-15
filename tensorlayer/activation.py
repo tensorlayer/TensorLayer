@@ -221,7 +221,7 @@ def _sign_grad(unused_op, grad):
 
 
 def sign(x):
-    r"""Sign function.
+    """Sign function.
 
     Clip and binarize tensor using the straight through estimator (STE) for the gradient, usually be used for
     quantizing values in `Binarized Neural Networks`: https://arxiv.org/abs/1602.02830.
@@ -245,8 +245,8 @@ def sign(x):
     - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013)`
        http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf
 
-    - `BinaryNet: Training Deep Neural Networks with Weights and Activations Constrained to +1 or -1, \
-       Courbariaux et al. (2016)` https://arxiv.org/abs/1602.02830
+    - `BinaryNet: Training Deep Neural Networks with Weights and Activations Constrained to +1 or -1, Courbariaux et al. (2016)`
+       https://arxiv.org/abs/1602.02830
 
     """
     with tf.get_default_graph().gradient_override_map({"sign": "QuantizeGrad"}):
