@@ -251,6 +251,20 @@ class Network_Sequential_Test(CustomTestCase):
                 )
             )
 
+            cls.model.add(
+                tl.layers.SeparableConv2d(
+                    n_filter=4, filter_size=(5, 5), strides=(1, 1), padding='SAME', act=tf.nn.relu,
+                    name='separableconv2d_layer_32'
+                )
+            )
+
+            cls.model.add(
+                tl.layers.SeparableConv2d(
+                    n_filter=8, filter_size=(5, 5), strides=(1, 1), padding='SAME', act=tf.nn.relu, b_init=None,
+                    name='separableconv2d_layer_33'
+                )
+            )
+
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
@@ -260,13 +274,13 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(len(self.model.all_drop), 0)
 
     def test_count_params(self):
-        self.assertEqual(self.model.count_params(), 131829)
+        self.assertEqual(self.model.count_params(), 132197)
 
     def test_count_param_tensors(self):
-        self.assertEqual(len(self.model.get_all_params()), 55)
+        self.assertEqual(len(self.model.get_all_params()), 60)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 43)
+        self.assertEqual(self.model.count_layers(), 45)
 
     def test_network_dtype(self):
 
@@ -356,6 +370,10 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model["ternaryconv2d_layer_30"].outputs.shape, (100, 64, 64, 4))
 
         self.assertEqual(self.model["ternaryconv2d_layer_31"].outputs.shape, (100, 64, 64, 8))
+
+        self.assertEqual(self.model["separableconv2d_layer_32"].outputs.shape, (100, 64, 64, 4))
+
+        self.assertEqual(self.model["separableconv2d_layer_33"].outputs.shape, (100, 64, 64, 8))
 
 
 if __name__ == '__main__':
