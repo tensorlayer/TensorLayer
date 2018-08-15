@@ -197,7 +197,7 @@ class Conv2dLayer(Layer):
     ...                   padding='SAME',
     ...                   W_init=tf.truncated_normal_initializer(stddev=5e-2),
     ...                   b_init = tf.constant_initializer(value=0.0),
-    ...                   name ='cnn_layer1')     # output: (?, 28, 28, 32)
+    ...                   name ='conv2d_1')     # output: (?, 28, 28, 32)
 
     >>> net = tl.layers.PoolLayer(net,
     ...                   ksize=(1, 2, 2, 1),

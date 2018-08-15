@@ -65,12 +65,12 @@ class DorefaConv2d(Layer):
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, [None, 256, 256, 3])
     >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.DorefaConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
+    >>> net = tl.layers.DorefaConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='dorefa_conv2d_1')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=True, name='bn1')
     ...
     >>> net = tl.layers.SignLayer(net)
-    >>> net = tl.layers.DorefaConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='bcnn2')
+    >>> net = tl.layers.DorefaConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='dorefa_conv2d_2')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=True, name='bn2')
 
@@ -96,7 +96,7 @@ class DorefaConv2d(Layer):
             W_init_args=None,
             b_init_args=None,
             act=None,
-            name='dorefa_cnn2d',
+            name='dorefa_conv2d',
     ):
 
         if len(strides) != 2:

@@ -60,12 +60,12 @@ class TernaryConv2d(Layer):
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, [None, 256, 256, 3])
     >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.TernaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
+    >>> net = tl.layers.TernaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='ternary_conv2d_1')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=True, name='bn1')
     ...
     >>> net = tl.layers.SignLayer(net)
-    >>> net = tl.layers.TernaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='bcnn2')
+    >>> net = tl.layers.TernaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='ternary_conv2d_2')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=True, name='bn2')
 
@@ -99,7 +99,7 @@ class TernaryConv2d(Layer):
             # b_init_args=None,
             # use_cudnn_on_gpu=True,
             # data_format=None,
-            name='ternary_cnn2d',
+            name='ternary_conv2d',
     ):
         super(TernaryConv2d, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)

@@ -100,9 +100,9 @@ class RNNLayer(Layer):
     >>> num_steps = 5
     >>> x = tf.placeholder(tf.float32, shape=[batch_size, image_size, image_size, 1])
     >>> net = tl.layers.InputLayer(x, name='in')
-    >>> net = tl.layers.Conv2d(net, 32, (5, 5), (2, 2), tf.nn.relu, name='cnn1')
+    >>> net = tl.layers.Conv2d(net, 32, (5, 5), (2, 2), tf.nn.relu, name='conv2d_1')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), name='pool1')
-    >>> net = tl.layers.Conv2d(net, 10, (5, 5), (2, 2), tf.nn.relu, name='cnn2')
+    >>> net = tl.layers.Conv2d(net, 10, (5, 5), (2, 2), tf.nn.relu, name='conv2d_2')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), name='pool2')
     >>> net = tl.layers.FlattenLayer(net, name='flatten')
     >>> net = tl.layers.ReshapeLayer(net, shape=[-1, num_steps, int(net.outputs._shape[-1])])

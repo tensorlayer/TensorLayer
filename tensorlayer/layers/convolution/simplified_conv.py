@@ -5,9 +5,6 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
-from tensorlayer.layers.utils import get_collection_trainable
-
-from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import force_return_self
@@ -73,7 +70,7 @@ class Conv1d(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self, prev_layer=None, n_filter=32, filter_size=5, stride=1, padding='SAME', dilation_rate=1,
+            self, prev_layer=None, n_filter=32, filter_size=5, stride=1, padding='valid', dilation_rate=1,
             data_format="channels_last", W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0), W_init_args=None, b_init_args=None, act=None, name='conv1d'
     ):
@@ -217,7 +214,7 @@ class Conv2d(Layer):
             n_filter=32,
             filter_size=(3, 3),
             strides=(1, 1),
-            padding='SAME',
+            padding='valid',
             dilation_rate=(1, 1),
             data_format="channels_last",
             W_init=tf.truncated_normal_initializer(stddev=0.02),
