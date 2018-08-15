@@ -4,11 +4,12 @@
 import tensorflow as tf
 
 __all__ = [
-    'calculate_output_shape'
+    'compute_deconv2d_output_shape',
+    'compute_deconv3d_output_shape'
 ]
 
 
-def calculate_output_shape(input, filter_size_h, filter_size_w,
+def compute_deconv2d_output_shape(input, filter_size_h, filter_size_w,
     stride_h, stride_w, num_outputs, padding='SAME', data_format='NHWC'):
 
     #calculation of the output_shape:
@@ -18,38 +19,66 @@ def calculate_output_shape(input, filter_size_h, filter_size_w,
         input_size_w = input.get_shape().as_list()[2]
         stride_shape = [1, stride_h, stride_w, 1]
 
-        if padding == 'VALID':
-            output_size_h = (input_size_h - 1)*stride_h + filter_size_h
-            output_size_w = (input_size_w - 1)*stride_w + filter_size_w
-
-        elif padding == 'SAME':
-            output_size_h = (input_size_h - 1)*stride_h + 1
-            output_size_w = (input_size_w - 1)*stride_w + 1
-        else:
-            raise ValueError("unknown padding")
-
-        output_shape = [tf.shape(input)[0], output_size_h, output_size_w, num_outputs]
-
     elif data_format == "NCHW":
         input_channel_size = input.get_shape().as_list()[1]
         input_size_h = input.get_shape().as_list()[2]
         input_size_w = input.get_shape().as_list()[3]
         stride_shape = [1, 1, stride_h, stride_w]
 
-        if padding == 'VALID':
-            output_size_h = (input_size_h - 1)*stride_h + filter_size_h
-            output_size_w = (input_size_w - 1)*stride_w + filter_size_w
+    else:
+        raise ValueError("unknown data_format")
 
-        elif padding == 'SAME':
-            output_size_h = (input_size_h - 1)*stride_h + 1
-            output_size_w = (input_size_w - 1)*stride_w + 1
+    if padding == 'VALID':
+        output_size_h = (input_size_h - 1)*stride_h + filter_size_h
+        output_size_w = (input_size_w - 1)*stride_w + filter_size_w
 
-        else:
-            raise ValueError("unknown padding")
+    elif padding == 'SAME':
+        output_size_h = (input_size_h - 1)*stride_h + 1
+        output_size_w = (input_size_w - 1)*stride_w + 1
+    else:
+        raise ValueError("unknown padding")
 
-        output_shape =[tf.shape(input)[0], output_size_h, output_size_w, num_outputs]
+    if data_format == "NHWC":
+        return [tf.shape(input)[0], output_size_h, output_size_w, num_outputs]
+
+    else:  # data_format == "NCHW"
+        return [tf.shape(input)[0], num_outputs, output_size_h, output_size_w]
+
+
+def compute_deconv3d_output_shape(input, filter_size_d, filter_size_h, filter_size_w, stride_d, stride_h, stride_w, num_outputs, padding='SAME', data_format='NDHWC'):
+
+    if data_format == "NDHWC":
+        input_channel_size = input.get_shape().as_list()[3]
+        input_size_d = input.get_shape().as_list()[1]
+        input_size_h = input.get_shape().as_list()[2]
+        input_size_w = input.get_shape().as_list()[3]
+        stride_shape = [1, stride_h, stride_w, 1]
+
+    elif data_format == "NCDHW":
+        input_channel_size = input.get_shape().as_list()[1]
+        input_size_d = input.get_shape().as_list()[2]
+        input_size_h = input.get_shape().as_list()[3]
+        input_size_w = input.get_shape().as_list()[4]
+        stride_shape = [1, 1, stride_h, stride_w]
 
     else:
         raise ValueError("unknown data_format")
 
-    return output_shape
+    if padding == 'VALID':
+        output_size_d = (input_size_d - 1)*stride_d + filter_size_d
+        output_size_h = (input_size_h - 1)*stride_h + filter_size_h
+        output_size_w = (input_size_w - 1)*stride_w + filter_size_w
+
+    elif padding == 'SAME':
+        output_size_d = (input_size_d - 1)*stride_d + 1
+        output_size_h = (input_size_h - 1)*stride_h + 1
+        output_size_w = (input_size_w - 1)*stride_w + 1
+
+    else:
+        raise ValueError("unknown padding")
+
+    if data_format == "NDHWC":
+        return [tf.shape(input)[0], output_size_d, output_size_h, output_size_w, num_outputs]
+
+    else:  # data_format == "NCDHW"
+        return [tf.shape(input)[0], num_outputs, output_size_d, output_size_h, output_size_w]

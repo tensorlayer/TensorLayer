@@ -5,7 +5,7 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer.layers.utils import calculate_output_shape
+from tensorlayer.layers.utils import compute_deconv2d_output_shape
 
 from tensorlayer.layers.convolution.expert_conv import Conv1dLayer
 
@@ -302,7 +302,7 @@ class AtrousDeConv2dLayer(Layer):
                 **self.W_init_args
             )
 
-            self.out_shape = calculate_output_shape(
+            self.out_shape = compute_deconv2d_output_shape(
                 self.inputs, self.shape[0], self.shape[1], 1, 1, self.shape[2], padding=self.padding,
                 data_format="NHWC"
             )

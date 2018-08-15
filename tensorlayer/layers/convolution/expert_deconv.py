@@ -5,7 +5,8 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer.layers.utils import calculate_output_shape
+from tensorlayer.layers.utils import compute_deconv2d_output_shape
+from tensorlayer.layers.utils import compute_deconv3d_output_shape
 
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import force_return_self
@@ -172,7 +173,7 @@ class DeConv2dLayer(Layer):
                 **self.W_init_args
             )
 
-            self.out_shape = calculate_output_shape(
+            self.out_shape = compute_deconv2d_output_shape(
                 self.inputs, self.shape[0], self.shape[1], self.strides[1], self.strides[2],
                 self.shape[2], padding=self.padding, data_format=self.data_format
             )
@@ -234,7 +235,6 @@ class DeConv3dLayer(Layer):
             self,
             prev_layer=None,
             shape=(2, 2, 2, 128, 256),
-            output_shape=(1, 12, 32, 32, 128),
             strides=(1, 2, 2, 2, 1),
             padding='SAME',
             data_format='NDHWC',
@@ -255,7 +255,6 @@ class DeConv3dLayer(Layer):
 
         self.prev_layer = prev_layer
         self.shape = shape
-        self.output_shape = output_shape
         self.strides = strides
         self.padding = padding
         self.data_format = data_format
@@ -299,7 +298,7 @@ class DeConv3dLayer(Layer):
     @force_return_self
     def __call__(self, prev_layer, is_train=True):
 
-        super(DeConv3dLayer, self).__call__(prev_layer)
+        self._parse_inputs(prev_layer)
 
         with tf.variable_scope(self.name):
 
@@ -308,15 +307,13 @@ class DeConv3dLayer(Layer):
                 **self.W_init_args
             )
 
-            try:
-                batch_size = int(self.inputs.get_shape()[0])
-            except TypeError:
-                batch_size = None
-
-            deconv_shape = [batch_size] + list(self.output_shape[1:])
+            self.out_shape = compute_deconv3d_output_shape(
+                self.inputs, self.shape[0], self.shape[1], self.shape[2], self.strides[1], self.strides[2],
+                self.strides[3], self.shape[3], padding=self.padding, data_format=self.data_format
+            )
 
             self.outputs = tf.nn.conv3d_transpose(
-                self.inputs, weight_matrix, output_shape=deconv_shape, strides=self.strides, padding=self.padding
+                self.inputs, weight_matrix, output_shape=self.out_shape, strides=self.strides, padding=self.padding
             )
 
             if self.b_init:
@@ -328,6 +325,8 @@ class DeConv3dLayer(Layer):
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
+
+        super(DeConv3dLayer, self).__call__(prev_layer)
 
         self._add_layers(self.outputs)
         self._add_params(self._local_weights)
