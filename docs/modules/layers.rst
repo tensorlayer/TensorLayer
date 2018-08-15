@@ -247,10 +247,10 @@ Layer list
    TernaryConv2d
    DorefaDenseLayer
    DorefaConv2d
-   QuanDenseLayer
-   QuanDenseLayerWithBN
-   QuanConv2d
-   QuanConv2dWithBN
+   QuantizedDense
+   QuantizedDenseWithBN
+   QuantizedConv2d
+   QuantizedConv2dWithBN
 
    PReluLayer
    PRelu6Layer
@@ -830,24 +830,24 @@ DorefaConv2d
 Quantization Dense Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-QuanDenseLayer
+QuantizedDense
 """""""""""""""""""""
-.. autoclass:: QuanDenseLayer
+.. autoclass:: QuantizedDense
 
-QuanDenseLayerWithBN
+QuantizedDenseWithBN
 """"""""""""""""""""""""""""""""""""
-.. autoclass:: QuanDenseLayerWithBN
+.. autoclass:: QuantizedDenseWithBN
 
 Quantization Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Quantization
 """""""""""""""""""""
-.. autoclass:: QuanConv2d
+.. autoclass:: QuantizedConv2d
 
-QuanConv2dWithBN
+QuantizedConv2dWithBN
 """""""""""""""""""""
-.. autoclass:: QuanConv2dWithBN
+.. autoclass:: QuantizedConv2dWithBN
 
 DoReFa
 ^^^^^^^^^^^^^^
