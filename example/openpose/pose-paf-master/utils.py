@@ -53,15 +53,17 @@ class CocoMeta:
             self.joint_list.append(new_joint)
 
 class PoseInfo:
-    def __init__(self, image_base_dir, anno_path):
+    def __init__(self, image_base_dir, anno_path,with_mask):
         self.metas=[]
         # self.data_dir = data_dir
         # self.data_type = data_type
         self.image_base_dir = image_base_dir
         self.anno_path = anno_path
+        self.with_mask = with_mask
         self.coco = COCO(self.anno_path)
         self.get_image_annos()
         self.image_list=os.listdir(self.image_base_dir)
+
     @staticmethod
     def get_keypoints(annos_info):
         annolist = []
@@ -92,39 +94,40 @@ class PoseInfo:
             masks = []
 
             # sort from the biggest person to the smallest one
-            persons_ids = np.argsort([-a['area'] for a in anns], kind='mergesort')
+            if self.with_mask:
+                persons_ids = np.argsort([-a['area'] for a in anns], kind='mergesort')
 
-            for p_id in list(persons_ids):
-                person_meta = anns[p_id]
+                for p_id in list(persons_ids):
+                    person_meta = anns[p_id]
 
-                if person_meta["iscrowd"]:
-                    masks.append(self.coco.annToRLE(person_meta))
-                    continue
+                    if person_meta["iscrowd"]:
+                        masks.append(self.coco.annToRLE(person_meta))
+                        continue
 
-                # skip this person if parts number is too low or if
-                # segmentation area is too small
-                if person_meta["num_keypoints"] < 5 or person_meta["area"] < 32 * 32:
-                    masks.append(self.coco.annToRLE(person_meta))
-                    continue
+                    # skip this person if parts number is too low or if
+                    # segmentation area is too small
+                    if person_meta["num_keypoints"] < 5 or person_meta["area"] < 32 * 32:
+                        masks.append(self.coco.annToRLE(person_meta))
+                        continue
 
-                person_center = [person_meta["bbox"][0] + person_meta["bbox"][2] / 2,
-                                 person_meta["bbox"][1] + person_meta["bbox"][3] / 2]
+                    person_center = [person_meta["bbox"][0] + person_meta["bbox"][2] / 2,
+                                     person_meta["bbox"][1] + person_meta["bbox"][3] / 2]
 
-                # skip this person if the distance to existing person is too small
-                too_close = False
-                for pc in prev_center:
-                    a = np.expand_dims(pc[:2], axis=0)
-                    b = np.expand_dims(person_center, axis=0)
-                    dist = cdist(a, b)[0]
-                    if dist < pc[2] * 0.3:
-                        too_close = True
-                        break
+                    # skip this person if the distance to existing person is too small
+                    too_close = False
+                    for pc in prev_center:
+                        a = np.expand_dims(pc[:2], axis=0)
+                        b = np.expand_dims(person_center, axis=0)
+                        dist = cdist(a, b)[0]
+                        if dist < pc[2] * 0.3:
+                            too_close = True
+                            break
 
-                if too_close:
-                    # add mask of this person. we don't want to show the network
-                    # unlabeled people
-                    masks.append(self.coco.annToRLE(person_meta))
-                    continue
+                    if too_close:
+                        # add mask of this person. we don't want to show the network
+                        # unlabeled people
+                        masks.append(self.coco.annToRLE(person_meta))
+                        continue
 
             ############################################################################
             total_keypoints = sum([ann.get('num_keypoints', 0) for ann in annos_info])

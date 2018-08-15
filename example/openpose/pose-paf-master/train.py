@@ -25,30 +25,36 @@ from tensorlayer.prepro import keypoints_rotation,keypoint_resize_shortestedge_r
 import time
 import _pickle as cPickle
 from utils import PoseInfo, get_heatmap, get_vectormap
-from tf_data_aug import _resize_image,pose_rotation,random_flip,pose_resize_shortestedge_random,pose_crop_random,pose_random_scale
 from pycocotools.coco import maskUtils
 import os
 
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 parser = argparse.ArgumentParser(description='Training codes for Openpose using Tensorflow')
 parser.add_argument('--save_interval', type=int, default=5000)
 args = parser.parse_args()
 
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+'''
+file structure:
+data_dir:
+    image_folder : xxxx.jpg
+    'annotations': xxxx.json
+'''
+image_folder='val2014'
+data_dir = '/Users/Joel/Desktop/coco/coco_dataset'
+image_path= '{}/images/{}/'.format(data_dir,image_folder)
+anno_path = '{}/annotations/{}'.format(data_dir,'coco.json')
 
-
-data_dir = '/Users/Joel/Desktop/coco'
-image_path= '{}/images/{}/'.format(data_dir,'val2014')
-anno_path = '{}/annotations/{}'.format(data_dir,'person_keypoints_val2014.json')
-
-df_val = PoseInfo(image_path, anno_path)
+''''''
+df_val = PoseInfo(image_path, anno_path,False)
 
 imgs_file_list= df_val.get_image_list()
 objs_info_list=df_val.get_joint_list()
 mask_list= df_val.get_mask()
 targets=list(zip (objs_info_list,mask_list))
-
+#path to pretrain vgg
+MODEL_PATH = '/Users/Joel/Desktop/TRAINNING_LOG/vgg19.npy'
 def generator():
     inputs = imgs_file_list
     targets = list(zip (objs_info_list,mask_list))
@@ -70,7 +76,6 @@ def _data_aug_fn(image, ground_truth):
         mask_miss = np.bitwise_and(mask_miss, bin_mask)
 
     # image process
-
     image, annos, mask_miss = keypoint_random_scale(image, annos, mask_miss)
     image, annos, mask_miss = keypoints_rotation(image, annos, mask_miss)
     image, annos, mask_miss = keypoint_random_flip(image, annos, mask_miss)
@@ -105,26 +110,23 @@ def _map_fn(img_list, annos):
 
     return image, resultmap, mask
 
-# MPII 16  COCO 19
+#  COCO 19
 n_pos = 19
 n_epoch = 80
 batch_size = 2
-# learning_rate = 0.00001  # reduce it if your GPU memory is small
 
-x = tf.placeholder(tf.float32, [None, 368, 368, 3], "image")  # for tl.models.MobileNetV1, value [0, 1]; for VGG19 value [0, 255]
+x = tf.placeholder(tf.float32, [None, 368, 368, 3], "image")
 confs = tf.placeholder(tf.float32, [None, 46, 46, n_pos], "confidence_maps")
-pafs = tf.placeholder(tf.float32, [None, 46, 46, n_pos * 2], "pafs")  # x2 for x and y axises
+pafs = tf.placeholder(tf.float32, [None, 46, 46, n_pos * 2], "pafs")
 img_mask1 =tf.placeholder(tf.float32,[None,46,46,19],'img_mask1')
 img_mask2 =tf.placeholder(tf.float32,[None,46,46,38],'img_mask2')
-init = tf.global_variables_initializer()
-
 num_images=np.shape(imgs_file_list)[0]
-# ## define model
+#model define
 cnn, b1_list, b2_list, net = model(x, n_pos,img_mask1,img_mask2, False, False)
 
+#dataset api
 dataset = tf.data.Dataset().from_generator(generator, output_types=(tf.string, tf.string))
 dataset = dataset.map(_map_fn,num_parallel_calls=1)
-#顺序可能会有尾巴
 dataset = dataset.repeat(n_epoch)
 dataset = dataset.batch(batch_size)
 dataset = dataset.prefetch(buffer_size=2)
@@ -140,15 +142,14 @@ L2=0.0
 for idx, (l1, l2) in enumerate(zip(b1_list, b2_list)):
     loss_l1 = tf.nn.l2_loss( (tf.concat(l1.outputs, axis=0) - tf.concat(confs, axis=0)) *img_mask1)
     loss_l2 = tf.nn.l2_loss((tf.concat(l2.outputs, axis=0) - tf.concat(pafs, axis=0))*img_mask2)
-
     losses.append(tf.reduce_mean([loss_l1, loss_l2]))
     stage_losses.append(loss_l1/batch_size)
     stage_losses.append(loss_l2/batch_size)
-
 last_losses_l1.append(loss_l1)
 last_losses_l2.append(loss_l2)
 last_conf=b1_list[-1].outputs
 last_paf =b2_list[-1].outputs
+
 for p in tl.layers.get_variables_with_name('kernel', True, True):
     L2 += tf.contrib.layers.l2_regularizer(0.0005)(p)
 total_loss = tf.reduce_sum(losses) /batch_size + L2
@@ -170,7 +171,6 @@ config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=False)
 with tf.Session(config=config) as sess:
     sess.run(tf.global_variables_initializer())
 
-    MODEL_PATH = '/Users/Joel/Desktop/TRAINNING_LOG/vgg19.npy'
     npy_file = np.load(MODEL_PATH, encoding='latin1').item()
     params = []
     for val in sorted(npy_file.items()):
@@ -183,8 +183,6 @@ with tf.Session(config=config) as sess:
     tl.files.assign_params(sess, params, cnn)
     print("Restoring model from npy file")
 
-    # graph_path='/home/hao/Workspace/yuding/pose-paf-master/model/inf_model156000.npz'
-    # tl.files.load_and_assign_npz_dict(graph_path, sess)
     sess.run(tf.assign(lr_v, base_lr))
     while(True):
         tic=time.time()
