@@ -1,9 +1,8 @@
-#!/usr/bin/env pytest
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
 
-import os
 import unittest
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import warnings
 
 from sphinx.application import Sphinx
 
@@ -11,14 +10,16 @@ from sphinx.application import Sphinx
 class DocTest(unittest.TestCase):
     source_dir = u'docs/'
     config_dir = u'docs/'
-    output_dir = u'docs/test_build'
-    doctree_dir = u'docs/test_build/doctrees'
+    output_dir = u'docs/build_test'
+    doctree_dir = u'docs/build_test/doctrees'
 
     all_files = True
 
     @classmethod
     def setUpClass(cls):
-        os.environ["SPHINXBUILD"] = "1"
+
+        warnings.resetwarnings()
+        warnings.simplefilter("ignore", DeprecationWarning)
 
     def test_html_documentation(self):
         app = Sphinx(
