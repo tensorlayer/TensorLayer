@@ -336,7 +336,6 @@ def load_cropped_svhn(path='data', include_extra=True):
     >>> tl.vis.save_images(X_train[0:100], [10, 10], 'svhn.png')
 
     """
-
     start_time = time.time()
 
     path = os.path.join(path, 'cropped_svhn')
@@ -818,7 +817,6 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     >>> images = tl.files.load_flickr1M_dataset(tag='zebra')
 
     """
-
     path = os.path.join(path, 'flickr1M')
     logging.info("[Flickr1M] using {}% of images = {}".format(size * 10, size * 100000))
     images_zip = [
@@ -1923,7 +1921,7 @@ def save_graph(network=None, name='graph.pkl'):
 
 
 def _graph2net(graphs):
-    """ Inputs graphs, returns network. """
+    """Inputs graphs, returns network."""
     input_list = list()
     layer_dict = dict()
     # loop every layers
