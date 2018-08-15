@@ -42,7 +42,9 @@ class MeanPool1d(Layer):
     # net_new.outputs = outputs
     # net_new.all_layers.extend([outputs])
     # return net_new
-    @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        net='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(
             self, prev_layer, filter_size=3, strides=2, padding='valid', data_format='channels_last', name='meanpool1d'
     ):
@@ -78,7 +80,9 @@ class MeanPool2d(Layer):
 
     """
 
-    @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        net='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(self, prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='meanpool2d'):
 
         if strides is None:
@@ -126,7 +130,9 @@ class MeanPool3d(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(
             self, prev_layer, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last',
             name='meanpool3d'

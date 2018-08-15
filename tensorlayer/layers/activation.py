@@ -42,7 +42,9 @@ class PReluLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(
             self, prev_layer=None, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
             a_init_args=None, name="PReluLayer"
@@ -132,7 +134,9 @@ class PRelu6Layer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(
             self, prev_layer=None, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
             a_init_args=None, name="PReLU6_layer"
@@ -224,7 +228,9 @@ class PTRelu6Layer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(
             self, prev_layer=None, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
             a_init_args=None, name="PTReLU6_layer"

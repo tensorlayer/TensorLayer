@@ -67,7 +67,9 @@ class Conv1d(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(
             self, prev_layer, n_filter=32, filter_size=5, stride=1, dilation_rate=1, act=None, padding='SAME',
             data_format="channels_last", W_init=tf.truncated_normal_initializer(stddev=0.02),
@@ -150,7 +152,9 @@ class Conv2d(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(
             self,
             prev_layer,

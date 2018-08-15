@@ -44,7 +44,7 @@ class TensorHub(object):
         See ``pymongo.MongoClient``.
     """
 
-    # @deprecated_alias(db_name='dbname', user_name='username', end_support_version=2.1)
+    # @deprecated_alias(db_name='dbname', user_name='username', end_support_version="2.0.0")
     def __init__(
             self, ip='localhost', port=27017, dbname='dbname', username='None', password='password', project_name=None
     ):

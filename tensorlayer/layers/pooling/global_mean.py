@@ -33,7 +33,9 @@ class GlobalMeanPool1d(Layer):
     [None, 30]
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(self, prev_layer, name='globalmeanpool1d'):
         super(GlobalMeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -64,7 +66,9 @@ class GlobalMeanPool2d(Layer):
     [None, 30]
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(self, prev_layer, name='globalmeanpool2d'):
         super(GlobalMeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -95,7 +99,9 @@ class GlobalMeanPool3d(Layer):
     [None, 30]
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(self, prev_layer, name='globalmeanpool3d'):
         super(GlobalMeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
 

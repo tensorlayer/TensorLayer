@@ -44,7 +44,9 @@ class LocalResponseNormLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(
             self,
             prev_layer=None,
@@ -137,7 +139,9 @@ class BatchNormLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(
             self,
             prev_layer=None,
@@ -282,7 +286,9 @@ class InstanceNormLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(
             self,
             prev_layer=None,
@@ -359,7 +365,9 @@ class LayerNormLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(
             self, prev_layer=None, center=True, scale=True, variables_collections=None, outputs_collections=None,
             begin_norm_axis=1, begin_params_axis=-1, act=None, name='layernorm'
@@ -476,7 +484,9 @@ class SwitchNormLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', end_support_version="2.0.0"
+    )  # TODO: remove this line after before releasing TL 2.0.0
     def __init__(
             self,
             prev_layer=None,
