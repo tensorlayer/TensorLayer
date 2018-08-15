@@ -1,6 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-"""Example of Synced sequence input and output.
+r"""Example of Synced sequence input and output.
 
 This is a reimpmentation of the TensorFlow official PTB example in :
 tensorflow/models/rnn/ptb
@@ -132,7 +132,6 @@ def main(_):
     reasons, we will process data in mini-batches of size batch_size.
 
     """
-
     if FLAGS.model == "small":
         init_scale = 0.1
         learning_rate = 1.0
@@ -209,7 +208,7 @@ def main(_):
             net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
             net = tl.layers.RNNLayer(
                 net,
-                cell_fn=tf.contrib.rnn.BasicLSTMCell,  #tf.nn.rnn_cell.BasicLSTMCell,
+                cell_fn=tf.contrib.rnn.BasicLSTMCell,  # tf.nn.rnn_cell.BasicLSTMCell,
                 cell_init_args={'forget_bias': 0.0},  # 'state_is_tuple': True},
                 n_hidden=hidden_size,
                 initializer=init,
@@ -221,7 +220,7 @@ def main(_):
             net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop2')
             net = tl.layers.RNNLayer(
                 net,
-                cell_fn=tf.contrib.rnn.BasicLSTMCell,  #tf.nn.rnn_cell.BasicLSTMCell,
+                cell_fn=tf.contrib.rnn.BasicLSTMCell,  # tf.nn.rnn_cell.BasicLSTMCell,
                 cell_init_args={'forget_bias': 0.0},  # 'state_is_tuple': True},
                 n_hidden=hidden_size,
                 initializer=init,
@@ -249,7 +248,7 @@ def main(_):
     # sess.run(tf.global_variables_initializer())
     tl.layers.initialize_global_variables(sess)
 
-    def loss_fn(outputs, targets):  #, batch_size, num_steps):
+    def loss_fn(outputs, targets):  # , batch_size, num_steps):
         # See tl.cost.cross_entropy_seq()
         # Returns the cost function of Cross-entropy of two sequences, implement
         # softmax internally.
@@ -267,11 +266,11 @@ def main(_):
         return cost
 
     # Cost for Training
-    cost = loss_fn(net.outputs, targets)  #, batch_size, num_steps)
+    cost = loss_fn(net.outputs, targets)  # , batch_size, num_steps)
     # Cost for Validating
-    cost_val = loss_fn(net_val.outputs, targets)  #, batch_size, num_steps)
+    cost_val = loss_fn(net_val.outputs, targets)  # , batch_size, num_steps)
     # Cost for Testing (Evaluation)
-    cost_test = loss_fn(net_test.outputs, targets_test)  #, 1, 1)
+    cost_test = loss_fn(net_test.outputs, targets_test)  # , 1, 1)
 
     # Truncated Backpropagation for training
     with tf.variable_scope('learning_rate'):
@@ -382,7 +381,7 @@ def main(_):
 if __name__ == "__main__":
     tf.app.run()
 
-## log of SmallConfig
+# log of SmallConfig
 # Start learning a language model by using PTB dataset
 # Epoch: 1 Learning rate: 1.000
 # 0.004 perplexity: 5512.735 speed: 4555 wps
@@ -556,7 +555,7 @@ if __name__ == "__main__":
 # Evaluation
 # Test Perplexity: 116.723 took 124.06s
 
-## MediumConfig
+# MediumConfig
 # Epoch: 1 Learning rate: 1.000
 # 0.008 perplexity: 5173.547 speed: 6469 wps
 # 0.107 perplexity: 1219.527 speed: 6453 wps

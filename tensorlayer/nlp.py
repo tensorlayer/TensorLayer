@@ -873,7 +873,7 @@ def create_vocabulary(
         vocabulary_path, data_path, max_vocabulary_size, tokenizer=None, normalize_digits=True,
         _DIGIT_RE=re.compile(br"\d"), _START_VOCAB=None
 ):
-    """Create vocabulary file (if it does not exist yet) from data file.
+    r"""Create vocabulary file (if it does not exist yet) from data file.
 
     Data file is assumed to contain one sentence per line. Each sentence is
     tokenized and digits are normalized (if normalize_digits is set).
