@@ -289,7 +289,6 @@ def temp_handler(header):
     except IndexError:
         old_handler = None
 
-
     try:
 
         for handler in logger.handlers:

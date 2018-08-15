@@ -183,19 +183,19 @@ class SubpixelConv2d(Layer):
 
         if self.n_out_channels is None:
 
-            if int(self.inputs.get_shape()[-1]) / (self.scale ** 2) % 1 != 0:
+            if int(self.inputs.get_shape()[-1]) / (self.scale**2) % 1 != 0:
                 raise RuntimeError(
                     "%s: The number of input channels == (scale x scale) x The number of output channels" %
                     self.__class__.__name__
                 )
 
-            self.n_out_channels = int(int(self.inputs.get_shape()[-1]) / (self.scale ** 2))
+            self.n_out_channels = int(int(self.inputs.get_shape()[-1]) / (self.scale**2))
 
         if self.n_out_channels < 1 or int(self.inputs.get_shape()[-1]) != (self.scale**2) * self.n_out_channels:
-                _err_log = "%s: The number of input channels == (scale x scale) x n_out_channels" % (
-                    self.__class__.__name__
-                )
-                raise Exception(_err_log)
+            _err_log = "%s: The number of input channels == (scale x scale) x n_out_channels" % (
+                self.__class__.__name__
+            )
+            raise Exception(_err_log)
 
         super(SubpixelConv2d, self).__call__(prev_layer)
 
