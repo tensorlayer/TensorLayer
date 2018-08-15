@@ -163,14 +163,14 @@ class BinaryConv2d(Layer):
 
         with tf.variable_scope(self.name):
 
-            W = self._get_tf_variable(
+            weight_matrix = self._get_tf_variable(
                 name='W_conv2d', shape=w_shape, initializer=self.W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
-            W = quantize(W)
+            weight_matrix = quantize(weight_matrix)
 
             self.outputs = tf.nn.conv2d(
-                self.inputs, W, strides=strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
+                self.inputs, weight_matrix, strides=strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
                 data_format=self.data_format
             )
 

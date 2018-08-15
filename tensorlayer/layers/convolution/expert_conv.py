@@ -117,13 +117,12 @@ class Conv1dLayer(Layer):
         super(Conv1dLayer, self).__call__(prev_layer)
 
         with tf.variable_scope(self.name):
-
-            W = self._get_tf_variable(
+            weight_matrix = self._get_tf_variable(
                 name='W_conv1d', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
             self.outputs = tf.nn.conv1d(
-                self.inputs, W, stride=self.stride, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
+                self.inputs, weight_matrix, stride=self.stride, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
                 data_format=self.data_format
             )
 
@@ -271,12 +270,12 @@ class Conv2dLayer(Layer):
         super(Conv2dLayer, self).__call__(prev_layer)
 
         with tf.variable_scope(self.name):
-            W = self._get_tf_variable(
+            weight_matrix = self._get_tf_variable(
                 name='W_conv2d', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
             self.outputs = tf.nn.conv2d(
-                self.inputs, W, strides=self.strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
+                self.inputs, weight_matrix, strides=self.strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
                 data_format=self.data_format
             )
 
@@ -385,13 +384,12 @@ class Conv3dLayer(Layer):
         super(Conv3dLayer, self).__call__(prev_layer)
 
         with tf.variable_scope(self.name):
-
-            W = self._get_tf_variable(
+            weight_matrix = self._get_tf_variable(
                 name='W_conv3d', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
             self.outputs = tf.nn.conv3d(
-                self.inputs, W, strides=self.strides, padding=self.padding, data_format=self.data_format
+                self.inputs, weight_matrix, strides=self.strides, padding=self.padding, data_format=self.data_format
             )
 
             if self.b_init:

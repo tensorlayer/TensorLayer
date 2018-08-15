@@ -164,7 +164,7 @@ class DeConv2dLayer(Layer):
         super(DeConv2dLayer, self).__call__(prev_layer)
 
         with tf.variable_scope(self.name):
-            W = self._get_tf_variable(
+            weight_matrix = self._get_tf_variable(
                 name='W_deconv2d', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype,
                 **self.W_init_args
             )
@@ -177,7 +177,7 @@ class DeConv2dLayer(Layer):
             deconv_shape = [batch_size] + list(self.output_shape[1:])
 
             self.outputs = tf.nn.conv2d_transpose(
-                self.inputs, W, output_shape=deconv_shape, strides=self.strides, padding=self.padding
+                self.inputs, weight_matrix, output_shape=deconv_shape, strides=self.strides, padding=self.padding
             )
 
             if self.b_init:
@@ -296,7 +296,7 @@ class DeConv3dLayer(Layer):
 
         with tf.variable_scope(self.name):
 
-            W = self._get_tf_variable(
+            weight_matrix = self._get_tf_variable(
                 name='W_deconv3d', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype,
                 **self.W_init_args
             )
@@ -309,7 +309,7 @@ class DeConv3dLayer(Layer):
             deconv_shape = [batch_size] + list(self.output_shape[1:])
 
             self.outputs = tf.nn.conv3d_transpose(
-                self.inputs, W, output_shape=deconv_shape, strides=self.strides, padding=self.padding
+                self.inputs, weight_matrix, output_shape=deconv_shape, strides=self.strides, padding=self.padding
             )
 
             if self.b_init:

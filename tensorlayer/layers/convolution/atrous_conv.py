@@ -178,12 +178,12 @@ class AtrousConv2dLayer(Layer):
         with tf.variable_scope(self.name):
             shape = [self.filter_size[0], self.filter_size[1], int(self.inputs.get_shape()[-1]), self.n_filter]
 
-            W = self._get_tf_variable(
+            weight_matrix = self._get_tf_variable(
                 name='W_atrous_conv2d', shape=shape, initializer=self.W_init, dtype=self.inputs.dtype,
                 **self.W_init_args
             )
 
-            self.outputs = tf.nn.atrous_conv2d(self.inputs, filters=W, rate=self.rate, padding=self.padding)
+            self.outputs = tf.nn.atrous_conv2d(self.inputs, filters=weight_matrix, rate=self.rate, padding=self.padding)
 
             if self.b_init:
                 b = self._get_tf_variable(
@@ -288,7 +288,7 @@ class AtrousDeConv2dLayer(Layer):
         self._parse_inputs(prev_layer)
 
         with tf.variable_scope(self.name):
-            W = self._get_tf_variable(
+            weight_matrix = self._get_tf_variable(
                 name='W_atrous_conv2d_transpose', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype,
                 **self.W_init_args
             )
@@ -301,7 +301,7 @@ class AtrousDeConv2dLayer(Layer):
             deconv_shape = [batch_size] + list(self.output_shape[1:])
 
             self.outputs = tf.nn.atrous_conv2d_transpose(
-                self.inputs, filters=W, output_shape=deconv_shape, rate=self.rate, padding=self.padding
+                self.inputs, filters=weight_matrix, output_shape=deconv_shape, rate=self.rate, padding=self.padding
             )
 
             if self.b_init:

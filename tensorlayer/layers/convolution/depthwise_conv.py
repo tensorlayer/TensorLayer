@@ -153,13 +153,13 @@ class DepthwiseConv2d(Layer):
 
         with tf.variable_scope(self.name):
 
-            W = self._get_tf_variable(
+            weight_matrix = self._get_tf_variable(
                 name='W_depthwise2d', shape=w_shape, initializer=self.W_init, dtype=self.inputs.dtype,
                 **self.W_init_args
             )
 
             self.outputs = tf.nn.depthwise_conv2d(
-                self.inputs, W, strides=self.strides, padding=self.padding, rate=self.dilation_rate
+                self.inputs, weight_matrix, strides=self.strides, padding=self.padding, rate=self.dilation_rate
             )
 
             if self.b_init:

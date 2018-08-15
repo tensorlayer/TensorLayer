@@ -111,11 +111,11 @@ class QuantizedDenseWithBN(Layer):
 
         with tf.variable_scope(name):
 
-            W = self._get_tf_variable(
+            weight_matrix = self._get_tf_variable(
                 name='W', shape=(n_in, n_units), initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
-            mid_out = tf.matmul(x, W)
+            mid_out = tf.matmul(x, weight_matrix)
 
             para_bn_shape = mid_out.get_shape()[-1:]
 
@@ -167,16 +167,16 @@ class QuantizedDenseWithBN(Layer):
             else:
                 mean, var = moving_mean, moving_variance
 
-            _w_fold = w_fold(W, scale_para, var, epsilon)
+            _w_fold = w_fold(weight_matrix, scale_para, var, epsilon)
             _bias_fold = bias_fold(offset_para, scale_para, mean, var, epsilon)
 
-            W = quantize_weight_overflow(_w_fold, bitW)
-            # W = tl.act.sign(W)    # dont update ...
+            weight_matrix = quantize_weight_overflow(_w_fold, bitW)
+            # weight_matrix = tl.act.sign(weight_matrix)    # dont update ...
 
-            # W = tf.Variable(W)
+            # weight_matrix = tf.Variable(weight_matrix)
 
-            self.outputs = tf.matmul(self.inputs, W)
-            # self.outputs = xnor_gemm(self.inputs, W) # TODO
+            self.outputs = tf.matmul(self.inputs, weight_matrix)
+            # self.outputs = xnor_gemm(self.inputs, weight_matrix) # TODO
 
             self.outputs = tf.nn.bias_add(self.outputs, _bias_fold, name='bias_add')
 
@@ -184,4 +184,4 @@ class QuantizedDenseWithBN(Layer):
 
         self._add_layers(self.outputs)
 
-        self._add_params([W, scale_para, offset_para, moving_mean, moving_variance])
+        self._add_params([weight_matrix, scale_para, offset_para, moving_mean, moving_variance])

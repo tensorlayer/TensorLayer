@@ -85,13 +85,13 @@ class QuantizedDense(Layer):
 
         with tf.variable_scope(name):
 
-            W = self._get_tf_variable(
+            weight_matrix = self._get_tf_variable(
                 name='W', shape=(n_in, n_units), initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
-            W = quantize_weight_overflow(W, bitW)
+            weight_matrix = quantize_weight_overflow(weight_matrix, bitW)
 
-            self.outputs = tf.matmul(self.inputs, W)
+            self.outputs = tf.matmul(self.inputs, weight_matrix)
 
             if b_init is not None:
                 try:
@@ -108,6 +108,6 @@ class QuantizedDense(Layer):
         self._add_layers(self.outputs)
 
         if b_init is not None:
-            self._add_params([W, b])
+            self._add_params([weight_matrix, b])
         else:
-            self._add_params(W)
+            self._add_params(weight_matrix)

@@ -86,6 +86,7 @@ class SpatialTransformer2dAffineLayer(Layer):
         input_layer = self.inputs[0].outputs
         theta_layer = self.inputs[1]
 
+
         with tf.variable_scope(self.name) as vs:
 
             # 1. make the localisation network to [batch, 6] via Flatten and Dense.
@@ -96,7 +97,7 @@ class SpatialTransformer2dAffineLayer(Layer):
             # 2.1 W
             w_shape = (int(theta_layer.outputs.get_shape()[-1]), 6)
 
-            W = self._get_tf_variable(name='W', initializer=tf.zeros(w_shape), dtype=input_layer.dtype)
+            weight_matrix = self._get_tf_variable(name='W', initializer=tf.zeros(w_shape), dtype=input_layer.dtype)
 
             # 2.2 b
             identity = tf.constant(np.array([[1., 0, 0], [0, 1., 0]]).astype('float32').flatten())
@@ -104,7 +105,7 @@ class SpatialTransformer2dAffineLayer(Layer):
             b = self._get_tf_variable(name='b', initializer=identity, dtype=input_layer.dtype)
 
             # 2.3 transformation matrix
-            self.theta = tf.nn.tanh(tf.matmul(theta_layer.outputs, W) + b)
+            self.theta = tf.nn.tanh(tf.matmul(theta_layer.outputs, weight_matrix) + b)
 
             # 3. Spatial Transformer Sampling
             # 3.1 transformation

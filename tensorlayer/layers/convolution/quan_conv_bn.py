@@ -221,13 +221,13 @@ class QuantizedConv2dWithBN(Layer):
 
             quantized_inputs = quantize_active_overflow(self.inputs, self.bitA)  # Do not remove
 
-            W = self._get_tf_variable(
+            weight_matrix = self._get_tf_variable(
                 name='W_conv2d', shape=w_shape, initializer=self.W_init, dtype=quantized_inputs.dtype,
                 **self.W_init_args
             )
 
             conv_out = tf.nn.conv2d(
-                self.inputs, W, strides=strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
+                self.inputs, weight_matrix, strides=strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
                 data_format=self.data_format
             )
 
@@ -281,13 +281,13 @@ class QuantizedConv2dWithBN(Layer):
             else:
                 mean, var = moving_mean, moving_variance
 
-            _w_fold = w_fold(W, scale_para, var, self.epsilon)
+            _w_fold = w_fold(weight_matrix, scale_para, var, self.epsilon)
             _bias_fold = bias_fold(offset_para, scale_para, mean, var, self.epsilon)
 
-            W = quantize_weight_overflow(_w_fold, self.bitW)
+            weight_matrix = quantize_weight_overflow(_w_fold, self.bitW)
 
             conv_fold_out = tf.nn.conv2d(
-                quantized_inputs, W, strides=strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
+                quantized_inputs, weight_matrix, strides=strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
                 data_format=self.data_format
             )
 

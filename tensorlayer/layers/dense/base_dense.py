@@ -44,10 +44,10 @@ class DenseLayer(Layer):
 
     Without native TensorLayer APIs, you can do as follow.
 
-    >>> W = tf.Variable(
+    >>> weight_matrix = tf.Variable(
     ...     tf.random_uniform([n_in, n_units], -1.0, 1.0), name='W')
     >>> b = tf.Variable(tf.zeros(shape=[n_units]), name='b')
-    >>> y = tf.nn.relu(tf.matmul(inputs, W) + b)
+    >>> y = tf.nn.relu(tf.matmul(inputs, weight_matrix) + b)
 
     Notes
     -----
@@ -105,9 +105,9 @@ class DenseLayer(Layer):
         n_in = int(self.inputs.get_shape()[-1])
 
         with tf.variable_scope(self.name):
-            W = self._get_tf_variable(name='W', shape=(n_in, self.n_units), initializer=self.W_init, **self.W_init_args)
+            weight_matrix = self._get_tf_variable(name='W', shape=(n_in, self.n_units), initializer=self.W_init, **self.W_init_args)
 
-            self.outputs = tf.matmul(self.inputs, W)
+            self.outputs = tf.matmul(self.inputs, weight_matrix)
 
             if self.b_init is not None:
                 try:

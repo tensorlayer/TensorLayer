@@ -89,16 +89,16 @@ class DorefaDenseLayer(Layer):
 
         with tf.variable_scope(name):
 
-            W = self._get_tf_variable(
+            weight_matrix = self._get_tf_variable(
                 name='W', shape=(n_in, n_units), initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
-            # W = tl.act.sign(W)    # dont update ...
-            W = quantize_weight(W, bitW)
-            # W = tf.Variable(W)
-            # print(W)
+            # weight_matrix = tl.act.sign(weight_matrix)    # dont update ...
+            weight_matrix = quantize_weight(weight_matrix, bitW)
+            # weight_matrix = tf.Variable(weight_matrix)
+            # print(weight_matrix)
 
-            self.outputs = tf.matmul(self.inputs, W)
-            # self.outputs = xnor_gemm(self.inputs, W) # TODO
+            self.outputs = tf.matmul(self.inputs, weight_matrix)
+            # self.outputs = xnor_gemm(self.inputs, weight_matrix) # TODO
 
             if b_init is not None:
                 try:
@@ -110,12 +110,12 @@ class DorefaDenseLayer(Layer):
                     b = self._get_tf_variable(name='b', initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args)
 
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
-                # self.outputs = xnor_gemm(self.inputs, W) + b # TODO
+                # self.outputs = xnor_gemm(self.inputs, weight_matrix) + b # TODO
 
             self.outputs = self._apply_activation(self.outputs)
 
         self._add_layers(self.outputs)
         if b_init is not None:
-            self._add_params([W, b])
+            self._add_params([weight_matrix, b])
         else:
-            self._add_params(W)
+            self._add_params(weight_matrix)

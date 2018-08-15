@@ -89,20 +89,20 @@ class DropconnectDenseLayer(Layer):
         self.n_units = n_units
 
         with tf.variable_scope(name):
-            W = self._get_tf_variable(
+            weight_matrix = self._get_tf_variable(
                 name='W', shape=(n_in, n_units), initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
             b = self._get_tf_variable(
                 name='b', shape=(n_units), initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args
             )
-            # self.outputs = tf.matmul(self.inputs, W) + b
+            # self.outputs = tf.matmul(self.inputs, weight_matrix) + b
 
             LayersConfig.set_keep[name] = tf.placeholder(tf.float32)
 
-            W_dropcon = tf.nn.dropout(W, LayersConfig.set_keep[name])
+            W_dropcon = tf.nn.dropout(weight_matrix, LayersConfig.set_keep[name])
 
             self.outputs = self._apply_activation(tf.matmul(self.inputs, W_dropcon) + b)
 
         self.all_drop.update({LayersConfig.set_keep[name]: keep})
         self._add_layers(self.outputs)
-        self._add_params([W, b])
+        self._add_params([weight_matrix, b])

@@ -77,16 +77,16 @@ class BinaryDenseLayer(Layer):
         self.n_units = n_units
 
         with tf.variable_scope(name):
-            W = self._get_tf_variable(
+            weight_matrix = self._get_tf_variable(
                 name='W', shape=(n_in, n_units), initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
-            # W = tl.act.sign(W)    # dont update ...
-            W = quantize(W)
-            # W = tf.Variable(W)
-            # print(W)
+            # weight_matrix = tl.act.sign(weight_matrix)    # dont update ...
+            weight_matrix = quantize(weight_matrix)
+            # weight_matrix = tf.Variable(weight_matrix)
+            # print(weight_matrix)
 
-            self.outputs = tf.matmul(self.inputs, W)
-            # self.outputs = xnor_gemm(self.inputs, W) # TODO
+            self.outputs = tf.matmul(self.inputs, weight_matrix)
+            # self.outputs = xnor_gemm(self.inputs, weight_matrix) # TODO
 
             if b_init is not None:
                 try:
@@ -104,6 +104,6 @@ class BinaryDenseLayer(Layer):
         self._add_layers(self.outputs)
 
         if b_init is not None:
-            self._add_params([W, b])
+            self._add_params([weight_matrix, b])
         else:
-            self._add_params(W)
+            self._add_params(weight_matrix)
