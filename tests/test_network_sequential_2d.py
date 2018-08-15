@@ -97,6 +97,15 @@ class Network_Sequential_Test(CustomTestCase):
                     name='binary_conv2d_layer_9'
                 )
             )
+            '''
+            def deformable_conv_layer():
+                offset_conv_layer = tl.layers.Conv2d(18, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='offset2')
+                deformable_conv = tl.layers.DeformableConv2d(
+                    offset_conv_layer, 64, (3, 3), act=tf.nn.relu, name='deformable2'
+                )
+
+                return deformable_conv
+            '''
 
             cls.model.add(
                 tl.layers.DepthwiseConv2d(
@@ -189,6 +198,20 @@ class Network_Sequential_Test(CustomTestCase):
                 )
             )
 
+            cls.model.add(
+                tl.layers.Conv2d(
+                    n_filter=4, filter_size=(5, 5), strides=(1, 1), padding='SAME', act=tf.nn.relu,
+                    name='conv1d_layer_23'
+                )
+            )
+
+            cls.model.add(
+                tl.layers.Conv2d(
+                    n_filter=8, filter_size=(5, 5), strides=(1, 1), padding='SAME', b_init=None, act=None,
+                    name='conv1d_layer_24'
+                )
+            )
+
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
@@ -198,13 +221,13 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(len(self.model.all_drop), 0)
 
     def test_count_params(self):
-        self.assertEqual(self.model.count_params(), 127473)
+        self.assertEqual(self.model.count_params(), 129077)
 
     def test_count_param_tensors(self):
-        self.assertEqual(len(self.model.get_all_params()), 45)
+        self.assertEqual(len(self.model.get_all_params()), 48)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 34)
+        self.assertEqual(self.model.count_layers(), 36)
 
     def test_network_dtype(self):
 
@@ -276,6 +299,10 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model["quantizedconv2d_layer_21"].outputs.shape, (100, 32, 32, 16))
 
         self.assertEqual(self.model["quantizedconv2d_layer_22"].outputs.shape, (100, 32, 32, 8))
+
+        self.assertEqual(self.model["conv1d_layer_23"].outputs.shape, (100, 32, 32, 4))
+
+        self.assertEqual(self.model["conv1d_layer_24"].outputs.shape, (100, 32, 32, 8))
 
 
 if __name__ == '__main__':
