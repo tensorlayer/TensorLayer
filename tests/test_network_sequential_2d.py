@@ -201,14 +201,14 @@ class Network_Sequential_Test(CustomTestCase):
             cls.model.add(
                 tl.layers.Conv2d(
                     n_filter=4, filter_size=(5, 5), strides=(1, 1), padding='SAME', act=tf.nn.relu,
-                    name='conv1d_layer_23'
+                    name='conv2d_layer_23'
                 )
             )
 
             cls.model.add(
                 tl.layers.Conv2d(
-                    n_filter=8, filter_size=(5, 5), strides=(1, 1), padding='SAME', b_init=None, act=None,
-                    name='conv1d_layer_24'
+                    n_filter=8, filter_size=(5, 5), strides=(1, 1), padding='SAME', b_init=None, act=tf.nn.relu,
+                    name='conv2d_layer_24'
                 )
             )
 
@@ -300,9 +300,9 @@ class Network_Sequential_Test(CustomTestCase):
 
         self.assertEqual(self.model["quantizedconv2d_layer_22"].outputs.shape, (100, 32, 32, 8))
 
-        self.assertEqual(self.model["conv1d_layer_23"].outputs.shape, (100, 32, 32, 4))
+        self.assertEqual(self.model["conv2d_layer_23"].outputs.shape, (100, 32, 32, 4))
 
-        self.assertEqual(self.model["conv1d_layer_24"].outputs.shape, (100, 32, 32, 8))
+        self.assertEqual(self.model["conv2d_layer_24"].outputs.shape, (100, 32, 32, 8))
 
 
 if __name__ == '__main__':
