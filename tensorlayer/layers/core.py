@@ -440,7 +440,8 @@ class Layer(BaseLayer):
                     self.inputs.name,  # .split(':')[0],
                     {
                         'shape': self.inputs.get_shape().as_list(),
-                        'dtype': self.inputs.dtype.name, 'class': 'placeholder',
+                        'dtype': self.inputs.dtype.name,
+                        'class': 'placeholder',
                         'prev_layer': None
                     }
                 )
