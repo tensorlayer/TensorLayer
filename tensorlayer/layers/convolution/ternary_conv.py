@@ -76,81 +76,120 @@ class TernaryConv2d(Layer):
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
             n_filter=32,
             filter_size=(3, 3),
             strides=(1, 1),
-            act=None,
             padding='SAME',
+            data_format="NHWC",
+            use_cudnn_on_gpu=True,
             gemmlowp_at_inference=False,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            use_cudnn_on_gpu=True,
-            data_format=None,
-            # act=None,
-            # shape=(5, 5, 1, 100),
-            # strides=(1, 1, 1, 1),
-            # padding='SAME',
-            # W_init=tf.truncated_normal_initializer(stddev=0.02),
-            # b_init=tf.constant_initializer(value=0.0),
-            # W_init_args=None,
-            # b_init_args=None,
-            # use_cudnn_on_gpu=True,
-            # data_format=None,
+            act=None,
             name='ternary_conv2d',
     ):
-        super(TernaryConv2d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
-        logging.info(
-            "TernaryConv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
-                self.name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
-            )
-        )
+        if data_format not in ["NHWC", "NCHW"]:
+            raise ValueError("`data_format` value is not valid, should be either: 'NHWC' or 'NCHW'")
+
+        if padding.lower() not in ["same", "valid"]:
+            raise ValueError("`padding` value is not valid, should be either: 'same' or 'valid'")
 
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2.")
 
+        # TODO: Implement GEMM
         if gemmlowp_at_inference:
             raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
+        self.prev_layer = prev_layer
+        self.n_filter = n_filter
+        self.filter_size = filter_size
+        self.strides = strides
+        self.padding = padding
+        self.data_format = data_format
+        self.use_cudnn_on_gpu = use_cudnn_on_gpu
+        self.gemmlowp_at_inference = gemmlowp_at_inference
+        self.data_format = data_format
+        self.W_init = W_init
+        self.b_init = b_init
+        self.act = act
+        self.name = name
+
+        super(TernaryConv2d, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+
+    def __str__(self):
+        additional_str = []
+
         try:
-            input_channels = int(prev_layer.outputs.get_shape()[-1])
+            additional_str.append("n_filter: %d" % self.n_filter)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("filter_size: %s" % str(self.filter_size))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("stride: %s" % str(self.strides))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        super(TernaryConv2d, self).__call__(prev_layer)
+
+        try:
+            input_channels = int(self.inputs.get_shape()[-1])
+
         except TypeError:  # if input_channels is ?, it happens when using Spatial Transformer Net
             input_channels = 1
             logging.warning("unknow input channels, set to 1")
 
-        shape = (filter_size[0], filter_size[1], input_channels, n_filter)
-        strides = (1, strides[0], strides[1], 1)
+        shape = (self.filter_size[0], self.filter_size[1], input_channels, self.n_filter)
+        strides = (1, self.strides[0], self.strides[1], 1)
 
-        with tf.variable_scope(name):
+        with tf.variable_scope(self.name):
 
-            W = self._get_tf_variable(
-                name='W_conv2d', shape=shape, initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
+            weight_matrix = self._get_tf_variable(
+                name='W_conv2d', shape=shape, initializer=self.W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
-            alpha = compute_alpha(W)
+            alpha = compute_alpha(weight_matrix)
 
-            W = ternary_operation(W)
-            W = tf.multiply(alpha, W)
+            weight_matrix = ternary_operation(weight_matrix)
+            weight_matrix = tf.multiply(alpha, weight_matrix)
 
             self.outputs = tf.nn.conv2d(
-                self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
-                data_format=data_format
+                self.inputs, weight_matrix, strides=strides, padding=self.padding,
+                use_cudnn_on_gpu=self.use_cudnn_on_gpu, data_format=self.data_format
             )
 
-            if b_init:
-
+            if self.b_init:
                 b = self._get_tf_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args
+                    name='b_conv2d', shape=(shape[-1]), initializer=self.b_init, dtype=self.inputs.dtype, **self.b_init_args
                 )
 
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self._add_layers(self.outputs)
-        self._add_params(self._local_weights)
+            self._add_layers(self.outputs)
+            self._add_params(self._local_weights)
