@@ -115,7 +115,7 @@ class DeformableConv2d(Layer):
     @private_method
     def _check_inputs(self, prev_layer, offset_layer):
 
-        if isinstance(prev_layer, tf.layers.Layer):
+        if isinstance(prev_layer, Layer):
 
             if offset_layer is None:
                 raise ValueError("`theta_layer` cannot be set to None")
@@ -134,8 +134,8 @@ class DeformableConv2d(Layer):
 
         super(DeformableConv2d, self).__call__(self._check_inputs(prev_layer, offset_layer))
 
-        input_layer = self.inputs[0].outputs
-        offset_layer = self.inputs[1].outputs
+        input_layer = self.inputs[0]
+        offset_layer = self.inputs[1]
 
         try:
             input_channels = int(input_layer.get_shape()[-1])
@@ -152,8 +152,8 @@ class DeformableConv2d(Layer):
                 raise AssertionError("offset_layer.get_shape()[-1] is not equal to: %d" % (2 * w_shape[0] * w_shape[1]))
 
             # Grid initialisation
-            input_h = int(self.inputs.get_shape()[1])
-            input_w = int(self.inputs.get_shape()[2])
+            input_h = int(input_layer.get_shape()[1])
+            input_w = int(input_layer.get_shape()[2])
 
             kernel_n = w_shape[0] * w_shape[1]
 
@@ -193,25 +193,25 @@ class DeformableConv2d(Layer):
             # grid_offset --> (h, w, n, 2)
             grid_offset = grid + initial_offsets
 
-            input_deform = self._tf_batch_map_offsets(self.inputs, offset_layer, grid_offset)
+            input_deform = self._tf_batch_map_offsets(input_layer, offset_layer, grid_offset)
 
             weight_matrix = self._get_tf_variable(
                 name='W_deformableconv2d', shape=(1, 1, w_shape[0] * w_shape[1], w_shape[-2], w_shape[-1]),
-                initializer=self.W_init, dtype=self.inputs.dtype, **self.W_init_args
+                initializer=self.W_init, dtype=input_layer.dtype, **self.W_init_args
             )
 
             _tensor = tf.nn.conv3d(input_deform, weight_matrix, strides=[1, 1, 1, 1, 1], padding='VALID', name=None)
 
             if self.b_init:
                 b = self._get_tf_variable(
-                    name='b_deformableconv2d', shape=(w_shape[-1]), initializer=self.b_init, dtype=self.inputs.dtype,
+                    name='b_deformableconv2d', shape=(w_shape[-1]), initializer=self.b_init, dtype=input_layer.dtype,
                     **self.b_init_args
                 )
 
                 _tensor = tf.nn.bias_add(_tensor, b, name='bias_add')
 
             self.outputs = tf.reshape(
-                tensor=self._apply_activation(_tensor), shape=[tf.shape(self.inputs)[0], input_h, input_w, w_shape[-1]]
+                tensor=self._apply_activation(_tensor), shape=[tf.shape(input_layer)[0], input_h, input_w, w_shape[-1]]
             )
 
         self._add_layers(self.outputs)

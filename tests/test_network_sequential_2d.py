@@ -72,15 +72,14 @@ class Network_Sequential_Test(CustomTestCase):
 
             cls.model.add(
                 tl.layers.AtrousDeConv2dLayer(
-                    shape=(3, 3, 32, 32), output_shape=(None, 64, 64, 32), rate=2, padding='SAME', act=tf.nn.relu,
-                    name='atrous_2d_transpose_6'
+                    shape=(3, 3, 32, 32), rate=2, padding='SAME', act=tf.nn.relu, name='atrous_2d_transpose_6'
                 )
             )
 
             cls.model.add(
                 tl.layers.AtrousDeConv2dLayer(
-                    shape=(3, 3, 32, 32), output_shape=(None, 128, 128, 32), rate=2, padding='SAME', b_init=None,
-                    act=tf.nn.relu, name='atrous_2d_transpose_7'
+                    shape=(3, 3, 32, 32), rate=2, padding='SAME', b_init=None, act=tf.nn.relu,
+                    name='atrous_2d_transpose_7'
                 )
             )
 
@@ -194,7 +193,7 @@ class Network_Sequential_Test(CustomTestCase):
             cls.model.add(
                 tl.layers.QuantizedConv2dWithBN(
                     n_filter=8, filter_size=(5, 5), strides=(1, 1), padding='SAME', bitW=1, bitA=3, decay=0.9,
-                    act=tf.nn.relu, name='quantizedconv2d_layer_22'
+                    act=tf.nn.relu, name='quantizedconv2dwithbn_layer_22'
                 )
             )
 
@@ -319,61 +318,61 @@ class Network_Sequential_Test(CustomTestCase):
 
         self.assertEqual(self.model["atrous_2d_layer_5"].outputs.shape, (100, 38, 38, 32))
 
-        self.assertEqual(self.model["atrous_2d_transpose_6"].outputs.shape, (100, 64, 64, 32))
+        self.assertEqual(self.model["atrous_2d_transpose_6"].outputs.shape, (100, 38, 38, 32))
 
-        self.assertEqual(self.model["atrous_2d_transpose_7"].outputs.shape, (100, 128, 128, 32))
+        self.assertEqual(self.model["atrous_2d_transpose_7"].outputs.shape, (100, 38, 38, 32))
 
-        self.assertEqual(self.model["binary_conv2d_layer_8"].outputs.shape, (100, 128, 128, 32))
+        self.assertEqual(self.model["binary_conv2d_layer_8"].outputs.shape, (100, 38, 38, 32))
 
-        self.assertEqual(self.model["binary_conv2d_layer_9"].outputs.shape, (100, 128, 128, 32))
+        self.assertEqual(self.model["binary_conv2d_layer_9"].outputs.shape, (100, 38, 38, 32))
 
-        self.assertEqual(self.model["depthwise_conv2d_layer_10"].outputs.shape, (100, 128, 128, 32))
+        self.assertEqual(self.model["depthwise_conv2d_layer_10"].outputs.shape, (100, 38, 38, 32))
 
-        self.assertEqual(self.model["depthwise_conv2d_layer_11"].outputs.shape, (100, 128, 128, 32))
+        self.assertEqual(self.model["depthwise_conv2d_layer_11"].outputs.shape, (100, 38, 38, 32))
 
-        self.assertEqual(self.model["dorefa_conv2d_layer_12"].outputs.shape, (100, 128, 128, 32))
+        self.assertEqual(self.model["dorefa_conv2d_layer_12"].outputs.shape, (100, 38, 38, 32))
 
-        self.assertEqual(self.model["dorefa_conv2d_layer_13"].outputs.shape, (100, 128, 128, 32))
+        self.assertEqual(self.model["dorefa_conv2d_layer_13"].outputs.shape, (100, 38, 38, 32))
 
-        self.assertEqual(self.model["expert_conv2d_layer_14"].outputs.shape, (100, 128, 128, 16))
+        self.assertEqual(self.model["expert_conv2d_layer_14"].outputs.shape, (100, 38, 38, 16))
 
-        self.assertEqual(self.model["expert_conv2d_layer_15"].outputs.shape, (100, 128, 128, 8))
+        self.assertEqual(self.model["expert_conv2d_layer_15"].outputs.shape, (100, 38, 38, 8))
 
-        self.assertEqual(self.model["expert_deconv2d_layer_16"].outputs.shape, (100, 128, 128, 8))
+        self.assertEqual(self.model["expert_deconv2d_layer_16"].outputs.shape, (100, 75, 75, 8))
 
-        self.assertEqual(self.model["expert_deconv2d_layer_17"].outputs.shape, (100, 128, 128, 8))
+        self.assertEqual(self.model["expert_deconv2d_layer_17"].outputs.shape, (100, 149, 149, 8))
 
-        self.assertEqual(self.model["groupconv2d_layer_18"].outputs.shape, (100, 64, 64, 32))
+        self.assertEqual(self.model["groupconv2d_layer_18"].outputs.shape, (100, 75, 75, 32))
 
-        self.assertEqual(self.model["groupconv2d_layer_19"].outputs.shape, (100, 32, 32, 16))
+        self.assertEqual(self.model["groupconv2d_layer_19"].outputs.shape, (100, 38, 38, 16))
 
-        self.assertEqual(self.model["quantizedconv2d_layer_20"].outputs.shape, (100, 32, 32, 8))
+        self.assertEqual(self.model["quantizedconv2d_layer_20"].outputs.shape, (100, 38, 38, 8))
 
-        self.assertEqual(self.model["quantizedconv2d_layer_21"].outputs.shape, (100, 32, 32, 16))
+        self.assertEqual(self.model["quantizedconv2d_layer_21"].outputs.shape, (100, 38, 38, 16))
 
-        self.assertEqual(self.model["quantizedconv2d_layer_22"].outputs.shape, (100, 32, 32, 8))
+        self.assertEqual(self.model["quantizedconv2dwithbn_layer_22"].outputs.shape, (100, 38, 38, 8))
 
-        self.assertEqual(self.model["conv2d_layer_23"].outputs.shape, (100, 32, 32, 4))
+        self.assertEqual(self.model["conv2d_layer_23"].outputs.shape, (100, 38, 38, 4))
 
-        self.assertEqual(self.model["conv2d_layer_24"].outputs.shape, (100, 32, 32, 8))
+        self.assertEqual(self.model["conv2d_layer_24"].outputs.shape, (100, 38, 38, 8))
 
-        self.assertEqual(self.model["deconv2d_layer_25"].outputs.shape, (100, 32, 32, 4))
+        self.assertEqual(self.model["deconv2d_layer_25"].outputs.shape, (100, 38, 38, 4))
 
-        self.assertEqual(self.model["deconv2d_layer_26"].outputs.shape, (100, 32, 32, 8))
+        self.assertEqual(self.model["deconv2d_layer_26"].outputs.shape, (100, 38, 38, 8))
 
-        self.assertEqual(self.model["subpixelconv2d_layer_27"].outputs.shape, (100, 64, 64, 2))
+        self.assertEqual(self.model["subpixelconv2d_layer_27"].outputs.shape, (100, 76, 76, 2))
 
-        self.assertEqual(self.model["conv2d_layer_28"].outputs.shape, (100, 32, 32, 8))
+        self.assertEqual(self.model["conv2d_layer_28"].outputs.shape, (100, 38, 38, 8))
 
-        self.assertEqual(self.model["subpixelconv2d_layer_29"].outputs.shape, (100, 64, 64, 2))
+        self.assertEqual(self.model["subpixelconv2d_layer_29"].outputs.shape, (100, 76, 76, 2))
 
-        self.assertEqual(self.model["ternaryconv2d_layer_30"].outputs.shape, (100, 64, 64, 4))
+        self.assertEqual(self.model["ternaryconv2d_layer_30"].outputs.shape, (100, 76, 76, 4))
 
-        self.assertEqual(self.model["ternaryconv2d_layer_31"].outputs.shape, (100, 64, 64, 8))
+        self.assertEqual(self.model["ternaryconv2d_layer_31"].outputs.shape, (100, 76, 76, 8))
 
-        self.assertEqual(self.model["separableconv2d_layer_32"].outputs.shape, (100, 64, 64, 4))
+        self.assertEqual(self.model["separableconv2d_layer_32"].outputs.shape, (100, 76, 76, 4))
 
-        self.assertEqual(self.model["separableconv2d_layer_33"].outputs.shape, (100, 64, 64, 8))
+        self.assertEqual(self.model["separableconv2d_layer_33"].outputs.shape, (100, 76, 76, 8))
 
 
 if __name__ == '__main__':
