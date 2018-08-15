@@ -78,8 +78,9 @@ class Conv1d(Layer):
         if data_format not in ["channels_last", "channels_first"]:
             raise ValueError("`data_format` value is not valid, should be either: 'channels_last' or 'channels_first'")
 
-        if padding.lower() not in ["same", "valid"]:
-            raise ValueError("`padding` value is not valid, should be either: 'same' or 'valid'")
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
 
         self.prev_layer = prev_layer
         self.n_filter = n_filter
@@ -228,8 +229,9 @@ class Conv2d(Layer):
         if data_format not in ["channels_last", "channels_first"]:
             raise ValueError("`data_format` value is not valid, should be either: 'channels_last' or 'channels_first'")
 
-        if padding.lower() not in ["same", "valid"]:
-            raise ValueError("`padding` value is not valid, should be either: 'same' or 'valid'")
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
 
         self.prev_layer = prev_layer
         self.n_filter = n_filter

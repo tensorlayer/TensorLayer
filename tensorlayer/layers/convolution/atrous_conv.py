@@ -5,6 +5,8 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
+from tensorlayer.layers.utils import calculate_output_shape
+
 from tensorlayer.layers.convolution.expert_conv import Conv1dLayer
 
 from tensorlayer.decorators import deprecated_alias
@@ -128,6 +130,10 @@ class AtrousConv2dLayer(Layer):
             W_init_args=None, b_init_args=None, act=None, name='atrous_2d'
     ):
 
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
+
         self.prev_layer = prev_layer
         self.n_filter = n_filter
         self.filter_size = filter_size
@@ -235,14 +241,17 @@ class AtrousDeConv2dLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self, prev_layer=None, shape=(3, 3, 128, 256), output_shape=(1, 64, 64, 128), rate=2, padding='SAME',
+            self, prev_layer=None, shape=(3, 3, 128, 256), rate=2, padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
             W_init_args=None, b_init_args=None, act=None, name='atrous_2d_transpose'
     ):
 
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
+
         self.prev_layer = prev_layer
         self.shape = shape
-        self.output_shape = output_shape
         self.rate = rate
         self.padding = padding
         self.W_init = W_init
@@ -293,15 +302,13 @@ class AtrousDeConv2dLayer(Layer):
                 **self.W_init_args
             )
 
-            try:
-                batch_size = int(self.inputs.get_shape()[0])
-            except TypeError:
-                batch_size = None
-
-            deconv_shape = [batch_size] + list(self.output_shape[1:])
+            self.out_shape = calculate_output_shape(
+                self.inputs, self.shape[0], self.shape[1], 1, 1, self.shape[2], padding=self.padding,
+                data_format="NHWC"
+            )
 
             self.outputs = tf.nn.atrous_conv2d_transpose(
-                self.inputs, filters=weight_matrix, output_shape=deconv_shape, rate=self.rate, padding=self.padding
+                self.inputs, filters=weight_matrix, output_shape=self.out_shape, rate=self.rate, padding=self.padding
             )
 
             if self.b_init:
@@ -313,7 +320,7 @@ class AtrousDeConv2dLayer(Layer):
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
-            self.out_shape = self.outputs.shape
+            #self.out_shape = self.outputs.shape
 
         super(AtrousDeConv2dLayer, self).__call__(prev_layer)
 

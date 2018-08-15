@@ -100,6 +100,10 @@ class QuantizedConv2d(Layer):
             name='quantized_conv2d',
     ):
 
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
+
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2.")
 

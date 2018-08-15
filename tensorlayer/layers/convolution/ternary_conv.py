@@ -95,8 +95,9 @@ class TernaryConv2d(Layer):
         if data_format not in ["NHWC", "NCHW"]:
             raise ValueError("`data_format` value is not valid, should be either: 'NHWC' or 'NCHW'")
 
-        if padding.lower() not in ["same", "valid"]:
-            raise ValueError("`padding` value is not valid, should be either: 'same' or 'valid'")
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
 
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2.")

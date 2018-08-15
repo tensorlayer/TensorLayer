@@ -94,6 +94,10 @@ class BinaryConv2d(Layer):
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2.")
 
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
+
         if data_format not in ["NHWC", "NCHW"]:
             raise ValueError("`data_format` value is not valid, should be either: 'NHWC' or 'NCHW'")
 

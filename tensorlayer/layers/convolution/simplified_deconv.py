@@ -73,8 +73,9 @@ class DeConv2d(Layer):
         if data_format not in ["channels_last", "channels_first"]:
             raise ValueError("`data_format` value is not valid, should be either: 'channels_last' or 'channels_first'")
 
-        if padding.lower() not in ["same", "valid"]:
-            raise ValueError("`padding` value is not valid, should be either: 'same' or 'valid'")
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
 
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2, DeConv2d and DeConv2dLayer are different.")
@@ -198,8 +199,9 @@ class DeConv3d(Layer):
         if data_format not in ["channels_last", "channels_first"]:
             raise ValueError("`data_format` value is not valid, should be either: 'channels_last' or 'channels_first'")
 
-        if padding.lower() not in ["same", "valid"]:
-            raise ValueError("`padding` value is not valid, should be either: 'same' or 'valid'")
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
 
         self.prev_layer = prev_layer
         self.n_filter = n_filter

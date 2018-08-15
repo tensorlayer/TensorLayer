@@ -93,6 +93,10 @@ class DepthwiseConv2d(Layer):
             name='depthwise_conv2d',
     ):
 
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
+
         if len(strides) == 2:
             strides = [1, strides[0], strides[1], 1]
 

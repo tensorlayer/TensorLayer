@@ -128,6 +128,10 @@ class QuantizedConv2dWithBN(Layer):
             name='quantized_conv2d',
     ):
 
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
+
         if len(filter_size) != 2:
             raise ValueError("len(filter_size) should be 2.")
 
