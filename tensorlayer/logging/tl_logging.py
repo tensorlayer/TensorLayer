@@ -284,9 +284,14 @@ def temp_handler(header):
     else:
         _logging_target = _sys.stderr
 
-    old_handler = logger.handlers[0]
+    try:
+        old_handler = logger.handlers[0]
+    except IndexError:
+        old_handler = None
+
 
     try:
+
         for handler in logger.handlers:
             logger.removeHandler(handler)
 
@@ -299,7 +304,8 @@ def temp_handler(header):
         for handler in logger.handlers:
             logger.removeHandler(handler)
 
-        logger.addHandler(old_handler)
+        if old_handler is not None:
+            logger.addHandler(old_handler)
 
 
 def _get_thread_id():
