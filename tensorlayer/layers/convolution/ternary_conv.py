@@ -4,7 +4,6 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
 
 from tensorlayer.layers.utils import compute_alpha
 from tensorlayer.layers.utils import ternary_operation
@@ -12,6 +11,7 @@ from tensorlayer.layers.utils import ternary_operation
 from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
 
 __all__ = ['TernaryConv2d']
 
