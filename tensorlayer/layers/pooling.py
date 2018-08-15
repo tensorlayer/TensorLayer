@@ -23,6 +23,7 @@ __all__ = [
     'GlobalMeanPool2d',
     'GlobalMaxPool3d',
     'GlobalMeanPool3d',
+    'CornerPool',
 ]
 
 
@@ -518,4 +519,59 @@ class GlobalMeanPool3d(Layer):
 
         self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2, 3], name=name)
 
+        self._add_layers(self.outputs)
+
+class CornerPool2d(Layer):
+    """The :class:`CornerPool2d` class is 2D corner pool, see `here <https://arxiv.org/abs/1808.01244/>`__.
+
+    Parameters
+    --------------
+    prev_layer : :class:`Layer`
+        Previous layer.
+    filter_size : int
+        The filter size.
+    mode:str
+        TopLeft for the top left corner,
+        Bottomright for the bottom right corner.
+    name : str
+        A unique layer name.
+
+    Examples
+    ---------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
+    >>> x = tf.placeholder("float32", [None, 100, 100, 30])
+    >>> n = tl.layers.InputLayer(x, name='in')
+    >>> n = tl.layers.CornerPool2d(n,(3,3),'TopLeft',name='cornerpool2d')
+    [None, 100, 100, 30]
+    """
+
+
+    def __init__(
+        self,
+        prev_layer = None,
+        filter_size=(3,3),
+        mode='TopLeft',
+        name ='cornerpool_layer2d',
+    ):
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        logging.info(
+            "CornerPool %s: filter_size: %s Mode: %s" %
+            (self.name, str(filter_size), str(mode))
+        )
+        self.inputs = prev_layer.outputs
+        if mode=='TopLeft':
+            temp_bottom=tf.keras.layers.ZeroPadding2D(padding=((0, filter_size[0]-1), (0,  0)))(self.inputs)
+            temp_right=tf.keras.layers.ZeroPadding2D(padding=((0,0), (0,  filter_size[1]-1)))(self.inputs)
+            temp_bottom=tf.layers.max_pooling2d(temp_bottom, (filter_size[0],1), (1,1), padding='valid', data_format='channels_last')
+            temp_right=tf.layers.max_pooling2d(temp_right, (1,filter_size[1]), (1,1), padding='valid', data_format='channels_last')
+            self.outputs=tf.add(temp_bottom,temp_right,name=name)
+        elif mode=='BottomRight':
+            temp_top=tf.keras.layers.ZeroPadding2D(padding=((filter_size[0]-1,0), (0,0)))(self.inputs)
+            temp_left=tf.keras.layers.ZeroPadding2D(padding=((0,0), (filter_size[1]-1,0)))(self.inputs)
+            temp_top=tf.layers.max_pooling2d(temp_top, (filter_size[0],1), (1,1), padding='valid', data_format='channels_last')
+            temp_left=tf.layers.max_pooling2d(temp_left, (1,filter_size[1]), (1,1), padding='valid', data_format='channels_last')
+            self.outputs=tf.add(temp_top,temp_left,name=name)
+        else:
+            raise AssertionError("Mode should be of 'BottomRight'and'TopLeft' ")
         self._add_layers(self.outputs)

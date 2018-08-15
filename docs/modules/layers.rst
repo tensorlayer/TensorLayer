@@ -186,6 +186,7 @@ Layer list
    GlobalMeanPool2d
    GlobalMaxPool3d
    GlobalMeanPool3d
+   CornerPool2d
 
    SubpixelConv1d
    SubpixelConv2d
@@ -770,6 +771,10 @@ Pooling layer for any dimensions and any pooling functions.
 3D Global Mean pooling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: GlobalMeanPool3d
+
+2D Corner pooling
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: CornerPool2d
 
 .. -----------------------------------------------------------
 ..                    Quantized Layers
