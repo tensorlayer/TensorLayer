@@ -30,6 +30,9 @@ from skimage.morphology import binary_erosion as _binary_erosion
 from six.moves import range
 
 import PIL
+import cv2 #TODO Remove
+import math
+import random
 
 # linalg https://docs.scipy.org/doc/scipy/reference/linalg.html
 # ndimage https://docs.scipy.org/doc/scipy/reference/ndimage.html
@@ -3434,6 +3437,7 @@ def resize_image(image,annos,mask,_target_width,_target_height):
     return new_image,annos,new_mask
 
 def _rotate_coord(shape, newxy, point, angle):
+
     angle = -1 * angle / 180.0 * math.pi
 
     ox, oy = shape
@@ -3497,7 +3501,7 @@ def keypoints_rotation(image,annos,mask):
     img_shape=np.shape(image)
     height  = img_shape[0]
     width   = img_shape[1]
-    deg = random.uniform(-15.0, 15.0)
+    deg = np.random.uniform(-15.0, 15.0)
 
     img = image
     center = (img.shape[1] * 0.5, img.shape[0] * 0.5)       # x, y
@@ -3565,7 +3569,7 @@ def keypoint_random_flip(image,annos,mask_miss):
 
         """
     flip_list=[0, 1, 5, 6, 7, 2, 3, 4, 11, 12, 13, 8, 9, 10, 15, 14, 17, 16, 18]
-    prob = random.uniform(0, 1.0)
+    prob = np.random.uniform(0, 1.0)
     if prob > 0.5:
         return image,annos,mask_miss
 
@@ -3658,7 +3662,7 @@ def keypoint_resize_shortestedge_random(image,annos, mask):
     ratio_h = _target_height / height
     ratio = min(ratio_w, ratio_h)
     target_size = int(min(width * ratio + 0.5, height * ratio + 0.5))
-    random_target=random.uniform(0.95, 1.6)
+    random_target=np.random.uniform(0.95, 1.6)
     target_size = int(target_size * random_target)
     # target_size = int(min(_network_w, _network_h) * random.uniform(0.7, 1.5))
 

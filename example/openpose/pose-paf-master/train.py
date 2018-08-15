@@ -17,15 +17,15 @@ Visualize Caffe model : http://ethereon.github.io/netscope/#/editor
 
 import numpy as np
 import tensorflow as tf
+import tensorlayer as tl
 import argparse
 import cv2
-import tensorlayer as tl
 from vgg_model import model
+from tensorlayer.prepro import keypoints_rotation,keypoint_resize_shortestedge_random,keypoint_random_scale,keypoint_random_flip,keypoint_crop_random
 import time
 import _pickle as cPickle
-from data_process import PoseInfo
+from utils import PoseInfo, get_heatmap, get_vectormap
 from tf_data_aug import _resize_image,pose_rotation,random_flip,pose_resize_shortestedge_random,pose_crop_random,pose_random_scale
-from faster_map_cal import get_vectormap, get_heatmap
 from pycocotools.coco import maskUtils
 import os
 
@@ -38,10 +38,11 @@ os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
-data_dir = '/home/hao/Workspace/yuding/coco_dataset'
-data_type = 'train'
-anno_path = '{}/annotations/person_keypoints_{}2014.json'.format(data_dir, data_type)
-df_val = PoseInfo(data_dir, data_type, anno_path)
+data_dir = '/Users/Joel/Desktop/coco'
+image_path= '{}/images/{}/'.format(data_dir,'val2014')
+anno_path = '{}/annotations/{}'.format(data_dir,'person_keypoints_val2014.json')
+
+df_val = PoseInfo(image_path, anno_path)
 
 imgs_file_list= df_val.get_image_list()
 objs_info_list=df_val.get_joint_list()
@@ -70,11 +71,11 @@ def _data_aug_fn(image, ground_truth):
 
     # image process
 
-    image, annos, mask_miss = pose_random_scale(image, annos, mask_miss)
-    image, annos, mask_miss = pose_rotation(image, annos, mask_miss)
-    image, annos, mask_miss = random_flip(image, annos, mask_miss)
-    image, annos, mask_miss = pose_resize_shortestedge_random(image, annos, mask_miss)
-    image, annos, mask_miss = pose_crop_random(image, annos, mask_miss)
+    image, annos, mask_miss = keypoint_random_scale(image, annos, mask_miss)
+    image, annos, mask_miss = keypoints_rotation(image, annos, mask_miss)
+    image, annos, mask_miss = keypoint_random_flip(image, annos, mask_miss)
+    image, annos, mask_miss = keypoint_resize_shortestedge_random(image, annos, mask_miss)
+    image, annos, mask_miss = keypoint_crop_random(image, annos, mask_miss)
 
     h,w,_=np.shape(image)
     if h != 368 or w != 368:
@@ -107,7 +108,7 @@ def _map_fn(img_list, annos):
 # MPII 16  COCO 19
 n_pos = 19
 n_epoch = 80
-batch_size = 10
+batch_size = 2
 # learning_rate = 0.00001  # reduce it if your GPU memory is small
 
 x = tf.placeholder(tf.float32, [None, 368, 368, 3], "image")  # for tl.models.MobileNetV1, value [0, 1]; for VGG19 value [0, 255]
@@ -122,11 +123,11 @@ num_images=np.shape(imgs_file_list)[0]
 cnn, b1_list, b2_list, net = model(x, n_pos,img_mask1,img_mask2, False, False)
 
 dataset = tf.data.Dataset().from_generator(generator, output_types=(tf.string, tf.string))
-dataset = dataset.map(_map_fn,num_parallel_calls=4)
+dataset = dataset.map(_map_fn,num_parallel_calls=1)
 #顺序可能会有尾巴
 dataset = dataset.repeat(n_epoch)
 dataset = dataset.batch(batch_size)
-dataset = dataset.prefetch(buffer_size=8)
+dataset = dataset.prefetch(buffer_size=2)
 iterator = dataset.make_one_shot_iterator()
 one_element = iterator.get_next()
 
@@ -169,7 +170,7 @@ config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=False)
 with tf.Session(config=config) as sess:
     sess.run(tf.global_variables_initializer())
 
-    MODEL_PATH = '/home/hao/Workspace/yuding/pretrain_vgg/vgg19.npy'
+    MODEL_PATH = '/Users/Joel/Desktop/TRAINNING_LOG/vgg19.npy'
     npy_file = np.load(MODEL_PATH, encoding='latin1').item()
     params = []
     for val in sorted(npy_file.items()):
@@ -206,6 +207,7 @@ with tf.Session(config=config) as sess:
 
         [_, the_loss, loss_ll,L2_reg,conf_result,weight_norm,paf_result] = sess.run([train_op, total_loss, stage_losses,L2,last_conf,L2, last_paf],
                                           feed_dict={x: x_, confs: confs_, pafs: pafs_,img_mask1:mask1,img_mask2:mask2})
+
         lr=sess.run(lr_v)
         tstring=time.strftime('%d-%m %H:%M:%S', time.localtime(time.time()))
         print('Total Loss at iteration {} is: {} Learning rate {:10e} weight_norm {:10e} Time: {}'.format(gs_num,the_loss,lr,weight_norm,tstring))
@@ -216,12 +218,6 @@ with tf.Session(config=config) as sess:
         if gs_num!=0 and gs_num % args.save_interval == 0:
             ticks = time.time()
             print('Saved time:',ticks)
-            np.save('/home/hao/Workspace/yuding/pose-paf-master/val/image' + str(gs_num) + '.npy', x_)
-            np.save('/home/hao/Workspace/yuding/pose-paf-master/val/heat_ground' + str(gs_num) + '.npy', confs_)
-            np.save('/home/hao/Workspace/yuding/pose-paf-master/val/heat_result' + str(gs_num) + '.npy', conf_result)
-            np.save('/home/hao/Workspace/yuding/pose-paf-master/val/paf_ground' + str(gs_num) + '.npy', pafs_)
-            np.save('/home/hao/Workspace/yuding/pose-paf-master/val/mask' + str(gs_num) + '.npy', mask)
-            np.save('/home/hao/Workspace/yuding/pose-paf-master/val/paf_result' + str(gs_num) + '.npy', paf_result)
-            tl.files.save_npz_dict(net.all_params, '/home/hao/Workspace/yuding/pose-paf-master/model/inf_model' + str(gs_num) + '.npz', sess=sess)
+            tl.files.save_npz_dict(net.all_params, '/Users/Joel/Desktop/Log_1508/model/inf_model' + str(gs_num) + '.npz', sess=sess)
         if gs_num > 3000001:
             break
