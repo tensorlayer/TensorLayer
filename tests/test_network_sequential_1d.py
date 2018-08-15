@@ -117,6 +117,8 @@ class Network_Sequential_Test(CustomTestCase):
                 )
             )
 
+            cls.model.add(tl.layers.SubpixelConv1d(scale=2, name='subpixelconv1d_layer_17'))
+
             plh = tf.placeholder(tf.float16, (100, 32))
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
@@ -132,7 +134,7 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(len(self.model.get_all_params()), 43)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 41)
+        self.assertEqual(self.model.count_layers(), 42)
 
     def test_network_dtype(self):
 
@@ -205,6 +207,8 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model["conv1d_layer_15"].outputs.shape, (100, 271, 12))
 
         self.assertEqual(self.model["conv1d_layer_16"].outputs.shape, (100, 271, 8))
+
+        self.assertEqual(self.model["subpixelconv1d_layer_17"].outputs.shape, (100, 542, 4))
 
 
 if __name__ == '__main__':
