@@ -23,7 +23,7 @@ __all__ = [
     'GlobalMeanPool2d',
     'GlobalMaxPool3d',
     'GlobalMeanPool3d',
-    'CornerPool',
+    'CornerPool2d',
 ]
 
 
