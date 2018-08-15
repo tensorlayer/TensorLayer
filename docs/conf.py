@@ -86,6 +86,9 @@ autodoc_mock_imports = [
     'sklearn',
     'tensorflow',
     'tqdm',
+
+    # TL C++ Packages
+    'tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

@@ -49,7 +49,7 @@ def model(x, y_, reuse):
 
 
 def model_batch_norm(x, y_, reuse, is_train):
-    """ Batch normalization should be placed before rectifier. """
+    """Batch normalization should be placed before rectifier."""
     W_init = tf.truncated_normal_initializer(stddev=5e-2)
     W_init2 = tf.truncated_normal_initializer(stddev=0.04)
     b_init2 = tf.constant_initializer(value=0.1)
@@ -114,10 +114,10 @@ def distort_fn(x, is_train=False):
 x = tf.placeholder(dtype=tf.float32, shape=[None, 24, 24, 3], name='x')
 y_ = tf.placeholder(dtype=tf.int64, shape=[None], name='y_')
 
-## using local response normalization
+# using local response normalization
 # network, cost, _ = model(x, y_, False)
 # _, cost_test, acc = model(x, y_, True)
-## you may want to try batch normalization
+# you may want to try batch normalization
 network, cost, _ = model_batch_norm(x, y_, False, is_train=True)
 _, cost_test, acc = model_batch_norm(x, y_, True, is_train=False)
 

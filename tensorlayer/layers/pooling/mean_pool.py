@@ -35,13 +35,7 @@ class MeanPool1d(Layer):
         A unique layer name.
 
     """
-    # logging.info("MeanPool1d %s: filter_size: %s strides: %s padding: %s" % (self.name, str(filter_size), str(strides), str(padding)))
-    # outputs = tf.layers.average_pooling1d(prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
-    #
-    # net_new = copy.copy(prev_layer)
-    # net_new.outputs = outputs
-    # net_new.all_layers.extend([outputs])
-    # return net_new
+
     @deprecated_alias(net='prev_layer', end_support_version="2.0.0")  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self, prev_layer, filter_size=3, strides=2, padding='valid', data_format='channels_last', name='meanpool1d'

@@ -88,20 +88,18 @@ def initialize_rnn_state(state, feed_dict=None):
         The TensorFlow's RNN state.
 
     """
-
     if isinstance(state, LSTMStateTuple):
         c = state.c.eval(feed_dict=feed_dict)
         h = state.h.eval(feed_dict=feed_dict)
         return c, h
+
     else:
         new_state = state.eval(feed_dict=feed_dict)
         return new_state
 
 
 def target_mask_op(data, pad_val=0):  # HangSheng: return tensor for mask,if input is tf.string
-    """Return tensor for mask, if input is ``tf.string``.
-
-    """
+    """Return tensor for mask, if input is ``tf.string``."""
     data_shape_size = data.get_shape().ndims
     if data_shape_size == 3:
         return tf.cast(tf.reduce_any(tf.not_equal(data, pad_val), axis=2), dtype=tf.int32)
@@ -233,9 +231,7 @@ def retrieve_seq_length_op2(data):
 
 
 def retrieve_seq_length_op3(data, pad_val=0):  # HangSheng: return tensor for sequence length, if input is tf.string
-    """Return tensor for sequence length, if input is ``tf.string``.
-
-    """
+    """Return tensor for sequence length, if input is ``tf.string``."""
     data_shape_size = data.get_shape().ndims
     if data_shape_size == 3:
         return tf.reduce_sum(tf.cast(tf.reduce_any(tf.not_equal(data, pad_val), axis=2), dtype=tf.int32), 1)

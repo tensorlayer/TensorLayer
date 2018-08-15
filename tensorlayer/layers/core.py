@@ -69,7 +69,6 @@ class BaseLayer(object):
 
     Examples
     ---------
-
     - Define model
 
     >>> import tensorflow as tf
@@ -142,8 +141,7 @@ class BaseLayer(object):
         logging.info("  num of params: %d" % self.count_params())
 
     def print_layers(self):
-        """Print all info of layers in the network"""
-
+        """Print all info of layers in the network."""
         for i, layer in enumerate(self.all_layers):
             # logging.info("  layer %d: %s" % (i, str(layer)))
             logging.info(
@@ -151,7 +149,7 @@ class BaseLayer(object):
             )
 
     def count_params(self):
-        """Returns the number of parameters in the network"""
+        """Returns the number of parameters in the network."""
         n_params = 0
         for _i, p in enumerate(self.all_params):
             n = 1
@@ -167,7 +165,7 @@ class BaseLayer(object):
         return n_params
 
     def get_all_params(self, session=None):
-        """Return the parameters in a list of array. """
+        """Return the parameters in a list of array."""
         _params = []
         for p in self.all_params:
             if session is None:
@@ -213,7 +211,7 @@ class BaseLayer(object):
 
     @protected_method
     def _get_init_args(self, skip=4):
-        """Get all arguments of current layer for saving the graph. """
+        """Get all arguments of current layer for saving the graph."""
         stack = inspect.stack()
 
         if len(stack) < skip + 1:
@@ -388,7 +386,7 @@ class Layer(BaseLayer):
         else:  # normal layers e.g. Conv2d
             self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer.name})
 
-        # if act:  ## convert activation from function to string
+        # if act:  # convert activation from function to string
         #     try:
         #         act = act.__name__
         #     except:

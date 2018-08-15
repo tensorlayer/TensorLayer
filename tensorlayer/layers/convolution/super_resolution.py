@@ -144,6 +144,7 @@ class SubpixelConv2d(Layer):
     - `Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network <https://arxiv.org/pdf/1609.05158.pdf>`__
 
     """
+
     # github/Tetrachrome/subpixel  https://github.com/Tetrachrome/subpixel/blob/master/subpixel.py
     @deprecated_alias(net='prev_layer', end_support_version="2.0.0")  # TODO: remove this line before releasing TL 2.0.0
     def __init__(self, prev_layer=None, scale=2, n_out_channels=None, act=None, name='subpixel_conv2d'):

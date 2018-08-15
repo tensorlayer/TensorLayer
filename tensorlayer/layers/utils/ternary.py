@@ -11,9 +11,7 @@ __all__ = [
 
 
 def compute_alpha(x):
-    """
-    Computing the scale parameter.
-    """
+    """Computing the scale parameter."""
     threshold = _compute_threshold(x)
     alpha1_temp1 = tf.where(tf.greater(x, threshold), x, tf.zeros_like(x, tf.float32))
     alpha1_temp2 = tf.where(tf.less(x, -threshold), x, tf.zeros_like(x, tf.float32))
@@ -30,9 +28,7 @@ def compute_alpha(x):
 
 
 def ternary_operation(x):
-    """
-    Ternary operation use threshold computed with weights.
-    """
+    """Ternary operation use threshold computed with weights."""
     g = tf.get_default_graph()
     with g.gradient_override_map({"Sign": "Identity"}):
         threshold = _compute_threshold(x)

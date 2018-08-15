@@ -71,7 +71,8 @@ class DepthwiseConv2d(Layer):
     - tflearn's `grouped_conv_2d <https://github.com/tflearn/tflearn/blob/3e0c3298ff508394f3ef191bcd7d732eb8860b2e/tflearn/layers/conv.py>`__
     - keras's `separableconv2d <https://keras.io/layers/convolutional/#separableconv2d>`__
 
-    """ # # https://zhuanlan.zhihu.com/p/31551004  https://github.com/xiaohu2015/DeepLearning_tutorials/blob/master/CNNs/MobileNet.py
+    # https://zhuanlan.zhihu.com/p/31551004  https://github.com/xiaohu2015/DeepLearning_tutorials/blob/master/CNNs/MobileNet.py
+    """
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
