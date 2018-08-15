@@ -21,9 +21,7 @@ class Layer_Convolution_3D_Test(unittest.TestCase):
 
         cls.n1 = tl.layers.Conv3dLayer(cls.input_layer, shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1))
 
-        cls.n2 = tl.layers.DeConv3dLayer(
-            cls.n1, shape=(2, 2, 2, 128, 32), output_shape=(100, 12, 32, 32, 128), strides=(1, 2, 2, 2, 1)
-        )
+        cls.n2 = tl.layers.DeConv3dLayer(cls.n1, shape=(2, 2, 2, 128, 32), strides=(1, 2, 2, 2, 1))
 
         cls.n3 = tl.layers.DeConv3d(cls.n2, n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2))
 
@@ -43,14 +41,14 @@ class Layer_Convolution_3D_Test(unittest.TestCase):
         self.assertEqual(len(self.n2.all_layers), 3)
         self.assertEqual(len(self.n2.all_params), 4)
         self.assertEqual(self.n2.count_params(), 33696)
-        self.assertEqual(self.n2.outputs.get_shape().as_list()[1:], [12, 32, 32, 128])
+        self.assertEqual(self.n2.outputs.get_shape().as_list()[1:], [99, 99, 99, 128])
 
     def test_layer_n3(self):
 
         self.assertEqual(len(self.n3.all_layers), 4)
         self.assertEqual(len(self.n3.all_params), 6)
         self.assertEqual(self.n3.count_params(), 144320)
-        self.assertEqual(self.n3.outputs.get_shape().as_list()[1:], [24, 64, 64, 32])
+        self.assertEqual(self.n3.outputs.get_shape().as_list()[1:], [199, 199, 199, 32])
 
 
 if __name__ == '__main__':
