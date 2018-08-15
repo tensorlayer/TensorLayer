@@ -302,7 +302,7 @@ def hard_tanh(x, name='htanh'):
     return tf.clip_by_value(x, -1, 1, name=name)
 
 
-@deprecated(date="2018-06-30", instructions="This API will be deprecated soon as tf.nn.softmax can do the same thing")
+@deprecated(date="2018-06-30", instructions="This API will be removed in TL 2.0.0 in favor of `tf.nn.softmax`")
 def pixel_wise_softmax(x, name='pixel_wise_softmax'):
     """Return the softmax outputs of images, every pixels have multiple label, the sum of a pixel is 1.
 

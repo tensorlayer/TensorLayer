@@ -46,7 +46,7 @@ class LocalResponseNormLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self,
             prev_layer=None,
@@ -141,7 +141,7 @@ class BatchNormLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self,
             prev_layer=None,
@@ -288,7 +288,7 @@ class InstanceNormLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self,
             prev_layer=None,
@@ -367,7 +367,7 @@ class LayerNormLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self, prev_layer=None, center=True, scale=True, variables_collections=None, outputs_collections=None,
             begin_norm_axis=1, begin_params_axis=-1, act=None, name='layernorm'
@@ -438,12 +438,12 @@ class LayerNormLayer(Layer):
                 center=self.center,
                 scale=self.scale,
                 activation_fn=None,
-                reuse=is_name_reuse,
                 variables_collections=self.variables_collections,
                 outputs_collections=self.outputs_collections,
-                trainable=is_train,
                 begin_norm_axis=self.begin_norm_axis,
                 begin_params_axis=self.begin_params_axis,
+                reuse=is_name_reuse,
+                trainable=is_train,
                 scope='var',
             )
 
@@ -486,7 +486,7 @@ class SwitchNormLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self,
             prev_layer=None,

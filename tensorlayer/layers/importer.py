@@ -44,7 +44,7 @@ class SlimNetsLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self,
             prev_layer=None,
@@ -108,9 +108,9 @@ class SlimNetsLayer(Layer):
         self._add_params(slim_variables)
 
 
-@deprecated(
-    date="2018-06-30", instructions="This layer will be deprecated in TL 2.0.0 in favor of :class:`LambdaLayer`"
-)  # TODO: remove this line after before releasing TL 2.0.0
+# @deprecated(
+#     date="2018-06-30", instructions="This layer will be removed in TL 2.0.0 in favor of :class:`LambdaLayer`"
+# )  # TODO: remove this line before releasing TL 2.0.0
 class KerasLayer(Layer):
     """A layer to import Keras layers into TensorLayer.
 
@@ -131,7 +131,7 @@ class KerasLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self,
             prev_layer=None,
@@ -184,8 +184,8 @@ class KerasLayer(Layer):
 
 
 @deprecated(
-    date="2018-06-30", instructions="This layer will be deprecated in TL 2.0.0 in favor of :class:`LambdaLayer`"
-)  # TODO: remove this line after before releasing TL 2.0.0
+    date="2018-06-30", instructions="This layer will be removed in TL 2.0.0 in favor of :class:`LambdaLayer`"
+)  # TODO: remove this line before releasing TL 2.0.0
 class EstimatorLayer(Layer):
     """A layer that accepts a user-defined model.
 
@@ -206,7 +206,7 @@ class EstimatorLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', args='layer_args', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self,
             prev_layer=None,

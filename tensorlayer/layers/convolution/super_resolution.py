@@ -49,9 +49,7 @@ class SubpixelConv1d(Layer):
 
     """
 
-    @deprecated_alias(
-        net='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    @deprecated_alias(net='prev_layer', end_support_version="2.0.0")  # TODO: remove this line before releasing TL 2.0.0
     def __init__(self, prev_layer, scale=2, act=None, name='subpixel_conv1d'):
 
         super(SubpixelConv1d, self).__init__(prev_layer=prev_layer, act=act, name=name)
@@ -130,9 +128,7 @@ class SubpixelConv2d(Layer):
 
     """
     # github/Tetrachrome/subpixel  https://github.com/Tetrachrome/subpixel/blob/master/subpixel.py
-    @deprecated_alias(
-        net='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    @deprecated_alias(net='prev_layer', end_support_version="2.0.0")  # TODO: remove this line before releasing TL 2.0.0
     def __init__(self, prev_layer, scale=2, n_out_channel=None, act=None, name='subpixel_conv2d'):
 
         super(SubpixelConv2d, self).__init__(prev_layer=prev_layer, act=act, name=name)

@@ -17,9 +17,7 @@ __all__ = [
 ]
 
 
-@deprecated_alias(
-    layer='prev_layer', end_support_version="2.0.0"
-)  # TODO: remove this line after before releasing TL 2.0.0
+@deprecated_alias(layer='prev_layer', end_support_version="2.0.0")  # TODO: remove this line before releasing TL 2.0.0
 def atrous_conv1d(
         prev_layer,
         n_filter=32,
@@ -124,7 +122,7 @@ class AtrousConv2dLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self, prev_layer=None, n_filter=32, filter_size=(3, 3), rate=2, padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
@@ -236,7 +234,7 @@ class AtrousDeConv2dLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self, prev_layer=None, shape=(3, 3, 128, 256), output_shape=(1, 64, 64, 128), rate=2, padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),

@@ -42,7 +42,7 @@ class UpSampling2dLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self,
             prev_layer=None,
@@ -161,7 +161,7 @@ class DownSampling2dLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self,
             prev_layer=None,

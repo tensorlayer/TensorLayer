@@ -50,7 +50,7 @@ class Conv1dLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self,
             prev_layer=None,
@@ -69,6 +69,9 @@ class Conv1dLayer(Layer):
 
         if data_format not in ["NWC", "NCW"]:
             raise ValueError("`data_format` value is not valid, should be either: 'NWC' or 'NCW'")
+
+        if padding.lower() not in ["same", "valid"]:
+            raise ValueError("`padding` value is not valid, should be either: 'same' or 'valid'")
 
         self.prev_layer = prev_layer
         self.shape = shape
@@ -206,7 +209,7 @@ class Conv2dLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self, prev_layer=None, shape=(5, 5, 1, 100), strides=(1, 1, 1, 1), padding='SAME', data_format="NHWC",
             use_cudnn_on_gpu=True, gemmlowp_at_inference=False, W_init=tf.truncated_normal_initializer(stddev=0.02),
@@ -329,7 +332,7 @@ class Conv3dLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self, prev_layer=None, shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1), padding='SAME', data_format='NDHWC',
             W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),

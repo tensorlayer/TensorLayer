@@ -36,9 +36,7 @@ class MaxPool1d(Layer):
 
     """
 
-    @deprecated_alias(
-        net='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    @deprecated_alias(net='prev_layer', end_support_version="2.0.0")  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self, prev_layer, filter_size=3, strides=2, padding='valid', data_format='channels_last', name='maxpool1d'
     ):
@@ -74,9 +72,7 @@ class MaxPool2d(Layer):
 
     """
 
-    @deprecated_alias(
-        net='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    @deprecated_alias(net='prev_layer', end_support_version="2.0.0")  # TODO: remove this line before releasing TL 2.0.0
     def __init__(self, prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool2d'):
         if strides is None:
             strides = filter_size
@@ -125,7 +121,7 @@ class MaxPool3d(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
             self, prev_layer, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last',
             name='maxpool3d'

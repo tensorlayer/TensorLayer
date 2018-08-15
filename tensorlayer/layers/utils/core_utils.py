@@ -19,6 +19,7 @@ __all__ = [
 ]
 
 
+@deprecated(date="2018-06-30", instructions="This function will be removed in TL 2.0.0 in favor of `tf.get_collection`")
 def get_collection_trainable(name=''):
     variables = []
     for p in tf.trainable_variables():
@@ -28,9 +29,8 @@ def get_collection_trainable(name=''):
     return variables
 
 
-@deprecated_alias(
-    printable='verbose', end_support_version="2.0.0"
-)  # TODO: remove this line after before releasing TL 2.0.0
+@deprecated(date="2018-06-30", instructions="This function will be removed in TL 2.0.0 in favor of `tf.get_collection`")
+@deprecated_alias(printable='verbose', end_support_version="2.0.0")  # TODO: remove this line before releasing TL 2.0.0
 def get_layers_with_name(net, name="", verbose=False):
     """Get a list of layers' output in a network by a given name scope.
 
@@ -71,9 +71,7 @@ def get_layers_with_name(net, name="", verbose=False):
     return layers
 
 
-@deprecated_alias(
-    printable='verbose', end_support_version="2.0.0"
-)  # TODO: remove this line after before releasing TL 2.0.0
+@deprecated_alias(printable='verbose', end_support_version="2.0.0")  # TODO: remove this line before releasing TL 2.0.0
 def get_variables_with_name(name=None, train_only=True, verbose=False):
     """Get a list of TensorFlow variables by a given name scope.
 

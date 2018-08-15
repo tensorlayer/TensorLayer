@@ -43,7 +43,7 @@ class FlattenLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(self, prev_layer=None, name='flatten'):
 
         self.prev_layer = prev_layer
@@ -99,7 +99,7 @@ class ReshapeLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(self, prev_layer=None, shape=list(), name='reshape'):
 
         if not shape:
@@ -160,7 +160,7 @@ class TransposeLayer(Layer):
 
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line after before releasing TL 2.0.0
+    )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(self, prev_layer=None, perm=None, name='transpose'):
 
         if perm is None:
