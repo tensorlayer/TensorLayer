@@ -13,9 +13,7 @@ from tensorlayer.networks import BaseNetwork
 from tensorlayer.decorators import protected_method
 from tensorlayer.decorators import private_method
 
-__all__ = [
-    'CustomModel'
-]
+__all__ = ['CustomModel']
 
 
 class CustomModel(BaseNetwork, ABC):
@@ -37,16 +35,9 @@ class CustomModel(BaseNetwork, ABC):
         else:
             input_layer, output_layer = model
 
-        if not isinstance(
-                input_layer,
-                (
-                        tl.layers.InputLayer,
-                        tl.layers.OneHotInputLayer,
-                        tl.layers.Word2vecEmbeddingInputlayer,
-                        tl.layers.EmbeddingInputlayer,
-                        tl.layers.AverageEmbeddingInputlayer
-                )
-        ):
+        if not isinstance(input_layer,
+                          (tl.layers.InputLayer, tl.layers.OneHotInputLayer, tl.layers.Word2vecEmbeddingInputlayer,
+                           tl.layers.EmbeddingInputlayer, tl.layers.AverageEmbeddingInputlayer)):
             raise RuntimeError(
                 "The returned input layer (type: %s) is not an instance of a known input layer: %s" %
                 (type(input_layer), tl.layers.inputs.__all__)
@@ -79,8 +70,7 @@ class CustomModel(BaseNetwork, ABC):
     def compile(self, input_plh, reuse=False, is_train=True):
 
         logging.info(
-            "** Compiling %s `%s` - reuse: %s, is_train: %s **" %
-            (self.__class__.__name__, self.name, reuse, is_train)
+            "** Compiling %s `%s` - reuse: %s, is_train: %s **" % (self.__class__.__name__, self.name, reuse, is_train)
         )
 
         # Reset All Layers' Inputs

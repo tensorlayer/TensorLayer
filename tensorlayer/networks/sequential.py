@@ -106,8 +106,7 @@ class Sequential(BaseNetwork):
     def compile(self, input_plh, reuse=False, is_train=True):
 
         logging.info(
-            "** Compiling %s `%s` - reuse: %s, is_train: %s **" %
-            (self.__class__.__name__, self.name, reuse, is_train)
+            "** Compiling %s `%s` - reuse: %s, is_train: %s **" % (self.__class__.__name__, self.name, reuse, is_train)
         )
 
         # Reset All Layers' Inputs

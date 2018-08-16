@@ -152,7 +152,6 @@ class ZeroPad1d(Layer):
 
         return self._str(additional_str)
 
-
     def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
@@ -220,7 +219,6 @@ class ZeroPad2d(Layer):
 
         return self._str(additional_str)
 
-
     def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
@@ -284,7 +282,6 @@ class ZeroPad3d(Layer):
             pass
 
         return self._str(additional_str)
-
 
     def compile(self, prev_layer, is_train=True):
 

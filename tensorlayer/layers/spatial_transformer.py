@@ -76,7 +76,7 @@ class SpatialTransformer2dAffineLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
 
     def compile(self, prev_layer, theta_layer=None, is_train=True):
 

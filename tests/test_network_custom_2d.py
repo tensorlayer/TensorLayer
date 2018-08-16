@@ -21,34 +21,23 @@ class Network_Sequential_Test(CustomTestCase):
     def setUpClass(cls):
 
         with tf.variable_scope("test_scope"):
+
             def fire_module(inputs, squeeze_depth, expand_depth, name):
                 """Fire module: squeeze input filters, then apply spatial convolutions."""
 
                 with tf.variable_scope(name, "fire", [inputs]):
                     squeezed = tl.layers.Conv2d(
-                        n_filter=squeeze_depth,
-                        filter_size=(1, 1),
-                        strides=(1, 1),
-                        padding='SAME',
-                        act=tf.nn.relu,
+                        n_filter=squeeze_depth, filter_size=(1, 1), strides=(1, 1), padding='SAME', act=tf.nn.relu,
                         name='squeeze'
                     )(inputs)
 
                     e1x1 = tl.layers.Conv2d(
-                        n_filter=expand_depth,
-                        filter_size=(1, 1),
-                        strides=(1, 1),
-                        padding='SAME',
-                        act=tf.nn.relu,
+                        n_filter=expand_depth, filter_size=(1, 1), strides=(1, 1), padding='SAME', act=tf.nn.relu,
                         name='e1x1'
                     )(squeezed)
 
                     e3x3 = tl.layers.Conv2d(
-                        n_filter=expand_depth,
-                        filter_size=(3, 3),
-                        strides=(1, 1),
-                        padding='SAME',
-                        act=tf.nn.relu,
+                        n_filter=expand_depth, filter_size=(3, 3), strides=(1, 1), padding='SAME', act=tf.nn.relu,
                         name='e3x3'
                     )(squeezed)
 
@@ -73,6 +62,7 @@ class Network_Sequential_Test(CustomTestCase):
 
     def test_True(self):
         self.assertTrue(True)
+
     '''
     def test_get_all_drop_plh(self):
         self.assertEqual(len(self.model.all_drop), 0)
@@ -121,6 +111,7 @@ class Network_Sequential_Test(CustomTestCase):
 
         self.assertEqual(self.model["simple_deconv3d_layer_8"].outputs.shape, (100, 564, 564, 564, 8))
     '''
+
 
 if __name__ == '__main__':
 

@@ -18,10 +18,7 @@ import warnings
 import tensorlayer as tl
 
 __all__ = [
-    "add_deprecation_notice_to_docstring",
-    "get_qualified_name",
-    "get_network_obj",
-    "rename_kwargs",
+    "add_deprecation_notice_to_docstring", "get_qualified_name", "get_network_obj", "rename_kwargs",
     "validate_deprecation_args"
 ]
 
