@@ -96,10 +96,8 @@ class UpSampling2dLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
@@ -130,7 +128,7 @@ class UpSampling2dLayer(Layer):
 
             self.out_shape = self.outputs.shape
 
-        super(UpSampling2dLayer, self).__call__(prev_layer)
+        super(UpSampling2dLayer, self).compile(prev_layer)
 
         self._add_layers(self.outputs)
 
@@ -215,10 +213,8 @@ class DownSampling2dLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
@@ -249,6 +245,6 @@ class DownSampling2dLayer(Layer):
 
             self.out_shape = self.outputs.shape
 
-        super(DownSampling2dLayer, self).__call__(prev_layer)
+        super(DownSampling2dLayer, self).compile(prev_layer)
 
         self._add_layers(self.outputs)

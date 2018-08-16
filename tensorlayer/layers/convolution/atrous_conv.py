@@ -174,12 +174,10 @@ class AtrousConv2dLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(AtrousConv2dLayer, self).__call__(prev_layer)
+        super(AtrousConv2dLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
             shape = [self.filter_size[0], self.filter_size[1], int(self.inputs.get_shape()[-1]), self.n_filter]
@@ -289,10 +287,8 @@ class AtrousDeConv2dLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
@@ -321,7 +317,7 @@ class AtrousDeConv2dLayer(Layer):
             self.outputs = self._apply_activation(self.outputs)
             #self.out_shape = self.outputs.shape
 
-        super(AtrousDeConv2dLayer, self).__call__(prev_layer)
+        super(AtrousDeConv2dLayer, self).compile(prev_layer)
 
         self._add_layers(self.outputs)
         self._add_params(self._local_weights)

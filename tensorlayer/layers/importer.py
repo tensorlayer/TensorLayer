@@ -77,12 +77,10 @@ class SlimNetsLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(SlimNetsLayer, self).__call__(prev_layer)
+        super(SlimNetsLayer, self).compile(prev_layer)
 
         slim_layers = []
 
@@ -166,12 +164,10 @@ class KerasLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(KerasLayer, self).__call__(prev_layer)
+        super(KerasLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name) as vs:
             self.outputs = self.keras_layer(self.inputs)
@@ -241,12 +237,10 @@ class EstimatorLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(EstimatorLayer, self).__call__(prev_layer)
+        super(EstimatorLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name) as vs:
             self.outputs = self.model_fn(self.inputs, **self.layer_args)

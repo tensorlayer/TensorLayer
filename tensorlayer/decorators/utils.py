@@ -10,10 +10,20 @@ They replace the following imports:
 >>> from tensorflow.python.util.deprecation import _validate_deprecation_args
 """
 
-import sys
+import inspect
 import re
+import sys
+import warnings
 
-__all__ = ["add_deprecation_notice_to_docstring", "get_qualified_name", "validate_deprecation_args"]
+import tensorlayer as tl
+
+__all__ = [
+    "add_deprecation_notice_to_docstring",
+    "get_qualified_name",
+    "get_network_obj",
+    "rename_kwargs",
+    "validate_deprecation_args"
+]
 
 
 def add_deprecation_notice_to_docstring(doc, date, instructions):
@@ -29,6 +39,45 @@ def get_qualified_name(function):
     if hasattr(function, 'im_class'):
         return function.im_class.__name__ + '.' + function.__name__
     return function.__name__
+
+
+def get_network_obj(skip=2):
+    stack = inspect.stack()
+
+    if len(stack) < skip + 1:
+        raise ValueError("The length of the inspection stack is shorter than the requested start position.")
+
+    for current_stack in stack[skip:]:
+
+        try:
+            args, _, _, values = inspect.getargvalues(current_stack[0])
+
+            if 'self' in values.keys() and isinstance(values['self'], tl.networks.CustomModel):
+                return values['self']
+
+        except Exception as e:
+            print("Except Type 1:", type(e))
+            continue
+
+    return None
+
+
+def rename_kwargs(kwargs, aliases, end_support_version, func_name):
+
+    for alias, new in aliases.items():
+
+        if alias in kwargs:
+
+            if new in kwargs:
+                raise TypeError('{}() received both {} and {}'.format(func_name, alias, new))
+
+            warnings.warn('{}() - {} is deprecated; use {}'.format(func_name, alias, new), DeprecationWarning)
+            tl.logging.warning(
+                "DeprecationWarning: {}(): "
+                "`{}` argument is deprecated and will be removed in version {}, "
+                "please change for `{}.`".format(func_name, alias, end_support_version, new)
+            )
+            kwargs[new] = kwargs.pop(alias)
 
 
 def validate_deprecation_args(date, instructions):

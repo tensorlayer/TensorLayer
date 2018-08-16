@@ -1,6 +1,8 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+__all__ = ['force_return_self']
+
 
 def force_return_self(func):
     """decorator to overwrite return value with `self` object"""

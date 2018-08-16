@@ -11,5 +11,8 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
 
 from .core import BaseNetwork
 from .sequential import Sequential
+from .custom_model import CustomModel
 
-__all__ = ['BaseNetwork', 'Sequential']
+__all__ = []
+__all__ += sequential.__all__
+__all__ += custom_model.__all__

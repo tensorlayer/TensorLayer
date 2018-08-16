@@ -127,10 +127,8 @@ class DeformableConv2d(Layer):
             return prev_layer
 
         else:
-            return None
-
-    @force_return_self
-    def __call__(self, prev_layer, offset_layer=None, is_train=True):
+            return None
+    def compile(self, prev_layer, offset_layer=None, is_train=True):
 
         super(DeformableConv2d, self).__call__(self._check_inputs(prev_layer, offset_layer))
 

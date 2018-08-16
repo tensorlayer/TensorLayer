@@ -110,12 +110,10 @@ class Conv1dLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(Conv1dLayer, self).__call__(prev_layer)
+        super(Conv1dLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
@@ -267,12 +265,10 @@ class Conv2dLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(Conv2dLayer, self).__call__(prev_layer)
+        super(Conv2dLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
@@ -385,12 +381,10 @@ class Conv3dLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(Conv3dLayer, self).__call__(prev_layer)
+        super(Conv3dLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(

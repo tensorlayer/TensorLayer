@@ -84,12 +84,10 @@ class TimeDistributedLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(TimeDistributedLayer, self).__call__(prev_layer)
+        super(TimeDistributedLayer, self).compile(prev_layer)
 
         if not isinstance(self.inputs, tf.Tensor):
             self.inputs = tf.transpose(tf.stack(self.inputs), [1, 0, 2])

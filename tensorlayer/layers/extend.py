@@ -67,10 +67,8 @@ class ExpandDimsLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
@@ -80,7 +78,7 @@ class ExpandDimsLayer(Layer):
 
         self._add_layers(self.outputs)
 
-        super(ExpandDimsLayer, self).__call__(prev_layer)
+        super(ExpandDimsLayer, self).compile(prev_layer)
 
 
 class TileLayer(Layer):
@@ -134,10 +132,8 @@ class TileLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
@@ -147,4 +143,4 @@ class TileLayer(Layer):
 
         self._add_layers(self.outputs)
 
-        super(TileLayer, self).__call__(prev_layer)
+        super(TileLayer, self).compile(prev_layer)

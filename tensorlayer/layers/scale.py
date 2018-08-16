@@ -51,12 +51,10 @@ class ScaleLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(ScaleLayer, self).__call__(prev_layer)
+        super(ScaleLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
             scale = self._get_tf_variable(

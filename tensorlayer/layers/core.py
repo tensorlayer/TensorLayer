@@ -9,11 +9,14 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer.utils import list_remove_repeat
 
 from tensorlayer import logging
 
+from tensorlayer.decorators import force_return_self
+from tensorlayer.decorators import layer_autoregister
 from tensorlayer.decorators import protected_method
 from tensorlayer.decorators import private_method
 
@@ -313,6 +316,7 @@ class Layer(BaseLayer):
     __metaclass__ = ABCMeta
 
     @abstractmethod
+    @layer_autoregister
     def __init__(self, *args, **kwargs):
 
         super(Layer, self).__init__(*args, **kwargs)
@@ -339,32 +343,16 @@ class Layer(BaseLayer):
             else:
                 self.__call__(self.prev_layer)
 
+        # Make Layer robust to declarations in name_scopes
+        scope = tf.get_default_graph().get_name_scope()
+        self.name = scope + "/" + self.name if scope != "" else self.name
+
     def __str__(self):
         return self._str()
 
-    @private_method
-    def _str(self, additional_str=list()):
-
-        if len(additional_str) > 0:
-            additional_str = ", ".join(additional_str)
-        else:
-            additional_str = None
-
-        _str = "%s: " % self.__class__.__name__
-
-        if self.is_setup:
-            _str += "`%s`" % self.name
-
-            if additional_str is not None:
-                _str += " - %s" % additional_str
-        else:
-            _str += "setup process not finished"
-
-        return _str
-
     @abstractmethod
     @private_method
-    def __call__(self, prev_layer, is_train=True):
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
@@ -397,6 +385,38 @@ class Layer(BaseLayer):
         self.graph.update(self.layer_args)
 
         self._add_graphs((self.name, self.graph))
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        if isinstance(prev_layer, tf.Tensor) and isinstance(self, (tl.layers.InputLayer, tl.layers.OneHotInputLayer)):
+            self.compile(prev_layer, is_train)
+
+        if hasattr(prev_layer, "outputs") and prev_layer.outputs is not None:
+            self.compile(prev_layer, is_train)
+
+        else:
+            self.prev_layer = prev_layer
+
+    @private_method
+    def _str(self, additional_str=list()):
+
+        if len(additional_str) > 0:
+            additional_str = ", ".join(additional_str)
+        else:
+            additional_str = None
+
+        _str = "%s: " % self.__class__.__name__
+
+        if self.is_setup:
+            _str += "`%s`" % self.name
+
+            if additional_str is not None:
+                _str += " - %s" % additional_str
+        else:
+            _str += "setup process not finished"
+
+        return _str
 
     @protected_method
     def _parse_inputs(self, prev_layer):

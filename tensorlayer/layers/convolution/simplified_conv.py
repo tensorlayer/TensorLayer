@@ -131,10 +131,9 @@ class Conv1d(Layer):
 
         return self._str(additional_str)
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+    def compile(self, prev_layer, is_train=True):
 
-        super(Conv1d, self).__call__(prev_layer)
+        super(Conv1d, self).compile(prev_layer)
 
         is_name_reuse = tf.get_variable_scope().reuse
 
@@ -282,10 +281,9 @@ class Conv2d(Layer):
 
         return self._str(additional_str)
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+    def compile(self, prev_layer, is_train=True):
 
-        super(Conv2d, self).__call__(prev_layer)
+        super(Conv2d, self).compile(prev_layer)
 
         is_name_reuse = tf.get_variable_scope().reuse
 

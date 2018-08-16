@@ -70,12 +70,10 @@ class SubpixelConv1d(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(SubpixelConv1d, self).__call__(prev_layer)
+        super(SubpixelConv1d, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
 
@@ -175,10 +173,8 @@ class SubpixelConv2d(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
@@ -198,7 +194,7 @@ class SubpixelConv2d(Layer):
             )
             raise Exception(_err_log)
 
-        super(SubpixelConv2d, self).__call__(prev_layer)
+        super(SubpixelConv2d, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
 

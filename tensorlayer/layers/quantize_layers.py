@@ -39,12 +39,10 @@ class SignLayer(Layer):
         self.prev_layer = prev_layer
         self.name = name
 
-        super(SignLayer, self).__init__()
+        super(SignLayer, self).__init__()
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(SignLayer, self).__call__(prev_layer)
+        super(SignLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
             self.outputs = quantize(self.inputs)

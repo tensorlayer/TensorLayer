@@ -9,6 +9,8 @@ from tensorlayer import logging
 
 from tensorlayer.networks import BaseNetwork
 
+__all__ = ['Sequential']
+
 
 class Sequential(BaseNetwork):
     """Linear stack of layers.
@@ -103,7 +105,10 @@ class Sequential(BaseNetwork):
 
     def compile(self, input_plh, reuse=False, is_train=True):
 
-        logging.info("** Compiling Model `%s` - reuse: %s, is_train: %s **" % (self.name, reuse, is_train))
+        logging.info(
+            "** Compiling %s `%s` - reuse: %s, is_train: %s **" %
+            (self.__class__.__name__, self.name, reuse, is_train)
+        )
 
         # Reset All Layers' Inputs
         for name, layer in self.all_layers_dict.items():

@@ -87,15 +87,14 @@ class PadLayer(Layer):
 
         return self._str(additional_str)
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
         self.outputs = tf.pad(self.inputs, paddings=self.padding, mode=self.mode, name=self.name)
         self.out_shape = self.outputs.shape
 
-        super(PadLayer, self).__call__(prev_layer)
+        super(PadLayer, self).compile(prev_layer)
 
         self._add_layers(self.outputs)
 
@@ -153,8 +152,8 @@ class ZeroPad1d(Layer):
 
         return self._str(additional_str)
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
@@ -162,7 +161,7 @@ class ZeroPad1d(Layer):
         self.outputs = tf.keras.layers.ZeroPadding1D(padding=self.padding, name=self.name)(self.inputs)
         self.out_shape = self.outputs.shape
 
-        super(ZeroPad1d, self).__call__(prev_layer)
+        super(ZeroPad1d, self).compile(prev_layer)
 
         self._add_layers(self.outputs)
 
@@ -221,8 +220,8 @@ class ZeroPad2d(Layer):
 
         return self._str(additional_str)
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
@@ -230,7 +229,7 @@ class ZeroPad2d(Layer):
         self.outputs = tf.keras.layers.ZeroPadding2D(padding=self.padding, name=self.name)(self.inputs)
         self.out_shape = self.outputs.shape
 
-        super(ZeroPad2d, self).__call__(prev_layer)
+        super(ZeroPad2d, self).compile(prev_layer)
 
         self._add_layers(self.outputs)
 
@@ -286,8 +285,8 @@ class ZeroPad3d(Layer):
 
         return self._str(additional_str)
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
@@ -295,6 +294,6 @@ class ZeroPad3d(Layer):
         self.outputs = tf.keras.layers.ZeroPadding3D(padding=self.padding, name=self.name)(self.inputs)
         self.out_shape = self.outputs.shape
 
-        super(ZeroPad3d, self).__call__(prev_layer)
+        super(ZeroPad3d, self).compile(prev_layer)
 
         self._add_layers(self.outputs)

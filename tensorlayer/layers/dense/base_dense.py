@@ -94,10 +94,9 @@ class DenseLayer(Layer):
 
         return self._str(additional_str)
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+    def compile(self, prev_layer, is_train=True):
 
-        super(DenseLayer, self).__call__(prev_layer)
+        super(DenseLayer, self).compile(prev_layer)
 
         if self.inputs.get_shape().ndims != 2:
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")

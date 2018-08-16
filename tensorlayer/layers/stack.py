@@ -62,12 +62,10 @@ class StackLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(StackLayer, self).__call__(prev_layer)
+        super(StackLayer, self).compile(prev_layer)
 
         self.outputs = tf.stack(self.inputs, axis=self.axis, name=self.name)
         self._add_layers(self.outputs)
@@ -125,17 +123,15 @@ class UnStackLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
         self.outputs = tf.unstack(self.inputs, num=self.num, axis=self.axis, name=self.name)
         self.n_outputs = len(self.outputs)
 
-        super(UnStackLayer, self).__call__(prev_layer)
+        super(UnStackLayer, self).compile(prev_layer)
 
         net_new = []
 

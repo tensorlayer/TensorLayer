@@ -131,12 +131,10 @@ class GroupConv2d(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(GroupConv2d, self).__call__(prev_layer)
+        super(GroupConv2d, self).compile(prev_layer)
 
         input_channels = int(self.inputs.get_shape()[-1])
 

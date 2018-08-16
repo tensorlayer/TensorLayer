@@ -111,12 +111,10 @@ class DropoutLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(DropoutLayer, self).__call__(prev_layer)
+        super(DropoutLayer, self).compile(prev_layer)
 
         if is_train is False:
             logging.info("  -> [Not Training] - skip `%s`" % self.__class__.__name__)

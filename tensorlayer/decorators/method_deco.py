@@ -3,6 +3,8 @@
 
 import inspect
 
+__all__ = ['private_method', 'protected_method']
+
 
 def private_method(func):
     """Decorator for making an instance method private."""

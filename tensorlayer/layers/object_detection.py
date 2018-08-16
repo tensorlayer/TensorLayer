@@ -74,12 +74,10 @@ class ROIPoolingLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(ROIPoolingLayer, self).__call__(prev_layer)
+        super(ROIPoolingLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
             self.outputs = roi_pooling(self.inputs, self.rois, self.pool_height, self.pool_width)

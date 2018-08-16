@@ -89,12 +89,10 @@ class LocalResponseNormLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(LocalResponseNormLayer, self).__call__(prev_layer)
+        super(LocalResponseNormLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
             self.outputs = tf.nn.local_response_normalization(
@@ -192,12 +190,10 @@ class BatchNormLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(BatchNormLayer, self).__call__(prev_layer)
+        super(BatchNormLayer, self).compile(prev_layer)
 
         x_shape = self.inputs.get_shape()
         params_shape = x_shape[-1:]
@@ -317,15 +313,13 @@ class InstanceNormLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         if len(prev_layer.outputs.shape) not in [3, 4]:
             raise RuntimeError("`%s` only accepts input Tensor of dimension 3 or 4." % self.__class__.__name__)
 
-        super(InstanceNormLayer, self).__call__(prev_layer)
+        super(InstanceNormLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
             mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
@@ -423,12 +417,10 @@ class LayerNormLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(LayerNormLayer, self).__call__(prev_layer)
+        super(LayerNormLayer, self).compile(prev_layer)
 
         is_name_reuse = tf.get_variable_scope().reuse
 
@@ -519,15 +511,13 @@ class SwitchNormLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         if len(prev_layer.outputs.shape) not in [3, 4]:
             raise RuntimeError("`%s` only accepts input Tensor of dimension 3 or 4." % self.__class__.__name__)
 
-        super(SwitchNormLayer, self).__call__(prev_layer)
+        super(SwitchNormLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
 

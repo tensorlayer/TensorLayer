@@ -134,12 +134,10 @@ class SeparableConv1d(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(SeparableConv1d, self).__call__(prev_layer)
+        super(SeparableConv1d, self).compile(prev_layer)
 
         is_name_reuse = tf.get_variable_scope().reuse
 
@@ -278,12 +276,10 @@ class SeparableConv2d(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(SeparableConv2d, self).__call__(prev_layer)
+        super(SeparableConv2d, self).compile(prev_layer)
 
         is_name_reuse = tf.get_variable_scope().reuse
 

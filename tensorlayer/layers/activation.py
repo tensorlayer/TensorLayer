@@ -66,12 +66,10 @@ class PReluLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(PReluLayer, self).__call__(prev_layer)
+        super(PReluLayer, self).compile(prev_layer)
 
         if self.channel_shared:
             w_shape = (1, )
@@ -158,12 +156,10 @@ class PRelu6Layer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(PRelu6Layer, self).__call__(prev_layer)
+        super(PRelu6Layer, self).compile(prev_layer)
 
         if self.channel_shared:
             w_shape = (1, )
@@ -252,12 +248,10 @@ class PTRelu6Layer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
-
-        super(PTRelu6Layer, self).__call__(prev_layer)
+        super(PTRelu6Layer, self).compile(prev_layer)
 
         if self.channel_shared:
             w_shape = (1, )

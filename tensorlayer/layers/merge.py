@@ -79,10 +79,8 @@ class ConcatLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
@@ -91,7 +89,7 @@ class ConcatLayer(Layer):
 
         self._add_layers(self.outputs)
 
-        super(ConcatLayer, self).__call__(prev_layer)
+        super(ConcatLayer, self).compile(prev_layer)
 
 
 class ElementwiseLayer(Layer):
@@ -158,10 +156,8 @@ class ElementwiseLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
@@ -176,4 +172,4 @@ class ElementwiseLayer(Layer):
 
         self._add_layers(self.outputs)
 
-        super(ElementwiseLayer, self).__call__(prev_layer)
+        super(ElementwiseLayer, self).compile(prev_layer)

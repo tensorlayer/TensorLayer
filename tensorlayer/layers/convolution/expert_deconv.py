@@ -160,10 +160,8 @@ class DeConv2dLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
@@ -191,7 +189,7 @@ class DeConv2dLayer(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        super(DeConv2dLayer, self).__call__(prev_layer)
+        super(DeConv2dLayer, self).compile(prev_layer)
 
         self._add_layers(self.outputs)
         self._add_params(self._local_weights)
@@ -293,10 +291,8 @@ class DeConv3dLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
@@ -326,7 +322,7 @@ class DeConv3dLayer(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        super(DeConv3dLayer, self).__call__(prev_layer)
+        super(DeConv3dLayer, self).compile(prev_layer)
 
         self._add_layers(self.outputs)
         self._add_params(self._local_weights)

@@ -59,15 +59,13 @@ class FlattenLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         _out = flatten_reshape(prev_layer.outputs, name=self.name)
         self.out_shape = _out.shape
 
-        super(FlattenLayer, self).__call__(prev_layer)
+        super(FlattenLayer, self).compile(prev_layer)
 
         self.outputs = _out
         self._add_layers(self.outputs)
@@ -119,15 +117,13 @@ class ReshapeLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         _out = tf.reshape(prev_layer.outputs, shape=self._shape, name=self.name)
         self.out_shape = _out.shape
 
-        super(ReshapeLayer, self).__call__(prev_layer)
+        super(ReshapeLayer, self).compile(prev_layer)
 
         self.outputs = _out
         self._add_layers(self.outputs)
@@ -185,15 +181,13 @@ class TransposeLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
-
-    @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+        return self._str(additional_str)
+    def compile(self, prev_layer, is_train=True):
 
         _out = tf.transpose(prev_layer.outputs, perm=self.perm, name=self.name)
         self.out_shape = _out.shape
 
-        super(TransposeLayer, self).__call__(prev_layer)
+        super(TransposeLayer, self).compile(prev_layer)
 
         self.outputs = _out
         self._add_layers(self.outputs)
