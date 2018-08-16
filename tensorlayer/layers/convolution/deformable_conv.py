@@ -130,7 +130,7 @@ class DeformableConv2d(Layer):
             return None
     def compile(self, prev_layer, offset_layer=None, is_train=True):
 
-        super(DeformableConv2d, self).__call__(self._check_inputs(prev_layer, offset_layer))
+        super(DeformableConv2d, self).compile(self._check_inputs(prev_layer, offset_layer))
 
         input_layer = self.inputs[0]
         offset_layer = self.inputs[1]

@@ -4,6 +4,7 @@
 from abc import ABCMeta, abstractmethod
 
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer import logging
 from tensorlayer.layers import core
@@ -33,8 +34,8 @@ class BaseNetwork(core.BaseLayer):
         '''
 
         self._net = None
-        self.outputs = None
         self.is_compiled = False
+        self.outputs = None
 
         #if name is None:
         #    raise ValueError('%s must have a name.' % self.__class__.__name__)
@@ -47,7 +48,7 @@ class BaseNetwork(core.BaseLayer):
             raise ValueError('%s must have a name.' % self.__class__.__name__)
         else:
             scope_name = tf.get_variable_scope().name
-            self.full_scope = scope_name + '/' + self.name if scope_name else self.name
+            self.model_scope = scope_name + '/' + self.name if scope_name else self.name
 
         self.all_layers_dict = dict()
 
@@ -64,7 +65,7 @@ class BaseNetwork(core.BaseLayer):
         if not self.is_compiled:
             raise RuntimeError("Impossible to get the network's paramaters if the network is not compiled.")
 
-        return tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.full_scope)
+        return tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.model_scope)
 
     def count_params(self):
         """Returns the number of parameters in the network"""
@@ -85,6 +86,55 @@ class BaseNetwork(core.BaseLayer):
                     n = n * s
             n_params = n_params + n
         return n_params
+
+    def register_new_layer(self, layer):
+
+        if not isinstance(layer, tl.layers.Layer):
+            raise TypeError('You can only register a `tensorlayer.layers.Layer`. Found: %s' % type(layer))
+
+        if layer.name in self.all_layers_dict.keys():
+            raise ValueError("The layer name `%s` already exists in this network" % layer.name)
+
+        self.all_layers_dict[layer.name] = layer
+        self.all_layers.append(layer.name)
+
+    def compile(self, input_plh, reuse=False, is_train=True):
+
+        logging.info(
+            "** Compiling %s `%s` - reuse: %s, is_train: %s **" % (self.__class__.__name__, self.name, reuse, is_train)
+        )
+
+        # Reset All Layers' Inputs
+        for name, layer in self.all_layers_dict.items():
+            layer.inputs = None
+            layer.outputs = None
+
+        with logging.temp_handler("    [*]"):
+
+            _net = self.all_layers_dict[self.all_layers[0]](input_plh)
+
+            with tf.variable_scope(self.name, reuse=reuse):
+
+                for layer in self.all_layers[1:]:
+                    _net = self.all_layers_dict[layer](is_train=is_train)
+                    self.all_drop.update(_net._local_drop)
+
+            if not self.is_compiled:
+                self._net = _net
+                self.outputs = self._net.outputs
+                self.is_compiled = True
+
+        return self.outputs
+
+    def __getitem__(self, layer_name):
+        if layer_name in self.all_layers_dict.keys():
+            return self.all_layers_dict[layer_name]
+
+        elif self.model_scope + "/" + layer_name in self.all_layers_dict.keys():
+            return self.all_layers_dict[self.model_scope + "/" + layer_name]
+
+        else:
+            raise ValueError("layer name `%s` does not exist in this network" % layer_name)
 
     '''
     def _base_init(self, name=None):

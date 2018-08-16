@@ -4,6 +4,7 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer import logging
 
@@ -47,11 +48,16 @@ class MeanPool1d(Layer):
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
-        self.outputs = tf.layers.average_pooling1d(
-            prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
-        )
+        with tf.variable_scope(self.name) as vs:
+
+            self.outputs = tf.layers.average_pooling1d(
+                prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=None
+            )
+
+            self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self._add_layers(self.outputs)
+        self._add_params(self._local_weights)
 
 
 class MeanPool2d(Layer):
@@ -85,11 +91,16 @@ class MeanPool2d(Layer):
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
-        self.outputs = tf.layers.average_pooling2d(
-            self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name
-        )
+        with tf.variable_scope(self.name) as vs:
+
+            self.outputs = tf.layers.average_pooling2d(
+                self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=None
+            )
+
+            self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self._add_layers(self.outputs)
+        self._add_params(self._local_weights)
 
 
 class MeanPool3d(Layer):
@@ -135,8 +146,13 @@ class MeanPool3d(Layer):
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
-        self.outputs = tf.layers.average_pooling3d(
-            prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
-        )
+        with tf.variable_scope(self.name) as vs:
+
+            self.outputs = tf.layers.average_pooling3d(
+                prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=None
+            )
+
+            self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self._add_layers(self.outputs)
+        self._add_params(self._local_weights)

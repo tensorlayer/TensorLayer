@@ -52,6 +52,9 @@ def get_network_obj(skip=2):
             if 'self' in values.keys() and isinstance(values['self'], tl.networks.CustomModel):
                 return values['self']
 
+            if 'cls' in values.keys() and isinstance(values['cls'], tl.networks.CustomModel):
+                return values['cls']
+
         except Exception as e:
             print("Except Type 1:", type(e))
             continue

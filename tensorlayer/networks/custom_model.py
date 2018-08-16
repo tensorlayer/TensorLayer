@@ -51,49 +51,6 @@ class CustomModel(BaseNetwork, ABC):
 
         return input_layer, output_layer
 
-    def register_new_layer(self, layer):
-
-        if not isinstance(layer, tl.layers.Layer):
-            raise TypeError('You can only register a `tensorlayer.layers.Layer`. Found: %s' % type(layer))
-
-        if layer.name in self.all_layers_dict.keys():
-            raise ValueError("The layer name `%s` already exists in this network" % layer.name)
-
-        self.all_layers_dict[layer.name] = layer
-        self.all_layers.append(layer.name)
-
-        # Reset Network State in case it was previously compiled
-        self._net = None
-        self.outputs = None
-        self.is_compiled = False
-
-    def compile(self, input_plh, reuse=False, is_train=True):
-
-        logging.info(
-            "** Compiling %s `%s` - reuse: %s, is_train: %s **" % (self.__class__.__name__, self.name, reuse, is_train)
-        )
-
-        # Reset All Layers' Inputs
-        for name, layer in self.all_layers_dict.items():
-            layer.inputs = None
-            layer.outputs = None
-
-        with logging.temp_handler("    [*]"):
-
-            _net = self.all_layers_dict[self.all_layers[0]](input_plh)
-
-            with tf.variable_scope(self.name, reuse=reuse):
-                for layer in self.all_layers[1:]:
-                    _net = self.all_layers_dict[layer](prev_layer=_net, is_train=is_train)
-                    self.all_drop.update(_net._local_drop)
-
-            if not self.is_compiled:
-                self._net = _net
-                self.outputs = self._net.outputs
-                self.is_compiled = True
-
-        return self.outputs
-
     def count_layers(self):
         return len(self.all_layers_dict)
 

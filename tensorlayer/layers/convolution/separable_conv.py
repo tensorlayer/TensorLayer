@@ -134,7 +134,8 @@ class SeparableConv1d(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(SeparableConv1d, self).compile(prev_layer)
@@ -149,7 +150,7 @@ class SeparableConv1d(Layer):
                 depth_multiplier=self.depth_multiplier, activation=None,
                 use_bias=(True if self.b_init is not None else
                           False), depthwise_initializer=self.depthwise_init, pointwise_initializer=self.pointwise_init,
-                bias_initializer=self.b_init, trainable=is_train, reuse=is_name_reuse, name="separable_conv1d"
+                bias_initializer=self.b_init, trainable=is_train, reuse=is_name_reuse, name=None
             )
 
             self._apply_activation(self.outputs)
@@ -276,7 +277,8 @@ class SeparableConv2d(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(SeparableConv2d, self).compile(prev_layer)
@@ -288,10 +290,9 @@ class SeparableConv2d(Layer):
             self.outputs = tf.layers.separable_conv2d(
                 inputs=self.inputs, filters=self.n_filter, kernel_size=self.filter_size, strides=self.strides,
                 padding=self.padding, data_format=self.data_format, dilation_rate=self.dilation_rate,
-                depth_multiplier=self.depth_multiplier, use_bias=(True if self.b_init is not None else
-                                                                  False), depthwise_initializer=self.depthwise_init,
-                pointwise_initializer=self.pointwise_init, bias_initializer=self.b_init, trainable=is_train,
-                reuse=is_name_reuse, activation=None, name="separable_conv2d"
+                depth_multiplier=self.depth_multiplier, use_bias=(True if self.b_init is not None else False),
+                depthwise_initializer=self.depthwise_init, pointwise_initializer=self.pointwise_init,
+                bias_initializer=self.b_init, trainable=is_train, reuse=is_name_reuse, activation=None, name=None
             )
 
             self._apply_activation(self.outputs)

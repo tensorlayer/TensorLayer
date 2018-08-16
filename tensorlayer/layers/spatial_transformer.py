@@ -80,7 +80,7 @@ class SpatialTransformer2dAffineLayer(Layer):
 
     def compile(self, prev_layer, theta_layer=None, is_train=True):
 
-        super(SpatialTransformer2dAffineLayer, self).__call__(self._check_inputs(prev_layer, theta_layer))
+        super(SpatialTransformer2dAffineLayer, self).compile(self._check_inputs(prev_layer, theta_layer))
 
         input_layer = self.inputs[0].outputs
         theta_layer = self.inputs[1]
@@ -134,7 +134,7 @@ class SpatialTransformer2dAffineLayer(Layer):
     @private_method
     def _check_inputs(self, prev_layer, theta_layer):
 
-        if isinstance(prev_layer, tf.layers.Layer):
+        if isinstance(prev_layer, tl.layers.Layer):
 
             if theta_layer is None:
                 raise ValueError("`theta_layer` cannot be set to None")

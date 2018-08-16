@@ -65,76 +65,29 @@ class Sequential(BaseNetwork):
 
         super(Sequential, self).__init__(name)
 
-        self.add(layers.InputLayer(name='input_layer'))
-        '''
-        # Add to the model any layers passed to the constructor.
-        if layers:
-            for layer in layers:
-                self.add(layer)
-        '''
+        self._last_layer = None
+
+        with tf.variable_scope(self.name):
+            self.add(layers.InputLayer(name='input_layer'))
+            '''
+            # Add to the model any layers passed to the constructor.
+            if layers:
+                for layer in layers:
+                    self.add(layer)
+            '''
 
     def add(self, layer):
-        """Adds a layer instance on top of the layer stack.
-        Arguments:
-                layer: layer instance.
-        Raises:
-                TypeError: If `layer` is not a layer instance.
-                ValueError: In case the `layer` argument does not
-                        know its input shape.
-                ValueError: In case the `layer` argument has
-                        multiple output tensors, or is already connected
-                        somewhere else (forbidden in `Sequential` models).
-        """
+        self.register_new_layer(layer)
 
-        if not isinstance(layer, layers.Layer):
-            raise TypeError('The added layer must be an instance of class Layer. Found: %s' % type(layer))
-
-        if len(self.all_layers) > 0 and isinstance(layer, layers.InputLayer):
-            raise TypeError('No need to add another `InputLayer`, it is automatically added to the network')
-
-        if layer.name in self.all_layers_dict.keys():
-            raise ValueError("The layer name `%s` already exists in this network" % layer.name)
-
-        self.all_layers_dict[layer.name] = layer
-        self.all_layers.append(layer.name)
+        self._last_layer = layer(self._last_layer)
 
         # Reset Network State in case it was previously compiled
         self._net = None
-        self.outputs = None
         self.is_compiled = False
-
-    def compile(self, input_plh, reuse=False, is_train=True):
-
-        logging.info(
-            "** Compiling %s `%s` - reuse: %s, is_train: %s **" % (self.__class__.__name__, self.name, reuse, is_train)
-        )
-
-        # Reset All Layers' Inputs
-        for name, layer in self.all_layers_dict.items():
-            layer.inputs = None
-            layer.outputs = None
-
-        with logging.temp_handler("    [*]"):
-
-            _net = self.all_layers_dict[self.all_layers[0]](input_plh)
-
-            with tf.variable_scope(self.name, reuse=reuse):
-                for layer in self.all_layers[1:]:
-                    _net = self.all_layers_dict[layer](prev_layer=_net, is_train=is_train)
-                    self.all_drop.update(_net._local_drop)
-
-            if not self.is_compiled:
-                self._net = _net
-                self.outputs = self._net.outputs
-                self.is_compiled = True
-
-        return self.outputs
+        self.outputs = layer(self.outputs)
 
     def count_layers(self):
         return len(self.all_layers_dict)
-
-    def __getitem__(self, layer_name):
-        return self.all_layers_dict[layer_name]
 
     '''
         if not self._layers:

@@ -121,7 +121,8 @@ class DeConv2d(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(DeConv2d, self).compile(prev_layer)
@@ -134,7 +135,7 @@ class DeConv2d(Layer):
                 inputs=self.inputs, filters=self.n_filter, kernel_size=self.filter_size, strides=self.strides,
                 padding=self.padding, data_format=self.data_format, activation=None, kernel_initializer=self.W_init,
                 bias_initializer=self.b_init, use_bias=(True if self.b_init else
-                                                        False), reuse=is_name_reuse, trainable=is_train, name=self.name
+                                                        False), reuse=is_name_reuse, trainable=is_train, name=None
             )
 
             self._apply_activation(self.outputs)
@@ -242,7 +243,8 @@ class DeConv3d(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(DeConv3d, self).compile(prev_layer)
@@ -255,7 +257,7 @@ class DeConv3d(Layer):
                 inputs=self.inputs, filters=self.n_filter, kernel_size=self.filter_size, strides=self.strides,
                 padding=self.padding, data_format=self.data_format, activation=None, kernel_initializer=self.W_init,
                 bias_initializer=self.b_init, use_bias=(True if self.b_init else
-                                                        False), reuse=is_name_reuse, trainable=is_train, name=self.name
+                                                        False), reuse=is_name_reuse, trainable=is_train, name=None
             )
 
             self._apply_activation(self.outputs)

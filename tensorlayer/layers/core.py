@@ -17,6 +17,7 @@ from tensorlayer import logging
 
 from tensorlayer.decorators import force_return_self
 from tensorlayer.decorators import layer_autoregister
+from tensorlayer.decorators import overwrite_layername_in_network
 from tensorlayer.decorators import protected_method
 from tensorlayer.decorators import private_method
 
@@ -317,6 +318,7 @@ class Layer(BaseLayer):
 
     @abstractmethod
     @layer_autoregister
+    @overwrite_layername_in_network
     def __init__(self, *args, **kwargs):
 
         super(Layer, self).__init__(*args, **kwargs)
@@ -342,10 +344,6 @@ class Layer(BaseLayer):
                 self.__call__(self.prev_layer, self.is_train)
             else:
                 self.__call__(self.prev_layer)
-
-        # Make Layer robust to declarations in name_scopes
-        scope = tf.get_default_graph().get_name_scope()
-        self.name = scope + "/" + self.name if scope != "" else self.name
 
     def __str__(self):
         return self._str()
@@ -387,12 +385,20 @@ class Layer(BaseLayer):
         self._add_graphs((self.name, self.graph))
 
     @force_return_self
-    def __call__(self, prev_layer, is_train=True):
+    def __call__(self, prev_layer=None, is_train=True):
+
+        if prev_layer is None:
+
+            if hasattr(self, 'prev_layer') and self.prev_layer is not None:
+                prev_layer = self.prev_layer
+
+            elif not isinstance(self, (tl.layers.InputLayer, tl.layers.OneHotInputLayer)):
+                raise ValueError("No previous_layer has been given to the layer `%s`" % self.name)
 
         if isinstance(prev_layer, tf.Tensor) and isinstance(self, (tl.layers.InputLayer, tl.layers.OneHotInputLayer)):
             self.compile(prev_layer, is_train)
 
-        if hasattr(prev_layer, "outputs") and prev_layer.outputs is not None:
+        elif (hasattr(prev_layer, "outputs") and prev_layer.outputs is not None) or isinstance(prev_layer, (list, tuple)):
             self.compile(prev_layer, is_train)
 
         else:
