@@ -21,27 +21,55 @@ class Network_Sequential_Test(CustomTestCase):
     def setUpClass(cls):
 
         with tf.variable_scope("test_scope"):
+            def fire_module(inputs, squeeze_depth, expand_depth, name):
+                """Fire module: squeeze input filters, then apply spatial convolutions."""
+
+                with tf.variable_scope(name, "fire", [inputs]):
+                    squeezed = tl.layers.Conv2d(
+                        n_filter=squeeze_depth,
+                        filter_size=(1, 1),
+                        strides=(1, 1),
+                        padding='SAME',
+                        act=tf.nn.relu,
+                        name='squeeze'
+                    )(inputs)
+
+                    e1x1 = tl.layers.Conv2d(
+                        n_filter=expand_depth,
+                        filter_size=(1, 1),
+                        strides=(1, 1),
+                        padding='SAME',
+                        act=tf.nn.relu,
+                        name='e1x1'
+                    )(squeezed)
+
+                    e3x3 = tl.layers.Conv2d(
+                        n_filter=expand_depth,
+                        filter_size=(3, 3),
+                        strides=(1, 1),
+                        padding='SAME',
+                        act=tf.nn.relu,
+                        name='e3x3'
+                    )(squeezed)
+
+                    return tl.layers.ConcatLayer(concat_dim=3, name='concat')([e1x1, e3x3])
 
             class MyCustomNetwork(tl.networks.CustomModel):
 
-                def model(self, input_plh, is_train=True):
-                    input_layer = tl.layers.InputLayer(name='input_layer')(input_plh, is_train)
+                def model(self):
+                    input_layer = tl.layers.InputLayer(name='input_layer')
 
-                    net = tl.layers.ReshapeLayer(shape=[-1, 16, 16, 16, 1], name="reshape_layer_1")(input_layer, is_train)
-                    net = tl.layers.PadLayer(padding=[[0, 0], [4, 4], [3, 3], [2, 2], [0, 0]], name='pad_layer_2')(net, is_train)
-                    net = tl.layers.ZeroPad3d(padding=2, name='zeropad3d_layer_2-1')(net, is_train)
-                    net = tl.layers.ZeroPad3d(padding=(2, 2, 2), name='zeropad3d_layer_2-2')(net, is_train)
-                    net = tl.layers.ZeroPad3d(padding=((2, 2), (3, 3), (4, 4)), name='zeropad3d_layer_2-3')(net, is_train)
-                    net = tl.layers.ScaleLayer(init_scale=2., name='scale_layer_2')(net, is_train)
+                    net = fire_module(input_layer, 32, 24, "fire_module_1")
+                    net = fire_module(net, 32, 24, "fire_module_2")
 
                     return input_layer, net
 
-            cls.model = MyCustomNetwork("my_custom_model")
+            cls.model = MyCustomNetwork(name="my_custom_network")
 
-            plh = tf.placeholder(tf.float16, (100, 16, 16, 16))
+            plh = tf.placeholder(tf.float16, (100, 16, 16, 3))
 
-            cls.train_model_input, cls.train_model_output = cls.model.compile(plh, reuse=False, is_train=True)
-            cls.test_model_input, cls.test_model_output = cls.model.compile(plh, reuse=True, is_train=False)
+            cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
+            cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
 
     def test_True(self):
         self.assertTrue(True)
