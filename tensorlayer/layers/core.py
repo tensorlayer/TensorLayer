@@ -398,8 +398,21 @@ class Layer(BaseLayer):
         if isinstance(prev_layer, tf.Tensor) and isinstance(self, (tl.layers.InputLayer, tl.layers.OneHotInputLayer)):
             self.compile(prev_layer, is_train)
 
-        elif (hasattr(prev_layer, "outputs") and prev_layer.outputs is not None) or isinstance(prev_layer, (list, tuple)):
+        elif (hasattr(prev_layer, "outputs") and prev_layer.outputs is not None):
             self.compile(prev_layer, is_train)
+
+        elif isinstance(prev_layer, (list, tuple)):
+            check_passed = True
+
+            for layer in prev_layer:
+                if not hasattr(layer, "outputs") or layer.outputs is None:
+                    check_passed = False
+                    break
+
+            if check_passed:
+                self.compile(prev_layer, is_train)
+            else:
+                self.prev_layer = prev_layer
 
         else:
             self.prev_layer = prev_layer
