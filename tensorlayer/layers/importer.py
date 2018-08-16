@@ -77,7 +77,8 @@ class SlimNetsLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(SlimNetsLayer, self).compile(prev_layer)
@@ -98,12 +99,12 @@ class SlimNetsLayer(Layer):
                 for v in end_points.values():
                     slim_layers.append(v)
 
-            slim_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
             self.outputs = self._apply_activation(self.outputs)
 
-        self._add_layers(slim_layers)
-        self._add_params(slim_variables)
+            self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+        self._add_layers(self.outputs)
+        self._add_params(self._local_weights)
 
 
 # @deprecated(
@@ -143,9 +144,12 @@ class KerasLayer(Layer):
             raise ValueError("keras_layer is None")
 
         self.prev_layer = prev_layer
-        self.keras_layer = keras_layer(**keras_args)
         self.act = act
         self.name = name
+        self.keras_layer = keras_layer(**keras_args)
+
+        if not isinstance(self.keras_layer, tf.keras.layers.Layer):
+            raise ValueError("keras_layer is not a Keras Layer but `%s`" % type(self.keras_layer))
 
         super(KerasLayer, self).__init__(keras_args=keras_args)
 
@@ -164,19 +168,28 @@ class KerasLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(KerasLayer, self).compile(prev_layer)
 
-        with tf.variable_scope(self.name) as vs:
-            self.outputs = self.keras_layer(self.inputs)
-            keras_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        current_varscope = tf.get_variable_scope()
 
+        with tf.variable_scope(current_varscope.name + "/" + self.name + "/", reuse=current_varscope.reuse):
+
+            self.outputs = self.keras_layer(self.inputs)
             self.outputs = self._apply_activation(self.outputs)
 
+            if is_train:
+                self._local_weights = self.keras_layer._trainable_weights
+
+                for var in self._local_weights:  # Keras does not add the vars to the collection
+                    if var.trainable and var not in tf.get_collection(TF_GRAPHKEYS_VARIABLES):
+                        tf.add_to_collection(name=TF_GRAPHKEYS_VARIABLES, value=var)
+
         self._add_layers(self.outputs)
-        self._add_params(keras_variables)
+        self._add_params(self._local_weights)
 
 
 @deprecated(
@@ -237,14 +250,16 @@ class EstimatorLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(EstimatorLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name) as vs:
             self.outputs = self.model_fn(self.inputs, **self.layer_args)
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+            self._local_weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=vs.name)
 
         self._add_layers(self.outputs)
-        self._add_params(variables)
+        self._add_params(self._local_weights)

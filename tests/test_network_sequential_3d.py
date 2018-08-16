@@ -15,7 +15,7 @@ except ImportError:
     from unittests_helper import CustomTestCase
 
 
-class Network_Sequential_Test(CustomTestCase):
+class Network_Sequential_3D_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
