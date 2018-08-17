@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """Examples of Stacked Denoising Autoencoder, Dropout, Dropconnect and CNN.
 
 - Multi-layer perceptron (MNIST) - Classification task, see tutorial_mnist_simple.py

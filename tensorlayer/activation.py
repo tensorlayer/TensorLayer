@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """A file containing various activation functions."""
 
 import tensorflow as tf

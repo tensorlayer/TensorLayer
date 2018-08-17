@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """Alpha Version for Distributed Training
 
 you can test this example in your local machine using 2 workers and 1 ps like below,

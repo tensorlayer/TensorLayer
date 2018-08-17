@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """You will learn.
 
 1. How to convert CIFAR-10 dataset into TFRecord format file.

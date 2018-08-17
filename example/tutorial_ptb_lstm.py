@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 r"""Example of Synced sequence input and output.
 
 This is a reimpmentation of the TensorFlow official PTB example in :

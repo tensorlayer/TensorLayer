@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+
 """Vector Representations of Words.
 
 This is the minimalistic reimplementation of

@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """
 MobileNetV1 for ImageNet using TL models
 

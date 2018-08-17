@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """
 
 - 1. This model has 1,068,298 paramters and TWN compression strategy(weight:1,0,-1, output: float32),

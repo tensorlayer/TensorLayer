@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """
 TensorLayer provides rich layer implementations trailed for
 various benchmarks and domain-specific problems. In addition, we also

@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf8 -*-
+
 """
 MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications
 https://github.com/rcmalli/keras-mobilenet/blob/master/keras_mobilenet/mobilenet.py

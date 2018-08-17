@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """Reimplementation of the TensorFlow official CIFAR-10 CNN tutorials.
 
 - 1. This model has 1,068,298 paramters, after few hours of training with GPU,

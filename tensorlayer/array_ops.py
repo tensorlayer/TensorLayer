@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """A file containing functions related to array manipulation."""
 
 from tensorflow.python.eager import context

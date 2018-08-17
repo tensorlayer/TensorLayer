@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """Example of training an Inception V3 model with ImageNet.
 
 The parameters are set as in the best results of the paper: https://arxiv.org/abs/1512.00567
