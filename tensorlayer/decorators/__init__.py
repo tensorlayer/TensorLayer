@@ -11,6 +11,7 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
 
 from .deprecation_decorators import deprecated
 from .deprecation_decorators import deprecated_alias
+from .deprecation_decorators import deprecated_args
 from .method_decorators import private_method
 from .method_decorators import protected_method
 from .layer_decorators import force_return_self

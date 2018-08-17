@@ -10,6 +10,7 @@ They replace the following imports:
 >>> from tensorflow.python.util.deprecation import _validate_deprecation_args
 """
 
+import collections
 import inspect
 import re
 import sys
@@ -17,14 +18,81 @@ import warnings
 
 import tensorlayer as tl
 
+from tensorflow.python.util import tf_inspect
+
 __all__ = [
-    "add_deprecation_notice_to_docstring", "get_qualified_name", "get_network_obj", "rename_kwargs",
-    "validate_deprecation_args"
+    "DeprecatedArgSpec", "add_deprecated_arg_notice_to_docstring", "add_deprecation_notice_to_docstring",
+    "call_location", "get_qualified_name", "get_network_obj", "rename_kwargs", "validate_deprecation_args"
 ]
+
+DeprecatedArgSpec = collections.namedtuple('DeprecatedArgSpec', ['position', 'has_ok_value', 'ok_value'])
+
+
+def add_deprecated_arg_notice_to_docstring(doc, date, instructions):
+    """Adds a deprecation notice to a docstring for deprecated arguments."""
+    return _add_notice_to_docstring(
+        doc, instructions, 'DEPRECATED FUNCTION ARGUMENTS', '(deprecated arguments)', [
+            'SOME ARGUMENTS ARE DEPRECATED. They will be removed %s.' %
+            ('in a future version' if date is None else ('after %s' % date)), 'Instructions for updating:'
+        ]
+    )
+
+    # if instructions:
+    #     deprecation_message = """
+    #         .. warning::
+    #             **THIS FUNCTION IS DEPRECATED:** It will be removed after %s.
+    #             *Instructions for updating:* %s.
+    #     """ % (('in a future version' if date is None else ('after %s' % date)), instructions)
+    #
+    # else:
+    #     deprecation_message = """
+    #         .. warning::
+    #             **THIS FUNCTION IS DEPRECATED:** It will be removed after %s.
+    #     """ % (('in a future version' if date is None else ('after %s' % date)))
+    #
+    # main_text = [deprecation_message]
+    #
+    # return _add_notice_to_docstring(doc=doc, instructions='DEPRECATED FUNCTION', notice=main_text)
 
 
 def add_deprecation_notice_to_docstring(doc, date, instructions):
-    return _add_deprecated_function_notice_to_docstring(doc, date, instructions)
+    """Adds a deprecation notice to a docstring for deprecated functions."""
+
+    if instructions:
+        deprecation_message = """
+            .. warning::
+                **THIS FUNCTION IS DEPRECATED:** It will be removed after %s.
+                *Instructions for updating:* %s.
+        """ % (('in a future version' if date is None else ('after %s' % date)), instructions)
+
+    else:
+        deprecation_message = """
+            .. warning::
+                **THIS FUNCTION IS DEPRECATED:** It will be removed after %s.
+        """ % (('in a future version' if date is None else ('after %s' % date)))
+
+    main_text = [deprecation_message]
+
+    return _add_notice_to_docstring(doc=doc, instructions='DEPRECATED FUNCTION', notice=main_text)
+
+
+def call_location():
+    """Returns call location given level up from current call."""
+    frame = tf_inspect.currentframe()
+
+    if frame:
+        # CPython internals are available, use them for performance.
+        # walk back two frames to get to deprecated function caller.
+        first_frame = frame.f_back
+        second_frame = first_frame.f_back
+        frame = second_frame if second_frame else first_frame
+        return '%s:%d' % (frame.f_code.co_filename, frame.f_lineno)
+
+    else:
+        # Slow fallback path
+        stack = tf_inspect.stack(0)  # 0 avoids generating unused context
+        entry = stack[2]
+        return '%s:%d' % (entry[1], entry[2])
 
 
 def get_qualified_name(function):
@@ -87,36 +155,17 @@ def validate_deprecation_args(date, instructions):
         raise ValueError('Don\'t deprecate things without conversion instructions!')
 
 
-def _add_deprecated_function_notice_to_docstring(doc, date, instructions):
-    """Adds a deprecation notice to a docstring for deprecated functions."""
-
-    if instructions:
-        deprecation_message = """
-            .. warning::
-                **THIS FUNCTION IS DEPRECATED:** It will be removed after %s.
-                *Instructions for updating:* %s.
-        """ % (('in a future version' if date is None else ('after %s' % date)), instructions)
-
-    else:
-        deprecation_message = """
-            .. warning::
-                **THIS FUNCTION IS DEPRECATED:** It will be removed after %s.
-        """ % (('in a future version' if date is None else ('after %s' % date)))
-
-    main_text = [deprecation_message]
-
-    return _add_notice_to_docstring(doc, 'DEPRECATED FUNCTION', main_text)
-
-
-def _add_notice_to_docstring(doc, no_doc_str, notice):
+def _add_notice_to_docstring(doc, instructions, no_doc_str, suffix_str, notice):
     """Adds a deprecation notice to a docstring."""
     if not doc:
         lines = [no_doc_str]
 
     else:
         lines = _normalize_docstring(doc).splitlines()
+        # lines[0] += ' ' + suffix_str
 
-    notice = [''] + notice
+    # notice = [''] + notice
+    notice = [''] + notice + [instructions]
 
     if len(lines) > 1:
         # Make sure that we keep our distance from the main body
