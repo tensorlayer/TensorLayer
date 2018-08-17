@@ -33,9 +33,11 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 parser = argparse.ArgumentParser(description='Training codes for Openpose using Tensorflow')
 parser.add_argument('--save_interval', type=int, default=5000)
-parser.add_argument('--model_path', type=str, default=None,description='Path to your vgg19.npy file')
-parser.add_argument('--save_interval', type=int, default=5000)
-parser.add_argument('--save_interval', type=int, default=5000)
+parser.add_argument('--model_path', type=str, default='/Users/Joel/Desktop/TRAINNING_LOG/vgg19.npy',help='Path to your vgg19.npy file')
+parser.add_argument('--log_interval', type=int, default=1)
+parser.add_argument('--batch_size', type=int, default=8)
+parser.add_argument('--save_path',type=str,default='/Users/Joel/Desktop/Log_1508/model/')
+parser.add_argument('--vis_path',type=str,default='/Users/Joel/Desktop/Log_1508/val/')
 args = parser.parse_args()
 
 '''
@@ -44,20 +46,26 @@ data_dir:
     image_folder : xxxx.jpg
     'annotations': xxxx.json
 '''
+
 image_folder='val2014'
 data_dir = '/Users/Joel/Desktop/coco/coco_dataset'
 image_path= '{}/images/{}/'.format(data_dir,image_folder)
 anno_path = '{}/annotations/{}'.format(data_dir,'coco.json')
 
-''''''
+
+#concat your data here
+'''
+imgs_file_list: list of path to xxx.jpg
+objs_info_list: annotations list of every image 
+mask_list: mask of every image 
+'''
 df_val = PoseInfo(image_path, anno_path,False)
 imgs_file_list= df_val.get_image_list()
 objs_info_list=df_val.get_joint_list()
 mask_list= df_val.get_mask()
 targets=list(zip (objs_info_list,mask_list))
 
-#path to pretrain vgg
-# MODEL_PATH = '/Users/Joel/Desktop/TRAINNING_LOG/vgg19.npy'
+
 MODEL_PATH = args.model_path
 
 def generator():
@@ -75,6 +83,7 @@ def _data_aug_fn(image, ground_truth):
     h_mask, w_mask, _ = np.shape(image)
     # mask
     mask_miss = np.ones((h_mask, w_mask), dtype=np.uint8)
+    
     for seg in mask:
         bin_mask = maskUtils.decode(seg)
         bin_mask = np.logical_not(bin_mask)
@@ -115,7 +124,7 @@ def _map_fn(img_list, annos):
 #  COCO 19
 n_pos = 19
 n_epoch = 80
-batch_size = 10
+batch_size = args.batch_size
 stepsize = 136106
 weight_decay = 5e-4
 base_lr = 4e-5
@@ -174,6 +183,7 @@ config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=False)
 with tf.Session(config=config) as sess:
     sess.run(tf.global_variables_initializer())
 
+    #for vgg19 restoring
     npy_file = np.load(MODEL_PATH, encoding='latin1').item()
     params = []
     for val in sorted(npy_file.items()):
@@ -193,6 +203,8 @@ with tf.Session(config=config) as sess:
         if gs_num != 0 and (gs_num % stepsize == 0):
             new_lr_decay = gamma ** (gs_num // stepsize)
             sess.run(tf.assign(lr_v, base_lr * new_lr_decay))
+
+        #TODO change to direct feed
         tran_batch = sess.run(one_element)
         #image
         x_ = tran_batch[0]
@@ -209,16 +221,20 @@ with tf.Session(config=config) as sess:
         [_, the_loss, loss_ll,L2_reg,conf_result,weight_norm,paf_result] = sess.run([train_op, total_loss, stage_losses,L2,last_conf,L2, last_paf],
                                           feed_dict={x: x_, confs: confs_, pafs: pafs_,img_mask1:mask1,img_mask2:mask2})
 
+        # if gs_num%args.log_interval==0 and gs_num!=0:
         lr=sess.run(lr_v)
         tstring=time.strftime('%d-%m %H:%M:%S', time.localtime(time.time()))
         print('Total Loss at iteration {} is: {} Learning rate {:10e} weight_norm {:10e} Time: {}'.format(gs_num,the_loss,lr,weight_norm,tstring))
-        print('Time difference', time.time() - tic)
-
         for ix, ll in enumerate(loss_ll):
             print('Network#',ix,'For Branch',ix%2+1,'Loss:',ll)
+
         if gs_num!=0 and gs_num % args.save_interval == 0:
-            ticks = time.time()
-            print('Saved time:',ticks)
-            tl.files.save_npz_dict(net.all_params, '/Users/Joel/Desktop/Log_1508/model/inf_model' + str(gs_num) + '.npz', sess=sess)
+            np.save(args.vis_path+'image' + str(gs_num) + '.npy', x_)
+            np.save(args.vis_path+'heat_ground' + str(gs_num) + '.npy', confs_)
+            np.save(args.vis_path+'heat_result' + str(gs_num) + '.npy', conf_result)
+            np.save(args.vis_path+'paf_ground' + str(gs_num) + '.npy', pafs_)
+            np.save(args.vis_path+'mask' + str(gs_num) + '.npy', mask)
+            np.save(args.vis_path+'paf_result' + str(gs_num) + '.npy', paf_result)
+            tl.files.save_npz_dict(net.all_params, args.save_path +'openpose_model' + str(gs_num) + '.npz', sess=sess)
         if gs_num > 3000001:
             break
