@@ -83,7 +83,7 @@ def _data_aug_fn(image, ground_truth):
     h_mask, w_mask, _ = np.shape(image)
     # mask
     mask_miss = np.ones((h_mask, w_mask), dtype=np.uint8)
-    
+
     for seg in mask:
         bin_mask = maskUtils.decode(seg)
         bin_mask = np.logical_not(bin_mask)

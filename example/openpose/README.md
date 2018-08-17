@@ -9,18 +9,15 @@ Therefore, we xxxxx
 
 ## 2. Project files
 
-- `vgg_models.py` is to define the model structures, currently only VGG19 Based model included
-- `utils.py` is to extract databased from cocodataset and groundtruth calculation
-- `train.py` is to train the model
-- ....
+- `vgg_models.py` : to define the model structures, currently only VGG19 Based model included
+- `utils.py` : to extract databased from cocodataset and groundtruth calculation
+- `train.py` : to train the model
+- `visual.py`: draw the training result
 
 ## 3. Preparation
 
 
 1. for data processing, COCOAPIs are used, refer to : https://github.com/cocodataset/cocoapi
-2.
-To have a fast inferecning, the pose-processing for inferencing is based on OpenPose's C++ implmentation, so before you run the inferencing code, 
-you should compile ...
 
 ## 4. Use pre-trained model
 
