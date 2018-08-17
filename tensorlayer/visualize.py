@@ -444,10 +444,17 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
             #         np.reshape(CNN[count-1,:,:,:], (n_row, n_col)),
             #         cmap='gray', interpolation="nearest")     # theano
             if n_color == 1:
-                plt.imshow(np.reshape(CNN[:, :, :, count - 1], (n_row, n_col)), cmap='gray', interpolation="nearest")
+                plt.imshow(
+                    X=np.reshape(a=CNN[:, :, :, count - 1], newshape=(n_row, n_col)),
+                    cmap='gray',
+                    interpolation="nearest"
+                )
+
             elif n_color == 3:
                 plt.imshow(
-                    np.reshape(CNN[:, :, :, count - 1], (n_row, n_col, n_color)), cmap='gray', interpolation="nearest"
+                    X=np.reshape(a=CNN[:, :, :, count - 1], newshape=(n_row, n_col, n_color)),
+                    cmap='gray',
+                    interpolation="nearest"
                 )
             else:
                 raise Exception("Unknown n_color")

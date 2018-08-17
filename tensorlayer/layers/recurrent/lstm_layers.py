@@ -152,7 +152,8 @@ class ConvLSTMLayer(Layer):
                     # <akara>: stack more RNN layer after that
                     # 5D Tensor [n_example/n_steps, n_steps, h, w, c]
                     self.outputs = tf.reshape(
-                        tf.concat(outputs, 1), [-1, n_steps, cell_shape[0], cell_shape[1], feature_map]
+                        tf.concat(outputs, 1),
+                        [-1, n_steps, cell_shape[0], cell_shape[1], feature_map]
                     )
 
         self.final_state = state
