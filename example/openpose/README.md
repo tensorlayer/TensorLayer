@@ -9,13 +9,16 @@ Therefore, we xxxxx
 
 ## 2. Project files
 
-- `models.py` is to define the model structures, e.g. VGG19, Residual Squeezenet
-- `data_process.py` is to 
+- `vgg_models.py` is to define the model structures, currently only VGG19 Based model included
+- `utils.py` is to extract databased from cocodataset and groundtruth calculation
 - `train.py` is to train the model
 - ....
 
 ## 3. Preparation
 
+
+1. for data processing, COCOAPIs are used, refer to : https://github.com/cocodataset/cocoapi
+2.
 To have a fast inferecning, the pose-processing for inferencing is based on OpenPose's C++ implmentation, so before you run the inferencing code, 
 you should compile ...
 

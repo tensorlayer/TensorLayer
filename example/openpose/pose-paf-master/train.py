@@ -33,6 +33,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 parser = argparse.ArgumentParser(description='Training codes for Openpose using Tensorflow')
 parser.add_argument('--save_interval', type=int, default=5000)
+parser.add_argument('--model_path', type=str, default=None,description='Path to your vgg19.npy file')
+parser.add_argument('--save_interval', type=int, default=5000)
+parser.add_argument('--save_interval', type=int, default=5000)
 args = parser.parse_args()
 
 '''
@@ -48,13 +51,15 @@ anno_path = '{}/annotations/{}'.format(data_dir,'coco.json')
 
 ''''''
 df_val = PoseInfo(image_path, anno_path,False)
-
 imgs_file_list= df_val.get_image_list()
 objs_info_list=df_val.get_joint_list()
 mask_list= df_val.get_mask()
 targets=list(zip (objs_info_list,mask_list))
+
 #path to pretrain vgg
-MODEL_PATH = '/Users/Joel/Desktop/TRAINNING_LOG/vgg19.npy'
+# MODEL_PATH = '/Users/Joel/Desktop/TRAINNING_LOG/vgg19.npy'
+MODEL_PATH = args.model_path
+
 def generator():
     inputs = imgs_file_list
     targets = list(zip (objs_info_list,mask_list))
@@ -83,9 +88,6 @@ def _data_aug_fn(image, ground_truth):
     image, annos, mask_miss = keypoint_crop_random(image, annos, mask_miss)
 
     h,w,_=np.shape(image)
-    if h != 368 or w != 368:
-        image, annos, mask_miss = _resize_image(image, annos, mask_miss, 368, 368)
-
     height, width, _ = np.shape(image)
     heatmap = get_heatmap(annos, height, width)
     vectormap = get_vectormap(annos, height, width)
@@ -113,7 +115,11 @@ def _map_fn(img_list, annos):
 #  COCO 19
 n_pos = 19
 n_epoch = 80
-batch_size = 2
+batch_size = 10
+stepsize = 136106
+weight_decay = 5e-4
+base_lr = 4e-5
+gamma=0.333
 
 x = tf.placeholder(tf.float32, [None, 368, 368, 3], "image")
 confs = tf.placeholder(tf.float32, [None, 46, 46, n_pos], "confidence_maps")
@@ -155,19 +161,16 @@ for p in tl.layers.get_variables_with_name('kernel', True, True):
 total_loss = tf.reduce_sum(losses) /batch_size + L2
 
 global_step = tf.Variable(1, trainable=False)
-stepsize = 136106
-weight_decay = 5e-4
-base_lr = 4e-5
-gamma=0.333
-
 print('Config:','n_epoch: ',n_epoch,'batch_size: ',batch_size,'base_lr: ',base_lr,'stepsize: ',stepsize)
-# train_params = tl.layers.get_variables_with_name('cpm', True, True)  # dont update pretraied cnn part
 with tf.variable_scope('learning_rate'):
     lr_v = tf.Variable(base_lr, trainable=False)
 
 opt = tf.train.MomentumOptimizer(lr_v,0.9)
 train_op=opt.minimize(total_loss,global_step=global_step)
 config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=False)
+
+
+#start training
 with tf.Session(config=config) as sess:
     sess.run(tf.global_variables_initializer())
 
