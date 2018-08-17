@@ -19,8 +19,8 @@ Therefore, we xxxxx
 
 1. for data processing, COCOAPIs are used, refer to : https://github.com/cocodataset/cocoapi
 2. Build c++ library for post processing. See : https://github.com/ildoonet/tf-pose-estimation/tree/master/tf_pose/pafprocess
-    $ cd tf_pose/pafprocess
-    $ swig -python -c++ pafprocess.i && python3 setup.py build_ext --inplace
+-$ cd tf_pose/pafprocess
+-$ swig -python -c++ pafprocess.i && python3 setup.py build_ext --inplace
 
 ## 4. Use pre-trained model
 
@@ -44,7 +44,7 @@ And then `train.py` will train the model to the end.
 
 ## 6. Evaluate a model
 
-Runs `xxx.py`, the API `xxxxx` is ....
+Runs `eval.py`, the API `xxxxx` is ....
 
 ## 7. Speed up and deployment
 

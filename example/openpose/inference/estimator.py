@@ -45,22 +45,17 @@ def _stage(cnn, b1, b2, n_pos, name='stageX'):
     return b1, b2
 
 def vgg_network(x):
-    x=x/255.0 #temp
-    VGG_MEAN = [103.939, 116.779, 123.68]
 
-    print("build model started")
-    rgb_scaled = x * 255.0
-    # Convert RGB to BGR
-    red, green, blue = tf.split(rgb_scaled, 3, 3)
-    rgb = tf.concat([
-        red - VGG_MEAN[2],
-        green - VGG_MEAN[1],
-        blue - VGG_MEAN[0]
-    ], axis=3)
+    # red, green, blue = tf.split(x, 3, 3)
+    # rgb = tf.concat([
+    #     red ,
+    #     green,
+    #     blue
+    # ], axis=3)
     # input layer
-    rgb = rgb / 255.0
+    bgr = x / 255.0 - 0.5
 
-    net_in = InputLayer(rgb, name='input')
+    net_in = InputLayer(bgr, name='input')
     # conv1
     net = Conv2d(net_in, 64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1')
     net = Conv2d(net, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2')
