@@ -135,6 +135,7 @@ To release a new version, please update the changelog as followed:
 - numpy>=1.14,<1.15 => numpy>=1.14,<1.16 (PR #754)
 - tqdm>=4.23,<4.24 => tqdm>=4.23,<4.25 (PR #755)
 - pytest>=3.6,<3.7 => tqdm>=3.6,<3.8 (PR #755)
+- yapf>=0.21,<0.22 => yapf>=0.21,<0.23 (PR #755)
 
 ### Contributors
 - @DEKHTIARJonathan: #739 #747 #750 #754 #755
