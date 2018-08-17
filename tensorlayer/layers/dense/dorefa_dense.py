@@ -69,8 +69,9 @@ class DorefaDenseLayer(Layer):
             b_init_args=None,
             name='dorefa_dense',
     ):
-        super(DorefaDenseLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super(DorefaDenseLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
 
         logging.info(
             "DorefaDenseLayer  %s: %d %s" %

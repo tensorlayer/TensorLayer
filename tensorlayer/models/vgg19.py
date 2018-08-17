@@ -150,7 +150,8 @@ class VGG19Base(object):
         # For existing pre-trained model link
         logging.info("Restore pre-trained parameters")
         maybe_download_and_extract(
-            'vgg19.npy', 'models',
+            'vgg19.npy',
+            'models',
             'https://media.githubusercontent.com/media/tensorlayer/pretrained-models/master/models/',
             expected_bytes=574670860
         )

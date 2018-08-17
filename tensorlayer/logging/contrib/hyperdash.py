@@ -56,8 +56,9 @@ class Experiment(hd.Experiment):
         if api_key is not None:
             HyperDashHandler.set_apikey(api_key)
 
-        super(Experiment,
-              self).__init__(model_name=model_name, api_key_getter=HyperDashHandler.get_apikey, capture_io=capture_io)
+        super(Experiment, self).__init__(
+            model_name=model_name, api_key_getter=HyperDashHandler.get_apikey, capture_io=capture_io
+        )
 
 
 monitor = HyperDashHandler.monitor

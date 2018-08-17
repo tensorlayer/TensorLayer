@@ -137,7 +137,10 @@ class DynamicRNNLayer(Layer):
             raise Exception("Please put in cell_fn")
 
         super(DynamicRNNLayer, self).__init__(
-            prev_layer=prev_layer, cell_init_args=cell_init_args, dynamic_rnn_init_args=dynamic_rnn_init_args, name=name
+            prev_layer=prev_layer,
+            cell_init_args=cell_init_args,
+            dynamic_rnn_init_args=dynamic_rnn_init_args,
+            name=name
         )
 
         if self.cell_init_args:
@@ -392,7 +395,10 @@ class BiDynamicRNNLayer(Layer):
             name='bi_dyrnn_layer',
     ):
         super(BiDynamicRNNLayer, self).__init__(
-            prev_layer=prev_layer, cell_init_args=cell_init_args, dynamic_rnn_init_args=dynamic_rnn_init_args, name=name
+            prev_layer=prev_layer,
+            cell_init_args=cell_init_args,
+            dynamic_rnn_init_args=dynamic_rnn_init_args,
+            name=name
         )
 
         if self.cell_init_args:
@@ -490,18 +496,28 @@ class BiDynamicRNNLayer(Layer):
                     self.bw_cell = [cell_creator() for _ in range(n_layer)]
 
                 outputs, states_fw, states_bw = stack_bidirectional_dynamic_rnn(
-                    cells_fw=self.fw_cell, cells_bw=self.bw_cell, inputs=self.inputs, sequence_length=sequence_length,
-                    initial_states_fw=self.fw_initial_state, initial_states_bw=self.bw_initial_state,
-                    dtype=self.inputs.dtype, **self.dynamic_rnn_init_args
+                    cells_fw=self.fw_cell,
+                    cells_bw=self.bw_cell,
+                    inputs=self.inputs,
+                    sequence_length=sequence_length,
+                    initial_states_fw=self.fw_initial_state,
+                    initial_states_bw=self.bw_initial_state,
+                    dtype=self.inputs.dtype,
+                    **self.dynamic_rnn_init_args
                 )
 
             else:
                 self.fw_cell = cell_creator()
                 self.bw_cell = cell_creator()
                 outputs, (states_fw, states_bw) = tf.nn.bidirectional_dynamic_rnn(
-                    cell_fw=self.fw_cell, cell_bw=self.bw_cell, inputs=self.inputs, sequence_length=sequence_length,
-                    initial_state_fw=self.fw_initial_state, initial_state_bw=self.bw_initial_state,
-                    dtype=self.inputs.dtype, **self.dynamic_rnn_init_args
+                    cell_fw=self.fw_cell,
+                    cell_bw=self.bw_cell,
+                    inputs=self.inputs,
+                    sequence_length=sequence_length,
+                    initial_state_fw=self.fw_initial_state,
+                    initial_state_bw=self.bw_initial_state,
+                    dtype=self.inputs.dtype,
+                    **self.dynamic_rnn_init_args
                 )
 
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)

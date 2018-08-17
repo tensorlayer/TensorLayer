@@ -359,7 +359,8 @@ def main(_):
                     cost_val, lstm1_val.final_state.c, lstm1_val.final_state.h, lstm2_val.final_state.c,
                     lstm2_val.final_state.h,
                     tf.no_op()
-                ], feed_dict=feed_dict
+                ],
+                feed_dict=feed_dict
             )
             state1 = (state1_c, state1_h)
             state2 = (state2_c, state2_h)
@@ -393,7 +394,8 @@ def main(_):
                 lstm1_test.final_state.h,
                 lstm2_test.final_state.c,
                 lstm2_test.final_state.h,
-            ], feed_dict=feed_dict
+            ],
+            feed_dict=feed_dict
         )
         state1 = (state1_c, state1_h)
         state2 = (state2_c, state2_h)

@@ -162,12 +162,24 @@ class ReconLayer(DenseLayer):
         else:
             raise Exception("Don't support the given reconstruct activation function")
 
-        self.train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08,
-                                               use_locking=False).minimize(self.cost, var_list=self.train_params)
+        self.train_op = tf.train.AdamOptimizer(
+            learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False
+        ).minimize(
+            self.cost, var_list=self.train_params
+        )
         # self.train_op = tf.train.GradientDescentOptimizer(1.0).minimize(self.cost, var_list=self.train_params)
 
     def pretrain(
-            self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True,
+            self,
+            sess,
+            x,
+            X_train,
+            X_val,
+            denoise_name=None,
+            n_epoch=100,
+            batch_size=128,
+            print_freq=10,
+            save=True,
             save_name='w1pre_'
     ):
         # ====================================================
@@ -217,8 +229,12 @@ class ReconLayer(DenseLayer):
                 if save:
                     try:
                         visualize.draw_weights(
-                            self.train_params[0].eval(), second=10, saveable=True, shape=[28, 28],
-                            name=save_name + str(epoch + 1), fig_idx=2012
+                            self.train_params[0].eval(),
+                            second=10,
+                            saveable=True,
+                            shape=[28, 28],
+                            name=save_name + str(epoch + 1),
+                            fig_idx=2012
                         )
                         files.save_npz([self.all_params[0]], name=save_name + str(epoch + 1) + '.npz')
                     except Exception:

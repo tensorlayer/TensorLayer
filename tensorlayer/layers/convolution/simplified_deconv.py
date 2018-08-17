@@ -132,10 +132,19 @@ class DeConv2d(Layer):
         with tf.variable_scope(self.name) as vs:
 
             self.outputs = tf.layers.conv2d_transpose(
-                inputs=self.inputs, filters=self.n_filter, kernel_size=self.filter_size, strides=self.strides,
-                padding=self.padding, data_format=self.data_format, activation=None, kernel_initializer=self.W_init,
-                bias_initializer=self.b_init, use_bias=(True if self.b_init else
-                                                        False), reuse=is_name_reuse, trainable=is_train, name=None
+                inputs=self.inputs,
+                filters=self.n_filter,
+                kernel_size=self.filter_size,
+                strides=self.strides,
+                padding=self.padding,
+                data_format=self.data_format,
+                activation=None,
+                kernel_initializer=self.W_init,
+                bias_initializer=self.b_init,
+                use_bias=(True if self.b_init else False),
+                reuse=is_name_reuse,
+                trainable=is_train,
+                name=None
             )
 
             self._apply_activation(self.outputs)
@@ -254,10 +263,19 @@ class DeConv3d(Layer):
         with tf.variable_scope(self.name) as vs:
 
             self.outputs = tf.layers.conv3d_transpose(
-                inputs=self.inputs, filters=self.n_filter, kernel_size=self.filter_size, strides=self.strides,
-                padding=self.padding, data_format=self.data_format, activation=None, kernel_initializer=self.W_init,
-                bias_initializer=self.b_init, use_bias=(True if self.b_init else
-                                                        False), reuse=is_name_reuse, trainable=is_train, name=None
+                inputs=self.inputs,
+                filters=self.n_filter,
+                kernel_size=self.filter_size,
+                strides=self.strides,
+                padding=self.padding,
+                data_format=self.data_format,
+                activation=None,
+                kernel_initializer=self.W_init,
+                bias_initializer=self.b_init,
+                use_bias=(True if self.b_init else False),
+                reuse=is_name_reuse,
+                trainable=is_train,
+                name=None
             )
 
             self._apply_activation(self.outputs)

@@ -57,8 +57,21 @@ tl.layers.initialize_global_variables(sess)
 
 # train the network
 tl.utils.fit(
-    sess, net_train, train_op, cost, X_train, y_train, x, y_, acc=acc, batch_size=500, n_epoch=1, print_freq=5,
-    X_val=X_val, y_val=y_val, eval_train=False
+    sess,
+    net_train,
+    train_op,
+    cost,
+    X_train,
+    y_train,
+    x,
+    y_,
+    acc=acc,
+    batch_size=500,
+    n_epoch=1,
+    print_freq=5,
+    X_val=X_val,
+    y_val=y_val,
+    eval_train=False
 )
 
 # evaluation and save result that match the result_key

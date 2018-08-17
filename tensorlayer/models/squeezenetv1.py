@@ -184,7 +184,9 @@ class SqueezeNetV1(Layer):
     def restore_params(self, sess, path='models'):
         logging.info("Restore pre-trained parameters")
         maybe_download_and_extract(
-            'squeezenet.npz', path, 'https://github.com/tensorlayer/pretrained-models/raw/master/models/',
+            'squeezenet.npz',
+            path,
+            'https://github.com/tensorlayer/pretrained-models/raw/master/models/',
             expected_bytes=7405613
         )  # ls -al
         params = load_npz(name=os.path.join(path, 'squeezenet.npz'))

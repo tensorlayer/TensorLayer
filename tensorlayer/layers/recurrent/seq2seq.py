@@ -135,8 +135,9 @@ class Seq2Seq(Layer):
             return_seq_2d=False,
             name='seq2seq',
     ):
-        super(Seq2Seq,
-              self).__init__(prev_layer=[net_encode_in, net_decode_in], cell_init_args=cell_init_args, name=name)
+        super(Seq2Seq, self).__init__(
+            prev_layer=[net_encode_in, net_decode_in], cell_init_args=cell_init_args, name=name
+        )
 
         if self.cell_init_args:
             self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True,
@@ -159,18 +160,34 @@ class Seq2Seq(Layer):
             # tl.layers.set_name_reuse(reuse)
             # network = InputLayer(self.inputs, name=name+'/input')
             network_encode = DynamicRNNLayer(
-                net_encode_in, cell_fn=cell_fn, cell_init_args=self.cell_init_args, n_hidden=n_hidden,
-                initializer=initializer, initial_state=initial_state_encode, dropout=dropout, n_layer=n_layer,
-                sequence_length=encode_sequence_length, return_last=False, return_seq_2d=True, name='encode'
+                net_encode_in,
+                cell_fn=cell_fn,
+                cell_init_args=self.cell_init_args,
+                n_hidden=n_hidden,
+                initializer=initializer,
+                initial_state=initial_state_encode,
+                dropout=dropout,
+                n_layer=n_layer,
+                sequence_length=encode_sequence_length,
+                return_last=False,
+                return_seq_2d=True,
+                name='encode'
             )
             # vs.reuse_variables()
             # tl.layers.set_name_reuse(True)
             network_decode = DynamicRNNLayer(
-                net_decode_in, cell_fn=cell_fn, cell_init_args=self.cell_init_args, n_hidden=n_hidden,
+                net_decode_in,
+                cell_fn=cell_fn,
+                cell_init_args=self.cell_init_args,
+                n_hidden=n_hidden,
                 initializer=initializer,
-                initial_state=(network_encode.final_state if initial_state_decode is None else
-                               initial_state_decode), dropout=dropout, n_layer=n_layer,
-                sequence_length=decode_sequence_length, return_last=False, return_seq_2d=return_seq_2d, name='decode'
+                initial_state=(network_encode.final_state if initial_state_decode is None else initial_state_decode),
+                dropout=dropout,
+                n_layer=n_layer,
+                sequence_length=decode_sequence_length,
+                return_last=False,
+                return_seq_2d=return_seq_2d,
+                name='decode'
             )
             self.outputs = network_decode.outputs
 

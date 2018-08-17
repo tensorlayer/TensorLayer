@@ -45,28 +45,44 @@ class Network_Sequential_3D_Test(CustomTestCase):
 
             cls.model.add(
                 tl.layers.DeConv3dLayer(
-                    shape=(3, 3, 3, 8, 16), strides=(1, 2, 2, 2, 1), padding='SAME', act=tf.nn.relu,
+                    shape=(3, 3, 3, 8, 16),
+                    strides=(1, 2, 2, 2, 1),
+                    padding='SAME',
+                    act=tf.nn.relu,
                     name='expert_deconv3d_layer_5'
                 )
             )
 
             cls.model.add(
                 tl.layers.DeConv3dLayer(
-                    shape=(3, 3, 3, 4, 8), strides=(1, 2, 2, 2, 1), padding='SAME', b_init=None, act=tf.nn.relu,
+                    shape=(3, 3, 3, 4, 8),
+                    strides=(1, 2, 2, 2, 1),
+                    padding='SAME',
+                    b_init=None,
+                    act=tf.nn.relu,
                     name='expert_deconv3d_layer_6'
                 )
             )
 
             cls.model.add(
                 tl.layers.DeConv3d(
-                    n_filter=4, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME', act=tf.nn.relu,
+                    n_filter=4,
+                    filter_size=(3, 3, 3),
+                    strides=(2, 2, 2),
+                    padding='SAME',
+                    act=tf.nn.relu,
                     name='simple_deconv3d_layer_7'
                 )
             )
 
             cls.model.add(
                 tl.layers.DeConv3d(
-                    n_filter=8, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME', act=tf.nn.relu, b_init=None,
+                    n_filter=8,
+                    filter_size=(3, 3, 3),
+                    strides=(2, 2, 2),
+                    padding='SAME',
+                    act=tf.nn.relu,
+                    b_init=None,
                     name='simple_deconv3d_layer_8'
                 )
             )

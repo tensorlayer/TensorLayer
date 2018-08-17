@@ -511,7 +511,14 @@ def load_matt_mahoney_text8_dataset(path='data'):
 
 
 def load_imdb_dataset(
-        path='data', nb_words=None, skip_top=0, maxlen=None, test_split=0.2, seed=113, start_char=1, oov_char=2,
+        path='data',
+        nb_words=None,
+        skip_top=0,
+        maxlen=None,
+        test_split=0.2,
+        seed=113,
+        start_char=1,
+        oov_char=2,
         index_from=3
 ):
     """Load IMDB dataset.
@@ -1953,8 +1960,9 @@ def _graph2net(graphs):
             if name not in input_list:  # if placeholder is not exist
                 dtype = layer_kwargs.pop('dtype')
                 shape = layer_kwargs.pop('shape')
-                _placeholder = tf.placeholder(eval('tf.' + dtype), shape,
-                                              name=name.split(':')[0])  # globals()['tf.'+dtype]
+                _placeholder = tf.placeholder(
+                    eval('tf.' + dtype), shape, name=name.split(':')[0]
+                )  # globals()['tf.'+dtype]
                 # _placeholder = tf.placeholder(ast.literal_eval('tf.' + dtype), shape, name=name.split(':')[0])
                 # input_dict.update({name: _placeholder})
                 input_list.append((name, _placeholder))

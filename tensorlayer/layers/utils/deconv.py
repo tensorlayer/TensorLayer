@@ -44,7 +44,15 @@ def compute_deconv2d_output_shape(
 
 
 def compute_deconv3d_output_shape(
-        input, filter_size_d, filter_size_h, filter_size_w, stride_d, stride_h, stride_w, num_outputs, padding='SAME',
+        input,
+        filter_size_d,
+        filter_size_h,
+        filter_size_w,
+        stride_d,
+        stride_h,
+        stride_w,
+        num_outputs,
+        padding='SAME',
         data_format='NDHWC'
 ):
 

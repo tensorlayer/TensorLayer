@@ -270,9 +270,16 @@ def freeze_graph(graph_path, checkpoint_path, output_path, end_node_names, is_bi
     - `tensorflow freeze_graph <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/tools/freeze_graph.py>`
     """
     _freeze_graph(
-        input_graph=graph_path, input_saver='', input_binary=is_binary_graph, input_checkpoint=checkpoint_path,
-        output_graph=output_path, output_node_names=end_node_names, restore_op_name='save/restore_all',
-        filename_tensor_name='save/Const:0', clear_devices=True, initializer_nodes=None
+        input_graph=graph_path,
+        input_saver='',
+        input_binary=is_binary_graph,
+        input_checkpoint=checkpoint_path,
+        output_graph=output_path,
+        output_node_names=end_node_names,
+        restore_op_name='save/restore_all',
+        filename_tensor_name='save/Const:0',
+        clear_devices=True,
+        initializer_nodes=None
     )
 
 
@@ -328,7 +335,10 @@ if __name__ == '__main__':
 
     # 2. Freeze the graph with checkpoints
     freeze_graph(
-        graph_path='graph.proto', is_binary_graph=True, checkpoint_path='model.ckpt', output_path='frozen_graph.pb',
+        graph_path='graph.proto',
+        is_binary_graph=True,
+        checkpoint_path='model.ckpt',
+        output_path='frozen_graph.pb',
         end_node_names='output/bias_add'
     )
 

@@ -121,7 +121,10 @@ class QuantizedDenseWithBN(Layer):
 
             if gamma_init:
                 scale_para = self._get_tf_variable(
-                    name='scale_para', shape=para_bn_shape, initializer=gamma_init, dtype=self.inputs.dtype,
+                    name='scale_para',
+                    shape=para_bn_shape,
+                    initializer=gamma_init,
+                    dtype=self.inputs.dtype,
                     trainable=is_train
                 )
             else:
@@ -129,14 +132,20 @@ class QuantizedDenseWithBN(Layer):
 
             if beta_init:
                 offset_para = self._get_tf_variable(
-                    name='offset_para', shape=para_bn_shape, initializer=beta_init, dtype=self.inputs.dtype,
+                    name='offset_para',
+                    shape=para_bn_shape,
+                    initializer=beta_init,
+                    dtype=self.inputs.dtype,
                     trainable=is_train
                 )
             else:
                 offset_para = None
 
             moving_mean = self._get_tf_variable(
-                'moving_mean', para_bn_shape, initializer=tf.constant_initializer(1.), dtype=self.inputs.dtype,
+                'moving_mean',
+                para_bn_shape,
+                initializer=tf.constant_initializer(1.),
+                dtype=self.inputs.dtype,
                 trainable=False
             )
 

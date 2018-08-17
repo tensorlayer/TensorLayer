@@ -82,7 +82,8 @@ class GaussianNoiseLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(GaussianNoiseLayer, self).compile(prev_layer)
@@ -94,7 +95,10 @@ class GaussianNoiseLayer(Layer):
         else:
             with tf.variable_scope(self.name):
                 noise = tf.random_normal(
-                    shape=self.inputs.get_shape(), mean=self.mean, stddev=self.stddev, seed=self.seed,
+                    shape=self.inputs.get_shape(),
+                    mean=self.mean,
+                    stddev=self.stddev,
+                    seed=self.seed,
                     dtype=self.inputs.dtype
                 )
                 self.outputs = tf.add(self.inputs, noise)

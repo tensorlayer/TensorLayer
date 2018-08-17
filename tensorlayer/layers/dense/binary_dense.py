@@ -60,8 +60,9 @@ class BinaryDenseLayer(Layer):
             b_init_args=None,
             name='binary_dense',
     ):
-        super(BinaryDenseLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super(BinaryDenseLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "BinaryDenseLayer  %s: %d %s" %
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')

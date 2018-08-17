@@ -96,7 +96,8 @@ def read_and_decode(filename, is_train=None):
     reader = tf.TFRecordReader()
     _, serialized_example = reader.read(filename_queue)
     features = tf.parse_single_example(
-        serialized_example, features={
+        serialized_example,
+        features={
             'label': tf.FixedLenFeature([], tf.int64),
             'img_raw': tf.FixedLenFeature([], tf.string),
         }

@@ -74,8 +74,9 @@ class DropconnectDenseLayer(Layer):
             b_init_args=None,
             name='dropconnect_layer',
     ):
-        super(DropconnectDenseLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super(DropconnectDenseLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
 
         logging.info(
             "DropconnectDenseLayer %s: %d %s" %

@@ -27,17 +27,29 @@ class CustomNetwork_2D_Test(CustomTestCase):
 
                 with tf.variable_scope(name, "fire", [inputs]):
                     squeezed = tl.layers.Conv2d(
-                        n_filter=squeeze_depth, filter_size=(1, 1), strides=(1, 1), padding='SAME', act=tf.nn.relu,
+                        n_filter=squeeze_depth,
+                        filter_size=(1, 1),
+                        strides=(1, 1),
+                        padding='SAME',
+                        act=tf.nn.relu,
                         name='squeeze'
                     )(inputs)
 
                     e1x1 = tl.layers.Conv2d(
-                        n_filter=expand_depth, filter_size=(1, 1), strides=(1, 1), padding='SAME', act=tf.nn.relu,
+                        n_filter=expand_depth,
+                        filter_size=(1, 1),
+                        strides=(1, 1),
+                        padding='SAME',
+                        act=tf.nn.relu,
                         name='e1x1'
                     )(squeezed)
 
                     e3x3 = tl.layers.Conv2d(
-                        n_filter=expand_depth, filter_size=(3, 3), strides=(1, 1), padding='SAME', act=tf.nn.relu,
+                        n_filter=expand_depth,
+                        filter_size=(3, 3),
+                        strides=(1, 1),
+                        padding='SAME',
+                        act=tf.nn.relu,
                         name='e3x3'
                     )(squeezed)
 

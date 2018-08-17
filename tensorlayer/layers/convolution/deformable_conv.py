@@ -127,7 +127,8 @@ class DeformableConv2d(Layer):
             return prev_layer
 
         else:
-            return None
+            return None
+
     def compile(self, prev_layer, offset_layer=None, is_train=True):
 
         super(DeformableConv2d, self).compile(self._check_inputs(prev_layer, offset_layer))
@@ -174,7 +175,8 @@ class DeformableConv2d(Layer):
 
             grid = tf.meshgrid(
                 tf.range(-int((w_shape[0] - 1) / 2.0), int(input_h - int((w_shape[0] - 1) / 2.0)), 1),
-                tf.range(-int((w_shape[1] - 1) / 2.0), int(input_w - int((w_shape[1] - 1) / 2.0)), 1), indexing='ij'
+                tf.range(-int((w_shape[1] - 1) / 2.0), int(input_w - int((w_shape[1] - 1) / 2.0)), 1),
+                indexing='ij'
             )
 
             grid = tf.stack(grid, axis=-1)
@@ -194,15 +196,21 @@ class DeformableConv2d(Layer):
             input_deform = self._tf_batch_map_offsets(input_layer, offset_layer, grid_offset)
 
             weight_matrix = self._get_tf_variable(
-                name='W_deformableconv2d', shape=(1, 1, w_shape[0] * w_shape[1], w_shape[-2], w_shape[-1]),
-                initializer=self.W_init, dtype=input_layer.dtype, **self.W_init_args
+                name='W_deformableconv2d',
+                shape=(1, 1, w_shape[0] * w_shape[1], w_shape[-2], w_shape[-1]),
+                initializer=self.W_init,
+                dtype=input_layer.dtype,
+                **self.W_init_args
             )
 
             _tensor = tf.nn.conv3d(input_deform, weight_matrix, strides=[1, 1, 1, 1, 1], padding='VALID', name=None)
 
             if self.b_init:
                 b = self._get_tf_variable(
-                    name='b_deformableconv2d', shape=(w_shape[-1]), initializer=self.b_init, dtype=input_layer.dtype,
+                    name='b_deformableconv2d',
+                    shape=(w_shape[-1]),
+                    initializer=self.b_init,
+                    dtype=input_layer.dtype,
                     **self.b_init_args
                 )
 
@@ -346,7 +354,8 @@ class DeformableConv2d(Layer):
             [
                 tf.clip_by_value(coords[:, :, :, :, 0], 0.0, tf.cast(input_h - 1, 'float32')),
                 tf.clip_by_value(coords[:, :, :, :, 1], 0.0, tf.cast(input_w - 1, 'float32'))
-            ], axis=-1
+            ],
+            axis=-1
         )
         coords = tf.tile(coords, [channel, 1, 1, 1, 1])
 

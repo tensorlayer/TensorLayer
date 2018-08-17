@@ -58,13 +58,25 @@ def model(x, y_, reuse, is_train, bitW, bitA):
     with tf.variable_scope("model", reuse=reuse):
         net = tl.layers.InputLayer(x, name='input')
         net = tl.layers.QuantizedConv2dWithBN(
-            net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', is_train=is_train, bitW=bitW, bitA=bitA,
+            net,
+            64, (5, 5), (1, 1),
+            act=tf.nn.relu,
+            padding='SAME',
+            is_train=is_train,
+            bitW=bitW,
+            bitA=bitA,
             name='qconv2dbn1'
         )
         net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
         # net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn1')
         net = tl.layers.QuantizedConv2dWithBN(
-            net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train=is_train, bitW=bitW, bitA=bitA,
+            net,
+            64, (5, 5), (1, 1),
+            padding='SAME',
+            act=tf.nn.relu,
+            is_train=is_train,
+            bitW=bitW,
+            bitA=bitA,
             name='qconv2dbn2'
         )
         # net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn2')
@@ -109,8 +121,9 @@ learning_rate = 0.0001
 print_freq = 1
 batch_size = 128
 
-train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08,
-                                  use_locking=False).minimize(cost)
+train_op = tf.train.AdamOptimizer(
+    learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False
+).minimize(cost)
 
 sess.run(tf.global_variables_initializer())
 

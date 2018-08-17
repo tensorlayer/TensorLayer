@@ -160,20 +160,30 @@ class DeConv2dLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
-                name='W_deconv2d', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype,
+                name='W_deconv2d',
+                shape=self.shape,
+                initializer=self.W_init,
+                dtype=self.inputs.dtype,
                 **self.W_init_args
             )
 
             self.out_shape = compute_deconv2d_output_shape(
-                self.inputs, self.shape[0], self.shape[1], self.strides[1], self.strides[2], self.shape[2],
-                padding=self.padding, data_format=self.data_format
+                self.inputs,
+                self.shape[0],
+                self.shape[1],
+                self.strides[1],
+                self.strides[2],
+                self.shape[2],
+                padding=self.padding,
+                data_format=self.data_format
             )
 
             self.outputs = tf.nn.conv2d_transpose(
@@ -182,7 +192,10 @@ class DeConv2dLayer(Layer):
 
             if self.b_init:
                 b = self._get_tf_variable(
-                    name='b_deconv2d', shape=(self.shape[-2]), initializer=self.b_init, dtype=self.inputs.dtype,
+                    name='b_deconv2d',
+                    shape=(self.shape[-2]),
+                    initializer=self.b_init,
+                    dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
@@ -291,7 +304,8 @@ class DeConv3dLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
@@ -299,13 +313,24 @@ class DeConv3dLayer(Layer):
         with tf.variable_scope(self.name):
 
             weight_matrix = self._get_tf_variable(
-                name='W_deconv3d', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype,
+                name='W_deconv3d',
+                shape=self.shape,
+                initializer=self.W_init,
+                dtype=self.inputs.dtype,
                 **self.W_init_args
             )
 
             self.out_shape = compute_deconv3d_output_shape(
-                self.inputs, self.shape[0], self.shape[1], self.shape[2], self.strides[1], self.strides[2],
-                self.strides[3], self.shape[3], padding=self.padding, data_format=self.data_format
+                self.inputs,
+                self.shape[0],
+                self.shape[1],
+                self.shape[2],
+                self.strides[1],
+                self.strides[2],
+                self.strides[3],
+                self.shape[3],
+                padding=self.padding,
+                data_format=self.data_format
             )
 
             self.outputs = tf.nn.conv3d_transpose(
@@ -314,7 +339,10 @@ class DeConv3dLayer(Layer):
 
             if self.b_init:
                 b = self._get_tf_variable(
-                    name='b_deconv3d', shape=(self.shape[-2]), initializer=self.b_init, dtype=self.inputs.dtype,
+                    name='b_deconv3d',
+                    shape=(self.shape[-2]),
+                    initializer=self.b_init,
+                    dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
 

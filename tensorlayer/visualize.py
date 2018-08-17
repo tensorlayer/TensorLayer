@@ -645,8 +645,9 @@ def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig
             #     feature = np.zeros_like(feature)
             # if np.mean(feature) < -0.015:      # condition threshold
             #     feature = np.zeros_like(feature)
-            plt.imshow(np.reshape(feature, (shape[0], shape[1])), cmap='gray',
-                       interpolation="nearest")  # , vmin=np.min(feature), vmax=np.max(feature))
+            plt.imshow(
+                np.reshape(feature, (shape[0], shape[1])), cmap='gray', interpolation="nearest"
+            )  # , vmin=np.min(feature), vmax=np.max(feature))
             # plt.title(name)
             # ------------------------------------------------------------
             # plt.imshow(np.reshape(W[:,count-1] ,(np.sqrt(size),np.sqrt(size))), cmap='gray', interpolation="nearest")

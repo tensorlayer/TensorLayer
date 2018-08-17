@@ -496,17 +496,38 @@ class Layer(BaseLayer):
 
     @protected_method
     def _get_tf_variable(
-            self, name, shape=None, dtype=None, initializer=None, regularizer=None, trainable=True, collections=None,
-            caching_device=None, partitioner=None, validate_shape=True, use_resource=None, custom_getter=None,
+            self,
+            name,
+            shape=None,
+            dtype=None,
+            initializer=None,
+            regularizer=None,
+            trainable=True,
+            collections=None,
+            caching_device=None,
+            partitioner=None,
+            validate_shape=True,
+            use_resource=None,
+            custom_getter=None,
             constraint=None
     ):
         if hasattr(self, "inputs") and isinstance(self.inputs, tf.Tensor):
             dtype = self.inputs.dtype
 
         w = tf.get_variable(
-            name, shape=shape, dtype=dtype, initializer=initializer, regularizer=regularizer, trainable=trainable,
-            collections=collections, caching_device=caching_device, partitioner=partitioner,
-            validate_shape=validate_shape, use_resource=use_resource, custom_getter=custom_getter, constraint=constraint
+            name,
+            shape=shape,
+            dtype=dtype,
+            initializer=initializer,
+            regularizer=regularizer,
+            trainable=trainable,
+            collections=collections,
+            caching_device=caching_device,
+            partitioner=partitioner,
+            validate_shape=validate_shape,
+            use_resource=use_resource,
+            custom_getter=custom_getter,
+            constraint=constraint
         )
 
         self._local_weights.append(w)

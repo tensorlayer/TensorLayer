@@ -60,8 +60,9 @@ class TernaryDenseLayer(Layer):
             b_init_args=None,
             name='ternary_dense',
     ):
-        super(TernaryDenseLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super(TernaryDenseLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
 
         logging.info(
             "TernaryDenseLayer  %s: %d %s" %

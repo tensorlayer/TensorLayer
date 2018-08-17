@@ -46,8 +46,12 @@ class PReluLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self, prev_layer=None, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
-            a_init_args=None, name="PReluLayer"
+            self,
+            prev_layer=None,
+            channel_shared=False,
+            a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            a_init_args=None,
+            name="PReluLayer"
     ):
 
         self.prev_layer = prev_layer
@@ -66,7 +70,8 @@ class PReluLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(PReluLayer, self).compile(prev_layer)
@@ -136,8 +141,12 @@ class PRelu6Layer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self, prev_layer=None, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
-            a_init_args=None, name="PReLU6_layer"
+            self,
+            prev_layer=None,
+            channel_shared=False,
+            a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            a_init_args=None,
+            name="PReLU6_layer"
     ):
 
         self.prev_layer = prev_layer
@@ -156,7 +165,8 @@ class PRelu6Layer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(PRelu6Layer, self).compile(prev_layer)
@@ -228,8 +238,12 @@ class PTRelu6Layer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self, prev_layer=None, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
-            a_init_args=None, name="PTReLU6_layer"
+            self,
+            prev_layer=None,
+            channel_shared=False,
+            a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            a_init_args=None,
+            name="PTReLU6_layer"
     ):
 
         self.prev_layer = prev_layer
@@ -248,7 +262,8 @@ class PTRelu6Layer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(PTRelu6Layer, self).compile(prev_layer)

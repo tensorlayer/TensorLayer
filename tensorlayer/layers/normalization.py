@@ -89,7 +89,8 @@ class LocalResponseNormLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(LocalResponseNormLayer, self).compile(prev_layer)
@@ -190,7 +191,8 @@ class BatchNormLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(BatchNormLayer, self).compile(prev_layer)
@@ -226,7 +228,11 @@ class BatchNormLayer(Layer):
             # 2.
 
             moving_mean = self._get_tf_variable(
-                'moving_mean', params_shape, initializer=self.moving_mean_init, dtype=self.inputs.dtype, trainable=False
+                'moving_mean',
+                params_shape,
+                initializer=self.moving_mean_init,
+                dtype=self.inputs.dtype,
+                trainable=False
             )
 
             moving_variance = self._get_tf_variable(
@@ -313,7 +319,8 @@ class InstanceNormLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         if len(prev_layer.outputs.shape) not in [3, 4]:
@@ -325,12 +332,14 @@ class InstanceNormLayer(Layer):
             mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
 
             scale = self._get_tf_variable(
-                'scale', [self.inputs.get_shape()[-1]], dtype=self.inputs.dtype,
+                'scale', [self.inputs.get_shape()[-1]],
+                dtype=self.inputs.dtype,
                 initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02)
             )
 
             offset = self._get_tf_variable(
-                'offset', [self.inputs.get_shape()[-1]], dtype=self.inputs.dtype,
+                'offset', [self.inputs.get_shape()[-1]],
+                dtype=self.inputs.dtype,
                 initializer=tf.constant_initializer(0.0)
             )
 
@@ -363,8 +372,16 @@ class LayerNormLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self, prev_layer=None, center=True, scale=True, variables_collections=None, outputs_collections=None,
-            begin_norm_axis=1, begin_params_axis=-1, act=None, name='layernorm'
+            self,
+            prev_layer=None,
+            center=True,
+            scale=True,
+            variables_collections=None,
+            outputs_collections=None,
+            begin_norm_axis=1,
+            begin_params_axis=-1,
+            act=None,
+            name='layernorm'
     ):
 
         self.prev_layer = prev_layer
@@ -417,7 +434,8 @@ class LayerNormLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(LayerNormLayer, self).compile(prev_layer)
@@ -511,7 +529,8 @@ class SwitchNormLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         if len(prev_layer.outputs.shape) not in [3, 4]:

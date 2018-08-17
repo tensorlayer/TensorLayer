@@ -70,9 +70,20 @@ class Conv1d(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self, prev_layer=None, n_filter=32, filter_size=5, stride=1, padding='valid', dilation_rate=1,
-            data_format="channels_last", W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0), W_init_args=None, b_init_args=None, act=None, name='conv1d'
+            self,
+            prev_layer=None,
+            n_filter=32,
+            filter_size=5,
+            stride=1,
+            padding='valid',
+            dilation_rate=1,
+            data_format="channels_last",
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            act=None,
+            name='conv1d'
     ):
 
         if data_format not in ["channels_last", "channels_first"]:
@@ -140,10 +151,20 @@ class Conv1d(Layer):
         with tf.variable_scope(self.name) as vs:
 
             self.outputs = tf.layers.conv1d(
-                inputs=self.inputs, filters=self.n_filter, kernel_size=self.filter_size, strides=self.stride,
-                padding=self.padding, data_format=self.data_format, dilation_rate=self.dilation_rate, activation=None,
-                kernel_initializer=self.W_init, bias_initializer=self.b_init, use_bias=(True if self.b_init else False),
-                reuse=is_name_reuse, trainable=is_train, name=None
+                inputs=self.inputs,
+                filters=self.n_filter,
+                kernel_size=self.filter_size,
+                strides=self.stride,
+                padding=self.padding,
+                data_format=self.data_format,
+                dilation_rate=self.dilation_rate,
+                activation=None,
+                kernel_initializer=self.W_init,
+                bias_initializer=self.b_init,
+                use_bias=(True if self.b_init else False),
+                reuse=is_name_reuse,
+                trainable=is_train,
+                name=None
             )
 
             self._apply_activation(self.outputs)
@@ -290,10 +311,20 @@ class Conv2d(Layer):
         with tf.variable_scope(self.name) as vs:
 
             self.outputs = tf.layers.conv2d(
-                inputs=self.inputs, filters=self.n_filter, kernel_size=self.filter_size, strides=self.strides,
-                padding=self.padding, data_format=self.data_format, dilation_rate=self.dilation_rate, activation=None,
-                kernel_initializer=self.W_init, bias_initializer=self.b_init, use_bias=(True if self.b_init else False),
-                reuse=is_name_reuse, trainable=is_train, name=None
+                inputs=self.inputs,
+                filters=self.n_filter,
+                kernel_size=self.filter_size,
+                strides=self.strides,
+                padding=self.padding,
+                data_format=self.data_format,
+                dilation_rate=self.dilation_rate,
+                activation=None,
+                kernel_initializer=self.W_init,
+                bias_initializer=self.b_init,
+                use_bias=(True if self.b_init else False),
+                reuse=is_name_reuse,
+                trainable=is_train,
+                name=None
             )
 
         self._apply_activation(self.outputs)

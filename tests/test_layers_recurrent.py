@@ -40,16 +40,24 @@ class Layer_Recurrent_Test(unittest.TestCase):
         )
         net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop1')
         net1 = tl.layers.RNNLayer(
-            net1, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps,
-            return_last=False, name='lstm1'
+            net1,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.hidden_size,
+            n_steps=cls.num_steps,
+            return_last=False,
+            name='lstm1'
         )
 
         # lstm1 = net1
 
         net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop2')
         net1 = tl.layers.RNNLayer(
-            net1, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps,
-            return_last=True, name='lstm2'
+            net1,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.hidden_size,
+            n_steps=cls.num_steps,
+            return_last=True,
+            name='lstm2'
         )
 
         # lstm2 = net1
@@ -79,8 +87,13 @@ class Layer_Recurrent_Test(unittest.TestCase):
         net2 = tl.layers.ReshapeLayer(net2, shape=(-1, cls.num_steps, int(net2.outputs._shape[-1])))
 
         net2 = tl.layers.RNNLayer(
-            net2, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=200, n_steps=cls.num_steps, return_last=False,
-            return_seq_2d=True, name='rnn'
+            net2,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=200,
+            n_steps=cls.num_steps,
+            return_last=False,
+            return_seq_2d=True,
+            name='rnn'
         )
 
         net2 = tl.layers.DenseLayer(net2, n_units=3, name='out')
@@ -103,8 +116,13 @@ class Layer_Recurrent_Test(unittest.TestCase):
             inputs=x3, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb'
         )
         net3 = tl.layers.BiRNNLayer(
-            net3, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps,
-            return_last=False, return_seq_2d=False, name='birnn'
+            net3,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.hidden_size,
+            n_steps=cls.num_steps,
+            return_last=False,
+            return_seq_2d=False,
+            name='birnn'
         )
 
         net3.print_layers()
@@ -120,8 +138,14 @@ class Layer_Recurrent_Test(unittest.TestCase):
             inputs=x3, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb2'
         )
         net4 = tl.layers.BiRNNLayer(
-            net4, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps, n_layer=2,
-            return_last=False, return_seq_2d=False, name='birnn2'
+            net4,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.hidden_size,
+            n_steps=cls.num_steps,
+            n_layer=2,
+            return_last=False,
+            return_seq_2d=False,
+            name='birnn2'
         )
 
         net4.print_layers()
@@ -157,10 +181,14 @@ class Layer_Recurrent_Test(unittest.TestCase):
         )
 
         rnn = tl.layers.DynamicRNNLayer(
-            nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size,
-            dropout=(cls.keep_prob
-                     if cls.is_train else None), sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
-            return_last=False, return_seq_2d=True, name='dynamicrnn'
+            nin,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.embedding_size,
+            dropout=(cls.keep_prob if cls.is_train else None),
+            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+            return_last=False,
+            return_seq_2d=True,
+            name='dynamicrnn'
         )
 
         net5 = tl.layers.DenseLayer(rnn, n_units=cls.vocab_size, name="o")
@@ -179,18 +207,29 @@ class Layer_Recurrent_Test(unittest.TestCase):
             inputs=input_seqs, vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name='seq_embedding2'
         )
         rnn = tl.layers.DynamicRNNLayer(
-            nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size,
-            dropout=(cls.keep_prob
-                     if cls.is_train else None), sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
-            n_layer=3, return_last=False, return_seq_2d=True, name='dynamicrnn2'
+            nin,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.embedding_size,
+            dropout=(cls.keep_prob if cls.is_train else None),
+            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+            n_layer=3,
+            return_last=False,
+            return_seq_2d=True,
+            name='dynamicrnn2'
         )
 
         # net6 = tl.layers.DenseLayer(rnn, n_units=cls.vocab_size, name="o2")
 
         net6 = tl.layers.DynamicRNNLayer(
-            nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size, dropout=None,
-            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs), n_layer=3, return_last=False,
-            return_seq_2d=False, name='dynamicrnn3'
+            nin,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.embedding_size,
+            dropout=None,
+            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+            n_layer=3,
+            return_last=False,
+            return_seq_2d=False,
+            name='dynamicrnn3'
         )
 
         # net6 = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o3")
@@ -202,9 +241,15 @@ class Layer_Recurrent_Test(unittest.TestCase):
         cls.net6_rnn_shape = rnn.outputs.get_shape().as_list()
 
         net7 = tl.layers.DynamicRNNLayer(
-            nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size, dropout=None,
-            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs), n_layer=1, return_last=True,
-            return_seq_2d=False, name='dynamicrnn4'
+            nin,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.embedding_size,
+            dropout=None,
+            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+            n_layer=1,
+            return_last=True,
+            return_seq_2d=False,
+            name='dynamicrnn4'
         )
 
         net7.print_layers()
@@ -213,9 +258,15 @@ class Layer_Recurrent_Test(unittest.TestCase):
         cls.net7_shape = net7.outputs.get_shape().as_list()
 
         net8 = tl.layers.DynamicRNNLayer(
-            nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size, dropout=None,
-            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs), n_layer=1, return_last=True,
-            return_seq_2d=True, name='dynamicrnn5'
+            nin,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.embedding_size,
+            dropout=None,
+            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+            n_layer=1,
+            return_last=True,
+            return_seq_2d=True,
+            name='dynamicrnn5'
         )
 
         net8.print_layers()
@@ -226,10 +277,14 @@ class Layer_Recurrent_Test(unittest.TestCase):
         # =============================== BiDynamic Synced input and output ===============================
 
         rnn = tl.layers.BiDynamicRNNLayer(
-            nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size,
-            dropout=(cls.keep_prob
-                     if cls.is_train else None), sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
-            return_last=False, return_seq_2d=True, name='bidynamicrnn'
+            nin,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.embedding_size,
+            dropout=(cls.keep_prob if cls.is_train else None),
+            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+            return_last=False,
+            return_seq_2d=True,
+            name='bidynamicrnn'
         )
 
         net9 = tl.layers.DenseLayer(rnn, n_units=cls.vocab_size, name="o4")
@@ -245,10 +300,15 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
         # n_layer=2
         rnn = tl.layers.BiDynamicRNNLayer(
-            nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size,
-            dropout=(cls.keep_prob
-                     if cls.is_train else None), sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
-            n_layer=2, return_last=False, return_seq_2d=True, name='bidynamicrnn2'
+            nin,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.embedding_size,
+            dropout=(cls.keep_prob if cls.is_train else None),
+            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+            n_layer=2,
+            return_last=False,
+            return_seq_2d=True,
+            name='bidynamicrnn2'
         )
 
         net10 = tl.layers.DenseLayer(rnn, n_units=cls.vocab_size, name="o5")
@@ -284,11 +344,18 @@ class Layer_Recurrent_Test(unittest.TestCase):
                 )
 
             net11 = tl.layers.Seq2Seq(
-                net_encode, net_decode, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=200,
+                net_encode,
+                net_decode,
+                cell_fn=tf.contrib.rnn.BasicLSTMCell,
+                n_hidden=200,
                 initializer=tf.random_uniform_initializer(-0.1, 0.1),
                 encode_sequence_length=tl.layers.retrieve_seq_length_op2(encode_seqs),
-                decode_sequence_length=tl.layers.retrieve_seq_length_op2(decode_seqs), initial_state_encode=None,
-                dropout=None, n_layer=2, return_seq_2d=True, name='Seq2seq'
+                decode_sequence_length=tl.layers.retrieve_seq_length_op2(decode_seqs),
+                initial_state_encode=None,
+                dropout=None,
+                n_layer=2,
+                return_seq_2d=True,
+                name='Seq2seq'
             )
 
         net11 = tl.layers.DenseLayer(net11, n_units=10000, name='oo')

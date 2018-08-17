@@ -148,7 +148,8 @@ class BinaryConv2d(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(BinaryConv2d, self).compile(prev_layer)
@@ -172,14 +173,21 @@ class BinaryConv2d(Layer):
             weight_matrix = quantize(weight_matrix)
 
             self.outputs = tf.nn.conv2d(
-                self.inputs, weight_matrix, strides=strides, padding=self.padding,
-                use_cudnn_on_gpu=self.use_cudnn_on_gpu, data_format=self.data_format
+                self.inputs,
+                weight_matrix,
+                strides=strides,
+                padding=self.padding,
+                use_cudnn_on_gpu=self.use_cudnn_on_gpu,
+                data_format=self.data_format
             )
 
             if self.b_init:
 
                 b = self._get_tf_variable(
-                    name='b_conv2d', shape=(w_shape[-1]), initializer=self.b_init, dtype=self.inputs.dtype,
+                    name='b_conv2d',
+                    shape=(w_shape[-1]),
+                    initializer=self.b_init,
+                    dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
 

@@ -20,8 +20,13 @@ class Layer_Convolution_2D_Test(unittest.TestCase):
         cls.input_layer = tl.layers.InputLayer(x, name='input_layer')
 
         cls.n1 = tl.layers.Conv2dLayer(
-            cls.input_layer, act=tf.nn.relu, shape=(5, 5, 3, 32), strides=(1, 2, 2, 1), padding='valid',
-            W_init=tf.truncated_normal_initializer(stddev=5e-2), b_init=tf.constant_initializer(value=0.0),
+            cls.input_layer,
+            act=tf.nn.relu,
+            shape=(5, 5, 3, 32),
+            strides=(1, 2, 2, 1),
+            padding='valid',
+            W_init=tf.truncated_normal_initializer(stddev=5e-2),
+            b_init=tf.constant_initializer(value=0.0),
             name='conv2dlayer'
         )
 
@@ -30,7 +35,13 @@ class Layer_Convolution_2D_Test(unittest.TestCase):
         )
 
         cls.n3 = tl.layers.Conv2d(
-            cls.n2, n_filter=32, filter_size=(3, 3), strides=(2, 2), padding='valid', act=tf.nn.relu, b_init=None,
+            cls.n2,
+            n_filter=32,
+            filter_size=(3, 3),
+            strides=(2, 2),
+            padding='valid',
+            act=tf.nn.relu,
+            b_init=None,
             name='conv2d_no_bias'
         )
 

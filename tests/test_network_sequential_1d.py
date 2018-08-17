@@ -62,10 +62,13 @@ class Network_Sequential_1D_Test(CustomTestCase):
 
             cls.model.add(
                 tl.layers.SlimNetsLayer(
-                    slim_layer=slim.fully_connected, slim_args={
+                    slim_layer=slim.fully_connected,
+                    slim_args={
                         'num_outputs': 50,
                         'activation_fn': None
-                    }, act=tf.nn.relu, name="seq_layer_10"
+                    },
+                    act=tf.nn.relu,
+                    name="seq_layer_10"
                 )
             )
 
@@ -80,7 +83,11 @@ class Network_Sequential_1D_Test(CustomTestCase):
             cls.model.add(tl.layers.BatchNormLayer(decay=0.9, epsilon=1e-5, act=None, name='batchnorm_layer_11'))
             cls.model.add(
                 tl.layers.LayerNormLayer(
-                    center=True, scale=True, begin_norm_axis=1, begin_params_axis=-1, act=None,
+                    center=True,
+                    scale=True,
+                    begin_norm_axis=1,
+                    begin_params_axis=-1,
+                    act=None,
                     name='layernorm_layer_11'
                 )
             )
@@ -121,14 +128,23 @@ class Network_Sequential_1D_Test(CustomTestCase):
 
             cls.model.add(
                 tl.layers.SeparableConv1d(
-                    n_filter=8, filter_size=5, strides=1, padding='SAME', act=tf.nn.relu,
+                    n_filter=8,
+                    filter_size=5,
+                    strides=1,
+                    padding='SAME',
+                    act=tf.nn.relu,
                     name='separableconv1d_layer_18'
                 )
             )
 
             cls.model.add(
                 tl.layers.SeparableConv1d(
-                    n_filter=4, filter_size=5, strides=1, padding='SAME', act=tf.nn.relu, b_init=None,
+                    n_filter=4,
+                    filter_size=5,
+                    strides=1,
+                    padding='SAME',
+                    act=tf.nn.relu,
+                    b_init=None,
                     name='separableconv1d_layer_19'
                 )
             )

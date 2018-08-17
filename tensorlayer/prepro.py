@@ -473,7 +473,15 @@ def flip_axis_multi(x, axis, is_random=False):
 
 # shift
 def shift(
-        x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0.,
+        x,
+        wrg=0.1,
+        hrg=0.1,
+        is_random=False,
+        row_index=0,
+        col_index=1,
+        channel_index=2,
+        fill_mode='nearest',
+        cval=0.,
         order=1
 ):
     """Shift an image randomly or non-randomly.
@@ -517,7 +525,15 @@ def shift(
 
 
 def shift_multi(
-        x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0.,
+        x,
+        wrg=0.1,
+        hrg=0.1,
+        is_random=False,
+        row_index=0,
+        col_index=1,
+        channel_index=2,
+        fill_mode='nearest',
+        cval=0.,
         order=1
 ):
     """Shift images with the same arguments, randomly or non-randomly.
@@ -633,7 +649,14 @@ def shear_multi(
 
 
 def shear2(
-        x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0.,
+        x,
+        shear=(0.1, 0.1),
+        is_random=False,
+        row_index=0,
+        col_index=1,
+        channel_index=2,
+        fill_mode='nearest',
+        cval=0.,
         order=1
 ):
     """Shear an image randomly or non-randomly.
@@ -683,7 +706,14 @@ def shear2(
 
 
 def shear_multi2(
-        x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0.,
+        x,
+        shear=(0.1, 0.1),
+        is_random=False,
+        row_index=0,
+        col_index=1,
+        channel_index=2,
+        fill_mode='nearest',
+        cval=0.,
         order=1
 ):
     """Shear images with the same arguments, randomly or non-randomly.
@@ -723,8 +753,18 @@ def shear_multi2(
 
 # swirl
 def swirl(
-        x, center=None, strength=1, radius=100, rotation=0, output_shape=None, order=1, mode='constant', cval=0,
-        clip=True, preserve_range=False, is_random=False
+        x,
+        center=None,
+        strength=1,
+        radius=100,
+        rotation=0,
+        output_shape=None,
+        order=1,
+        mode='constant',
+        cval=0,
+        clip=True,
+        preserve_range=False,
+        is_random=False
 ):
     """Swirl an image randomly or non-randomly, see `scikit-image swirl API <http://scikit-image.org/docs/dev/api/skimage.transform.html#skimage.transform.swirl>`__
     and `example <http://scikit-image.org/docs/dev/auto_examples/plot_swirl.html>`__.
@@ -788,8 +828,17 @@ def swirl(
     if max_v > 1:  # Note: the input of this fn should be [-1, 1], rescale is required.
         x = x / max_v
     swirled = skimage.transform.swirl(
-        x, center=center, strength=strength, radius=radius, rotation=rotation, output_shape=output_shape, order=order,
-        mode=mode, cval=cval, clip=clip, preserve_range=preserve_range
+        x,
+        center=center,
+        strength=strength,
+        radius=radius,
+        rotation=rotation,
+        output_shape=output_shape,
+        order=order,
+        mode=mode,
+        cval=cval,
+        clip=clip,
+        preserve_range=preserve_range
     )
     if max_v > 1:
         swirled = swirled * max_v
@@ -797,8 +846,18 @@ def swirl(
 
 
 def swirl_multi(
-        x, center=None, strength=1, radius=100, rotation=0, output_shape=None, order=1, mode='constant', cval=0,
-        clip=True, preserve_range=False, is_random=False
+        x,
+        center=None,
+        strength=1,
+        radius=100,
+        rotation=0,
+        output_shape=None,
+        order=1,
+        mode='constant',
+        cval=0,
+        clip=True,
+        preserve_range=False,
+        is_random=False
 ):
     """Swirl multiple images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
@@ -834,8 +893,17 @@ def swirl_multi(
         if max_v > 1:  # Note: the input of this fn should be [-1, 1], rescale is required.
             data = data / max_v
         swirled = skimage.transform.swirl(
-            data, center=center, strength=strength, radius=radius, rotation=rotation, output_shape=output_shape,
-            order=order, mode=mode, cval=cval, clip=clip, preserve_range=preserve_range
+            data,
+            center=center,
+            strength=strength,
+            radius=radius,
+            rotation=rotation,
+            output_shape=output_shape,
+            order=order,
+            mode=mode,
+            cval=cval,
+            clip=clip,
+            preserve_range=preserve_range
         )
         if max_v > 1:
             swirled = swirled * max_v
@@ -958,8 +1026,15 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
 
 # zoom
 def zoom(
-        x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
-        cval=0., order=1
+        x,
+        zoom_range=(0.9, 1.1),
+        is_random=False,
+        row_index=0,
+        col_index=1,
+        channel_index=2,
+        fill_mode='nearest',
+        cval=0.,
+        order=1
 ):
     """Zoom in and out of a single image, randomly or non-randomly.
 
@@ -1008,8 +1083,15 @@ def zoom(
 
 
 def zoom_multi(
-        x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
-        cval=0., order=1
+        x,
+        zoom_range=(0.9, 1.1),
+        is_random=False,
+        row_index=0,
+        col_index=1,
+        channel_index=2,
+        fill_mode='nearest',
+        cval=0.,
+        order=1
 ):
     """Zoom in and out of images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
@@ -1837,7 +1919,14 @@ def projective_transform_by_points(
     m = transform.ProjectiveTransform()
     m.estimate(dst, src)
     warped = transform.warp(
-        x, m, map_args=map_args, output_shape=output_shape, order=order, mode=mode, cval=cval, clip=clip,
+        x,
+        m,
+        map_args=map_args,
+        output_shape=output_shape,
+        order=order,
+        mode=mode,
+        cval=cval,
+        clip=clip,
         preserve_range=preserve_range
     )
     return warped
@@ -2524,8 +2613,16 @@ def obj_box_imresize(im, coords=None, size=None, interp='bicubic', mode=None, is
 
 
 def obj_box_crop(
-        im, classes=None, coords=None, wrg=100, hrg=100, is_rescale=False, is_center=False, is_random=False,
-        thresh_wh=0.02, thresh_wh2=12.
+        im,
+        classes=None,
+        coords=None,
+        wrg=100,
+        hrg=100,
+        is_rescale=False,
+        is_center=False,
+        is_random=False,
+        thresh_wh=0.02,
+        thresh_wh2=12.
 ):
     """Randomly or centrally crop an image, and compute the new bounding box coordinates.
     Objects outside the cropped image will be removed.
@@ -2677,8 +2774,22 @@ def obj_box_crop(
 
 
 def obj_box_shift(
-        im, classes=None, coords=None, wrg=0.1, hrg=0.1, row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
-        cval=0., order=1, is_rescale=False, is_center=False, is_random=False, thresh_wh=0.02, thresh_wh2=12.
+        im,
+        classes=None,
+        coords=None,
+        wrg=0.1,
+        hrg=0.1,
+        row_index=0,
+        col_index=1,
+        channel_index=2,
+        fill_mode='nearest',
+        cval=0.,
+        order=1,
+        is_rescale=False,
+        is_center=False,
+        is_random=False,
+        thresh_wh=0.02,
+        thresh_wh2=12.
 ):
     """Shift an image randomly or non-randomly, and compute the new bounding box coordinates.
     Objects outside the cropped image will be removed.
@@ -2812,9 +2923,21 @@ def obj_box_shift(
 
 
 def obj_box_zoom(
-        im, classes=None, coords=None, zoom_range=(0.9,
-                                                   1.1), row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
-        cval=0., order=1, is_rescale=False, is_center=False, is_random=False, thresh_wh=0.02, thresh_wh2=12.
+        im,
+        classes=None,
+        coords=None,
+        zoom_range=(0.9, 1.1),
+        row_index=0,
+        col_index=1,
+        channel_index=2,
+        fill_mode='nearest',
+        cval=0.,
+        order=1,
+        is_rescale=False,
+        is_center=False,
+        is_random=False,
+        thresh_wh=0.02,
+        thresh_wh2=12.
 ):
     """Zoom in and out of a single image, randomly or non-randomly, and compute the new bounding box coordinates.
     Objects outside the cropped image will be removed.

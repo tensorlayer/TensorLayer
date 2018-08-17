@@ -231,11 +231,18 @@ def main_lstm_generate_text():
         with tf.variable_scope("model", reuse=reuse):
             network = EmbeddingInputlayer(x, vocab_size, hidden_size, rnn_init, name='embedding')
             network = RNNLayer(
-                network, cell_fn=tf.contrib.rnn.BasicLSTMCell, cell_init_args={
+                network,
+                cell_fn=tf.contrib.rnn.BasicLSTMCell,
+                cell_init_args={
                     'forget_bias': 0.0,
                     'state_is_tuple': True
-                }, n_hidden=hidden_size, initializer=rnn_init, n_steps=sequence_length, return_last=False,
-                return_seq_2d=True, name='lstm1'
+                },
+                n_hidden=hidden_size,
+                initializer=rnn_init,
+                n_steps=sequence_length,
+                return_last=False,
+                return_seq_2d=True,
+                name='lstm1'
             )
             lstm1 = network
             network = DenseLayer(network, vocab_size, W_init=rnn_init, b_init=rnn_init, act=None, name='output')
@@ -340,7 +347,8 @@ def main_lstm_generate_text():
             for _ in range(print_length):
                 a_id = np.asarray(a_id).reshape(1, 1)
                 out, state1 = sess.run(
-                    [y_soft, lstm1_test.final_state], feed_dict={
+                    [y_soft, lstm1_test.final_state],
+                    feed_dict={
                         input_data_test: a_id,
                         lstm1_test.initial_state: state1
                     }

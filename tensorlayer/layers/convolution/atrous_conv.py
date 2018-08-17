@@ -125,9 +125,18 @@ class AtrousConv2dLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self, prev_layer=None, n_filter=32, filter_size=(3, 3), rate=2, padding='SAME',
-            W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None, b_init_args=None, act=None, name='atrous_2d'
+            self,
+            prev_layer=None,
+            n_filter=32,
+            filter_size=(3, 3),
+            rate=2,
+            padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            act=None,
+            name='atrous_2d'
     ):
 
         padding = padding.upper()
@@ -174,7 +183,8 @@ class AtrousConv2dLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(AtrousConv2dLayer, self).compile(prev_layer)
@@ -183,7 +193,10 @@ class AtrousConv2dLayer(Layer):
             shape = [self.filter_size[0], self.filter_size[1], int(self.inputs.get_shape()[-1]), self.n_filter]
 
             weight_matrix = self._get_tf_variable(
-                name='W_atrous_conv2d', shape=shape, initializer=self.W_init, dtype=self.inputs.dtype,
+                name='W_atrous_conv2d',
+                shape=shape,
+                initializer=self.W_init,
+                dtype=self.inputs.dtype,
                 **self.W_init_args
             )
 
@@ -191,7 +204,10 @@ class AtrousConv2dLayer(Layer):
 
             if self.b_init:
                 b = self._get_tf_variable(
-                    name='b_atrous_conv2d', shape=(self.n_filter, ), initializer=self.b_init, dtype=self.inputs.dtype,
+                    name='b_atrous_conv2d',
+                    shape=(self.n_filter, ),
+                    initializer=self.b_init,
+                    dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
 
@@ -239,9 +255,17 @@ class AtrousDeConv2dLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self, prev_layer=None, shape=(3, 3, 128, 256), rate=2, padding='SAME',
-            W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None, b_init_args=None, act=None, name='atrous_2d_transpose'
+            self,
+            prev_layer=None,
+            shape=(3, 3, 128, 256),
+            rate=2,
+            padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            act=None,
+            name='atrous_2d_transpose'
     ):
 
         padding = padding.upper()
@@ -287,19 +311,30 @@ class AtrousDeConv2dLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
-                name='W_atrous_conv2d_transpose', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype,
+                name='W_atrous_conv2d_transpose',
+                shape=self.shape,
+                initializer=self.W_init,
+                dtype=self.inputs.dtype,
                 **self.W_init_args
             )
 
             self.out_shape = compute_deconv2d_output_shape(
-                self.inputs, self.shape[0], self.shape[1], 1, 1, self.shape[2], padding=self.padding, data_format="NHWC"
+                self.inputs,
+                self.shape[0],
+                self.shape[1],
+                1,
+                1,
+                self.shape[2],
+                padding=self.padding,
+                data_format="NHWC"
             )
 
             self.outputs = tf.nn.atrous_conv2d_transpose(
@@ -308,8 +343,11 @@ class AtrousDeConv2dLayer(Layer):
 
             if self.b_init:
                 b = self._get_tf_variable(
-                    name='b_atrous_conv2d_transpose', shape=(self.shape[-2]), initializer=self.b_init,
-                    dtype=self.inputs.dtype, **self.b_init_args
+                    name='b_atrous_conv2d_transpose',
+                    shape=(self.shape[-2]),
+                    initializer=self.b_init,
+                    dtype=self.inputs.dtype,
+                    **self.b_init_args
                 )
 
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')

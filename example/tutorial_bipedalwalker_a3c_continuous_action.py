@@ -163,7 +163,10 @@ class ACNet(object):
     def save_ckpt(self):
         tl.files.exists_or_mkdir(self.scope)
         tl.files.save_ckpt(
-            sess=sess, mode_name='model.ckpt', var_list=self.a_params + self.c_params, save_dir=self.scope,
+            sess=sess,
+            mode_name='model.ckpt',
+            var_list=self.a_params + self.c_params,
+            save_dir=self.scope,
             printable=True
         )
 

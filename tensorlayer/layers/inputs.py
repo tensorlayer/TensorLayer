@@ -247,7 +247,9 @@ class Word2vecEmbeddingInputlayer(Layer):
         self.name = name
 
         super(Word2vecEmbeddingInputlayer, self).__init__(
-            nce_W_init_args=nce_W_init_args, nce_b_init_args=nce_b_init_args, nce_loss_args=nce_loss_args,
+            nce_W_init_args=nce_W_init_args,
+            nce_b_init_args=nce_b_init_args,
+            nce_loss_args=nce_loss_args,
             E_init_args=E_init_args
         )
 
@@ -293,12 +295,18 @@ class Word2vecEmbeddingInputlayer(Layer):
 
             # Construct the variables for the NCE loss (i.e. negative sampling)
             nce_weights = self._get_tf_variable(
-                name='nce_weights', shape=self._emb_shape, dtype=self.dtype, initializer=self.nce_W_init,
+                name='nce_weights',
+                shape=self._emb_shape,
+                dtype=self.dtype,
+                initializer=self.nce_W_init,
                 **self.nce_W_init_args
             )
 
             nce_biases = self._get_tf_variable(
-                name='nce_biases', shape=(self.vocabulary_size, ), dtype=self.dtype, initializer=self.nce_b_init,
+                name='nce_biases',
+                shape=(self.vocabulary_size, ),
+                dtype=self.dtype,
+                initializer=self.nce_b_init,
                 **self.nce_b_init_args
             )
 
@@ -308,8 +316,13 @@ class Word2vecEmbeddingInputlayer(Layer):
 
             self.nce_cost = tf.reduce_mean(
                 tf.nn.nce_loss(
-                    weights=nce_weights, biases=nce_biases, inputs=self.outputs, labels=self.train_labels,
-                    num_sampled=self.num_sampled, num_classes=self.vocabulary_size, **self.nce_loss_args
+                    weights=nce_weights,
+                    biases=nce_biases,
+                    inputs=self.outputs,
+                    labels=self.train_labels,
+                    num_sampled=self.num_sampled,
+                    num_classes=self.vocabulary_size,
+                    **self.nce_loss_args
                 )
             )
 
@@ -500,7 +513,10 @@ class AverageEmbeddingInputlayer(Layer):
         with tf.variable_scope(self.name):
 
             embeddings = self._get_tf_variable(
-                name='embeddings', shape=self._emb_shape, dtype=self.dtype, initializer=self.embeddings_initializer,
+                name='embeddings',
+                shape=self._emb_shape,
+                dtype=self.dtype,
+                initializer=self.embeddings_initializer,
                 **self.embeddings_kwargs
             )
 

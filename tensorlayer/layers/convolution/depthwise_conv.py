@@ -139,7 +139,8 @@ class DepthwiseConv2d(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(DepthwiseConv2d, self).compile(prev_layer)
@@ -156,7 +157,10 @@ class DepthwiseConv2d(Layer):
         with tf.variable_scope(self.name):
 
             weight_matrix = self._get_tf_variable(
-                name='W_depthwise2d', shape=w_shape, initializer=self.W_init, dtype=self.inputs.dtype,
+                name='W_depthwise2d',
+                shape=w_shape,
+                initializer=self.W_init,
+                dtype=self.inputs.dtype,
                 **self.W_init_args
             )
 
@@ -166,8 +170,11 @@ class DepthwiseConv2d(Layer):
 
             if self.b_init:
                 b = self._get_tf_variable(
-                    name='b_depthwise2d', shape=(input_channels * self.depth_multiplier), initializer=self.b_init,
-                    dtype=self.inputs.dtype, **self.b_init_args
+                    name='b_depthwise2d',
+                    shape=(input_channels * self.depth_multiplier),
+                    initializer=self.b_init,
+                    dtype=self.inputs.dtype,
+                    **self.b_init_args
                 )
 
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')

@@ -24,18 +24,27 @@ db.save_dataset((X_train, y_train, X_val, y_val, X_test, y_test), 'mnist', descr
 
 # push tasks into database, then allow other servers pull tasks to run
 db.create_task(
-    task_name='mnist', script='task_script.py', hyper_parameters=dict(n_units1=800, n_units2=800),
-    saved_result_keys=['test_accuracy'], description='800-800'
+    task_name='mnist',
+    script='task_script.py',
+    hyper_parameters=dict(n_units1=800, n_units2=800),
+    saved_result_keys=['test_accuracy'],
+    description='800-800'
 )
 
 db.create_task(
-    task_name='mnist', script='task_script.py', hyper_parameters=dict(n_units1=600, n_units2=600),
-    saved_result_keys=['test_accuracy'], description='600-600'
+    task_name='mnist',
+    script='task_script.py',
+    hyper_parameters=dict(n_units1=600, n_units2=600),
+    saved_result_keys=['test_accuracy'],
+    description='600-600'
 )
 
 db.create_task(
-    task_name='mnist', script='task_script.py', hyper_parameters=dict(n_units1=400, n_units2=400),
-    saved_result_keys=['test_accuracy'], description='400-400'
+    task_name='mnist',
+    script='task_script.py',
+    hyper_parameters=dict(n_units1=400, n_units2=400),
+    saved_result_keys=['test_accuracy'],
+    description='400-400'
 )
 
 # wait for tasks to finish

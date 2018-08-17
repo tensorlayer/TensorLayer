@@ -158,7 +158,8 @@ class DorefaConv2d(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(DorefaConv2d, self).compile(prev_layer)
@@ -177,20 +178,30 @@ class DorefaConv2d(Layer):
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
-                name='W_conv2d', shape=w_shape, initializer=self.W_init, dtype=quantized_inputs.dtype,
+                name='W_conv2d',
+                shape=w_shape,
+                initializer=self.W_init,
+                dtype=quantized_inputs.dtype,
                 **self.W_init_args
             )
 
             weight_matrix = quantize_weight(weight_matrix, self.bitW)
 
             self.outputs = tf.nn.conv2d(
-                quantized_inputs, weight_matrix, strides=strides, padding=self.padding,
-                use_cudnn_on_gpu=self.use_cudnn_on_gpu, data_format=self.data_format
+                quantized_inputs,
+                weight_matrix,
+                strides=strides,
+                padding=self.padding,
+                use_cudnn_on_gpu=self.use_cudnn_on_gpu,
+                data_format=self.data_format
             )
 
             if self.b_init:
                 b = self._get_tf_variable(
-                    name='b_conv2d', shape=(w_shape[-1]), initializer=self.b_init, dtype=quantized_inputs.dtype,
+                    name='b_conv2d',
+                    shape=(w_shape[-1]),
+                    initializer=self.b_init,
+                    dtype=quantized_inputs.dtype,
                     **self.b_init_args
                 )
 

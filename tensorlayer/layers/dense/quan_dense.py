@@ -65,8 +65,9 @@ class QuantizedDense(Layer):
             b_init_args=None,
             name='quantized_dense',
     ):
-        super(QuantizedDense, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super(QuantizedDense, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
 
         logging.info(
             "QuantizedDense  %s: %d %s" %

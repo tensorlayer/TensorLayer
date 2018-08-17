@@ -205,7 +205,8 @@ class QuantizedConv2dWithBN(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(QuantizedConv2dWithBN, self).compile(prev_layer)
@@ -224,20 +225,30 @@ class QuantizedConv2dWithBN(Layer):
             quantized_inputs = quantize_active_overflow(self.inputs, self.bitA)  # Do not remove
 
             weight_matrix = self._get_tf_variable(
-                name='W_conv2d', shape=w_shape, initializer=self.W_init, dtype=quantized_inputs.dtype,
+                name='W_conv2d',
+                shape=w_shape,
+                initializer=self.W_init,
+                dtype=quantized_inputs.dtype,
                 **self.W_init_args
             )
 
             conv_out = tf.nn.conv2d(
-                self.inputs, weight_matrix, strides=strides, padding=self.padding,
-                use_cudnn_on_gpu=self.use_cudnn_on_gpu, data_format=self.data_format
+                self.inputs,
+                weight_matrix,
+                strides=strides,
+                padding=self.padding,
+                use_cudnn_on_gpu=self.use_cudnn_on_gpu,
+                data_format=self.data_format
             )
 
             para_bn_shape = conv_out.get_shape()[-1:]
 
             if self.gamma_init:
                 scale_para = self._get_tf_variable(
-                    name='scale_para', shape=para_bn_shape, initializer=self.gamma_init, dtype=quantized_inputs.dtype,
+                    name='scale_para',
+                    shape=para_bn_shape,
+                    initializer=self.gamma_init,
+                    dtype=quantized_inputs.dtype,
                     trainable=is_train
                 )
             else:
@@ -245,14 +256,20 @@ class QuantizedConv2dWithBN(Layer):
 
             if self.beta_init:
                 offset_para = self._get_tf_variable(
-                    name='offset_para', shape=para_bn_shape, initializer=self.beta_init, dtype=quantized_inputs.dtype,
+                    name='offset_para',
+                    shape=para_bn_shape,
+                    initializer=self.beta_init,
+                    dtype=quantized_inputs.dtype,
                     trainable=is_train
                 )
             else:
                 offset_para = None
 
             moving_mean = self._get_tf_variable(
-                'moving_mean', para_bn_shape, initializer=tf.constant_initializer(1.), dtype=quantized_inputs.dtype,
+                'moving_mean',
+                para_bn_shape,
+                initializer=tf.constant_initializer(1.),
+                dtype=quantized_inputs.dtype,
                 trainable=False
             )
 
@@ -289,8 +306,12 @@ class QuantizedConv2dWithBN(Layer):
             weight_matrix = quantize_weight_overflow(_w_fold, self.bitW)
 
             conv_fold_out = tf.nn.conv2d(
-                quantized_inputs, weight_matrix, strides=strides, padding=self.padding,
-                use_cudnn_on_gpu=self.use_cudnn_on_gpu, data_format=self.data_format
+                quantized_inputs,
+                weight_matrix,
+                strides=strides,
+                padding=self.padding,
+                use_cudnn_on_gpu=self.use_cudnn_on_gpu,
+                data_format=self.data_format
             )
 
             self.outputs = tf.nn.bias_add(conv_fold_out, _bias_fold, name='bn_bias_add')
