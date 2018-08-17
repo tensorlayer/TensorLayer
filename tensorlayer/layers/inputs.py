@@ -492,9 +492,9 @@ class AverageEmbeddingInputlayer(Layer):
     )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        inputs,
-        vocabulary_size,
-        embedding_size,
+        inputs=None,
+        vocabulary_size=None,
+        embedding_size=None,
         pad_value=0,
         embeddings_initializer=tf.random_uniform_initializer(-0.1, 0.1),
         embeddings_kwargs=None,
