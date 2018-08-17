@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 
 from tensorlayer.decorators import deprecated_alias
-from tensorlayer.decorators import force_return_self
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'StackLayer',
@@ -41,6 +41,11 @@ class StackLayer(Layer):
 
     """
 
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`layers` is deprecated, use the functional API instead",
+        deprecated_args=("layers", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
         layers=None,

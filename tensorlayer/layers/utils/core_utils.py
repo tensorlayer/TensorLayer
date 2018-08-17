@@ -19,7 +19,10 @@ __all__ = [
 ]
 
 
-@deprecated(date="2018-06-30", instructions="This function will be removed in TL 2.0.0 in favor of `tf.get_collection`")
+@deprecated(
+    end_support_version="2.0.0",
+    instructions="This function will be removed in TL 2.0.0 in favor of `tf.get_collection`"
+)
 def get_collection_trainable(name=''):
     variables = []
     for p in tf.trainable_variables():
@@ -29,7 +32,10 @@ def get_collection_trainable(name=''):
     return variables
 
 
-@deprecated(date="2018-06-30", instructions="This function will be removed in TL 2.0.0 in favor of `tf.get_collection`")
+@deprecated(
+    end_support_version="2.0.0",
+    instructions="This function will be removed in TL 2.0.0 in favor of `tf.get_collection`"
+)
 @deprecated_alias(printable='verbose', end_support_version="2.0.0")  # TODO: remove this line before releasing TL 2.0.0
 def get_layers_with_name(net, name="", verbose=False):
     """Get a list of layers' output in a network by a given name scope.
@@ -141,12 +147,14 @@ def print_all_variables(train_only=False):
         logging.info("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 
 
-@deprecated(date="2018-06-30", instructions="TensorLayer relies on TensorFlow to check naming")
+@deprecated(end_support_version="2.0.0", instructions="TensorLayer relies on TensorFlow to check naming")
 def clear_layers_name():
     logging.warning('this method is DEPRECATED and has no effect, please remove it from your code.')
 
 
-@deprecated(date="2018-09-30", instructions="This API is deprecated in favor of `tf.global_variables_initializer`")
+@deprecated(
+    end_support_version="2.0.0", instructions="This API is deprecated in favor of `tf.global_variables_initializer`"
+)
 def initialize_global_variables(sess):
     """Initialize the global variables of TensorFlow.
 
@@ -165,6 +173,6 @@ def initialize_global_variables(sess):
     sess.run(tf.global_variables_initializer())
 
 
-@deprecated(date="2018-06-30", instructions="TensorLayer relies on TensorFlow to check name reusing")
+@deprecated(end_support_version="2.0.0", instructions="TensorLayer relies on TensorFlow to check name reusing")
 def set_name_reuse(enable=True):
     logging.warning('this method is DEPRECATED and has no effect, please remove it from your code.')

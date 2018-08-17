@@ -7,7 +7,7 @@ from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer.decorators import deprecated_alias
-from tensorlayer.decorators import force_return_self
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'LambdaLayer',
@@ -59,6 +59,11 @@ class LambdaLayer(Layer):
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`prev_layer` is deprecated, use the functional API instead",
+        deprecated_args=("prev_layer", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
         prev_layer=None,
@@ -142,10 +147,15 @@ class ElementwiseLambdaLayer(Layer):
     >>> z = tl.layers.ElementwiseLambdaLayer([noise, mean, std], fn=func, name='z')
     """
 
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`layers` is deprecated, use the functional API instead",
+        deprecated_args=("layers", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        layers,
-        fn,
+        layers=None,
+        fn=None,
         fn_args=None,
         act=None,
         name='elementwiselambda_layer',

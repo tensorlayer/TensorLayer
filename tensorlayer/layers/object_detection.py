@@ -7,7 +7,7 @@ import tensorlayer as tl
 from tensorlayer.layers.core import Layer
 
 from tensorlayer.decorators import deprecated_alias
-from tensorlayer.decorators import force_return_self
+from tensorlayer.decorators import deprecated_args
 
 from tensorlayer.lazy_imports import LazyImport
 
@@ -49,6 +49,11 @@ class ROIPoolingLayer(Layer):
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`prev_layer` is deprecated, use the functional API instead",
+        deprecated_args=("prev_layer", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
         prev_layer=None,

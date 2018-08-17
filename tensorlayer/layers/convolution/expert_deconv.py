@@ -9,7 +9,7 @@ from tensorlayer.layers.utils import compute_deconv2d_output_shape
 from tensorlayer.layers.utils import compute_deconv3d_output_shape
 
 from tensorlayer.decorators import deprecated_alias
-from tensorlayer.decorators import force_return_self
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'DeConv2dLayer',
@@ -97,11 +97,15 @@ class DeConv2dLayer(Layer):
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`prev_layer` is deprecated, use the functional API instead",
+        deprecated_args=("prev_layer", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
         prev_layer=None,
         shape=(3, 3, 128, 256),
-        output_shape=(1, 256, 256, 128),
         strides=(1, 2, 2, 1),
         padding='SAME',
         data_format='NHWC',
@@ -242,6 +246,11 @@ class DeConv3dLayer(Layer):
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`prev_layer` is deprecated, use the functional API instead",
+        deprecated_args=("prev_layer", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
         prev_layer=None,

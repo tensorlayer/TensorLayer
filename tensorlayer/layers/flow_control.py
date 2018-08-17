@@ -7,6 +7,8 @@ from tensorlayer import logging
 
 from tensorlayer.layers.core import Layer
 
+from tensorlayer.decorators import deprecated_args
+
 __all__ = [
     'MultiplexerLayer',
 ]
@@ -56,6 +58,11 @@ class MultiplexerLayer(Layer):
 
     """
 
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`layers` is deprecated, use the functional API instead",
+        deprecated_args=("layers", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(self, layers, name='mux_layer'):
 
         super(MultiplexerLayer, self).__init__(prev_layer=layers, name=name)

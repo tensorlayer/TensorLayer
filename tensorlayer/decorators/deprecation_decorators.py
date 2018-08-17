@@ -30,15 +30,17 @@ _PRINT_DEPRECATION_WARNINGS = True
 _PRINTED_WARNING = {}
 
 
-def deprecated(wrapped=None, date='', instructions='', warn_once=True):
+def deprecated(wrapped=None, end_support_version='', instructions='', warn_once=True):
 
     if wrapped is None:
-        return functools.partial(deprecated, date=date, instructions=instructions, warn_once=warn_once)
+        return functools.partial(
+            deprecated, end_support_version=end_support_version, instructions=instructions, warn_once=warn_once
+        )
 
     @wrapt.decorator
     def wrapper(wrapped, instance=None, args=None, kwargs=None):
 
-        validate_deprecation_args(date, instructions)
+        validate_deprecation_args(instructions)
 
         if _PRINT_DEPRECATION_WARNINGS:
 
@@ -56,11 +58,9 @@ def deprecated(wrapped=None, date='', instructions='', warn_once=True):
                     wrapped_type = "Class"
 
                 tl.logging.warning(
-                    '%s: `%s.%s` (in file: `%s`) is deprecated and will be removed %s.\n'
-                    'Instructions for updating: %s\n' % (
-                        wrapped_type, wrapped.__module__, class_or_func_name, filename, 'in a future version'
-                        if date is None else ('after %s' % date), instructions
-                    )
+                    '%s: `%s.%s` (in file: `%s`) is deprecated and will be removed in version %s.\n'
+                    'Instructions for updating: %s\n' %
+                    (wrapped_type, wrapped.__module__, class_or_func_name, filename, end_support_version, instructions)
                 )
 
         return wrapped(*args, **kwargs)
@@ -69,7 +69,8 @@ def deprecated(wrapped=None, date='', instructions='', warn_once=True):
 
     if sys.version_info > (3, 0):  # docstring can only be edited with Python 3
         wrapt.FunctionWrapper.__setattr__(
-            decorated, "__doc__", add_deprecation_notice_to_docstring(wrapped.__doc__, date, instructions)
+            decorated, "__doc__",
+            add_deprecation_notice_to_docstring(wrapped.__doc__, end_support_version, instructions)
         )
 
     return decorated
@@ -96,7 +97,7 @@ def deprecated_alias(end_support_version, **aliases):
     return deco
 
 
-def deprecated_args(date, instructions, *deprecated_arg_names_or_tuples, **kwargs):
+def deprecated_args(end_support_version, instructions, deprecated_args, warn_once=True):
     """Decorator for marking specific function arguments as deprecated.
 
     This decorator logs a deprecation warning whenever the decorated function is
@@ -116,14 +117,13 @@ def deprecated_args(date, instructions, *deprecated_arg_names_or_tuples, **kwarg
             Must be ISO 8601 (YYYY-MM-DD), or None.
         instructions: String. Instructions on how to update code using the
             deprecated function.
-        *deprecated_arg_names_or_tuples: String or 2-Tuple(String,
+        deprecated_args: A Tuple of strings or 2-Tuple(String,
             [ok_vals]).    The string is the deprecated argument name.
             Optionally, an ok-value may be provided.    If the user provided
             argument equals this value, the warning is suppressed.
-        **kwargs: If `warn_once=False` is passed, every call with a deprecated
+        warn_once: If `warn_once=False` is passed, every call with a deprecated
             argument will log a warning. The default behavior is to only warn the
             first time the function is called with any given deprecated argument.
-            All other kwargs raise `ValueError`.
 
     Returns:
         Decorated function or method.
@@ -135,22 +135,16 @@ def deprecated_args(date, instructions, *deprecated_arg_names_or_tuples, **kwarg
             list, or if a kwarg other than `warn_once` is passed.
     """
 
-    validate_deprecation_args(date, instructions)
+    validate_deprecation_args(instructions)
 
-    if not deprecated_arg_names_or_tuples:
+    if not deprecated_args:
         raise ValueError('Specify which argument is deprecated.')
-
-    if kwargs and list(kwargs.keys()) != ['warn_once']:
-        kwargs.pop('warn_once', None)
-        raise ValueError('Illegal argument to deprecated_args: %s' % kwargs)
-
-    warn_once = kwargs.get('warn_once', True)
 
     def _get_arg_names_to_ok_vals():
         """Returns a dict mapping arg_name to DeprecatedArgSpec w/o position."""
         d = {}
 
-        for name_or_tuple in deprecated_arg_names_or_tuples:
+        for name_or_tuple in deprecated_args:
 
             if isinstance(name_or_tuple, tuple):
                 d[name_or_tuple[0]] = DeprecatedArgSpec(-1, True, name_or_tuple[1])
@@ -176,11 +170,15 @@ def deprecated_args(date, instructions, *deprecated_arg_names_or_tuples, **kwarg
             Dictionary from arg_name to DeprecatedArgSpec.
         """
         arg_name_to_pos = dict((name, pos) for (pos, name) in enumerate(arg_spec.args))
+
         deprecated_positional_args = {}
+
         for arg_name, spec in iter(names_to_ok_vals.items()):
+
             if arg_name in arg_name_to_pos:
                 pos = arg_name_to_pos[arg_name]
                 deprecated_positional_args[arg_name] = DeprecatedArgSpec(pos, spec.has_ok_value, spec.ok_value)
+
         return deprecated_positional_args
 
     def deprecated_wrapper(func):
@@ -196,10 +194,7 @@ def deprecated_args(date, instructions, *deprecated_arg_names_or_tuples, **kwarg
         is_varargs_deprecated = arg_spec.varargs in deprecated_arg_names
         is_kwargs_deprecated = arg_spec.keywords in deprecated_arg_names
 
-        if (
-            len(deprecated_positions) + is_varargs_deprecated + is_kwargs_deprecated !=
-            len(deprecated_arg_names_or_tuples)
-        ):
+        if (len(deprecated_positions) + is_varargs_deprecated + is_kwargs_deprecated != len(deprecated_args)):
             known_args = arg_spec.args + [arg_spec.varargs, arg_spec.keywords]
 
             missing_args = [arg_name for arg_name in deprecated_arg_names if arg_name not in known_args]
@@ -271,21 +266,31 @@ def deprecated_args(date, instructions, *deprecated_arg_names_or_tuples, **kwarg
                         invalid_args.append(arg_name)
 
                 for arg_name in invalid_args:
+                    '''
+                    tl.logging.warning(
+                        '%s: `%s.%s` (in file: `%s`) is deprecated and will be removed %s.\n'
+                        'Instructions for updating: %s\n' % (
+                            wrapped_type, wrapped.__module__, class_or_func_name, filename, 'in a future version'
+                            if date is None else ('after %s' % date), instructions
+                        )
+                    )
+                    '''
+
                     if (func, arg_name) not in _PRINTED_WARNING:
                         if warn_once:
                             _PRINTED_WARNING[(func, arg_name)] = True
 
                         tl.logging.warning(
-                            'From %s: calling %s (from %s) with %s is deprecated and will '
-                            'be removed %s.\nInstructions for updating:\n%s', call_location(),
-                            decorator_utils.get_qualified_name(func), func.__module__, arg_name, 'in a future version'
-                            if date is None else ('after %s' % date), instructions
+                            'From %s: calling %s (from %s) with %s is deprecated and will be removed in version %s\n'
+                            'Instructions for updating:\n%s', call_location(), decorator_utils.get_qualified_name(func),
+                            func.__module__, arg_name, end_support_version, instructions
                         )
 
             return func(*args, **kwargs)
 
         return tf_decorator.make_decorator(
-            func, new_func, 'deprecated', add_deprecated_arg_notice_to_docstring(func.__doc__, date, instructions)
+            func, new_func, 'deprecated',
+            add_deprecated_arg_notice_to_docstring(func.__doc__, end_support_version, instructions)
         )
 
     return deprecated_wrapper

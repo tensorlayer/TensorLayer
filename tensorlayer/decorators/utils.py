@@ -29,12 +29,16 @@ __all__ = [
 DeprecatedArgSpec = collections.namedtuple('DeprecatedArgSpec', ['position', 'has_ok_value', 'ok_value'])
 
 
-def add_deprecated_arg_notice_to_docstring(doc, date, instructions):
+def add_deprecated_arg_notice_to_docstring(doc, end_support_version, instructions):
     """Adds a deprecation notice to a docstring for deprecated arguments."""
     return _add_notice_to_docstring(
-        doc, instructions, 'DEPRECATED FUNCTION ARGUMENTS', '(deprecated arguments)', [
-            'SOME ARGUMENTS ARE DEPRECATED. They will be removed %s.' %
-            ('in a future version' if date is None else ('after %s' % date)), 'Instructions for updating:'
+        doc=doc,
+        instructions=instructions,
+        no_doc_str='DEPRECATED FUNCTION ARGUMENTS',
+        suffix_str='(deprecated arguments)',
+        notice=[
+            'SOME ARGUMENTS ARE DEPRECATED. They will be removed in TensorLayer version: %s.' % end_support_version,
+            'Instructions for updating:'
         ]
     )
 
@@ -56,25 +60,28 @@ def add_deprecated_arg_notice_to_docstring(doc, date, instructions):
     # return _add_notice_to_docstring(doc=doc, instructions='DEPRECATED FUNCTION', notice=main_text)
 
 
-def add_deprecation_notice_to_docstring(doc, date, instructions):
+def add_deprecation_notice_to_docstring(doc, end_support_version, instructions):
     """Adds a deprecation notice to a docstring for deprecated functions."""
 
     if instructions:
         deprecation_message = """
             .. warning::
-                **THIS FUNCTION IS DEPRECATED:** It will be removed after %s.
+                **THIS FUNCTION IS DEPRECATED:** It will be removed in TensorLayer version: %s.
                 *Instructions for updating:* %s.
-        """ % (('in a future version' if date is None else ('after %s' % date)), instructions)
+        """ % (end_support_version, instructions)
 
     else:
         deprecation_message = """
             .. warning::
-                **THIS FUNCTION IS DEPRECATED:** It will be removed after %s.
-        """ % (('in a future version' if date is None else ('after %s' % date)))
+                **THIS FUNCTION IS DEPRECATED:** It will be removed in TensorLayer version: %s.
+        """ % end_support_version
 
     main_text = [deprecation_message]
 
-    return _add_notice_to_docstring(doc=doc, instructions='DEPRECATED FUNCTION', notice=main_text)
+    # _add_notice_to_docstring(doc, instructions, no_doc_str, suffix_str, notice)
+    return _add_notice_to_docstring(
+        doc=doc, instructions='DEPRECATED CLASS OR FUNCTION', no_doc_str="", suffix_str="", notice=main_text
+    )
 
 
 def call_location():
@@ -149,9 +156,10 @@ def rename_kwargs(kwargs, aliases, end_support_version, func_name):
             kwargs[new] = kwargs.pop(alias)
 
 
-def validate_deprecation_args(date, instructions):
-    if date is not None and not re.match(r'20\d\d-[01]\d-[0123]\d', date):
-        raise ValueError('Date must be YYYY-MM-DD.')
+# def validate_deprecation_args(end_support_version, instructions):
+#     if end_support_version is not None and not re.match(r'\d+\.\d+(\.\d+)?(\S*)?$', end_support_version):
+#         raise ValueError('end_support_version does not comply with the semantic version format.')
+def validate_deprecation_args(instructions):
     if not instructions:
         raise ValueError('Don\'t deprecate things without conversion instructions!')
 

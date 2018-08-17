@@ -11,6 +11,7 @@ from tensorlayer.layers.utils.ternary import ternary_operation
 from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'TernaryDenseLayer',
@@ -48,6 +49,11 @@ class TernaryDenseLayer(Layer):
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`prev_layer` is deprecated, use the functional API instead",
+        deprecated_args=("prev_layer", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
         prev_layer,

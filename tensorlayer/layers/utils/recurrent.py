@@ -3,7 +3,7 @@
 
 import tensorflow as tf
 
-from tensorlayer.layers.recurrent.lstm_cells import LSTMStateTuple
+from tensorflow.python.ops.rnn_cell import LSTMStateTuple
 
 __all__ = [
     '_conv_linear',

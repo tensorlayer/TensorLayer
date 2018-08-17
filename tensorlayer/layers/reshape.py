@@ -8,7 +8,7 @@ from tensorlayer.layers.core import Layer
 from tensorlayer.layers.utils.reshape import flatten_reshape
 
 from tensorlayer.decorators import deprecated_alias
-from tensorlayer.decorators import force_return_self
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'FlattenLayer',
@@ -44,6 +44,11 @@ class FlattenLayer(Layer):
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`prev_layer` is deprecated, use the functional API instead",
+        deprecated_args=("prev_layer", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(self, prev_layer=None, name='flatten'):
 
         self.prev_layer = prev_layer
@@ -59,7 +64,8 @@ class FlattenLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         _out = flatten_reshape(prev_layer.outputs, name=self.name)
@@ -98,6 +104,11 @@ class ReshapeLayer(Layer):
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`prev_layer` is deprecated, use the functional API instead",
+        deprecated_args=("prev_layer", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(self, prev_layer=None, shape=list(), name='reshape'):
 
         if not shape:
@@ -117,7 +128,8 @@ class ReshapeLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         _out = tf.reshape(prev_layer.outputs, shape=self._shape, name=self.name)
@@ -157,6 +169,11 @@ class TransposeLayer(Layer):
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`prev_layer` is deprecated, use the functional API instead",
+        deprecated_args=("prev_layer", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(self, prev_layer=None, perm=None, name='transpose'):
 
         if perm is None:
@@ -181,7 +198,8 @@ class TransposeLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         _out = tf.transpose(prev_layer.outputs, perm=self.perm, name=self.name)

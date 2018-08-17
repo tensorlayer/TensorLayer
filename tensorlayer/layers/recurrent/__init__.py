@@ -19,8 +19,6 @@ from .lstm_layers import *
 
 from .seq2seq import *
 
-from .utils import *
-
 __all__ = [
     'RNNLayer',
     'BiRNNLayer',

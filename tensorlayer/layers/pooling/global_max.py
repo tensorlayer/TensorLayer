@@ -8,7 +8,7 @@ from tensorlayer.layers.core import Layer
 from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
-from tensorlayer.decorators import force_return_self
+from tensorlayer.decorators import deprecated_args
 
 __all__ = ['GlobalMaxPool1d', 'GlobalMaxPool2d', 'GlobalMaxPool3d']
 
@@ -34,6 +34,11 @@ class GlobalMaxPool1d(Layer):
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`prev_layer` is deprecated, use the functional API instead",
+        deprecated_args=("prev_layer", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(self, prev_layer, name='globalmaxpool1d'):
         super(GlobalMaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -67,6 +72,11 @@ class GlobalMaxPool2d(Layer):
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`prev_layer` is deprecated, use the functional API instead",
+        deprecated_args=("prev_layer", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(self, prev_layer, name='globalmaxpool2d'):
         super(GlobalMaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -100,6 +110,11 @@ class GlobalMaxPool3d(Layer):
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`prev_layer` is deprecated, use the functional API instead",
+        deprecated_args=("prev_layer", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(self, prev_layer, name='globalmaxpool3d'):
         super(GlobalMaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
 

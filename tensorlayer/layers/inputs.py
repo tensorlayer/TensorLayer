@@ -5,7 +5,7 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer.decorators import force_return_self
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'InputLayer',
@@ -29,6 +29,11 @@ class InputLayer(Layer):
 
     """
 
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`inputs` is deprecated, use the functional API instead",
+        deprecated_args=("inputs", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(self, inputs=None, name='input'):
 
         self.prev_layer = inputs
@@ -86,6 +91,11 @@ class OneHotInputLayer(Layer):
 
     """
 
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`inputs` is deprecated, use the functional API instead",
+        deprecated_args=("inputs", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(self, inputs=None, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name='input'):
 
         if depth is None:
@@ -218,6 +228,11 @@ class Word2vecEmbeddingInputlayer(Layer):
 
     """
 
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`inputs` is deprecated, use the functional API instead",
+        deprecated_args=("inputs", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
         inputs=None,
@@ -371,6 +386,11 @@ class EmbeddingInputlayer(Layer):
     (8, 50)
     """
 
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`inputs` is deprecated, use the functional API instead",
+        deprecated_args=("inputs", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
         inputs=None,
@@ -465,6 +485,11 @@ class AverageEmbeddingInputlayer(Layer):
 
     """
 
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`inputs` is deprecated, use the functional API instead",
+        deprecated_args=("inputs", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
         inputs,

@@ -10,7 +10,7 @@ from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated
 from tensorlayer.decorators import deprecated_alias
-from tensorlayer.decorators import force_return_self
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'SlimNetsLayer',
@@ -45,6 +45,11 @@ class SlimNetsLayer(Layer):
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`prev_layer` is deprecated, use the functional API instead",
+        deprecated_args=("prev_layer", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
         prev_layer=None,
@@ -108,7 +113,7 @@ class SlimNetsLayer(Layer):
 
 
 # @deprecated(
-#     date="2018-06-30", instructions="This layer will be removed in TL 2.0.0 in favor of :class:`LambdaLayer`"
+#     end_support_version="2.0.0", instructions="This layer will be removed in TL 2.0.0 in favor of :class:`LambdaLayer`"
 # )  # TODO: remove this line before releasing TL 2.0.0
 class KerasLayer(Layer):
     """A layer to import Keras layers into TensorLayer.
@@ -131,6 +136,11 @@ class KerasLayer(Layer):
     @deprecated_alias(
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`prev_layer` is deprecated, use the functional API instead",
+        deprecated_args=("prev_layer", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
         prev_layer=None,
@@ -193,7 +203,7 @@ class KerasLayer(Layer):
 
 
 @deprecated(
-    date="2018-06-30", instructions="This layer will be removed in TL 2.0.0 in favor of :class:`LambdaLayer`"
+    end_support_version="2.0.0", instructions="This layer is deprecated in favor of :class:`LambdaLayer`"
 )  # TODO: remove this line before releasing TL 2.0.0
 class EstimatorLayer(Layer):
     """A layer that accepts a user-defined model.
@@ -216,6 +226,11 @@ class EstimatorLayer(Layer):
     @deprecated_alias(
         layer='prev_layer', args='layer_args', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
+    @deprecated_args(
+        end_support_version="2.1.0",
+        instructions="`prev_layer` is deprecated, use the functional API instead",
+        deprecated_args=("prev_layer", ),
+    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
         prev_layer=None,
