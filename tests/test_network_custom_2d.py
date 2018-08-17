@@ -33,7 +33,9 @@ class CustomNetwork_2D_Test(CustomTestCase):
                         padding='SAME',
                         act=tf.nn.relu,
                         name='squeeze'
-                    )(inputs)
+                    )(
+                        inputs
+                    )
 
                     e1x1 = tl.layers.Conv2d(
                         n_filter=expand_depth,
@@ -42,7 +44,9 @@ class CustomNetwork_2D_Test(CustomTestCase):
                         padding='SAME',
                         act=tf.nn.relu,
                         name='e1x1'
-                    )(squeezed)
+                    )(
+                        squeezed
+                    )
 
                     e3x3 = tl.layers.Conv2d(
                         n_filter=expand_depth,
@@ -51,7 +55,9 @@ class CustomNetwork_2D_Test(CustomTestCase):
                         padding='SAME',
                         act=tf.nn.relu,
                         name='e3x3'
-                    )(squeezed)
+                    )(
+                        squeezed
+                    )
 
                     return tl.layers.ConcatLayer(concat_dim=3, name='concat')([e1x1, e3x3])
 

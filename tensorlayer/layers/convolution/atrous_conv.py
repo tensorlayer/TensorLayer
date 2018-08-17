@@ -21,19 +21,19 @@ __all__ = [
 
 @deprecated_alias(layer='prev_layer', end_support_version="2.0.0")  # TODO: remove this line before releasing TL 2.0.0
 def atrous_conv1d(
-        prev_layer,
-        n_filter=32,
-        filter_size=2,
-        stride=1,
-        dilation=1,
-        padding='SAME',
-        data_format='NWC',
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        act=None,
-        name='atrous_1d',
+    prev_layer,
+    n_filter=32,
+    filter_size=2,
+    stride=1,
+    dilation=1,
+    padding='SAME',
+    data_format='NWC',
+    W_init=tf.truncated_normal_initializer(stddev=0.02),
+    b_init=tf.constant_initializer(value=0.0),
+    W_init_args=None,
+    b_init_args=None,
+    act=None,
+    name='atrous_1d',
 ):
     """Simplified version of :class:`AtrousConv1dLayer`.
 
@@ -125,18 +125,18 @@ class AtrousConv2dLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            n_filter=32,
-            filter_size=(3, 3),
-            rate=2,
-            padding='SAME',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            act=None,
-            name='atrous_2d'
+        self,
+        prev_layer=None,
+        n_filter=32,
+        filter_size=(3, 3),
+        rate=2,
+        padding='SAME',
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        act=None,
+        name='atrous_2d'
     ):
 
         padding = padding.upper()
@@ -255,17 +255,17 @@ class AtrousDeConv2dLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            shape=(3, 3, 128, 256),
-            rate=2,
-            padding='SAME',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            act=None,
-            name='atrous_2d_transpose'
+        self,
+        prev_layer=None,
+        shape=(3, 3, 128, 256),
+        rate=2,
+        padding='SAME',
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        act=None,
+        name='atrous_2d_transpose'
     ):
 
         padding = padding.upper()

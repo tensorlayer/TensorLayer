@@ -74,12 +74,12 @@ class ReconLayer(DenseLayer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer,
-            x_recon=None,
-            n_units=784,
-            act=tf.nn.softplus,
-            name='recon',
+        self,
+        prev_layer,
+        x_recon=None,
+        n_units=784,
+        act=tf.nn.softplus,
+        name='recon',
     ):
         super(ReconLayer, self).__init__(prev_layer=prev_layer, n_units=n_units, act=act, name=name)
 
@@ -170,17 +170,17 @@ class ReconLayer(DenseLayer):
         # self.train_op = tf.train.GradientDescentOptimizer(1.0).minimize(self.cost, var_list=self.train_params)
 
     def pretrain(
-            self,
-            sess,
-            x,
-            X_train,
-            X_val,
-            denoise_name=None,
-            n_epoch=100,
-            batch_size=128,
-            print_freq=10,
-            save=True,
-            save_name='w1pre_'
+        self,
+        sess,
+        x,
+        X_train,
+        X_val,
+        denoise_name=None,
+        n_epoch=100,
+        batch_size=128,
+        print_freq=10,
+        save=True,
+        save_name='w1pre_'
     ):
         # ====================================================
         #

@@ -376,9 +376,14 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
 
         # start training
         hooks = [StopAtStepHook(last_step=steps_per_epoch * epochs)]
-        with tl.distributed.DistributedSession(task_spec=task_spec, hooks=hooks, checkpoint_dir=checkpoints_path,
-                                               save_summaries_secs=None, save_summaries_steps=300,
-                                               save_checkpoint_secs=60 * 60) as sess:
+        with tl.distributed.DistributedSession(
+            task_spec=task_spec,
+            hooks=hooks,
+            checkpoint_dir=checkpoints_path,
+            save_summaries_secs=None,
+            save_summaries_steps=300,
+            save_checkpoint_secs=60 * 60
+        ) as sess:
             # print network information
             if task_spec is None or task_spec.is_master():
                 network.print_params(False, session=sess)

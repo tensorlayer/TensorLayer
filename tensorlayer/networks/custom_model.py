@@ -35,9 +35,13 @@ class CustomModel(BaseNetwork, ABC):
         else:
             input_layer, output_layer = model
 
-        if not isinstance(input_layer,
-                          (tl.layers.InputLayer, tl.layers.OneHotInputLayer, tl.layers.Word2vecEmbeddingInputlayer,
-                           tl.layers.EmbeddingInputlayer, tl.layers.AverageEmbeddingInputlayer)):
+        if not isinstance(
+            input_layer,
+            (
+                tl.layers.InputLayer, tl.layers.OneHotInputLayer, tl.layers.Word2vecEmbeddingInputlayer,
+                tl.layers.EmbeddingInputlayer, tl.layers.AverageEmbeddingInputlayer
+            )
+        ):
             raise RuntimeError(
                 "The returned input layer (type: %s) is not an instance of a known input layer: %s" %
                 (type(input_layer), tl.layers.inputs.__all__)

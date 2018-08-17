@@ -52,18 +52,18 @@ class QuantizedDense(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer,
-            n_units=100,
-            act=None,
-            bitW=8,
-            bitA=8,
-            gemmlowp_at_inference=False,
-            W_init=tf.truncated_normal_initializer(stddev=0.1),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            name='quantized_dense',
+        self,
+        prev_layer,
+        n_units=100,
+        act=None,
+        bitW=8,
+        bitA=8,
+        gemmlowp_at_inference=False,
+        W_init=tf.truncated_normal_initializer(stddev=0.1),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        name='quantized_dense',
     ):
         super(QuantizedDense, self).__init__(
             prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name

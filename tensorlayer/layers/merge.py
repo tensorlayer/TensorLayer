@@ -54,10 +54,10 @@ class ConcatLayer(Layer):
     """
 
     def __init__(
-            self,
-            prev_layer=None,
-            concat_dim=-1,
-            name='concat_layer',
+        self,
+        prev_layer=None,
+        concat_dim=-1,
+        name='concat_layer',
     ):
 
         self.prev_layer = prev_layer
@@ -79,7 +79,8 @@ class ConcatLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
@@ -129,11 +130,11 @@ class ElementwiseLayer(Layer):
     """
 
     def __init__(
-            self,
-            prev_layer=None,
-            combine_fn=tf.minimum,
-            act=None,
-            name='elementwise_layer',
+        self,
+        prev_layer=None,
+        combine_fn=tf.minimum,
+        act=None,
+        name='elementwise_layer',
     ):
 
         self.prev_layer = prev_layer
@@ -156,7 +157,8 @@ class ElementwiseLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)

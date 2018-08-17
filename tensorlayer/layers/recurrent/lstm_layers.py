@@ -73,18 +73,18 @@ class ConvLSTMLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer,
-            cell_shape=None,
-            feature_map=1,
-            filter_size=(3, 3),
-            cell_fn=BasicConvLSTMCell,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
-            n_steps=5,
-            initial_state=None,
-            return_last=False,
-            return_seq_2d=False,
-            name='convlstm',
+        self,
+        prev_layer,
+        cell_shape=None,
+        feature_map=1,
+        filter_size=(3, 3),
+        cell_fn=BasicConvLSTMCell,
+        initializer=tf.random_uniform_initializer(-0.1, 0.1),
+        n_steps=5,
+        initial_state=None,
+        return_last=False,
+        return_seq_2d=False,
+        name='convlstm',
     ):
         super(ConvLSTMLayer, self).__init__(prev_layer=prev_layer, name=name)
 

@@ -31,15 +31,16 @@ class SignLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            name='sign',
+        self,
+        prev_layer=None,
+        name='sign',
     ):
 
         self.prev_layer = prev_layer
         self.name = name
 
-        super(SignLayer, self).__init__()
+        super(SignLayer, self).__init__()
+
     def compile(self, prev_layer, is_train=True):
 
         super(SignLayer, self).compile(prev_layer)

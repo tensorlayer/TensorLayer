@@ -47,13 +47,13 @@ class PoolLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer,
-            ksize=(1, 2, 2, 1),
-            strides=(1, 2, 2, 1),
-            padding='SAME',
-            pool=tf.nn.max_pool,
-            name='pool_layer',
+        self,
+        prev_layer,
+        ksize=(1, 2, 2, 1),
+        strides=(1, 2, 2, 1),
+        padding='SAME',
+        pool=tf.nn.max_pool,
+        name='pool_layer',
     ):
         super(PoolLayer, self).__init__(prev_layer=prev_layer, name=name)
 

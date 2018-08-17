@@ -44,13 +44,13 @@ class UpSampling2dLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            size=list(),
-            is_scale=True,
-            method=0,
-            align_corners=False,
-            name='upsample2d_layer',
+        self,
+        prev_layer=None,
+        size=list(),
+        is_scale=True,
+        method=0,
+        align_corners=False,
+        name='upsample2d_layer',
     ):
 
         if not isinstance(size, (list, tuple)):
@@ -96,7 +96,8 @@ class UpSampling2dLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
@@ -161,13 +162,13 @@ class DownSampling2dLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            size=list(),
-            is_scale=True,
-            method=0,
-            align_corners=False,
-            name='downsample2d_layer',
+        self,
+        prev_layer=None,
+        size=list(),
+        is_scale=True,
+        method=0,
+        align_corners=False,
+        name='downsample2d_layer',
     ):
 
         if not isinstance(size, (list, tuple)):
@@ -213,7 +214,8 @@ class DownSampling2dLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)

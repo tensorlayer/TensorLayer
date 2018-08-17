@@ -78,19 +78,19 @@ class DepthwiseConv2d(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            shape=(3, 3),
-            strides=(1, 1),
-            padding='SAME',
-            dilation_rate=(1, 1),
-            depth_multiplier=1,
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            act=None,
-            name='depthwise_conv2d',
+        self,
+        prev_layer=None,
+        shape=(3, 3),
+        strides=(1, 1),
+        padding='SAME',
+        dilation_rate=(1, 1),
+        depth_multiplier=1,
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        act=None,
+        name='depthwise_conv2d',
     ):
 
         padding = padding.upper()

@@ -42,10 +42,10 @@ class StackLayer(Layer):
     """
 
     def __init__(
-            self,
-            layers=None,
-            axis=1,
-            name='stack',
+        self,
+        layers=None,
+        axis=1,
+        name='stack',
     ):
 
         self.prev_layer = layers
@@ -62,7 +62,8 @@ class StackLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(StackLayer, self).compile(prev_layer)
@@ -123,7 +124,8 @@ class UnStackLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)

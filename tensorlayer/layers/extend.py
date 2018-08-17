@@ -42,10 +42,10 @@ class ExpandDimsLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            axis=0,
-            name='expand_dims',
+        self,
+        prev_layer=None,
+        axis=0,
+        name='expand_dims',
     ):
 
         self.prev_layer = prev_layer
@@ -67,7 +67,8 @@ class ExpandDimsLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)
@@ -132,7 +133,8 @@ class TileLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)

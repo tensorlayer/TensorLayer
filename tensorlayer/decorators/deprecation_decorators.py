@@ -196,8 +196,10 @@ def deprecated_args(date, instructions, *deprecated_arg_names_or_tuples, **kwarg
         is_varargs_deprecated = arg_spec.varargs in deprecated_arg_names
         is_kwargs_deprecated = arg_spec.keywords in deprecated_arg_names
 
-        if (len(deprecated_positions) + is_varargs_deprecated + is_kwargs_deprecated !=
-                len(deprecated_arg_names_or_tuples)):
+        if (
+            len(deprecated_positions) + is_varargs_deprecated + is_kwargs_deprecated !=
+            len(deprecated_arg_names_or_tuples)
+        ):
             known_args = arg_spec.args + [arg_spec.varargs, arg_spec.keywords]
 
             missing_args = [arg_name for arg_name in deprecated_arg_names if arg_name not in known_args]
@@ -246,8 +248,10 @@ def deprecated_args(date, instructions, *deprecated_arg_names_or_tuples, **kwarg
                 named_args = tf_inspect.getcallargs(func, *args, **kwargs)
 
                 for arg_name, spec in iter(deprecated_positions.items()):
-                    if (spec.position < len(args) and
-                            not (spec.has_ok_value and _same_value(named_args[arg_name], spec.ok_value))):
+                    if (
+                        spec.position < len(args) and
+                        not (spec.has_ok_value and _same_value(named_args[arg_name], spec.ok_value))
+                    ):
 
                         invalid_args.append(arg_name)
 
@@ -258,9 +262,12 @@ def deprecated_args(date, instructions, *deprecated_arg_names_or_tuples, **kwarg
                     invalid_args.append(arg_spec.keywords)
 
                 for arg_name in deprecated_arg_names:
-                    if (arg_name in kwargs and
-                            not (deprecated_positions[arg_name].has_ok_value and
-                                 _same_value(named_args[arg_name], deprecated_positions[arg_name].ok_value))):
+                    if (
+                        arg_name in kwargs and not (
+                            deprecated_positions[arg_name].has_ok_value and
+                            _same_value(named_args[arg_name], deprecated_positions[arg_name].ok_value)
+                        )
+                    ):
                         invalid_args.append(arg_name)
 
                 for arg_name in invalid_args:

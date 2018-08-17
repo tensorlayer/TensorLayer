@@ -75,21 +75,21 @@ class QuantizedDenseWithBN(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer,
-            n_units=100,
-            act=None,
-            decay=0.9,
-            epsilon=1e-5,
-            is_train=False,
-            bitW=8,
-            bitA=8,
-            gamma_init=tf.ones_initializer,
-            beta_init=tf.zeros_initializer,
-            gemmlowp_at_inference=False,
-            W_init=tf.truncated_normal_initializer(stddev=0.1),
-            W_init_args=None,
-            name='quantized_dense_with_bn',
+        self,
+        prev_layer,
+        n_units=100,
+        act=None,
+        decay=0.9,
+        epsilon=1e-5,
+        is_train=False,
+        bitW=8,
+        bitA=8,
+        gamma_init=tf.ones_initializer,
+        beta_init=tf.zeros_initializer,
+        gemmlowp_at_inference=False,
+        W_init=tf.truncated_normal_initializer(stddev=0.1),
+        W_init_args=None,
+        name='quantized_dense_with_bn',
     ):
         super(QuantizedDenseWithBN, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
 

@@ -466,8 +466,10 @@ class Layer(BaseLayer):
             self._add_graphs(sum([l.all_graphs for l in prev_layer], []))
 
         elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
-            if self.__class__.__name__ not in ['InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer',
-                                               'EmbeddingInputlayer', 'AverageEmbeddingInputlayer']:
+            if self.__class__.__name__ not in [
+                'InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer', 'EmbeddingInputlayer',
+                'AverageEmbeddingInputlayer'
+            ]:
                 raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
 
             self.inputs = prev_layer
@@ -496,20 +498,20 @@ class Layer(BaseLayer):
 
     @protected_method
     def _get_tf_variable(
-            self,
-            name,
-            shape=None,
-            dtype=None,
-            initializer=None,
-            regularizer=None,
-            trainable=True,
-            collections=None,
-            caching_device=None,
-            partitioner=None,
-            validate_shape=True,
-            use_resource=None,
-            custom_getter=None,
-            constraint=None
+        self,
+        name,
+        shape=None,
+        dtype=None,
+        initializer=None,
+        regularizer=None,
+        trainable=True,
+        collections=None,
+        caching_device=None,
+        partitioner=None,
+        validate_shape=True,
+        use_resource=None,
+        custom_getter=None,
+        constraint=None
     ):
         if hasattr(self, "inputs") and isinstance(self.inputs, tf.Tensor):
             dtype = self.inputs.dtype

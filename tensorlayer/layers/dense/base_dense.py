@@ -59,15 +59,15 @@ class DenseLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            n_units=100,
-            act=None,
-            W_init=tf.truncated_normal_initializer(stddev=0.1),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            name='dense',
+        self,
+        prev_layer=None,
+        n_units=100,
+        act=None,
+        W_init=tf.truncated_normal_initializer(stddev=0.1),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        name='dense',
     ):
 
         self.prev_layer = prev_layer

@@ -46,12 +46,12 @@ class SlimNetsLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            slim_layer=None,
-            slim_args=None,
-            act=None,
-            name='tfslim_layer',
+        self,
+        prev_layer=None,
+        slim_layer=None,
+        slim_args=None,
+        act=None,
+        name='tfslim_layer',
     ):
 
         if slim_layer is None:
@@ -132,12 +132,12 @@ class KerasLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            keras_layer=None,
-            keras_args=None,
-            act=None,
-            name='keras_layer',
+        self,
+        prev_layer=None,
+        keras_layer=None,
+        keras_args=None,
+        act=None,
+        name='keras_layer',
     ):
 
         if keras_layer is None:
@@ -217,12 +217,12 @@ class EstimatorLayer(Layer):
         layer='prev_layer', args='layer_args', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            model_fn=None,
-            layer_args=None,
-            act=None,
-            name='estimator_layer',
+        self,
+        prev_layer=None,
+        model_fn=None,
+        layer_args=None,
+        act=None,
+        name='estimator_layer',
     ):
 
         if model_fn is None:

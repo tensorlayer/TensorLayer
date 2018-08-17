@@ -55,19 +55,19 @@ class DeConv2d(Layer):
         layer='prev_layer', n_out_channel='n_filter', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            n_filter=32,
-            filter_size=(3, 3),
-            strides=(2, 2),
-            padding='valid',
-            data_format='channels_last',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            act=None,
-            name='deconv2d'
+        self,
+        prev_layer=None,
+        n_filter=32,
+        filter_size=(3, 3),
+        strides=(2, 2),
+        padding='valid',
+        data_format='channels_last',
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,  # TODO: Remove when TF <1.3 not supported
+        b_init_args=None,  # TODO: Remove when TF <1.3 not supported
+        act=None,
+        name='deconv2d'
     ):
 
         if data_format not in ["channels_last", "channels_first"]:
@@ -189,19 +189,19 @@ class DeConv3d(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            n_filter=32,
-            filter_size=(3, 3, 3),
-            strides=(2, 2, 2),
-            padding='valid',
-            data_format='channels_last',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            act=None,
-            name='deconv3d'
+        self,
+        prev_layer=None,
+        n_filter=32,
+        filter_size=(3, 3, 3),
+        strides=(2, 2, 2),
+        padding='valid',
+        data_format='channels_last',
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,  # TODO: Remove when TF <1.3 not supported
+        b_init_args=None,  # TODO: Remove when TF <1.3 not supported
+        act=None,
+        name='deconv3d'
     ):
 
         if data_format not in ["channels_last", "channels_first"]:

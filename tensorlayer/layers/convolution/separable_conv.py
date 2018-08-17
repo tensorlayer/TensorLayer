@@ -53,20 +53,20 @@ class SeparableConv1d(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            n_filter=100,
-            filter_size=3,
-            strides=1,
-            padding='valid',
-            data_format='channels_last',
-            dilation_rate=1,
-            depth_multiplier=1,
-            depthwise_init=None,
-            pointwise_init=None,
-            b_init=tf.zeros_initializer(),
-            act=None,
-            name='separable_conv1d',
+        self,
+        prev_layer=None,
+        n_filter=100,
+        filter_size=3,
+        strides=1,
+        padding='valid',
+        data_format='channels_last',
+        dilation_rate=1,
+        depth_multiplier=1,
+        depthwise_init=None,
+        pointwise_init=None,
+        b_init=tf.zeros_initializer(),
+        act=None,
+        name='separable_conv1d',
     ):
 
         padding = padding.upper()
@@ -210,20 +210,20 @@ class SeparableConv2d(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            n_filter=100,
-            filter_size=(3, 3),
-            strides=(1, 1),
-            padding='valid',
-            data_format='channels_last',
-            dilation_rate=(1, 1),
-            depth_multiplier=1,
-            depthwise_init=None,
-            pointwise_init=None,
-            b_init=tf.zeros_initializer(),
-            act=None,
-            name='separable_conv2d',
+        self,
+        prev_layer=None,
+        n_filter=100,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        padding='valid',
+        data_format='channels_last',
+        dilation_rate=(1, 1),
+        depth_multiplier=1,
+        depthwise_init=None,
+        pointwise_init=None,
+        b_init=tf.zeros_initializer(),
+        act=None,
+        name='separable_conv2d',
     ):
 
         if data_format not in ["channels_last", "channels_first"]:

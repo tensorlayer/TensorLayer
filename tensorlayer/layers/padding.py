@@ -45,11 +45,11 @@ class PadLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            padding=None,
-            mode='CONSTANT',
-            name='pad_layer',
+        self,
+        prev_layer=None,
+        padding=None,
+        mode='CONSTANT',
+        name='pad_layer',
     ):
 
         if padding is None:
@@ -119,10 +119,10 @@ class ZeroPad1d(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            padding=None,
-            name='zeropad1d',
+        self,
+        prev_layer=None,
+        padding=None,
+        name='zeropad1d',
     ):
 
         if not isinstance(padding, (int, tuple, list)):
@@ -186,10 +186,10 @@ class ZeroPad2d(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            padding=None,
-            name='zeropad2d',
+        self,
+        prev_layer=None,
+        padding=None,
+        name='zeropad2d',
     ):
 
         if not isinstance(padding, (int, tuple, list)):
@@ -250,10 +250,10 @@ class ZeroPad3d(Layer):
     """
 
     def __init__(
-            self,
-            prev_layer=None,
-            padding=None,
-            name='zeropad3d',
+        self,
+        prev_layer=None,
+        padding=None,
+        name='zeropad3d',
     ):
 
         if not isinstance(padding, (int, tuple, list)):

@@ -70,20 +70,20 @@ class Conv1d(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            n_filter=32,
-            filter_size=5,
-            stride=1,
-            padding='valid',
-            dilation_rate=1,
-            data_format="channels_last",
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            act=None,
-            name='conv1d'
+        self,
+        prev_layer=None,
+        n_filter=32,
+        filter_size=5,
+        stride=1,
+        padding='valid',
+        dilation_rate=1,
+        data_format="channels_last",
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        act=None,
+        name='conv1d'
     ):
 
         if data_format not in ["channels_last", "channels_first"]:
@@ -230,20 +230,20 @@ class Conv2d(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            n_filter=32,
-            filter_size=(3, 3),
-            strides=(1, 1),
-            padding='valid',
-            dilation_rate=(1, 1),
-            data_format="channels_last",
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            act=None,
-            name='conv2d',
+        self,
+        prev_layer=None,
+        n_filter=32,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        padding='valid',
+        dilation_rate=(1, 1),
+        data_format="channels_last",
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        act=None,
+        name='conv2d',
     ):
 
         if data_format not in ["channels_last", "channels_first"]:

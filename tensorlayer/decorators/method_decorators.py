@@ -38,7 +38,7 @@ def protected_method(func):
                 break
 
         if ('self' not in outer_frame.f_locals or
-                outer_frame.f_locals['self'] is not args[0]) and (not share_subsclass):
+            outer_frame.f_locals['self'] is not args[0]) and (not share_subsclass):
             raise RuntimeError('%s.%s is a protected method' % (args[0].__class__.__name__, func.__name__))
 
         return func(*args, **kwargs)

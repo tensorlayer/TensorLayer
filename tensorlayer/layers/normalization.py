@@ -48,13 +48,13 @@ class LocalResponseNormLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            depth_radius=None,
-            bias=None,
-            alpha=None,
-            beta=None,
-            name='lrn_layer',
+        self,
+        prev_layer=None,
+        depth_radius=None,
+        bias=None,
+        alpha=None,
+        beta=None,
+        name='lrn_layer',
     ):
 
         self.prev_layer = prev_layer
@@ -142,17 +142,17 @@ class BatchNormLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            decay=0.9,
-            epsilon=1e-5,
-            beta_init=tf.zeros_initializer,
-            gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
-            moving_mean_init=tf.zeros_initializer,
-            moving_var_init=tf.constant_initializer(1.),
-            act=None,
-            is_train=False,
-            name='batchnorm_layer',
+        self,
+        prev_layer=None,
+        decay=0.9,
+        epsilon=1e-5,
+        beta_init=tf.zeros_initializer,
+        gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
+        moving_mean_init=tf.zeros_initializer,
+        moving_var_init=tf.constant_initializer(1.),
+        act=None,
+        is_train=False,
+        name='batchnorm_layer',
     ):
 
         self.prev_layer = prev_layer
@@ -292,11 +292,11 @@ class InstanceNormLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            epsilon=1e-5,
-            act=None,
-            name='instance_norm',
+        self,
+        prev_layer=None,
+        epsilon=1e-5,
+        act=None,
+        name='instance_norm',
     ):
 
         self.prev_layer = prev_layer
@@ -372,16 +372,16 @@ class LayerNormLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            center=True,
-            scale=True,
-            variables_collections=None,
-            outputs_collections=None,
-            begin_norm_axis=1,
-            begin_params_axis=-1,
-            act=None,
-            name='layernorm'
+        self,
+        prev_layer=None,
+        center=True,
+        scale=True,
+        variables_collections=None,
+        outputs_collections=None,
+        begin_norm_axis=1,
+        begin_params_axis=-1,
+        act=None,
+        name='layernorm'
     ):
 
         self.prev_layer = prev_layer
@@ -498,13 +498,13 @@ class SwitchNormLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            epsilon=1e-5,
-            beta_init=tf.constant_initializer(0.0),
-            gamma_init=tf.constant_initializer(1.0),
-            act=None,
-            name='switchnorm_layer',
+        self,
+        prev_layer=None,
+        epsilon=1e-5,
+        beta_init=tf.constant_initializer(0.0),
+        gamma_init=tf.constant_initializer(1.0),
+        act=None,
+        name='switchnorm_layer',
     ):
 
         self.prev_layer = prev_layer

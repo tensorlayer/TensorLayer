@@ -58,11 +58,11 @@ class TimeDistributedLayer(Layer):
         layer='prev_layer', args="layer_args", end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            layer_class=None,
-            layer_args=None,
-            name='time_distributed',
+        self,
+        prev_layer=None,
+        layer_class=None,
+        layer_args=None,
+        name='time_distributed',
     ):
 
         self.prev_layer = prev_layer
@@ -84,7 +84,8 @@ class TimeDistributedLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(TimeDistributedLayer, self).compile(prev_layer)

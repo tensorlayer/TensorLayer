@@ -60,12 +60,12 @@ class LambdaLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            fn=None,
-            fn_args=None,
-            act=None,
-            name='lambda_layer',
+        self,
+        prev_layer=None,
+        fn=None,
+        fn_args=None,
+        act=None,
+        name='lambda_layer',
     ):
         if fn is None:
             raise AssertionError("The `fn` argument cannot be None")
@@ -90,7 +90,8 @@ class LambdaLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(LambdaLayer, self).compile(prev_layer)
@@ -142,12 +143,12 @@ class ElementwiseLambdaLayer(Layer):
     """
 
     def __init__(
-            self,
-            layers,
-            fn,
-            fn_args=None,
-            act=None,
-            name='elementwiselambda_layer',
+        self,
+        layers,
+        fn,
+        fn_args=None,
+        act=None,
+        name='elementwiselambda_layer',
     ):
         if fn is None:
             raise AssertionError("The `fn` argument cannot be None")
@@ -172,7 +173,8 @@ class ElementwiseLambdaLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(ElementwiseLambdaLayer, self).compile(prev_layer)

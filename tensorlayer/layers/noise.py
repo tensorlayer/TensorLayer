@@ -51,13 +51,13 @@ class GaussianNoiseLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            mean=0.0,
-            stddev=1.0,
-            is_train=True,
-            seed=None,
-            name='gaussian_noise_layer',
+        self,
+        prev_layer=None,
+        mean=0.0,
+        stddev=1.0,
+        is_train=True,
+        seed=None,
+        name='gaussian_noise_layer',
     ):
 
         self.prev_layer = prev_layer

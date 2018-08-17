@@ -126,17 +126,17 @@ class RNNLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer,
-            cell_fn,
-            cell_init_args=None,
-            n_hidden=100,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
-            n_steps=5,
-            initial_state=None,
-            return_last=False,
-            return_seq_2d=False,
-            name='rnn',
+        self,
+        prev_layer,
+        cell_fn,
+        cell_init_args=None,
+        n_hidden=100,
+        initializer=tf.random_uniform_initializer(-0.1, 0.1),
+        n_steps=5,
+        initial_state=None,
+        return_last=False,
+        return_seq_2d=False,
+        name='rnn',
     ):
 
         if cell_fn is None:
@@ -313,20 +313,20 @@ class BiRNNLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer,
-            cell_fn,
-            cell_init_args=None,
-            n_hidden=100,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
-            n_steps=5,
-            fw_initial_state=None,
-            bw_initial_state=None,
-            dropout=None,
-            n_layer=1,
-            return_last=False,
-            return_seq_2d=False,
-            name='birnn',
+        self,
+        prev_layer,
+        cell_fn,
+        cell_init_args=None,
+        n_hidden=100,
+        initializer=tf.random_uniform_initializer(-0.1, 0.1),
+        n_steps=5,
+        fw_initial_state=None,
+        bw_initial_state=None,
+        dropout=None,
+        n_layer=1,
+        return_last=False,
+        return_seq_2d=False,
+        name='birnn',
     ):
         super(BiRNNLayer, self).__init__(prev_layer=prev_layer, cell_init_args=cell_init_args, name=name)
 

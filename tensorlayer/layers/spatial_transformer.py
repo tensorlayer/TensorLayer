@@ -46,11 +46,11 @@ class SpatialTransformer2dAffineLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            theta_layer=None,
-            out_size=None,
-            name='spatial_trans_2d_affine',
+        self,
+        prev_layer=None,
+        theta_layer=None,
+        out_size=None,
+        name='spatial_trans_2d_affine',
     ):
 
         if out_size is None:

@@ -219,21 +219,21 @@ class Word2vecEmbeddingInputlayer(Layer):
     """
 
     def __init__(
-            self,
-            inputs=None,
-            train_labels=None,
-            vocabulary_size=80000,
-            embedding_size=200,
-            num_sampled=64,
-            nce_loss_args=None,
-            E_init=tf.random_uniform_initializer(minval=-1.0, maxval=1.0),
-            E_init_args=None,
-            nce_W_init=tf.truncated_normal_initializer(stddev=0.03),
-            nce_W_init_args=None,
-            nce_b_init=tf.constant_initializer(value=0.0),
-            nce_b_init_args=None,
-            dtype=None,
-            name='word2vec',
+        self,
+        inputs=None,
+        train_labels=None,
+        vocabulary_size=80000,
+        embedding_size=200,
+        num_sampled=64,
+        nce_loss_args=None,
+        E_init=tf.random_uniform_initializer(minval=-1.0, maxval=1.0),
+        E_init_args=None,
+        nce_W_init=tf.truncated_normal_initializer(stddev=0.03),
+        nce_W_init_args=None,
+        nce_b_init=tf.constant_initializer(value=0.0),
+        nce_b_init_args=None,
+        dtype=None,
+        name='word2vec',
     ):
         self.prev_layer = inputs
         self.train_labels = train_labels
@@ -372,14 +372,14 @@ class EmbeddingInputlayer(Layer):
     """
 
     def __init__(
-            self,
-            inputs=None,
-            vocabulary_size=80000,
-            embedding_size=200,
-            E_init=tf.random_uniform_initializer(-0.1, 0.1),
-            E_init_args=None,
-            dtype=None,
-            name='embedding',
+        self,
+        inputs=None,
+        vocabulary_size=80000,
+        embedding_size=200,
+        E_init=tf.random_uniform_initializer(-0.1, 0.1),
+        E_init_args=None,
+        dtype=None,
+        name='embedding',
     ):
         self.prev_layer = inputs
         self.vocabulary_size = vocabulary_size
@@ -466,15 +466,15 @@ class AverageEmbeddingInputlayer(Layer):
     """
 
     def __init__(
-            self,
-            inputs,
-            vocabulary_size,
-            embedding_size,
-            pad_value=0,
-            embeddings_initializer=tf.random_uniform_initializer(-0.1, 0.1),
-            embeddings_kwargs=None,
-            dtype=None,
-            name='average_embedding',
+        self,
+        inputs,
+        vocabulary_size,
+        embedding_size,
+        pad_value=0,
+        embeddings_initializer=tf.random_uniform_initializer(-0.1, 0.1),
+        embeddings_kwargs=None,
+        dtype=None,
+        name='average_embedding',
     ):
         self.prev_layer = inputs
         self.vocabulary_size = vocabulary_size

@@ -98,19 +98,19 @@ class DeConv2dLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            shape=(3, 3, 128, 256),
-            output_shape=(1, 256, 256, 128),
-            strides=(1, 2, 2, 1),
-            padding='SAME',
-            data_format='NHWC',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            act=None,
-            name='deconv2d_layer',
+        self,
+        prev_layer=None,
+        shape=(3, 3, 128, 256),
+        output_shape=(1, 256, 256, 128),
+        strides=(1, 2, 2, 1),
+        padding='SAME',
+        data_format='NHWC',
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        act=None,
+        name='deconv2d_layer',
     ):
 
         padding = padding.upper()
@@ -243,18 +243,18 @@ class DeConv3dLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            shape=(2, 2, 2, 128, 256),
-            strides=(1, 2, 2, 2, 1),
-            padding='SAME',
-            data_format='NDHWC',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            act=None,
-            name='deconv3d_layer',
+        self,
+        prev_layer=None,
+        shape=(2, 2, 2, 128, 256),
+        strides=(1, 2, 2, 2, 1),
+        padding='SAME',
+        data_format='NDHWC',
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        act=None,
+        name='deconv3d_layer',
     ):
 
         padding = padding.upper()

@@ -80,13 +80,13 @@ class DropoutLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            keep=0.5,
-            is_fix=False,
-            is_train=True,
-            seed=None,
-            name='dropout_layer',
+        self,
+        prev_layer=None,
+        keep=0.5,
+        is_fix=False,
+        is_train=True,
+        seed=None,
+        name='dropout_layer',
     ):
 
         self.prev_layer = prev_layer
@@ -111,7 +111,8 @@ class DropoutLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        return self._str(additional_str)
+
     def compile(self, prev_layer, is_train=True):
 
         super(DropoutLayer, self).compile(prev_layer)

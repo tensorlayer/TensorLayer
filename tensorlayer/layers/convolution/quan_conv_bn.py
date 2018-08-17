@@ -100,32 +100,32 @@ class QuantizedConv2dWithBN(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
+        self,
+        prev_layer=None,
 
-            # Quantized Conv 2D Parameters
-            n_filter=32,
-            filter_size=(3, 3),
-            strides=(1, 1),
-            padding='SAME',
-            bitW=8,
-            bitA=8,
-            data_format="NHWC",
-            use_cudnn_on_gpu=True,
-            gemmlowp_at_inference=False,
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            W_init_args=None,
+        # Quantized Conv 2D Parameters
+        n_filter=32,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        padding='SAME',
+        bitW=8,
+        bitA=8,
+        data_format="NHWC",
+        use_cudnn_on_gpu=True,
+        gemmlowp_at_inference=False,
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        W_init_args=None,
 
-            # BatchNorm Parameters
-            decay=0.9,
-            epsilon=1e-5,
-            is_train=False,
-            gamma_init=tf.ones_initializer,
-            beta_init=tf.zeros_initializer,
+        # BatchNorm Parameters
+        decay=0.9,
+        epsilon=1e-5,
+        is_train=False,
+        gamma_init=tf.ones_initializer,
+        beta_init=tf.zeros_initializer,
 
-            # Layer Parameters
-            act=None,
-            name='quantized_conv2d',
+        # Layer Parameters
+        act=None,
+        name='quantized_conv2d',
     ):
 
         padding = padding.upper()

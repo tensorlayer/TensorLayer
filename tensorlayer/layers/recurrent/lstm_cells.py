@@ -34,8 +34,7 @@ class BasicConvLSTMCell(ConvRNNCell):
     """
 
     def __init__(
-            self, shape, filter_size, num_features, forget_bias=1.0, input_size=None, state_is_tuple=False,
-            act=tf.nn.tanh
+        self, shape, filter_size, num_features, forget_bias=1.0, input_size=None, state_is_tuple=False, act=tf.nn.tanh
     ):
         """Initialize the basic Conv LSTM cell."""
         # if not state_is_tuple:

@@ -52,19 +52,19 @@ class Conv1dLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            shape=(5, 1, 5),
-            stride=1,
-            padding='SAME',
-            data_format='NWC',
-            use_cudnn_on_gpu=True,
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            act=None,
-            name='conv1d_layer',
+        self,
+        prev_layer=None,
+        shape=(5, 1, 5),
+        stride=1,
+        padding='SAME',
+        data_format='NWC',
+        use_cudnn_on_gpu=True,
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        act=None,
+        name='conv1d_layer',
     ):
 
         if data_format not in ["NWC", "NCW"]:
@@ -217,20 +217,20 @@ class Conv2dLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            shape=(5, 5, 1, 100),
-            strides=(1, 1, 1, 1),
-            padding='SAME',
-            data_format="NHWC",
-            use_cudnn_on_gpu=True,
-            gemmlowp_at_inference=False,
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            act=None,
-            name='conv2d_layer'
+        self,
+        prev_layer=None,
+        shape=(5, 5, 1, 100),
+        strides=(1, 1, 1, 1),
+        padding='SAME',
+        data_format="NHWC",
+        use_cudnn_on_gpu=True,
+        gemmlowp_at_inference=False,
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        act=None,
+        name='conv2d_layer'
     ):
 
         padding = padding.upper()
@@ -361,18 +361,18 @@ class Conv3dLayer(Layer):
         layer='prev_layer', end_support_version="2.0.0"
     )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
-            self,
-            prev_layer=None,
-            shape=(2, 2, 2, 3, 32),
-            strides=(1, 2, 2, 2, 1),
-            padding='SAME',
-            data_format='NDHWC',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            act=None,
-            name='conv3d_layer'
+        self,
+        prev_layer=None,
+        shape=(2, 2, 2, 3, 32),
+        strides=(1, 2, 2, 2, 1),
+        padding='SAME',
+        data_format='NDHWC',
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        act=None,
+        name='conv3d_layer'
     ):
 
         padding = padding.upper()
