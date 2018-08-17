@@ -19,8 +19,10 @@ Therefore, we xxxxx
 
 1. for data processing, COCOAPIs are used, refer to : https://github.com/cocodataset/cocoapi
 2. Build c++ library for post processing. See : https://github.com/ildoonet/tf-pose-estimation/tree/master/tf_pose/pafprocess
--$ cd tf_pose/pafprocess
--$ swig -python -c++ pafprocess.i && python3 setup.py build_ext --inplace
+
+$ cd tf_pose/pafprocess
+
+$ swig -python -c++ pafprocess.i && python3 setup.py build_ext --inplace
 
 ## 4. Use pre-trained model
 
@@ -36,6 +38,7 @@ The performance of pre-trained model is as follow:
 - Speed is tested on XXX
 
 ## 5. Train a model
+For your own training, please put .jpg files into coco_dataset/images/ and put .json into coco_dataset/annotations/
 
 Runs `train.py`, it will automatically download MSCOCO 2017 dataset into `dataset/coco17`. 
 The default model in `models.py` is based on VGG19, which is the same with the original paper. 
@@ -44,7 +47,7 @@ And then `train.py` will train the model to the end.
 
 ## 6. Evaluate a model
 
-Runs `eval.py`, the API `xxxxx` is ....
+Runs `eval.py` for inference 
 
 ## 7. Speed up and deployment
 
