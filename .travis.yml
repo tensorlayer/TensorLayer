@@ -68,7 +68,9 @@ install:
         pip install tensorflow==$_TF_VERSION;
     fi
   - pip install -e .[all_cpu_dev]
-
+  
+before_script:
+  - if [[ -v _DOC_AND_YAPF_TEST ]]; then curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash; fossa test; fi
 
 script:
   # units test
