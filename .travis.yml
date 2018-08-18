@@ -11,9 +11,9 @@ branches:
     - /\d+\.\d+(\.\d+)?(\S*)?$/
 
 python:
-  - "2.7"
-  - "3.5"
   - "3.6"
+  - "3.5"
+  - "2.7"
 
 env:
 
@@ -54,7 +54,7 @@ env:
 
 matrix:
   include:
-    - python: 3.6
+    - python: '3.6'
       env:
         - _DOC_AND_YAPF_TEST=True
 

@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
+r"""
 1. Before you start, run this script: https://github.com/tensorlayer/tensorlayer/blob/distributed/scripts/download_and_install_openmpi3_linux.sh
 2. Update the PATH with OpenMPI bin by running: PATH=$PATH:$HOME/local/openmpi/bin
    Update the PATH in ~/.bashrc if you want OpenMPI to be ready once the machine start

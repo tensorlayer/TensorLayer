@@ -93,7 +93,6 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
     - `ericjang-DRAW <https://github.com/ericjang/draw/blob/master/draw.py#L73>`__
 
     """
-
     #     with ops.op_scope([output, target], name, "bce_loss") as name:
     #         output = ops.convert_to_tensor(output, name="preds")
     #         target = ops.convert_to_tensor(targets, name="target")
@@ -255,11 +254,11 @@ def dice_coe(output, target, loss_type='jaccard', axis=(1, 2, 3), smooth=1e-5):
         r = tf.reduce_sum(target, axis=axis)
     else:
         raise Exception("Unknow loss_type")
-    ## old axis=[0,1,2,3]
+    # old axis=[0,1,2,3]
     # dice = 2 * (inse) / (l + r)
     # epsilon = 1e-5
     # dice = tf.clip_by_value(dice, 0, 1.0-epsilon) # if all empty, dice = 1
-    ## new haodong
+    # new haodong
     dice = (2. * inse + smooth) / (l + r + smooth)
     ##
     dice = tf.reduce_mean(dice, name='dice_coe')
@@ -294,11 +293,11 @@ def dice_hard_coe(output, target, threshold=0.5, axis=(1, 2, 3), smooth=1e-5):
     inse = tf.reduce_sum(tf.multiply(output, target), axis=axis)
     l = tf.reduce_sum(output, axis=axis)
     r = tf.reduce_sum(target, axis=axis)
-    ## old axis=[0,1,2,3]
+    # old axis=[0,1,2,3]
     # hard_dice = 2 * (inse) / (l + r)
     # epsilon = 1e-5
     # hard_dice = tf.clip_by_value(hard_dice, 0, 1.0-epsilon)
-    ## new haodong
+    # new haodong
     hard_dice = (2. * inse + smooth) / (l + r + smooth)
     ##
     hard_dice = tf.reduce_mean(hard_dice, name='hard_dice')
@@ -332,13 +331,13 @@ def iou_coe(output, target, threshold=0.5, axis=(1, 2, 3), smooth=1e-5):
     truth = tf.cast(target > threshold, dtype=tf.float32)
     inse = tf.reduce_sum(tf.multiply(pre, truth), axis=axis)  # AND
     union = tf.reduce_sum(tf.cast(tf.add(pre, truth) >= 1, dtype=tf.float32), axis=axis)  # OR
-    ## old axis=[0,1,2,3]
+    # old axis=[0,1,2,3]
     # epsilon = 1e-5
     # batch_iou = inse / (union + epsilon)
-    ## new haodong
+    # new haodong
     batch_iou = (inse + smooth) / (union + smooth)
     iou = tf.reduce_mean(batch_iou, name='iou_coe')
-    return iou  #, pre, truth, inse, union
+    return iou  # , pre, truth, inse, union
 
 
 # ## test soft/hard dice and iou
@@ -375,7 +374,7 @@ def iou_coe(output, target, threshold=0.5, axis=(1, 2, 3), smooth=1e-5):
 # exit()
 
 
-def cross_entropy_seq(logits, target_seqs, batch_size=None):  #, batch_size=1, num_steps=None):
+def cross_entropy_seq(logits, target_seqs, batch_size=None):  # , batch_size=1, num_steps=None):
     """Returns the expression of cross-entropy of two sequences, implement
     softmax internally. Normally be used for fixed length RNN outputs, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__.
 
@@ -407,7 +406,7 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):  #, batch_size=1, n
         [logits], [tf.reshape(target_seqs, [-1])], [tf.ones_like(tf.reshape(target_seqs, [-1]), dtype=tf.float32)]
     )
     # [tf.ones([batch_size * num_steps])])
-    cost = tf.reduce_sum(loss)  #/ batch_size
+    cost = tf.reduce_sum(loss)  # / batch_size
     if batch_size is not None:
         cost = cost / batch_size
     return cost
@@ -462,7 +461,7 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
     targets = tf.reshape(target_seqs, [-1])  # to one vector
     weights = tf.to_float(tf.reshape(input_mask, [-1]))  # to one vector like targets
     losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=targets, name=name) * weights
-    #losses = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=targets, name=name)) # for TF1.0 and others
+    # losses = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=targets, name=name)) # for TF1.0 and others
 
     loss = tf.divide(
         tf.reduce_sum(losses),  # loss from mask. reduce_sum before element-wise mul with mask !!
@@ -494,13 +493,12 @@ def cosine_similarity(v1, v2):
     - `<https://en.wikipedia.org/wiki/Cosine_similarity>`__.
 
     """
-
     return tf.reduce_sum(tf.multiply(v1, v2), 1) / (
         tf.sqrt(tf.reduce_sum(tf.multiply(v1, v1), 1)) * tf.sqrt(tf.reduce_sum(tf.multiply(v2, v2), 1))
     )
 
 
-## Regularization Functions
+# Regularization Functions
 def li_regularizer(scale, scope=None):
     """Li regularization removes the neurons of previous layer. The `i` represents `inputs`.
     Returns a function that can be used to apply group li regularization to weights.
@@ -522,7 +520,6 @@ def li_regularizer(scale, scope=None):
     ValueError : if scale is outside of the range [0.0, 1.0] or if scale is not a float.
 
     """
-
     if isinstance(scale, numbers.Integral):
         raise ValueError('scale cannot be an integer: %s' % scale)
     if isinstance(scale, numbers.Real):
@@ -569,7 +566,6 @@ def lo_regularizer(scale):
     ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
 
     """
-
     if isinstance(scale, numbers.Integral):
         raise ValueError('scale cannot be an integer: %s' % scale)
 
@@ -618,7 +614,6 @@ def maxnorm_regularizer(scale=1.0):
     ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
 
     """
-
     if isinstance(scale, numbers.Integral):
         raise ValueError('scale cannot be an integer: %s' % scale)
 
@@ -664,7 +659,6 @@ def maxnorm_o_regularizer(scale):
     ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
 
     """
-
     if isinstance(scale, numbers.Integral):
         raise ValueError('scale cannot be an integer: %s' % scale)
 
@@ -712,7 +706,6 @@ def maxnorm_i_regularizer(scale):
     ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
 
     """
-
     if isinstance(scale, numbers.Integral):
         raise ValueError('scale cannot be an integer: %s' % scale)
 
