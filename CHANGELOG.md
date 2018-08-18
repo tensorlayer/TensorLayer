@@ -81,6 +81,8 @@ To release a new version, please update the changelog as followed:
   - Add `tl.files.load_graph_` (PR ＃751)
   - Add `tl.files.save_graph_and_params` (PR ＃751)
   - Add `tl.files.load_graph_and_params` (PR ＃751)
+- CI Tool:
+  - [Fossa CI](https://app.fossa.io/projects/git%2Bgithub.com%2Ftensorlayer%2Ftensorlayer) has been added (PR #789)
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
@@ -136,7 +138,7 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 
-- @DEKHTIARJonathan: #739 #747 #750 #754
+- @DEKHTIARJonathan: #739 #747 #750 #754 #789
 - @lgarithm: #705 #700
 - @OwenLiuzZ: #698 #710 #775 #776
 - @zsdonghao: #711 #712 #734 #736 #737 #700 #751
