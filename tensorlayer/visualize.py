@@ -278,7 +278,7 @@ def draw_mpii_pose_to_image(image, poses, save_name='image.png'):
         image = image * 255
 
     for people in poses:
-        ### Pose Keyponts
+        # Pose Keyponts
         joint_pos = people['joint_pos']
         # draw sketch
         # joint id (0 - r ankle, 1 - r knee, 2 - r hip, 3 - l hip, 4 - l knee,
@@ -335,7 +335,7 @@ def draw_mpii_pose_to_image(image, poses, save_name='image.png'):
             # rr, cc = skimage.draw.circle(int(pos_loc[1]), int(pos_loc[0]), radius)
             # image[rr, cc] = [0, 255, 0]
 
-        ### Head
+        # Head
         head_rect = people['head_rect']
         if head_rect:  # if head exists
             cv2.rectangle(
@@ -356,7 +356,7 @@ draw_mpii_people_to_image = draw_mpii_pose_to_image
 
 
 def frame(I=None, second=5, saveable=True, name='frame', cmap=None, fig_idx=12836):
-    """Display a frame(image). Make sure OpenAI Gym render() is disable before using it.
+    """Display a frame. Make sure OpenAI Gym render() is disable before using it.
 
     Parameters
     ----------
@@ -565,7 +565,7 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500, second=5, save
             plt.ion()
             plt.figure(fig_idx)
 
-        plt.figure(figsize=figsize)  #in inches
+        plt.figure(figsize=figsize)  # in inches
 
         for i, label in enumerate(labels):
             x, y = low_dim_embs[i, :]
@@ -646,7 +646,7 @@ def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig
             # if np.mean(feature) < -0.015:      # condition threshold
             #     feature = np.zeros_like(feature)
             plt.imshow(np.reshape(feature, (shape[0], shape[1])), cmap='gray',
-                       interpolation="nearest")  #, vmin=np.min(feature), vmax=np.max(feature))
+                       interpolation="nearest")  # , vmin=np.min(feature), vmax=np.max(feature))
             # plt.title(name)
             # ------------------------------------------------------------
             # plt.imshow(np.reshape(W[:,count-1] ,(np.sqrt(size),np.sqrt(size))), cmap='gray', interpolation="nearest")

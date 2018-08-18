@@ -69,7 +69,6 @@ class Layer(object):
 
     Examples
     ---------
-
     - Define model
 
     >>> import tensorflow as tf
@@ -109,6 +108,7 @@ class Layer(object):
     Tensor("d2/Identity:0", shape=(?, 80), dtype=float32)
 
     """
+
     # Added to allow auto-completion
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -165,10 +165,17 @@ class Layer(object):
 
             self.inputs = prev_layer
 
-            self._add_graphs((self.inputs.name, #.split(':')[0],
-                {'shape': self.inputs.get_shape().as_list(),
-                'dtype': self.inputs.dtype.name, 'class': 'placeholder',
-                'prev_layer': None}))
+            self._add_graphs(
+                (
+                    self.inputs.name,  # .split(':')[0],
+                    {
+                        'shape': self.inputs.get_shape().as_list(),
+                        'dtype': self.inputs.dtype.name,
+                        'class': 'placeholder',
+                        'prev_layer': None
+                    }
+                )
+            )
 
         elif prev_layer is not None:
             # 4. tl.models
@@ -180,7 +187,7 @@ class Layer(object):
             if hasattr(prev_layer, "outputs"):
                 self.inputs = prev_layer.outputs
 
-        ## TL Graph
+        # TL Graph
         if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
             _list = []
             for layer in prev_layer:
@@ -223,8 +230,7 @@ class Layer(object):
         logging.info("  num of params: %d" % self.count_params())
 
     def print_layers(self):
-        """Print all info of layers in the network"""
-
+        """Print all info of layers in the network."""
         for i, layer in enumerate(self.all_layers):
             # logging.info("  layer %d: %s" % (i, str(layer)))
             logging.info(
@@ -232,7 +238,7 @@ class Layer(object):
             )
 
     def count_params(self):
-        """Returns the number of parameters in the network"""
+        """Returns the number of parameters in the network."""
         n_params = 0
         for _i, p in enumerate(self.all_params):
             n = 1
@@ -248,7 +254,7 @@ class Layer(object):
         return n_params
 
     def get_all_params(self, session=None):
-        """Return the parameters in a list of array. """
+        """Return the parameters in a list of array."""
         _params = []
         for p in self.all_params:
             if session is None:
@@ -292,7 +298,7 @@ class Layer(object):
 
     @protected_method
     def _get_init_args(self, skip=4):
-        """Get all arguments of current layer for saving the graph. """
+        """Get all arguments of current layer for saving the graph."""
         stack = inspect.stack()
 
         if len(stack) < skip + 1:
@@ -304,18 +310,18 @@ class Layer(object):
 
         for arg in args:
 
-            ## some args dont need to be saved into the graph. e.g. the input placeholder
+            # some args dont need to be saved into the graph. e.g. the input placeholder
             if values[arg] is not None and arg not in ['self', 'prev_layer', 'inputs']:
 
                 val = values[arg]
 
-                ## change function (e.g. act) into dictionary of module path and function name
+                # change function (e.g. act) into dictionary of module path and function name
                 if inspect.isfunction(val):
                     params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
-                ## ignore more args e.g. TF class
+                # ignore more args e.g. TF class
                 elif arg.endswith('init'):
                     continue
-                ## for other data type, save them directly
+                # for other data type, save them directly
                 else:
                     params[arg] = val
 
