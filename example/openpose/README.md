@@ -9,6 +9,7 @@ Therefore, we xxxxx
 
 ## 2. Project files
 
+<<<<<<< HEAD
 - `models.py` is to define the model structures, e.g. VGG19, Residual Squeezenet
 - `data_process.py` is to 
 - `train.py` is to train the model
@@ -18,6 +19,22 @@ Therefore, we xxxxx
 
 To have a fast inferecning, the pose-processing for inferencing is based on OpenPose's C++ implmentation, so before you run the inferencing code, 
 you should compile ...
+=======
+- `vgg_models.py` : to define the model structures, currently only VGG19 Based model included
+- `utils.py` : to extract databased from cocodataset and groundtruth calculation
+- `train.py` : to train the model
+- `visual.py`: draw the training result
+
+## 3. Preparation
+
+
+1. for data processing, COCOAPIs are used, refer to : https://github.com/cocodataset/cocoapi
+2. Build c++ library for post processing. See : https://github.com/ildoonet/tf-pose-estimation/tree/master/tf_pose/pafprocess
+
+$ cd tf_pose/pafprocess
+
+$ swig -python -c++ pafprocess.i && python3 setup.py build_ext --inplace
+>>>>>>> a3206e6b00901b3a5d1e1954d45cee090c1a0cd8
 
 ## 4. Use pre-trained model
 
@@ -33,6 +50,10 @@ The performance of pre-trained model is as follow:
 - Speed is tested on XXX
 
 ## 5. Train a model
+<<<<<<< HEAD
+=======
+For your own training, please put .jpg files into coco_dataset/images/ and put .json into coco_dataset/annotations/
+>>>>>>> a3206e6b00901b3a5d1e1954d45cee090c1a0cd8
 
 Runs `train.py`, it will automatically download MSCOCO 2017 dataset into `dataset/coco17`. 
 The default model in `models.py` is based on VGG19, which is the same with the original paper. 
@@ -41,7 +62,11 @@ And then `train.py` will train the model to the end.
 
 ## 6. Evaluate a model
 
+<<<<<<< HEAD
 Runs `xxx.py`, the API `xxxxx` is ....
+=======
+Runs `eval.py` for inference 
+>>>>>>> a3206e6b00901b3a5d1e1954d45cee090c1a0cd8
 
 ## 7. Speed up and deployment
 
@@ -58,4 +83,8 @@ For TensorRT float16 (half-float) inferencing, xxx
 
 ## 9. Discussion
 
+<<<<<<< HEAD
 - [TensorLayer Issues 434](https://github.com/tensorlayer/tensorlayer/issues/434)
+=======
+- [TensorLayer Issues 434](https://github.com/tensorlayer/tensorlayer/issues/434)
+>>>>>>> a3206e6b00901b3a5d1e1954d45cee090c1a0cd8
