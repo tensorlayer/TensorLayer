@@ -67,13 +67,14 @@ matrix:
 install:
   - |
     if [[ -v _DOC_AND_YAPF_TEST ]]; then
-        pip install tensorflow
-        ./scripts/install-horovod-for-doc-test.sh
+        pip install tensorflow 
+        pip install yapf
+        pip install -r requirements/requirements_doc.txt
         curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash
     else
         pip install tensorflow==$_TF_VERSION;
+        pip install -e .[all_cpu_dev]
     fi
-  - pip install -e .[all_cpu_dev]
   
 before_script:
   - if [[ -v _DOC_AND_YAPF_TEST ]]; then fossa test; fi
