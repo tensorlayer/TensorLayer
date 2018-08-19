@@ -70,43 +70,49 @@ if __name__ == '__main__':
     parser.add_argument('--multi-scale', type=bool, default=True)
     args = parser.parse_args()
 
-    val_path = '/Users/Joel/Desktop/1k_list.txt'
-    f = open(val_path)
-    line = f.readline()
-    keys1k = []
-    while line:
-        line = line.rstrip('\n')
-        info = line.split()
-        keys1k.append(int(info[1]))
-        line = f.readline()
+    # val_path = '/Users/Joel/Desktop/1k_list.txt'
+    # f = open(val_path)
+    # line = f.readline()
+    # keys1k = []
+    # while line:
+    #     line = line.rstrip('\n')
+    #     info = line.split()
+    #     keys1k.append(int(info[1]))
+    #     line = f.readline()
 
-    cocoyear_list = ['2014', '2017']
-    if args.cocoyear not in cocoyear_list:
-        logger.error('cocoyear should be one of %s' % str(cocoyear_list))
-        sys.exit(-1)
+    # cocoyear_list = ['2014', '2017']
+    # if args.cocoyear not in cocoyear_list:
+    #     logger.error('cocoyear should be one of %s' % str(cocoyear_list))
+    #     sys.exit(-1)
 
-    image_dir = args.coco_dir + 'images/val2014'
-    coco_json_file = args.coco_dir + 'annotations/person_keypoints_val%s.json' % args.cocoyear
+    # image_dir = args.coco_dir + 'images/val2014'
+    # coco_json_file = args.coco_dir + 'annotations/person_keypoints_val%s.json' % args.cocoyear
+
+    ## which data for evaluation  HAO
+    path = os.path.join('..', 'data', 'mscoco2014')
+    image_dir = os.path.join(path, "val2014")
+    coco_json_file = os.path.join(path, "annotations", "person_keypoints_val2014.json")
+
     cocoGt = COCO(coco_json_file)
     catIds = cocoGt.getCatIds(catNms=['person'])
     keys = cocoGt.getImgIds(catIds=catIds)
-    keys = keys1k
+    # keys = keys1k
     if args.data_idx < 0:
         if eval_size > 0:
             keys = keys[:eval_size]  # only use the first #eval_size elements.
-
         pass
     else:
         keys = [keys[args.data_idx]]
     logger.info('validation %s set size=%d' % (coco_json_file, len(keys)))
-    write_json = 'etcs/%s_%s_%f.json' % (args.model, args.resize, args.resize_out_ratio)
+    write_json = '%s_%s_%f.json' % (args.model, args.resize, args.resize_out_ratio)
 
-    logger.debug('initialization %s : %s' % (args.model, get_graph_path(args.model)))
+    # logger.debug('initialization %s : %s' % (args.model, get_graph_path(args.model)))
     w, h = model_wh(args.resize)
 
     result = []
 
-    e = TfPoseEstimator('/Users/Joel/Desktop/Log_0808/small_inf_model110000.npz', target_size=(w, h))
+    # HAO
+    e = TfPoseEstimator('models/pose1.npz', target_size=(w, h))
 
     for i, k in enumerate(tqdm(keys)):
 
@@ -115,6 +121,8 @@ if __name__ == '__main__':
 
         img_name = os.path.join(image_dir, img_meta['file_name'])
         image = read_imgfile(img_name, None, None)
+        # bgr 2 rgb HAO
+        image = image[...,::-1]
         print(img_name)
         if image is None:
             logger.error('image not found, path=%s' % img_name)
@@ -168,9 +176,9 @@ if __name__ == '__main__':
             # plt.imshow(CocoPose.get_bgimg(inp, target_size=(vectmap.shape[1], vectmap.shape[0])), alpha=0.5)
             plt.imshow(tmp2_even, cmap=plt.cm.gray, alpha=0.5)
             plt.colorbar()
-            plt.savefig('eval_img3/' + 'smamm_inf_110k' + '_' + str(i) + ".png", dpi=300)
+            plt.savefig('smamm_inf_110k' + '_' + str(i) + ".png", dpi=300)
             plt.cla
-            plt.show()
+            # plt.show()
 
     fp = open(write_json, 'w')
     json.dump(result, fp)

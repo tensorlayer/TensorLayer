@@ -7,6 +7,7 @@ from tensorlayer.files.utils import maybe_download_and_extract, folder_exists, d
 from tensorlayer import logging
 from config import config
 import matplotlib.pyplot as plt
+
 ## download dataset
 def load_mscoco_dataset(path='data', dataset='2014'):  # TODO move to tl.files later
     """Download MSCOCO Dataset.
@@ -20,12 +21,23 @@ def load_mscoco_dataset(path='data', dataset='2014'):  # TODO move to tl.files l
 
     Returns
     ---------
-    imgs_file_list : list of str
-        Full paths of all images.
+    train_im_path : str
+        Folder path of all training images.
+    train_ann_path : str
+        File path of training annotations.
+    val_im_path : str
+        Folder path of all validating images.
+    val_ann_path : str
+        File path of validating annotations.
+    test_im_path : str
+        Folder path of all testing images.
+    test_ann_path : str
+        File path of testing annotations.
 
     Examples
     ----------
-    >>>
+    >>> train_im_path, train_ann_path, val_im_path, val_ann_path, _, _ = \
+    ...    tl.files.load_mscoco_dataset('data', '2017')
 
     References
     -------------
@@ -58,21 +70,21 @@ def load_mscoco_dataset(path='data', dataset='2014'):  # TODO move to tl.files l
         else:
             logging.info("    validating images exists")
 
-        # if folder_exists(os.path.join(path, "train2014")) is False:
-        #     logging.info("    downloading training images")
-        #     os.system("wget http://images.cocodataset.org/zips/train2014.zip -P {}".format(path))
-        #     unzip(os.path.join(path, "train2014.zip"), path)
-        #     del_file(os.path.join(path, "train2014.zip"))
-        # else:
-        #     logging.info("    training images exists")
-        #
-        # if folder_exists(os.path.join(path, "test2014")) is False:
-        #     logging.info("    downloading testing images")
-        #     os.system("wget http://images.cocodataset.org/zips/test2014.zip -P {}".format(path))
-        #     unzip(os.path.join(path, "test2014.zip"), path)
-        #     del_file(os.path.join(path, "test2014.zip"))
-        # else:
-        #     logging.info("    testing images exists")
+        if folder_exists(os.path.join(path, "train2014")) is False:
+            logging.info("    downloading training images")
+            os.system("wget http://images.cocodataset.org/zips/train2014.zip -P {}".format(path))
+            unzip(os.path.join(path, "train2014.zip"), path)
+            del_file(os.path.join(path, "train2014.zip"))
+        else:
+            logging.info("    training images exists")
+
+        if folder_exists(os.path.join(path, "test2014")) is False:
+            logging.info("    downloading testing images")
+            os.system("wget http://images.cocodataset.org/zips/test2014.zip -P {}".format(path))
+            unzip(os.path.join(path, "test2014.zip"), path)
+            del_file(os.path.join(path, "test2014.zip"))
+        else:
+            logging.info("    testing images exists")
 
         # # wget http://images.cocodataset.org/annotations/annotations_trainval2014.zip
         # # url = 'http://images.cocodataset.org/annotations'
@@ -89,6 +101,7 @@ def load_mscoco_dataset(path='data', dataset='2014'):  # TODO move to tl.files l
         # extracted_filename2 = ''
         # path = os.path.join(path, 'mscoco2014')
     elif dataset == "2017":
+        # 11.5w train, 0.5w valid, test (no annotation)
         raise Exception("Unimplement")
         path = os.path.join(path, 'mscoco2017')
     else:
@@ -108,7 +121,7 @@ def load_mscoco_dataset(path='data', dataset='2014'):  # TODO move to tl.files l
     val_images_path = os.path.join(path, "val2014")
     val_annotations_file_path = os.path.join(path, "annotations", "person_keypoints_val2014.json")
     test_images_path = os.path.join(path, "test2014")
-    test_annotations_file_path = os.path.join(path, "annotations", "person_keypoints_test2014.json")
+    test_annotations_file_path = None #os.path.join(path, "annotations", "person_keypoints_test2014.json")
     return train_images_path, train_annotations_file_path, \
             val_images_path, val_annotations_file_path, \
                 test_images_path, test_annotations_file_path
@@ -522,7 +535,7 @@ def fast_vectormap(vectormap, countmap, i, v_start, v_end):
     return vectormap
 
 
-def draw_intermedia_results(images, heats_ground, heats_result, pafs_ground, pafs_result, masks):
+def draw_intermedia_results(images, heats_ground, heats_result, pafs_ground, pafs_result, masks, name=''):
     """
     images :
     heats : keypoint maps
@@ -531,16 +544,19 @@ def draw_intermedia_results(images, heats_ground, heats_result, pafs_ground, paf
     """
     interval = len(pafs_result)
     for i in range(interval):
-        heat_ground = heats_ground[i]
-        heat_result = heats_result[i]
-        paf_ground = pafs_ground[i]
-        paf_result = pafs_result[i]
-
-        mask = masks[i]
-
-        mask = mask.reshape(46, 46, 1)
-        mask1 = np.repeat(mask, 19, 2)
-        mask2 = np.repeat(mask, 38, 2)
+        if heats_ground is not None:
+            heat_ground = heats_ground[i]
+        if heats_result is not None:
+            heat_result = heats_result[i]
+        if pafs_ground is not None:
+            paf_ground = pafs_ground[i]
+        if pafs_result is not None:
+            paf_result = pafs_result[i]
+        if masks is not None:
+            mask = masks[i]
+            mask = mask.reshape(46, 46, 1)
+            mask1 = np.repeat(mask, 19, 2)
+            mask2 = np.repeat(mask, 38, 2)
 
         image = images[i]
 
@@ -548,54 +564,67 @@ def draw_intermedia_results(images, heats_ground, heats_result, pafs_ground, paf
         a = fig.add_subplot(2, 3, 1)
         plt.imshow(image)
 
-        a = fig.add_subplot(2, 3, 2)
-        a.set_title('Vectormap_ground')
-        vectormap = paf_ground * mask2
-        tmp2 = vectormap.transpose((2, 0, 1))
-        tmp2_odd = np.amax(np.absolute(tmp2[::2, :, :]), axis=0)
-        tmp2_even = np.amax(np.absolute(tmp2[1::2, :, :]), axis=0)
+        if pafs_ground is not None:
+            a = fig.add_subplot(2, 3, 2)
+            a.set_title('Vectormap_ground')
+            vectormap = paf_ground * mask2
+            tmp2 = vectormap.transpose((2, 0, 1))
+            tmp2_odd = np.amax(np.absolute(tmp2[::2, :, :]), axis=0)
+            tmp2_even = np.amax(np.absolute(tmp2[1::2, :, :]), axis=0)
 
-        # tmp2_odd = tmp2_odd * 255
-        # tmp2_odd = tmp2_odd.astype(np.int)
-        plt.imshow(tmp2_odd, alpha=0.3)
+            # tmp2_odd = tmp2_odd * 255
+            # tmp2_odd = tmp2_odd.astype(np.int)
+            plt.imshow(tmp2_odd, alpha=0.3)
 
-        # tmp2_even = tmp2_even * 255
-        # tmp2_even = tmp2_even.astype(np.int)
-        plt.colorbar()
-        plt.imshow(tmp2_even, alpha=0.3)
+            # tmp2_even = tmp2_even * 255
+            # tmp2_even = tmp2_even.astype(np.int)
+            plt.colorbar()
+            plt.imshow(tmp2_even, alpha=0.3)
 
-        a = fig.add_subplot(2, 3, 3)
-        a.set_title('Vectormap result')
-        vectormap = paf_result * mask2
-        tmp2 = vectormap.transpose((2, 0, 1))
-        tmp2_odd = np.amax(np.absolute(tmp2[::2, :, :]), axis=0)
-        tmp2_even = np.amax(np.absolute(tmp2[1::2, :, :]), axis=0)
-        plt.imshow(tmp2_odd, alpha=0.3)
+        if pafs_result is not None:
+            a = fig.add_subplot(2, 3, 3)
+            a.set_title('Vectormap result')
+            if masks is not None:
+                vectormap = paf_result * mask2
+            else:
+                vectormap = paf_result
+            tmp2 = vectormap.transpose((2, 0, 1))
+            tmp2_odd = np.amax(np.absolute(tmp2[::2, :, :]), axis=0)
+            tmp2_even = np.amax(np.absolute(tmp2[1::2, :, :]), axis=0)
+            plt.imshow(tmp2_odd, alpha=0.3)
 
-        plt.colorbar()
-        plt.imshow(tmp2_even, alpha=0.3)
+            plt.colorbar()
+            plt.imshow(tmp2_even, alpha=0.3)
 
-        a = fig.add_subplot(2, 3, 4)
-        a.set_title('Heatmap result')
-        heatmap = heat_result * mask1
-        tmp = heatmap
-        tmp = np.amax(heatmap[:, :, :-1], axis=2)
+        if heats_result is not None:
+            a = fig.add_subplot(2, 3, 4)
+            a.set_title('Heatmap result')
+            if masks is not None:
+                heatmap = heat_result * mask1
+            else:
+                heatmap = heat_result
+            tmp = heatmap
+            tmp = np.amax(heatmap[:, :, :-1], axis=2)
 
-        plt.colorbar()
-        plt.imshow(tmp, alpha=0.3)
+            plt.colorbar()
+            plt.imshow(tmp, alpha=0.3)
 
-        a = fig.add_subplot(2, 3, 5)
-        a.set_title('Heatmap ground truth')
-        heatmap = heat_ground * mask1
-        tmp = heatmap
-        tmp = np.amax(heatmap[:, :, :-1], axis=2)
+        if heats_ground is not None:
+            a = fig.add_subplot(2, 3, 5)
+            a.set_title('Heatmap ground truth')
+            if masks is not None:
+                heatmap = heat_ground * mask1
+            else:
+                heatmap = heat_ground
+            tmp = heatmap
+            tmp = np.amax(heatmap[:, :, :-1], axis=2)
 
-        plt.colorbar()
-        plt.imshow(tmp, alpha=0.3)
+            plt.colorbar()
+            plt.imshow(tmp, alpha=0.3)
         # plt.savefig(str(i)+'.png',dpi=300)
         # plt.show()
 
-        plt.savefig(os.path.join(config.LOG.vis_path, str(i)+'.png'), dpi=300)
+        plt.savefig(os.path.join(config.LOG.vis_path, name + str(i)+'.png'), dpi=300)
 
 
 if __name__ == '__main__':

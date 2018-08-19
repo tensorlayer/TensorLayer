@@ -10,13 +10,18 @@ from smoother import Smoother
 import tensorlayer as tl
 from tensorlayer.layers import *
 try:
-    from inference.pafprocess import pafprocess
-except ModuleNotFoundError as e:
+    from pafprocess import pafprocess
+except ImportError as e:
     print(e)
     print(
         'you need to build c++ library for pafprocess. See : https://github.com/ildoonet/tf-pose-estimation/tree/master/tf_pose/pafprocess'
     )
     exit(-1)
+
+import sys
+sys.path.append("../")
+from config import config
+from models import model
 
 logger = logging.getLogger('TfPoseEstimator')
 logger.setLevel(logging.INFO)
@@ -24,97 +29,6 @@ ch = logging.StreamHandler()
 formatter = logging.Formatter('[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
-
-
-def _stage(cnn, b1, b2, n_pos, name='stageX'):
-    with tf.variable_scope(name):
-        net = ConcatLayer([cnn, b1, b2], -1, name='concat')
-        with tf.variable_scope("branch1"):
-            b1 = Conv2d(net, 128, (7, 7), (1, 1), tf.nn.relu, 'SAME', name='c1')
-            b1 = Conv2d(b1, 128, (7, 7), (1, 1), tf.nn.relu, 'SAME', name='c2')
-            b1 = Conv2d(b1, 128, (7, 7), (1, 1), tf.nn.relu, 'SAME', name='c3')
-            b1 = Conv2d(b1, 128, (7, 7), (1, 1), tf.nn.relu, 'SAME', name='c4')
-            b1 = Conv2d(b1, 128, (7, 7), (1, 1), tf.nn.relu, 'SAME', name='c5')
-            b1 = Conv2d(b1, 128, (1, 1), (1, 1), tf.nn.relu, 'VALID', name='c6')
-            b1 = Conv2d(b1, n_pos, (1, 1), (1, 1), None, 'VALID', name='conf')
-        with tf.variable_scope("branch2"):
-            b2 = Conv2d(net, 128, (7, 7), (1, 1), tf.nn.relu, 'SAME', name='c1')
-            b2 = Conv2d(b2, 128, (7, 7), (1, 1), tf.nn.relu, 'SAME', name='c2')
-            b2 = Conv2d(b2, 128, (7, 7), (1, 1), tf.nn.relu, 'SAME', name='c3')
-            b2 = Conv2d(b2, 128, (7, 7), (1, 1), tf.nn.relu, 'SAME', name='c4')
-            b2 = Conv2d(b2, 128, (7, 7), (1, 1), tf.nn.relu, 'SAME', name='c5')
-            b2 = Conv2d(b2, 128, (1, 1), (1, 1), tf.nn.relu, 'VALID', name='c6')
-            b2 = Conv2d(b2, 38, (1, 1), (1, 1), None, 'VALID', name='pafs')
-    return b1, b2
-
-
-def vgg_network(x):
-
-    # red, green, blue = tf.split(x, 3, 3)
-    # rgb = tf.concat([
-    #     red ,
-    #     green,
-    #     blue
-    # ], axis=3)
-    # input layer
-    bgr = x / 255.0 - 0.5
-
-    net_in = InputLayer(bgr, name='input')
-    # conv1
-    net = Conv2d(net_in, 64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1')
-    net = Conv2d(net, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2')
-    net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1')
-    # conv2
-    net = Conv2d(net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_1')
-    net = Conv2d(net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_2')
-    net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2')
-    # conv3
-    net = Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_1')
-    net = Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_2')
-    net = Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_3')
-    net = Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_4')
-    net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool3')
-    # conv4
-    net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1')
-    net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2')
-    net = Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_3')
-    net = Conv2d(net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_4')
-
-    return net
-
-
-def model(x, n_pos, is_train=False, reuse=None):
-    b1_list = []
-    b2_list = []
-    with tf.variable_scope('model', reuse):
-        # feature extraction part
-        # cnn = tl.models.MobileNetV1(x, end_with='depth5', is_train=is_train, reuse=reuse)  # i.e. vgg16 conv4_2 ~ 4_4
-        cnn = vgg_network(x)
-        with tf.variable_scope('cpm', reuse):
-            # stage 1
-            with tf.variable_scope("stage1"):
-                with tf.variable_scope("branch1"):
-                    b1 = Conv2d(cnn, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='c1')
-                    b1 = Conv2d(b1, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='c2')
-                    b1 = Conv2d(b1, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='c3')
-                    b1 = Conv2d(b1, 512, (1, 1), (1, 1), tf.nn.relu, 'VALID', name='c4')
-                    b1 = Conv2d(b1, n_pos, (1, 1), (1, 1), None, 'VALID', name='confs')
-                with tf.variable_scope("branch2"):
-                    b2 = Conv2d(cnn, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='c1')
-                    b2 = Conv2d(b2, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='c2')
-                    b2 = Conv2d(b2, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='c3')
-                    b2 = Conv2d(b2, 512, (1, 1), (1, 1), tf.nn.relu, 'VALID', name='c4')
-                    b2 = Conv2d(b2, 38, (1, 1), (1, 1), None, 'VALID', name='pafs')
-                b1_list.append(b1)
-                b2_list.append(b2)
-            # stage 2~6
-            for i in range(2, 7):
-                b1, b2 = _stage(cnn, b1_list[-1], b2_list[-1], n_pos, name='stage%d' % i)
-                b1_list.append(b1)
-                b2_list.append(b2)
-        net = tl.layers.merge_networks([b1_list[-1], b2_list[-1]])
-        return cnn, b1_list, b2_list, net
-
 
 ###################################
 def _round(v):
@@ -351,7 +265,7 @@ class PoseEstimator:
 
     @staticmethod
     def estimate_paf(peaks, heat_mat, paf_mat):
-        pafprocess.process_paf(peaks, heat_mat, paf_mat)
+        pafprocess.process_paf(peaks, heat_mat, paf_mat)    # C++
 
         humans = []
         for human_id in range(pafprocess.get_num_humans()):
@@ -386,7 +300,7 @@ class TfPoseEstimator:
 
         self.persistent_sess = tf.InteractiveSession()
         x = tf.placeholder(tf.float32, [None, target_size[1], target_size[0], 3], "image")
-        cnn, b1_list, b2_list, net = model(x, 19, False, False)
+        cnn, b1_list, b2_list, net = model(x, config.MODEL.n_pos, False, False)
 
         tl.layers.initialize_global_variables(self.persistent_sess)
         tl.files.load_and_assign_npz_dict(graph_path, self.persistent_sess)

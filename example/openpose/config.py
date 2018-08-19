@@ -21,8 +21,11 @@ config.MODEL.win = 368
 config.MODEL.hout = config.MODEL.hin / 8  # output size during training (default 46)
 config.MODEL.wout = config.MODEL.win / 8
 
+if (config.MODEL.hin % 16 != 0) or (config.MODEL.win % 16 != 0):
+    raise Exception("image size should be divided by 16")
+
 config.DATA = edict()
-config.DATA.coco_version = '2014'  # MSCOCO version 2014 or 2017
+config.DATA.coco_version = '2017'  # MSCOCO version 2014 or 2017
 config.DATA.data_path = 'data'
 config.DATA.your_images_path = os.path.join('data', 'your_data', 'images')
 config.DATA.your_annos_path = os.path.join('data', 'your_data', 'anno.json')

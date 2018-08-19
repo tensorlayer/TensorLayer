@@ -32,9 +32,15 @@ make
 ```python
 cd pafprocess
 swig -python -c++ pafprocess.i && python3 setup.py build_ext --inplace
+
+** before recompiling **
+rm -rf build
+rm *.so
 ```
 
 ## 4. Use pre-trained model
+
+In this project, input images are RGB with 0~1
 
 Runs `xxx.py`, it will automatically download the default VGG19-based model from [here](https://github.com/tensorlayer/pretrained-models), 
 and use it for inferencing.

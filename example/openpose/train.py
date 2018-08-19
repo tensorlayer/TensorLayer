@@ -280,7 +280,7 @@ if __name__ == '__main__':
 
             # save some intermedian results
             if (gs_num != 0) and (gs_num % 1==0):#save_interval == 0):
-                draw_intermedia_results(x_, confs_, conf_result, pafs_, paf_result, mask)
+                draw_intermedia_results(x_, confs_, conf_result, pafs_, paf_result, mask, 'train')
                 # np.save(config.LOG.vis_path + 'image' + str(gs_num) + '.npy', x_)
                 # np.save(config.LOG.vis_path + 'heat_ground' + str(gs_num) + '.npy', confs_)
                 # np.save(config.LOG.vis_path + 'heat_result' + str(gs_num) + '.npy', conf_result)
@@ -289,5 +289,7 @@ if __name__ == '__main__':
                 # np.save(config.LOG.vis_path + 'paf_result' + str(gs_num) + '.npy', paf_result)
                 tl.files.save_npz_dict(
                     net.all_params, os.path.join(model_path, 'pose'+str(gs_num)+'.npz'), sess=sess)
+                tl.files.save_npz_dict(
+                    net.all_params, os.path.join(model_path, 'pose.npz'), sess=sess)
             if gs_num > 3000001:
                 break
