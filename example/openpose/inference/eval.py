@@ -22,11 +22,13 @@ logger.addHandler(ch)
 
 eval_size = 10
 
+
 def model_wh(resolution_str):
     width, height = map(int, resolution_str.split('x'))
     if width % 16 != 0 or height % 16 != 0:
         raise Exception('Width and height should be multiples of 16. w=%d, h=%d' % (width, height))
     return int(width), int(height)
+
 
 def read_imgfile(path, width=None, height=None):
     val_image = cv2.imread(path, cv2.IMREAD_COLOR)
@@ -34,8 +36,10 @@ def read_imgfile(path, width=None, height=None):
         val_image = cv2.resize(val_image, (width, height))
     return val_image
 
+
 def round_int(val):
     return int(round(val))
+
 
 def write_coco_json(human, image_w, image_h):
     keypoints = []
@@ -51,8 +55,14 @@ def write_coco_json(human, image_w, image_h):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Tensorflow Openpose Inference')
-    parser.add_argument('--resize', type=str, default='432x368', help='if provided, resize images before they are processed. default=0x0, Recommends : 432x368 or 656x368 or 1312x736 ')
-    parser.add_argument('--resize-out-ratio', type=float, default=8.0, help='if provided, resize heatmaps before they are post-processed. default=8.0')
+    parser.add_argument(
+        '--resize', type=str, default='432x368', help=
+        'if provided, resize images before they are processed. default=0x0, Recommends : 432x368 or 656x368 or 1312x736 '
+    )
+    parser.add_argument(
+        '--resize-out-ratio', type=float, default=8.0,
+        help='if provided, resize heatmaps before they are post-processed. default=8.0'
+    )
     parser.add_argument('--model', type=str, default='cmu', help='cmu / mobilenet_thin')
     parser.add_argument('--cocoyear', type=str, default='2014')
     parser.add_argument('--coco-dir', type=str, default='/Users/Joel/Desktop/coco/')
@@ -75,13 +85,12 @@ if __name__ == '__main__':
         logger.error('cocoyear should be one of %s' % str(cocoyear_list))
         sys.exit(-1)
 
-
     image_dir = args.coco_dir + 'images/val2014'
     coco_json_file = args.coco_dir + 'annotations/person_keypoints_val%s.json' % args.cocoyear
     cocoGt = COCO(coco_json_file)
     catIds = cocoGt.getCatIds(catNms=['person'])
     keys = cocoGt.getImgIds(catIds=catIds)
-    keys=keys1k
+    keys = keys1k
     if args.data_idx < 0:
         if eval_size > 0:
             keys = keys[:eval_size]  # only use the first #eval_size elements.
@@ -100,7 +109,6 @@ if __name__ == '__main__':
     e = TfPoseEstimator('/Users/Joel/Desktop/Log_0808/small_inf_model110000.npz', target_size=(w, h))
 
     for i, k in enumerate(tqdm(keys)):
-
 
         img_meta = cocoGt.loadImgs(k)[0]
         img_idx = img_meta['id']
@@ -160,7 +168,7 @@ if __name__ == '__main__':
             # plt.imshow(CocoPose.get_bgimg(inp, target_size=(vectmap.shape[1], vectmap.shape[0])), alpha=0.5)
             plt.imshow(tmp2_even, cmap=plt.cm.gray, alpha=0.5)
             plt.colorbar()
-            plt.savefig('eval_img3/' + 'smamm_inf_110k' + '_' + str(i) + ".png",dpi=300)
+            plt.savefig('eval_img3/' + 'smamm_inf_110k' + '_' + str(i) + ".png", dpi=300)
             plt.cla
             plt.show()
 

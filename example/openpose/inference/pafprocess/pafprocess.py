@@ -6,6 +6,7 @@
 
 from sys import version_info as _swig_python_version_info
 if _swig_python_version_info >= (2, 7, 0):
+
     def swig_import_helper():
         import importlib
         pkg = __name__.rpartition('.')[0]
@@ -14,9 +15,11 @@ if _swig_python_version_info >= (2, 7, 0):
             return importlib.import_module(mname)
         except ImportError:
             return importlib.import_module('_pafprocess')
+
     _pafprocess = swig_import_helper()
     del swig_import_helper
 elif _swig_python_version_info >= (2, 6, 0):
+
     def swig_import_helper():
         from os.path import dirname
         import imp
@@ -32,6 +35,7 @@ elif _swig_python_version_info >= (2, 6, 0):
             if fp is not None:
                 fp.close()
         return _mod
+
     _pafprocess = swig_import_helper()
     del swig_import_helper
 else:
@@ -47,6 +51,7 @@ try:
     import builtins as __builtin__
 except ImportError:
     import __builtin__
+
 
 def _swig_setattr_nondynamic(self, class_type, name, value, static=1):
     if (name == "thisown"):
@@ -85,15 +90,23 @@ def _swig_repr(self):
         strthis = "proxy of " + self.this.__repr__()
     except __builtin__.Exception:
         strthis = ""
-    return "<%s.%s; %s >" % (self.__class__.__module__, self.__class__.__name__, strthis,)
+    return "<%s.%s; %s >" % (
+        self.__class__.__module__,
+        self.__class__.__name__,
+        strthis,
+    )
+
 
 try:
     _object = object
     _newclass = 1
 except __builtin__.Exception:
+
     class _object:
         pass
+
     _newclass = 0
+
 
 class Peak(_object):
     __swig_setmethods__ = {}
@@ -124,8 +137,11 @@ class Peak(_object):
             self.this.append(this)
         except __builtin__.Exception:
             self.this = this
+
     __swig_destroy__ = _pafprocess.delete_Peak
     __del__ = lambda self: None
+
+
 Peak_swigregister = _pafprocess.Peak_swigregister
 Peak_swigregister(Peak)
 cvar = _pafprocess.cvar
@@ -139,6 +155,7 @@ STEP_PAF = cvar.STEP_PAF
 COCOPAIRS_SIZE = cvar.COCOPAIRS_SIZE
 COCOPAIRS_NET = cvar.COCOPAIRS_NET
 COCOPAIRS = cvar.COCOPAIRS
+
 
 class VectorXY(_object):
     __swig_setmethods__ = {}
@@ -161,10 +178,14 @@ class VectorXY(_object):
             self.this.append(this)
         except __builtin__.Exception:
             self.this = this
+
     __swig_destroy__ = _pafprocess.delete_VectorXY
     __del__ = lambda self: None
+
+
 VectorXY_swigregister = _pafprocess.VectorXY_swigregister
 VectorXY_swigregister(VectorXY)
+
 
 class ConnectionCandidate(_object):
     __swig_setmethods__ = {}
@@ -195,10 +216,14 @@ class ConnectionCandidate(_object):
             self.this.append(this)
         except __builtin__.Exception:
             self.this = this
+
     __swig_destroy__ = _pafprocess.delete_ConnectionCandidate
     __del__ = lambda self: None
+
+
 ConnectionCandidate_swigregister = _pafprocess.ConnectionCandidate_swigregister
 ConnectionCandidate_swigregister(ConnectionCandidate)
+
 
 class Connection(_object):
     __swig_setmethods__ = {}
@@ -233,39 +258,60 @@ class Connection(_object):
             self.this.append(this)
         except __builtin__.Exception:
             self.this = this
+
     __swig_destroy__ = _pafprocess.delete_Connection
     __del__ = lambda self: None
+
+
 Connection_swigregister = _pafprocess.Connection_swigregister
 Connection_swigregister(Connection)
 
 
 def process_paf(p1, h1, f1):
     return _pafprocess.process_paf(p1, h1, f1)
+
+
 process_paf = _pafprocess.process_paf
+
 
 def get_num_humans():
     return _pafprocess.get_num_humans()
+
+
 get_num_humans = _pafprocess.get_num_humans
+
 
 def get_part_cid(human_id, part_id):
     return _pafprocess.get_part_cid(human_id, part_id)
+
+
 get_part_cid = _pafprocess.get_part_cid
+
 
 def get_score(human_id):
     return _pafprocess.get_score(human_id)
+
+
 get_score = _pafprocess.get_score
+
 
 def get_part_x(cid):
     return _pafprocess.get_part_x(cid)
+
+
 get_part_x = _pafprocess.get_part_x
+
 
 def get_part_y(cid):
     return _pafprocess.get_part_y(cid)
+
+
 get_part_y = _pafprocess.get_part_y
+
 
 def get_part_score(cid):
     return _pafprocess.get_part_score(cid)
+
+
 get_part_score = _pafprocess.get_part_score
 # This file is compatible with both classic and new-style classes.
-
-

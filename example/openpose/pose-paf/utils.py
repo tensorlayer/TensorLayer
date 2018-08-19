@@ -3,19 +3,76 @@ import numpy as np
 import os
 from scipy.spatial.distance import cdist
 from pycocotools.coco import maskUtils
-class CocoMeta:
-    limb = list(zip(
-        [2, 9,  10,  2, 12, 13, 2, 3, 4, 3,  2, 6, 7, 6,  2, 1,  1,  15, 16],
-        [9, 10, 11, 12, 13, 14, 3, 4, 5, 17, 6, 7, 8, 18, 1, 15, 16, 17, 18]
-    ))
+from tensorlayer.files.utils import maybe_download_and_extract
 
-    def __init__(self, idx, img_url, img_meta, annotations,masks):
+
+def load_mscoco_dataset(path='data', dataset='2014'):  # TODO move to tl.files later
+    """Download MSCOCO Dataset.
+
+    Parameters
+    -----------
+    path : str
+        The path that the data is downloaded to, defaults is ``data/mscoco...``.
+    dataset : str
+        The MSCOCO dataset version, `2014` or `2017`.
+
+    Returns
+    ---------
+    imgs_file_list : list of str
+        Full paths of all images.
+
+    Examples
+    ----------
+    >>>
+
+    References
+    -------------
+    - `MSCOCO <http://mscoco.org>`__.
+
+    """
+    if dataset == "2014":
+        logging.info("    [============= MSCOCO 2014 =============]")
+        # wget http://images.cocodataset.org/annotations/annotations_trainval2014.zip
+        url = 'http://images.cocodataset.org/annotations'
+        tar_filename = 'annotations_trainval2014.zip'
+        extracted_filename = ''
+        # wget http://images.cocodataset.org/zips/train2014.zip
+        url2 = 'http://images.cocodataset.org/zips'
+        tar_filename2 = 'train2014.zip'
+        extracted_filename2 = ''
+        path = os.path.join(path, 'mscoco2014')
+    elif dataset == "2017":
+        raise Exception("Unimplement")
+        path = os.path.join(path, 'mscoco2017')
+    else:
+        raise Exception("dataset can only be 2014 and 2017, see MSCOCO website for more details.")
+
+    logging.info("    downloading annotations")
+    maybe_download_and_extract(tar_filename, path, url, extract=True)
+    del_file(os.path.join(path, tar_filename))
+
+    logging.info("    downloading images")
+    maybe_download_and_extract(tar_filename2, path, url2, extract=True)
+    del_file(os.path.join(path, tar_filename2))
+
+    return
+
+
+class CocoMeta:
+    limb = list(
+        zip(
+            [2, 9, 10, 2, 12, 13, 2, 3, 4, 3, 2, 6, 7, 6, 2, 1, 1, 15, 16],
+            [9, 10, 11, 12, 13, 14, 3, 4, 5, 17, 6, 7, 8, 18, 1, 15, 16, 17, 18]
+        )
+    )
+
+    def __init__(self, idx, img_url, img_meta, annotations, masks):
         self.idx = idx
         self.img_url = img_url
         self.img = None
         self.height = int(img_meta['height'])
         self.width = int(img_meta['width'])
-        self.masks =masks
+        self.masks = masks
         joint_list = []
 
         for anno in annotations:
@@ -31,10 +88,12 @@ class CocoMeta:
 
         self.joint_list = []
         # 对原 COCO 数据集的转换 其中第二位之所以不一样是为了计算 Neck 等于左右 shoulder 的中点
-        transform = list(zip(
-            [1, 6, 7, 9, 11, 6, 8, 10, 13, 15, 17, 12, 14, 16, 3, 2, 5, 4],
-            [1, 7, 7, 9, 11, 6, 8, 10, 13, 15, 17, 12, 14, 16, 3, 2, 5, 4]
-        ))
+        transform = list(
+            zip(
+                [1, 6, 7, 9, 11, 6, 8, 10, 13, 15, 17, 12, 14, 16, 3, 2, 5, 4],
+                [1, 7, 7, 9, 11, 6, 8, 10, 13, 15, 17, 12, 14, 16, 3, 2, 5, 4]
+            )
+        )
         for prev_joint in joint_list:
             new_joint = []
             for idx1, idx2 in transform:
@@ -48,13 +107,15 @@ class CocoMeta:
 
             # for background
             new_joint.append((-1000, -1000))
-            if len(new_joint)!=19:
+            if len(new_joint) != 19:
                 print('The Length of joints list should be 0 or 19 but actually:', len(new_joint))
             self.joint_list.append(new_joint)
 
+
 class PoseInfo:
-    def __init__(self, image_base_dir, anno_path,with_mask):
-        self.metas=[]
+
+    def __init__(self, image_base_dir, anno_path, with_mask):
+        self.metas = []
         # self.data_dir = data_dir
         # self.data_type = data_type
         self.image_base_dir = image_base_dir
@@ -62,7 +123,7 @@ class PoseInfo:
         self.with_mask = with_mask
         self.coco = COCO(self.anno_path)
         self.get_image_annos()
-        self.image_list=os.listdir(self.image_base_dir)
+        self.image_list = os.listdir(self.image_base_dir)
 
     @staticmethod
     def get_keypoints(annos_info):
@@ -75,7 +136,7 @@ class PoseInfo:
     def get_image_annos(self):
 
         images_ids = self.coco.getImgIds()
-        len_imgs=len(images_ids)
+        len_imgs = len(images_ids)
         for idx in range(len_imgs):
 
             images_info = self.coco.loadImgs(images_ids[idx])
@@ -89,7 +150,7 @@ class PoseInfo:
             keypoints = self.get_keypoints(annos_info)
 
             #############################################################################
-            anns=annos_info
+            anns = annos_info
             prev_center = []
             masks = []
 
@@ -110,8 +171,10 @@ class PoseInfo:
                         masks.append(self.coco.annToRLE(person_meta))
                         continue
 
-                    person_center = [person_meta["bbox"][0] + person_meta["bbox"][2] / 2,
-                                     person_meta["bbox"][1] + person_meta["bbox"][3] / 2]
+                    person_center = [
+                        person_meta["bbox"][0] + person_meta["bbox"][2] / 2,
+                        person_meta["bbox"][1] + person_meta["bbox"][3] / 2
+                    ]
 
                     # skip this person if the distance to existing person is too small
                     too_close = False
@@ -137,28 +200,33 @@ class PoseInfo:
 
         print("Overall get {}".format(len(self.metas)))
 
-
     def load_images(self):
         pass
+
     def get_image_list(self):
-        img_list=[]
+        img_list = []
         for meta in self.metas:
             img_list.append(meta.img_url)
         return img_list
+
     def get_joint_list(self):
-        joint_list=[]
+        joint_list = []
         for meta in self.metas:
             joint_list.append(meta.joint_list)
         return joint_list
+
     def get_mask(self):
-        mask_list =[]
+        mask_list = []
         for meta in self.metas:
             mask_list.append(meta.masks)
         return mask_list
+
+
 import math
 import cv2
 
-def get_heatmap(annos,height,width):
+
+def get_heatmap(annos, height, width):
     # 19 for coco, 15 for MPII
     num_joints = 19
 
@@ -173,7 +241,7 @@ def get_heatmap(annos,height,width):
         for i, points in enumerate(joint):
             if points[0] < 0 or points[1] < 0:
                 continue
-            joints_heatmap=put_heatmap(joints_heatmap, i, points, 8.0)
+            joints_heatmap = put_heatmap(joints_heatmap, i, points, 8.0)
 
     # 0: joint index, 1:y, 2:x
     joints_heatmap = joints_heatmap.transpose((1, 2, 0))
@@ -189,6 +257,7 @@ def get_heatmap(annos,height,width):
     joints_heatmap = mapholder.transpose(1, 2, 0)
 
     return joints_heatmap.astype(np.float16)
+
 
 def put_heatmap(heatmap, plane_idx, center, sigma):
 
@@ -208,8 +277,8 @@ def put_heatmap(heatmap, plane_idx, center, sigma):
 
     ## fast - vectorize
     arr_heatmap = heatmap[plane_idx, y0:y1 + 1, x0:x1 + 1]
-    y_vec = (np.arange(y0, y1 + 1) - center_y) ** 2  # y1 included
-    x_vec = (np.arange(x0, x1 + 1) - center_x) ** 2
+    y_vec = (np.arange(y0, y1 + 1) - center_y)**2  # y1 included
+    x_vec = (np.arange(x0, x1 + 1) - center_x)**2
     xv, yv = np.meshgrid(x_vec, y_vec)
     arr_sum = exp_factor * (xv + yv)
     arr_exp = np.exp(-arr_sum)
@@ -217,21 +286,24 @@ def put_heatmap(heatmap, plane_idx, center, sigma):
     heatmap[plane_idx, y0:y1 + 1, x0:x1 + 1] = np.maximum(arr_heatmap, arr_exp)
     return heatmap
 
-def get_vectormap(annos,height,width):
+
+def get_vectormap(annos, height, width):
 
     num_joints = 19
 
-    limb = list(zip(
-        [2, 9, 10, 2, 12, 13, 2, 3, 4, 3, 2, 6, 7, 6, 2, 1, 1, 15, 16],
-        [9, 10, 11, 12, 13, 14, 3, 4, 5, 17, 6, 7, 8, 18, 1, 15, 16, 17, 18]
-    ))
+    limb = list(
+        zip(
+            [2, 9, 10, 2, 12, 13, 2, 3, 4, 3, 2, 6, 7, 6, 2, 1, 1, 15, 16],
+            [9, 10, 11, 12, 13, 14, 3, 4, 5, 17, 6, 7, 8, 18, 1, 15, 16, 17, 18]
+        )
+    )
 
     vectormap = np.zeros((num_joints * 2, height, width), dtype=np.float32)
     counter = np.zeros((num_joints, height, width), dtype=np.int16)
 
     for joint in annos:
-        if len(joint)!=19:
-            print('THE LENGTH IS NOT 19 ERROR:',len(joint))
+        if len(joint) != 19:
+            print('THE LENGTH IS NOT 19 ERROR:', len(joint))
         for i, (a, b) in enumerate(limb):
             a -= 1
             b -= 1
@@ -256,12 +328,13 @@ def get_vectormap(annos,height,width):
 
     mapholder = []
     for i in range(0, 38):
-        a = cv2.resize(np.array(vectormap[:, :, i]), (46, 46),interpolation=cv2.INTER_AREA)
+        a = cv2.resize(np.array(vectormap[:, :, i]), (46, 46), interpolation=cv2.INTER_AREA)
         mapholder.append(a)
     mapholder = np.array(mapholder)
     vectormap = mapholder.transpose(1, 2, 0)
 
     return vectormap.astype(np.float16)
+
 
 def cal_vectormap(vectormap, countmap, i, v_start, v_end):
     _, height, width = vectormap.shape[:3]
@@ -269,10 +342,9 @@ def cal_vectormap(vectormap, countmap, i, v_start, v_end):
     threshold = 8
     vector_x = v_end[0] - v_start[0]
     vector_y = v_end[1] - v_start[1]
-    length = math.sqrt(vector_x ** 2 + vector_y ** 2)
+    length = math.sqrt(vector_x**2 + vector_y**2)
     if length == 0:
         return vectormap
-
 
     min_x = max(0, int(min(v_start[0], v_end[0]) - threshold))
     min_y = max(0, int(min(v_start[1], v_end[1]) - threshold))
@@ -297,6 +369,8 @@ def cal_vectormap(vectormap, countmap, i, v_start, v_end):
             vectormap[i * 2 + 1][y][x] = norm_y
 
     return vectormap
+
+
 def fast_vectormap(vectormap, countmap, i, v_start, v_end):
     _, height, width = vectormap.shape[:3]
     _, height, width = vectormap.shape[:3]
@@ -305,7 +379,7 @@ def fast_vectormap(vectormap, countmap, i, v_start, v_end):
     vector_x = v_end[0] - v_start[0]
     vector_y = v_end[1] - v_start[1]
 
-    length = math.sqrt(vector_x ** 2 + vector_y ** 2)
+    length = math.sqrt(vector_x**2 + vector_y**2)
     if length == 0:
         return vectormap
 
@@ -318,20 +392,22 @@ def fast_vectormap(vectormap, countmap, i, v_start, v_end):
     norm_x = vector_x / length
     norm_y = vector_y / length
 
-    x_vec = (np.arange(min_x, max_x) - v_start[0])*norm_y
-    y_vec = (np.arange(min_y, max_y) - v_start[1])*norm_x
+    x_vec = (np.arange(min_x, max_x) - v_start[0]) * norm_y
+    y_vec = (np.arange(min_y, max_y) - v_start[1]) * norm_x
 
     xv, yv = np.meshgrid(x_vec, y_vec)
 
-    dist_matrix=abs(xv-yv)
-    filter_matrix=np.where(dist_matrix>threshold,0,1)
-    countmap[i, min_y: max_y, min_x: max_x]+=filter_matrix
-    for y in range(max_y-min_y):
-        for x in range(max_x-min_x):
-            if filter_matrix[y,x]!=0:
-                vectormap[i * 2 + 0, min_y+y, min_x+x] = norm_x
-                vectormap[i * 2 + 1, min_y+y, min_x+x] = norm_y
+    dist_matrix = abs(xv - yv)
+    filter_matrix = np.where(dist_matrix > threshold, 0, 1)
+    countmap[i, min_y:max_y, min_x:max_x] += filter_matrix
+    for y in range(max_y - min_y):
+        for x in range(max_x - min_x):
+            if filter_matrix[y, x] != 0:
+                vectormap[i * 2 + 0, min_y + y, min_x + x] = norm_x
+                vectormap[i * 2 + 1, min_y + y, min_x + x] = norm_y
     return vectormap
+
+
 if __name__ == '__main__':
     data_dir = '/Users/Joel/Desktop/coco'
     data_type = 'val'
@@ -339,9 +415,9 @@ if __name__ == '__main__':
     df_val = PoseInfo(data_dir, data_type, anno_path)
 
     for i in range(50):
-        meta=df_val.metas[i]
-        mask_sig= meta.masks
-        print('shape of np mask is ',np.shape (mask_sig),type(mask_sig))
+        meta = df_val.metas[i]
+        mask_sig = meta.masks
+        print('shape of np mask is ', np.shape(mask_sig), type(mask_sig))
         if mask_sig is not []:
             mask_miss = np.ones((meta.height, meta.width), dtype=np.uint8)
             for seg in mask_sig:

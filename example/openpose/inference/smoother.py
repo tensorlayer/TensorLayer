@@ -9,6 +9,7 @@ import tensorflow as tf
 
 
 def layer(op):
+
     def layer_decorated(self, *args, **kwargs):
         # Automatically set a name if not provided.
         name = kwargs.setdefault('name', self.get_unique_name(op.__name__))
@@ -32,6 +33,7 @@ def layer(op):
 
 
 class Smoother(object):
+
     def __init__(self, inputs, filter_size, sigma):
         self.inputs = inputs
         self.terminals = []
@@ -60,14 +62,14 @@ class Smoother(object):
         return self
 
     def gauss_kernel(self, kernlen=21, nsig=3, channels=1):
-        interval = (2*nsig+1.)/(kernlen)
-        x = np.linspace(-nsig-interval/2., nsig+interval/2., kernlen+1)
+        interval = (2 * nsig + 1.) / (kernlen)
+        x = np.linspace(-nsig - interval / 2., nsig + interval / 2., kernlen + 1)
         kern1d = np.diff(st.norm.cdf(x))
         kernel_raw = np.sqrt(np.outer(kern1d, kern1d))
-        kernel = kernel_raw/kernel_raw.sum()
-        out_filter = np.array(kernel, dtype = np.float32)
+        kernel = kernel_raw / kernel_raw.sum()
+        out_filter = np.array(kernel, dtype=np.float32)
         out_filter = out_filter.reshape((kernlen, kernlen, 1, 1))
-        out_filter = np.repeat(out_filter, channels, axis = 2)
+        out_filter = np.repeat(out_filter, channels, axis=2)
         return out_filter
 
     def make_gauss_var(self, name, size, sigma, c_i):
@@ -81,10 +83,7 @@ class Smoother(object):
         return self.terminals[-1]
 
     @layer
-    def conv(self,
-             input,
-             name,
-             padding='SAME'):
+    def conv(self, input, name, padding='SAME'):
         # Get the number of channels in the input
         c_i = input.get_shape().as_list()[3]
         # Convolution for a given input and kernel

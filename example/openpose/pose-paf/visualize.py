@@ -2,49 +2,49 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-#moniter training
+# moniter training
 val_path = '/Users/Joel/Desktop/Log_1708/val/'
 val_list = os.listdir(val_path)
 
-idx=165000
-heats_ground=[]
-heats_result=[]
-pafs_ground=[]
-pafs_result=[]
-masks=[]
-images=[]
+idx = 165000
+heats_ground = []
+heats_result = []
+pafs_ground = []
+pafs_result = []
+masks = []
+images = []
 for val in val_list:
-    if val.startswith('heat_ground'+str(idx)):
-        heats_ground=np.load(val_path+val)
+    if val.startswith('heat_ground' + str(idx)):
+        heats_ground = np.load(val_path + val)
     elif val.startswith('heat_result' + str(idx)):
         heats_result = np.load(val_path + val)
-    elif val.startswith('paf_result'+str(idx)):
-        pafs_result=np.load(val_path+val)
+    elif val.startswith('paf_result' + str(idx)):
+        pafs_result = np.load(val_path + val)
     elif val.startswith('paf_ground' + str(idx)):
         pafs_ground = np.load(val_path + val)
-    elif val.startswith('mask'+str(idx)):
-        masks=np.load(val_path+val)
-    elif val.startswith('image'+str(idx)):
-        images=np.load(val_path+val)
+    elif val.startswith('mask' + str(idx)):
+        masks = np.load(val_path + val)
+    elif val.startswith('image' + str(idx)):
+        images = np.load(val_path + val)
 
-interval=len(pafs_result)
+interval = len(pafs_result)
 for i in range(interval):
-    heat_ground=heats_ground[i]
-    heat_result=heats_result[i]
-    paf_ground=pafs_ground[i]
-    paf_result=pafs_result[i]
+    heat_ground = heats_ground[i]
+    heat_result = heats_result[i]
+    paf_ground = pafs_ground[i]
+    paf_result = pafs_result[i]
 
-    mask=masks[i]
+    mask = masks[i]
 
     mask = mask.reshape(46, 46, 1)
     mask1 = np.repeat(mask, 19, 2)
     mask2 = np.repeat(mask, 38, 2)
 
-    image=images[i]
+    image = images[i]
 
     fig = plt.figure(figsize=(8, 8))
     a = fig.add_subplot(2, 3, 1)
-    plt.imshow(image )
+    plt.imshow(image)
 
     a = fig.add_subplot(2, 3, 2)
     a.set_title('Vectormap_ground')
