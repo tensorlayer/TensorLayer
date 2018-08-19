@@ -74,7 +74,7 @@ def _data_aug_fn(image, ground_truth):
 
     # image data augmentation
     image, annos, mask_miss = keypoint_random_resize(image, annos, mask_miss, zoom_range=(0.8, 1.2))
-    image, annos, mask_miss = keypoint_random_rotate(image, annos, mask_miss, rg=30.0)
+    image, annos, mask_miss = keypoint_random_rotate(image, annos, mask_miss, rg=15.0)
     image, annos, mask_miss = keypoint_random_flip(image, annos, mask_miss, prob=0.5)
     image, annos, mask_miss = keypoint_random_resize_shortestedge(image, annos, mask_miss, min_size=(hin, win))  # TODO: give size
     image, annos, mask_miss = keypoint_random_crop(image, annos, mask_miss, size=(hin, win))  # TODO: give size
