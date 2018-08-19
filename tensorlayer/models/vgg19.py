@@ -163,7 +163,9 @@ class VGG19Base(object):
             b = np.asarray(val[1][1])
             print("  Loading %s: %s, %s" % (val[0], W.shape, b.shape))
             params.extend([W, b])
-
+            if len(self.all_params) == len(params):
+                break
+                
         print("Restoring model from npz file")
         assign_params(sess, params, self.net)
         del params
