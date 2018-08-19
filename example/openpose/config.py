@@ -1,3 +1,4 @@
+import os
 from easydict import EasyDict as edict
 
 config = edict()
@@ -13,13 +14,18 @@ config.TRAIN.gamma = 0.333  # gamma of Adam
 config.TRAIN.weight_decay = 5e-4
 
 config.MODEL = edict()
+config.MODEL.model_path = 'models'  # save directory
 config.MODEL.n_pos = 19  # number of keypoints
-config.MODEL.model_path = 'models'
+config.MODEL.hin = 368  # input size during training
+config.MODEL.win = 368
+config.MODEL.hout = config.MODEL.hin / 8  # output size during training (default 46)
+config.MODEL.wout = config.MODEL.win / 8
 
 config.DATA = edict()
 config.DATA.coco_version = '2014'  # MSCOCO version 2014 or 2017
 config.DATA.data_path = 'data'
-config.DATA.your_data_path = 'data/your_data'
+config.DATA.your_images_path = os.path.join('data', 'your_data', 'images')
+config.DATA.your_annos_path = os.path.join('data', 'your_data', 'anno.json')
 
 config.LOG = edict()
 config.LOG.vis_path = 'vis'

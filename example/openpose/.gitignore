@@ -1,0 +1,6 @@
+vis/
+data/mscoco2014
+data/mscoco2017
+models/
+tensorlayer/
+cocoapi-master/

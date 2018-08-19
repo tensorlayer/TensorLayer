@@ -19,12 +19,20 @@ Therefore, we xxxxx
 ## 3. Preparation
 
 
-1. for data processing, COCOAPIs are used, refer to : https://github.com/cocodataset/cocoapi
+1. for data processing, COCOAPIs are used, download cocoapi repo : https://github.com/cocodataset/cocoapi, go into Python folder and make.
+
+```bash
+git clone https://github.com/cocodataset/cocoapi
+cd cocoapi-master/PythonAPI
+make
+```
+
 2. Build c++ library for post processing. See : https://github.com/ildoonet/tf-pose-estimation/tree/master/tf_pose/pafprocess
 
-$ cd tf_pose/pafprocess
-
-$ swig -python -c++ pafprocess.i && python3 setup.py build_ext --inplace
+```python
+cd pafprocess
+swig -python -c++ pafprocess.i && python3 setup.py build_ext --inplace
+```
 
 ## 4. Use pre-trained model
 

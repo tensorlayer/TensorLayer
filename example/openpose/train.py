@@ -7,14 +7,36 @@ import _pickle as cPickle
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.prepro import keypoint_random_rotate, keypoint_random_resize_shortestedge, keypoint_random_resize, keypoint_random_flip, keypoint_random_crop
-
 from models import model
 from config import config
-from utils import PoseInfo, get_heatmap, get_vectormap, load_mscoco_dataset
+from utils import PoseInfo, get_heatmap, get_vectormap, load_mscoco_dataset, draw_intermedia_results
 from pycocotools.coco import maskUtils
+
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
+
+tl.files.exists_or_mkdir(config.LOG.vis_path, verbose=False)
 
 # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
+## define hyper-parameters for training
+batch_size = config.TRAIN.batch_size
+n_epoch = config.TRAIN.n_epoch
+step_size = config.TRAIN.step_size
+save_interval = config.TRAIN.save_interval
+weight_decay = config.TRAIN.weight_decay
+base_lr = config.TRAIN.base_lr
+gamma = config.TRAIN.gamma
+
+## define hyper-parameters for model
+model_path = config.MODEL.model_path
+n_pos = config.MODEL.n_pos
+hin = config.MODEL.hin
+win = config.MODEL.win
+hout = config.MODEL.hout
+wout = config.MODEL.wout
+
 
 # parser = argparse.ArgumentParser(description='Training code for OpenPose using Tensorflow')
 # parser.add_argument('--save_interval', type=int, default=5000)
@@ -50,27 +72,27 @@ def _data_aug_fn(image, ground_truth):
         bin_mask = np.logical_not(bin_mask)
         mask_miss = np.bitwise_and(mask_miss, bin_mask)
 
-    # image process
-    image, annos, mask_miss = keypoint_random_resize(image, annos, mask_miss)  # TODO: give size
-    image, annos, mask_miss = keypoint_random_rotate(image, annos, mask_miss)  # TODO: give angle
+    # image data augmentation
+    image, annos, mask_miss = keypoint_random_resize(image, annos, mask_miss, zoom_range=(0.8, 1.2))
+    image, annos, mask_miss = keypoint_random_rotate(image, annos, mask_miss, rg=30.0)
     image, annos, mask_miss = keypoint_random_flip(image, annos, mask_miss, prob=0.5)
-    image, annos, mask_miss = keypoint_random_resize_shortestedge(image, annos, mask_miss)  # TODO: give size
-    image, annos, mask_miss = keypoint_random_crop(image, annos, mask_miss)  # TODO: give size
+    image, annos, mask_miss = keypoint_random_resize_shortestedge(image, annos, mask_miss, min_size=(hin, win))  # TODO: give size
+    image, annos, mask_miss = keypoint_random_crop(image, annos, mask_miss, size=(hin, win))  # TODO: give size
 
+    # generate result maps including keypoints heatmap, pafs and mask
     h, w, _ = np.shape(image)
     height, width, _ = np.shape(image)
     heatmap = get_heatmap(annos, height, width)
     vectormap = get_vectormap(annos, height, width)
     resultmap = np.concatenate((heatmap, vectormap), axis=2)
 
-    image = image
     image = np.array(image, dtype=np.float32)
 
-    img_mask = mask_miss.reshape(368, 368, 1)
+    img_mask = mask_miss.reshape(hin, win, 1)
     image = image * np.repeat(img_mask, 3, 2)
 
     resultmap = np.array(resultmap, dtype=np.float32)
-    mask_miss = cv2.resize(mask_miss, (46, 46), interpolation=cv2.INTER_AREA)
+    mask_miss = cv2.resize(mask_miss, (hout, wout), interpolation=cv2.INTER_AREA)
     mask_miss = np.array(mask_miss, dtype=np.float32)
     return image, resultmap, mask_miss
 
@@ -78,7 +100,7 @@ def _data_aug_fn(image, ground_truth):
 def _map_fn(img_list, annos):
     """ TF Dataset pipeline. """
     image = tf.read_file(img_list)
-    image = tf.image.decode_jpeg(image, channels=3)
+    image = tf.image.decode_jpeg(image, channels=3) # get RGB with 0~1
     image = tf.image.convert_image_dtype(image, dtype=tf.float32)
     image, resultmap, mask = tf.py_func(_data_aug_fn, [image, annos], [tf.float32, tf.float32, tf.float32])
     return image, resultmap, mask
@@ -86,8 +108,10 @@ def _map_fn(img_list, annos):
 
 if __name__ == '__main__':
 
-    ## download MSCOCO data to data/mscoco... folder
-    xxxx = load_mscoco_dataset(config.DATA.data_path, config.DATA.coco_version)
+    ## download MSCOCO data to "data/mscoco..."" folder
+    train_im_path, train_ann_path, val_im_path, val_ann_path, _, _ = \
+        load_mscoco_dataset(config.DATA.data_path, config.DATA.coco_version)
+
 
     # image_folder = 'val2014'
     # data_dir = 'data' #'/Users/Joel/Desktop/coco/coco_dataset'
@@ -99,42 +123,56 @@ if __name__ == '__main__':
     # objs_info_list: annotations list of every image
     # mask_list: mask of every image
     # '''
-    # df_val = PoseInfo(image_path, anno_path, False)
-    # imgs_file_list = df_val.get_image_list()
-    # objs_info_list = df_val.get_joint_list()
-    # mask_list = df_val.get_mask()
-    # targets = list(zip(objs_info_list, mask_list))
-    # MODEL_PATH = config.MODEL.model_path
 
-    ## concat your customized data from data/your_data folder
-    config.DATA.your_data_path
+    ## read coco images with valid people
+    # train_data = PoseInfo(train_im_path, train_ann_path, False)
+    # train_imgs_file_list = train_data.get_image_list()
+    # train_objs_info_list = train_data.get_joint_list()
+    # train_mask_list = train_data.get_mask()
+    # # train_targets = list(zip(train_objs_info_list, train_mask_list))
 
-    ## define COCO 19 points hyper-paramters
-    n_pos = config.MODEL.n_pos
-    n_epoch = config.TRAIN.n_epoch
-    batch_size = config.TRAIN.batch_size
-    step_size = config.TRAIN.step_size
-    weight_decay = config.TRAIN.weight_decay
-    base_lr = config.TRAIN.base_lr
-    gamma = config.TRAIN.gamma
+    val_data = PoseInfo(val_im_path, val_ann_path, False)
+    val_imgs_file_list = val_data.get_image_list()
+    val_objs_info_list = val_data.get_joint_list()
+    val_mask_list = val_data.get_mask()
+    # val_targets = list(zip(val_objs_info_list, val_mask_list))
+    imgs_file_list = val_imgs_file_list
+    train_targets = list(zip(val_objs_info_list, val_mask_list))
 
-    x = tf.placeholder(tf.float32, [None, 368, 368, 3], "image")
-    confs = tf.placeholder(tf.float32, [None, 46, 46, n_pos], "confidence_maps")
-    pafs = tf.placeholder(tf.float32, [None, 46, 46, n_pos * 2], "pafs")
-    img_mask1 = tf.placeholder(tf.float32, [None, 46, 46, 19], 'img_mask1')
-    img_mask2 = tf.placeholder(tf.float32, [None, 46, 46, 38], 'img_mask2')
+    # we use both training and validating sets of MSCOCO to train model,
+    # keep the last 2000 validating data for testing
+    # imgs_file_list = train_imgs_file_list + val_imgs_file_list
+    # train_targets = list(zip(train_objs_info_list+val_objs_info_list, \
+    #                 val_objs_info_list+val_mask_list))
+
+    # ## concat your customized data from "data/your_data" folder into COCO data
+    # your_images_path = config.DATA.your_images_path
+    # your_annos_path = config.DATA.your_annos_path
+    # your_data = PoseInfo(your_images_path, your_annos_path, False)
+    # your_imgs_file_list = your_data.get_image_list()
+    # your_objs_info_list = your_data.get_joint_list()
+    # your_mask_list = your_data.get_mask()
+    #
+    # imgs_file_list = train_imgs_file_list + val_imgs_file_list + your_imgs_file_list
+    # train_targets = list(zip(train_objs_info_list+val_objs_info_list+your_objs_info_list, \
+    #                 val_objs_info_list+val_mask_list+your_mask_list))
+
+    ## define model architecture
+    x = tf.placeholder(tf.float32, [None, hin, win, 3], "image")
+    confs = tf.placeholder(tf.float32, [None, hout, wout, n_pos], "confidence_maps")
+    pafs = tf.placeholder(tf.float32, [None, hout, wout, n_pos * 2], "pafs")
+    # if the people does not have
+    img_mask1 = tf.placeholder(tf.float32, [None, hout, wout, n_pos], 'img_mask1')
+    img_mask2 = tf.placeholder(tf.float32, [None, hout, wout, n_pos * 2], 'img_mask2')
     num_images = np.shape(imgs_file_list)[0]
 
-    ## define model archuecture
     cnn, b1_list, b2_list, net = model(x, n_pos, img_mask1, img_mask2, False, False)
 
     ## define data augmentation
     def generator():
         """ TF Dataset generartor """
-        inputs = imgs_file_list
-        targets = list(zip(objs_info_list, mask_list))
-        assert len(inputs) == len(targets)
-        for _input, _target in zip(inputs, targets):
+        assert len(imgs_file_list) == len(train_targets)
+        for _input, _target in zip(imgs_file_list, train_targets):
             yield _input.encode('utf-8'), cPickle.dumps(_target)
 
     dataset = tf.data.Dataset().from_generator(generator, output_types=(tf.string, tf.string))
@@ -180,7 +218,7 @@ if __name__ == '__main__':
         sess.run(tf.global_variables_initializer())
 
         # restore pretrained vgg19  TODO: use tl.models.VGG19
-        # npy_file = np.load(MODEL_PATH, encoding='latin1').item()
+        # npy_file = np.load('models', encoding='latin1').item()
         # params = []
         # for val in sorted(npy_file.items()):
         #     if val[0] == 'conv4_3':
@@ -191,7 +229,7 @@ if __name__ == '__main__':
         #     params.extend([W, b])
         # tl.files.assign_params(sess, params, cnn)
         # print("Restoring model from npy file")
-        cnn.restore_params(sess)
+        # cnn.restore_params(sess)
 
         # train until the end
         sess.run(tf.assign(lr_v, base_lr))
@@ -204,13 +242,12 @@ if __name__ == '__main__':
 
             # get a batch of training data. TODO change to direct feed without using placeholder
             tran_batch = sess.run(one_element)
-
             # image
             x_ = tran_batch[0]
             # conf and paf maps
             map_batch = tran_batch[1]
-            confs_ = map_batch[:, :, :, 0:19]
-            pafs_ = map_batch[:, :, :, 19:57]
+            confs_ = map_batch[:, :, :, 0:19]  # TODO change to n_pos
+            pafs_ = map_batch[:, :, :, 19:57]  # TODO change to n_pos:
             # mask
             mask = tran_batch[2]
             mask = mask.reshape(batch_size, 46, 46, 1)
@@ -241,15 +278,16 @@ if __name__ == '__main__':
             for ix, ll in enumerate(loss_ll):
                 print('Network#', ix, 'For Branch', ix % 2 + 1, 'Loss:', ll)
 
-            if gs_num != 0 and gs_num % config.TRAIN.save_interval == 0:
-                np.save(config.LOG.vis_path + 'image' + str(gs_num) + '.npy', x_)
-                np.save(config.LOG.vis_path + 'heat_ground' + str(gs_num) + '.npy', confs_)
-                np.save(config.LOG.vis_path + 'heat_result' + str(gs_num) + '.npy', conf_result)
-                np.save(config.LOG.vis_path + 'paf_ground' + str(gs_num) + '.npy', pafs_)
-                np.save(config.LOG.vis_path + 'mask' + str(gs_num) + '.npy', mask)
-                np.save(config.LOG.vis_path + 'paf_result' + str(gs_num) + '.npy', paf_result)
+            # save some intermedian results
+            if (gs_num != 0) and (gs_num % 1==0):#save_interval == 0):
+                draw_intermedia_results(x_, confs_, conf_result, pafs_, paf_result, mask)
+                # np.save(config.LOG.vis_path + 'image' + str(gs_num) + '.npy', x_)
+                # np.save(config.LOG.vis_path + 'heat_ground' + str(gs_num) + '.npy', confs_)
+                # np.save(config.LOG.vis_path + 'heat_result' + str(gs_num) + '.npy', conf_result)
+                # np.save(config.LOG.vis_path + 'paf_ground' + str(gs_num) + '.npy', pafs_)
+                # np.save(config.LOG.vis_path + 'mask' + str(gs_num) + '.npy', mask)
+                # np.save(config.LOG.vis_path + 'paf_result' + str(gs_num) + '.npy', paf_result)
                 tl.files.save_npz_dict(
-                    net.all_params, config.MODEL.model_path + 'openpose_model' + str(gs_num) + '.npz', sess=sess
-                )
+                    net.all_params, os.path.join(model_path, 'pose'+str(gs_num)+'.npz'), sess=sess)
             if gs_num > 3000001:
                 break

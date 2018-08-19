@@ -73,7 +73,7 @@ def model(x, n_pos, mask_miss1, mask_miss2, is_train=False, reuse=None):
         # Feature extraction part
         # 1. by default, following the paper, we use VGG19 as the default model
         # cnn = vgg_network(x)
-        models.VGG19(x, end_with='conv4_4', reuse=reuse)
+        cnn = tl.models.VGG19(x, end_with='conv4_2', reuse=reuse)
         # 2. you can customize this part to speed up the inferencing
         # cnn = tl.models.MobileNetV1(x, end_with='depth5', is_train=is_train, reuse=reuse)  # i.e. vgg16 conv4_2 ~ 4_4
 
@@ -99,7 +99,7 @@ def model(x, n_pos, mask_miss1, mask_miss2, is_train=False, reuse=None):
             b2_list.append(b2)
             # stage 2~6
             for i in range(2, 7):
-                b1, b2 = stage(cnn, b1_list[-1], b2_list[-1], n_pos, mask_miss1, mask_miss2, name='stage%d' % i)
+                b1, b2 = stage(cnn, b1_list[-1], b2_list[-1], n_pos, mask_miss1, mask_miss2, is_train, name='stage%d' % i)
                 b1_list.append(b1)
                 b2_list.append(b2)
         net = tl.layers.merge_networks([b1_list[-1], b2_list[-1]])

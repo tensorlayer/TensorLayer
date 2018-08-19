@@ -3,8 +3,10 @@ import numpy as np
 import os
 from scipy.spatial.distance import cdist
 from pycocotools.coco import maskUtils
-from tensorlayer.files.utils import maybe_download_and_extract
-
+from tensorlayer.files.utils import maybe_download_and_extract, folder_exists, del_file
+from tensorlayer import logging
+from config import config
+import matplotlib.pyplot as plt
 ## download dataset
 def load_mscoco_dataset(path='data', dataset='2014'):  # TODO move to tl.files later
     """Download MSCOCO Dataset.
@@ -30,35 +32,91 @@ def load_mscoco_dataset(path='data', dataset='2014'):  # TODO move to tl.files l
     - `MSCOCO <http://mscoco.org>`__.
 
     """
+    import zipfile
+    def unzip(path_to_zip_file, directory_to_extract_to):
+        zip_ref = zipfile.ZipFile(path_to_zip_file, 'r')
+        zip_ref.extractall(directory_to_extract_to)
+        zip_ref.close()
+
     if dataset == "2014":
         logging.info("    [============= MSCOCO 2014 =============]")
-        # wget http://images.cocodataset.org/annotations/annotations_trainval2014.zip
-        url = 'http://images.cocodataset.org/annotations'
-        tar_filename = 'annotations_trainval2014.zip'
-        extracted_filename = ''
-        # wget http://images.cocodataset.org/zips/train2014.zip
-        url2 = 'http://images.cocodataset.org/zips'
-        tar_filename2 = 'train2014.zip'
-        extracted_filename2 = ''
         path = os.path.join(path, 'mscoco2014')
+
+        if folder_exists(os.path.join(path, "annotations")) is False:
+            logging.info("    downloading annotations")
+            os.system("wget http://images.cocodataset.org/annotations/annotations_trainval2014.zip -P {}".format(path))
+            unzip(os.path.join(path, "annotations_trainval2014.zip"), path)
+            del_file(os.path.join(path, "annotations_trainval2014.zip"))
+        else:
+            logging.info("    annotations exists")
+
+        if folder_exists(os.path.join(path, "val2014")) is False:
+            logging.info("    downloading validating images")
+            os.system("wget http://images.cocodataset.org/zips/val2014.zip -P {}".format(path))
+            unzip(os.path.join(path, "val2014.zip"), path)
+            del_file(os.path.join(path, "val2014.zip"))
+        else:
+            logging.info("    validating images exists")
+
+        # if folder_exists(os.path.join(path, "train2014")) is False:
+        #     logging.info("    downloading training images")
+        #     os.system("wget http://images.cocodataset.org/zips/train2014.zip -P {}".format(path))
+        #     unzip(os.path.join(path, "train2014.zip"), path)
+        #     del_file(os.path.join(path, "train2014.zip"))
+        # else:
+        #     logging.info("    training images exists")
+        #
+        # if folder_exists(os.path.join(path, "test2014")) is False:
+        #     logging.info("    downloading testing images")
+        #     os.system("wget http://images.cocodataset.org/zips/test2014.zip -P {}".format(path))
+        #     unzip(os.path.join(path, "test2014.zip"), path)
+        #     del_file(os.path.join(path, "test2014.zip"))
+        # else:
+        #     logging.info("    testing images exists")
+
+        # # wget http://images.cocodataset.org/annotations/annotations_trainval2014.zip
+        # # url = 'http://images.cocodataset.org/annotations'
+        # # tar_filename = 'annotations_trainval2014.zip'
+        # # extracted_filename = ''
+        # logging.info("    downloading validating images")
+        # os.system("wget http://images.cocodataset.org/zips/val2014.zip -P {}".format(path))
+
+        # logging.info("    downloading training images")
+        # os.system("wget http://images.cocodataset.org/zips/train2014.zip -P {}".format(path))
+        # # wget http://images.cocodataset.org/zips/train2014.zip
+        # url2 = 'http://images.cocodataset.org/zips'
+        # tar_filename2 = 'train2014.zip'
+        # extracted_filename2 = ''
+        # path = os.path.join(path, 'mscoco2014')
     elif dataset == "2017":
         raise Exception("Unimplement")
         path = os.path.join(path, 'mscoco2017')
     else:
         raise Exception("dataset can only be 2014 and 2017, see MSCOCO website for more details.")
 
-    logging.info("    downloading annotations")
-    maybe_download_and_extract(tar_filename, path, url, extract=True)
-    del_file(os.path.join(path, tar_filename))
+    # logging.info("    downloading annotations")
+    # print(url, tar_filename)
+    # maybe_download_and_extract(tar_filename, path, url, extract=True)
+    # del_file(os.path.join(path, tar_filename))
+    #
+    # logging.info("    downloading images")
+    # maybe_download_and_extract(tar_filename2, path, url2, extract=True)
+    # del_file(os.path.join(path, tar_filename2))
 
-    logging.info("    downloading images")
-    maybe_download_and_extract(tar_filename2, path, url2, extract=True)
-    del_file(os.path.join(path, tar_filename2))
+    train_images_path = os.path.join(path, "train2014")
+    train_annotations_file_path = os.path.join(path, "annotations", "person_keypoints_train2014.json")
+    val_images_path = os.path.join(path, "val2014")
+    val_annotations_file_path = os.path.join(path, "annotations", "person_keypoints_val2014.json")
+    test_images_path = os.path.join(path, "test2014")
+    test_annotations_file_path = os.path.join(path, "annotations", "person_keypoints_test2014.json")
+    return train_images_path, train_annotations_file_path, \
+            val_images_path, val_annotations_file_path, \
+                test_images_path, test_annotations_file_path
 
-    return
 
-## xxx
+## read coco data
 class CocoMeta:
+    """ Be used in PoseInfo. """
     limb = list(
         zip(
             [2, 9, 10, 2, 12, 13, 2, 3, 4, 3, 2, 6, 7, 6, 2, 1, 1, 15, 16],
@@ -113,7 +171,7 @@ class CocoMeta:
 
 
 class PoseInfo:
-
+    """ Use COCO for pose estimation, returns images with people only. """
     def __init__(self, image_base_dir, anno_path, with_mask):
         self.metas = []
         # self.data_dir = data_dir
@@ -140,9 +198,10 @@ class PoseInfo:
         for idx in range(len_imgs):
 
             images_info = self.coco.loadImgs(images_ids[idx])
-            image_path = self.image_base_dir + images_info[0]['file_name']
+            image_path = os.path.join(self.image_base_dir, images_info[0]['file_name'])
             # filter that some images might not in the list
             if not os.path.exists(image_path):
+                print("non path exists:", image_path)
                 continue
 
             annos_ids = self.coco.getAnnIds(imgIds=images_ids[idx])
@@ -220,6 +279,7 @@ class PoseInfo:
         for meta in self.metas:
             mask_list.append(meta.masks)
         return mask_list
+
 
 ## xxx
 import math
@@ -460,6 +520,82 @@ def fast_vectormap(vectormap, countmap, i, v_start, v_end):
                 vectormap[i * 2 + 0, min_y + y, min_x + x] = norm_x
                 vectormap[i * 2 + 1, min_y + y, min_x + x] = norm_y
     return vectormap
+
+
+def draw_intermedia_results(images, heats_ground, heats_result, pafs_ground, pafs_result, masks):
+    """
+    images :
+    heats : keypoint maps
+    pafs :
+    masks :
+    """
+    interval = len(pafs_result)
+    for i in range(interval):
+        heat_ground = heats_ground[i]
+        heat_result = heats_result[i]
+        paf_ground = pafs_ground[i]
+        paf_result = pafs_result[i]
+
+        mask = masks[i]
+
+        mask = mask.reshape(46, 46, 1)
+        mask1 = np.repeat(mask, 19, 2)
+        mask2 = np.repeat(mask, 38, 2)
+
+        image = images[i]
+
+        fig = plt.figure(figsize=(8, 8))
+        a = fig.add_subplot(2, 3, 1)
+        plt.imshow(image)
+
+        a = fig.add_subplot(2, 3, 2)
+        a.set_title('Vectormap_ground')
+        vectormap = paf_ground * mask2
+        tmp2 = vectormap.transpose((2, 0, 1))
+        tmp2_odd = np.amax(np.absolute(tmp2[::2, :, :]), axis=0)
+        tmp2_even = np.amax(np.absolute(tmp2[1::2, :, :]), axis=0)
+
+        # tmp2_odd = tmp2_odd * 255
+        # tmp2_odd = tmp2_odd.astype(np.int)
+        plt.imshow(tmp2_odd, alpha=0.3)
+
+        # tmp2_even = tmp2_even * 255
+        # tmp2_even = tmp2_even.astype(np.int)
+        plt.colorbar()
+        plt.imshow(tmp2_even, alpha=0.3)
+
+        a = fig.add_subplot(2, 3, 3)
+        a.set_title('Vectormap result')
+        vectormap = paf_result * mask2
+        tmp2 = vectormap.transpose((2, 0, 1))
+        tmp2_odd = np.amax(np.absolute(tmp2[::2, :, :]), axis=0)
+        tmp2_even = np.amax(np.absolute(tmp2[1::2, :, :]), axis=0)
+        plt.imshow(tmp2_odd, alpha=0.3)
+
+        plt.colorbar()
+        plt.imshow(tmp2_even, alpha=0.3)
+
+        a = fig.add_subplot(2, 3, 4)
+        a.set_title('Heatmap result')
+        heatmap = heat_result * mask1
+        tmp = heatmap
+        tmp = np.amax(heatmap[:, :, :-1], axis=2)
+
+        plt.colorbar()
+        plt.imshow(tmp, alpha=0.3)
+
+        a = fig.add_subplot(2, 3, 5)
+        a.set_title('Heatmap ground truth')
+        heatmap = heat_ground * mask1
+        tmp = heatmap
+        tmp = np.amax(heatmap[:, :, :-1], axis=2)
+
+        plt.colorbar()
+        plt.imshow(tmp, alpha=0.3)
+        # plt.savefig(str(i)+'.png',dpi=300)
+        # plt.show()
+
+        plt.savefig(os.path.join(config.LOG.vis_path, str(i)+'.png'), dpi=300)
 
 
 if __name__ == '__main__':

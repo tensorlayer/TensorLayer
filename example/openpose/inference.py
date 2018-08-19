@@ -16,7 +16,7 @@ net.outputs
 
 # restore model parameters
 
-# get one example image
+# get one example image with range 0~1
 
 tl.files.read_image()
 
