@@ -5,7 +5,7 @@ from scipy.spatial.distance import cdist
 from pycocotools.coco import maskUtils
 from tensorlayer.files.utils import maybe_download_and_extract
 
-
+## download dataset
 def load_mscoco_dataset(path='data', dataset='2014'):  # TODO move to tl.files later
     """Download MSCOCO Dataset.
 
@@ -57,7 +57,7 @@ def load_mscoco_dataset(path='data', dataset='2014'):  # TODO move to tl.files l
 
     return
 
-
+## xxx
 class CocoMeta:
     limb = list(
         zip(
@@ -221,12 +221,24 @@ class PoseInfo:
             mask_list.append(meta.masks)
         return mask_list
 
-
+## xxx
 import math
 import cv2
 
 
 def get_heatmap(annos, height, width):
+    """
+
+    Parameters
+    -----------
+
+
+    Returns
+    --------
+
+
+    """
+
     # 19 for coco, 15 for MPII
     num_joints = 19
 
@@ -260,7 +272,17 @@ def get_heatmap(annos, height, width):
 
 
 def put_heatmap(heatmap, plane_idx, center, sigma):
+    """
 
+    Parameters
+    -----------
+
+
+    Returns
+    --------
+
+
+    """
     center_x, center_y = center
     _, height, width = heatmap.shape[:3]
 
@@ -288,7 +310,17 @@ def put_heatmap(heatmap, plane_idx, center, sigma):
 
 
 def get_vectormap(annos, height, width):
+    """
 
+    Parameters
+    -----------
+
+
+    Returns
+    --------
+
+
+    """
     num_joints = 19
 
     limb = list(
@@ -337,6 +369,17 @@ def get_vectormap(annos, height, width):
 
 
 def cal_vectormap(vectormap, countmap, i, v_start, v_end):
+    """
+
+    Parameters
+    -----------
+
+
+    Returns
+    --------
+
+
+    """
     _, height, width = vectormap.shape[:3]
 
     threshold = 8
@@ -372,6 +415,17 @@ def cal_vectormap(vectormap, countmap, i, v_start, v_end):
 
 
 def fast_vectormap(vectormap, countmap, i, v_start, v_end):
+    """
+
+    Parameters
+    -----------
+
+
+    Returns
+    --------
+
+
+    """
     _, height, width = vectormap.shape[:3]
     _, height, width = vectormap.shape[:3]
 

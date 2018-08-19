@@ -1,9 +1,10 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import config
 
 # moniter training
-val_path = '/Users/Joel/Desktop/Log_1708/val/'
+val_path = config.xxx # '/Users/Joel/Desktop/Log_1708/val/'
 val_list = os.listdir(val_path)
 
 idx = 165000
