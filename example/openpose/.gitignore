@@ -1,3 +1,5 @@
+coco/
+cocoapi/
 inference/*png
 vis/
 data/mscoco2014

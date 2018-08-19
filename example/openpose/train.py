@@ -112,50 +112,44 @@ if __name__ == '__main__':
     train_im_path, train_ann_path, val_im_path, val_ann_path, _, _ = \
         load_mscoco_dataset(config.DATA.data_path, config.DATA.coco_version)
 
+    ## read coco training images contains valid people
+    train_data = PoseInfo(train_im_path, train_ann_path, False)
+    train_imgs_file_list = train_data.get_image_list()
+    train_objs_info_list = train_data.get_joint_list()
+    train_mask_list = train_data.get_mask()
+    # train_targets = list(zip(train_objs_info_list, train_mask_list))
+    if len(train_imgs_file_list) != len(train_objs_info_list):
+        raise Exception("number of training images and annotations do not match")
+    else:
+        print("number of training images {}".format(len(train_imgs_file_list)))
 
-    # image_folder = 'val2014'
-    # data_dir = 'data' #'/Users/Joel/Desktop/coco/coco_dataset'
-    # image_path = '{}/images/{}/'.format(data_dir, image_folder)
-    # anno_path = '{}/annotations/{}'.format(data_dir, 'coco.json')
-    #
-    # '''
-    # imgs_file_list: list of path to xxx.jpg
-    # objs_info_list: annotations list of every image
-    # mask_list: mask of every image
-    # '''
-
-    ## read coco images with valid people
-    # train_data = PoseInfo(train_im_path, train_ann_path, False)
-    # train_imgs_file_list = train_data.get_image_list()
-    # train_objs_info_list = train_data.get_joint_list()
-    # train_mask_list = train_data.get_mask()
-    # # train_targets = list(zip(train_objs_info_list, train_mask_list))
-
+    ## read coco validating images contains valid people
     val_data = PoseInfo(val_im_path, val_ann_path, False)
     val_imgs_file_list = val_data.get_image_list()
     val_objs_info_list = val_data.get_joint_list()
     val_mask_list = val_data.get_mask()
     # val_targets = list(zip(val_objs_info_list, val_mask_list))
-    imgs_file_list = val_imgs_file_list
-    train_targets = list(zip(val_objs_info_list, val_mask_list))
+    if len(val_imgs_file_list) != len(val_objs_info_list):
+        raise Exception("number of validating images and annotations do not match")
+    else:
+        print("number of validating images {}".format(len(val_imgs_file_list)))
 
-    # we use both training and validating sets of MSCOCO to train model,
-    # keep the last 2000 validating data for testing
-    # imgs_file_list = train_imgs_file_list + val_imgs_file_list
-    # train_targets = list(zip(train_objs_info_list+val_objs_info_list, \
-    #                 val_objs_info_list+val_mask_list))
+    ## read your customized images contains valid people
+    your_images_path = config.DATA.your_images_path
+    your_annos_path = config.DATA.your_annos_path
+    your_data = PoseInfo(your_images_path, your_annos_path, False)
+    your_imgs_file_list = your_data.get_image_list()
+    your_objs_info_list = your_data.get_joint_list()
+    your_mask_list = your_data.get_mask()
+    if len(your_imgs_file_list) != len(your_objs_info_list):
+        raise Exception("number of customized images and annotations do not match")
+    else:
+        print("number of customized images {}".format(len(your_imgs_file_list)))
 
-    # ## concat your customized data from "data/your_data" folder into COCO data
-    # your_images_path = config.DATA.your_images_path
-    # your_annos_path = config.DATA.your_annos_path
-    # your_data = PoseInfo(your_images_path, your_annos_path, False)
-    # your_imgs_file_list = your_data.get_image_list()
-    # your_objs_info_list = your_data.get_joint_list()
-    # your_mask_list = your_data.get_mask()
-    #
-    # imgs_file_list = train_imgs_file_list + val_imgs_file_list + your_imgs_file_list
-    # train_targets = list(zip(train_objs_info_list+val_objs_info_list+your_objs_info_list, \
-    #                 val_objs_info_list+val_mask_list+your_mask_list))
+    ## concat your customized data from "data/your_data" folder into the training data
+    imgs_file_list = train_imgs_file_list + your_imgs_file_list
+    train_targets = list(zip(train_objs_info_list + your_objs_info_list, \
+                    train_mask_list + your_mask_list))
 
     ## define model architecture
     x = tf.placeholder(tf.float32, [None, hin, win, 3], "image")

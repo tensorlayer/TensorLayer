@@ -28,7 +28,7 @@ config.DATA = edict()
 config.DATA.coco_version = '2017'  # MSCOCO version 2014 or 2017
 config.DATA.data_path = 'data'
 config.DATA.your_images_path = os.path.join('data', 'your_data', 'images')
-config.DATA.your_annos_path = os.path.join('data', 'your_data', 'anno.json')
+config.DATA.your_annos_path = os.path.join('data', 'your_data', 'coco.json')
 
 config.LOG = edict()
 config.LOG.vis_path = 'vis'

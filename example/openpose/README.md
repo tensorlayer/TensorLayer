@@ -1,11 +1,15 @@
 # OpenPose using TensorFlow and TensorLayer
 
+</a>
+<p align="center">
+    <img src="https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/media/dance_foot.gif?raw=true", width="360">
+</p>
+
 ## 1. Motivation
 
-Ok, CMU provides OpenPose for real-time 2D pose estimation for ["Realtime Multi-Person 2D Pose Estimation using Part Affinity Fields"]() However, the training code is based on Caffe and C++, which is hard to customize.
-While in practice, developers need to customize their training set, data augmentation methods according to their projects.
-In addition, the speed of original model in the paper can be improved.
-Therefore, we xxxxx
+OpenPose from CMU provides real-time 2D pose estimation following ["Realtime Multi-Person 2D Pose Estimation using Part Affinity Fields"](https://arxiv.org/pdf/1611.08050.pdf) However, the [training code](https://github.com/ZheC/Realtime_Multi-Person_Pose_Estimation) is based on Caffe and C++, which is hard to customize.
+While in practice, developers need to customize their training set, data augmentation methods according to their requirement.
+For this reason, we reimplemented this project in TensorLayer fashion.
 
 ## 2. Project files
 
@@ -22,9 +26,20 @@ Therefore, we xxxxx
 1. for data processing, COCOAPIs are used, download cocoapi repo : https://github.com/cocodataset/cocoapi, go into Python folder and make.
 
 ```bash
-git clone https://github.com/cocodataset/cocoapi
-cd cocoapi-master/PythonAPI
+git clone https://github.com/pdollar/coco.git
+cd coco/PythonAPI
 make
+
+** before recompiling **
+rm -rf build
+```
+
+alternatively, following this:
+
+```bash
+git clone https://github.com/waleedka/coco 
+cd cococ
+python PythonAPI/setup.py build_ext install
 ```
 
 2. Build c++ library for post processing. See : https://github.com/ildoonet/tf-pose-estimation/tree/master/tf_pose/pafprocess
