@@ -18,6 +18,7 @@ tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 tl.files.exists_or_mkdir(config.LOG.vis_path, verbose=False)  # to save visualization results
+tl.files.exists_or_mkdir(config.MODEL.model_path, verbose=False) # to save model files
 
 # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -172,7 +173,9 @@ if __name__ == '__main__':
     iterator = dataset.make_one_shot_iterator()
     one_element = iterator.get_next()
 
-    if config.TRAIN.distributed is False:
+    if config.TRAIN.train_mode == 'placeholder':
+        """ Train with placeholder can help your to check the data easily.
+        """
         ## define model architecture
         x = tf.placeholder(tf.float32, [None, hin, win, 3], "image")
         confs = tf.placeholder(tf.float32, [None, hout, wout, n_pos], "confidence_maps")
@@ -296,5 +299,11 @@ if __name__ == '__main__':
                     tl.files.save_npz_dict(net.all_params, os.path.join(model_path, 'pose.npz'), sess=sess)
                 if gs_num > 3000001:
                     break
-    else:
+    elif config.TRAIN.train_mode == 'dataset':  # TODO
+        """ Train with TensorFlow dataset mode is usually faster than placeholder.
+        """
+        raise Exception("xx")
+    elif config.TRAIN.train_mode == 'distributed':  # TODO
+        """ Train with distributed mode.
+        """
         raise Exception("TODO tl.distributed.Trainer")
