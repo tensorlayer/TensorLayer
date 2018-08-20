@@ -19,8 +19,8 @@ config.MODEL.model_path = 'models'  # save directory
 config.MODEL.n_pos = 19  # number of keypoints
 config.MODEL.hin = 368  # input size during training
 config.MODEL.win = 368
-config.MODEL.hout = config.MODEL.hin / 8  # output size during training (default 46)
-config.MODEL.wout = config.MODEL.win / 8
+config.MODEL.hout = int(config.MODEL.hin / 8)  # output size during training (default 46)
+config.MODEL.wout = int(config.MODEL.win / 8)
 
 if (config.MODEL.hin % 16 != 0) or (config.MODEL.win % 16 != 0):
     raise Exception("image size should be divided by 16")
