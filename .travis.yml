@@ -8,6 +8,7 @@ addons:
 branches:
   only:
     - master
+    - TensorLayer-1.x
     - /\d+\.\d+(\.\d+)?(\S*)?$/
 
 python:
@@ -50,7 +51,10 @@ env:
   ### === GITHUB_PERSONAL_TOKEN === ###
   ## To update: travis encrypt HYPERDASH_APIKEY=################################
   - secure: "ez9Ck1VpqWOd2PPu+CMWzd8R4aAIXbjKCk96PCKwWu8VXoHjaPkiy8Nn0LUzSlUg3nKdZmu2JSndwDMy3+lMLG7zE2WlGNY7MF5KM3GrvFpP3cxJQ6OuPcZcEH4j5KtBtNTrNqa8SWglqhc9mr66a92SD8Ydc4aMj6L9nbQvrsvVzIMmMy6weVlpBF35nweYCM8LxlsnqyPLleHPZo3o/k+hsTqQQbiMGjC78tqrGr56u7AjL2+D/m33+dfCGzFvMJFcpLQ5ldbcVU54i5e6V3xJ48P30QOGZaqG3fcpfZsyJEIWjykt6XFA8GfJjaVVbxdlr7zP7Vd9iWBuemnMEX3F9Cy/4x7LmX9PJfsVPC6FQnanDvsZSNO5hpmKe8BTpttJJvxgscOczV4jnI69OzqhSQeyChwtkqhIg1E/53XIO+uLJAAZsCkAco7tjGGXTKyv8ZlpSJwSqsLcmgpmQbfodCoMLcYenTxqKZv78e2B4tOPGQyS2bkSxAqhvAIam7RCq/yEvz5n2/mBFEGwP6OQFIdC7ypO2LyrOlLT7HJjCeYMeKSm+GOD3LW9oIy9QJZpG6N/zAAjnk9C2mYtWRQIBo4qdHjRvyDReevDexI8j0AXySblxREmQ7ZaT6KEDXXZSu5goTlaGm0g2HwAkKu9xYFV/bRtp6+i1mP7CQg="
-
+  
+  ### === FOSSA API TOKEN === ###
+  ## To update: travis encrypt FOSSA_API_TOKEN=################################
+  - secure: "n0vwEDPKf8uXfV4yyJJjZ+im/SkfhH8nmkt7eFllfBrO+AWmzhR7PASXdwJPWyM9M3qTzayvRUqN0vTfcpVDDcmr7xn5kPQU5SIXgiuVZcrEOM22VScUHwaya4CCVVj4bVNqsJv5AeinNRS3ZXwIAFJab5ObPCee6T2xIfl+VWbuMZPiyanIquPaAwsRQI3iojjc9TXEuxR3LhypFNxi1RKTDP7B/sTOAU7yKpKb4dvFaNOn1c5weHQ8WrMZMF0NVT6bjwzLHemXRwGVG/cUeAGUOx+RHVHskkPu2Ur3j9FFkFPWS5VOGx5amXDNoMozrqzejRTR/trlUubr7XtSWZ7QnHcL9eY9aKhbW83TwCTkoZMUQbQ/W/bcyEFyQYAl3c6pDk+FGn8/OhYhSVjgR9HDUuKxUyim0PI4Hat1oSYJmebW9+3pKlC7exnp5Jnel1ptvToy6wqcbxIh3WI54ujLevxGYG4YMu+apmE0EFcyGFnxZc0qtKhA/DOuCL29wOlNqo1s80Ulm2Sf5FUb7JVC3N7mngDfLevWxuZqmyRdOlCn5t0aRUiXecl7/bsC6A0Yb8yM65yH4U/C2XxiioOxvZ1b6WuP/Fu2kYGJgGXJkjrjhXiS0TKab54D4WjykH+IWnQONi/ML21+/OHJ0Y7GoDoskY/GQ2OEO9rfO6I="
 
 matrix:
   include:
@@ -62,13 +66,17 @@ matrix:
 install:
   - |
     if [[ -v _DOC_AND_YAPF_TEST ]]; then
-        pip install tensorflow
-        ./scripts/install-horovod-for-doc-test.sh
+        pip install tensorflow 
+        pip install yapf
+        pip install -r requirements/requirements_doc.txt
+        curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash
     else
         pip install tensorflow==$_TF_VERSION;
+        pip install -e .[all_cpu_dev]
     fi
-  - pip install -e .[all_cpu_dev]
-
+  
+before_script:
+  - if [[ -v _DOC_AND_YAPF_TEST ]]; then fossa test; fi
 
 script:
   # units test

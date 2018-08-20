@@ -81,6 +81,8 @@ To release a new version, please update the changelog as followed:
   - Add `tl.files.load_graph_` (PR ＃751)
   - Add `tl.files.save_graph_and_params` (PR ＃751)
   - Add `tl.files.load_graph_and_params` (PR ＃751)
+- CI Tool:
+  - [Fossa CI](https://app.fossa.io/projects/git%2Bgithub.com%2Ftensorlayer%2Ftensorlayer) has been added (PR #789)
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
@@ -136,7 +138,7 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 
-- @DEKHTIARJonathan: #739 #747 #750 #754
+- @DEKHTIARJonathan: #739 #747 #750 #754 #789
 - @lgarithm: #705 #700
 - @OwenLiuzZ: #698 #710 #775 #776
 - @zsdonghao: #711 #712 #734 #736 #737 #700 #751
@@ -144,6 +146,11 @@ To release a new version, please update the changelog as followed:
 - @XJTUWYD: #735
 - @mutewall: #735
 - @thangvubk: #759
+
+## [1.9.1] - 2018-07-30
+
+### Fixed
+- Issue with tensorflow 1.10.0 fixed
 
 ## [1.9.0] - 2018-06-16
 
@@ -315,6 +322,7 @@ To release a new version, please update the changelog as followed:
 
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...master
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...master
+[1.9.1]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...1.9.0
 [1.9.0]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...1.8.5
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5
