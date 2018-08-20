@@ -1,4 +1,4 @@
-# Tensorlayer Adain Style Transfer
+# Tensorlayer Adaptive Style Transfer
 ------
 
 1. Tensorlayer implementation of the ICCV 2017 Paper [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/abs/1703.06868)
