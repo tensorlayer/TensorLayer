@@ -37,7 +37,6 @@ win = config.MODEL.win
 hout = config.MODEL.hout
 wout = config.MODEL.wout
 
-
 # parser = argparse.ArgumentParser(description='Training code for OpenPose using Tensorflow')
 # parser.add_argument('--save_interval', type=int, default=5000)
 # parser.add_argument(
@@ -76,7 +75,8 @@ def _data_aug_fn(image, ground_truth):
     image, annos, mask_miss = keypoint_random_resize(image, annos, mask_miss, zoom_range=(0.8, 1.2))
     image, annos, mask_miss = keypoint_random_rotate(image, annos, mask_miss, rg=15.0)
     image, annos, mask_miss = keypoint_random_flip(image, annos, mask_miss, prob=0.5)
-    image, annos, mask_miss = keypoint_random_resize_shortestedge(image, annos, mask_miss, min_size=(hin, win))  # TODO: give size
+    image, annos, mask_miss = keypoint_random_resize_shortestedge(image, annos, mask_miss,
+                                                                  min_size=(hin, win))  # TODO: give size
     image, annos, mask_miss = keypoint_random_crop(image, annos, mask_miss, size=(hin, win))  # TODO: give size
 
     # generate result maps including keypoints heatmap, pafs and mask
@@ -100,7 +100,7 @@ def _data_aug_fn(image, ground_truth):
 def _map_fn(img_list, annos):
     """ TF Dataset pipeline. """
     image = tf.read_file(img_list)
-    image = tf.image.decode_jpeg(image, channels=3) # get RGB with 0~1
+    image = tf.image.decode_jpeg(image, channels=3)  # get RGB with 0~1
     image = tf.image.convert_image_dtype(image, dtype=tf.float32)
     image, resultmap, mask = tf.py_func(_data_aug_fn, [image, annos], [tf.float32, tf.float32, tf.float32])
     return image, resultmap, mask
@@ -146,7 +146,11 @@ if __name__ == '__main__':
     else:
         print("number of customized images {}".format(len(your_imgs_file_list)))
 
-    ## concat your customized data from "data/your_data" folder into the training data
+    ## choice dataset for training
+    # 1. only coco training set
+    # imgs_file_list = train_imgs_file_list
+    # train_targets = list(zip(train_objs_info_list, train_mask_list))
+    # 2. your customized data from "data/your_data" and coco training set
     imgs_file_list = train_imgs_file_list + your_imgs_file_list
     train_targets = list(zip(train_objs_info_list + your_objs_info_list, \
                     train_mask_list + your_mask_list))
@@ -155,7 +159,7 @@ if __name__ == '__main__':
     x = tf.placeholder(tf.float32, [None, hin, win, 3], "image")
     confs = tf.placeholder(tf.float32, [None, hout, wout, n_pos], "confidence_maps")
     pafs = tf.placeholder(tf.float32, [None, hout, wout, n_pos * 2], "pafs")
-    # if the people does not have
+    # if the people does not have keypoints annotations, ignore the area
     img_mask1 = tf.placeholder(tf.float32, [None, hout, wout, n_pos], 'img_mask1')
     img_mask2 = tf.placeholder(tf.float32, [None, hout, wout, n_pos * 2], 'img_mask2')
     num_images = np.shape(imgs_file_list)[0]
@@ -273,7 +277,7 @@ if __name__ == '__main__':
                 print('Network#', ix, 'For Branch', ix % 2 + 1, 'Loss:', ll)
 
             # save some intermedian results
-            if (gs_num != 0) and (gs_num % 1==0):#save_interval == 0):
+            if (gs_num != 0) and (gs_num % 1 == 0):  #save_interval == 0):
                 draw_intermedia_results(x_, confs_, conf_result, pafs_, paf_result, mask, 'train')
                 # np.save(config.LOG.vis_path + 'image' + str(gs_num) + '.npy', x_)
                 # np.save(config.LOG.vis_path + 'heat_ground' + str(gs_num) + '.npy', confs_)
@@ -282,8 +286,8 @@ if __name__ == '__main__':
                 # np.save(config.LOG.vis_path + 'mask' + str(gs_num) + '.npy', mask)
                 # np.save(config.LOG.vis_path + 'paf_result' + str(gs_num) + '.npy', paf_result)
                 tl.files.save_npz_dict(
-                    net.all_params, os.path.join(model_path, 'pose'+str(gs_num)+'.npz'), sess=sess)
-                tl.files.save_npz_dict(
-                    net.all_params, os.path.join(model_path, 'pose.npz'), sess=sess)
+                    net.all_params, os.path.join(model_path, 'pose' + str(gs_num) + '.npz'), sess=sess
+                )
+                tl.files.save_npz_dict(net.all_params, os.path.join(model_path, 'pose.npz'), sess=sess)
             if gs_num > 3000001:
                 break

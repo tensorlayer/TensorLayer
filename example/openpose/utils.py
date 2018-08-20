@@ -8,6 +8,7 @@ from tensorlayer import logging
 from config import config
 import matplotlib.pyplot as plt
 
+
 ## download dataset
 def load_mscoco_dataset(path='data', dataset='2017', task='person'):  # TODO move to tl.files later
     """Download MSCOCO Dataset.
@@ -48,6 +49,7 @@ def load_mscoco_dataset(path='data', dataset='2017', task='person'):  # TODO mov
 
     """
     import zipfile
+
     def unzip(path_to_zip_file, directory_to_extract_to):
         zip_ref = zipfile.ZipFile(path_to_zip_file, 'r')
         zip_ref.extractall(directory_to_extract_to)
@@ -154,7 +156,7 @@ def load_mscoco_dataset(path='data', dataset='2017', task='person'):  # TODO mov
         elif task == "instance":
             val_annotations_file_path = os.path.join(path, "annotations", "instances_val2014.json")
         test_images_path = os.path.join(path, "test2014")
-        test_annotations_file_path = None #os.path.join(path, "annotations", "person_keypoints_test2014.json")
+        test_annotations_file_path = None  #os.path.join(path, "annotations", "person_keypoints_test2014.json")
     else:
         train_images_path = os.path.join(path, "train2017")
         if task == "person":
@@ -173,7 +175,7 @@ def load_mscoco_dataset(path='data', dataset='2017', task='person'):  # TODO mov
         elif task == "instance":
             val_annotations_file_path = os.path.join(path, "annotations", "instances_val2017.json")
         test_images_path = os.path.join(path, "test2017")
-        test_annotations_file_path = None #os.path.join(path, "annotations", "person_keypoints_test2017.json")
+        test_annotations_file_path = None  #os.path.join(path, "annotations", "person_keypoints_test2017.json")
     return train_images_path, train_annotations_file_path, \
             val_images_path, val_annotations_file_path, \
                 test_images_path, test_annotations_file_path
@@ -237,6 +239,7 @@ class CocoMeta:
 
 class PoseInfo:
     """ Use COCO for pose estimation, returns images with people only. """
+
     def __init__(self, image_base_dir, anno_path, with_mask):
         self.metas = []
         # self.data_dir = data_dir
@@ -676,7 +679,7 @@ def draw_intermedia_results(images, heats_ground, heats_result, pafs_ground, paf
         # plt.savefig(str(i)+'.png',dpi=300)
         # plt.show()
 
-        plt.savefig(os.path.join(config.LOG.vis_path, name + str(i)+'.png'), dpi=300)
+        plt.savefig(os.path.join(config.LOG.vis_path, name + str(i) + '.png'), dpi=300)
 
 
 if __name__ == '__main__':

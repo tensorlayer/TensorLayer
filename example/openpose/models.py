@@ -99,7 +99,9 @@ def model(x, n_pos, mask_miss1, mask_miss2, is_train=False, reuse=None):
             b2_list.append(b2)
             # stage 2~6
             for i in range(2, 7):
-                b1, b2 = stage(cnn, b1_list[-1], b2_list[-1], n_pos, mask_miss1, mask_miss2, is_train, name='stage%d' % i)
+                b1, b2 = stage(
+                    cnn, b1_list[-1], b2_list[-1], n_pos, mask_miss1, mask_miss2, is_train, name='stage%d' % i
+                )
                 b1_list.append(b1)
                 b2_list.append(b2)
         net = tl.layers.merge_networks([b1_list[-1], b2_list[-1]])

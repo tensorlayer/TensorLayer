@@ -9,7 +9,7 @@ from utils import draw_intermedia_results
 if __name__ == '__main__':
     n_pos = config.MODEL.n_pos
     model_path = config.MODEL.model_path
-    h, w = 368, 432 # image size for inferencing, small size can speed up
+    h, w = 368, 432  # image size for inferencing, small size can speed up
     if (h % 16 != 0) or (w % 16 != 0):
         raise Exception("image size should be divided by 16")
 
@@ -30,6 +30,7 @@ if __name__ == '__main__':
             tf.equal(gaussian_heatMat, max_pooled_in_tensor), gaussian_heatMat, tf.zeros_like(gaussian_heatMat)
         )
         return tensor_peaks
+
     peak_tensor = get_peak(pafs_tensor)
 
     ## restore model parameters
@@ -54,8 +55,9 @@ if __name__ == '__main__':
     ## get coordinate results from maps using conf and pafs from network output, and peak
     # using OpenPose's official C++ code for this part
     from inference.estimator import Human
+
     def estimate_paf(peaks, heat_mat, paf_mat):
-        pafprocess.process_paf(peaks, heat_mat, paf_mat)    # C++
+        pafprocess.process_paf(peaks, heat_mat, paf_mat)  # C++
 
         humans = []
         for human_id in range(pafprocess.get_num_humans()):
@@ -80,6 +82,7 @@ if __name__ == '__main__':
                 humans.append(human)
 
         return humans
+
     humans = estimate_paf(peak[0], conf[0], pafs[0])
     print(humans)
 
