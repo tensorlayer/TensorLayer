@@ -4,6 +4,8 @@ import time
 # import argparse
 import numpy as np
 import _pickle as cPickle
+import matplotlib
+matplotlib.use('Agg')
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.prepro import keypoint_random_rotate, keypoint_random_resize_shortestedge, keypoint_random_resize, keypoint_random_flip, keypoint_random_crop
@@ -15,7 +17,7 @@ from pycocotools.coco import maskUtils
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
-tl.files.exists_or_mkdir(config.LOG.vis_path, verbose=False)
+tl.files.exists_or_mkdir(config.LOG.vis_path, verbose=False)  # to save visualization results
 
 # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
