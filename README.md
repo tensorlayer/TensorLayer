@@ -9,7 +9,6 @@
 [![Chinese Documentation](https://img.shields.io/badge/documentation-%E4%B8%AD%E6%96%87-blue.svg)](https://tensorlayercn.readthedocs.io/)
 [![Chinese Book](https://img.shields.io/badge/book-%E4%B8%AD%E6%96%87-blue.svg)](http://www.broadview.com.cn/book/5059/)
 [![Downloads](http://pepy.tech/badge/tensorlayer)](http://pepy.tech/project/tensorlayer)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftensorlayer%2Ftensorlayer.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftensorlayer%2Ftensorlayer?ref=badge_shield)
 
 
 ![PyPI Stable Version](http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/release/tensorlayer/tensorlayer.svg?label=PyPI%20-%20Release)
@@ -139,6 +138,3 @@ If you find this project useful, we would be grateful if you cite the TensorLaye
 # License
 
 TensorLayer is released under the Apache 2.0 license.
-
-
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftensorlayer%2Ftensorlayer.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftensorlayer%2Ftensorlayer?ref=badge_large)
