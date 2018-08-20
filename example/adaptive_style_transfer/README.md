@@ -1,5 +1,4 @@
-eig# Tensorflow Adain Style Transfer
-
+# Tensorflow Adain Style Transfer
 ------
 
 1. Tensorflow implementation of the ICCV 2017 Paper [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/abs/1703.06868)
@@ -19,9 +18,9 @@ Here are some result images (Left to Right: Content , Style , Result):
 </div>
 
 <div align="center">
-   <img src="./images/content/brad_pitt.jpg" width=250 height=250>
-   <img src="./images/style/woman_matisse.jpg" width=250 height=250>
-   <img src="./output/woman_matisse_brad_pitt.jpg" width=250 height=250>
+   <img src="./images/content/content_1.jpg" width=250 height=250>
+   <img src="./images/style/style_1.jpg" width=250 height=250>
+   <img src="./output/output_1.jpg" width=250 height=250>
 </div>
 
 <div align="center">
