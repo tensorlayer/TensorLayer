@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
+r"""
 Play with ONNX models in TensorLayer.
 
 This tutorial is corresponding to the onnx-tf tutorial:
@@ -148,7 +148,6 @@ def generate_graph_and_checkpoint(graph_output_path, checkpoint_output_path):
     - `onnx-tf exporting tutorial <https://github.com/onnx/tutorials/blob/master/tutorials/OnnxTensorflowExport.ipynb>`__
 
     """
-
     X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
 
     sess = tf.InteractiveSession()
@@ -270,7 +269,6 @@ def freeze_graph(graph_path, checkpoint_path, output_path, end_node_names, is_bi
     - `onnx-tf exporting tutorial <https://github.com/onnx/tutorials/blob/master/tutorials/OnnxTensorflowExport.ipynb>`__
     - `tensorflow freeze_graph <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/tools/freeze_graph.py>`
     """
-
     _freeze_graph(
         input_graph=graph_path, input_saver='', input_binary=is_binary_graph, input_checkpoint=checkpoint_path,
         output_graph=output_path, output_node_names=end_node_names, restore_op_name='save/restore_all',
@@ -294,7 +292,6 @@ def convert_model_to_onnx(frozen_graph_path, end_node_names, onnx_output_path):
     -----------
     - `onnx-tf exporting tutorial <https://github.com/onnx/tutorials/blob/master/tutorials/OnnxTensorflowExport.ipynb>`
     """
-
     with tf.gfile.GFile(frozen_graph_path, "rb") as f:
         graph_def = tf.GraphDef()
         graph_def.ParseFromString(f.read())
@@ -316,7 +313,6 @@ def convert_onnx_to_model(onnx_input_path):
     -----------
     - `onnx-tf exporting tutorial <https://github.com/onnx/tutorials/blob/master/tutorials/OnnxTensorflowExport.ipynb>`__
     """
-
     model = onnx.load(onnx_input_path)
     tf_rep = prepare(model)
     # Image Path

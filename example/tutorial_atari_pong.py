@@ -1,6 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-""" Monte-Carlo Policy Network π(a|s)  (REINFORCE).
+"""Monte-Carlo Policy Network π(a|s)  (REINFORCE).
 
 To understand Reinforcement Learning, we let computer to learn how to play
 Pong game from the original screen inputs. Before we start, we highly recommend
@@ -45,7 +45,7 @@ np.set_printoptions(threshold=np.nan)
 
 
 def prepro(I):
-    """ prepro 210x160x3 uint8 frame into 6400 (80x80) 1D float vector """
+    """Prepro 210x160x3 uint8 frame into 6400 (80x80) 1D float vector."""
     I = I[35:195]
     I = I[::2, ::2, 0]
     I[I == 144] = 0
@@ -88,7 +88,8 @@ with tf.Session() as sess:
     start_time = time.time()
     game_number = 0
     while True:
-        if render: env.render()
+        if render:
+            env.render()
 
         cur_x = prepro(observation)
         x = cur_x - prev_x if prev_x is not None else np.zeros(D)
@@ -134,7 +135,11 @@ with tf.Session() as sess:
             prev_x = None
 
         if reward != 0:
-            print(('episode %d: game %d took %.5fs, reward: %f' % (episode_number, game_number, \
-                time.time() - start_time, reward)), ('' if reward == -1 else ' !!!!!!!!'))
+            print(
+                (
+                    'episode %d: game %d took %.5fs, reward: %f' %
+                    (episode_number, game_number, time.time() - start_time, reward)
+                ), ('' if reward == -1 else ' !!!!!!!!')
+            )
             start_time = time.time()
             game_number += 1

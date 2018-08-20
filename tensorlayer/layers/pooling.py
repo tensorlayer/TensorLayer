@@ -141,6 +141,7 @@ class MeanPool1d(Layer):
         A unique layer name.
 
     """
+
     # logging.info("MeanPool1d %s: filter_size: %s strides: %s padding: %s" % (self.name, str(filter_size), str(strides), str(padding)))
     # outputs = tf.layers.average_pooling1d(prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
     #

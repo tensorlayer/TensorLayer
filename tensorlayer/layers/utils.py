@@ -45,9 +45,7 @@ def clear_layers_name():
 
 
 def compute_alpha(x):
-    """
-    Computing the scale parameter.
-    """
+    """Computing the scale parameter."""
     threshold = _compute_threshold(x)
     alpha1_temp1 = tf.where(tf.greater(x, threshold), x, tf.zeros_like(x, tf.float32))
     alpha1_temp2 = tf.where(tf.less(x, -threshold), x, tf.zeros_like(x, tf.float32))
@@ -95,7 +93,6 @@ def flatten_reshape(variable, name='flatten'):
     >>> print(network.get_shape()[:].as_list()[1:])
     >>> [None, 123008]
     """
-
     dim = 1
     for d in variable.get_shape()[1:].as_list():
         dim *= d
@@ -233,7 +230,6 @@ def initialize_rnn_state(state, feed_dict=None):
         The TensorFlow's RNN state.
 
     """
-
     if isinstance(state, LSTMStateTuple):
         c = state.c.eval(feed_dict=feed_dict)
         h = state.h.eval(feed_dict=feed_dict)
@@ -300,19 +296,23 @@ def merge_networks(layers=None):
 
     all_params = []
     all_layers = []
+    all_graphs = []
     all_drop = {}
 
     for l in layers:
         all_params.extend(l.all_params)
         all_layers.extend(l.all_layers)
+        all_graphs.extend(l.all_graphs)
         all_drop.update(l.all_drop)
 
     layer.all_params = list(all_params)
     layer.all_layers = list(all_layers)
+    layer.all_graphs = list(all_graphs)
     layer.all_drop = dict(all_drop)
 
     layer.all_layers = list_remove_repeat(layer.all_layers)
     layer.all_params = list_remove_repeat(layer.all_params)
+    layer.all_graphs = list_remove_repeat(layer.all_graphs)
 
     return layer
 
@@ -385,9 +385,7 @@ def set_name_reuse(enable=True):
 
 
 def ternary_operation(x):
-    """
-    Ternary operation use threshold computed with weights.
-    """
+    """Ternary operation use threshold computed with weights."""
     g = tf.get_default_graph()
     with g.gradient_override_map({"Sign": "Identity"}):
         threshold = _compute_threshold(x)
@@ -400,7 +398,7 @@ def ternary_operation(x):
 
 @tf.RegisterGradient("TL_Sign_QuantizeGrad")
 def _quantize_grad(op, grad):
-    """Clip and binarize tensor using the straight through estimator (STE) for the gradient. """
+    """Clip and binarize tensor using the straight through estimator (STE) for the gradient."""
     return tf.clip_by_value(grad, -1, 1)
 
 

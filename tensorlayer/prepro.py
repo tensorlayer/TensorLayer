@@ -1154,9 +1154,7 @@ def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
     >>> x = tl.prepro.illumination(x, 0.5, 0.6, 0.8, is_random=False)
 
     """
-
     if is_random:
-
         if not (len(gamma) == len(contrast) == len(saturation) == 2):
             raise AssertionError("if is_random = True, the arguments are (min, max)")
 
@@ -1373,7 +1371,7 @@ def imresize(x, size=None, interp='bicubic', mode=None):
 
 
 # value scale
-def pixel_value_scale(im, val=0.9, clip=(-np.inf, np.inf), is_random=False):
+def pixel_value_scale(im, val=0.9, clip=None, is_random=False):
     """Scales each value in the pixels of the image.
 
     Parameters
@@ -1405,6 +1403,9 @@ def pixel_value_scale(im, val=0.9, clip=(-np.inf, np.inf), is_random=False):
     >>> im = pixel_value_scale(im, 0.9, [0, 255], is_random=False)
 
     """
+
+    clip = clip if clip is not None else (-np.inf, np.inf)
+
     if is_random:
         scale = 1 + np.random.uniform(-val, val)
         im = im * scale
@@ -2191,7 +2192,6 @@ def obj_box_coord_centroid_to_upleft_butright(coord, to_int=False):
       [20, 30, 40, 50]
 
     """
-
     if len(coord) != 4:
         raise AssertionError("coordinate should be 4 values : [x, y, w, h]")
 
@@ -2285,7 +2285,7 @@ def obj_box_coord_upleft_to_centroid(coord):
 
 
 def parse_darknet_ann_str_to_list(annotations):
-    """Input string format of class, x, y, w, h, return list of list format.
+    r"""Input string format of class, x, y, w, h, return list of list format.
 
     Parameters
     -----------
@@ -2379,7 +2379,6 @@ def obj_box_horizontal_flip(im, coords=None, is_rescale=False, is_center=False, 
       [[50, 40, 30, 30]]
 
     """
-
     if coords is None:
         coords = []
 

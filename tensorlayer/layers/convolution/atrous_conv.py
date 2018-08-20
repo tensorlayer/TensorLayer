@@ -72,7 +72,6 @@ def atrous_conv1d(
         A :class:`AtrousConv1dLayer` object
 
     """
-
     return Conv1dLayer(
         prev_layer=prev_layer,
         act=act,

@@ -37,8 +37,7 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 
 
 def basic_clean_str(string):
-    """Tokenization/string cleaning for a datasets.
-    """
+    """Tokenization/string cleaning for a datasets."""
     string = re.sub(r"\n", " ", string)  # '\n'      --> ' '
     string = re.sub(r"\'s", " \'s", string)  # it's      --> it 's
     string = re.sub(r"\’s", " \'s", string)
@@ -80,8 +79,7 @@ def basic_clean_str(string):
 
 
 def customized_clean_str(string):
-    """Tokenization/string cleaning for a datasets.
-    """
+    """Tokenization/string cleaning for a datasets."""
     string = re.sub(r"\n", " ", string)  # '\n'      --> ' '
     string = re.sub(r"\'s", " \'s", string)  # it's      --> it 's
     string = re.sub(r"\’s", " \'s", string)
@@ -122,7 +120,7 @@ def customized_clean_str(string):
     return string.strip().lower()  # lowercase
 
 
-def customized_read_words(input_fpath):  #, dictionary):
+def customized_read_words(input_fpath):  # , dictionary):
     with open(input_fpath, "r", encoding="utf8") as f:
         words = f.read()
     # Clean the data
@@ -135,7 +133,7 @@ def main_restore_embedding_layer():
     """How to use Embedding layer, and how to convert IDs to vector,
     IDs to words, etc.
     """
-    ## Step 1: Build the embedding matrix and load the existing embedding matrix.
+    # Step 1: Build the embedding matrix and load the existing embedding matrix.
     vocabulary_size = 50000
     embedding_size = 128
     model_file_name = "model_word2vec_50k_128"
@@ -166,7 +164,7 @@ def main_restore_embedding_layer():
     emb_net.print_params()
     emb_net.print_layers()
 
-    ## Step 2: Input word(s), output the word vector(s).
+    # Step 2: Input word(s), output the word vector(s).
     word = b'hello'
     word_id = dictionary[word]
     print('word_id:', word_id)
@@ -185,8 +183,7 @@ def main_restore_embedding_layer():
 
 
 def main_lstm_generate_text():
-    """Generate text by Synced sequence input and output.
-    """
+    """Generate text by Synced sequence input and output."""
     # rnn model and update  (describtion: see tutorial_ptb_lstm.py)
     init_scale = 0.1
     learning_rate = 1.0
@@ -203,7 +200,7 @@ def main_lstm_generate_text():
 
     model_file_name = "model_generate_text.npz"
 
-    ##===== Prepare Data
+    # ===== Prepare Data
     words = customized_read_words(input_fpath="data/trump/trump_text.txt")
 
     vocab = tl.nlp.create_vocab([words], word_counts_output_file='vocab.txt', min_word_count=1)
@@ -219,7 +216,7 @@ def main_lstm_generate_text():
 
     sess = tf.InteractiveSession()
 
-    ##===== Define model
+    # ===== Define model
     input_data = tf.placeholder(tf.int32, [batch_size, sequence_length])
     targets = tf.placeholder(tf.int32, [batch_size, sequence_length])
     # Testing (Evaluation), for generate text
@@ -253,7 +250,7 @@ def main_lstm_generate_text():
 
     # y_id = tf.argmax(tf.nn.softmax(y), 1)
 
-    ##===== Define train ops
+    # ===== Define train ops
     def loss_fn(outputs, targets, batch_size, sequence_length):
         # Returns the cost function of Cross-entropy of two sequences, implement
         # softmax internally.
@@ -268,24 +265,24 @@ def main_lstm_generate_text():
         cost = tf.reduce_sum(loss) / batch_size
         return cost
 
-    ## Cost for Training
+    # Cost for Training
     cost = loss_fn(network.outputs, targets, batch_size, sequence_length)
 
-    ## Truncated Backpropagation for training
+    # Truncated Backpropagation for training
     with tf.variable_scope('learning_rate'):
         lr = tf.Variable(0.0, trainable=False)
-    ## You can get all trainable parameters as follow.
+    # You can get all trainable parameters as follow.
     # tvars = tf.trainable_variables()
-    ## Alternatively, you can specify the parameters for training as follw.
+    # Alternatively, you can specify the parameters for training as follw.
     #  tvars = network.all_params      $ all parameters
     #  tvars = network.all_params[1:]  $ parameters except embedding matrix
-    ## Train the whole network.
+    # Train the whole network.
     tvars = network.all_params
     grads, _ = tf.clip_by_global_norm(tf.gradients(cost, tvars), max_grad_norm)
     optimizer = tf.train.GradientDescentOptimizer(lr)
     train_op = optimizer.apply_gradients(zip(grads, tvars))
 
-    ##===== Training
+    # ===== Training
     tl.layers.initialize_global_variables(sess)
 
     print("\nStart learning a model to generate text")
@@ -300,7 +297,7 @@ def main_lstm_generate_text():
         start_time = time.time()
         costs = 0.0
         iters = 0
-        ## reset all states at the begining of every epoch
+        # reset all states at the begining of every epoch
         state1 = tl.layers.initialize_rnn_state(lstm1.initial_state)
         for step, (x, y) in enumerate(tl.iterate.ptb_iterator(train_data, batch_size, sequence_length)):
             _cost, state1, _ = sess.run(
@@ -323,7 +320,7 @@ def main_lstm_generate_text():
         print("Epoch: %d/%d Train Perplexity: %.3f" % (i + 1, max_max_epoch, train_perplexity))
 
         # for diversity in diversity_list:
-        ## testing: sample from top k words
+        # testing: sample from top k words
         for top_k in top_k_list:
             # Testing, generate some text from a given seed.
             state1 = tl.layers.initialize_rnn_state(lstm1_test.initial_state)
@@ -348,12 +345,12 @@ def main_lstm_generate_text():
                         lstm1_test.initial_state: state1
                     }
                 )
-                ## Without sampling
+                # Without sampling
                 # a_id = np.argmax(out[0])
-                ## Sample from all words, if vocab_size is large,
+                # Sample from all words, if vocab_size is large,
                 # this may have numeric error.
                 # a_id = tl.nlp.sample(out[0], diversity)
-                ## Sample from the top k words.
+                # Sample from the top k words.
                 a_id = tl.nlp.sample_top(out[0], top_k=top_k)
                 outs_id.append(a_id)
             sentence = [vocab.id_to_word(w) for w in outs_id]

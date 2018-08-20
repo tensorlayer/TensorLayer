@@ -64,7 +64,7 @@ class StackLayer(Layer):
 
 
 class UnStackLayer(Layer):
-    """"
+    """
     The :class:`UnStackLayer` class is a layer for unstacking the given dimension of a rank-R tensor into rank-(R-1) tensors., see `tf.unstack() <https://www.tensorflow.org/api_docs/python/tf/unstack>`__.
 
     Parameters

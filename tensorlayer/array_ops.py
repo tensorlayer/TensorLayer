@@ -38,7 +38,6 @@ def alphas(shape, alpha_value, name=None):
     --------
     >>> tl.alphas([2, 3], tf.int32)  # [[alpha, alpha, alpha], [alpha, alpha, alpha]]
     """
-
     with ops.name_scope(name, "alphas", [shape]) as name:
 
         alpha_tensor = convert_to_tensor(alpha_value)
@@ -90,11 +89,10 @@ def alphas_like(tensor, alpha_value, name=None, optimize=True):
     >>> tensor = tf.constant([[1, 2, 3], [4, 5, 6]])
     >>> tl.alphas_like(tensor, 0.5)  # [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]
     """
-
     with ops.name_scope(name, "alphas_like", [tensor]) as name:
         tensor = ops.convert_to_tensor(tensor, name="tensor")
 
-        if context.in_eager_mode():  #and dtype is not None and dtype != tensor.dtype:
+        if context.in_eager_mode():  # and dtype is not None and dtype != tensor.dtype:
             ret = alphas(shape_internal(tensor, optimize=optimize), alpha_value=alpha_value, name=name)
 
         else:  # if context.in_graph_mode():

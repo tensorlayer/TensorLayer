@@ -132,7 +132,6 @@ def main(_):
     of zeros and gets updated after reading each word. Also, for computational
     reasons, we will process data in mini-batches of size batch_size.
     """
-
     if FLAGS.model == "small":
         init_scale = 0.1
         learning_rate = 1.
@@ -209,7 +208,7 @@ def main(_):
             net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
             net = tl.layers.RNNLayer(
                 net,
-                cell_fn=tf.contrib.rnn.BasicLSTMCell,  #tf.nn.rnn_cell.BasicLSTMCell,
+                cell_fn=tf.contrib.rnn.BasicLSTMCell,  # tf.nn.rnn_cell.BasicLSTMCell,
                 cell_init_args={
                     'forget_bias': 0.0,
                     'state_is_tuple': True
@@ -224,7 +223,7 @@ def main(_):
             net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop2')
             net = tl.layers.RNNLayer(
                 net,
-                cell_fn=tf.contrib.rnn.BasicLSTMCell,  #tf.nn.rnn_cell.BasicLSTMCell,
+                cell_fn=tf.contrib.rnn.BasicLSTMCell,  # tf.nn.rnn_cell.BasicLSTMCell,
                 cell_init_args={
                     'forget_bias': 0.0,
                     'state_is_tuple': True
@@ -411,7 +410,7 @@ def main(_):
 if __name__ == "__main__":
     tf.app.run()
 
-## log of SmallConfig
+# log of SmallConfig
 # Start learning a language model by using PTB dataset
 # Epoch: 1 Learning rate: 1.000
 # 0.004 perplexity: 5512.735 speed: 4555 wps
@@ -585,7 +584,7 @@ if __name__ == "__main__":
 # Evaluation
 # Test Perplexity: 116.723 took 124.06s
 
-## MediumConfig
+# MediumConfig
 # Epoch: 1 Learning rate: 1.000
 # 0.008 perplexity: 5173.547 speed: 6469 wps
 # 0.107 perplexity: 1219.527 speed: 6453 wps
