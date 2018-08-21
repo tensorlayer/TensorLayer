@@ -64,11 +64,11 @@ class Encoder(object):
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2dLayer(
             net, act=tf.nn.relu, shape=[3, 3, 256, 256], strides=[1, 1, 1, 1], padding='VALID', name=prefix + 'conv3_2'
-        ) 
+        )
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2dLayer(
             net, act=tf.nn.relu, shape=[3, 3, 256, 256], strides=[1, 1, 1, 1], padding='VALID', name=prefix + 'conv3_3'
-        )        
+        )
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2dLayer(
             net, act=tf.nn.relu, shape=[3, 3, 256, 256], strides=[1, 1, 1, 1], padding='VALID', name=prefix + 'conv3_4'
