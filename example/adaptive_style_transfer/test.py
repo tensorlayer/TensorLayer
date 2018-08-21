@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import os
 import numpy as np
 import tensorflow as tf
 from scipy.misc import imread, imsave
