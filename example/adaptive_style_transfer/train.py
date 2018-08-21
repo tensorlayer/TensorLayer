@@ -5,7 +5,7 @@ import tensorflow as tf
 from scipy.misc import imsave
 import tensorlayer as tl
 import utils
-from models import Decoder,Encoder
+from models import Decoder, Encoder
 
 # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -32,8 +32,8 @@ if __name__ == '__main__':
 
     # Get the path of all valid images
     print('Preprocessing training images \n')
-    content_images = tl.files.load_file_list(CONTENT_DATA_PATH,  regx='\\.(jpg|jpeg|png)', keep_prefix=True)
-    style_images = tl.files.load_file_list(STYLE_DATA_PATH,  regx='\\.(jpg|jpeg|png)', keep_prefix=True)
+    content_images = tl.files.load_file_list(CONTENT_DATA_PATH, regx='\\.(jpg|jpeg|png)', keep_prefix=True)
+    style_images = tl.files.load_file_list(STYLE_DATA_PATH, regx='\\.(jpg|jpeg|png)', keep_prefix=True)
     num_imgs = min(len(content_images), len(style_images))
     content_images = content_images[:num_imgs]
     style_images = style_images[:num_imgs]

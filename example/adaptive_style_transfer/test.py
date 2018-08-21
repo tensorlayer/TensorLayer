@@ -3,7 +3,7 @@ import os
 import numpy as np
 import tensorflow as tf
 from scipy.misc import imread, imsave
-from models import Decoder,Encoder
+from models import Decoder, Encoder
 import utils
 
 # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"

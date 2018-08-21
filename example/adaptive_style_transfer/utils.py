@@ -9,6 +9,7 @@ from scipy.misc import imread, imresize
 
 PATH = '/root/even/dataset/wiki_all_images'
 
+
 def list_images(directory):
     images = []
     for file in listdir(directory):
@@ -64,7 +65,7 @@ def AdaIN(content_features, style_features, alpha=1, epsilon=1e-5):
 
 def pre_process_dataset(dir_path):
 
-    paths = tl.files.load_file_list(dir_path,  regx='\\.(jpg|jpeg|png)', keep_prefix=True)
+    paths = tl.files.load_file_list(dir_path, regx='\\.(jpg|jpeg|png)', keep_prefix=True)
 
     print('\norigin files number: %d\n' % len(paths))
 
@@ -100,4 +101,4 @@ def pre_process_dataset(dir_path):
                 num_delete += 1
                 remove(path)
 
-    print('\n\ndelete %d files! Current number of files: %d\n\n' % (num_delete, len(paths) - num_delete))    
+    print('\n\ndelete %d files! Current number of files: %d\n\n' % (num_delete, len(paths) - num_delete))

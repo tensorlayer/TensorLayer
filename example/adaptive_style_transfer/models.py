@@ -86,6 +86,7 @@ class Decoder(object):
         tl.files.load_and_assign_npz(sess, weight_path, net)
         print("Restored decoder model from npy file")
 
+
 class Encoder(object):
 
     @classmethod
