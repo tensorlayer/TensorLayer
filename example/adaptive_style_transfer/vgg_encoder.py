@@ -59,11 +59,11 @@ class Encoder(object):
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2dLayer(
             net, act=tf.nn.relu, shape=[3, 3, 128, 256], strides=[1, 1, 1, 1], padding='VALID', name=prefix + 'conv3_1'
-        )     
+        )
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2dLayer(
             net, act=tf.nn.relu, shape=[3, 3, 256, 256], strides=[1, 1, 1, 1], padding='VALID', name=prefix + 'conv3_2'
-        )        
+        ) 
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2dLayer(
             net, act=tf.nn.relu, shape=[3, 3, 256, 256], strides=[1, 1, 1, 1], padding='VALID', name=prefix + 'conv3_3'
@@ -91,7 +91,7 @@ class Encoder(object):
         else:
             return image - np.array([123.68, 116.779, 103.939])
 
-    @classmethod        
+    @classmethod
     def deprocess(self, image, mode='BGR'):
         if mode == 'BGR':
             return image + np.array([103.939, 116.779, 123.68])

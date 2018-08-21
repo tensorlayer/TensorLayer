@@ -1,9 +1,8 @@
-import os
 from datetime import datetime
 
 import numpy as np
 import tensorflow as tf
-from scipy.misc import imresize, imsave
+from scipy.misc import imsave
 
 import tensorlayer as tl
 import utils

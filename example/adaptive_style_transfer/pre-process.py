@@ -37,7 +37,7 @@ def main(dir_path):
 
         try:
             image = imread(path, mode='RGB')
-        except:
+        except IOError:
             num_delete += 1
             print('Cant read this file, will delete it')
             remove(path)
@@ -45,7 +45,6 @@ def main(dir_path):
         if len(image.shape) != 3 or image.shape[2] != 3:
             num_delete += 1
             remove(path)
-
             print('\nimage.shape:', image.shape, ' Remove image <%s>\n' % path)
         else:
             height, width, _ = image.shape

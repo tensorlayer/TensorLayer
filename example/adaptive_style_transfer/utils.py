@@ -1,5 +1,5 @@
-from os import listdir, sep
-from os.path import join, splitext
+from os import listdir
+from os.path import join
 
 import numpy as np
 from scipy.misc import imread, imresize
