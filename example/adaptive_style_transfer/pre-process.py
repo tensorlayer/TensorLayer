@@ -1,5 +1,3 @@
-
-
 # A Script to Pre-process WikiArt dataset
 # This script helps to discard the "bad" images
 # which cannot be well used by the training method.
@@ -7,14 +5,13 @@
 from __future__ import print_function
 
 import sys
-import warnings
 import traceback
-import numpy as np
-
-from os import remove
-from os import listdir
-from os.path import join
+import warnings
 from datetime import datetime
+from os import listdir, remove
+from os.path import join
+
+import numpy as np
 from scipy.misc import imread, imresize
 
 PATH = '/root/even/dataset/wiki_all_images'
@@ -49,7 +46,6 @@ def main(dir_path):
             num_delete += 1
             print('Cant read this file, will delete it')
             remove(path)
-
 
         if len(image.shape) != 3 or image.shape[2] != 3:
             num_delete += 1

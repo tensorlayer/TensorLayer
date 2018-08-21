@@ -67,7 +67,7 @@ class UpSampling2dLayer(Layer):
             if is_scale:
                 size_h = size[0] * tf.shape(self.inputs)[1]
                 size_w = size[1] * tf.shape(self.inputs)[2]
-                size = [size_h,size_w]
+                size = [size_h, size_w]
 
         else:
             raise Exception("Donot support shape %s" % tf.shape(self.inputs))
