@@ -1,7 +1,7 @@
 # Tensorlayer Adaptive Style Transfer
 ------
 
-1. Tensorlayer implement of the ICCV 2017 Paper [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/abs/1703.06868)
+1. Tensorlayer implementation of the ICCV 2017 Paper [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/abs/1703.06868) which supports any styles in one single model.
 
 2. You can use the  <b>train.py</b> script to train your own model.  Alternatively, you can use the <b>test.py</b> script to run my pretrained models.
 My pretrained models can be downloaded from [here](https://github.com/tensorlayer/pretrained-models/tree/master/models/style_transfer_pretrained_models), and put into the 'pretrained_models' folder for testing.
@@ -46,4 +46,4 @@ Here are some result images (Left to Right: Content , Style , Result):
    <img src="./images/output/style_6_content_1.jpg" width=250 height=250>
 </div>
 
-
+Enjoy!
