@@ -2,7 +2,6 @@ from __future__ import print_function
 import tensorflow as tf
 import tensorlayer as tl
 import numpy as np
-from datetime import datetime
 from os import listdir, remove
 from os.path import join
 from scipy.misc import imread, imresize
@@ -96,7 +95,7 @@ def pre_process_dataset(dir_path):
 
             try:
                 image = imresize(image, [new_height, new_width], interp='nearest')
-            except:
+            except Exception():
                 print('Cant resize this file, will delete it')
                 num_delete += 1
                 remove(path)
