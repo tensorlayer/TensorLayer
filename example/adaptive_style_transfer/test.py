@@ -3,9 +3,8 @@ import os
 import numpy as np
 import tensorflow as tf
 from scipy.misc import imread, imsave
-from adain_norm import AdaIN
-from vgg_decoder import Decoder
-from vgg_encoder import Encoder
+from models import Decoder,Encoder
+import utils
 
 # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "1"
@@ -42,7 +41,7 @@ if __name__ == '__main__':
         enc_s_net = encoder.encode(style, 'style/')
 
         # pass the encoded images to AdaIN
-        target_features = AdaIN(enc_c_net.outputs, enc_s_net.outputs)
+        target_features = utils.AdaIN(enc_c_net.outputs, enc_s_net.outputs)
 
         # decode target features back to image
         dec_net = decoder.decode(target_features, prefix="decoder/")

@@ -3,12 +3,9 @@ from datetime import datetime
 import numpy as np
 import tensorflow as tf
 from scipy.misc import imsave
-
 import tensorlayer as tl
 import utils
-from adain_norm import AdaIN
-from vgg_decoder import Decoder
-from vgg_encoder import Encoder
+from models import Decoder,Encoder
 
 # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -20,7 +17,6 @@ MODEL_SAVE_PATHS = './models/'
 EPOCHS = 16
 EPSILON = 1e-5
 LEARNING_RATE = 1e-4
-
 BATCH_SIZE = 8
 HEIGHT = 256
 WIDTH = 256
@@ -36,8 +32,8 @@ if __name__ == '__main__':
 
     # Get the path of all valid images
     print('Preprocessing training images \n')
-    content_images = utils.list_images(CONTENT_DATA_PATH)
-    style_images = utils.list_images(STYLE_DATA_PATH)
+    content_images = tl.files.load_file_list(CONTENT_DATA_PATH,  regx='\\.(jpg|jpeg|png)', keep_prefix=True)
+    style_images = tl.files.load_file_list(STYLE_DATA_PATH,  regx='\\.(jpg|jpeg|png)', keep_prefix=True)
     num_imgs = min(len(content_images), len(style_images))
     content_images = content_images[:num_imgs]
     style_images = style_images[:num_imgs]
@@ -66,7 +62,7 @@ if __name__ == '__main__':
         content_enc_net = encoder.encode(content, 'content/')
         style_enc_net = encoder.encode(style, 'style/')
 
-        adain_features = AdaIN(content_enc_net.outputs, style_enc_net.outputs)
+        adain_features = utils.AdaIN(content_enc_net.outputs, style_enc_net.outputs)
 
         stylied_dec_net = decoder.decode(adain_features, 'stylized_dec/')
 
@@ -175,7 +171,7 @@ if __name__ == '__main__':
                         }
                     )
                     print("stylied_image generated", result_image.shape)
-                    imsave("output/step_" + str(step) + ".png", result_image[0])
+                    imsave("temp_output/step_" + str(step) + ".png", result_image[0])
 
                 step += 1
 
