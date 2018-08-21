@@ -98,6 +98,8 @@ To release a new version, please update the changelog as followed:
   - `tutorial_mnist_distributed_trainer.py` and `tutorial_cifar10_distributed_trainer.py` are added to explain the uses of Distributed Trainer (PR #700)
   - add `tutorial_quanconv_cifar10.py` and `tutorial_quanconv_mnist.py` (PR #735)
   - add `tutorial_work_with_onnx.py`(PR #775)
+- Examples:
+  - [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/abs/1703.06868) (PR #796)
 
 ### Changed
 
@@ -144,6 +146,7 @@ To release a new version, please update the changelog as followed:
 - @XJTUWYD: #735
 - @mutewall: #735
 - @thangvubk: #759
+- @JunbinWang: #796
 
 ## [1.9.0] - 2018-06-16
 
