@@ -11,9 +11,7 @@
 #     'relu3_3', 'conv3_4', 'relu3_4', 'pool3',   'conv4_1', 'relu4_1'
 # )
 
-import numpy as np
 import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer.layers import *
 
@@ -23,6 +21,7 @@ from tensorlayer.layers import *
 
 class Encoder(object):
 
+    @classmethod
     def encode(self, image, prefix=''):
         """
         Build the VGG 19 Model
@@ -85,18 +84,21 @@ class Encoder(object):
 
         return net
 
+    @classmethod
     def preprocess(self, image, mode='BGR'):
         if mode == 'BGR':
             return image - np.array([103.939, 116.779, 123.68])
         else:
             return image - np.array([123.68, 116.779, 103.939])
 
+    @classmethod        
     def deprocess(self, image, mode='BGR'):
         if mode == 'BGR':
             return image + np.array([103.939, 116.779, 123.68])
         else:
             return image + np.array([123.68, 116.779, 103.939])
 
+    @classmethod
     def restore_model(self, sess, weight_path, net):
         tl.files.load_and_assign_npz(sess, weight_path, net)
         print("Restored Encoder model from npy file")

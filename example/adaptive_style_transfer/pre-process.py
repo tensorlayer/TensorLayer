@@ -4,14 +4,9 @@
 
 from __future__ import print_function
 
-import sys
-import traceback
-import warnings
 from datetime import datetime
 from os import listdir, remove
 from os.path import join
-
-import numpy as np
 from scipy.misc import imread, imresize
 
 PATH = '/root/even/dataset/wiki_all_images'

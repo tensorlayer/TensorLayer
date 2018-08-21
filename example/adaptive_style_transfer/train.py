@@ -3,7 +3,7 @@ from datetime import datetime
 
 import numpy as np
 import tensorflow as tf
-from scipy.misc import imread, imresize, imsave
+from scipy.misc import imresize, imsave
 
 import tensorlayer as tl
 import utils
@@ -60,7 +60,6 @@ if __name__ == '__main__':
         # switch RGB to BGR
         content = tf.reverse(content_input, axis=[-1])
         style = tf.reverse(style_input, axis=[-1])
-       
         # preprocess image
         content = encoder.preprocess(content)
         style = encoder.preprocess(style)
@@ -83,7 +82,7 @@ if __name__ == '__main__':
 
         # switch RGB to BGR
         stylied_image = tf.reverse(stylied_image, axis=[-1])
-        
+
         # preprocess image
         stylied_image = encoder.preprocess(stylied_image)
 
@@ -125,7 +124,6 @@ if __name__ == '__main__':
         encoder.restore_model(sess, ENCODER_PATH, content_enc_net)
         encoder.restore_model(sess, ENCODER_PATH, style_enc_net)
         encoder.restore_model(sess, ENCODER_PATH, stylied_enc_net)
-
 
         # """Start Training"""
         step = 0

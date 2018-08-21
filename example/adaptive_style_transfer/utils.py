@@ -1,8 +1,8 @@
-from os import listdir, mkdir, sep
-from os.path import exists, join, splitext
+from os import listdir, sep
+from os.path import join, splitext
 
 import numpy as np
-from scipy.misc import imread, imresize, imsave
+from scipy.misc import imread, imresize
 
 
 def list_images(directory):

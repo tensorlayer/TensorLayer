@@ -12,9 +12,7 @@
 #     'relu2_1', 'upsample', 'conv1_2',  'relu1_2', 'conv1_1',
 # )
 
-import numpy as np
 import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer.layers import *
 
@@ -23,6 +21,7 @@ WEIGHT_INIT_STDDEV = 0.1
 
 class Decoder(object):
 
+    @classmethod
     def decode(self, image, prefix):
         """
         Build the VGG 19 Model
@@ -82,6 +81,7 @@ class Decoder(object):
 
         return net
 
+    @classmethod
     def restore_model(self, sess, weight_path, net):
         tl.files.load_and_assign_npz(sess, weight_path, net)
         print("Restored decoder model from npy file")

@@ -1,12 +1,8 @@
-import os
 from datetime import datetime
 
 import numpy as np
 import tensorflow as tf
-from scipy.misc import imread, imresize, imsave
-
-import tensorlayer as tl
-import utils
+from scipy.misc import imread, imsave
 from adain_norm import AdaIN
 from vgg_decoder import Decoder
 from vgg_encoder import Encoder
