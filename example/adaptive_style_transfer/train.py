@@ -23,8 +23,8 @@ WIDTH = 256
 CHANNEL = 3
 # batch_size, height, weight, channel_number
 INPUT_SHAPE = (BATCH_SIZE, HEIGHT, WIDTH, CHANNEL)
-CONTENT_DATA_PATH = '/root/even/dataset/COCO_train_2014/'
-STYLE_DATA_PATH = '/root/even/dataset/wiki_all_images/'
+CONTENT_DATA_PATH = 'dataset/COCO_train_2014/'
+STYLE_DATA_PATH = 'dataset/wiki_all_images/'
 
 if __name__ == '__main__':
 
