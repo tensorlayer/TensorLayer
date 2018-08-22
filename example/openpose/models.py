@@ -35,34 +35,38 @@ def stage(cnn, b1, b2, n_pos, maskInput1, maskInput2, is_train, name='stageX'):
     return b1, b2
 
 
-# def vgg_network(x):
-#     """ VGG19 network for default model """
-#     red, green, blue = tf.split(axis=3, num_or_size_splits=3, value=x)
-#     bgr = tf.concat(axis=3, values=[blue, green, red])
-#     bgr = bgr - 0.5
-#     # input layer
-#     net_in = InputLayer(bgr, name='input')
-#     # conv1
-#     net = Conv2d(net_in, 64, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1')
-#     net = Conv2d(net, 64, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2')
-#     net = MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
-#     # conv2
-#     net = Conv2d(net, 128, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv2_1')
-#     net = Conv2d(net, 128, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv2_2')
-#     net = MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
-#     # conv3
-#     net = Conv2d(net, 256, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv3_1')
-#     net = Conv2d(net, 256, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv3_2')
-#     net = Conv2d(net, 256, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv3_3')
-#     net = Conv2d(net, 256, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv3_4')
-#     net = MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool3')
-#     # conv4
-#     net = Conv2d(net, 512, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1')
-#     net = Conv2d(net, 512, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2')
-#     net = Conv2d(net, 256, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, b_init=b_init, name='conv4_3')
-#     net = Conv2d(net, 128, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, b_init=b_init, name='conv4_4')
-#
-#     return net
+def vgg_network(x):
+    """ VGG19 network for default model """
+
+    #input x: 0~1
+    #bgr: -0.5~0.5 for InputLayer
+    red, green, blue = tf.split(axis=3, num_or_size_splits=3, value=x)
+    bgr = tf.concat(axis=3, values=[blue, green, red])
+    bgr = bgr - 0.5
+
+    # input layer
+    net_in = InputLayer(bgr, name='input')
+    # conv1
+    net = Conv2d(net_in, 64, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1')
+    net = Conv2d(net, 64, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2')
+    net = MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
+    # conv2
+    net = Conv2d(net, 128, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv2_1')
+    net = Conv2d(net, 128, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv2_2')
+    net = MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
+    # conv3
+    net = Conv2d(net, 256, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv3_1')
+    net = Conv2d(net, 256, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv3_2')
+    net = Conv2d(net, 256, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv3_3')
+    net = Conv2d(net, 256, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv3_4')
+    net = MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool3')
+    # conv4
+    net = Conv2d(net, 512, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1')
+    net = Conv2d(net, 512, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2')
+    net = Conv2d(net, 256, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, b_init=b_init, name='conv4_3')
+    net = Conv2d(net, 128, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, b_init=b_init, name='conv4_4')
+
+    return net
 
 
 def model(x, n_pos, mask_miss1, mask_miss2, is_train=False, reuse=None):
@@ -72,14 +76,11 @@ def model(x, n_pos, mask_miss1, mask_miss2, is_train=False, reuse=None):
     with tf.variable_scope('model', reuse):
         # Feature extraction part
         # 1. by default, following the paper, we use VGG19 as the default model
-        # cnn = vgg_network(x)
-        cnn = tl.models.VGG19(x, end_with='conv4_2', reuse=reuse)
+        cnn = vgg_network(x)
+        # cnn = tl.models.VGG19(x, end_with='conv4_2', reuse=reuse)
         # 2. you can customize this part to speed up the inferencing
         # cnn = tl.models.MobileNetV1(x, end_with='depth5', is_train=is_train, reuse=reuse)  # i.e. vgg16 conv4_2 ~ 4_4
-        cnn = Conv2d(cnn, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                     W_init=W_init, b_init=b_init, name='conv4_3')
-        cnn = Conv2d(cnn, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                     W_init=W_init, b_init=b_init, name='conv4_4')
+
         with tf.variable_scope('cpm', reuse):
             # stage 1
             with tf.variable_scope("stage1/branch1"):
