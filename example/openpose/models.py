@@ -76,7 +76,10 @@ def model(x, n_pos, mask_miss1, mask_miss2, is_train=False, reuse=None):
         cnn = tl.models.VGG19(x, end_with='conv4_2', reuse=reuse)
         # 2. you can customize this part to speed up the inferencing
         # cnn = tl.models.MobileNetV1(x, end_with='depth5', is_train=is_train, reuse=reuse)  # i.e. vgg16 conv4_2 ~ 4_4
-
+        cnn = Conv2d(cnn, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
+                     W_init=W_init, b_init=b_init, name='conv4_3')
+        cnn = Conv2d(cnn, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
+                     W_init=W_init, b_init=b_init, name='conv4_4')
         with tf.variable_scope('cpm', reuse):
             # stage 1
             with tf.variable_scope("stage1/branch1"):
