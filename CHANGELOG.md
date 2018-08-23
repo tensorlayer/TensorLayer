@@ -129,10 +129,14 @@ To release a new version, please update the changelog as followed:
 
 ### Dependencies Update
 
-- tensorflow>=1.8,<1.9 => tensorflow>=1.9,<1.10 (PR #739)
-- tensorflow-gpu>=1.8,<1.9 => tensorflow-gpu>=1.9,<1.10 (PR #739)
-- pymongo>=3.6,<3.7 => pymongo>=3.7,<3.8 (PR #750)
-- numpy>=1.14,<1.15 => numpy>=1.15,<1.16 (PR #754)
+- tensorflow>=1.8,<1.9 => tensorflow>=1.6,<1.11 (PR #739 and PR #798)
+- tensorflow-gpu>=1.8,<1.9 => tensorflow-gpu>=1.6,<1.11 (PR #739 and PR #798)
+- pymongo>=3.6,<3.7 => pymongo>=3.6,<3.8 (PR #750)
+- numpy>=1.14,<1.15 => numpy>=1.14,<1.16 (PR #754)
+- tqdm>=4.23,<4.24 => tqdm>=4.23,<4.25 (PR #798)
+- pytest>=3.6,<3.7 => tqdm>=3.6,<3.8 (PR #798)
+- yapf>=0.21,<0.22 => yapf>=0.21,<0.23 (PR #798)
+- tqdm>=4.23,<4.25 => tqdm>=4.23,<4.26 (PR #798)
 
 ### Contributors
 
@@ -144,6 +148,11 @@ To release a new version, please update the changelog as followed:
 - @XJTUWYD: #735
 - @mutewall: #735
 - @thangvubk: #759
+
+## [1.9.1] - 2018-07-30
+
+### Fixed
+- Issue with tensorflow 1.10.0 fixed
 
 ## [1.9.0] - 2018-06-16
 
@@ -315,6 +324,7 @@ To release a new version, please update the changelog as followed:
 
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...master
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...master
+[1.9.1]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...1.9.0
 [1.9.0]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...1.8.5
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5
