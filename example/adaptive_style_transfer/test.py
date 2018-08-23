@@ -14,6 +14,7 @@ DECODER_PATH = 'pretrained_models/pretrained_vgg19_decoder_model.npz'
 content_path = 'images/content/'
 style_path = 'images/style/'
 output_path = 'images/output/'
+alpha = 1
 
 if __name__ == '__main__':
 
@@ -41,7 +42,7 @@ if __name__ == '__main__':
         enc_s_net = encoder.encode(style, 'style/')
 
         # pass the encoded images to AdaIN
-        target_features = utils.AdaIN(enc_c_net.outputs, enc_s_net.outputs)
+        target_features = utils.AdaIN(enc_c_net.outputs, enc_s_net.outputs, alpha=alpha)
 
         # decode target features back to image
         dec_net = decoder.decode(target_features, prefix="decoder/")
