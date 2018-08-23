@@ -28,9 +28,6 @@ Here are some result images (Left to Right: Content , Style , Result):
    <img src="./images/output/style_11_content2.png" width=250 height=250>
 </div>
 
-
-
-
 <div align="center">
    <img src="./images/content/chicago.jpg" width=250 height=250>
    <img src="./images/style/cat.jpg" width=250 height=250>
