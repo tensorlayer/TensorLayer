@@ -16,8 +16,7 @@ __all__ = [
 
 
 class UpSampling2dLayer(Layer):
-    """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer.
-    See `tf.image.resize_images <https://www.tensorflow.org/api_docs/python/tf/image/resize_images>`__.
+    """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer, see `tf.image.resize_images <https://www.tensorflow.org/api_docs/python/tf/image/resize_images>`__.
     Parameters
     ----------
     prev_layer : :class:`Layer`
@@ -87,8 +86,7 @@ class UpSampling2dLayer(Layer):
 
 
 class DownSampling2dLayer(Layer):
-    """The :class:`DownSampling2dLayer` class is down-sampling 2D layer.
-    See `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
+    """The :class:`DownSampling2dLayer` class is down-sampling 2D layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
     Parameters
     ----------
     prev_layer : :class:`Layer`
