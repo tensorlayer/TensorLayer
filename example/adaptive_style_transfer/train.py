@@ -12,7 +12,6 @@ from models import Decoder, Encoder
 
 ENCODER_PATH = 'pretrained_models/pretrained_vgg19_encoder_model.npz'
 STYLE_LAYERS = ('conv1_1', 'conv2_1', 'conv3_1', 'conv4_1')
-MODEL_SAVE_PATHS = './models/'
 
 EPOCHS = 16
 EPSILON = 1e-5
@@ -23,8 +22,10 @@ WIDTH = 256
 CHANNEL = 3
 # batch_size, height, weight, channel_number
 INPUT_SHAPE = (BATCH_SIZE, HEIGHT, WIDTH, CHANNEL)
-CONTENT_DATA_PATH = 'dataset/COCO_train_2014/'
-STYLE_DATA_PATH = 'dataset/wiki_all_images/'
+CONTENT_DATA_PATH = './dataset/COCO_train_2014/'
+STYLE_DATA_PATH = './dataset/wiki_all_images/'
+MODEL_SAVE_PATH = './models/'
+TEMP_IMAGE_PATH = './temp_images/'
 
 if __name__ == '__main__':
 
@@ -163,7 +164,7 @@ if __name__ == '__main__':
 
                 if step % 1000 == 0:
                     print('save model now,step:', step)
-                    tl.files.save_npz(stylied_dec_net.all_params, name=MODEL_SAVE_PATHS + str(step) + '_model.npz')
+                    tl.files.save_npz(stylied_dec_net.all_params, name=MODEL_SAVE_PATH + str(step) + '_model.npz')
                     result_image = sess.run(
                         stylied_image, feed_dict={
                             content_input: content_batch,
@@ -171,11 +172,11 @@ if __name__ == '__main__':
                         }
                     )
                     print("stylied_image generated", result_image.shape)
-                    imsave("temp_output/step_" + str(step) + ".png", result_image[0])
+                    imsave(TEMP_IMAGE_PATH + "/step_" + str(step) + ".png", result_image[0])
 
                 step += 1
 
             print('One Epoch finished\n!')
 
         # """Done Training & Save the model"""
-        tl.files.save_npz(stylied_dec_net.all_params, name=MODEL_SAVE_PATHS + str(step) + '_model.npz')
+        tl.files.save_npz(stylied_dec_net.all_params, name=MODEL_SAVE_PATH + str(step) + '_model.npz')
