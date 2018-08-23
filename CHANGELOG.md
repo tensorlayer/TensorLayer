@@ -99,7 +99,7 @@ To release a new version, please update the changelog as followed:
   - add `tutorial_quanconv_cifar10.py` and `tutorial_quanconv_mnist.py` (PR #735)
   - add `tutorial_work_with_onnx.py`(PR #775)
 - Examples:
-  - [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/abs/1703.06868) (PR #796)
+  - [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/abs/1703.06868) (PR #799)
 
 ### Changed
 
