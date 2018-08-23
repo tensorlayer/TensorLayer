@@ -17,36 +17,43 @@ Here are some result images (Left to Right: Content , Style , Result):
 
 <div align="center">
    <img src="./images/content/content_1.png" width=250 height=250>
-   <img src="./images/style/style_1.png" width=250 height=250>
-   <img src="./images/output/style_1_content_1.jpg" width=250 height=250>
+   <img src="./images/style/style_5.png" width=250 height=250>
+   <img src="./images/output/style_5_content_1.jpg" width=250 height=250>
 </div>
 
 
 <div align="center">
    <img src="./images/content/content_2.png" width=250 height=250>
-   <img src="./images/style/style_2.png" width=250 height=250>
-   <img src="./images/output/style_2_content_2.jpg" width=250 height=250>
+   <img src="./images/style/style11.png" width=250 height=250>
+   <img src="./images/output/style_11_content2.png" width=250 height=250>
 </div>
+
+
 
 
 <div align="center">
-   <img src="./images/content/content_3.png" width=250 height=250>
-   <img src="./images/style/style_3.png" width=250 height=250>
-   <img src="./images/output/style_3_content_3.jpg" width=250 height=250>
+   <img src="./images/content/chicago.jpg" width=250 height=250>
+   <img src="./images/style/cat.jpg" width=250 height=250>
+   <img src="./images/output/cat_chicago.jpg" width=250 height=250>
 </div>
 
 
 
+<div align="center">
+   <img src="./images/content/lance.jpg" width=250 height=250>
+   <img src="./images/style/lion.jpg" width=250 height=250>
+   <img src="./images/output/lion_lance.jpg" width=250 height=250>
+</div>
 <div align="center">
    <img src="./images/content/content_4.png" width=250 height=250>
-   <img src="./images/style/style_4.png" width=250 height=250>
-   <img src="./images/output/style_4_content_4.jpg" width=250 height=250>
+   <img src="./images/style/style_6.png" width=250 height=250>
+   <img src="./images/output/style_6_content_4.jpg" width=250 height=250>
 </div>
 
 <div align="center">
-   <img src="./images/content/content_1.png" width=250 height=250>
-   <img src="./images/style/style_6.png" width=250 height=250>
-   <img src="./images/output/style_6_content_1.jpg" width=250 height=250>
+   <img src="./images/content/lance.jpg" width=250 height=250>
+   <img src="./images/style/udnie.jpg" width=250 height=250>
+   <img src="./images/output/udnie_lance.jpg" width=250 height=250>
 </div>
 
 Enjoy!
