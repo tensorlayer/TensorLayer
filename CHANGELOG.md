@@ -328,7 +328,7 @@ To release a new version, please update the changelog as followed:
 
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...master
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...master
 [1.9.1]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...1.9.1
 [1.9.0]: https://github.com/tensorlayer/tensorlayer/compare/1.8.5...1.9.0
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5
