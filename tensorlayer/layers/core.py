@@ -116,6 +116,7 @@ class BaseLayer(object):
     @abstractmethod
     def __init__(self, *args, **kwargs):
 
+        self.all_params = list()
         self.all_layers = list()
         self.all_drop = dict()
         self.all_graphs = list()
@@ -151,22 +152,6 @@ class BaseLayer(object):
             logging.info(
                 "  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name)
             )
-
-    def count_params(self):
-        """Returns the number of parameters in the network."""
-        n_params = 0
-        for _i, p in enumerate(self.all_params):
-            n = 1
-            # for s in p.eval().shape:
-            for s in p.get_shape():
-                try:
-                    s = int(s)
-                except TypeError:
-                    s = 1
-                if s:
-                    n = n * s
-            n_params = n_params + n
-        return n_params
 
     def get_all_params(self, session=None):
         """Return the parameters in a list of array."""
@@ -267,23 +252,23 @@ class BaseLayer(object):
     def _add_params(self, params):
 
         if isinstance(params, list):
-            self.all_params.extend(list(params))
+            for param in params:
+                if param not in self.all_params:
+                    self.all_params.append(param)
 
-        else:
-            self.all_params.append(params)
-
-        self.all_params = list_remove_repeat(self.all_params)
+        elif params not in self.all_params:
+                self.all_params.append(params)
 
     @protected_method
     def _add_graphs(self, graphs):
 
         if isinstance(graphs, list):
-            self.all_graphs.extend(list(graphs))
+            for graph in graphs:
+                if graph not in self.all_graphs:
+                    self.all_graphs.append(graph)
 
-        else:
+        elif graphs not in self.all_graphs:
             self.all_graphs.append(graphs)
-
-        # self.all_graphs = list_remove_repeat(self.all_graphs) # cannot repeat
 
     @protected_method
     def _add_dropout_layers(self, drop_layers):
@@ -295,12 +280,6 @@ class BaseLayer(object):
 
         else:
             raise ValueError()
-
-    @private_method
-    def _apply_activation(self, logits, **kwargs):
-        if not kwargs:
-            kwargs = {}
-        return self.act(logits, **kwargs) if self.act is not None else logits
 
     @private_method
     def _argument_dict_checkup(self, args):
@@ -322,8 +301,6 @@ class Layer(BaseLayer):
     def __init__(self, *args, **kwargs):
 
         super(Layer, self).__init__(*args, **kwargs)
-
-        self.all_params = list()
 
         self.is_setup = False
 
@@ -532,9 +509,20 @@ class Layer(BaseLayer):
             constraint=constraint
         )
 
-        self._local_weights.append(w)
+        self._add_local_weights(w)
 
         return w
+
+    @protected_method
+    def _add_local_weights(self, weights):
+
+        if isinstance(weights, list):
+            for param in weights:
+                if param not in self._local_weights:
+                    self._local_weights.append(param)
+
+        elif weights not in self._local_weights:
+                self._local_weights.append(weights)
 
     def get_all_params(self, session=None):
         """Return the parameters in a list of array. """
@@ -545,6 +533,12 @@ class Layer(BaseLayer):
             else:
                 _params.append(session.run(p))
         return _params
+
+    @private_method
+    def _apply_activation(self, logits, **kwargs):
+        if not kwargs:
+            kwargs = {}
+        return self.act(logits, **kwargs) if self.act is not None else logits
 
     # def __getstate__(self): # pickle save
     #     return {'version': 0.1,

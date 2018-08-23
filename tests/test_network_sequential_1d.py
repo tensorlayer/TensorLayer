@@ -155,16 +155,16 @@ class Network_Sequential_1D_Test(CustomTestCase):
             cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
 
     def test_get_all_drop_plh(self):
-        self.assertEqual(len(self.model.all_drop), 1)
+        self.assertEqual(len(self.train_model.all_drop), 1)
 
     def test_count_params(self):
-        self.assertEqual(self.model.count_params(), 34193)
+        self.assertEqual(self.train_model.count_params(), 34193)
 
     def test_count_param_tensors(self):
-        self.assertEqual(len(self.model.get_all_params()), 48)
+        self.assertEqual(len(self.train_model.all_params), 48)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 44)
+        self.assertEqual(len(self.train_model.all_layers), 44)
 
     def test_network_dtype(self):
 

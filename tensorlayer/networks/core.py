@@ -104,37 +104,52 @@ class BaseNetwork(core.BaseLayer):
             "** Compiling %s `%s` - reuse: %s, is_train: %s **" % (self.__class__.__name__, self.name, reuse, is_train)
         )
 
+        all_params = []
+        all_layers = []
+        all_graphs = []
+        all_drop = {}
+        all_layers_dict = {}
+
         # Reset All Layers' Inputs
         for name, layer in self.all_layers_dict.items():
             layer.inputs = None
             layer.outputs = None
 
-        with logging.temp_handler("    [*]"):
-
-            _net = self.all_layers_dict[self.all_layers[0]](input_plh)
-
-            with tf.variable_scope(self.name, reuse=reuse):
-
-                for layer in self.all_layers[1:]:
-                    _net = self.all_layers_dict[layer](is_train=is_train)
-                    self.all_drop.update(_net._local_drop)
-
-            if not self.is_compiled:
-                self._net = _net
-                self.outputs = self._net.outputs
-                self.is_compiled = True
-
-        return self.outputs
-
-    def __getitem__(self, layer_name):
-        if layer_name in self.all_layers_dict.keys():
-            return self.all_layers_dict[layer_name]
-
-        elif self.model_scope + "/" + layer_name in self.all_layers_dict.keys():
-            return self.all_layers_dict[self.model_scope + "/" + layer_name]
+        if len(self.all_layers_dict) == 0:
+            raise RuntimeError("This network has no layer registered.")
 
         else:
-            raise ValueError("layer name `%s` does not exist in this network" % layer_name)
+            with logging.temp_handler("    [*]"):
+
+                with tf.variable_scope(self.name, reuse=reuse):
+
+                    for id_layer, layer in enumerate(self.all_layers):
+
+                        layer_factory = self.all_layers_dict[layer]
+                        all_layers_dict[layer] = layer_factory
+
+                        if id_layer == 0:
+                            network = layer_factory(input_plh, is_train=is_train)
+                        else:
+                            network = layer_factory(is_train=is_train)
+
+                        all_params.extend(layer_factory._local_weights)
+                        all_layers.append(layer_factory)
+                        # all_graphs.append(layer_factory.all_graphs)  =>  KO for now
+                        all_drop.update(layer_factory._local_drop)
+
+            return tl.models.CompiledNetwork(
+                inputs=input_plh,
+                outputs=network.outputs,
+                all_layers_dict=all_layers_dict,
+                all_params=all_params,
+
+                # all_graphs=all_graphs,
+                all_graphs=network.all_graphs,
+
+                all_drop=all_drop,
+                is_train=is_train
+            )
 
     '''
     def _base_init(self, name=None):

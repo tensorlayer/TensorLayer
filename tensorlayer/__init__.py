@@ -55,6 +55,7 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     from tensorlayer import lazy_imports
     from tensorlayer import logging
     from tensorlayer import models
+    from tensorlayer import nets
     from tensorlayer import networks
     from tensorlayer import optimizers
     from tensorlayer import rein

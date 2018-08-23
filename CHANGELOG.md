@@ -70,7 +70,6 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
-
 - API:
   - Add `tl.model.vgg19` (PR #698)
   - Add `tl.logging.contrib.hyperdash` (PR #739)
@@ -81,6 +80,7 @@ To release a new version, please update the changelog as followed:
   - Add `tl.files.load_graph_` (PR ＃751)
   - Add `tl.files.save_graph_and_params` (PR ＃751)
   - Add `tl.files.load_graph_and_params` (PR ＃751)
+  - Add `tl.models.CompiledNetwork` class (PR ＃755)
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
@@ -90,7 +90,13 @@ To release a new version, please update the changelog as followed:
   - Release QuantizedConv2d, QuantizedConv2dWithBN, QuantizedDense, QuantizedDenseWithBN (PR#735)
   - Update Core Layer to support graph (PR ＃751)
 - Setup:
-  - Creation of installation flaggs `all_dev`, `all_cpu_dev`, and `all_gpu_dev` (PR #739)
+  - Creation of installation flags `all_dev`, `all_cpu_dev`, and `all_gpu_dev` (PR #739)
+- Tests:
+  - `test_model_compilednetwork.py` has been introduced to test the class `tl.models.CompiledNetwork` (PR #755).
+  - `test_network_custom_2d.py` has been introduced to test the class `tl.networks.CustomModel` (PR #755).
+  - `test_network_sequential_1d.py` has been introduced to test the class `tl.networks.Sequential` with 1D data Layers (PR #755).
+  - `test_network_sequential_2d.py` has been introduced to test the class `tl.networks.Sequential` with 2D data Layers (PR #755).
+  - `test_network_sequential_3d.py` has been introduced to test the class `tl.networks.Sequential` with 3D data Layers (PR #755).
 - Tutorials:
   - `tutorial_models_vgg19` has been introduced to show how to use `tl.model.vgg19` (PR #698).
   - fix bug of `tutorial_bipedalwalker_a3c_continuous_action.py` (PR #734, Issue #732)
@@ -100,26 +106,25 @@ To release a new version, please update the changelog as followed:
   - add `tutorial_work_with_onnx.py`(PR #775)
 
 ### Changed
-
+- API:
   - function minibatches changed to avoid wasting samples.(PR #762)
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
   - Dockerfiles merged and refactored into one file (PR #747)
   - LazyImports move to the most **top level** imports as possible (PR #739)
   - some new test functions have been added in `test_layers_convolution.py`, `test_layers_normalization.py`, `test_layers_core.py` (PR #735)
   - `use_gemm` parameter changed for `gemmlowp_at_inference` (PR #751)
+  - `tl.models` has been renamed to `tl.nets` to comply with TF Slim naming convention: https://github.com/tensorflow/models/tree/master/research/slim (PR #755)
+- Documentation:
   - documentation now uses mock imports reducing the number of dependencies to compile the documentation (PR #785)
   - fixed and enforced pydocstyle D210, D200, D301, D207, D403, D204, D412, D402, D300, D208 (PR #784)
 
 ### Deprecated
-
   - `tl.logging.warn` has been deprecated in favor of `tl.logging.warning` (PR #739)
 
 ### Removed
-
   - `conv_layers()`  has been removed in both vgg16 and vgg19(PR #710)
 
 ### Fixed
-
 - import error caused by matplotlib on OSX (PR #705)
 - missing import in tl.prepro (PR #712)
 - Dockerfiles import error fixed - issue #733 (PR #747)
