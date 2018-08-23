@@ -43,8 +43,8 @@ class CompiledNetwork(object):
             super(CompiledNetwork, self).__setattr__(key, value)
         else:
             raise RuntimeError(
-                "A Tensorlayer network is not supposed to be modified once it has been compiled. "
-                "An attempt to modify the attribute: `{}` has been detected.".format(key)
+                "A Tensorlayer `{}` is not supposed to be modified. "
+                "An attempt to modify the attribute: `{}` has been detected.".format(self.__class__.__name__, key)
             )
 
     def count_params(self):
