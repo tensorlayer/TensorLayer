@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Using Dataset API and tf.image can obtain the best performance."""
 
@@ -6,7 +6,7 @@ import time
 import multiprocessing
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import *
+from tensorlayer.layers import InputLayer, Conv2d, BatchNormLayer, MaxPool2d, FlattenLayer, DenseLayer
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
