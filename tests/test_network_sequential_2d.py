@@ -206,7 +206,6 @@ class Network_Sequential_2D_Test(CustomTestCase):
                 tl.layers.DeConv2dLayer(
                     shape=(3, 3, 8, 8),
                     strides=(1, 2, 2, 1),
-                    output_shape=(None, 128, 128, 8),
                     padding='SAME',
                     act=tf.nn.relu,
                     name='expert_deconv2d_layer_16'
@@ -217,7 +216,6 @@ class Network_Sequential_2D_Test(CustomTestCase):
                 tl.layers.DeConv2dLayer(
                     shape=(3, 3, 8, 8),
                     strides=(1, 2, 2, 1),
-                    output_shape=(None, 128, 128, 8),
                     padding='SAME',
                     b_init=None,
                     act=tf.nn.relu,

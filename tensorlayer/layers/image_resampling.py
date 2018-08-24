@@ -114,11 +114,11 @@ class UpSampling2dLayer(Layer):
             x_pos, y_pos = (1, 2)
 
         else:
-            raise RuntimeError("The input shape: %s is not supported" % prev_layer.outputs)
+            raise RuntimeError("The input shape: %s is not supported" % tf.shape(self.inputs))
 
         if self.is_scale:
-            size_h = np.ceil(int(self.inputs.shape[x_pos]) * self.size[0]).astype(dtype=np.int32)
-            size_w = np.ceil(int(self.inputs.shape[y_pos]) * self.size[1]).astype(dtype=np.int32)
+            size_h = tf.shape(self.inputs)[x_pos] * self.size[0]
+            size_w = tf.shape(self.inputs)[y_pos] * self.size[1]
 
             _size = [size_h, size_w]
 
@@ -237,11 +237,11 @@ class DownSampling2dLayer(Layer):
             x_pos, y_pos = (1, 2)
 
         else:
-            raise RuntimeError("The input shape: %s is not supported" % prev_layer.outputs)
+            raise RuntimeError("The input shape: %s is not supported" % tf.shape(self.inputs))
 
         if self.is_scale:
-            size_h = np.ceil(int(self.inputs.shape[x_pos]) / float(self.size[0])).astype(dtype=np.int32)
-            size_w = np.ceil(int(self.inputs.shape[y_pos]) / float(self.size[1])).astype(dtype=np.int32)
+            size_h = tf.cast(tf.ceil(tf.shape(self.inputs)[x_pos] / np.float32(self.size[0])), tf.int32)
+            size_w = tf.cast(tf.ceil(tf.shape(self.inputs)[y_pos] / np.float32(self.size[1])), tf.int32)
 
             _size = [size_h, size_w]
 
