@@ -20,6 +20,7 @@ n_step_epoch = int(len(y_train) / batch_size)
 n_step = n_epoch * n_step_epoch
 shuffle_buffer_size = 100
 
+
 def model_batch_norm(x_crop, y_, is_train, reuse):
     W_init = tf.truncated_normal_initializer(stddev=5e-2)
     W_init2 = tf.truncated_normal_initializer(stddev=0.04)
@@ -52,6 +53,7 @@ def model_batch_norm(x_crop, y_, is_train, reuse):
 
         return net, cost, acc
 
+
 def generator_train():
     inputs = X_train
     targets = y_train
@@ -61,6 +63,7 @@ def generator_train():
         # yield _input.encode('utf-8'), _target.encode('utf-8')
         yield _input, _target
 
+
 def generator_test():
     inputs = X_test
     targets = y_test
@@ -69,6 +72,7 @@ def generator_test():
     for _input, _target in zip(inputs, targets):
         # yield _input.encode('utf-8'), _target.encode('utf-8')
         yield _input, _target
+
 
 def _map_fn_train(img, target):
     # 1. Randomly crop a [height, width] section of the image.
@@ -84,6 +88,7 @@ def _map_fn_train(img, target):
     target = tf.reshape(target, ())
     return img, target
 
+
 def _map_fn_test(img, target):
     # 1. Crop the central [height, width] of the image.
     img = tf.image.resize_image_with_crop_or_pad(img, 24, 24)
@@ -93,8 +98,10 @@ def _map_fn_test(img, target):
     target = tf.reshape(target, ())
     return img, target
 
+
 # dataset API and augmentation
-ds = tf.data.Dataset().from_generator(generator_train, output_types=(tf.float32, tf.int32))#, output_shapes=((24, 24, 3), (1)))
+ds = tf.data.Dataset().from_generator(generator_train, output_types=(tf.float32,
+                                                                     tf.int32))  #, output_shapes=((24, 24, 3), (1)))
 ds = ds.map(_map_fn_train, num_parallel_calls=multiprocessing.cpu_count())
 ds = ds.repeat(n_epoch)
 ds = ds.shuffle(shuffle_buffer_size)
@@ -102,7 +109,8 @@ ds = ds.prefetch(buffer_size=2)
 ds = ds.batch(batch_size)
 value = ds.make_one_shot_iterator().get_next()
 
-ds = tf.data.Dataset().from_generator(generator_test, output_types=(tf.float32, tf.int32))#, output_shapes=((24, 24, 3), (1)))
+ds = tf.data.Dataset().from_generator(generator_test, output_types=(tf.float32,
+                                                                    tf.int32))  #, output_shapes=((24, 24, 3), (1)))
 ds = ds.map(_map_fn_test, num_parallel_calls=multiprocessing.cpu_count())
 ds = ds.repeat(n_epoch)
 ds = ds.shuffle(shuffle_buffer_size)
