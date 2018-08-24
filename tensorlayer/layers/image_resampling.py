@@ -17,7 +17,8 @@ __all__ = [
 
 
 class UpSampling2dLayer(Layer):
-    """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer, see `tf.image.resize_images <https://www.tensorflow.org/api_docs/python/tf/image/resize_images>`__.
+    """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer, see `tf.image.resize_images
+    <https://www.tensorflow.org/api_docs/python/tf/image/resize_images>`__.
 
     Parameters
     ----------
@@ -119,14 +120,19 @@ class UpSampling2dLayer(Layer):
         with tf.variable_scope(self.name):
 
             if self.is_scale:
-                if None not in [self.inputs.get_shape()[x_pos]._value, self.inputs.get_shape()[y_pos]._value]:
-                    size_h = self.inputs.get_shape()[x_pos] * self.size[0]
-                    size_w = self.inputs.get_shape()[y_pos] * self.size[1]
-                else:
-                    size_h = tf.shape(self.inputs)[x_pos] * self.size[0]
-                    size_w = tf.shape(self.inputs)[y_pos] * self.size[1]
+                if all(isinstance(x, int) for x in self.size):
+                    if None not in [self.inputs.get_shape()[x_pos]._value, self.inputs.get_shape()[y_pos]._value]:
+                        size_h = self.inputs.get_shape()[x_pos] * self.size[0]
+                        size_w = self.inputs.get_shape()[y_pos] * self.size[1]
+                    else:
+                        size_h = tf.shape(self.inputs)[x_pos] * self.size[0]
+                        size_w = tf.shape(self.inputs)[y_pos] * self.size[1]
 
-                _size = [size_h, size_w]
+                    _size = [size_h, size_w]
+
+                else:
+                    raise ValueError("all elements of tuple `size` hyperparameter should of type `int`")
+
 
             else:
                 _size = self.size
@@ -146,7 +152,8 @@ class UpSampling2dLayer(Layer):
 
 
 class DownSampling2dLayer(Layer):
-    """The :class:`DownSampling2dLayer` class is down-sampling 2D layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
+    """The :class:`DownSampling2dLayer` class is down-sampling 2D layer, see `tf.image.resize_images
+    <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
 
     Parameters
     ----------
@@ -248,12 +255,24 @@ class DownSampling2dLayer(Layer):
         with tf.variable_scope(self.name):
 
             if self.is_scale:
-                if None not in [self.inputs.get_shape()[x_pos]._value, self.inputs.get_shape()[y_pos]._value]:
-                    size_h = tf.cast(tf.ceil(int(self.inputs.get_shape()[x_pos]) / float(self.size[0])), tf.int32)
-                    size_w = tf.cast(tf.ceil(int(self.inputs.get_shape()[y_pos]) / float(self.size[1])), tf.int32)
+                if all(isinstance(x, int) for x in self.size):
+                    if None not in [self.inputs.get_shape()[x_pos]._value, self.inputs.get_shape()[y_pos]._value]:
+                        size_h = tf.cast(tf.ceil(int(self.inputs.get_shape()[x_pos]) / float(self.size[0])), tf.int32)
+                        size_w = tf.cast(tf.ceil(int(self.inputs.get_shape()[y_pos]) / float(self.size[1])), tf.int32)
+                    else:
+                        size_h = tf.cast(tf.ceil(tf.shape(self.inputs)[x_pos] / np.float32(self.size[0])), tf.int32)
+                        size_w = tf.cast(tf.ceil(tf.shape(self.inputs)[y_pos] / np.float32(self.size[1])), tf.int32)
+
+                elif all(isinstance(x, float) for x in self.size):
+                    if None not in [self.inputs.get_shape()[x_pos]._value, self.inputs.get_shape()[y_pos]._value]:
+                        size_h = tf.cast(int(self.inputs.get_shape()[x_pos]) * self.size[0], tf.int32)
+                        size_w = tf.cast(int(self.inputs.get_shape()[y_pos]) * self.size[1], tf.int32)
+                    else:
+                        size_h = tf.shape(self.inputs)[x_pos] * self.size[0]
+                        size_w = tf.shape(self.inputs)[y_pos] * self.size[1]
+
                 else:
-                    size_h = tf.cast(tf.ceil(tf.shape(self.inputs)[x_pos] / np.float32(self.size[0])), tf.int32)
-                    size_w = tf.cast(tf.ceil(tf.shape(self.inputs)[y_pos] / np.float32(self.size[1])), tf.int32)
+                    raise ValueError("all elements of tuple `size` hyperparameter should be either `int` or `float`")
 
                 _size = [size_h, size_w]
 
