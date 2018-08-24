@@ -16,41 +16,41 @@
 Here are some result images (Left to Right: Content , Style , Result):
 
 <div align="center">
-   <img src="./images/content/content_1.png" width=250 height=250>
-   <img src="./images/style/style_5.png" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-   models/blob/master/models/style_transfer_models_and_examples/images/content/content_1.png" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/style/style_5.png" width=250 height=250>
    <img src="./images/output/style_5_content_1.jpg" width=250 height=250>
 </div>
 
 
 <div align="center">
-   <img src="./images/content/content_2.png" width=250 height=250>
-   <img src="./images/style/style11.png" width=250 height=250>
-   <img src="./images/output/style_11_content2.png" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/content/content_2.png" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/style/style11.png" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/output/style_11_content2.png" width=250 height=250>
 </div>
 
 <div align="center">
-   <img src="./images/content/chicago.jpg" width=250 height=250>
-   <img src="./images/style/cat.jpg" width=250 height=250>
-   <img src="./images/output/cat_chicago.jpg" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/content/chicago.jpg" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/style/cat.jpg" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/output/cat_chicago.jpg" width=250 height=250>
 </div>
 
 
 
 <div align="center">
-   <img src="./images/content/lance.jpg" width=250 height=250>
-   <img src="./images/style/lion.jpg" width=250 height=250>
-   <img src="./images/output/lion_lance.jpg" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/content/lance.jpg" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/style/lion.jpg" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/output/lion_lance.jpg" width=250 height=250>
 </div>
 <div align="center">
-   <img src="./images/content/content_4.png" width=250 height=250>
-   <img src="./images/style/style_6.png" width=250 height=250>
-   <img src="./images/output/style_6_content_4.jpg" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/content/content_4.png" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/style/style_6.png" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/output/style_6_content_4.jpg" width=250 height=250>
 </div>
 
 <div align="center">
-   <img src="./images/content/lance.jpg" width=250 height=250>
-   <img src="./images/style/udnie.jpg" width=250 height=250>
-   <img src="./images/output/udnie_lance.jpg" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/content/lance.jpg" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/style/udnie.jpg" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/output/udnie_lance.jpg" width=250 height=250>
 </div>
 
 Enjoy!
