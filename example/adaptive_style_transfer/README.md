@@ -16,7 +16,7 @@
 Here are some result images (Left to Right: Content , Style , Result):
 
 <div align="center">
-   <img src="https://github.com/tensorlayer/pretrained-   models/blob/master/models/style_transfer_models_and_examples/images/content/content_1.png" width=250 height=250>
+   <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/content/content_1.png" width=250 height=250>
    <img src="https://github.com/tensorlayer/pretrained-models/blob/master/models/style_transfer_models_and_examples/images/style/style_5.png" width=250 height=250>
    <img src="./images/output/style_5_content_1.jpg" width=250 height=250>
 </div>
