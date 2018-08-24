@@ -7,29 +7,30 @@ Examples
 Basics
 ============
 
- - Multi-layer perceptron (MNIST). Classification task, see `tutorial_mnist_simple.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_simple.py>`__.
- - Multi-layer perceptron (MNIST). Classification with dropout using iterator, see `method1 <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`__ (**use placeholder**) and `method2 <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py>`__ (**use reuse**).
- - Denoising Autoencoder (MNIST). Classification task, see `tutorial_mnist.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist.py>`__.
- - Stacked Denoising Autoencoder and Fine-Tuning (MNIST). A MLP classification task, see `tutorial_mnist.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist.py>`__.
- - Convolutional Network (MNIST). Classification task, see `tutorial_mnist.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist.py>`__.
- - Convolutional Network (CIFAR-10). Classification task, see `tutorial_cifar10.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_cifar10.py>`_ and `tutorial_cifar10_tfrecord.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_cifar10_tfrecord.py>`__.
- - TensorFlow dataset API for object detection see `here <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_tf_dataset_voc.py>`__.
- - Merge TF-Slim into TensorLayer. `tutorial_inceptionV3_tfslim.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`__.
- - Merge Keras into TensorLayer. `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`__.
- - Data augmentation with TFRecord. Effective way to load and pre-process data, see `tutorial_tfrecord*.py <https://github.com/tensorlayer/tensorlayer/tree/master/example>`__ and `tutorial_cifar10_tfrecord.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_cifar10_tfrecord.py>`__.
- - Data augmentation with TensorLayer, see `tutorial_image_preprocess.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_image_preprocess.py>`__.
- - Float 16 half-precision model, see `tutorial_mnist_float16.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_float16.py>`__.
- - Transparent distributed training. `mnist <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_distributed_trainer.py>`__ by `luomai <https://github.com/luomai>`__.
+ - Multi-layer perceptron (MNIST). Classification task, see `tutorial_mnist_simple.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/basic_tutorials/tutorial_mnist_simple.py>`__.
+ - Multi-layer perceptron (MNIST). Classification with dropout using iterator, see `method1 <https://github.com/tensorlayer/tensorlayer/blob/master/example/basic_tutorials/tutorial_mlp_dropout1.py>`__ (**use placeholder**) and `method2 <https://github.com/tensorlayer/tensorlayer/blob/master/example/basic_tutorials/tutorial_mlp_dropout2.py>`__ (**use reuse**).
+ - Denoising Autoencoder (MNIST). Classification task, see `tutorial_mnist_autoencoder_cnn.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/basic_tutorials/tutorial_mnist_autoencoder_cnn.py>`__.
+ - Stacked Denoising Autoencoder and Fine-Tuning (MNIST). A MLP classification task, see `tutorial_mnist_autoencoder_cnn.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/basic_tutorials/tutorial_mnist_autoencoder_cnn.py>`__.
+ - Convolutional Network (MNIST). Classification task, see `tutorial_mnist_autoencoder_cnn.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/basic_tutorials/tutorial_mnist_autoencoder_cnn.py>`__.
+ - Convolutional Network (CIFAR-10). Classification task, see `tutorial_cifar10.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/basic_tutorials/tutorial_cifar10.py>`_ and `tutorial_cifar10_tfrecord.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/basic_tutorials/tutorial_cifar10_tfrecord.py>`__.
+ - TensorFlow dataset API for object detection see `here <https://github.com/tensorlayer/tensorlayer/blob/master/example/data_process/tutorial_tf_dataset_voc.py>`__.
+ - Merge TF-Slim into TensorLayer. `tutorial_inceptionV3_tfslim.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/pretrained_cnn/tutorial_inceptionV3_tfslim.py>`__.
+ - Merge Keras into TensorLayer. `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/keras_tfslim/tutorial_keras.py>`__.
+ - Data augmentation with TFRecord. Effective way to load and pre-process data, see `tutorial_tfrecord*.py <https://github.com/tensorlayer/tensorlayer/tree/master/example/data_process>`__ and `tutorial_cifar10_tfrecord.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/basic_tutorials/tutorial_cifar10_tfrecord.py>`__.
+ - Data augmentation with Dataset API. Effective way to load and pre-process data, see `tutorial_cifar10_datasetapi.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/basic_tutorials/tutorial_cifar10_datasetapi.py>`__.
+ - Data augmentation with TensorLayer. See `tutorial_image_preprocess.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_image_preprocess.py>`__ (for quick test only).
+ - Float 16 half-precision model, see `tutorial_mnist_float16.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/basic_tutorials/tutorial_mnist_float16.py>`__.
+ - Transparent distributed training. `mnist <https://github.com/tensorlayer/tensorlayer/blob/master/example/distributed_training/tutorial_mnist_distributed_trainer.py>`__ by `luomai <https://github.com/luomai>`__.
 
 Vision
 ==================
 
  - Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization, see `examples <https://github.com/tensorlayer/tensorlayer/tree/master/applications/adaptive_style_transfer>`__.
  - ArcFace: Additive Angular Margin Loss for Deep Face Recognition, see `InsignFace <https://github.com/auroua/InsightFace_TF>`__.
- - BinaryNet. Model compression, see `mnist <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_binarynet_mnist_cnn.py>`__ `cifar10 <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_binarynet_cifar10_tfrecord.py>`__.
- - Ternary Weight Network. Model compression, see `mnist <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ternaryweight_mnist_cnn.py>`__ `cifar10 <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ternaryweight_cifar10_tfrecord.py>`__.
- - DoReFa-Net. Model compression, see `mnist <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_dorefanet_mnist_cnn.py>`__ `cifar10 <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_dorefanet_cifar10_tfrecord.py>`__.
- - QuanCNN. Model compression, sees `mnist <https://github.com/XJTUI-AIR-FALCON/tensorlayer/blob/master/example/tutorial_quanconv_mnist.py>`__ `cifar10 <https://github.com/XJTUI-AIR-FALCON/tensorlayer/blob/master/example/tutorial_quanconv_cifar10.py>`__.
+ - BinaryNet. Model compression, see `mnist <https://github.com/tensorlayer/tensorlayer/blob/master/example/quantized_net/tutorial_binarynet_mnist_cnn.py>`__ `cifar10 <https://github.com/tensorlayer/tensorlayer/blob/master/example/quantized_net/tutorial_binarynet_cifar10_tfrecord.py>`__.
+ - Ternary Weight Network. Model compression, see `mnist <https://github.com/tensorlayer/tensorlayer/blob/master/example/quantized_net/tutorial_ternaryweight_mnist_cnn.py>`__ `cifar10 <https://github.com/tensorlayer/tensorlayer/blob/master/example/quantized_net/tutorial_ternaryweight_cifar10_tfrecord.py>`__.
+ - DoReFa-Net. Model compression, see `mnist <https://github.com/tensorlayer/tensorlayer/blob/master/example/quantized_net/tutorial_dorefanet_mnist_cnn.py>`__ `cifar10 <https://github.com/tensorlayer/tensorlayer/blob/master/example/quantized_net/tutorial_dorefanet_cifar10_tfrecord.py>`__.
+ - QuanCNN. Model compression, sees `mnist <https://github.com/XJTUI-AIR-FALCON/tensorlayer/blob/master/example/quantized_net/tutorial_quanconv_mnist.py>`__ `cifar10 <https://github.com/XJTUI-AIR-FALCON/tensorlayer/blob/master/example/quantized_net/tutorial_quanconv_cifar10.py>`__.
  - Wide ResNet (CIFAR) by `ritchieng <https://github.com/ritchieng/wideresnet-tensorlayer>`__.
  - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`__ by `zsdonghao <https://github.com/zsdonghao/Spatial-Transformer-Nets>`__.
  - `U-Net for brain tumor segmentation <https://github.com/zsdonghao/u-net-brain-tumor>`__ by `zsdonghao <https://github.com/zsdonghao/u-net-brain-tumor>`__.
@@ -50,34 +51,34 @@ Adversarial Learning
 Natural Language Processing
 ==============================
 
- - Recurrent Neural Network (LSTM). Apply multiple LSTM to PTB dataset for language modeling, see `tutorial_ptb_lstm_state_is_tuple.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__.
- - Word Embedding (Word2vec). Train a word embedding matrix, see `tutorial_word2vec_basic.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial\_word2vec_basic.py>`__.
- - Restore Embedding matrix. Restore a pre-train embedding matrix, see `tutorial_generate_text.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_generate_text.py>`__.
- - Text Generation. Generates new text scripts, using LSTM network, see `tutorial_generate_text.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_generate_text.py>`__.
+ - Recurrent Neural Network (LSTM). Apply multiple LSTM to PTB dataset for language modeling, see `tutorial_ptb_lstm_state_is_tuple.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/text_ptb/tutorial_ptb_lstm_state_is_tuple.py>`__.
+ - Word Embedding (Word2vec). Train a word embedding matrix, see `tutorial_word2vec_basic.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/text_word_embedding/tutorial\_word2vec_basic.py>`__.
+ - Restore Embedding matrix. Restore a pre-train embedding matrix, see `tutorial_generate_text.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/text_generation/tutorial_generate_text.py>`__.
+ - Text Generation. Generates new text scripts, using LSTM network, see `tutorial_generate_text.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/text_generation/tutorial_generate_text.py>`__.
  - Chinese Text Anti-Spam by `pakrchen <https://github.com/pakrchen/text-antispam>`__.
  - `Chatbot in 200 lines of code <https://github.com/tensorlayer/seq2seq-chatbot>`__ for `Seq2Seq <http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#simple-seq2seq>`__.
- - FastText Sentence Classification (IMDB), see `tutorial_imdb_fasttext.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_imdb_fasttext.py>`__ by `tomtung <https://github.com/tomtung>`__.
+ - FastText Sentence Classification (IMDB), see `tutorial_imdb_fasttext.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/text_classification/tutorial_imdb_fasttext.py>`__ by `tomtung <https://github.com/tomtung>`__.
 
 Reinforcement Learning
 ==============================
 
- - Policy Gradient / Network (Atari Ping Pong), see `tutorial_atari_pong.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_atari_pong.py>`__.
- - Deep Q-Network (Frozen lake), see `tutorial_frozenlake_dqn.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_frozenlake_dqn.py>`__.
- - Q-Table learning algorithm (Frozen lake), see `tutorial_frozenlake_q_table.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_frozenlake_q_table.py>`__.
+ - Policy Gradient / Network (Atari Ping Pong), see `tutorial_atari_pong.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/reinforcement_learning/tutorial_atari_pong.py>`__.
+ - Deep Q-Network (Frozen lake), see `tutorial_frozenlake_dqn.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/reinforcement_learning/tutorial_frozenlake_dqn.py>`__.
+ - Q-Table learning algorithm (Frozen lake), see `tutorial_frozenlake_q_table.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/reinforcement_learning/tutorial_frozenlake_q_table.py>`__.
  - Asynchronous Policy Gradient using TensorDB (Atari Ping Pong) by `nebulaV <https://github.com/akaraspt/tl_paper>`__.
- - AC for discrete action space (Cartpole), see `tutorial_cartpole_ac.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_cartpole_ac.py>`__.
- - A3C for continuous action space (Bipedal Walker), see `tutorial_bipedalwalker_a3c*.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_bipedalwalker_a3c_continuous_action.py>`__.
+ - AC for discrete action space (Cartpole), see `tutorial_cartpole_ac.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/reinforcement_learning/tutorial_cartpole_ac.py>`__.
+ - A3C for continuous action space (Bipedal Walker), see `tutorial_bipedalwalker_a3c*.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/reinforcement_learning/tutorial_bipedalwalker_a3c_continuous_action.py>`__.
  - `DAGGER <https://www.cs.cmu.edu/%7Esross1/publications/Ross-AIStats11-NoRegret.pdf>`__ for (`Gym Torcs <https://github.com/ugo-nama-kun/gym_torcs>`__) by `zsdonghao <https://github.com/zsdonghao/Imitation-Learning-Dagger-Torcs>`__.
  - `TRPO <https://arxiv.org/abs/1502.05477>`__ for continuous and discrete action space by `jjkke88 <https://github.com/jjkke88/RL_toolbox>`__.
 
 Pretrained Models
 ==================
 
- - VGG 16 (ImageNet). Classification task, see `tl.models.VGG16 <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_vgg16.py>`__ or `tutorial_vgg16.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_vgg16.py>`__.
- - VGG 19 (ImageNet). Classification task, see `tutorial_vgg19.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_vgg19.py>`__.
- - InceptionV3 (ImageNet). Classification task, see `tutorial_inceptionV3_tfslim.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`__.
- - SqueezeNet (ImageNet). Model compression, see `tl.models.SqueezeNetV1 <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_squeezenetv1.py>`__ or `tutorial_squeezenet.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_squeezenet.py>`__.
- - MobileNet (ImageNet). Model compression, see `tl.models.MobileNetV1 <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_mobilenetv1.py>`__ or `tutorial_mobilenet.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mobilenet.py>`__.
+ - VGG 16 (ImageNet). Classification task, see `tl.models.VGG16 <https://github.com/tensorlayer/tensorlayer/blob/master/example/pretrained_cnn/tutorial_models_vgg16.py>`__ or `tutorial_vgg16.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/pretrained_cnn/tutorial_vgg16.py>`__.
+ - VGG 19 (ImageNet). Classification task, see `tutorial_vgg19.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/pretrained_cnn/tutorial_vgg19.py>`__.
+ - InceptionV3 (ImageNet). Classification task, see `tutorial_inceptionV3_tfslim.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/pretrained_cnn/tutorial_inceptionV3_tfslim.py>`__.
+ - SqueezeNet (ImageNet). Model compression, see `tl.models.SqueezeNetV1 <https://github.com/tensorlayer/tensorlayer/blob/master/example/pretrained_cnn/tutorial_models_squeezenetv1.py>`__ or `tutorial_squeezenet.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/pretrained_cnn/tutorial_squeezenet.py>`__.
+ - MobileNet (ImageNet). Model compression, see `tl.models.MobileNetV1 <https://github.com/tensorlayer/tensorlayer/blob/master/example/pretrained_cnn/tutorial_models_mobilenetv1.py>`__ or `tutorial_mobilenet.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/pretrained_cnn/tutorial_mobilenet.py>`__.
  - More CNN implementations of `TF-Slim <https://github.com/tensorflow/models/tree/master/research/slim>`__ can be connected to TensorLayer via SlimNetsLayer.
  - All pretrained models in `pretrained-models <https://github.com/tensorlayer/pretrained-models>`__.
 
