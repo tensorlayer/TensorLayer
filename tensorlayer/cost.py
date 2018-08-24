@@ -264,6 +264,7 @@ def dice_hard_coe(output, target, threshold=0.5, axis=(1, 2, 3), smooth=1e-5):
     References
     -----------
     - `Wiki-Dice <https://en.wikipedia.org/wiki/Sørensen–Dice_coefficient>`__
+    
     """
     output = tf.cast(output > threshold, dtype=tf.float32)
     target = tf.cast(target > threshold, dtype=tf.float32)
