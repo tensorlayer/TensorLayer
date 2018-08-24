@@ -116,23 +116,29 @@ class UpSampling2dLayer(Layer):
         else:
             raise RuntimeError("The input shape: %s is not supported" % tf.shape(self.inputs))
 
-        if self.is_scale:
-            size_h = tf.shape(self.inputs)[x_pos] * self.size[0]
-            size_w = tf.shape(self.inputs)[y_pos] * self.size[1]
-
-            _size = [size_h, size_w]
-
-        else:
-            _size = self.size
-
         with tf.variable_scope(self.name):
+
+            if self.is_scale:
+                if None not in [self.inputs.get_shape()[x_pos]._value, self.inputs.get_shape()[y_pos]._value]:
+                    size_h = self.inputs.get_shape()[x_pos] * self.size[0]
+                    size_w = self.inputs.get_shape()[y_pos] * self.size[1]
+                else:
+                    size_h = tf.shape(self.inputs)[x_pos] * self.size[0]
+                    size_w = tf.shape(self.inputs)[y_pos] * self.size[1]
+
+                _size = [size_h, size_w]
+
+            else:
+                _size = self.size
+
+            print("size:", _size)
 
             self.outputs = tf.image.resize_images(
                 self.inputs, size=_size, method=self.method, align_corners=self.align_corners
             )
             self.outputs = tf.cast(self.outputs, self.inputs.dtype)
 
-            self.out_shape = self.outputs.shape
+            self.out_shape = self.outputs.get_shape()
 
         super(UpSampling2dLayer, self).compile(prev_layer)
 
@@ -239,23 +245,27 @@ class DownSampling2dLayer(Layer):
         else:
             raise RuntimeError("The input shape: %s is not supported" % tf.shape(self.inputs))
 
-        if self.is_scale:
-            size_h = tf.cast(tf.ceil(tf.shape(self.inputs)[x_pos] / np.float32(self.size[0])), tf.int32)
-            size_w = tf.cast(tf.ceil(tf.shape(self.inputs)[y_pos] / np.float32(self.size[1])), tf.int32)
-
-            _size = [size_h, size_w]
-
-        else:
-            _size = self.size
-
         with tf.variable_scope(self.name):
+
+            if self.is_scale:
+                if None not in [self.inputs.get_shape()[x_pos]._value, self.inputs.get_shape()[y_pos]._value]:
+                    size_h = tf.cast(tf.ceil(int(self.inputs.get_shape()[x_pos]) / float(self.size[0])), tf.int32)
+                    size_w = tf.cast(tf.ceil(int(self.inputs.get_shape()[y_pos]) / float(self.size[1])), tf.int32)
+                else:
+                    size_h = tf.cast(tf.ceil(tf.shape(self.inputs)[x_pos] / np.float32(self.size[0])), tf.int32)
+                    size_w = tf.cast(tf.ceil(tf.shape(self.inputs)[y_pos] / np.float32(self.size[1])), tf.int32)
+
+                _size = [size_h, size_w]
+
+            else:
+                _size = self.size
 
             self.outputs = tf.image.resize_images(
                 self.inputs, size=_size, method=self.method, align_corners=self.align_corners
             )
             self.outputs = tf.cast(self.outputs, self.inputs.dtype)
 
-            self.out_shape = self.outputs.shape
+            self.out_shape = self.outputs.get_shape()
 
         super(DownSampling2dLayer, self).compile(prev_layer)
 
