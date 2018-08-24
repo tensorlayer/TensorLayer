@@ -7,7 +7,10 @@ import tensorflow as tf
 
 from tensorlayer.decorators.utils import get_network_obj
 
-__all__ = ['layer_autoregister', 'force_return_self', 'overwrite_layername_in_network']
+__all__ = [
+    'auto_parse_inputs', 'auto_reset_temp_attrs', 'force_return_self', 'layer_autoregister',
+    'overwrite_layername_in_network'
+]
 
 
 def force_return_self(func):
@@ -18,6 +21,30 @@ def force_return_self(func):
         func(self, *args, **kwargs)
 
         return self
+
+    return func_wrapper
+
+
+def auto_reset_temp_attrs(func):
+    """decorator to overwrite return value with `self` object"""
+
+    def func_wrapper(self, *args, **kwargs):
+        """decorator wrapper function"""
+        self._temp_data = dict()
+
+        return func(self, *args, **kwargs)
+
+    return func_wrapper
+
+
+def auto_parse_inputs(func):
+    """decorator to overwrite return value with `self` object"""
+
+    def func_wrapper(self, *args, **kwargs):
+        """decorator wrapper function"""
+        super(self.__class__, self).compile(args[0])  # args[0] => prev_layer
+
+        return func(self, *args, **kwargs)
 
     return func_wrapper
 

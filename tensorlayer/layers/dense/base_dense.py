@@ -5,6 +5,7 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -99,21 +100,22 @@ class DenseLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
         super(DenseLayer, self).compile(prev_layer)
 
-        if self.inputs.get_shape().ndims != 2:
+        if self._temp_data['inputs'].get_shape().ndims != 2:
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
 
-        n_in = int(self.inputs.get_shape()[-1])
+        n_in = int(self._temp_data['inputs'].get_shape()[-1])
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
                 name='W', shape=(n_in, self.n_units), initializer=self.W_init, **self.W_init_args
             )
 
-            self.outputs = tf.matmul(self.inputs, weight_matrix)
+            self._temp_data['outputs'] = tf.matmul(self._temp_data['inputs'], weight_matrix)
 
             if self.b_init is not None:
                 try:
@@ -121,9 +123,9 @@ class DenseLayer(Layer):
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = self._get_tf_variable(name='b', initializer=self.b_init, **self.b_init_args)
 
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

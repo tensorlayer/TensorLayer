@@ -133,7 +133,6 @@ class UpSampling2dLayer(Layer):
                 else:
                     raise ValueError("all elements of tuple `size` hyperparameter should of type `int`")
 
-
             else:
                 _size = self.size
 

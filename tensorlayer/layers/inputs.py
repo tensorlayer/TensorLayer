@@ -46,7 +46,7 @@ class InputLayer(Layer):
         additional_str = []
 
         try:
-            additional_str.append("input shape: %s" % self.inputs.shape)
+            additional_str.append("input shape: %s" % self._temp_data['inputs'].shape)
         except AttributeError:
             pass
 
@@ -56,7 +56,8 @@ class InputLayer(Layer):
 
         super(InputLayer, self).compile(prev_layer)
 
-        self.outputs = self.inputs
+        self._temp_data['outputs'] = self._temp_data['inputs']
+
         self._add_layers(self.outputs)
 
 
@@ -252,8 +253,11 @@ class Word2vecEmbeddingInputlayer(Layer):
     ):
         self.prev_layer = inputs
         self.train_labels = train_labels
+
         self.vocabulary_size = vocabulary_size
         self.embedding_size = embedding_size
+        self.emb_shape = [self.vocabulary_size, self.embedding_size]
+
         self.num_sampled = num_sampled
         self.E_init = E_init
         self.nce_W_init = nce_W_init
@@ -272,7 +276,7 @@ class Word2vecEmbeddingInputlayer(Layer):
         additional_str = []
 
         try:
-            additional_str.append("embedding shape: %s" % self._emb_shape)
+            additional_str.append("embedding shape: %s" % self.emb_shape)
         except AttributeError:
             pass
 
@@ -295,12 +299,10 @@ class Word2vecEmbeddingInputlayer(Layer):
         # embed is the outputs of the hidden layer (embedding layer), it is a
         # row vector with 'embedding_size' values.
 
-        self._emb_shape = [self.vocabulary_size, self.embedding_size]
-
         with tf.variable_scope(self.name):
 
             embeddings = self._get_tf_variable(
-                name='embeddings', shape=self._emb_shape, dtype=self.dtype, initializer=self.E_init, **self.E_init_args
+                name='embeddings', shape=self.emb_shape, dtype=self.dtype, initializer=self.E_init, **self.E_init_args
             )
 
             self.outputs = tf.nn.embedding_lookup(embeddings, self.inputs)
@@ -311,7 +313,7 @@ class Word2vecEmbeddingInputlayer(Layer):
             # Construct the variables for the NCE loss (i.e. negative sampling)
             nce_weights = self._get_tf_variable(
                 name='nce_weights',
-                shape=self._emb_shape,
+                shape=self.emb_shape,
                 dtype=self.dtype,
                 initializer=self.nce_W_init,
                 **self.nce_W_init_args
@@ -402,8 +404,11 @@ class EmbeddingInputlayer(Layer):
         name='embedding',
     ):
         self.prev_layer = inputs
+
         self.vocabulary_size = vocabulary_size
         self.embedding_size = embedding_size
+        self.emb_shape = [self.vocabulary_size, self.embedding_size]
+
         self.E_init = E_init
         self.dtype = dtype
         self.name = name
@@ -414,7 +419,7 @@ class EmbeddingInputlayer(Layer):
         additional_str = []
 
         try:
-            additional_str.append("embedding shape: %s" % self._emb_shape)
+            additional_str.append("embedding shape: %s" % self.emb_shape)
         except AttributeError:
             pass
 
@@ -429,12 +434,10 @@ class EmbeddingInputlayer(Layer):
 
         self._parse_inputs(prev_layer)
 
-        self._emb_shape = [self.vocabulary_size, self.embedding_size]
-
         with tf.variable_scope(self.name):
 
             embeddings = self._get_tf_variable(
-                name='embeddings', shape=self._emb_shape, initializer=self.E_init, dtype=self.dtype, **self.E_init_args
+                name='embeddings', shape=self.emb_shape, initializer=self.E_init, dtype=self.dtype, **self.E_init_args
             )
 
             self.outputs = tf.nn.embedding_lookup(embeddings, self.inputs)
@@ -502,8 +505,11 @@ class AverageEmbeddingInputlayer(Layer):
         name='average_embedding',
     ):
         self.prev_layer = inputs
+
         self.vocabulary_size = vocabulary_size
         self.embedding_size = embedding_size
+        self.emb_shape = [self.vocabulary_size, self.embedding_size]
+
         self.pad_value = pad_value
         self.embeddings_initializer = embeddings_initializer
         self.dtype = dtype
@@ -515,7 +521,7 @@ class AverageEmbeddingInputlayer(Layer):
         additional_str = []
 
         try:
-            additional_str.append("embedding shape: %s" % self._emb_shape)
+            additional_str.append("embedding shape: %s" % self.emb_shape)
         except AttributeError:
             pass
 
@@ -533,13 +539,11 @@ class AverageEmbeddingInputlayer(Layer):
 
         self._parse_inputs(prev_layer)
 
-        self._emb_shape = [self.vocabulary_size, self.embedding_size]
-
         with tf.variable_scope(self.name):
 
             embeddings = self._get_tf_variable(
                 name='embeddings',
-                shape=self._emb_shape,
+                shape=self.emb_shape,
                 dtype=self.dtype,
                 initializer=self.embeddings_initializer,
                 **self.embeddings_kwargs

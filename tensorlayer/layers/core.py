@@ -15,6 +15,7 @@ from tensorlayer.utils import list_remove_repeat
 
 from tensorlayer import logging
 
+from tensorlayer.decorators import auto_reset_temp_attrs
 from tensorlayer.decorators import force_return_self
 from tensorlayer.decorators import layer_autoregister
 from tensorlayer.decorators import overwrite_layername_in_network
@@ -257,7 +258,7 @@ class BaseLayer(object):
                     self.all_params.append(param)
 
         elif params not in self.all_params:
-                self.all_params.append(params)
+            self.all_params.append(params)
 
     @protected_method
     def _add_graphs(self, graphs):
@@ -302,9 +303,9 @@ class Layer(BaseLayer):
 
         super(Layer, self).__init__(*args, **kwargs)
 
-        self.is_setup = False
+        self.graph = dict()
 
-        self.graph = {}
+        self._temp_data = dict()
 
         self._local_weights = list()
         self._local_drop = dict()
@@ -329,11 +330,64 @@ class Layer(BaseLayer):
     @private_method
     def compile(self, prev_layer, is_train=True):
 
-        self._parse_inputs(prev_layer)
+        if 'inputs' in self._temp_data.keys() and self._temp_data['inputs'] is not None:
+            return
 
-        self.is_setup = True
-        logging.info(str(self))
+        if isinstance(prev_layer, CompiledLayer):
+            # 1. for normal layer have only 1 input i.e. DenseLayer
+            # Hint : list(), dict() is pass by value (shallow), without them,
+            # it is pass by reference.
 
+            self._temp_data['inputs'] = prev_layer.outputs
+
+            # self._add_layers(prev_layer.all_layers)
+            # self._add_params(prev_layer.all_params)
+            # self._add_dropout_layers(prev_layer.all_drop)
+            # self._add_graphs(prev_layer.all_graphs)
+
+        elif isinstance(prev_layer, list):
+            # 2. for layer have multiply inputs i.e. ConcatLayer
+
+            self._temp_data['inputs'] = [layer.outputs for layer in prev_layer]
+
+            self._add_layers(sum([l.all_layers for l in prev_layer], []))
+            self._add_params(sum([l.all_params for l in prev_layer], []))
+            self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
+            self._add_graphs(sum([l.all_graphs for l in prev_layer], []))
+
+        elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
+            if self.__class__.__name__ not in [
+                'InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer', 'EmbeddingInputlayer',
+                'AverageEmbeddingInputlayer'
+            ]:
+                raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
+
+            self._temp_data['inputs'] = prev_layer
+            '''
+            self._add_graphs(
+                (
+                    self._temp_data['inputs'].name,  # .split(':')[0],
+                    {
+                        'shape': self._temp_data['inputs'].get_shape().as_list(),
+                        'dtype': self._temp_data['inputs'].dtype.name,
+                        'class': 'placeholder',
+                        'prev_layer': None
+                    }
+                )
+            )
+            '''
+
+        elif prev_layer is not None:
+
+            # 4. tl.models
+            self._add_layers(prev_layer.all_layers)
+            self._add_params(prev_layer.all_params)
+            self._add_dropout_layers(prev_layer.all_drop)
+            self._add_graphs(prev_layer.all_graphs)
+
+            if hasattr(prev_layer, "outputs"):
+                self._temp_data['inputs'] = prev_layer.outputs
+        '''
         # TL Graph
         if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
             _list = []
@@ -360,8 +414,10 @@ class Layer(BaseLayer):
         self.graph.update(self.layer_args)
 
         self._add_graphs((self.name, self.graph))
+        '''
 
-    @force_return_self
+    # @force_return_self
+    @auto_reset_temp_attrs
     def __call__(self, prev_layer=None, is_train=True):
 
         if prev_layer is None:
@@ -375,7 +431,7 @@ class Layer(BaseLayer):
         if isinstance(prev_layer, tf.Tensor) and isinstance(self, (tl.layers.InputLayer, tl.layers.OneHotInputLayer)):
             self.compile(prev_layer, is_train)
 
-        elif (hasattr(prev_layer, "outputs") and prev_layer.outputs is not None):
+        elif hasattr(prev_layer, "outputs") and prev_layer.outputs is not None:
             self.compile(prev_layer, is_train)
 
         elif isinstance(prev_layer, (list, tuple)):
@@ -394,6 +450,8 @@ class Layer(BaseLayer):
         else:
             self.prev_layer = prev_layer
 
+        return self._create_compiled_layer()
+
     @private_method
     def _str(self, additional_str=list()):
 
@@ -404,7 +462,7 @@ class Layer(BaseLayer):
 
         _str = "%s: " % self.__class__.__name__
 
-        if self.is_setup:
+        if self._temp_data:
             _str += "`%s`" % self.name
 
             if additional_str is not None:
@@ -413,65 +471,6 @@ class Layer(BaseLayer):
             _str += "setup process not finished"
 
         return _str
-
-    @protected_method
-    def _parse_inputs(self, prev_layer):
-
-        if hasattr(self, 'inputs') and self.inputs is not None:
-            return
-
-        if isinstance(prev_layer, Layer):
-            # 1. for normal layer have only 1 input i.e. DenseLayer
-            # Hint : list(), dict() is pass by value (shallow), without them,
-            # it is pass by reference.
-
-            self.inputs = prev_layer.outputs
-
-            self._add_layers(prev_layer.all_layers)
-            self._add_params(prev_layer.all_params)
-            self._add_dropout_layers(prev_layer.all_drop)
-            self._add_graphs(prev_layer.all_graphs)
-
-        elif isinstance(prev_layer, list):
-            # 2. for layer have multiply inputs i.e. ConcatLayer
-
-            self.inputs = [layer.outputs for layer in prev_layer]
-
-            self._add_layers(sum([l.all_layers for l in prev_layer], []))
-            self._add_params(sum([l.all_params for l in prev_layer], []))
-            self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
-            self._add_graphs(sum([l.all_graphs for l in prev_layer], []))
-
-        elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
-            if self.__class__.__name__ not in [
-                'InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer', 'EmbeddingInputlayer',
-                'AverageEmbeddingInputlayer'
-            ]:
-                raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
-
-            self.inputs = prev_layer
-
-            self._add_graphs(
-                (
-                    self.inputs.name,  # .split(':')[0],
-                    {
-                        'shape': self.inputs.get_shape().as_list(),
-                        'dtype': self.inputs.dtype.name,
-                        'class': 'placeholder',
-                        'prev_layer': None
-                    }
-                )
-            )
-
-        elif prev_layer is not None:
-            # 4. tl.models
-            self._add_layers(prev_layer.all_layers)
-            self._add_params(prev_layer.all_params)
-            self._add_dropout_layers(prev_layer.all_drop)
-            self._add_graphs(prev_layer.all_graphs)
-
-            if hasattr(prev_layer, "outputs"):
-                self.inputs = prev_layer.outputs
 
     @protected_method
     def _get_tf_variable(
@@ -522,7 +521,27 @@ class Layer(BaseLayer):
                     self._local_weights.append(param)
 
         elif weights not in self._local_weights:
-                self._local_weights.append(weights)
+            self._local_weights.append(weights)
+
+    @private_method
+    def _apply_activation(self, logits, **kwargs):
+        if not kwargs:
+            kwargs = {}
+        return self.act(logits, **kwargs) if self.act is not None else logits
+
+    @private_method
+    def _create_compiled_layer(self):
+        return type("Compiled_" + self.__class__.__name__, (CompiledLayer, ), {})(
+            layer_to_compile=self,
+            inputs=self._temp_data['inputs'],
+            outputs=self._temp_data['outputs'],
+            local_weights=self._local_weights,
+            local_drop=self._local_drop
+        )
+
+    # =============================================== #
+    #                  TO BE REMOVED                  #
+    # =============================================== #
 
     def get_all_params(self, session=None):
         """Return the parameters in a list of array. """
@@ -534,12 +553,6 @@ class Layer(BaseLayer):
                 _params.append(session.run(p))
         return _params
 
-    @private_method
-    def _apply_activation(self, logits, **kwargs):
-        if not kwargs:
-            kwargs = {}
-        return self.act(logits, **kwargs) if self.act is not None else logits
-
     # def __getstate__(self): # pickle save
     #     return {'version': 0.1,
     #             # 'outputs': self.outputs,
@@ -547,3 +560,72 @@ class Layer(BaseLayer):
     #
     # def __setstate__(self, state): # pickle restore
     #     self.outputs = state['outputs']
+
+
+class CompiledLayer(object):
+
+    def __init__(self, layer_to_compile, inputs, outputs, local_weights, local_drop):
+
+        self.hyperparameters = dict()
+
+        for key, value in layer_to_compile.__dict__.items():
+
+            # Do not record these arguments
+            if key in [
+                "prev_layer", "all_params", "all_layers", "all_drop", "all_graphs", "graph", "is_setup", "inputs",
+                "outputs", "_local_drop", "_local_weights", '_temp_data'
+            ]:
+                continue
+
+            # setattr(self, key, value)
+            self.hyperparameters[key] = value
+
+        self._str_ = str(layer_to_compile)
+
+        self.inputs = inputs
+        self.outputs = outputs
+
+        self.local_weights = local_weights
+        self.local_drop = local_drop
+
+        self.name = self.hyperparameters["name"]
+
+        logging.info(str(self))
+
+    def __str__(self):
+        return self._str_
+
+    def __setattr__(self, key, value):
+
+        previous_frame = inspect.currentframe().f_back
+        _, _, function_name, _, _ = inspect.getframeinfo(previous_frame)
+
+        if function_name == "__init__":
+            super(CompiledLayer, self).__setattr__(key, value)
+        else:
+            raise RuntimeError(
+                "A Tensorlayer `{}` is not supposed to be modified.\n"
+                "An attempt to modify the attribute: `{}` has been detected.".format(self.__class__.__name__, key)
+            )
+
+    def count_params(self):
+        """Returns the number of parameters in the network."""
+        n_params = 0
+
+        for _i, p in enumerate(self.local_weights):
+
+            n = 1
+            # for s in p.eval().shape:
+            for s in p.get_shape():
+
+                try:
+                    s = int(s)
+                except TypeError:
+                    s = 1
+
+                if s:
+                    n = n * s
+
+            n_params = n_params + n
+
+        return n_params

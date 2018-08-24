@@ -33,7 +33,12 @@ class Decoder(object):
         net_in = InputLayer(image, name='input')
         net = PadLayer(net_in, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=256,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv4_1'
         )
         net = UpSampling2dLayer(net, [2, 2], method=1)
@@ -41,22 +46,42 @@ class Decoder(object):
         # conv3
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=256,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv3_4'
         )
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=256,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv3_3'
         )
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=256,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv3_2'
         )
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=128,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv3_1'
         )
         net = UpSampling2dLayer(net, [2, 2], method=1)
@@ -64,12 +89,22 @@ class Decoder(object):
         # conv2
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=128,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv2_2'
         )
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=64,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv2_1'
         )
         net = UpSampling2dLayer(net, [2, 2], method=1)
@@ -77,7 +112,12 @@ class Decoder(object):
         # conv1
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=64,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv1_2'
         )
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
@@ -114,7 +154,12 @@ class Encoder(object):
         )
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=64,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv1_2'
         )
         net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1')
@@ -122,41 +167,76 @@ class Encoder(object):
         # conv2
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=128,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv2_1'
         )
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=128,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv2_2'
         )
         net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2')
         # conv3
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=256,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv3_1'
         )
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=256,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv3_2'
         )
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=256,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv3_3'
         )
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=256,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv3_4'
         )
         net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool3')
         # conv4
         net = PadLayer(net, [[0, 0], [1, 1], [1, 1], [0, 0]], mode="REFLECT")
         net = Conv2d(
-            net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='VALID',
+            net,
+            n_filter=512,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.nn.relu,
+            padding='VALID',
             name=prefix + 'conv4_1'
         )
         print("build Encoder model finished:")

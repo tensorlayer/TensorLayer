@@ -149,7 +149,8 @@ if __name__ == '__main__':
 
                 if step % 100 == 0:
                     _content_loss, _style_loss, _loss = sess.run(
-                        [content_loss, style_loss, loss], feed_dict={
+                        [content_loss, style_loss, loss],
+                        feed_dict={
                             content_input: content_batch,
                             style_input: style_batch
                         }

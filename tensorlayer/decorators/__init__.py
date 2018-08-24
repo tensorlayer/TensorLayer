@@ -15,6 +15,8 @@ from .deprecation_decorators import deprecated_alias
 from .deprecation_decorators import deprecated_args
 from .method_decorators import private_method
 from .method_decorators import protected_method
+from .layer_decorators import auto_parse_inputs
+from .layer_decorators import auto_reset_temp_attrs
 from .layer_decorators import force_return_self
 from .layer_decorators import layer_autoregister
 from .layer_decorators import overwrite_layername_in_network

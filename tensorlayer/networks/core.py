@@ -146,7 +146,6 @@ class BaseNetwork(core.BaseLayer):
 
                 # all_graphs=all_graphs,
                 all_graphs=network.all_graphs,
-
                 all_drop=all_drop,
                 is_train=is_train
             )
