@@ -5,3 +5,4 @@ The `tl.models` toolbox allows us to use the entire or a part of the state-of-th
 ### `tutorial_xxx.py`
 
 The other examples without using `tl.models` show you the details to build state-of-the-art models.
+Before you run the code, please get the `data` folder from the root of example
