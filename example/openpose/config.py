@@ -12,7 +12,7 @@ config.TRAIN.step_size = 136106  # evey number of step to decay lr
 config.TRAIN.base_lr = 4e-5  # initial learning rate
 config.TRAIN.gamma = 0.333  # gamma of Adam
 config.TRAIN.weight_decay = 5e-4
-config.TRAIN.distributed = False
+config.TRAIN.train_mode = 'placeholder' # dataset, distributed
 
 config.MODEL = edict()
 config.MODEL.model_path = 'models'  # save directory
