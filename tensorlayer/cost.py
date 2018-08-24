@@ -483,14 +483,9 @@ def cosine_similarity(v1, v2):
     v1, v2 : Tensor
         Tensor with the same shape [batch_size, n_feature].
 
-    Returns
-    -------
-    Tensor
-        a tensor of shape [batch_size].
-
     References
     ----------
-    - `<https://en.wikipedia.org/wiki/Cosine_similarity>`__.
+    - `Wiki <https://en.wikipedia.org/wiki/Cosine_similarity>`__.
 
     """
     return tf.reduce_sum(tf.multiply(v1, v2), 1) / (
