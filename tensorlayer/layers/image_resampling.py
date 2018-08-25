@@ -108,25 +108,28 @@ class UpSampling2dLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        if len(self.inputs.shape) == 3:
+        if len(self._temp_data['inputs'].shape) == 3:
             x_pos, y_pos = (0, 1)
 
-        elif len(self.inputs.shape) == 4:
+        elif len(self._temp_data['inputs'].shape) == 4:
             x_pos, y_pos = (1, 2)
 
         else:
-            raise RuntimeError("The input shape: %s is not supported" % tf.shape(self.inputs))
+            raise RuntimeError("The input shape: %s is not supported" % tf.shape(self._temp_data['inputs']))
 
         with tf.variable_scope(self.name):
 
             if self.is_scale:
                 if all(isinstance(x, int) for x in self.size):
-                    if None not in [self.inputs.get_shape()[x_pos]._value, self.inputs.get_shape()[y_pos]._value]:
-                        size_h = self.inputs.get_shape()[x_pos] * self.size[0]
-                        size_w = self.inputs.get_shape()[y_pos] * self.size[1]
+                    if None not in [
+                        self._temp_data['inputs'].get_shape()[x_pos]._value,
+                        self._temp_data['inputs'].get_shape()[y_pos]._value
+                    ]:
+                        size_h = self._temp_data['inputs'].get_shape()[x_pos] * self.size[0]
+                        size_w = self._temp_data['inputs'].get_shape()[y_pos] * self.size[1]
                     else:
-                        size_h = tf.shape(self.inputs)[x_pos] * self.size[0]
-                        size_w = tf.shape(self.inputs)[y_pos] * self.size[1]
+                        size_h = tf.shape(self._temp_data['inputs'])[x_pos] * self.size[0]
+                        size_w = tf.shape(self._temp_data['inputs'])[y_pos] * self.size[1]
 
                     _size = [size_h, size_w]
 
@@ -136,16 +139,14 @@ class UpSampling2dLayer(Layer):
             else:
                 _size = self.size
 
-            print("size:", _size)
-
-            self.outputs = tf.image.resize_images(
-                self.inputs, size=_size, method=self.method, align_corners=self.align_corners
+            self._temp_data['outputs'] = tf.image.resize_images(
+                self._temp_data['inputs'], size=_size, method=self.method, align_corners=self.align_corners
             )
-            self.outputs = tf.cast(self.outputs, self.inputs.dtype)
+            self._temp_data['outputs'] = tf.cast(self._temp_data['outputs'], self._temp_data['inputs'].dtype)
 
-            self.out_shape = self.outputs.get_shape()
+            self.out_shape = self._temp_data['outputs'].get_shape()
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
 
 
 class DownSampling2dLayer(Layer):
@@ -239,33 +240,47 @@ class DownSampling2dLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        if len(self.inputs.shape) == 3:
+        if len(self._temp_data['inputs'].shape) == 3:
             x_pos, y_pos = (0, 1)
 
-        elif len(self.inputs.shape) == 4:
+        elif len(self._temp_data['inputs'].shape) == 4:
             x_pos, y_pos = (1, 2)
 
         else:
-            raise RuntimeError("The input shape: %s is not supported" % tf.shape(self.inputs))
+            raise RuntimeError("The input shape: %s is not supported" % tf.shape(self._temp_data['inputs']))
 
         with tf.variable_scope(self.name):
 
             if self.is_scale:
                 if all(isinstance(x, int) for x in self.size):
-                    if None not in [self.inputs.get_shape()[x_pos]._value, self.inputs.get_shape()[y_pos]._value]:
-                        size_h = tf.cast(tf.ceil(int(self.inputs.get_shape()[x_pos]) / float(self.size[0])), tf.int32)
-                        size_w = tf.cast(tf.ceil(int(self.inputs.get_shape()[y_pos]) / float(self.size[1])), tf.int32)
+                    if None not in [
+                        self._temp_data['inputs'].get_shape()[x_pos]._value,
+                        self._temp_data['inputs'].get_shape()[y_pos]._value
+                    ]:
+                        size_h = tf.cast(
+                            tf.ceil(int(self._temp_data['inputs'].get_shape()[x_pos]) / float(self.size[0])), tf.int32
+                        )
+                        size_w = tf.cast(
+                            tf.ceil(int(self._temp_data['inputs'].get_shape()[y_pos]) / float(self.size[1])), tf.int32
+                        )
                     else:
-                        size_h = tf.cast(tf.ceil(tf.shape(self.inputs)[x_pos] / np.float32(self.size[0])), tf.int32)
-                        size_w = tf.cast(tf.ceil(tf.shape(self.inputs)[y_pos] / np.float32(self.size[1])), tf.int32)
+                        size_h = tf.cast(
+                            tf.ceil(tf.shape(self._temp_data['inputs'])[x_pos] / np.float32(self.size[0])), tf.int32
+                        )
+                        size_w = tf.cast(
+                            tf.ceil(tf.shape(self._temp_data['inputs'])[y_pos] / np.float32(self.size[1])), tf.int32
+                        )
 
                 elif all(isinstance(x, float) for x in self.size):
-                    if None not in [self.inputs.get_shape()[x_pos]._value, self.inputs.get_shape()[y_pos]._value]:
-                        size_h = tf.cast(int(self.inputs.get_shape()[x_pos]) * self.size[0], tf.int32)
-                        size_w = tf.cast(int(self.inputs.get_shape()[y_pos]) * self.size[1], tf.int32)
+                    if None not in [
+                        self._temp_data['inputs'].get_shape()[x_pos]._value,
+                        self._temp_data['inputs'].get_shape()[y_pos]._value
+                    ]:
+                        size_h = tf.cast(int(self._temp_data['inputs'].get_shape()[x_pos]) * self.size[0], tf.int32)
+                        size_w = tf.cast(int(self._temp_data['inputs'].get_shape()[y_pos]) * self.size[1], tf.int32)
                     else:
-                        size_h = tf.shape(self.inputs)[x_pos] * self.size[0]
-                        size_w = tf.shape(self.inputs)[y_pos] * self.size[1]
+                        size_h = tf.shape(self._temp_data['inputs'])[x_pos] * self.size[0]
+                        size_w = tf.shape(self._temp_data['inputs'])[y_pos] * self.size[1]
 
                 else:
                     raise ValueError("all elements of tuple `size` hyperparameter should be either `int` or `float`")
@@ -275,11 +290,11 @@ class DownSampling2dLayer(Layer):
             else:
                 _size = self.size
 
-            self.outputs = tf.image.resize_images(
-                self.inputs, size=_size, method=self.method, align_corners=self.align_corners
+            self._temp_data['outputs'] = tf.image.resize_images(
+                self._temp_data['inputs'], size=_size, method=self.method, align_corners=self.align_corners
             )
-            self.outputs = tf.cast(self.outputs, self.inputs.dtype)
+            self._temp_data['outputs'] = tf.cast(self._temp_data['outputs'], self._temp_data['inputs'].dtype)
 
-            self.out_shape = self.outputs.get_shape()
+            self.out_shape = self._temp_data['outputs'].get_shape()
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])

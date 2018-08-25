@@ -95,17 +95,17 @@ class GaussianNoiseLayer(Layer):
 
         if is_train is False:
             logging.info("  -> [Not Training] - skip `%s`" % self.__class__.__name__)
-            self.outputs = self.inputs
+            self._temp_data['outputs'] = self._temp_data['inputs']
 
         else:
             with tf.variable_scope(self.name):
                 noise = tf.random_normal(
-                    shape=self.inputs.get_shape(),
+                    shape=self._temp_data['inputs'].get_shape(),
                     mean=self.mean,
                     stddev=self.stddev,
                     seed=self.seed,
-                    dtype=self.inputs.dtype
+                    dtype=self._temp_data['inputs'].dtype
                 )
-                self.outputs = tf.add(self.inputs, noise)
+                self._temp_data['outputs'] = tf.add(self._temp_data['inputs'], noise)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])

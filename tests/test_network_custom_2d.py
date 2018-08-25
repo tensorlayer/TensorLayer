@@ -78,8 +78,6 @@ class CustomNetwork_2D_Test(CustomTestCase):
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
             cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
 
-            print(cls.model.get_all_params())
-
     def test_True(self):
         self.assertTrue(True)
 

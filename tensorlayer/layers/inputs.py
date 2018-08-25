@@ -58,7 +58,7 @@ class InputLayer(Layer):
 
         self._temp_data['outputs'] = self._temp_data['inputs']
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
 
 
 class OneHotInputLayer(Layer):
@@ -117,7 +117,7 @@ class OneHotInputLayer(Layer):
         additional_str = []
 
         try:
-            additional_str.append("input_shape: %s" % self.inputs.shape)
+            additional_str.append("input_shape: %s" % self._temp_data['inputs'].shape)
         except AttributeError:
             pass
 
@@ -131,12 +131,17 @@ class OneHotInputLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        self.outputs = tf.one_hot(
-            self.inputs, self.depth, on_value=self.on_value, off_value=self.off_value, axis=self.axis, dtype=self.dtype
+        self._temp_data['outputs'] = tf.one_hot(
+            self._temp_data['inputs'],
+            self.depth,
+            on_value=self.on_value,
+            off_value=self.off_value,
+            axis=self.axis,
+            dtype=self.dtype
         )
-        self.out_shape = self.outputs.shape
+        self.out_shape = self._temp_data['outputs'].shape
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
 
 
 class Word2vecEmbeddingInputlayer(Layer):
@@ -301,8 +306,8 @@ class Word2vecEmbeddingInputlayer(Layer):
                 name='embeddings', shape=self.emb_shape, dtype=self.dtype, initializer=self.E_init, **self.E_init_args
             )
 
-            self.outputs = tf.nn.embedding_lookup(embeddings, self.inputs)
-            self.out_shape = self.outputs.shape
+            self._temp_data['outputs'] = tf.nn.embedding_lookup(embeddings, self._temp_data['inputs'])
+            self.out_shape = self._temp_data['outputs'].shape
 
             # Construct the variables for the NCE loss (i.e. negative sampling)
             nce_weights = self._get_tf_variable(
@@ -329,7 +334,7 @@ class Word2vecEmbeddingInputlayer(Layer):
                 tf.nn.nce_loss(
                     weights=nce_weights,
                     biases=nce_biases,
-                    inputs=self.outputs,
+                    inputs=self._temp_data['outputs'],
                     labels=self.train_labels,
                     num_sampled=self.num_sampled,
                     num_classes=self.vocabulary_size,
@@ -339,7 +344,7 @@ class Word2vecEmbeddingInputlayer(Layer):
 
             self.normalized_embeddings = tf.nn.l2_normalize(embeddings, 1)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -433,10 +438,10 @@ class EmbeddingInputlayer(Layer):
                 name='embeddings', shape=self.emb_shape, initializer=self.E_init, dtype=self.dtype, **self.E_init_args
             )
 
-            self.outputs = tf.nn.embedding_lookup(embeddings, self.inputs)
-            self.out_shape = self.outputs.shape
+            self._temp_data['outputs'] = tf.nn.embedding_lookup(embeddings, self._temp_data['inputs'])
+            self.out_shape = self._temp_data['outputs'].shape
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -541,11 +546,11 @@ class AverageEmbeddingInputlayer(Layer):
 
             word_embeddings = tf.nn.embedding_lookup(
                 embeddings,
-                self.inputs,
+                self._temp_data['inputs'],
                 name='word_embeddings',
             )
             # Zero out embeddings of pad value
-            masks = tf.not_equal(self.inputs, self.pad_value, name='masks')
+            masks = tf.not_equal(self._temp_data['inputs'], self.pad_value, name='masks')
 
             word_embeddings *= tf.cast(tf.expand_dims(masks, axis=-1), dtype=self.dtype)
 
@@ -568,7 +573,7 @@ class AverageEmbeddingInputlayer(Layer):
 
             self.out_shape = sentence_embeddings.shape
 
-        self.outputs = sentence_embeddings
+        self._temp_data['outputs'] = sentence_embeddings
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

@@ -94,7 +94,7 @@ class ReconLayer(DenseLayer):
 
         # y : reconstruction outputs; train_params : parameters to train
         # Note that: train_params = [W_encoder, b_encoder, W_decoder, b_encoder]
-        y = self.outputs
+        y = self._temp_data['outputs']
         self.train_params = self.all_params[-4:]
 
         # =====================================================================

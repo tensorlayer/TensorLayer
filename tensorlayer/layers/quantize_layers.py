@@ -51,6 +51,6 @@ class SignLayer(Layer):
     def compile(self, prev_layer, is_train=True):
 
         with tf.variable_scope(self.name):
-            self.outputs = quantize(self.inputs)
+            self._temp_data['outputs'] = quantize(self._temp_data['inputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])

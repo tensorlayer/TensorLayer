@@ -158,18 +158,20 @@ class RNNLayer(Layer):
                 logging.warning('pop state_is_tuple fails.')
 
         logging.info(
-            "RNNLayer %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s " %
-            (self.name, n_hidden, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__)
+            "RNNLayer %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s " % (
+                self.name, n_hidden, n_steps, self._temp_data['inputs'].get_shape().ndims,
+                self._temp_data['inputs'].get_shape(), cell_fn.__name__
+            )
         )
 
         # You can get the dimension by .get_shape() or ._shape, and check the
         # dimension by .with_rank() as follow.
-        # self.inputs.get_shape().with_rank(2)
-        # self.inputs.get_shape().with_rank(3)
+        # self._temp_data['inputs'].get_shape().with_rank(2)
+        # self._temp_data['inputs'].get_shape().with_rank(3)
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
-            self.inputs.get_shape().with_rank(3)
+            self._temp_data['inputs'].get_shape().with_rank(3)
         except Exception:
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps, n_features]")
 
@@ -178,16 +180,16 @@ class RNNLayer(Layer):
         #     If input is［batch_size, n_steps, n_features], we do not need to reshape it.\n
         #     If input is [batch_size * n_steps, n_features], we need to reshape it.
         # if is_reshape:
-        #     self.inputs = tf.reshape(self.inputs, shape=[-1, n_steps, int(self.inputs._shape[-1])])
+        #     self._temp_data['inputs'] = tf.reshape(self._temp_data['inputs'], shape=[-1, n_steps, int(self._temp_data['inputs']._shape[-1])])
 
-        fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
+        fixed_batch_size = self._temp_data['inputs'].get_shape().with_rank_at_least(1)[0]
 
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
             logging.info("       RNN batch_size (concurrent processes): %d" % batch_size)
 
         else:
-            batch_size = array_ops.shape(self.inputs)[0]
+            batch_size = array_ops.shape(self._temp_data['inputs'])[0]
             logging.info("       non specified batch_size, uses a tensor instead.")
 
         self.batch_size = batch_size
@@ -210,14 +212,16 @@ class RNNLayer(Layer):
             self.cell = cell = cell_fn(num_units=n_hidden, **self.cell_init_args)
 
         if initial_state is None:
-            self.initial_state = cell.zero_state(batch_size, dtype=self.inputs.dtype)  #dtype=tf.float32)  # 1.2.3
+            self.initial_state = cell.zero_state(
+                batch_size, dtype=self._temp_data['inputs'].dtype
+            )  #dtype=tf.float32)  # 1.2.3
 
         state = self.initial_state
 
         with tf.variable_scope(name, initializer=initializer) as vs:
             for time_step in range(n_steps):
                 if time_step > 0: tf.get_variable_scope().reuse_variables()
-                (cell_output, state) = cell(self.inputs[:, time_step, :], state)
+                (cell_output, state) = cell(self._temp_data['inputs'][:, time_step, :], state)
                 outputs.append(cell_output)
 
             # Retrieve just the RNN variables.
@@ -228,23 +232,23 @@ class RNNLayer(Layer):
 
             if return_last:
                 # 2D Tensor [batch_size, n_hidden]
-                self.outputs = outputs[-1]
+                self._temp_data['outputs'] = outputs[-1]
             else:
                 if return_seq_2d:
                     # PTB tutorial: stack dense layer after that, or compute the cost from the output
                     # 2D Tensor [n_example, n_hidden]
 
-                    self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden])
+                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden])
 
                 else:
                     # <akara>: stack more RNN layer after that
                     # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
 
-                    self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_steps, n_hidden])
+                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [-1, n_steps, n_hidden])
 
         self.final_state = state
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(rnn_variables)
 
 
@@ -351,24 +355,24 @@ class BiRNNLayer(Layer):
 
         logging.info(
             "BiRNNLayer %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d " % (
-                self.name, n_hidden, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__,
-                dropout, n_layer
+                self.name, n_hidden, n_steps, self._temp_data['inputs'].get_shape().ndims,
+                self._temp_data['inputs'].get_shape(), cell_fn.__name__, dropout, n_layer
             )
         )
 
-        fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
+        fixed_batch_size = self._temp_data['inputs'].get_shape().with_rank_at_least(1)[0]
 
         if fixed_batch_size.value:
             self.batch_size = fixed_batch_size.value
             logging.info("       RNN batch_size (concurrent processes): %d" % self.batch_size)
 
         else:
-            self.batch_size = array_ops.shape(self.inputs)[0]
+            self.batch_size = array_ops.shape(self._temp_data['inputs'])[0]
             logging.info("       non specified batch_size, uses a tensor instead.")
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
-            self.inputs.get_shape().with_rank(3)
+            self._temp_data['inputs'].get_shape().with_rank(3)
         except Exception:
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps, n_features]")
 
@@ -425,19 +429,19 @@ class BiRNNLayer(Layer):
             # Initial state of RNN
             if fw_initial_state is None:
                 self.fw_initial_state = self.fw_cell.zero_state(
-                    self.batch_size, dtype=self.inputs.dtype
+                    self.batch_size, dtype=self._temp_data['inputs'].dtype
                 )  # dtype=tf.float32)
             else:
                 self.fw_initial_state = fw_initial_state
             if bw_initial_state is None:
                 self.bw_initial_state = self.bw_cell.zero_state(
-                    self.batch_size, dtype=self.inputs.dtype
+                    self.batch_size, dtype=self._temp_data['inputs'].dtype
                 )  # dtype=tf.float32)
             else:
                 self.bw_initial_state = bw_initial_state
             # exit()
             # Feedforward to MultiRNNCell
-            list_rnn_inputs = tf.unstack(self.inputs, axis=1)
+            list_rnn_inputs = tf.unstack(self._temp_data['inputs'], axis=1)
 
             bidirectional_rnn_fn = tf.contrib.rnn.static_bidirectional_rnn
 
@@ -451,18 +455,18 @@ class BiRNNLayer(Layer):
 
             if return_last:
                 raise Exception("Do not support return_last at the moment.")
-                # self.outputs = outputs[-1]
+                # self._temp_data['outputs'] = outputs[-1]
             else:
-                self.outputs = outputs
+                self._temp_data['outputs'] = outputs
                 if return_seq_2d:
                     # 2D Tensor [n_example, n_hidden]
-                    self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden * 2])
+                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden * 2])
 
                 else:
                     # <akara>: stack more RNN layer after that
                     # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
 
-                    self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_steps, n_hidden * 2])
+                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [-1, n_steps, n_hidden * 2])
 
             self.fw_final_state = fw_state
             self.bw_final_state = bw_state
@@ -472,5 +476,5 @@ class BiRNNLayer(Layer):
 
         logging.info("     n_params : %d" % (len(rnn_variables)))
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(rnn_variables)

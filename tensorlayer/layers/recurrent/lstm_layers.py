@@ -97,38 +97,40 @@ class ConvLSTMLayer(Layer):
 
         logging.info(
             "ConvLSTMLayer %s: feature_map: %d, n_steps: %d, "
-            "in_dim: %d %s, cell_fn: %s " %
-            (self.name, feature_map, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__)
+            "in_dim: %d %s, cell_fn: %s " % (
+                self.name, feature_map, n_steps, self._temp_data['inputs'].get_shape().ndims,
+                self._temp_data['inputs'].get_shape(), cell_fn.__name__
+            )
         )
         # You can get the dimension by .get_shape() or ._shape, and check the
         # dimension by .with_rank() as follow.
-        # self.inputs.get_shape().with_rank(2)
-        # self.inputs.get_shape().with_rank(3)
+        # self._temp_data['inputs'].get_shape().with_rank(2)
+        # self._temp_data['inputs'].get_shape().with_rank(3)
 
         # Input dimension should be rank 5 [batch_size, n_steps(max), h, w, c]
         try:
-            self.inputs.get_shape().with_rank(5)
+            self._temp_data['inputs'].get_shape().with_rank(5)
         except Exception:
             raise Exception(
                 "RNN : Input dimension should be rank 5 : [batch_size, n_steps, input_x, "
                 "input_y, feature_map]"
             )
 
-        fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
+        fixed_batch_size = self._temp_data['inputs'].get_shape().with_rank_at_least(1)[0]
 
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
             logging.info("     RNN batch_size (concurrent processes): %d" % batch_size)
 
         else:
-            batch_size = array_ops.shape(self.inputs)[0]
+            batch_size = array_ops.shape(self._temp_data['inputs'])[0]
             logging.info("     non specified batch_size, uses a tensor instead.")
         self.batch_size = batch_size
         outputs = []
         self.cell = cell = cell_fn(shape=cell_shape, filter_size=filter_size, num_features=feature_map)
 
         if initial_state is None:
-            self.initial_state = cell.zero_state(batch_size, dtype=self.inputs.dtype)
+            self.initial_state = cell.zero_state(batch_size, dtype=self._temp_data['inputs'].dtype)
         else:
             self.initial_state = initial_state
 
@@ -138,7 +140,7 @@ class ConvLSTMLayer(Layer):
         with tf.variable_scope(name, initializer=initializer) as vs:
             for time_step in range(n_steps):
                 if time_step > 0: tf.get_variable_scope().reuse_variables()
-                (cell_output, state) = cell(self.inputs[:, time_step, :, :, :], state)
+                (cell_output, state) = cell(self._temp_data['inputs'][:, time_step, :, :, :], state)
                 outputs.append(cell_output)
 
             # Retrieve just the RNN variables.
@@ -149,21 +151,24 @@ class ConvLSTMLayer(Layer):
 
             if return_last:
                 # 2D Tensor [batch_size, n_hidden]
-                self.outputs = outputs[-1]
+                self._temp_data['outputs'] = outputs[-1]
             else:
                 if return_seq_2d:
                     # PTB tutorial: stack dense layer after that, or compute the cost from the output
                     # 4D Tensor [n_example, h, w, c]
-                    self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, cell_shape[0] * cell_shape[1] * feature_map])
+                    self._temp_data['outputs'] = tf.reshape(
+                        tf.concat(outputs, 1),
+                        [-1, cell_shape[0] * cell_shape[1] * feature_map]
+                    )
                 else:
                     # <akara>: stack more RNN layer after that
                     # 5D Tensor [n_example/n_steps, n_steps, h, w, c]
-                    self.outputs = tf.reshape(
+                    self._temp_data['outputs'] = tf.reshape(
                         tf.concat(outputs, 1),
                         [-1, n_steps, cell_shape[0], cell_shape[1], feature_map]
                     )
 
         self.final_state = state
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(rnn_variables)

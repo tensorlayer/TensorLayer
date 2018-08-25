@@ -200,32 +200,37 @@ class AtrousConv2dLayer(Layer):
     def compile(self, prev_layer, is_train=True):
 
         with tf.variable_scope(self.name):
-            shape = [self.filter_size[0], self.filter_size[1], int(self.inputs.get_shape()[-1]), self.n_filter]
+            shape = [
+                self.filter_size[0], self.filter_size[1],
+                int(self._temp_data['inputs'].get_shape()[-1]), self.n_filter
+            ]
 
             weight_matrix = self._get_tf_variable(
                 name='W_atrous_conv2d',
                 shape=shape,
                 initializer=self.W_init,
-                dtype=self.inputs.dtype,
+                dtype=self._temp_data['inputs'].dtype,
                 **self.W_init_args
             )
 
-            self.outputs = tf.nn.atrous_conv2d(self.inputs, filters=weight_matrix, rate=self.rate, padding=self.padding)
+            self._temp_data['outputs'] = tf.nn.atrous_conv2d(
+                self._temp_data['inputs'], filters=weight_matrix, rate=self.rate, padding=self.padding
+            )
 
             if self.b_init:
                 b = self._get_tf_variable(
                     name='b_atrous_conv2d',
                     shape=(self.n_filter, ),
                     initializer=self.b_init,
-                    dtype=self.inputs.dtype,
+                    dtype=self._temp_data['inputs'].dtype,
                     **self.b_init_args
                 )
 
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -336,12 +341,12 @@ class AtrousDeConv2dLayer(Layer):
                 name='W_atrous_conv2d_transpose',
                 shape=self.shape,
                 initializer=self.W_init,
-                dtype=self.inputs.dtype,
+                dtype=self._temp_data['inputs'].dtype,
                 **self.W_init_args
             )
 
             self.out_shape = compute_deconv2d_output_shape(
-                self.inputs,
+                self._temp_data['inputs'],
                 self.shape[0],
                 self.shape[1],
                 1,
@@ -351,8 +356,12 @@ class AtrousDeConv2dLayer(Layer):
                 data_format="NHWC"
             )
 
-            self.outputs = tf.nn.atrous_conv2d_transpose(
-                self.inputs, filters=weight_matrix, output_shape=self.out_shape, rate=self.rate, padding=self.padding
+            self._temp_data['outputs'] = tf.nn.atrous_conv2d_transpose(
+                self._temp_data['inputs'],
+                filters=weight_matrix,
+                output_shape=self.out_shape,
+                rate=self.rate,
+                padding=self.padding
             )
 
             if self.b_init:
@@ -360,16 +369,16 @@ class AtrousDeConv2dLayer(Layer):
                     name='b_atrous_conv2d_transpose',
                     shape=(self.shape[-2]),
                     initializer=self.b_init,
-                    dtype=self.inputs.dtype,
+                    dtype=self._temp_data['inputs'].dtype,
                     **self.b_init_args
                 )
 
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
-            #self.out_shape = self.outputs.shape
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
+            #self.out_shape = self._temp_data['outputs'].shape
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 

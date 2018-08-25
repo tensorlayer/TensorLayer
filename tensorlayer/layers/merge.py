@@ -94,10 +94,10 @@ class ConcatLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        self.outputs = tf.concat(self.inputs, self.concat_dim, name=self.name)
-        self.out_shape = self.outputs.shape
+        self._temp_data['outputs'] = tf.concat(self._temp_data['inputs'], self.concat_dim, name=self.name)
+        self.out_shape = self._temp_data['outputs'].shape
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
 
 
 class ElementwiseLayer(Layer):
@@ -177,13 +177,13 @@ class ElementwiseLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        self.outputs = self.inputs[0]
+        self._temp_data['outputs'] = self._temp_data['inputs'][0]
 
-        for layer in self.inputs[1:]:
-            self.outputs = self.combine_fn(self.outputs, layer, name=self.name)
+        for layer in self._temp_data['inputs'][1:]:
+            self._temp_data['outputs'] = self.combine_fn(self._temp_data['outputs'], layer, name=self.name)
 
-        self.outputs = self._apply_activation(self.outputs)
+        self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self.out_shape = self.outputs.shape
+        self.out_shape = self._temp_data['outputs'].shape
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])

@@ -96,10 +96,12 @@ class PadLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        self.outputs = tf.pad(self.inputs, paddings=self.padding, mode=self.mode, name=self.name)
-        self.out_shape = self.outputs.shape
+        self._temp_data['outputs'] = tf.pad(
+            self._temp_data['inputs'], paddings=self.padding, mode=self.mode, name=self.name
+        )
+        self.out_shape = self._temp_data['outputs'].shape
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
 
 
 class ZeroPad1d(Layer):
@@ -154,19 +156,21 @@ class ZeroPad1d(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
         # TODO: Stop using Keras
-        self.outputs = tf.keras.layers.ZeroPadding1D(padding=self.padding, name=self.name)(self.inputs)
-        self.out_shape = self.outputs.shape
+        self._temp_data['outputs'] = tf.keras.layers.ZeroPadding1D(
+            padding=self.padding, name=self.name
+        )(self._temp_data['inputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
 
 
 class ZeroPad2d(Layer):
@@ -222,19 +226,21 @@ class ZeroPad2d(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
         # TODO: Stop using Keras
-        self.outputs = tf.keras.layers.ZeroPadding2D(padding=self.padding, name=self.name)(self.inputs)
-        self.out_shape = self.outputs.shape
+        self._temp_data['outputs'] = tf.keras.layers.ZeroPadding2D(
+            padding=self.padding, name=self.name
+        )(self._temp_data['inputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
 
 
 class ZeroPad3d(Layer):
@@ -290,16 +296,18 @@ class ZeroPad3d(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
         # TODO: Stop using Keras
-        self.outputs = tf.keras.layers.ZeroPadding3D(padding=self.padding, name=self.name)(self.inputs)
-        self.out_shape = self.outputs.shape
+        self._temp_data['outputs'] = tf.keras.layers.ZeroPadding3D(
+            padding=self.padding, name=self.name
+        )(self._temp_data['inputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])

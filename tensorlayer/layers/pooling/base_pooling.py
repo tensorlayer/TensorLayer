@@ -68,6 +68,8 @@ class PoolLayer(Layer):
             (self.name, str(ksize), str(strides), padding, pool.__name__)
         )
 
-        self.outputs = pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
+        self._temp_data['outputs'] = pool(
+            self._temp_data['inputs'], ksize=ksize, strides=strides, padding=padding, name=name
+        )
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])

@@ -102,12 +102,12 @@ class LambdaLayer(Layer):
     def compile(self, prev_layer, is_train=True):
 
         with tf.variable_scope(self.name) as vs:
-            self.outputs = self.fn(self.inputs, **self.fn_args)
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self.fn(self._temp_data['inputs'], **self.fn_args)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -189,10 +189,10 @@ class ElementwiseLambdaLayer(Layer):
     def compile(self, prev_layer, is_train=True):
 
         with tf.variable_scope(self.name) as vs:
-            self.outputs = self.fn(*self.inputs, **self.fn_args)
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self.fn(*self._temp_data['inputs'], **self.fn_args)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(variables)

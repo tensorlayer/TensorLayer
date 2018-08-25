@@ -58,13 +58,13 @@ class MaxPool1d(Layer):
 
         with tf.variable_scope(self.name) as vs:
 
-            self.outputs = tf.layers.max_pooling1d(
-                self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=None
+            self._temp_data['outputs'] = tf.layers.max_pooling1d(
+                self._temp_data['inputs'], filter_size, strides, padding=padding, data_format=data_format, name=None
             )
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -107,13 +107,18 @@ class MaxPool2d(Layer):
 
         with tf.variable_scope(self.name) as vs:
 
-            self.outputs = tf.layers.max_pooling2d(
-                self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=None
+            self._temp_data['outputs'] = tf.layers.max_pooling2d(
+                self._temp_data['inputs'],
+                filter_size,
+                strides,
+                padding=padding,
+                data_format='channels_last',
+                name=None
             )
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -171,11 +176,11 @@ class MaxPool3d(Layer):
 
         with tf.variable_scope(self.name) as vs:
 
-            self.outputs = tf.layers.max_pooling3d(
-                self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=None
+            self._temp_data['outputs'] = tf.layers.max_pooling3d(
+                self._temp_data['inputs'], filter_size, strides, padding=padding, data_format=data_format, name=None
             )
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

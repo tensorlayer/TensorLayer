@@ -85,13 +85,14 @@ class SubpixelConv1d(Layer):
 
         with tf.variable_scope(self.name):
 
-            self.outputs = tf.transpose(self.inputs, [2, 1, 0])  # (r, w, b)
-            self.outputs = tf.batch_to_space_nd(self.outputs, [self.scale], [[0, 0]])  # (1, r*w, b)
-            self.outputs = tf.transpose(self.outputs, [2, 1, 0])
+            self._temp_data['outputs'] = tf.transpose(self._temp_data['inputs'], [2, 1, 0])  # (r, w, b)
+            self._temp_data['outputs'] = tf.batch_to_space_nd(self._temp_data['outputs'],
+                                                              [self.scale], [[0, 0]])  # (1, r*w, b)
+            self._temp_data['outputs'] = tf.transpose(self._temp_data['outputs'], [2, 1, 0])
 
-            self._apply_activation(self.outputs)
+            self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -195,15 +196,16 @@ class SubpixelConv2d(Layer):
 
         if self.n_out_channels is None:
 
-            if int(self.inputs.get_shape()[-1]) / (self.scale**2) % 1 != 0:
+            if int(self._temp_data['inputs'].get_shape()[-1]) / (self.scale**2) % 1 != 0:
                 raise RuntimeError(
                     "%s: The number of input channels == (scale x scale) x The number of output channels" %
                     self.__class__.__name__
                 )
 
-            self.n_out_channels = int(int(self.inputs.get_shape()[-1]) / (self.scale**2))
+            self.n_out_channels = int(int(self._temp_data['inputs'].get_shape()[-1]) / (self.scale**2))
 
-        if self.n_out_channels < 1 or int(self.inputs.get_shape()[-1]) != (self.scale**2) * self.n_out_channels:
+        if self.n_out_channels < 1 or int(self._temp_data['inputs'].get_shape()[-1]
+                                         ) != (self.scale**2) * self.n_out_channels:
             _err_log = "%s: The number of input channels == (scale x scale) x n_out_channels" % (
                 self.__class__.__name__
             )
@@ -211,15 +213,15 @@ class SubpixelConv2d(Layer):
 
         with tf.variable_scope(self.name):
 
-            # bsize, a, b, c = self.outputs.get_shape().as_list()
-            # bsize = tf.shape(self.outputs)[0]  # Handling Dimension(None) type for undefined batch dim
-            # x_s = tf.split(self.outputs, self.scale, 3)  # b*h*w*r*r
+            # bsize, a, b, c = self._temp_data['outputs'].get_shape().as_list()
+            # bsize = tf.shape(self._temp_data['outputs'])[0]  # Handling Dimension(None) type for undefined batch dim
+            # x_s = tf.split(self._temp_data['outputs'], self.scale, 3)  # b*h*w*r*r
             # x_r = tf.concat(x_s, 2)  # b*h*(r*w)*r
-            # self.outputs = tf.reshape(x_r, (bsize, self.scale*a, self.scale*b, self.n_out_channels))  # b*(r*h)*(r*w)*c
+            # self._temp_data['outputs'] = tf.reshape(x_r, (bsize, self.scale*a, self.scale*b, self.n_out_channels))  # b*(r*h)*(r*w)*c
 
-            self.outputs = tf.depth_to_space(self.inputs, self.scale)
+            self._temp_data['outputs'] = tf.depth_to_space(self._temp_data['inputs'], self.scale)
 
-            self._apply_activation(self.outputs)
+            self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

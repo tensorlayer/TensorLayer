@@ -151,7 +151,7 @@ class DepthwiseConv2d(Layer):
     def compile(self, prev_layer, is_train=True):
 
         try:
-            input_channels = int(self.inputs.get_shape()[-1])
+            input_channels = int(self._temp_data['inputs'].get_shape()[-1])
 
         except TypeError:  # if input_channels is ?, it happens when using Spatial Transformer Net
             input_channels = 1
@@ -165,12 +165,16 @@ class DepthwiseConv2d(Layer):
                 name='W_depthwise2d',
                 shape=w_shape,
                 initializer=self.W_init,
-                dtype=self.inputs.dtype,
+                dtype=self._temp_data['inputs'].dtype,
                 **self.W_init_args
             )
 
-            self.outputs = tf.nn.depthwise_conv2d(
-                self.inputs, weight_matrix, strides=self.strides, padding=self.padding, rate=self.dilation_rate
+            self._temp_data['outputs'] = tf.nn.depthwise_conv2d(
+                self._temp_data['inputs'],
+                weight_matrix,
+                strides=self.strides,
+                padding=self.padding,
+                rate=self.dilation_rate
             )
 
             if self.b_init:
@@ -178,13 +182,13 @@ class DepthwiseConv2d(Layer):
                     name='b_depthwise2d',
                     shape=(input_channels * self.depth_multiplier),
                     initializer=self.b_init,
-                    dtype=self.inputs.dtype,
+                    dtype=self._temp_data['inputs'].dtype,
                     **self.b_init_args
                 )
 
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

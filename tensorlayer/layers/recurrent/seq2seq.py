@@ -167,7 +167,7 @@ class Seq2Seq(Layer):
 
         with tf.variable_scope(name):
             # tl.layers.set_name_reuse(reuse)
-            # network = InputLayer(self.inputs, name=name+'/input')
+            # network = InputLayer(self._temp_data['inputs'], name=name+'/input')
             network_encode = DynamicRNNLayer(
                 net_encode_in,
                 cell_fn=cell_fn,
@@ -198,7 +198,7 @@ class Seq2Seq(Layer):
                 return_seq_2d=return_seq_2d,
                 name='decode'
             )
-            self.outputs = network_decode.outputs
+            self._temp_data['outputs'] = network_decode.outputs
 
             # rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
@@ -219,4 +219,4 @@ class Seq2Seq(Layer):
         self._add_params(network_decode.all_params)
         self._add_dropout_layers(network_decode.all_drop)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])

@@ -140,8 +140,8 @@ class DeformableConv2d(Layer):
 
         super(DeformableConv2d, self).compile(self._check_inputs(prev_layer, offset_layer))
 
-        input_layer = self.inputs[0]
-        offset_layer = self.inputs[1]
+        input_layer = self._temp_data['inputs'][0]
+        offset_layer = self._temp_data['inputs'][1]
 
         try:
             input_channels = int(input_layer.get_shape()[-1])
@@ -223,11 +223,11 @@ class DeformableConv2d(Layer):
 
                 _tensor = tf.nn.bias_add(_tensor, b, name='bias_add')
 
-            self.outputs = tf.reshape(
+            self._temp_data['outputs'] = tf.reshape(
                 tensor=self._apply_activation(_tensor), shape=[tf.shape(input_layer)[0], input_h, input_w, w_shape[-1]]
             )
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
     @private_method

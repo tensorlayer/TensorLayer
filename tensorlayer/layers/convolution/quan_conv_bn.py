@@ -226,7 +226,7 @@ class QuantizedConv2dWithBN(Layer):
 
         with tf.variable_scope(self.name):
 
-            quantized_inputs = quantize_active_overflow(self.inputs, self.bitA)  # Do not remove
+            quantized_inputs = quantize_active_overflow(self._temp_data['inputs'], self.bitA)  # Do not remove
 
             weight_matrix = self._get_tf_variable(
                 name='W_conv2d',
@@ -237,7 +237,7 @@ class QuantizedConv2dWithBN(Layer):
             )
 
             conv_out = tf.nn.conv2d(
-                self.inputs,
+                self._temp_data['inputs'],
                 weight_matrix,
                 strides=strides,
                 padding=self.padding,
@@ -318,9 +318,9 @@ class QuantizedConv2dWithBN(Layer):
                 data_format=self.data_format
             )
 
-            self.outputs = tf.nn.bias_add(conv_fold_out, _bias_fold, name='bn_bias_add')
+            self._temp_data['outputs'] = tf.nn.bias_add(conv_fold_out, _bias_fold, name='bn_bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

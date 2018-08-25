@@ -81,39 +81,49 @@ class QuantizedDense(Layer):
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-        if self.inputs.get_shape().ndims != 2:
+        if self._temp_data['inputs'].get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
         if gemmlowp_at_inference:
             raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
-        n_in = int(self.inputs.get_shape()[-1])
-        self.inputs = quantize_active_overflow(self.inputs, bitA)
+        n_in = int(self._temp_data['inputs'].get_shape()[-1])
+        self._temp_data['inputs'] = quantize_active_overflow(self._temp_data['inputs'], bitA)
         self.n_units = n_units
 
         with tf.variable_scope(name):
 
             weight_matrix = self._get_tf_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
+                name='W',
+                shape=(n_in, n_units),
+                initializer=W_init,
+                dtype=self._temp_data['inputs'].dtype,
+                **self.W_init_args
             )
 
             weight_matrix = quantize_weight_overflow(weight_matrix, bitW)
 
-            self.outputs = tf.matmul(self.inputs, weight_matrix)
+            self._temp_data['outputs'] = tf.matmul(self._temp_data['inputs'], weight_matrix)
 
             if b_init is not None:
                 try:
                     b = self._get_tf_variable(
-                        name='b', shape=(n_units, ), initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args
+                        name='b',
+                        shape=(n_units, ),
+                        initializer=b_init,
+                        dtype=self._temp_data['inputs'].dtype,
+                        **self.b_init_args
                     )
                 except Exception:  # If initializer is a constant, do not specify shape.
-                    b = self._get_tf_variable(name='b', initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args)
+                    b = self._get_tf_variable(
+                        name='b', initializer=b_init, dtype=self._temp_data['inputs'].dtype, **self.b_init_args
+                    )
 
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
 
         if b_init is not None:
             self._add_params([weight_matrix, b])

@@ -175,12 +175,12 @@ class DeConv2dLayer(Layer):
                 name='W_deconv2d',
                 shape=self.shape,
                 initializer=self.W_init,
-                dtype=self.inputs.dtype,
+                dtype=self._temp_data['inputs'].dtype,
                 **self.W_init_args
             )
 
             self.out_shape = compute_deconv2d_output_shape(
-                self.inputs,
+                self._temp_data['inputs'],
                 self.shape[0],
                 self.shape[1],
                 self.strides[1],
@@ -190,8 +190,12 @@ class DeConv2dLayer(Layer):
                 data_format=self.data_format
             )
 
-            self.outputs = tf.nn.conv2d_transpose(
-                self.inputs, weight_matrix, output_shape=self.out_shape, strides=self.strides, padding=self.padding
+            self._temp_data['outputs'] = tf.nn.conv2d_transpose(
+                self._temp_data['inputs'],
+                weight_matrix,
+                output_shape=self.out_shape,
+                strides=self.strides,
+                padding=self.padding
             )
 
             if self.b_init:
@@ -199,14 +203,14 @@ class DeConv2dLayer(Layer):
                     name='b_deconv2d',
                     shape=(self.shape[-2]),
                     initializer=self.b_init,
-                    dtype=self.inputs.dtype,
+                    dtype=self._temp_data['inputs'].dtype,
                     **self.b_init_args
                 )
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -322,12 +326,12 @@ class DeConv3dLayer(Layer):
                 name='W_deconv3d',
                 shape=self.shape,
                 initializer=self.W_init,
-                dtype=self.inputs.dtype,
+                dtype=self._temp_data['inputs'].dtype,
                 **self.W_init_args
             )
 
             self.out_shape = compute_deconv3d_output_shape(
-                self.inputs,
+                self._temp_data['inputs'],
                 self.shape[0],
                 self.shape[1],
                 self.shape[2],
@@ -339,8 +343,12 @@ class DeConv3dLayer(Layer):
                 data_format=self.data_format
             )
 
-            self.outputs = tf.nn.conv3d_transpose(
-                self.inputs, weight_matrix, output_shape=self.out_shape, strides=self.strides, padding=self.padding
+            self._temp_data['outputs'] = tf.nn.conv3d_transpose(
+                self._temp_data['inputs'],
+                weight_matrix,
+                output_shape=self.out_shape,
+                strides=self.strides,
+                padding=self.padding
             )
 
             if self.b_init:
@@ -348,13 +356,13 @@ class DeConv3dLayer(Layer):
                     name='b_deconv3d',
                     shape=(self.shape[-2]),
                     initializer=self.b_init,
-                    dtype=self.inputs.dtype,
+                    dtype=self._temp_data['inputs'].dtype,
                     **self.b_init_args
                 )
 
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

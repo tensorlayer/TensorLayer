@@ -75,7 +75,7 @@ class SpatialTransformer2dAffineLayer(Layer):
         additional_str = []
 
         try:
-            additional_str.append("in_size: %s" % self.inputs[0].outputs.shape)
+            additional_str.append("in_size: %s" % self._temp_data['inputs'][0].outputs.shape)
         except AttributeError:
             pass
 
@@ -91,8 +91,8 @@ class SpatialTransformer2dAffineLayer(Layer):
 
         super(SpatialTransformer2dAffineLayer, self).compile(self._check_inputs(prev_layer, theta_layer))
 
-        input_layer = self.inputs[0].outputs
-        theta_layer = self.inputs[1]
+        input_layer = self._temp_data['inputs'][0].outputs
+        theta_layer = self._temp_data['inputs'][1]
 
         with tf.variable_scope(self.name) as vs:
 
@@ -117,7 +117,7 @@ class SpatialTransformer2dAffineLayer(Layer):
             # 3. Spatial Transformer Sampling
             # 3.1 transformation
 
-            self.outputs = transformer(input_layer, self.theta, out_size=self.out_size)
+            self._temp_data['outputs'] = transformer(input_layer, self.theta, out_size=self.out_size)
 
             # 3.2 automatically set batch_size and channels
             # e.g. [?, 40, 40, ?] --> [64, 40, 40, 1] or [64, 20, 20, 4]/ Hao Dong
@@ -132,12 +132,14 @@ class SpatialTransformer2dAffineLayer(Layer):
 
             n_channels = input_layer.get_shape().as_list()[-1]
 
-            self.outputs = tf.reshape(self.outputs, shape=[batch_size, self.out_size[0], self.out_size[1], n_channels])
+            self._temp_data['outputs'] = tf.reshape(
+                self._temp_data['outputs'], shape=[batch_size, self.out_size[0], self.out_size[1], n_channels]
+            )
 
             # 4. Get all parameters
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
     @private_method

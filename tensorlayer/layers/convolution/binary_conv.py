@@ -160,7 +160,7 @@ class BinaryConv2d(Layer):
     def compile(self, prev_layer, is_train=True):
 
         try:
-            input_channels = int(self.inputs.get_shape()[-1])
+            input_channels = int(self._temp_data['inputs'].get_shape()[-1])
 
         except TypeError:  # if input_channels is ?, it happens when using Spatial Transformer Net
             input_channels = 1
@@ -172,13 +172,17 @@ class BinaryConv2d(Layer):
         with tf.variable_scope(self.name):
 
             weight_matrix = self._get_tf_variable(
-                name='W_conv2d', shape=w_shape, initializer=self.W_init, dtype=self.inputs.dtype, **self.W_init_args
+                name='W_conv2d',
+                shape=w_shape,
+                initializer=self.W_init,
+                dtype=self._temp_data['inputs'].dtype,
+                **self.W_init_args
             )
 
             weight_matrix = quantize(weight_matrix)
 
-            self.outputs = tf.nn.conv2d(
-                self.inputs,
+            self._temp_data['outputs'] = tf.nn.conv2d(
+                self._temp_data['inputs'],
                 weight_matrix,
                 strides=strides,
                 padding=self.padding,
@@ -192,13 +196,13 @@ class BinaryConv2d(Layer):
                     name='b_conv2d',
                     shape=(w_shape[-1]),
                     initializer=self.b_init,
-                    dtype=self.inputs.dtype,
+                    dtype=self._temp_data['inputs'].dtype,
                     **self.b_init_args
                 )
 
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

@@ -69,7 +69,7 @@ class ExpandDimsLayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -79,10 +79,9 @@ class ExpandDimsLayer(Layer):
     def compile(self, prev_layer, is_train=True):
 
         with tf.variable_scope(self.name):
-            self.outputs = tf.expand_dims(self.inputs, axis=self.axis)
-            self.out_shape = self.outputs.shape
+            self._temp_data['outputs'] = tf.expand_dims(self._temp_data['inputs'], axis=self.axis)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
 
 
 class TileLayer(Layer):
@@ -137,7 +136,7 @@ class TileLayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -147,7 +146,6 @@ class TileLayer(Layer):
     def compile(self, prev_layer, is_train=True):
 
         with tf.variable_scope(self.name):
-            self.outputs = tf.tile(prev_layer.outputs, multiples=self.multiples)
-            self.out_shape = self.outputs.shape
+            self._temp_data['outputs'] = tf.tile(self._temp_data['inputs'], multiples=self.multiples)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])

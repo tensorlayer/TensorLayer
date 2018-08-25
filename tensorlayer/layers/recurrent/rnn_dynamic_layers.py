@@ -167,25 +167,25 @@ class DynamicRNNLayer(Layer):
 
         logging.info(
             "DynamicRNNLayer %s: n_hidden: %d, in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d" % (
-                self.name, n_hidden, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout,
-                n_layer
+                self.name, n_hidden, self._temp_data['inputs'].get_shape().ndims, self._temp_data['inputs'].get_shape(),
+                cell_fn.__name__, dropout, n_layer
             )
         )
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
-            self.inputs.get_shape().with_rank(3)
+            self._temp_data['inputs'].get_shape().with_rank(3)
         except Exception:
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps(max), n_features]")
 
         # Get the batch_size
-        fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
+        fixed_batch_size = self._temp_data['inputs'].get_shape().with_rank_at_least(1)[0]
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
             logging.info("       batch_size (concurrent processes): %d" % batch_size)
 
         else:
-            batch_size = array_ops.shape(self.inputs)[0]
+            batch_size = array_ops.shape(self._temp_data['inputs'])[0]
             logging.info("       non specified batch_size, uses a tensor instead.")
 
         self.batch_size = batch_size
@@ -246,7 +246,9 @@ class DynamicRNNLayer(Layer):
 
         # Initialize initial_state
         if initial_state is None:
-            self.initial_state = self.cell.zero_state(batch_size, dtype=self.inputs.dtype)  # dtype=tf.float32)
+            self.initial_state = self.cell.zero_state(
+                batch_size, dtype=self._temp_data['inputs'].dtype
+            )  # dtype=tf.float32)
         else:
             self.initial_state = initial_state
 
@@ -254,7 +256,8 @@ class DynamicRNNLayer(Layer):
         if sequence_length is None:
 
             sequence_length = retrieve_seq_length_op(
-                self.inputs if isinstance(self.inputs, tf.Tensor) else tf.stack(self.inputs)
+                self._temp_data['inputs']
+                if isinstance(self._temp_data['inputs'], tf.Tensor) else tf.stack(self._temp_data['inputs'])
             )
 
         # Main - Computes outputs and last_states
@@ -262,7 +265,7 @@ class DynamicRNNLayer(Layer):
             outputs, last_states = tf.nn.dynamic_rnn(
                 cell=self.cell,
                 # inputs=X
-                inputs=self.inputs,
+                inputs=self._temp_data['inputs'],
                 # dtype=tf.float64,
                 sequence_length=sequence_length,
                 initial_state=self.initial_state,
@@ -275,16 +278,16 @@ class DynamicRNNLayer(Layer):
             if return_last:
                 # [batch_size, n_hidden]
                 # outputs = tf.transpose(tf.pack(outputs), [1, 0, 2])
-                self.outputs = advanced_indexing_op(outputs, sequence_length)
+                self._temp_data['outputs'] = advanced_indexing_op(outputs, sequence_length)
 
             else:
                 # [batch_size, n_step(max), n_hidden]
-                # self.outputs = result[0]["outputs"]
-                # self.outputs = outputs    # it is 3d, but it is a list
+                # self._temp_data['outputs'] = result[0]["outputs"]
+                # self._temp_data['outputs'] = outputs    # it is 3d, but it is a list
                 if return_seq_2d:
                     # PTB tutorial:
                     # 2D Tensor [n_example, n_hidden]
-                    self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden])
+                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden])
 
                 else:
                     # <akara>:
@@ -292,15 +295,15 @@ class DynamicRNNLayer(Layer):
                     max_length = tf.shape(outputs)[1]
                     batch_size = tf.shape(outputs)[0]
 
-                    self.outputs = tf.reshape(tf.concat(outputs, 1), [batch_size, max_length, n_hidden])
-                    # self.outputs = tf.reshape(tf.concat(1, outputs), [-1, max_length, n_hidden])
+                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [batch_size, max_length, n_hidden])
+                    # self._temp_data['outputs'] = tf.reshape(tf.concat(1, outputs), [-1, max_length, n_hidden])
 
         # Final state
         self.final_state = last_states
 
         self.sequence_length = sequence_length
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(rnn_variables)
 
 
@@ -430,26 +433,26 @@ class BiDynamicRNNLayer(Layer):
 
         logging.info(
             "BiDynamicRNNLayer %s: n_hidden: %d in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d" % (
-                self.name, n_hidden, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout,
-                n_layer
+                self.name, n_hidden, self._temp_data['inputs'].get_shape().ndims, self._temp_data['inputs'].get_shape(),
+                cell_fn.__name__, dropout, n_layer
             )
         )
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
-            self.inputs.get_shape().with_rank(3)
+            self._temp_data['inputs'].get_shape().with_rank(3)
         except Exception:
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps(max), n_features]")
 
         # Get the batch_size
-        fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
+        fixed_batch_size = self._temp_data['inputs'].get_shape().with_rank_at_least(1)[0]
 
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
             logging.info("       batch_size (concurrent processes): %d" % batch_size)
 
         else:
-            batch_size = array_ops.shape(self.inputs)[0]
+            batch_size = array_ops.shape(self._temp_data['inputs'])[0]
             logging.info("       non specified batch_size, uses a tensor instead.")
 
         self.batch_size = batch_size
@@ -498,7 +501,8 @@ class BiDynamicRNNLayer(Layer):
             if sequence_length is None:
 
                 sequence_length = retrieve_seq_length_op(
-                    self.inputs if isinstance(self.inputs, tf.Tensor) else tf.stack(self.inputs)
+                    self._temp_data['inputs']
+                    if isinstance(self._temp_data['inputs'], tf.Tensor) else tf.stack(self._temp_data['inputs'])
                 )
 
             if n_layer > 1:
@@ -513,11 +517,11 @@ class BiDynamicRNNLayer(Layer):
                 outputs, states_fw, states_bw = stack_bidirectional_dynamic_rnn(
                     cells_fw=self.fw_cell,
                     cells_bw=self.bw_cell,
-                    inputs=self.inputs,
+                    inputs=self._temp_data['inputs'],
                     sequence_length=sequence_length,
                     initial_states_fw=self.fw_initial_state,
                     initial_states_bw=self.bw_initial_state,
-                    dtype=self.inputs.dtype,
+                    dtype=self._temp_data['inputs'].dtype,
                     **self.dynamic_rnn_init_args
                 )
 
@@ -527,11 +531,11 @@ class BiDynamicRNNLayer(Layer):
                 outputs, (states_fw, states_bw) = tf.nn.bidirectional_dynamic_rnn(
                     cell_fw=self.fw_cell,
                     cell_bw=self.bw_cell,
-                    inputs=self.inputs,
+                    inputs=self._temp_data['inputs'],
                     sequence_length=sequence_length,
                     initial_state_fw=self.fw_initial_state,
                     initial_state_bw=self.bw_initial_state,
-                    dtype=self.inputs.dtype,
+                    dtype=self._temp_data['inputs'].dtype,
                     **self.dynamic_rnn_init_args
                 )
 
@@ -545,13 +549,13 @@ class BiDynamicRNNLayer(Layer):
             if return_last:
                 # [batch_size, 2 * n_hidden]
                 raise NotImplementedError("Return last is not implemented yet.")
-                # self.outputs = advanced_indexing_op(outputs, sequence_length)
+                # self._temp_data['outputs'] = advanced_indexing_op(outputs, sequence_length)
             else:
                 # [batch_size, n_step(max), 2 * n_hidden]
                 if return_seq_2d:
                     # PTB tutorial:
                     # 2D Tensor [n_example, 2 * n_hidden]
-                    self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, 2 * n_hidden])
+                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [-1, 2 * n_hidden])
 
                 else:
                     # <akara>:
@@ -559,7 +563,9 @@ class BiDynamicRNNLayer(Layer):
                     max_length = tf.shape(outputs)[1]
                     batch_size = tf.shape(outputs)[0]
 
-                    self.outputs = tf.reshape(tf.concat(outputs, 1), [batch_size, max_length, 2 * n_hidden])
+                    self._temp_data['outputs'
+                                   ] = tf.reshape(tf.concat(outputs, 1),
+                                                  [batch_size, max_length, 2 * n_hidden])
 
         # Final state
         self.fw_final_states = states_fw
@@ -567,5 +573,5 @@ class BiDynamicRNNLayer(Layer):
 
         self.sequence_length = sequence_length
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(rnn_variables)

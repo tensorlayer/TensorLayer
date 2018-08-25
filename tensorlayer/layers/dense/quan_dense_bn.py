@@ -105,21 +105,25 @@ class QuantizedDenseWithBN(Layer):
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-        if self.inputs.get_shape().ndims != 2:
+        if self._temp_data['inputs'].get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
         if gemmlowp_at_inference:
             raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
-        n_in = int(self.inputs.get_shape()[-1])
-        x = self.inputs
-        self.inputs = quantize_active_overflow(self.inputs, bitA)
+        n_in = int(self._temp_data['inputs'].get_shape()[-1])
+        x = self._temp_data['inputs']
+        self._temp_data['inputs'] = quantize_active_overflow(self._temp_data['inputs'], bitA)
         self.n_units = n_units
 
         with tf.variable_scope(name):
 
             weight_matrix = self._get_tf_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
+                name='W',
+                shape=(n_in, n_units),
+                initializer=W_init,
+                dtype=self._temp_data['inputs'].dtype,
+                **self.W_init_args
             )
 
             mid_out = tf.matmul(x, weight_matrix)
@@ -131,7 +135,7 @@ class QuantizedDenseWithBN(Layer):
                     name='scale_para',
                     shape=para_bn_shape,
                     initializer=gamma_init,
-                    dtype=self.inputs.dtype,
+                    dtype=self._temp_data['inputs'].dtype,
                     trainable=is_train
                 )
             else:
@@ -142,7 +146,7 @@ class QuantizedDenseWithBN(Layer):
                     name='offset_para',
                     shape=para_bn_shape,
                     initializer=beta_init,
-                    dtype=self.inputs.dtype,
+                    dtype=self._temp_data['inputs'].dtype,
                     trainable=is_train
                 )
             else:
@@ -152,7 +156,7 @@ class QuantizedDenseWithBN(Layer):
                 'moving_mean',
                 para_bn_shape,
                 initializer=tf.constant_initializer(1.),
-                dtype=self.inputs.dtype,
+                dtype=self._temp_data['inputs'].dtype,
                 trainable=False
             )
 
@@ -160,7 +164,7 @@ class QuantizedDenseWithBN(Layer):
                 'moving_variance',
                 para_bn_shape,
                 initializer=tf.constant_initializer(1.),
-                dtype=self.inputs.dtype,
+                dtype=self._temp_data['inputs'].dtype,
                 trainable=False,
             )
 
@@ -191,13 +195,13 @@ class QuantizedDenseWithBN(Layer):
 
             # weight_matrix = tf.Variable(weight_matrix)
 
-            self.outputs = tf.matmul(self.inputs, weight_matrix)
-            # self.outputs = xnor_gemm(self.inputs, weight_matrix) # TODO
+            self._temp_data['outputs'] = tf.matmul(self._temp_data['inputs'], weight_matrix)
+            # self._temp_data['outputs'] = xnor_gemm(self._temp_data['inputs'], weight_matrix) # TODO
 
-            self.outputs = tf.nn.bias_add(self.outputs, _bias_fold, name='bias_add')
+            self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], _bias_fold, name='bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
 
         self._add_params([weight_matrix, scale_para, offset_para, moving_mean, moving_variance])

@@ -95,14 +95,14 @@ class TimeDistributedLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        if not isinstance(self.inputs, tf.Tensor):
-            self.inputs = tf.transpose(tf.stack(self.inputs), [1, 0, 2])
+        if not isinstance(self._temp_data['inputs'], tf.Tensor):
+            self._temp_data['inputs'] = tf.transpose(tf.stack(self._temp_data['inputs']), [1, 0, 2])
 
-        input_shape = self.inputs.get_shape()
+        input_shape = self._temp_data['inputs'].get_shape()
 
         timestep = input_shape[1]
 
-        x = tf.unstack(self.inputs, axis=1)
+        x = tf.unstack(self._temp_data['inputs'], axis=1)
 
         is_name_reuse = tf.get_variable_scope().reuse
 
@@ -118,7 +118,7 @@ class TimeDistributedLayer(Layer):
 
                 self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self.outputs = tf.stack(x, axis=1, name=self.name)
+        self._temp_data['outputs'] = tf.stack(x, axis=1, name=self.name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

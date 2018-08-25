@@ -142,7 +142,7 @@ class GroupConv2d(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        input_channels = int(self.inputs.get_shape()[-1])
+        input_channels = int(self._temp_data['inputs'].get_shape()[-1])
 
         if input_channels % self.n_group != 0:
             raise ValueError("The number of input channels must be evenly divisible by `n_group`")
@@ -156,39 +156,39 @@ class GroupConv2d(Layer):
                 name='W',
                 shape=[self.filter_size[0], self.filter_size[1], input_channels / self.n_group, self.n_filter],
                 initializer=self.W_init,
-                dtype=self.inputs.dtype,
+                dtype=self._temp_data['inputs'].dtype,
                 trainable=is_train,
                 **self.W_init_args
             )
 
             if self.n_group == 1:
-                self.outputs = self.exec_conv2d(self.inputs, We)
+                self._temp_data['outputs'] = self.exec_conv2d(self._temp_data['inputs'], We)
 
             else:
-                input_groups = tf.split(axis=3, num_or_size_splits=self.n_group, value=self.inputs)
+                input_groups = tf.split(axis=3, num_or_size_splits=self.n_group, value=self._temp_data['inputs'])
                 weights_groups = tf.split(axis=3, num_or_size_splits=self.n_group, value=We)
 
                 conv_groups = [
                     self.exec_conv2d(inputs, n_filters) for inputs, n_filters in zip(input_groups, weights_groups)
                 ]
 
-                self.outputs = tf.concat(axis=3, values=conv_groups)
+                self._temp_data['outputs'] = tf.concat(axis=3, values=conv_groups)
 
             if self.b_init:
                 b = self._get_tf_variable(
                     name='b',
                     shape=self.n_filter,
                     initializer=self.b_init,
-                    dtype=self.inputs.dtype,
+                    dtype=self._temp_data['inputs'].dtype,
                     trainable=True,
                     **self.b_init_args
                 )
 
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
     @private_method

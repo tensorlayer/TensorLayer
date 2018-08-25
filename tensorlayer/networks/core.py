@@ -104,11 +104,11 @@ class BaseNetwork(core.BaseLayer):
             "** Compiling %s `%s` - reuse: %s, is_train: %s **" % (self.__class__.__name__, self.name, reuse, is_train)
         )
 
-        all_params = []
-        all_layers = []
-        all_graphs = []
-        all_drop = {}
-        all_layers_dict = {}
+        _temp_params = []
+        _temp_layers = []
+        _temp_graphs = []
+        _temp_drop = {}
+        _temp_layers_dict = {}
 
         # Reset All Layers' Inputs
         for name, layer in self.all_layers_dict.items():
@@ -119,6 +119,8 @@ class BaseNetwork(core.BaseLayer):
             raise RuntimeError("This network has no layer registered.")
 
         else:
+            network = None
+
             with logging.temp_handler("    [*]"):
 
                 with tf.variable_scope(self.name, reuse=reuse):
@@ -126,27 +128,41 @@ class BaseNetwork(core.BaseLayer):
                     for id_layer, layer in enumerate(self.all_layers):
 
                         layer_factory = self.all_layers_dict[layer]
-                        all_layers_dict[layer] = layer_factory
+                        _temp_layers_dict[layer] = self.all_layers_dict[layer]
 
                         if id_layer == 0:
                             network = layer_factory(input_plh, is_train=is_train)
-                        else:
-                            network = layer_factory(is_train=is_train)
 
-                        all_params.extend(layer_factory._local_weights)
-                        all_layers.append(layer_factory)
+                        else:
+
+                            if isinstance(layer_factory.prev_layer, str):
+                                compiled_inputs = self.all_layers_dict[layer_factory.prev_layer]._last_compiled_layer
+
+                            elif all(isinstance(_layer, str) for _layer in layer_factory.prev_layer):
+                                compiled_inputs = [self.all_layers_dict[_layer]._last_compiled_layer for _layer in layer_factory.prev_layer]
+                            else:
+                                raise ValueError("`prev_layer` should be either a `str` or a list of `str`")
+
+                            network = layer_factory(
+                                prev_layer=compiled_inputs,
+                                is_train=is_train
+                            )
+
+                        _temp_params.extend(layer_factory._local_weights)
+                        _temp_layers.append(layer_factory)
                         # all_graphs.append(layer_factory.all_graphs)  =>  KO for now
-                        all_drop.update(layer_factory._local_drop)
+                        _temp_drop.update(layer_factory._local_drop)
 
             return tl.models.CompiledNetwork(
                 inputs=input_plh,
                 outputs=network.outputs,
-                all_layers_dict=all_layers_dict,
-                all_params=all_params,
 
+                all_layers_dict=_temp_layers_dict,
+                all_params=_temp_params,
                 # all_graphs=all_graphs,
-                all_graphs=network.all_graphs,
-                all_drop=all_drop,
+                all_graphs=_temp_graphs,
+                all_drop=_temp_drop,
+
                 is_train=is_train
             )
 

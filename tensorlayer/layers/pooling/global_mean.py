@@ -47,9 +47,9 @@ class GlobalMeanPool1d(Layer):
 
         logging.info("GlobalMeanPool1d %s" % self.name)
 
-        self.outputs = tf.reduce_mean(self.inputs, axis=1, name=name)
+        self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=1, name=name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
 
 
 class GlobalMeanPool2d(Layer):
@@ -85,9 +85,9 @@ class GlobalMeanPool2d(Layer):
 
         logging.info("GlobalMeanPool2d %s" % self.name)
 
-        self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2], name=name)
+        self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=[1, 2], name=name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
 
 
 class GlobalMeanPool3d(Layer):
@@ -123,6 +123,6 @@ class GlobalMeanPool3d(Layer):
 
         logging.info("GlobalMeanPool3d %s" % self.name)
 
-        self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2, 3], name=name)
+        self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=[1, 2, 3], name=name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])

@@ -73,8 +73,8 @@ class StackLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        self.outputs = tf.stack(self.inputs, axis=self.axis, name=self.name)
-        self._add_layers(self.outputs)
+        self._temp_data['outputs'] = tf.stack(self._temp_data['inputs'], axis=self.axis, name=self.name)
+        self._add_layers(self._temp_data['outputs'])
 
 
 class UnStackLayer(Layer):
@@ -134,12 +134,12 @@ class UnStackLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        self.outputs = tf.unstack(self.inputs, num=self.num, axis=self.axis, name=self.name)
-        self.n_outputs = len(self.outputs)
+        self._temp_data['outputs'] = tf.unstack(self._temp_data['inputs'], num=self.num, axis=self.axis, name=self.name)
+        self.n_outputs = len(self._temp_data['outputs'])
 
         net_new = []
 
-        for i, unstacked_dim in enumerate(self.outputs):
+        for i, unstacked_dim in enumerate(self._temp_data['outputs']):
             layer = Layer()
 
             layer.name = self.name + "_%d" % i
@@ -152,5 +152,5 @@ class UnStackLayer(Layer):
 
             net_new.append(layer)
 
-        self.outputs = net_new
-        self._add_layers(self.outputs)
+        self._temp_data['outputs'] = net_new
+        self._add_layers(self._temp_data['outputs'])

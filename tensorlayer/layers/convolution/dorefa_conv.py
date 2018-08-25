@@ -170,13 +170,13 @@ class DorefaConv2d(Layer):
     def compile(self, prev_layer, is_train=True):
 
         try:
-            input_channels = int(self.inputs.get_shape()[-1])
+            input_channels = int(self._temp_data['inputs'].get_shape()[-1])
 
         except TypeError:  # if input_channels is ?, it happens when using Spatial Transformer Net
             input_channels = 1
             logging.warning("unknown input channels, set to 1")
 
-        quantized_inputs = quantize_active(cabs(self.inputs), self.bitA)  # Do not remove
+        quantized_inputs = quantize_active(cabs(self._temp_data['inputs']), self.bitA)  # Do not remove
 
         w_shape = (self.filter_size[0], self.filter_size[1], input_channels, self.n_filter)
         strides = (1, self.strides[0], self.strides[1], 1)
@@ -192,7 +192,7 @@ class DorefaConv2d(Layer):
 
             weight_matrix = quantize_weight(weight_matrix, self.bitW)
 
-            self.outputs = tf.nn.conv2d(
+            self._temp_data['outputs'] = tf.nn.conv2d(
                 quantized_inputs,
                 weight_matrix,
                 strides=strides,
@@ -210,9 +210,9 @@ class DorefaConv2d(Layer):
                     **self.b_init_args
                 )
 
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

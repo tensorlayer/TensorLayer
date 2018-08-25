@@ -155,8 +155,8 @@ class Conv1d(Layer):
 
         with tf.variable_scope(self.name) as vs:
 
-            self.outputs = tf.layers.conv1d(
-                inputs=self.inputs,
+            self._temp_data['outputs'] = tf.layers.conv1d(
+                inputs=self._temp_data['inputs'],
                 filters=self.n_filter,
                 kernel_size=self.filter_size,
                 strides=self.stride,
@@ -172,11 +172,11 @@ class Conv1d(Layer):
                 name=None
             )
 
-            self._apply_activation(self.outputs)
+            self._apply_activation(self._temp_data['outputs'])
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -319,8 +319,8 @@ class Conv2d(Layer):
 
         with tf.variable_scope(self.name) as vs:
 
-            self.outputs = tf.layers.conv2d(
-                inputs=self.inputs,
+            self._temp_data['outputs'] = tf.layers.conv2d(
+                inputs=self._temp_data['inputs'],
                 filters=self.n_filter,
                 kernel_size=self.filter_size,
                 strides=self.strides,
@@ -336,9 +336,9 @@ class Conv2d(Layer):
                 name=None
             )
 
-        self._apply_activation(self.outputs)
+        self._apply_activation(self._temp_data['outputs'])
 
         self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

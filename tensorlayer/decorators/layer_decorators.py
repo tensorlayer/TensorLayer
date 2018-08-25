@@ -30,7 +30,12 @@ def auto_reset_temp_attrs(func):
 
     def func_wrapper(self, *args, **kwargs):
         """decorator wrapper function"""
-        self._temp_data = dict()
+        self._temp_data = {
+            'inputs': None,
+            'outputs': None,
+            'local_weights': [],
+            'local_drop': [],
+        }
 
         return func(self, *args, **kwargs)
 

@@ -92,23 +92,23 @@ class SlimNetsLayer(Layer):
 
         with tf.variable_scope(self.name) as vs:
 
-            _out = self.slim_layer(self.inputs, **self.slim_args)
+            _out = self.slim_layer(self._temp_data['inputs'], **self.slim_args)
 
             if isinstance(_out, tf.Tensor):
-                self.outputs = _out
+                self._temp_data['outputs'] = _out
                 slim_layers.append(_out)
 
             else:
-                self.outputs, end_points = _out
+                self._temp_data['outputs'], end_points = _out
 
                 for v in end_points.values():
                     slim_layers.append(v)
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -187,8 +187,8 @@ class KerasLayer(Layer):
 
         with tf.variable_scope(current_varscope.name + "/" + self.name + "/", reuse=current_varscope.reuse):
 
-            self.outputs = self.keras_layer(self.inputs)
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self.keras_layer(self._temp_data['inputs'])
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
             if is_train:
                 self._local_weights = self.keras_layer._trainable_weights
@@ -197,7 +197,7 @@ class KerasLayer(Layer):
                     if var.trainable and var not in tf.get_collection(TF_GRAPHKEYS_VARIABLES):
                         tf.add_to_collection(name=TF_GRAPHKEYS_VARIABLES, value=var)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -270,9 +270,9 @@ class EstimatorLayer(Layer):
     def compile(self, prev_layer, is_train=True):
 
         with tf.variable_scope(self.name) as vs:
-            self.outputs = self.model_fn(self.inputs, **self.layer_args)
+            self._temp_data['outputs'] = self.model_fn(self._temp_data['inputs'], **self.layer_args)
 
             self._local_weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=vs.name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

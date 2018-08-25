@@ -1,6 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import importlib
 import inspect
 import six
 
@@ -26,6 +27,7 @@ __all__ = [
     'TF_GRAPHKEYS_VARIABLES',
     'Layer',
     'BaseLayer',
+    'CompiledLayer'
 ]
 
 
@@ -121,9 +123,6 @@ class BaseLayer(object):
         self.all_drop = dict()
         self.all_graphs = list()
 
-        self.inputs = None
-        self.outputs = None
-
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""
         for i, p in enumerate(self.all_params):
@@ -164,7 +163,9 @@ class BaseLayer(object):
         return _params
 
     def __str__(self):
-        return "  Last layer is: %s (%s) %s" % (self.__class__.__name__, self.name, self.outputs.get_shape().as_list())
+        return "  Last layer is: %s (%s) %s" % (
+            self.__class__.__name__, self.name, self._temp_data['outputs'].get_shape().as_list()
+        )
 
     def __getitem__(self, key):
 
@@ -173,8 +174,8 @@ class BaseLayer(object):
         net_new.name = self.name
 
         net_new.name = self.name + '_indexing'
-        net_new.inputs = self.inputs
-        net_new.outputs = self.outputs[key]
+        net_new.inputs = self._temp_data['inputs']
+        net_new.outputs = self._temp_data['outputs'][key]
 
         net_new._add_layers(self.all_layers[:-1])
         net_new._add_layers(net_new.outputs)
@@ -305,6 +306,7 @@ class Layer(BaseLayer):
         self.graph = dict()
 
         self._temp_data = dict()
+        self._last_compiled_layer = None
 
         self._local_weights = list()
         self._local_drop = dict()
@@ -349,19 +351,17 @@ class Layer(BaseLayer):
 
             self._temp_data['inputs'] = [layer.outputs for layer in prev_layer]
 
-            self._add_layers(sum([l.all_layers for l in prev_layer], []))
-            self._add_params(sum([l.all_params for l in prev_layer], []))
-            self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
-            self._add_graphs(sum([l.all_graphs for l in prev_layer], []))
+            # self._add_layers(sum([l.all_layers for l in prev_layer], []))
+            # self._add_params(sum([l.all_params for l in prev_layer], []))
+            # self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
+            # self._add_graphs(sum([l.all_graphs for l in prev_layer], []))
 
         elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
-            if self.__class__.__name__ not in [
-                'InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer', 'EmbeddingInputlayer',
-                'AverageEmbeddingInputlayer'
-            ]:
+            if not self._check_self_is_input():
                 raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
 
             self._temp_data['inputs'] = prev_layer
+
             '''
             self._add_graphs(
                 (
@@ -379,10 +379,10 @@ class Layer(BaseLayer):
         elif prev_layer is not None:
 
             # 4. tl.models
-            self._add_layers(prev_layer.all_layers)
-            self._add_params(prev_layer.all_params)
-            self._add_dropout_layers(prev_layer.all_drop)
-            self._add_graphs(prev_layer.all_graphs)
+            # self._add_layers(prev_layer.all_layers)
+            # self._add_params(prev_layer.all_params)
+            # self._add_dropout_layers(prev_layer.all_drop)
+            # self._add_graphs(prev_layer.all_graphs)
 
             if hasattr(prev_layer, "outputs"):
                 self._temp_data['inputs'] = prev_layer.outputs
@@ -415,41 +415,57 @@ class Layer(BaseLayer):
         self._add_graphs((self.name, self.graph))
         '''
 
+    @private_method
+    def _check_self_is_input(self):
+
+        input_layers_module = importlib.import_module('tensorlayer.layers.inputs')
+        input_layers = tuple([getattr(input_layers_module, layer) for layer in tl.layers.inputs.__all__])
+
+        return isinstance(self, input_layers)
+
     # @force_return_self
     @auto_reset_temp_attrs
     def __call__(self, prev_layer=None, is_train=True):
 
-        if prev_layer is None:
+        if prev_layer is None and not self._check_self_is_input():
+            raise ValueError("No previous_layer has been given to the layer `%s`" % self.name)
 
-            if hasattr(self, 'prev_layer') and self.prev_layer is not None:
-                prev_layer = self.prev_layer
-
-            elif not isinstance(self, (tl.layers.InputLayer, tl.layers.OneHotInputLayer)):
-                raise ValueError("No previous_layer has been given to the layer `%s`" % self.name)
-
-        if isinstance(prev_layer, tf.Tensor) and isinstance(self, (tl.layers.InputLayer, tl.layers.OneHotInputLayer)):
+        elif isinstance(prev_layer, tf.Tensor) and self._check_self_is_input():
             self.compile(prev_layer, is_train)
 
-        elif hasattr(prev_layer, "outputs") and prev_layer.outputs is not None:
+        elif isinstance(prev_layer, tl.layers.CompiledLayer):
             self.compile(prev_layer, is_train)
+
+        elif isinstance(prev_layer, tl.layers.Layer):
+            self.prev_layer = prev_layer.name
 
         elif isinstance(prev_layer, (list, tuple)):
-            check_passed = True
 
-            for layer in prev_layer:
-                if not hasattr(layer, "outputs") or layer.outputs is None:
-                    check_passed = False
-                    break
+            if all(isinstance(layer, tl.layers.CompiledLayer) for layer in prev_layer):
+                check_passed = True
 
-            if check_passed:
-                self.compile(prev_layer, is_train)
+                for layer in prev_layer:
+                    if not hasattr(layer, "outputs") or layer.outputs is None:
+                        check_passed = False
+                        break
+
+                if check_passed:
+                    self.compile(prev_layer, is_train)
+                else:
+                    self.prev_layer = prev_layer.name
+
+            elif all(isinstance(layer, tl.layers.Layer) for layer in prev_layer):
+                self.prev_layer = [layer.name for layer in prev_layer]
             else:
-                self.prev_layer = prev_layer
+                raise ValueError("Not all layers given in `prev_layer` are either `CompiledLayer or `Layer` instance")
 
         else:
             self.prev_layer = prev_layer
 
-        return self._create_compiled_layer()
+        if self._temp_data['outputs'] is not None:
+            return self._create_compiled_layer()
+        else:
+            return self
 
     @private_method
     def _str(self, additional_str=list()):
@@ -488,8 +504,8 @@ class Layer(BaseLayer):
         custom_getter=None,
         constraint=None
     ):
-        if hasattr(self, "inputs") and isinstance(self.inputs, tf.Tensor):
-            dtype = self.inputs.dtype
+        if "inputs" in self._temp_data.keys() and isinstance(self._temp_data['inputs'], tf.Tensor):
+            dtype = self._temp_data['inputs'].dtype
 
         w = tf.get_variable(
             name,
@@ -530,13 +546,15 @@ class Layer(BaseLayer):
 
     @private_method
     def _create_compiled_layer(self):
-        return type("Compiled_" + self.__class__.__name__, (CompiledLayer, ), {})(
+        self._last_compiled_layer = type("Compiled_" + self.__class__.__name__, (CompiledLayer, ), {})(
             layer_to_compile=self,
             inputs=self._temp_data['inputs'],
             outputs=self._temp_data['outputs'],
-            local_weights=self._local_weights,
-            local_drop=self._local_drop
+            local_weights=self._temp_data['local_weights'],
+            local_drop=self._temp_data['local_drop'],
         )
+
+        return self._last_compiled_layer
 
     # =============================================== #
     #                  TO BE REMOVED                  #
@@ -554,7 +572,7 @@ class Layer(BaseLayer):
 
     # def __getstate__(self): # pickle save
     #     return {'version': 0.1,
-    #             # 'outputs': self.outputs,
+    #             # 'outputs': self._temp_data['outputs'],
     #             }
     #
     # def __setstate__(self, state): # pickle restore

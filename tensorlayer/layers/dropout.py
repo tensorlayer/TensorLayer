@@ -124,23 +124,27 @@ class DropoutLayer(Layer):
 
         if is_train is False:
             logging.info("  -> [Not Training] - skip `%s`" % self.__class__.__name__)
-            self.outputs = prev_layer.outputs
+            self._temp_data['outputs'] = prev_layer.outputs
 
         else:
 
             with tf.variable_scope(self.name):
                 # The name of placeholder for keep_prob is the same with the name of the Layer.
                 if self.is_fix:
-                    self.outputs = tf.nn.dropout(self.inputs, self.keep, seed=self.seed, name=self.name)
+                    self._temp_data['outputs'] = tf.nn.dropout(
+                        self._temp_data['inputs'], self.keep, seed=self.seed, name=self.name
+                    )
 
                 else:
-                    keep_plh = tf.placeholder(self.inputs.dtype, shape=())
+                    keep_plh = tf.placeholder(self._temp_data['inputs'].dtype, shape=())
 
                     self.all_drop.update({keep_plh: self.keep})
                     self._local_drop.update({keep_plh: self.keep})
 
                     LayersConfig.set_keep[self.name] = keep_plh
 
-                    self.outputs = tf.nn.dropout(self.inputs, keep_plh, seed=self.seed, name=self.name)
+                    self._temp_data['outputs'] = tf.nn.dropout(
+                        self._temp_data['inputs'], keep_plh, seed=self.seed, name=self.name
+                    )
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])

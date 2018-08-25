@@ -101,11 +101,15 @@ class LocalResponseNormLayer(Layer):
     def compile(self, prev_layer, is_train=True):
 
         with tf.variable_scope(self.name):
-            self.outputs = tf.nn.local_response_normalization(
-                self.inputs, depth_radius=self.depth_radius, bias=self.bias, alpha=self.alpha, beta=self.beta
+            self._temp_data['outputs'] = tf.nn.local_response_normalization(
+                self._temp_data['inputs'],
+                depth_radius=self.depth_radius,
+                bias=self.bias,
+                alpha=self.alpha,
+                beta=self.beta
             )
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
 
 
 class BatchNormLayer(Layer):
@@ -206,7 +210,7 @@ class BatchNormLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        x_shape = self.inputs.get_shape()
+        x_shape = self._temp_data['inputs'].get_shape()
         params_shape = x_shape[-1:]
 
         with tf.variable_scope(self.name):
@@ -217,7 +221,11 @@ class BatchNormLayer(Layer):
             if self.beta_init:
 
                 beta = self._get_tf_variable(
-                    'beta', shape=params_shape, initializer=self.beta_init, dtype=self.inputs.dtype, trainable=is_train
+                    'beta',
+                    shape=params_shape,
+                    initializer=self.beta_init,
+                    dtype=self._temp_data['inputs'].dtype,
+                    trainable=is_train
                 )
 
             else:
@@ -228,7 +236,7 @@ class BatchNormLayer(Layer):
                     'gamma',
                     shape=params_shape,
                     initializer=self.gamma_init,
-                    dtype=self.inputs.dtype,
+                    dtype=self._temp_data['inputs'].dtype,
                     trainable=is_train,
                 )
             else:
@@ -240,7 +248,7 @@ class BatchNormLayer(Layer):
                 'moving_mean',
                 params_shape,
                 initializer=self.moving_mean_init,
-                dtype=self.inputs.dtype,
+                dtype=self._temp_data['inputs'].dtype,
                 trainable=False
             )
 
@@ -248,13 +256,13 @@ class BatchNormLayer(Layer):
                 'moving_variance',
                 params_shape,
                 initializer=self.moving_var_init,
-                dtype=self.inputs.dtype,
+                dtype=self._temp_data['inputs'].dtype,
                 trainable=False,
             )
 
             # 3.
             # These ops will only be preformed when training.
-            mean, variance = tf.nn.moments(self.inputs, axis)
+            mean, variance = tf.nn.moments(self._temp_data['inputs'], axis)
 
             update_moving_mean = moving_averages.assign_moving_average(
                 moving_mean, mean, self.decay, zero_debias=False
@@ -273,11 +281,11 @@ class BatchNormLayer(Layer):
             else:
                 mean, var = moving_mean, moving_variance
 
-            self.outputs = self._apply_activation(
-                tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, self.epsilon)
+            self._temp_data['outputs'] = self._apply_activation(
+                tf.nn.batch_normalization(self._temp_data['inputs'], mean, var, beta, gamma, self.epsilon)
             )
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -342,27 +350,29 @@ class InstanceNormLayer(Layer):
             raise RuntimeError("`%s` only accepts input Tensor of dimension 3 or 4." % self.__class__.__name__)
 
         with tf.variable_scope(self.name):
-            mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
+            mean, var = tf.nn.moments(self._temp_data['inputs'], [1, 2], keep_dims=True)
 
             scale = self._get_tf_variable(
-                'scale', [self.inputs.get_shape()[-1]],
-                dtype=self.inputs.dtype,
+                'scale', [self._temp_data['inputs'].get_shape()[-1]],
+                dtype=self._temp_data['inputs'].dtype,
                 initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02)
             )
 
             offset = self._get_tf_variable(
-                'offset', [self.inputs.get_shape()[-1]],
-                dtype=self.inputs.dtype,
+                'offset', [self._temp_data['inputs'].get_shape()[-1]],
+                dtype=self._temp_data['inputs'].dtype,
                 initializer=tf.constant_initializer(0.0)
             )
 
-            self.outputs = tf.div(self.inputs - mean, tf.sqrt(var + self.epsilon))
-            self.outputs = tf.multiply(scale, tf.div(self.inputs - mean, tf.sqrt(var + self.epsilon)))
-            self.outputs = tf.add(self.outputs, offset)
+            self._temp_data['outputs'] = tf.div(self._temp_data['inputs'] - mean, tf.sqrt(var + self.epsilon))
+            self._temp_data['outputs'] = tf.multiply(
+                scale, tf.div(self._temp_data['inputs'] - mean, tf.sqrt(var + self.epsilon))
+            )
+            self._temp_data['outputs'] = tf.add(self._temp_data['outputs'], offset)
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -460,8 +470,8 @@ class LayerNormLayer(Layer):
         is_name_reuse = tf.get_variable_scope().reuse
 
         with tf.variable_scope(self.name) as vs:
-            self.outputs = tf.contrib.layers.layer_norm(
-                self.inputs,
+            self._temp_data['outputs'] = tf.contrib.layers.layer_norm(
+                self._temp_data['inputs'],
                 center=self.center,
                 scale=self.scale,
                 activation_fn=None,
@@ -474,11 +484,11 @@ class LayerNormLayer(Layer):
                 scope='var',
             )
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -561,11 +571,11 @@ class SwitchNormLayer(Layer):
 
         with tf.variable_scope(self.name):
 
-            ch = self.inputs.shape[-1]
+            ch = self._temp_data['inputs'].shape[-1]
 
-            batch_mean, batch_var = tf.nn.moments(self.inputs, [0, 1, 2], keep_dims=True)
-            ins_mean, ins_var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
-            layer_mean, layer_var = tf.nn.moments(self.inputs, [1, 2, 3], keep_dims=True)
+            batch_mean, batch_var = tf.nn.moments(self._temp_data['inputs'], [0, 1, 2], keep_dims=True)
+            ins_mean, ins_var = tf.nn.moments(self._temp_data['inputs'], [1, 2], keep_dims=True)
+            layer_mean, layer_var = tf.nn.moments(self._temp_data['inputs'], [1, 2, 3], keep_dims=True)
 
             gamma = self._get_tf_variable("gamma", [ch], initializer=self.gamma_init)
             beta = self._get_tf_variable("beta", [ch], initializer=self.beta_init)
@@ -579,10 +589,10 @@ class SwitchNormLayer(Layer):
             mean = mean_weight[0] * batch_mean + mean_weight[1] * ins_mean + mean_weight[2] * layer_mean
             var = var_weight[0] * batch_var + var_weight[1] * ins_var + var_weight[2] * layer_var
 
-            self.outputs = (self.inputs - mean) / (tf.sqrt(var + self.epsilon))
+            self._temp_data['outputs'] = (self._temp_data['inputs'] - mean) / (tf.sqrt(var + self.epsilon))
 
-            self.outputs = tf.add(tf.multiply(self.inputs, gamma), beta)
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = tf.add(tf.multiply(self._temp_data['inputs'], gamma), beta)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

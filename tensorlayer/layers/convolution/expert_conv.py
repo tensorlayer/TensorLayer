@@ -123,11 +123,15 @@ class Conv1dLayer(Layer):
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
-                name='W_conv1d', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype, **self.W_init_args
+                name='W_conv1d',
+                shape=self.shape,
+                initializer=self.W_init,
+                dtype=self._temp_data['inputs'].dtype,
+                **self.W_init_args
             )
 
-            self.outputs = tf.nn.conv1d(
-                self.inputs,
+            self._temp_data['outputs'] = tf.nn.conv1d(
+                self._temp_data['inputs'],
                 weight_matrix,
                 stride=self.stride,
                 padding=self.padding,
@@ -140,15 +144,15 @@ class Conv1dLayer(Layer):
                     name='b_conv1d',
                     shape=(self.shape[-1]),
                     initializer=self.b_init,
-                    dtype=self.inputs.dtype,
+                    dtype=self._temp_data['inputs'].dtype,
                     **self.b_init_args
                 )
 
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -301,11 +305,15 @@ class Conv2dLayer(Layer):
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
-                name='W_conv2d', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype, **self.W_init_args
+                name='W_conv2d',
+                shape=self.shape,
+                initializer=self.W_init,
+                dtype=self._temp_data['inputs'].dtype,
+                **self.W_init_args
             )
 
-            self.outputs = tf.nn.conv2d(
-                self.inputs,
+            self._temp_data['outputs'] = tf.nn.conv2d(
+                self._temp_data['inputs'],
                 weight_matrix,
                 strides=self.strides,
                 padding=self.padding,
@@ -318,15 +326,15 @@ class Conv2dLayer(Layer):
                     name='b_conv2d',
                     shape=(self.shape[-1]),
                     initializer=self.b_init,
-                    dtype=self.inputs.dtype,
+                    dtype=self._temp_data['inputs'].dtype,
                     **self.b_init_args
                 )
 
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -438,11 +446,19 @@ class Conv3dLayer(Layer):
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
-                name='W_conv3d', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype, **self.W_init_args
+                name='W_conv3d',
+                shape=self.shape,
+                initializer=self.W_init,
+                dtype=self._temp_data['inputs'].dtype,
+                **self.W_init_args
             )
 
-            self.outputs = tf.nn.conv3d(
-                self.inputs, weight_matrix, strides=self.strides, padding=self.padding, data_format=self.data_format
+            self._temp_data['outputs'] = tf.nn.conv3d(
+                self._temp_data['inputs'],
+                weight_matrix,
+                strides=self.strides,
+                padding=self.padding,
+                data_format=self.data_format
             )
 
             if self.b_init:
@@ -450,13 +466,13 @@ class Conv3dLayer(Layer):
                     name='b_conv3d',
                     shape=(self.shape[-1]),
                     initializer=self.b_init,
-                    dtype=self.inputs.dtype,
+                    dtype=self._temp_data['inputs'].dtype,
                     **self.b_init_args
                 )
 
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

@@ -84,21 +84,21 @@ class PReluLayer(Layer):
         if self.channel_shared:
             w_shape = (1, )
         else:
-            w_shape = int(self.inputs.get_shape()[-1])
+            w_shape = int(self._temp_data['inputs'].get_shape()[-1])
 
         with tf.variable_scope(self.name):
             alpha_var = self._get_tf_variable(name='alpha', shape=w_shape, initializer=self.a_init, **self.a_init_args)
 
             alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
 
-        self.outputs = self._apply_activation(
-            self.inputs, **{
+        self._temp_data['outputs'] = self._apply_activation(
+            self._temp_data['inputs'], **{
                 'alpha': alpha_var_constrained,
                 'name': "PReLU_activation"
             }
         )
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -183,21 +183,21 @@ class PRelu6Layer(Layer):
         if self.channel_shared:
             w_shape = (1, )
         else:
-            w_shape = int(self.inputs.get_shape()[-1])
+            w_shape = int(self._temp_data['inputs'].get_shape()[-1])
 
         with tf.variable_scope(self.name):
             alpha_var = self._get_tf_variable(name='alpha', shape=w_shape, initializer=self.a_init, **self.a_init_args)
 
             alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
 
-        self.outputs = self._apply_activation(
-            self.inputs, **{
+        self._temp_data['outputs'] = self._apply_activation(
+            self._temp_data['inputs'], **{
                 'alpha': alpha_var_constrained,
                 'name': "PReLU6_activation"
             }
         )
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
 
 
@@ -284,7 +284,7 @@ class PTRelu6Layer(Layer):
         if self.channel_shared:
             w_shape = (1, )
         else:
-            w_shape = int(self.inputs.get_shape()[-1])
+            w_shape = int(self._temp_data['inputs'].get_shape()[-1])
 
         with tf.variable_scope(self.name):
 
@@ -302,13 +302,13 @@ class PTRelu6Layer(Layer):
 
             alpha_high_constrained = tf.nn.sigmoid(alpha_high, name="constraining_alpha_high_in_0_1")
 
-        self.outputs = self.outputs = self._apply_activation(
-            self.inputs, **{
+        self._temp_data['outputs'] = self._temp_data['outputs'] = self._apply_activation(
+            self._temp_data['inputs'], **{
                 'alpha_low': alpha_low_constrained,
                 'alpha_high': alpha_high_constrained,
                 'name': "PTReLU6_activation"
             }
         )
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

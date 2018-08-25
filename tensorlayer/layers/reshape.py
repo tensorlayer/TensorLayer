@@ -61,7 +61,7 @@ class FlattenLayer(Layer):
         additional_str = []
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self.self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -70,11 +70,9 @@ class FlattenLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        _out = flatten_reshape(prev_layer.outputs, name=self.name)
-        self.out_shape = _out.shape
+        self._temp_data['outputs'] = flatten_reshape(prev_layer.outputs, name=self.name)
 
-        self.outputs = _out
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
 
 
 class ReshapeLayer(Layer):
@@ -124,7 +122,7 @@ class ReshapeLayer(Layer):
         additional_str = []
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -133,10 +131,9 @@ class ReshapeLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        self.outputs = tf.reshape(prev_layer.outputs, shape=self._shape, name=self.name)
-        self.out_shape = self.outputs.shape
+        self._temp_data['outputs'] = tf.reshape(prev_layer.outputs, shape=self._shape, name=self.name)
 
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
 
 
 class TransposeLayer(Layer):
@@ -192,7 +189,7 @@ class TransposeLayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -201,8 +198,6 @@ class TransposeLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        _out = tf.transpose(prev_layer.outputs, perm=self.perm, name=self.name)
-        self.out_shape = _out.shape
+        self._temp_data['outputs'] = tf.transpose(prev_layer.outputs, perm=self.perm, name=self.name)
 
-        self.outputs = _out
-        self._add_layers(self.outputs)
+        self._add_layers(self._temp_data['outputs'])
