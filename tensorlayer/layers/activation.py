@@ -8,6 +8,7 @@ from tensorlayer.layers.core import Layer
 from tensorlayer.activation import leaky_relu6
 from tensorlayer.activation import leaky_twice_relu6
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -77,9 +78,8 @@ class PReluLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(PReluLayer, self).compile(prev_layer)
 
         if self.channel_shared:
             w_shape = (1, )
@@ -177,9 +177,8 @@ class PRelu6Layer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(PRelu6Layer, self).compile(prev_layer)
 
         if self.channel_shared:
             w_shape = (1, )
@@ -279,9 +278,8 @@ class PTRelu6Layer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(PTRelu6Layer, self).compile(prev_layer)
 
         if self.channel_shared:
             w_shape = (1, )

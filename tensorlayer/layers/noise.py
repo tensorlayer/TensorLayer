@@ -7,6 +7,7 @@ from tensorlayer.layers.core import Layer
 
 from tensorlayer import logging
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -89,9 +90,8 @@ class GaussianNoiseLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(GaussianNoiseLayer, self).compile(prev_layer)
 
         if is_train is False:
             logging.info("  -> [Not Training] - skip `%s`" % self.__class__.__name__)

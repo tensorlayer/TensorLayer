@@ -13,6 +13,7 @@ from tensorlayer.layers.utils.quantization import quantize_weight_overflow
 from tensorflow.python.training import moving_averages
 from tensorlayer import logging
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -211,9 +212,8 @@ class QuantizedConv2dWithBN(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(QuantizedConv2dWithBN, self).compile(prev_layer)
 
         try:
             input_channels = int(prev_layer.outputs.get_shape()[-1])

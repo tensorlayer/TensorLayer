@@ -7,6 +7,7 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -104,9 +105,8 @@ class UpSampling2dLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        self._parse_inputs(prev_layer)
 
         if len(self.inputs.shape) == 3:
             x_pos, y_pos = (0, 1)
@@ -144,8 +144,6 @@ class UpSampling2dLayer(Layer):
             self.outputs = tf.cast(self.outputs, self.inputs.dtype)
 
             self.out_shape = self.outputs.get_shape()
-
-        super(UpSampling2dLayer, self).compile(prev_layer)
 
         self._add_layers(self.outputs)
 
@@ -238,9 +236,8 @@ class DownSampling2dLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        self._parse_inputs(prev_layer)
 
         if len(self.inputs.shape) == 3:
             x_pos, y_pos = (0, 1)
@@ -284,7 +281,5 @@ class DownSampling2dLayer(Layer):
             self.outputs = tf.cast(self.outputs, self.inputs.dtype)
 
             self.out_shape = self.outputs.get_shape()
-
-        super(DownSampling2dLayer, self).compile(prev_layer)
 
         self._add_layers(self.outputs)

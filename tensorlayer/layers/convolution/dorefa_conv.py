@@ -11,6 +11,7 @@ from tensorlayer.layers.utils import quantize_weight
 
 from tensorlayer import logging
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -165,9 +166,8 @@ class DorefaConv2d(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(DorefaConv2d, self).compile(prev_layer)
 
         try:
             input_channels = int(self.inputs.get_shape()[-1])

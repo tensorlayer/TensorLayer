@@ -5,6 +5,7 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -69,9 +70,8 @@ class StackLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(StackLayer, self).compile(prev_layer)
 
         self.outputs = tf.stack(self.inputs, axis=self.axis, name=self.name)
         self._add_layers(self.outputs)
@@ -131,14 +131,11 @@ class UnStackLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        self._parse_inputs(prev_layer)
 
         self.outputs = tf.unstack(self.inputs, num=self.num, axis=self.axis, name=self.name)
         self.n_outputs = len(self.outputs)
-
-        super(UnStackLayer, self).compile(prev_layer)
 
         net_new = []
 

@@ -14,6 +14,7 @@ from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 from tensorlayer.layers.utils.reshape import flatten_reshape
 from tensorlayer.layers.utils.spatial_transformer import transformer
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import private_method
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
@@ -85,6 +86,7 @@ class SpatialTransformer2dAffineLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, theta_layer=None, is_train=True):
 
         super(SpatialTransformer2dAffineLayer, self).compile(self._check_inputs(prev_layer, theta_layer))

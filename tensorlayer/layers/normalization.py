@@ -9,6 +9,7 @@ from tensorflow.python.training import moving_averages
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -96,9 +97,8 @@ class LocalResponseNormLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(LocalResponseNormLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
             self.outputs = tf.nn.local_response_normalization(
@@ -203,9 +203,8 @@ class BatchNormLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(BatchNormLayer, self).compile(prev_layer)
 
         x_shape = self.inputs.get_shape()
         params_shape = x_shape[-1:]
@@ -336,12 +335,11 @@ class InstanceNormLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
         if len(prev_layer.outputs.shape) not in [3, 4]:
             raise RuntimeError("`%s` only accepts input Tensor of dimension 3 or 4." % self.__class__.__name__)
-
-        super(InstanceNormLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
             mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
@@ -456,9 +454,8 @@ class LayerNormLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(LayerNormLayer, self).compile(prev_layer)
 
         is_name_reuse = tf.get_variable_scope().reuse
 
@@ -556,12 +553,11 @@ class SwitchNormLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
         if len(prev_layer.outputs.shape) not in [3, 4]:
             raise RuntimeError("`%s` only accepts input Tensor of dimension 3 or 4." % self.__class__.__name__)
-
-        super(SwitchNormLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
 

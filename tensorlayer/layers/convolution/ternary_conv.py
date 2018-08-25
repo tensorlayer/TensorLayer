@@ -10,6 +10,7 @@ from tensorlayer.layers.utils import ternary_operation
 
 from tensorlayer import logging
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -157,9 +158,8 @@ class TernaryConv2d(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(TernaryConv2d, self).compile(prev_layer)
 
         try:
             input_channels = int(self.inputs.get_shape()[-1])

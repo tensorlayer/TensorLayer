@@ -7,6 +7,7 @@ from tensorlayer.layers.core import Layer
 
 from tensorlayer.layers.utils.reshape import flatten_reshape
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -66,12 +67,11 @@ class FlattenLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
         _out = flatten_reshape(prev_layer.outputs, name=self.name)
         self.out_shape = _out.shape
-
-        super(FlattenLayer, self).compile(prev_layer)
 
         self.outputs = _out
         self._add_layers(self.outputs)
@@ -130,14 +130,12 @@ class ReshapeLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        _out = tf.reshape(prev_layer.outputs, shape=self._shape, name=self.name)
-        self.out_shape = _out.shape
+        self.outputs = tf.reshape(prev_layer.outputs, shape=self._shape, name=self.name)
+        self.out_shape = self.outputs.shape
 
-        super(ReshapeLayer, self).compile(prev_layer)
-
-        self.outputs = _out
         self._add_layers(self.outputs)
 
 
@@ -200,12 +198,11 @@ class TransposeLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
         _out = tf.transpose(prev_layer.outputs, perm=self.perm, name=self.name)
         self.out_shape = _out.shape
-
-        super(TransposeLayer, self).compile(prev_layer)
 
         self.outputs = _out
         self._add_layers(self.outputs)

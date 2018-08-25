@@ -5,6 +5,7 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -92,14 +93,11 @@ class PadLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        self._parse_inputs(prev_layer)
 
         self.outputs = tf.pad(self.inputs, paddings=self.padding, mode=self.mode, name=self.name)
         self.out_shape = self.outputs.shape
-
-        super(PadLayer, self).compile(prev_layer)
 
         self._add_layers(self.outputs)
 
@@ -164,13 +162,9 @@ class ZeroPad1d(Layer):
 
     def compile(self, prev_layer, is_train=True):
 
-        self._parse_inputs(prev_layer)
-
         # TODO: Stop using Keras
         self.outputs = tf.keras.layers.ZeroPadding1D(padding=self.padding, name=self.name)(self.inputs)
         self.out_shape = self.outputs.shape
-
-        super(ZeroPad1d, self).compile(prev_layer)
 
         self._add_layers(self.outputs)
 
@@ -236,13 +230,9 @@ class ZeroPad2d(Layer):
 
     def compile(self, prev_layer, is_train=True):
 
-        self._parse_inputs(prev_layer)
-
         # TODO: Stop using Keras
         self.outputs = tf.keras.layers.ZeroPadding2D(padding=self.padding, name=self.name)(self.inputs)
         self.out_shape = self.outputs.shape
-
-        super(ZeroPad2d, self).compile(prev_layer)
 
         self._add_layers(self.outputs)
 
@@ -308,12 +298,8 @@ class ZeroPad3d(Layer):
 
     def compile(self, prev_layer, is_train=True):
 
-        self._parse_inputs(prev_layer)
-
         # TODO: Stop using Keras
         self.outputs = tf.keras.layers.ZeroPadding3D(padding=self.padding, name=self.name)(self.inputs)
         self.out_shape = self.outputs.shape
-
-        super(ZeroPad3d, self).compile(prev_layer)
 
         self._add_layers(self.outputs)

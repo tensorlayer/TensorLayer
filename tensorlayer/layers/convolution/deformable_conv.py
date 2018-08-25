@@ -7,6 +7,7 @@ from tensorlayer.layers.core import Layer
 
 from tensorlayer import logging
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 from tensorlayer.decorators import private_method
@@ -134,6 +135,7 @@ class DeformableConv2d(Layer):
         else:
             return None
 
+    @auto_parse_inputs
     def compile(self, prev_layer, offset_layer=None, is_train=True):
 
         super(DeformableConv2d, self).compile(self._check_inputs(prev_layer, offset_layer))

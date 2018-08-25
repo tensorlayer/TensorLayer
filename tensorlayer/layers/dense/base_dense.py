@@ -103,8 +103,6 @@ class DenseLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        super(DenseLayer, self).compile(prev_layer)
-
         if self._temp_data['inputs'].get_shape().ndims != 2:
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
 

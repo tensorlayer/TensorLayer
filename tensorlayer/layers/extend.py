@@ -5,6 +5,7 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -74,17 +75,14 @@ class ExpandDimsLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        self._parse_inputs(prev_layer)
 
         with tf.variable_scope(self.name):
             self.outputs = tf.expand_dims(self.inputs, axis=self.axis)
             self.out_shape = self.outputs.shape
 
         self._add_layers(self.outputs)
-
-        super(ExpandDimsLayer, self).compile(prev_layer)
 
 
 class TileLayer(Layer):
@@ -145,14 +143,11 @@ class TileLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        self._parse_inputs(prev_layer)
 
         with tf.variable_scope(self.name):
             self.outputs = tf.tile(prev_layer.outputs, multiples=self.multiples)
             self.out_shape = self.outputs.shape
 
         self._add_layers(self.outputs)
-
-        super(TileLayer, self).compile(prev_layer)

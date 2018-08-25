@@ -7,6 +7,7 @@ from tensorlayer.layers.core import Layer
 
 from tensorlayer import logging
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 

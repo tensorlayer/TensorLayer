@@ -8,6 +8,7 @@ from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer import logging
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
@@ -84,9 +85,8 @@ class SlimNetsLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(SlimNetsLayer, self).compile(prev_layer)
 
         slim_layers = []
 
@@ -180,9 +180,8 @@ class KerasLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(KerasLayer, self).compile(prev_layer)
 
         current_varscope = tf.get_variable_scope()
 
@@ -267,9 +266,8 @@ class EstimatorLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(EstimatorLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name) as vs:
             self.outputs = self.model_fn(self.inputs, **self.layer_args)

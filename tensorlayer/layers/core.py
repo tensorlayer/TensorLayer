@@ -16,7 +16,6 @@ from tensorlayer.utils import list_remove_repeat
 from tensorlayer import logging
 
 from tensorlayer.decorators import auto_reset_temp_attrs
-from tensorlayer.decorators import force_return_self
 from tensorlayer.decorators import layer_autoregister
 from tensorlayer.decorators import overwrite_layername_in_network
 from tensorlayer.decorators import protected_method

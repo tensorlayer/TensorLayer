@@ -7,6 +7,7 @@ from tensorlayer.layers.core import Layer
 
 from tensorlayer import logging
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -146,9 +147,8 @@ class DepthwiseConv2d(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(DepthwiseConv2d, self).compile(prev_layer)
 
         try:
             input_channels = int(self.inputs.get_shape()[-1])

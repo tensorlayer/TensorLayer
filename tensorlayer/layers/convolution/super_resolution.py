@@ -5,6 +5,7 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -79,9 +80,8 @@ class SubpixelConv1d(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(SubpixelConv1d, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
 
@@ -190,9 +190,8 @@ class SubpixelConv2d(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        self._parse_inputs(prev_layer)
 
         if self.n_out_channels is None:
 
@@ -209,8 +208,6 @@ class SubpixelConv2d(Layer):
                 self.__class__.__name__
             )
             raise Exception(_err_log)
-
-        super(SubpixelConv2d, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
 

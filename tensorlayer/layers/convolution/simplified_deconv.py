@@ -6,6 +6,7 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -128,9 +129,8 @@ class DeConv2d(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(DeConv2d, self).compile(prev_layer)
 
         is_name_reuse = tf.get_variable_scope().reuse
 
@@ -264,9 +264,8 @@ class DeConv3d(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(DeConv3d, self).compile(prev_layer)
 
         is_name_reuse = tf.get_variable_scope().reuse
 

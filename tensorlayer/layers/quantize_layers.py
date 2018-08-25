@@ -7,6 +7,7 @@ from tensorlayer.layers.core import Layer
 
 from tensorlayer.layers.utils.quantization import quantize
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -46,9 +47,8 @@ class SignLayer(Layer):
 
         super(SignLayer, self).__init__()
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(SignLayer, self).compile(prev_layer)
 
         with tf.variable_scope(self.name):
             self.outputs = quantize(self.inputs)

@@ -5,6 +5,7 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
+from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
@@ -52,9 +53,8 @@ class InputLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        super(InputLayer, self).compile(prev_layer)
 
         self._temp_data['outputs'] = self._temp_data['inputs']
 
@@ -128,16 +128,13 @@ class OneHotInputLayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        self._parse_inputs(prev_layer)
 
         self.outputs = tf.one_hot(
             self.inputs, self.depth, on_value=self.on_value, off_value=self.off_value, axis=self.axis, dtype=self.dtype
         )
         self.out_shape = self.outputs.shape
-
-        super(OneHotInputLayer, self).compile(prev_layer)
 
         self._add_layers(self.outputs)
 
@@ -287,9 +284,8 @@ class Word2vecEmbeddingInputlayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        self._parse_inputs(prev_layer)
 
         # Look up embeddings for inputs.
         # Note: a row of 'embeddings' is the vector representation of a word.
@@ -307,8 +303,6 @@ class Word2vecEmbeddingInputlayer(Layer):
 
             self.outputs = tf.nn.embedding_lookup(embeddings, self.inputs)
             self.out_shape = self.outputs.shape
-
-            super(Word2vecEmbeddingInputlayer, self).compile(prev_layer)
 
             # Construct the variables for the NCE loss (i.e. negative sampling)
             nce_weights = self._get_tf_variable(
@@ -430,9 +424,8 @@ class EmbeddingInputlayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
-
-        self._parse_inputs(prev_layer)
 
         with tf.variable_scope(self.name):
 
@@ -442,8 +435,6 @@ class EmbeddingInputlayer(Layer):
 
             self.outputs = tf.nn.embedding_lookup(embeddings, self.inputs)
             self.out_shape = self.outputs.shape
-
-        super(EmbeddingInputlayer, self).compile(prev_layer)
 
         self._add_layers(self.outputs)
         self._add_params(self._local_weights)
@@ -532,12 +523,11 @@ class AverageEmbeddingInputlayer(Layer):
 
         return self._str(additional_str)
 
+    @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
         if prev_layer.get_shape().ndims != 2:
             raise ValueError('inputs must be of size batch_size * batch_sentence_length')
-
-        self._parse_inputs(prev_layer)
 
         with tf.variable_scope(self.name):
 
@@ -577,8 +567,6 @@ class AverageEmbeddingInputlayer(Layer):
             )
 
             self.out_shape = sentence_embeddings.shape
-
-        super(AverageEmbeddingInputlayer, self).compile(prev_layer)
 
         self.outputs = sentence_embeddings
 
