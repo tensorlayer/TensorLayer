@@ -123,7 +123,8 @@ class DropoutLayer(Layer):
                     )
 
                 else:
-                    keep_plh = tf.placeholder(self._temp_data['inputs'].dtype, shape=())
+                    # keep_plh = tf.placeholder(self._temp_data['inputs'].dtype, shape=())
+                    keep_plh = tf.placeholder(tf.float32, shape=())
                     self._add_local_drop_plh(keep_plh, self.keep)
 
                     LayersConfig.set_keep[self.name] = keep_plh

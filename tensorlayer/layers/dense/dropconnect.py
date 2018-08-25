@@ -81,42 +81,69 @@ class DropconnectDenseLayer(Layer):
         b_init_args=None,
         name='dropconnect_layer',
     ):
-        super(DropconnectDenseLayer, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
 
-        logging.info(
-            "DropconnectDenseLayer %s: %d %s" %
-            (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
-        )
+        self.keep=keep
+        self.n_units=n_units
+        self.act=act
+        self.W_init=W_init
+        self.b_init=b_init
+        self.W_init_args=W_init_args
+        self.b_init_args=b_init_args
+        self.name=name
 
-        if self._temp_data['inputs'].get_shape().ndims != 2:
-            raise Exception("The input dimension must be rank 2")
+        super(DropconnectDenseLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
 
-        n_in = int(self._temp_data['inputs'].get_shape()[-1])
-        self.n_units = n_units
+        def __str__(self):
+            additional_str = []
 
-        with tf.variable_scope(name):
-            weight_matrix = self._get_tf_variable(
-                name='W',
-                shape=(n_in, n_units),
-                initializer=W_init,
-                dtype=self._temp_data['inputs'].dtype,
-                **self.W_init_args
-            )
-            b = self._get_tf_variable(
-                name='b',
-                shape=(n_units),
-                initializer=b_init,
-                dtype=self._temp_data['inputs'].dtype,
-                **self.b_init_args
-            )
-            # self._temp_data['outputs'] = tf.matmul(self._temp_data['inputs'], weight_matrix) + b
+            try:
+                additional_str.append("keep: %f" % self.keep)
+            except AttributeError:
+                pass
 
-            LayersConfig.set_keep[name] = tf.placeholder(tf.float32)
+            try:
+                additional_str.append("n_units: %d" % self.n_units)
+            except AttributeError:
+                pass
 
-            W_dropcon = tf.nn.dropout(weight_matrix, LayersConfig.set_keep[name])
+            try:
+                additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
+            except AttributeError:
+                pass
 
-            self._temp_data['outputs'] = self._apply_activation(tf.matmul(self._temp_data['inputs'], W_dropcon) + b)
+            return self._str(additional_str)
 
-        self.all_drop.update({LayersConfig.set_keep[name]: keep})
+        @auto_parse_inputs
+        def compile(self, prev_layer):
+            if self._temp_data['inputs'].get_shape().ndims != 2:
+                raise Exception("The input dimension must be rank 2")
+
+            n_in = int(self._temp_data['inputs'].get_shape()[-1])
+
+            with tf.variable_scope(name):
+                weight_matrix = self._get_tf_variable(
+                    name='W',
+                    shape=(n_in, self.n_units),
+                    initializer=self.W_init,
+                    dtype=self._temp_data['inputs'].dtype,
+                    **self.W_init_args
+                )
+                b = self._get_tf_variable(
+                    name='b',
+                    shape=(self.n_units),
+                    initializer=self.b_init,
+                    dtype=self._temp_data['inputs'].dtype,
+                    **self.b_init_args
+                )
+                # self._temp_data['outputs'] = tf.matmul(self._temp_data['inputs'], weight_matrix) + b
+
+                # LayersConfig.set_keep[name] = tf.placeholder(tf.float32)
+                keep_plh = tf.placeholder(tf.float32, shape=())
+                self._add_local_drop_plh(keep_plh, self.keep)
+                LayersConfig.set_keep[self.name] = keep_plh
+
+                W_dropcon = tf.nn.dropout(weight_matrix, keep_plh)
+
+                self._temp_data['outputs'] = self._apply_activation(tf.matmul(self._temp_data['inputs'], W_dropcon) + b)
+
+            # self.all_drop.update({LayersConfig.set_keep[name]: keep})

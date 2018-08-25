@@ -75,58 +75,86 @@ class DorefaDenseLayer(Layer):
         b_init_args=None,
         name='dorefa_dense',
     ):
-        super(DorefaDenseLayer, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        self.bitW=bitW
+        self.bitA=bitA
+        self.n_units=n_units
+        self.act=act
+        self.gemmlowp_at_inference=gemmlowp_at_inference
+        self.W_init=W_init
+        self.b_init=b_init
+        self.W_init_args=W_init_args
+        self.b_init_args=b_init_args
+        self.name=name
 
-        logging.info(
-            "DorefaDenseLayer  %s: %d %s" %
-            (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
-        )
+        super(DorefaDenseLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
 
-        if self._temp_data['inputs'].get_shape().ndims != 2:
-            raise Exception("The input dimension must be rank 2, please reshape or flatten it")
-        if gemmlowp_at_inference:
-            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
-        n_in = int(self._temp_data['inputs'].get_shape()[-1])
-        self.n_units = n_units
+        def __str__(self):
+            additional_str = []
 
-        self._temp_data['inputs'] = quantize_active(cabs(self._temp_data['inputs']), bitA)
+            try:
+                additional_str.append("n_units: %d" % self.n_units)
+            except AttributeError:
+                pass
+            try:
+                additional_str.append("bitW: %d" % self.bitW)
+            except AttributeError:
+                pass
+            try:
+                additional_str.append("bitA: %d" % self.bitA)
+            except AttributeError:
+                pass
+            try:
+                additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
+            except AttributeError:
+                pass
 
-        with tf.variable_scope(name):
+            return self._str(additional_str)
 
-            weight_matrix = self._get_tf_variable(
-                name='W',
-                shape=(n_in, n_units),
-                initializer=W_init,
-                dtype=self._temp_data['inputs'].dtype,
-                **self.W_init_args
-            )
-            # weight_matrix = tl.act.sign(weight_matrix)    # dont update ...
-            weight_matrix = quantize_weight(weight_matrix, bitW)
-            # weight_matrix = tf.Variable(weight_matrix)
-            # print(weight_matrix)
+        @auto_parse_inputs
+        def compile(self, prev_layer):
+            if self._temp_data['inputs'].get_shape().ndims != 2:
+                raise Exception("The input dimension must be rank 2, please reshape or flatten it")
+            if self.gemmlowp_at_inference:
+                raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
-            self._temp_data['outputs'] = tf.matmul(self._temp_data['inputs'], weight_matrix)
-            # self._temp_data['outputs'] = xnor_gemm(self._temp_data['inputs'], weight_matrix) # TODO
+            n_in = int(self._temp_data['inputs'].get_shape()[-1])
 
-            if b_init:
-                try:
-                    b = self._get_tf_variable(
-                        name='b',
-                        shape=(n_units),
-                        initializer=b_init,
-                        dtype=self._temp_data['inputs'].dtype,
-                        **self.b_init_args
-                    )
+            self._temp_data['inputs'] = quantize_active(cabs(self._temp_data['inputs']), bitA)
 
-                except Exception:  # If initializer is a constant, do not specify shape.
-                    b = self._get_tf_variable(
-                        name='b', initializer=b_init, dtype=self._temp_data['inputs'].dtype, **self.b_init_args
-                    )
+            with tf.variable_scope(self.name):
 
-                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
-                # self._temp_data['outputs'] = xnor_gemm(self._temp_data['inputs'], weight_matrix) + b # TODO
+                weight_matrix = self._get_tf_variable(
+                    name='W',
+                    shape=(n_in, self.n_units),
+                    initializer=self.W_init,
+                    dtype=self._temp_data['inputs'].dtype,
+                    **self.W_init_args
+                )
+                # weight_matrix = tl.act.sign(weight_matrix)    # dont update ...
+                weight_matrix = quantize_weight(weight_matrix, self.bitW)
+                # weight_matrix = tf.Variable(weight_matrix)
+                # print(weight_matrix)
 
-            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
+                self._temp_data['outputs'] = tf.matmul(self._temp_data['inputs'], weight_matrix)
+                # self._temp_data['outputs'] = xnor_gemm(self._temp_data['inputs'], weight_matrix) # TODO
+
+                if self.b_init:
+                    try:
+                        b = self._get_tf_variable(
+                            name='b',
+                            shape=(self.n_units),
+                            initializer=self.b_init,
+                            dtype=self._temp_data['inputs'].dtype,
+                            **self.b_init_args
+                        )
+
+                    except Exception:  # If initializer is a constant, do not specify shape.
+                        b = self._get_tf_variable(
+                            name='b', initializer=self.b_init, dtype=self._temp_data['inputs'].dtype, **self.b_init_args
+                        )
+
+                    self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
+                    # self._temp_data['outputs'] = xnor_gemm(self._temp_data['inputs'], weight_matrix) + b # TODO
+
+                self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
