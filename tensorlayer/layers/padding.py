@@ -87,7 +87,7 @@ class PadLayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 
@@ -99,7 +99,6 @@ class PadLayer(Layer):
         self._temp_data['outputs'] = tf.pad(
             self._temp_data['inputs'], paddings=self.padding, mode=self.mode, name=self.name
         )
-        self.out_shape = self._temp_data['outputs'].shape
 
         self._add_layers(self._temp_data['outputs'])
 

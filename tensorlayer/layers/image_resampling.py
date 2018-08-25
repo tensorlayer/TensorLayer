@@ -99,7 +99,7 @@ class UpSampling2dLayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 
@@ -143,8 +143,6 @@ class UpSampling2dLayer(Layer):
                 self._temp_data['inputs'], size=_size, method=self.method, align_corners=self.align_corners
             )
             self._temp_data['outputs'] = tf.cast(self._temp_data['outputs'], self._temp_data['inputs'].dtype)
-
-            self.out_shape = self._temp_data['outputs'].get_shape()
 
         self._add_layers(self._temp_data['outputs'])
 
@@ -231,7 +229,7 @@ class DownSampling2dLayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 
@@ -294,7 +292,5 @@ class DownSampling2dLayer(Layer):
                 self._temp_data['inputs'], size=_size, method=self.method, align_corners=self.align_corners
             )
             self._temp_data['outputs'] = tf.cast(self._temp_data['outputs'], self._temp_data['inputs'].dtype)
-
-            self.out_shape = self._temp_data['outputs'].get_shape()
 
         self._add_layers(self._temp_data['outputs'])

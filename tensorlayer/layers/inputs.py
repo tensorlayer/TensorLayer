@@ -122,7 +122,7 @@ class OneHotInputLayer(Layer):
             pass
 
         try:
-            additional_str.append("output_shape: %s" % self.out_shape)
+            additional_str.append("output_shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 
@@ -139,7 +139,6 @@ class OneHotInputLayer(Layer):
             axis=self.axis,
             dtype=self.dtype
         )
-        self.out_shape = self._temp_data['outputs'].shape
 
         self._add_layers(self._temp_data['outputs'])
 
@@ -283,7 +282,7 @@ class Word2vecEmbeddingInputlayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 
@@ -307,7 +306,6 @@ class Word2vecEmbeddingInputlayer(Layer):
             )
 
             self._temp_data['outputs'] = tf.nn.embedding_lookup(embeddings, self._temp_data['inputs'])
-            self.out_shape = self._temp_data['outputs'].shape
 
             # Construct the variables for the NCE loss (i.e. negative sampling)
             nce_weights = self._get_tf_variable(
@@ -423,7 +421,7 @@ class EmbeddingInputlayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 
@@ -439,7 +437,6 @@ class EmbeddingInputlayer(Layer):
             )
 
             self._temp_data['outputs'] = tf.nn.embedding_lookup(embeddings, self._temp_data['inputs'])
-            self.out_shape = self._temp_data['outputs'].shape
 
         self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)
@@ -522,7 +519,7 @@ class AverageEmbeddingInputlayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 
@@ -565,15 +562,11 @@ class AverageEmbeddingInputlayer(Layer):
                 name='sentence_lengths',
             )
 
-            sentence_embeddings = tf.divide(
+            self._temp_data['outputs'] = tf.divide(
                 sum_word_embeddings,
                 sentence_lengths + 1e-8,  # Add epsilon to avoid dividing by 0
                 name='sentence_embeddings'
             )
-
-            self.out_shape = sentence_embeddings.shape
-
-        self._temp_data['outputs'] = sentence_embeddings
 
         self._add_layers(self._temp_data['outputs'])
         self._add_params(self._local_weights)

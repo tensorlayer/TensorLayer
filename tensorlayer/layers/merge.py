@@ -85,7 +85,7 @@ class ConcatLayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 
@@ -95,7 +95,6 @@ class ConcatLayer(Layer):
     def compile(self, prev_layer, is_train=True):
 
         self._temp_data['outputs'] = tf.concat(self._temp_data['inputs'], self.concat_dim, name=self.name)
-        self.out_shape = self._temp_data['outputs'].shape
 
         self._add_layers(self._temp_data['outputs'])
 
@@ -168,7 +167,7 @@ class ElementwiseLayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self.out_shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 
@@ -183,7 +182,5 @@ class ElementwiseLayer(Layer):
             self._temp_data['outputs'] = self.combine_fn(self._temp_data['outputs'], layer, name=self.name)
 
         self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-
-        self.out_shape = self._temp_data['outputs'].shape
 
         self._add_layers(self._temp_data['outputs'])
