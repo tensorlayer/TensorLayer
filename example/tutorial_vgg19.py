@@ -233,6 +233,7 @@ tl.files.assign_params(sess, params, net)
 
 img1 = load_image("data/tiger.jpeg")  # test data in github
 img1 = img1.reshape((1, 224, 224, 3))
+
 start_time = time.time()
 prob = sess.run(probs, feed_dict={x: img1})
 print("End time : %.5ss" % (time.time() - start_time))

@@ -2277,6 +2277,7 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
     filepath = os.path.join(working_directory, filename)
 
     if not os.path.exists(filepath):
+
         _download(filename, working_directory, url_source)
         statinfo = os.stat(filepath)
         logging.info('Succesfully downloaded %s %s bytes.' % (filename, statinfo.st_size))  # , 'bytes.')

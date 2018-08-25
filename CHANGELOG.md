@@ -81,6 +81,7 @@ To release a new version, please update the changelog as followed:
   - Add `tl.files.load_graph_` (PR ＃751)
   - Add `tl.files.save_graph_and_params` (PR ＃751)
   - Add `tl.files.load_graph_and_params` (PR ＃751)
+  - Add `tl.prepro.keypoint_random_xxx` (PR #787)
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
@@ -152,6 +153,7 @@ To release a new version, please update the changelog as followed:
 - @mutewall: #735
 - @thangvubk: #759
 - @JunbinWang: #796
+- @boldjoel: #787
 
 ## [1.9.1] - 2018-07-30
 
