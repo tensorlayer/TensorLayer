@@ -165,6 +165,8 @@ class Layer(BaseLayer):
         self._temp_data = dict()
         self._last_compiled_layer = None
 
+        self.prev_layer = None
+
         # self.layer_args = self._get_init_args(skip=4)
 
         for key in kwargs.keys():

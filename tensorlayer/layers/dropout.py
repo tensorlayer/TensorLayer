@@ -87,18 +87,13 @@ class DropoutLayer(Layer):
     )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         keep=0.5,
         is_fix=False,
-        is_train=True,
         seed=None,
         name='dropout_layer',
     ):
-
-        self.prev_layer = prev_layer
         self.keep = keep
         self.is_fix = is_fix
-        self.is_train = is_train
         self.seed = seed
         self.name = name
 
@@ -124,7 +119,7 @@ class DropoutLayer(Layer):
 
         if is_train is False:
             logging.info("  -> [Not Training] - skip `%s`" % self.__class__.__name__)
-            self._temp_data['outputs'] = prev_layer.outputs
+            self._temp_data['outputs'] = self._temp_data['inputs']
 
         else:
 

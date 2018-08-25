@@ -5,8 +5,6 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import logging
-
 from tensorlayer.decorators import auto_parse_inputs
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
@@ -54,20 +52,50 @@ class PoolLayer(Layer):
     )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer,
         ksize=(1, 2, 2, 1),
         strides=(1, 2, 2, 1),
         padding='SAME',
         pool=tf.nn.max_pool,
         name='pool_layer',
     ):
-        super(PoolLayer, self).__init__(prev_layer=prev_layer, name=name)
+        self.ksize = ksize
+        self.strides = strides
+        self.padding = padding
+        self.pool = pool
+        self.name = name
 
-        logging.info(
-            "PoolLayer %s: ksize: %s strides: %s padding: %s pool: %s" %
-            (self.name, str(ksize), str(strides), padding, pool.__name__)
-        )
+        super(PoolLayer, self).__init__()
 
-        self._temp_data['outputs'] = pool(
-            self._temp_data['inputs'], ksize=ksize, strides=strides, padding=padding, name=name
-        )
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("ksize: %f" % str(self.ksize))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("pool func: %s" % self.pool.__name__)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @auto_parse_inputs
+    def compile(self, prev_layer, is_train=True):
+
+        with tf.variable_scope(self.name):
+
+            self._temp_data['outputs'] = self.pool(
+                self._temp_data['inputs'], ksize=self.ksize, strides=self.strides, padding=self.padding, name="pooling_op"
+            )
