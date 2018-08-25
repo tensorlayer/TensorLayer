@@ -22,13 +22,7 @@ from tensorlayer.decorators import overwrite_layername_in_network
 from tensorlayer.decorators import protected_method
 from tensorlayer.decorators import private_method
 
-__all__ = [
-    'LayersConfig',
-    'TF_GRAPHKEYS_VARIABLES',
-    'Layer',
-    'BaseLayer',
-    'CompiledLayer'
-]
+__all__ = ['LayersConfig', 'TF_GRAPHKEYS_VARIABLES', 'Layer', 'BaseLayer', 'CompiledLayer']
 
 
 @six.add_metaclass(ABCMeta)
@@ -361,7 +355,6 @@ class Layer(BaseLayer):
                 raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
 
             self._temp_data['inputs'] = prev_layer
-
             '''
             self._add_graphs(
                 (

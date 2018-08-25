@@ -513,6 +513,7 @@ class Network_Sequential_2D_Test(CustomTestCase):
         self.assertEqual(self.model["separableconv2d_layer_33"].outputs.shape, (100, 76, 76, 8))
     '''
 
+
 if __name__ == '__main__':
 
     tf.logging.set_verbosity(tf.logging.DEBUG)

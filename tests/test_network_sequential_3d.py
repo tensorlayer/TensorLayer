@@ -145,6 +145,7 @@ class Network_Sequential_3D_Test(CustomTestCase):
         self.assertEqual(self.model["simple_deconv3d_layer_8"].outputs.shape, (100, 564, 564, 564, 8))
     '''
 
+
 if __name__ == '__main__':
 
     tf.logging.set_verbosity(tf.logging.DEBUG)

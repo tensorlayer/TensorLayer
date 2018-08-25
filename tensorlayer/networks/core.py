@@ -139,14 +139,14 @@ class BaseNetwork(core.BaseLayer):
                                 compiled_inputs = self.all_layers_dict[layer_factory.prev_layer]._last_compiled_layer
 
                             elif all(isinstance(_layer, str) for _layer in layer_factory.prev_layer):
-                                compiled_inputs = [self.all_layers_dict[_layer]._last_compiled_layer for _layer in layer_factory.prev_layer]
+                                compiled_inputs = [
+                                    self.all_layers_dict[_layer]._last_compiled_layer
+                                    for _layer in layer_factory.prev_layer
+                                ]
                             else:
                                 raise ValueError("`prev_layer` should be either a `str` or a list of `str`")
 
-                            network = layer_factory(
-                                prev_layer=compiled_inputs,
-                                is_train=is_train
-                            )
+                            network = layer_factory(prev_layer=compiled_inputs, is_train=is_train)
 
                         _temp_params.extend(layer_factory._local_weights)
                         _temp_layers.append(layer_factory)
@@ -156,13 +156,11 @@ class BaseNetwork(core.BaseLayer):
             return tl.models.CompiledNetwork(
                 inputs=input_plh,
                 outputs=network.outputs,
-
                 all_layers_dict=_temp_layers_dict,
                 all_params=_temp_params,
                 # all_graphs=all_graphs,
                 all_graphs=_temp_graphs,
                 all_drop=_temp_drop,
-
                 is_train=is_train
             )
 
