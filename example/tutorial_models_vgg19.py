@@ -27,6 +27,7 @@ vgg.print_params(False)
 
 vgg.print_layers()
 
+
 # img1 = tl.vis.read_image('data/tiger.jpeg')
 # img1 = tl.prepro.imresize(img1, (224, 224))
 def load_image(path):
@@ -44,6 +45,8 @@ def load_image(path):
     # resize to 224, 224
     resized_img = skimage.transform.resize(crop_img, (224, 224), anti_aliasing=False)
     return resized_img
+
+
 img1 = load_image("data/tiger.jpeg")  # test data in github
 img1 = img1.reshape((1, 224, 224, 3))
 
