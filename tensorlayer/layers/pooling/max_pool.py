@@ -64,9 +64,6 @@ class MaxPool1d(Layer):
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
 
 class MaxPool2d(Layer):
     """Max pooling for 2D image [batch, height, width, channel].
@@ -117,9 +114,6 @@ class MaxPool2d(Layer):
             )
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
 
 
 class MaxPool3d(Layer):
@@ -181,6 +175,3 @@ class MaxPool3d(Layer):
             )
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)

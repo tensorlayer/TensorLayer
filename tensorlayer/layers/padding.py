@@ -100,8 +100,6 @@ class PadLayer(Layer):
             self._temp_data['inputs'], paddings=self.padding, mode=self.mode, name=self.name
         )
 
-        self._add_layers(self._temp_data['outputs'])
-
 
 class ZeroPad1d(Layer):
     """
@@ -168,8 +166,6 @@ class ZeroPad1d(Layer):
         self._temp_data['outputs'] = tf.keras.layers.ZeroPadding1D(
             padding=self.padding, name=self.name
         )(self._temp_data['inputs'])
-
-        self._add_layers(self._temp_data['outputs'])
 
 
 class ZeroPad2d(Layer):
@@ -239,8 +235,6 @@ class ZeroPad2d(Layer):
             padding=self.padding, name=self.name
         )(self._temp_data['inputs'])
 
-        self._add_layers(self._temp_data['outputs'])
-
 
 class ZeroPad3d(Layer):
     """
@@ -308,5 +302,3 @@ class ZeroPad3d(Layer):
         self._temp_data['outputs'] = tf.keras.layers.ZeroPadding3D(
             padding=self.padding, name=self.name
         )(self._temp_data['inputs'])
-
-        self._add_layers(self._temp_data['outputs'])

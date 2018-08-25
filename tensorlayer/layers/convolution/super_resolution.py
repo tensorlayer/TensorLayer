@@ -92,9 +92,6 @@ class SubpixelConv1d(Layer):
 
             self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
 
 class SubpixelConv2d(Layer):
     """It is a 2D sub-pixel up-sampling layer, usually be used
@@ -222,6 +219,3 @@ class SubpixelConv2d(Layer):
             self._temp_data['outputs'] = tf.depth_to_space(self._temp_data['inputs'], self.scale)
 
             self._apply_activation(self._temp_data['outputs'])
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)

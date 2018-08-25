@@ -105,7 +105,7 @@ class TernaryDenseLayer(Layer):
             self._temp_data['outputs'] = tf.matmul(self._temp_data['inputs'], weight_matrix)
             # self._temp_data['outputs'] = xnor_gemm(self._temp_data['inputs'], weight_matrix) # TODO
 
-            if b_init is not None:
+            if b_init:
                 try:
                     b = self._get_tf_variable(
                         name='b',
@@ -122,10 +122,3 @@ class TernaryDenseLayer(Layer):
                 self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-
-        self._add_layers(self._temp_data['outputs'])
-
-        if b_init is not None:
-            self._add_params([weight_matrix, b])
-        else:
-            self._add_params(weight_matrix)

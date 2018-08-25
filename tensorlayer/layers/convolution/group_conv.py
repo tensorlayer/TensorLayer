@@ -188,9 +188,6 @@ class GroupConv2d(Layer):
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
     @private_method
     def exec_conv2d(self, inputs, n_filters):
         return tf.nn.conv2d(

@@ -78,13 +78,7 @@ class Sequential(BaseNetwork):
 
     def add(self, layer):
         self.register_new_layer(layer)
-
         self._last_layer = layer(self._last_layer)
-
-        # Reset Network State in case it was previously compiled
-        self._net = None
-        self.is_compiled = False
-        self.outputs = layer(self.outputs)
 
     def count_layers(self):
         return len(self.all_layers_dict)

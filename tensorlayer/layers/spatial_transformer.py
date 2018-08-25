@@ -139,9 +139,6 @@ class SpatialTransformer2dAffineLayer(Layer):
             # 4. Get all parameters
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
     @private_method
     def _check_inputs(self, prev_layer, theta_layer):
 

@@ -47,8 +47,6 @@ class GlobalMaxPool1d(Layer):
 
         self._temp_data['outputs'] = tf.reduce_max(self._temp_data['inputs'], axis=1, name=name)
 
-        self._add_layers(self._temp_data['outputs'])
-
 
 class GlobalMaxPool2d(Layer):
     """The :class:`GlobalMaxPool2d` class is a 2D Global Max Pooling layer.
@@ -85,8 +83,6 @@ class GlobalMaxPool2d(Layer):
 
         self._temp_data['outputs'] = tf.reduce_max(self._temp_data['inputs'], axis=[1, 2], name=name)
 
-        self._add_layers(self._temp_data['outputs'])
-
 
 class GlobalMaxPool3d(Layer):
     """The :class:`GlobalMaxPool3d` class is a 3D Global Max Pooling layer.
@@ -122,5 +118,3 @@ class GlobalMaxPool3d(Layer):
         logging.info("GlobalMaxPool3d %s" % self.name)
 
         self._temp_data['outputs'] = tf.reduce_max(self._temp_data['inputs'], axis=[1, 2, 3], name=name)
-
-        self._add_layers(self._temp_data['outputs'])

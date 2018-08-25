@@ -88,5 +88,3 @@ class ROIPoolingLayer(Layer):
         with tf.variable_scope(self.name):
             self._temp_data['outputs'
                            ] = roi_pooling(self._temp_data['inputs'], self.rois, self.pool_height, self.pool_width)
-
-        self._add_layers(self._temp_data['outputs'])

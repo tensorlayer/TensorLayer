@@ -13,7 +13,6 @@ __all__ = [
     'auto_parse_inputs', 'auto_reset_temp_attrs', 'force_return_self', 'layer_autoregister',
     'overwrite_layername_in_network'
 ]
-
 '''
 def force_return_self(func):
     """decorator to overwrite return value with `self` object"""
@@ -77,8 +76,8 @@ def auto_reset_temp_attrs(method):
         self._temp_data = {
             'inputs': None,
             'outputs': None,
-            'local_weights': [],
-            'local_drop': [],
+            'local_weights': list(),
+            'local_drop': dict(),
         }
         return method(self, *args, **kwargs)
 

@@ -98,9 +98,6 @@ class PReluLayer(Layer):
             }
         )
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
 
 class PRelu6Layer(Layer):
     """
@@ -196,9 +193,6 @@ class PRelu6Layer(Layer):
                 'name': "PReLU6_activation"
             }
         )
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
 
 
 class PTRelu6Layer(Layer):
@@ -309,6 +303,3 @@ class PTRelu6Layer(Layer):
                 'name': "PTReLU6_activation"
             }
         )
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)

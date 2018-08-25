@@ -165,10 +165,7 @@ class Layer(BaseLayer):
         self._temp_data = dict()
         self._last_compiled_layer = None
 
-        self._local_weights = list()
-        self._local_drop = dict()
-
-        self.layer_args = self._get_init_args(skip=4)
+        # self.layer_args = self._get_init_args(skip=4)
 
         for key in kwargs.keys():
             setattr(self, key, self._argument_dict_checkup(kwargs[key]))
@@ -222,7 +219,7 @@ class Layer(BaseLayer):
             self.prev_layer = prev_layer
 
         if self._temp_data['outputs'] is not None:
-            return self._create_compiled_layer()
+            return self._create_compiled_layer(is_train=is_train)
         else:
             return self
 
@@ -244,8 +241,8 @@ class Layer(BaseLayer):
 
             self._temp_data['inputs'] = prev_layer.outputs
 
-            # self._add_layers(prev_layer.all_layers)
-            # self._add_params(prev_layer.all_params)
+            #
+            #
             # self._add_dropout_layers(prev_layer.all_drop)
             # self._add_graphs(prev_layer.all_graphs)
 
@@ -254,8 +251,8 @@ class Layer(BaseLayer):
 
             self._temp_data['inputs'] = [layer.outputs for layer in prev_layer]
 
-            # self._add_layers(sum([l.all_layers for l in prev_layer], []))
-            # self._add_params(sum([l.all_params for l in prev_layer], []))
+            #
+            #
             # self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
             # self._add_graphs(sum([l.all_graphs for l in prev_layer], []))
 
@@ -281,8 +278,8 @@ class Layer(BaseLayer):
         elif prev_layer is not None:
 
             # 4. tl.models
-            # self._add_layers(prev_layer.all_layers)
-            # self._add_params(prev_layer.all_params)
+            #
+            #
             # self._add_dropout_layers(prev_layer.all_drop)
             # self._add_graphs(prev_layer.all_graphs)
 
@@ -352,13 +349,14 @@ class Layer(BaseLayer):
         return self.act(logits, **kwargs) if self.act is not None else logits
 
     @private_method
-    def _create_compiled_layer(self):
+    def _create_compiled_layer(self, is_train):
         self._last_compiled_layer = type("Compiled_" + self.__class__.__name__, (CompiledLayer, ), {})(
             layers_to_compile=self,
             inputs=self._temp_data['inputs'],
             outputs=self._temp_data['outputs'],
             local_weights=self._temp_data['local_weights'],
             local_drop=self._temp_data['local_drop'],
+            is_train=is_train
         )
 
         return self._last_compiled_layer
@@ -421,11 +419,17 @@ class Layer(BaseLayer):
 
         if isinstance(weights, list):
             for param in weights:
-                if param not in self._local_weights:
+                if param not in self._temp_data['local_weights']:
                     self._temp_data['local_weights'].append(param)
 
-        elif weights not in self._local_weights:
+        elif weights not in self._temp_data['local_weights']:
             self._temp_data['local_weights'].append(weights)
+
+    @protected_method
+    def _add_local_drop_plh(self, drop_plh, keep_prob):
+
+        if drop_plh not in self._temp_data['local_drop'].keys():
+            self._temp_data['local_drop'].update({drop_plh: keep_prob})
 
     @protected_method
     def _get_init_args(self, skip=4):
@@ -515,7 +519,9 @@ class Layer(BaseLayer):
 
     @protected_method
     def _add_dropout_layers(self, drop_layers):
-        tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, '_add_dropout_layers'))
+        tl.logging.fatal(
+            "THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, '_add_dropout_layers')
+        )
         pass
         '''
         if isinstance(drop_layers, dict) or isinstance(drop_layers, list):
@@ -590,7 +596,7 @@ class Layer(BaseLayer):
 
 class CompiledLayer(object):
 
-    def __init__(self, layers_to_compile, inputs, outputs, local_weights, local_drop):
+    def __init__(self, layers_to_compile, inputs, outputs, local_weights, local_drop, is_train):
 
         self.hyperparameters = dict()
 
@@ -599,10 +605,9 @@ class CompiledLayer(object):
             # Do not record these arguments
 
             # "prev_layer", "all_params", "all_layers", "all_drop", "all_graphs", "graph", "is_setup",
+            # "inputs", "outputs", "_local_drop", "_local_weights",
 
-            if key in [
-                "inputs", "outputs", "_local_drop", "_local_weights", '_temp_data'
-            ]:
+            if key in ["_last_compiled_layer", '_temp_data']:
                 continue
 
             # setattr(self, key, value)
@@ -615,6 +620,8 @@ class CompiledLayer(object):
 
         self.local_weights = local_weights
         self.local_drop = local_drop
+
+        self.is_train = is_train
 
         self.name = self.hyperparameters["name"]
 

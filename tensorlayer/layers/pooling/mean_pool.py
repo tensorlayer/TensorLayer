@@ -64,9 +64,6 @@ class MeanPool1d(Layer):
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
 
 class MeanPool2d(Layer):
     """Mean pooling for 2D image [batch, height, width, channel].
@@ -118,9 +115,6 @@ class MeanPool2d(Layer):
             )
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
 
 
 class MeanPool3d(Layer):
@@ -183,6 +177,3 @@ class MeanPool3d(Layer):
             )
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)

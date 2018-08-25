@@ -303,9 +303,6 @@ class DynamicRNNLayer(Layer):
 
         self.sequence_length = sequence_length
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(rnn_variables)
-
 
 class BiDynamicRNNLayer(Layer):
     """
@@ -572,6 +569,3 @@ class BiDynamicRNNLayer(Layer):
         self.bw_final_states = states_bw
 
         self.sequence_length = sequence_length
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(rnn_variables)

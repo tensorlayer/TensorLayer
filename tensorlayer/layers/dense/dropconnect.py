@@ -120,5 +120,3 @@ class DropconnectDenseLayer(Layer):
             self._temp_data['outputs'] = self._apply_activation(tf.matmul(self._temp_data['inputs'], W_dropcon) + b)
 
         self.all_drop.update({LayersConfig.set_keep[name]: keep})
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params([weight_matrix, b])

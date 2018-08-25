@@ -321,6 +321,3 @@ class QuantizedConv2dWithBN(Layer):
             self._temp_data['outputs'] = tf.nn.bias_add(conv_fold_out, _bias_fold, name='bn_bias_add')
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)

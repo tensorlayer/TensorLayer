@@ -74,7 +74,6 @@ class StackLayer(Layer):
     def compile(self, prev_layer, is_train=True):
 
         self._temp_data['outputs'] = tf.stack(self._temp_data['inputs'], axis=self.axis, name=self.name)
-        self._add_layers(self._temp_data['outputs'])
 
 
 class UnStackLayer(Layer):
@@ -153,4 +152,3 @@ class UnStackLayer(Layer):
             net_new.append(layer)
 
         self._temp_data['outputs'] = net_new
-        self._add_layers(self._temp_data['outputs'])

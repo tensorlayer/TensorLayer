@@ -49,8 +49,6 @@ class GlobalMeanPool1d(Layer):
 
         self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=1, name=name)
 
-        self._add_layers(self._temp_data['outputs'])
-
 
 class GlobalMeanPool2d(Layer):
     """The :class:`GlobalMeanPool2d` class is a 2D Global Mean Pooling layer.
@@ -87,8 +85,6 @@ class GlobalMeanPool2d(Layer):
 
         self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=[1, 2], name=name)
 
-        self._add_layers(self._temp_data['outputs'])
-
 
 class GlobalMeanPool3d(Layer):
     """The :class:`GlobalMeanPool3d` class is a 3D Global Mean Pooling layer.
@@ -124,5 +120,3 @@ class GlobalMeanPool3d(Layer):
         logging.info("GlobalMeanPool3d %s" % self.name)
 
         self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=[1, 2, 3], name=name)
-
-        self._add_layers(self._temp_data['outputs'])

@@ -152,9 +152,6 @@ class Conv1dLayer(Layer):
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
 
 class Conv2dLayer(Layer):
     """
@@ -334,9 +331,6 @@ class Conv2dLayer(Layer):
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
 
 class Conv3dLayer(Layer):
     """
@@ -473,6 +467,3 @@ class Conv3dLayer(Layer):
                 self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)

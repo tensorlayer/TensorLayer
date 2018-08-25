@@ -176,9 +176,6 @@ class Conv1d(Layer):
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
 
 class Conv2d(Layer):
     """Simplified version of :class:`Conv2dLayer`.
@@ -339,6 +336,3 @@ class Conv2d(Layer):
         self._apply_activation(self._temp_data['outputs'])
 
         self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)

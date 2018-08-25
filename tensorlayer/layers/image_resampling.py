@@ -144,8 +144,6 @@ class UpSampling2dLayer(Layer):
             )
             self._temp_data['outputs'] = tf.cast(self._temp_data['outputs'], self._temp_data['inputs'].dtype)
 
-        self._add_layers(self._temp_data['outputs'])
-
 
 class DownSampling2dLayer(Layer):
     """The :class:`DownSampling2dLayer` class is down-sampling 2D layer, see `tf.image.resize_images
@@ -292,5 +290,3 @@ class DownSampling2dLayer(Layer):
                 self._temp_data['inputs'], size=_size, method=self.method, align_corners=self.align_corners
             )
             self._temp_data['outputs'] = tf.cast(self._temp_data['outputs'], self._temp_data['inputs'].dtype)
-
-        self._add_layers(self._temp_data['outputs'])

@@ -108,9 +108,6 @@ class SlimNetsLayer(Layer):
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
 
 # @deprecated(
 #     end_support_version="2.0.0", instructions="This layer will be removed in TL 2.0.0 in favor of :class:`LambdaLayer`"
@@ -197,9 +194,6 @@ class KerasLayer(Layer):
                     if var.trainable and var not in tf.get_collection(TF_GRAPHKEYS_VARIABLES):
                         tf.add_to_collection(name=TF_GRAPHKEYS_VARIABLES, value=var)
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
 
 @deprecated(
     end_support_version="2.0.0", instructions="This layer is deprecated in favor of :class:`LambdaLayer`"
@@ -273,6 +267,3 @@ class EstimatorLayer(Layer):
             self._temp_data['outputs'] = self.model_fn(self._temp_data['inputs'], **self.layer_args)
 
             self._local_weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=vs.name)
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)

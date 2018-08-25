@@ -137,14 +137,10 @@ class DropoutLayer(Layer):
 
                 else:
                     keep_plh = tf.placeholder(self._temp_data['inputs'].dtype, shape=())
-
-                    self.all_drop.update({keep_plh: self.keep})
-                    self._local_drop.update({keep_plh: self.keep})
+                    self._add_local_drop_plh(keep_plh, self.keep)
 
                     LayersConfig.set_keep[self.name] = keep_plh
 
                     self._temp_data['outputs'] = tf.nn.dropout(
                         self._temp_data['inputs'], keep_plh, seed=self.seed, name=self.name
                     )
-
-        self._add_layers(self._temp_data['outputs'])

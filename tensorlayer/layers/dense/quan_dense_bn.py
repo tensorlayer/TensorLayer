@@ -201,7 +201,3 @@ class QuantizedDenseWithBN(Layer):
             self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], _bias_fold, name='bias_add')
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-
-        self._add_layers(self._temp_data['outputs'])
-
-        self._add_params([weight_matrix, scale_para, offset_para, moving_mean, moving_variance])

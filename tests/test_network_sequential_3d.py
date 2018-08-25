@@ -104,7 +104,6 @@ class Network_Sequential_3D_Test(CustomTestCase):
     def test_count_layers(self):
         self.assertEqual(self.model.count_layers(), 13)
 
-
     '''
     def test_network_dtype(self):
 

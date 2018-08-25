@@ -58,8 +58,6 @@ class InputLayer(Layer):
 
         self._temp_data['outputs'] = self._temp_data['inputs']
 
-        self._add_layers(self._temp_data['outputs'])
-
 
 class OneHotInputLayer(Layer):
     """
@@ -139,8 +137,6 @@ class OneHotInputLayer(Layer):
             axis=self.axis,
             dtype=self.dtype
         )
-
-        self._add_layers(self._temp_data['outputs'])
 
 
 class Word2vecEmbeddingInputlayer(Layer):
@@ -342,9 +338,6 @@ class Word2vecEmbeddingInputlayer(Layer):
 
             self.normalized_embeddings = tf.nn.l2_normalize(embeddings, 1)
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
 
 class EmbeddingInputlayer(Layer):
     """
@@ -437,9 +430,6 @@ class EmbeddingInputlayer(Layer):
             )
 
             self._temp_data['outputs'] = tf.nn.embedding_lookup(embeddings, self._temp_data['inputs'])
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
 
 
 class AverageEmbeddingInputlayer(Layer):
@@ -567,6 +557,3 @@ class AverageEmbeddingInputlayer(Layer):
                 sentence_lengths + 1e-8,  # Add epsilon to avoid dividing by 0
                 name='sentence_embeddings'
             )
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)

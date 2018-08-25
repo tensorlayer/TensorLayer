@@ -297,7 +297,7 @@ The following is an example implementation of a layer that multiplies its input 
           self.outputs = self.inputs * 2
 
           # update layer (customized)
-          self._add_layers(self.outputs)
+          
 
 Your Dense Layer
 ^^^^^^^^^^^^^^^^
@@ -336,8 +336,8 @@ At the end, for a layer with parameters, we also append the parameters into ``al
             self.outputs = self._apply_activation(tf.matmul(self.inputs, W) + b)
 
         # update layer (customized)
-        self._add_layers(self.outputs)
-        self._add_params([W, b])
+        
+        
 
 .. -----------------------------------------------------------
 ..                        Basic Layers

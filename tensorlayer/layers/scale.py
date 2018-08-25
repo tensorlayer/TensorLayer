@@ -67,6 +67,3 @@ class ScaleLayer(Layer):
                 "scale", shape=[1], initializer=tf.constant_initializer(value=self.init_scale)
             )
             self._temp_data['outputs'] = tf.multiply(self._temp_data['inputs'], scale)
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)

@@ -80,16 +80,7 @@ class BaseNetwork(core.BaseLayer):
             "** Compiling %s `%s` - reuse: %s, is_train: %s **" % (self.__class__.__name__, self.name, reuse, is_train)
         )
 
-        _temp_params = []
-        _temp_layers = []
-        _temp_graphs = []
-        _temp_drop = {}
-        _temp_layers_dict = {}
-
-        # Reset All Layers' Inputs
-        for name, layer in self.all_layers_dict.items():
-            layer.inputs = None
-            layer.outputs = None
+        _temp_all_layers = []
 
         if len(self.all_layers_dict) == 0:
             raise RuntimeError("This network has no layer registered.")
@@ -104,39 +95,28 @@ class BaseNetwork(core.BaseLayer):
                     for id_layer, layer in enumerate(self.all_layers):
 
                         layer_factory = self.all_layers_dict[layer]
-                        _temp_layers_dict[layer] = self.all_layers_dict[layer]
+                        _temp_all_layers.append(self.all_layers_dict[layer])
 
                         if id_layer == 0:
-                            network = layer_factory(input_plh, is_train=is_train)
+                            compiled_inputs = input_plh
 
+                        elif isinstance(layer_factory.prev_layer, str):
+                            compiled_inputs = self.all_layers_dict[layer_factory.prev_layer]._last_compiled_layer
+
+                        elif all(isinstance(_layer, str) for _layer in layer_factory.prev_layer):
+                            compiled_inputs = [
+                                self.all_layers_dict[_layer]._last_compiled_layer
+                                for _layer in layer_factory.prev_layer
+                            ]
                         else:
+                            raise ValueError("`prev_layer` should be either a `str` or a list of `str`")
 
-                            if isinstance(layer_factory.prev_layer, str):
-                                compiled_inputs = self.all_layers_dict[layer_factory.prev_layer]._last_compiled_layer
-
-                            elif all(isinstance(_layer, str) for _layer in layer_factory.prev_layer):
-                                compiled_inputs = [
-                                    self.all_layers_dict[_layer]._last_compiled_layer
-                                    for _layer in layer_factory.prev_layer
-                                ]
-                            else:
-                                raise ValueError("`prev_layer` should be either a `str` or a list of `str`")
-
-                            network = layer_factory(prev_layer=compiled_inputs, is_train=is_train)
-
-                        _temp_params.extend(layer_factory._local_weights)
-                        _temp_layers.append(layer_factory)
-                        # all_graphs.append(layer_factory.all_graphs)  =>  KO for now
-                        _temp_drop.update(layer_factory._local_drop)
+                        network = layer_factory(prev_layer=compiled_inputs, is_train=is_train)
 
             return tl.models.CompiledNetwork(
                 inputs=input_plh,
                 outputs=network.outputs,
-                all_layers_dict=_temp_layers_dict,
-                all_params=_temp_params,
-                # all_graphs=all_graphs,
-                all_graphs=_temp_graphs,
-                all_drop=_temp_drop,
+                all_layers=_temp_all_layers,
                 is_train=is_train
             )
 
@@ -148,7 +128,6 @@ class BaseNetwork(core.BaseLayer):
         """Returns a list of parameters in the network"""
         tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, 'get_all_params'))
         pass
-
         '''
         if not self.is_compiled:
             raise RuntimeError("Impossible to get the network's paramaters if the network is not compiled.")
@@ -160,7 +139,6 @@ class BaseNetwork(core.BaseLayer):
         """Returns the number of parameters in the network"""
         tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, 'count_params'))
         pass
-
         '''
         if not self.is_compiled:
             raise RuntimeError("Impossible to count the number of paramaters if the network is not compiled.")

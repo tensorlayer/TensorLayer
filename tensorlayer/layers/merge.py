@@ -96,8 +96,6 @@ class ConcatLayer(Layer):
 
         self._temp_data['outputs'] = tf.concat(self._temp_data['inputs'], self.concat_dim, name=self.name)
 
-        self._add_layers(self._temp_data['outputs'])
-
 
 class ElementwiseLayer(Layer):
     """A layer that combines multiple :class:`Layer` that have the same output shapes
@@ -182,5 +180,3 @@ class ElementwiseLayer(Layer):
             self._temp_data['outputs'] = self.combine_fn(self._temp_data['outputs'], layer, name=self.name)
 
         self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-
-        self._add_layers(self._temp_data['outputs'])

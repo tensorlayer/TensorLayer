@@ -107,5 +107,3 @@ class GaussianNoiseLayer(Layer):
                     dtype=self._temp_data['inputs'].dtype
                 )
                 self._temp_data['outputs'] = tf.add(self._temp_data['inputs'], noise)
-
-        self._add_layers(self._temp_data['outputs'])

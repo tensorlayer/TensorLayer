@@ -172,9 +172,6 @@ class SeparableConv1d(Layer):
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
 
 class SeparableConv2d(Layer):
     """The :class:`SeparableConv2d` class is a 2D depthwise separable convolutional layer, see `tf.layers.separable_conv2d <https://www.tensorflow.org/api_docs/python/tf/layers/separable_conv2d>`__.
@@ -323,6 +320,3 @@ class SeparableConv2d(Layer):
             self._apply_activation(self._temp_data['outputs'])
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)

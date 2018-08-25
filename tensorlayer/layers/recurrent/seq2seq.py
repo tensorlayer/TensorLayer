@@ -211,12 +211,7 @@ class Seq2Seq(Layer):
         self.final_state_decode = network_decode.final_state
 
         # self.sequence_length = sequence_length
-        self._add_layers(network_encode.all_layers)
-        self._add_params(network_encode.all_params)
+
         self._add_dropout_layers(network_encode.all_drop)
 
-        self._add_layers(network_decode.all_layers)
-        self._add_params(network_decode.all_params)
         self._add_dropout_layers(network_decode.all_drop)
-
-        self._add_layers(self._temp_data['outputs'])

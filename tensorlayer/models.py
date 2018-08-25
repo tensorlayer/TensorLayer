@@ -8,17 +8,19 @@ __all__ = ["CompiledNetwork"]
 
 class CompiledNetwork(object):
 
-    def __init__(self, inputs, outputs, all_layers_dict, all_params, all_graphs, all_drop, is_train):
+    def __init__(self, inputs, outputs, all_layers, is_train):
 
         self.inputs = inputs
         self.outputs = outputs
 
-        self.all_params = all_params
-        self.all_graphs = all_graphs
+        self.all_layers = all_layers
 
-        self.all_layers_dict = all_layers_dict
+        self.all_drop = dict()
+        self.all_weights = list()
 
-        self.all_drop = all_drop
+        for layer in self.all_layers:
+            self.all_drop.update(layer.local_drop)
+            self.all_weights.extend(layer.local_weights)
 
         self.is_train = is_train
 

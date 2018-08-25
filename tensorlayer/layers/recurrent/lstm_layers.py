@@ -169,6 +169,3 @@ class ConvLSTMLayer(Layer):
                     )
 
         self.final_state = state
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(rnn_variables)

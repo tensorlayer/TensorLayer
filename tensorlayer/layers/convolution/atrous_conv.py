@@ -230,9 +230,6 @@ class AtrousConv2dLayer(Layer):
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
 
 class AtrousDeConv2dLayer(Layer):
     """The :class:`AtrousDeConv2dLayer` class is 2D atrous convolution transpose, see `tf.nn.atrous_conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d_transpose>`__.
@@ -377,9 +374,6 @@ class AtrousDeConv2dLayer(Layer):
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
             #self.out_shape = self._temp_data['outputs'].shape
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
 
 
 # Alias

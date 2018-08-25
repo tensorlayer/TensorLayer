@@ -207,6 +207,3 @@ class TernaryConv2d(Layer):
                 self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-
-            self._add_layers(self._temp_data['outputs'])
-            self._add_params(self._local_weights)

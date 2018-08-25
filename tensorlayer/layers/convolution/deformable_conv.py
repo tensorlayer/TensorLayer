@@ -227,9 +227,6 @@ class DeformableConv2d(Layer):
                 tensor=self._apply_activation(_tensor), shape=[tf.shape(input_layer)[0], input_h, input_w, w_shape[-1]]
             )
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
     @private_method
     def _to_bc_h_w(self, x, x_shape):
         """(b, h, w, c) -> (b*c, h, w)"""

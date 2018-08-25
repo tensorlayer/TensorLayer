@@ -85,8 +85,6 @@ class MultiplexerLayer(Layer):
         # # the same with ConcatLayer
 
         # for i in range(1, len(layers)):
-        #     self._add_layers(list(layers[i].all_layers))
-        #     self._add_params(list(layers[i].all_params))
+        #
+        #
         #     self.all_drop.update(dict(layers[i].all_drop))
-
-        self._add_layers(self._temp_data['outputs'])

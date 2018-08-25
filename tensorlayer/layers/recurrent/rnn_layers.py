@@ -248,9 +248,6 @@ class RNNLayer(Layer):
 
         self.final_state = state
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(rnn_variables)
-
 
 class BiRNNLayer(Layer):
     """
@@ -475,6 +472,3 @@ class BiRNNLayer(Layer):
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         logging.info("     n_params : %d" % (len(rnn_variables)))
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(rnn_variables)

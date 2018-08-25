@@ -109,8 +109,6 @@ class LocalResponseNormLayer(Layer):
                 beta=self.beta
             )
 
-        self._add_layers(self._temp_data['outputs'])
-
 
 class BatchNormLayer(Layer):
     """
@@ -285,9 +283,6 @@ class BatchNormLayer(Layer):
                 tf.nn.batch_normalization(self._temp_data['inputs'], mean, var, beta, gamma, self.epsilon)
             )
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
 
 class InstanceNormLayer(Layer):
     """The :class:`InstanceNormLayer` class is a for instance normalization.
@@ -371,9 +366,6 @@ class InstanceNormLayer(Layer):
             self._temp_data['outputs'] = tf.add(self._temp_data['outputs'], offset)
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
 
 
 class LayerNormLayer(Layer):
@@ -488,9 +480,6 @@ class LayerNormLayer(Layer):
 
             self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
-
 
 class SwitchNormLayer(Layer):
     """
@@ -593,6 +582,3 @@ class SwitchNormLayer(Layer):
 
             self._temp_data['outputs'] = tf.add(tf.multiply(self._temp_data['inputs'], gamma), beta)
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-
-        self._add_layers(self._temp_data['outputs'])
-        self._add_params(self._local_weights)
