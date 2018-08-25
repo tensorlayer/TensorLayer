@@ -3278,7 +3278,7 @@ def sequences_get_mask(sequences, pad_val=0):
 
 
 def keypoint_random_crop2(image, annos, mask=None, size=(368, 368)):
-    """ Randomly reszie and crop image using padding without influence scales.
+    """Randomly reszie and crop image using padding without influence scales.
     Resize the image match with the minimum size before cropping, this API will change the zoom scale of object.
 
     Parameters
@@ -3448,7 +3448,7 @@ def keypoint_random_crop2(image, annos, mask=None, size=(368, 368)):
 
 
 def keypoint_random_crop(image, annos, mask=None, size=(368, 368)):
-    """ Randomly crop padded an image and corresponding keypoints using padding without influence scales, given by ``keypoint_random_resize_shortestedge``.
+    """Randomly crop padded an image and corresponding keypoints using padding without influence scales, given by ``keypoint_random_resize_shortestedge``.
 
     Parameters
     -----------
@@ -3512,7 +3512,7 @@ def keypoint_random_crop(image, annos, mask=None, size=(368, 368)):
 
 
 def keypoint_random_rotate(image, annos, mask=None, rg=15.):
-    """ Rotate an image and corresponding keypoints.
+    """Rotate an image and corresponding keypoints.
 
     Parameters
     -----------
@@ -3630,7 +3630,7 @@ def keypoint_random_rotate(image, annos, mask=None, rg=15.):
 
 
 def keypoint_random_flip(image, annos, mask=None, prob=0.5):
-    """ Flip an image and corresponding keypoints.
+    """Flip an image and corresponding keypoints.
 
     Parameters
     -----------
@@ -3678,7 +3678,7 @@ def keypoint_random_flip(image, annos, mask=None, prob=0.5):
 
 
 def keypoint_random_resize(image, annos, mask=None, zoom_range=(0.8, 1.2)):
-    """ Randomly resize an image and corresponding keypoints.
+    """Randomly resize an image and corresponding keypoints.
     The size of image will be changed.
 
     Parameters
@@ -3728,7 +3728,7 @@ def keypoint_random_resize(image, annos, mask=None, zoom_range=(0.8, 1.2)):
 def keypoint_random_resize_shortestedge(
         image, annos, mask=None, min_size=(368, 368), pad_val=(0, 0, np.random.uniform(0.0, 1.0))
 ):
-    """ Randomly resize an image and corresponding keypoints based on shorter edge with padding.
+    """Randomly resize an image and corresponding keypoints based on shorter edge with padding.
     The size of image will be changed.
 
     Parameters
