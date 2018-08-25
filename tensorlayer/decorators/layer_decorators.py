@@ -1,6 +1,8 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+from functools import wraps
+
 import wrapt
 
 import tensorflow as tf
@@ -12,7 +14,7 @@ __all__ = [
     'overwrite_layername_in_network'
 ]
 
-
+'''
 def force_return_self(func):
     """decorator to overwrite return value with `self` object"""
 
@@ -52,6 +54,46 @@ def auto_parse_inputs(func):
         return func(self, *args, **kwargs)
 
     return func_wrapper
+'''
+
+
+def auto_parse_inputs(method):
+    """decorator that automatically parse `prev_layer` compilation Layers"""
+
+    @wraps(method)
+    def _impl(self, *args, **kwargs):
+        super(self.__class__, self).compile(args[0])  # args[0] => prev_layer
+
+        return method(self, *args, **kwargs)
+
+    return _impl
+
+
+def auto_reset_temp_attrs(method):
+    """decorator that reset the `_temp_data` attribute for Layers"""
+
+    @wraps(method)
+    def _impl(self, *args, **kwargs):
+        self._temp_data = {
+            'inputs': None,
+            'outputs': None,
+            'local_weights': [],
+            'local_drop': [],
+        }
+        return method(self, *args, **kwargs)
+
+    return _impl
+
+
+def force_return_self(method):
+    """decorator that overwrite the returned value and return instead the object."""
+
+    @wraps(method)
+    def _impl(self, *args, **kwargs):
+        method(self, *args, **kwargs)
+        return self
+
+    return _impl
 
 
 @wrapt.decorator

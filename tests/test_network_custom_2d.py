@@ -72,22 +72,36 @@ class CustomNetwork_2D_Test(CustomTestCase):
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
             cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
 
-    def test_True(self):
-        self.assertTrue(True)
+            print("Train: %s - Type: %s" % (cls.train_model, type(cls.train_model)))
+            print("Test: %s - Type: %s" % (cls.test_model, type(cls.test_model)))
 
-    '''
     def test_get_all_drop_plh(self):
-        self.assertEqual(len(self.model.all_drop), 0)
+        self.assertEqual(len(self.train_model.all_drop), 0)
+        self.assertEqual(len(self.test_model.all_drop), 0)
+
+        with self.assertRaises(Exception):
+            self.assertEqual(len(self.model.all_drop), 0)
 
     def test_count_params(self):
-        self.assertEqual(self.model.count_params(), 6725)
+        self.assertEqual(self.train_model.count_params(), 6725)
+        self.assertEqual(self.test_model.count_params(), 6725)
+
+        with self.assertRaises([AttributeError, AssertionError]):
+            self.assertEqual(self.model.count_params(), 6725)
 
     def test_count_param_tensors(self):
-        self.assertEqual(len(self.model.get_all_params()), 10)
+        self.assertEqual(len(self.train_model.get_all_params()), 10)
+        self.assertEqual(len(self.test_model.get_all_params()), 10)
+
+        with self.assertRaises(Exception):
+            self.assertEqual(len(self.model.get_all_params()), 10)
 
     def test_count_layers(self):
+        self.assertEqual(self.train_model.count_layers(), 13)
+        self.assertEqual(self.test_model.count_layers(), 13)
         self.assertEqual(self.model.count_layers(), 13)
 
+    '''
     def test_network_dtype(self):
 
         with self.assertNotRaises(RuntimeError):

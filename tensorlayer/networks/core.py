@@ -33,15 +33,9 @@ class BaseNetwork(core.BaseLayer):
             self._init_subclassed_network(**kwargs)
         '''
 
-        self._net = None
-        self.is_compiled = False
-        self.outputs = None
+        self.all_layers = list()
+        self.all_layers_dict = dict()
 
-        #if name is None:
-        #    raise ValueError('%s must have a name.' % self.__class__.__name__)
-        #else:
-        #    scope_name = tf.get_variable_scope().name
-        #    self.name = scope_name + '/' + name if scope_name else name
         self.name = name
 
         if self.name is None:
@@ -50,42 +44,24 @@ class BaseNetwork(core.BaseLayer):
             scope_name = tf.get_variable_scope().name
             self.model_scope = scope_name + '/' + self.name if scope_name else self.name
 
-        self.all_layers_dict = dict()
-
         super(BaseNetwork, self).__init__()
 
         logging.info(str(self))
 
+    # =============================================== #
+    #                 PRIVATE METHODS                 #
+    # =============================================== #
+
+    # =============================================== #
+    #                PROTECTED METHODS                #
+    # =============================================== #
+
+    # =============================================== #
+    #                  PUBLIC METHODS                 #
+    # =============================================== #
+
     def __str__(self):
         return "%s model: `%s`" % (self.__class__.__name__, self.name)
-
-    def get_all_params(self):
-        """Returns a list of parameters in the network"""
-
-        if not self.is_compiled:
-            raise RuntimeError("Impossible to get the network's paramaters if the network is not compiled.")
-
-        return tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.model_scope)
-
-    def count_params(self):
-        """Returns the number of parameters in the network"""
-
-        if not self.is_compiled:
-            raise RuntimeError("Impossible to count the number of paramaters if the network is not compiled.")
-
-        n_params = 0
-        for _i, p in enumerate(self.get_all_params()):
-            n = 1
-            # for s in p.eval().shape:
-            for s in p.get_shape():
-                try:
-                    s = int(s)
-                except ValueError:
-                    s = 1
-                if s:
-                    n = n * s
-            n_params = n_params + n
-        return n_params
 
     def register_new_layer(self, layer):
 
@@ -163,6 +139,46 @@ class BaseNetwork(core.BaseLayer):
                 all_drop=_temp_drop,
                 is_train=is_train
             )
+
+    # =============================================== #
+    #              TO BE REMOVED/MOVED                #
+    # =============================================== #
+
+    def get_all_params(self):
+        """Returns a list of parameters in the network"""
+        tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, 'get_all_params'))
+        pass
+
+        '''
+        if not self.is_compiled:
+            raise RuntimeError("Impossible to get the network's paramaters if the network is not compiled.")
+
+        return tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.model_scope)        
+        '''
+
+    def count_params(self):
+        """Returns the number of parameters in the network"""
+        tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, 'count_params'))
+        pass
+
+        '''
+        if not self.is_compiled:
+            raise RuntimeError("Impossible to count the number of paramaters if the network is not compiled.")
+
+        n_params = 0
+        for _i, p in enumerate(self.get_all_params()):
+            n = 1
+            # for s in p.eval().shape:
+            for s in p.get_shape():
+                try:
+                    s = int(s)
+                except ValueError:
+                    s = 1
+                if s:
+                    n = n * s
+            n_params = n_params + n
+        return n_params
+        '''
 
     '''
     def _base_init(self, name=None):

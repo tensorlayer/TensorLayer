@@ -111,50 +111,7 @@ class BaseLayer(object):
 
     @abstractmethod
     def __init__(self, *args, **kwargs):
-
-        self.all_params = list()
-        self.all_layers = list()
-        self.all_drop = dict()
-        self.all_graphs = list()
-
-    def print_params(self, details=True, session=None):
-        """Print all info of parameters in the network"""
-        for i, p in enumerate(self.all_params):
-            if details:
-                try:
-                    val = p.eval(session=session)
-                    logging.info(
-                        "  param {:3}: {:20} {:15}    {} (mean: {:<18}, median: {:<18}, std: {:<18})   ".format(
-                            i, p.name, str(val.shape), p.dtype.name, val.mean(), np.median(val), val.std()
-                        )
-                    )
-                except Exception as e:
-                    logging.info(str(e))
-                    raise Exception(
-                        "Hint: print params details after tl.layers.initialize_global_variables(sess) "
-                        "or use network.print_params(False)."
-                    )
-            else:
-                logging.info("  param {:3}: {:20} {:15}    {}".format(i, p.name, str(p.get_shape()), p.dtype.name))
-        logging.info("  num of params: %d" % self.count_params())
-
-    def print_layers(self):
-        """Print all info of layers in the network."""
-        for i, layer in enumerate(self.all_layers):
-            # logging.info("  layer %d: %s" % (i, str(layer)))
-            logging.info(
-                "  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name)
-            )
-
-    def get_all_params(self, session=None):
-        """Return the parameters in a list of array."""
-        _params = []
-        for p in self.all_params:
-            if session is None:
-                _params.append(p.eval())
-            else:
-                _params.append(session.run(p))
-        return _params
+        pass
 
     def __str__(self):
         return "  Last layer is: %s (%s) %s" % (
@@ -165,9 +122,8 @@ class BaseLayer(object):
 
         net_new = Layer()
 
-        net_new.name = self.name
-
         net_new.name = self.name + '_indexing'
+        '''
         net_new.inputs = self._temp_data['inputs']
         net_new.outputs = self._temp_data['outputs'][key]
 
@@ -177,6 +133,7 @@ class BaseLayer(object):
         net_new._add_params(self.all_params)
         net_new._add_graphs(self.all_graphs)
         net_new._add_dropout_layers(self.all_drop)
+        '''
 
         return net_new
 
@@ -193,98 +150,6 @@ class BaseLayer(object):
     def __len__(self):
         return len(self.all_layers)
 
-    @protected_method
-    def _get_init_args(self, skip=4):
-        """Get all arguments of current layer for saving the graph."""
-        stack = inspect.stack()
-
-        if len(stack) < skip + 1:
-            raise ValueError("The length of the inspection stack is shorter than the requested start position.")
-
-        args, _, _, values = inspect.getargvalues(stack[skip][0])
-
-        params = {}
-
-        for arg in args:
-
-            # some args dont need to be saved into the graph. e.g. the input placeholder
-            if values[arg] is None or arg in ['self', 'prev_layer', 'inputs']:
-                continue
-
-            else:
-                val = values[arg]
-
-                # change function (e.g. act) into dictionary of module path and function name
-                if inspect.isfunction(val):
-                    params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
-
-                # ignore more args e.g. TF class
-                elif arg.endswith('init'):
-                    continue
-
-                # for other data type, save them directly
-                else:
-                    params[arg] = val
-
-        return params
-
-    @protected_method
-    def _add_layers(self, layers):
-        if isinstance(layers, list):
-            try:  # list of class Layer
-                new_layers = [layer.outputs for layer in layers]
-                self.all_layers.extend(list(new_layers))
-
-            except AttributeError:  # list of tf.Tensor
-                self.all_layers.extend(list(layers))
-
-        else:
-            self.all_layers.append(layers)
-
-        self.all_layers = list_remove_repeat(self.all_layers)
-
-    @protected_method
-    def _add_params(self, params):
-
-        if isinstance(params, list):
-            for param in params:
-                if param not in self.all_params:
-                    self.all_params.append(param)
-
-        elif params not in self.all_params:
-            self.all_params.append(params)
-
-    @protected_method
-    def _add_graphs(self, graphs):
-
-        if isinstance(graphs, list):
-            for graph in graphs:
-                if graph not in self.all_graphs:
-                    self.all_graphs.append(graph)
-
-        elif graphs not in self.all_graphs:
-            self.all_graphs.append(graphs)
-
-    @protected_method
-    def _add_dropout_layers(self, drop_layers):
-        if isinstance(drop_layers, dict) or isinstance(drop_layers, list):
-            self.all_drop.update(dict(drop_layers))
-
-        elif isinstance(drop_layers, tuple):
-            self.all_drop.update(list(drop_layers))
-
-        else:
-            raise ValueError()
-
-    @private_method
-    def _argument_dict_checkup(self, args):
-
-        if not isinstance(args, dict) and args is not None:
-            _err = "One of the argument given to `%s` should be formatted as a dictionary" % self.__class__.__name__
-            raise AssertionError(_err)
-
-        return args if args is not None else {}
-
 
 class Layer(BaseLayer):
 
@@ -296,8 +161,6 @@ class Layer(BaseLayer):
     def __init__(self, *args, **kwargs):
 
         super(Layer, self).__init__(*args, **kwargs)
-
-        self.graph = dict()
 
         self._temp_data = dict()
         self._last_compiled_layer = None
@@ -318,8 +181,54 @@ class Layer(BaseLayer):
             else:
                 self.__call__(self.prev_layer)
 
+    # =============================================== #
+    #                  PUBLIC METHODS                 #
+    # =============================================== #
+
     def __str__(self):
         return self._str()
+
+    @auto_reset_temp_attrs
+    def __call__(self, prev_layer=None, is_train=True):
+
+        if prev_layer is None and not self._check_self_is_input():
+            raise ValueError("No previous_layer has been given to the layer `%s`" % self.name)
+
+        elif isinstance(prev_layer, tf.Tensor) and self._check_self_is_input():
+            self.compile(prev_layer, is_train)
+
+        elif isinstance(prev_layer, tl.layers.CompiledLayer):
+            self.compile(prev_layer, is_train)
+
+        elif isinstance(prev_layer, tl.layers.Layer):
+            self.prev_layer = prev_layer.name
+
+        elif isinstance(prev_layer, (list, tuple)):
+
+            if all(isinstance(layer, tl.layers.CompiledLayer) for layer in prev_layer):
+
+                if any(not hasattr(layer, "outputs") or layer.outputs is None for layer in prev_layer):
+                    raise ValueError("A `CompiledLayer` in the layer's inputs contains no output or is None")
+
+                self.compile(prev_layer, is_train)
+
+            elif all(isinstance(layer, tl.layers.Layer) for layer in prev_layer):
+                self.prev_layer = [layer.name for layer in prev_layer]
+
+            else:
+                raise ValueError("Not all layers given in `prev_layer` are either `CompiledLayer or `Layer` instance")
+
+        else:
+            self.prev_layer = prev_layer
+
+        if self._temp_data['outputs'] is not None:
+            return self._create_compiled_layer()
+        else:
+            return self
+
+    # =============================================== #
+    #                 PRIVATE METHODS                 #
+    # =============================================== #
 
     @abstractmethod
     @private_method
@@ -416,50 +325,6 @@ class Layer(BaseLayer):
 
         return isinstance(self, input_layers)
 
-    # @force_return_self
-    @auto_reset_temp_attrs
-    def __call__(self, prev_layer=None, is_train=True):
-
-        if prev_layer is None and not self._check_self_is_input():
-            raise ValueError("No previous_layer has been given to the layer `%s`" % self.name)
-
-        elif isinstance(prev_layer, tf.Tensor) and self._check_self_is_input():
-            self.compile(prev_layer, is_train)
-
-        elif isinstance(prev_layer, tl.layers.CompiledLayer):
-            self.compile(prev_layer, is_train)
-
-        elif isinstance(prev_layer, tl.layers.Layer):
-            self.prev_layer = prev_layer.name
-
-        elif isinstance(prev_layer, (list, tuple)):
-
-            if all(isinstance(layer, tl.layers.CompiledLayer) for layer in prev_layer):
-                check_passed = True
-
-                for layer in prev_layer:
-                    if not hasattr(layer, "outputs") or layer.outputs is None:
-                        check_passed = False
-                        break
-
-                if check_passed:
-                    self.compile(prev_layer, is_train)
-                else:
-                    self.prev_layer = prev_layer.name
-
-            elif all(isinstance(layer, tl.layers.Layer) for layer in prev_layer):
-                self.prev_layer = [layer.name for layer in prev_layer]
-            else:
-                raise ValueError("Not all layers given in `prev_layer` are either `CompiledLayer or `Layer` instance")
-
-        else:
-            self.prev_layer = prev_layer
-
-        if self._temp_data['outputs'] is not None:
-            return self._create_compiled_layer()
-        else:
-            return self
-
     @private_method
     def _str(self, additional_str=list()):
 
@@ -480,12 +345,43 @@ class Layer(BaseLayer):
 
         return _str
 
+    @private_method
+    def _apply_activation(self, logits, **kwargs):
+        if not kwargs:
+            kwargs = {}
+        return self.act(logits, **kwargs) if self.act is not None else logits
+
+    @private_method
+    def _create_compiled_layer(self):
+        self._last_compiled_layer = type("Compiled_" + self.__class__.__name__, (CompiledLayer, ), {})(
+            layers_to_compile=self,
+            inputs=self._temp_data['inputs'],
+            outputs=self._temp_data['outputs'],
+            local_weights=self._temp_data['local_weights'],
+            local_drop=self._temp_data['local_drop'],
+        )
+
+        return self._last_compiled_layer
+
+    @private_method
+    def _argument_dict_checkup(self, args):
+
+        if not isinstance(args, dict) and args is not None:
+            _err = "One of the argument given to `%s` should be formatted as a dictionary" % self.__class__.__name__
+            raise AssertionError(_err)
+
+        return args if args is not None else {}
+
+    # =============================================== #
+    #                PROTECTED METHODS                #
+    # =============================================== #
+
     @protected_method
     def _get_tf_variable(
         self,
         name,
+        dtype,
         shape=None,
-        dtype=None,
         initializer=None,
         regularizer=None,
         trainable=True,
@@ -526,35 +422,117 @@ class Layer(BaseLayer):
         if isinstance(weights, list):
             for param in weights:
                 if param not in self._local_weights:
-                    self._local_weights.append(param)
+                    self._temp_data['local_weights'].append(param)
 
         elif weights not in self._local_weights:
-            self._local_weights.append(weights)
+            self._temp_data['local_weights'].append(weights)
 
-    @private_method
-    def _apply_activation(self, logits, **kwargs):
-        if not kwargs:
-            kwargs = {}
-        return self.act(logits, **kwargs) if self.act is not None else logits
+    @protected_method
+    def _get_init_args(self, skip=4):
+        """Get all arguments of current layer for saving the graph."""
+        stack = inspect.stack()
 
-    @private_method
-    def _create_compiled_layer(self):
-        self._last_compiled_layer = type("Compiled_" + self.__class__.__name__, (CompiledLayer, ), {})(
-            layer_to_compile=self,
-            inputs=self._temp_data['inputs'],
-            outputs=self._temp_data['outputs'],
-            local_weights=self._temp_data['local_weights'],
-            local_drop=self._temp_data['local_drop'],
-        )
+        if len(stack) < skip + 1:
+            raise ValueError("The length of the inspection stack is shorter than the requested start position.")
 
-        return self._last_compiled_layer
+        args, _, _, values = inspect.getargvalues(stack[skip][0])
+
+        params = {}
+
+        for arg in args:
+
+            # some args dont need to be saved into the graph. e.g. the input placeholder
+            if values[arg] is None or arg in ['self', 'prev_layer', 'inputs']:
+                continue
+
+            else:
+                val = values[arg]
+
+                # change function (e.g. act) into dictionary of module path and function name
+                if inspect.isfunction(val):
+                    params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
+
+                # ignore more args e.g. TF class
+                elif arg.endswith('init'):
+                    continue
+
+                # for other data type, save them directly
+                else:
+                    params[arg] = val
+
+        return params
 
     # =============================================== #
-    #                  TO BE REMOVED                  #
+    #              TO BE REMOVED/MOVED                #
     # =============================================== #
+
+    @protected_method
+    def _add_layers(self, layers):
+        tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, '_add_layers'))
+        pass
+        '''
+        if isinstance(layers, list):
+            try:  # list of class Layer
+                new_layers = [layer.outputs for layer in layers]
+                self.all_layers.extend(list(new_layers))
+
+            except AttributeError:  # list of tf.Tensor
+                self.all_layers.extend(list(layers))
+
+        else:
+            self.all_layers.append(layers)
+
+        self.all_layers = list_remove_repeat(self.all_layers)
+        '''
+
+    @protected_method
+    def _add_params(self, params):
+        tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, '_add_params'))
+        pass
+        '''
+        if isinstance(params, list):
+            for param in params:
+                if param not in self.all_params:
+                    self.all_params.append(param)
+
+        elif params not in self.all_params:
+            self.all_params.append(params)
+        '''
+
+    @protected_method
+    def _add_graphs(self, graphs):
+        tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, '_add_graphs'))
+        pass
+        '''
+        if isinstance(graphs, list):
+            for graph in graphs:
+                if graph not in self.all_graphs:
+                    self.all_graphs.append(graph)
+
+        elif graphs not in self.all_graphs:
+            self.all_graphs.append(graphs)
+        '''
+
+    @protected_method
+    def _add_dropout_layers(self, drop_layers):
+        tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, '_add_dropout_layers'))
+        pass
+        '''
+        if isinstance(drop_layers, dict) or isinstance(drop_layers, list):
+            self.all_drop.update(dict(drop_layers))
+
+        elif isinstance(drop_layers, tuple):
+            self.all_drop.update(list(drop_layers))
+
+        else:
+            raise ValueError()
+        '''
 
     def get_all_params(self, session=None):
-        """Return the parameters in a list of array. """
+        """Return the parameters in a list of array."""
+        tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, 'get_all_params'))
+        pass
+        '''
         _params = []
         for p in self.all_params:
             if session is None:
@@ -562,6 +540,44 @@ class Layer(BaseLayer):
             else:
                 _params.append(session.run(p))
         return _params
+        '''
+
+    def print_params(self, details=True, session=None):
+        """Print all info of parameters in the network"""
+        tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, 'print_params'))
+        pass
+        '''
+        for i, p in enumerate(self.all_params):
+            if details:
+                try:
+                    val = p.eval(session=session)
+                    logging.info(
+                        "  param {:3}: {:20} {:15}    {} (mean: {:<18}, median: {:<18}, std: {:<18})   ".format(
+                            i, p.name, str(val.shape), p.dtype.name, val.mean(), np.median(val), val.std()
+                        )
+                    )
+                except Exception as e:
+                    logging.info(str(e))
+                    raise Exception(
+                        "Hint: print params details after tl.layers.initialize_global_variables(sess) "
+                        "or use network.print_params(False)."
+                    )
+            else:
+                logging.info("  param {:3}: {:20} {:15}    {}".format(i, p.name, str(p.get_shape()), p.dtype.name))
+        logging.info("  num of params: %d" % self.count_params())
+        '''
+
+    def print_layers(self):
+        """Print all info of layers in the network."""
+        tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, 'print_layers'))
+        pass
+        '''
+        for i, layer in enumerate(self.all_layers):
+            # logging.info("  layer %d: %s" % (i, str(layer)))
+            logging.info(
+                "  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name)
+            )
+        '''
 
     # def __getstate__(self): # pickle save
     #     return {'version': 0.1,
@@ -574,23 +590,25 @@ class Layer(BaseLayer):
 
 class CompiledLayer(object):
 
-    def __init__(self, layer_to_compile, inputs, outputs, local_weights, local_drop):
+    def __init__(self, layers_to_compile, inputs, outputs, local_weights, local_drop):
 
         self.hyperparameters = dict()
 
-        for key, value in layer_to_compile.__dict__.items():
+        for key, value in layers_to_compile.__dict__.items():
 
             # Do not record these arguments
+
+            # "prev_layer", "all_params", "all_layers", "all_drop", "all_graphs", "graph", "is_setup",
+
             if key in [
-                "prev_layer", "all_params", "all_layers", "all_drop", "all_graphs", "graph", "is_setup", "inputs",
-                "outputs", "_local_drop", "_local_weights", '_temp_data'
+                "inputs", "outputs", "_local_drop", "_local_weights", '_temp_data'
             ]:
                 continue
 
             # setattr(self, key, value)
             self.hyperparameters[key] = value
 
-        self._str_ = str(layer_to_compile)
+        self._str_ = str(layers_to_compile)
 
         self.inputs = inputs
         self.outputs = outputs

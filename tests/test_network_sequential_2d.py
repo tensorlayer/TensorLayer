@@ -402,10 +402,8 @@ class Network_Sequential_2D_Test(CustomTestCase):
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
             cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
 
-    def test_True(self):
-        self.assertTrue(True)
-
-    '''
+            print("Train: %s - Type: %s" % (cls.train_model, type(cls.train_model)))
+            print("Test: %s - Type: %s" % (cls.test_model, type(cls.test_model)))
 
     def test_get_all_drop_plh(self):
         self.assertEqual(len(self.model.all_drop), 0)
@@ -419,6 +417,7 @@ class Network_Sequential_2D_Test(CustomTestCase):
     def test_count_layers(self):
         self.assertEqual(self.model.count_layers(), 45)
 
+    '''
     def test_network_dtype(self):
 
         with self.assertNotRaises(RuntimeError):

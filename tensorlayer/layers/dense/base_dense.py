@@ -110,16 +110,16 @@ class DenseLayer(Layer):
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
-                name='W', shape=(n_in, self.n_units), initializer=self.W_init, **self.W_init_args
+                name='W', shape=(n_in, self.n_units), dtype=self._temp_data['inputs'].dtype, initializer=self.W_init, **self.W_init_args
             )
 
             self._temp_data['outputs'] = tf.matmul(self._temp_data['inputs'], weight_matrix)
 
             if self.b_init is not None:
                 try:
-                    b = self._get_tf_variable(name='b', shape=self.n_units, initializer=self.b_init, **self.b_init_args)
+                    b = self._get_tf_variable(name='b', shape=self.n_units, dtype=self._temp_data['inputs'].dtype, initializer=self.b_init, **self.b_init_args)
                 except Exception:  # If initializer is a constant, do not specify shape.
-                    b = self._get_tf_variable(name='b', initializer=self.b_init, **self.b_init_args)
+                    b = self._get_tf_variable(name='b', dtype=self._temp_data['inputs'].dtype, initializer=self.b_init, **self.b_init_args)
 
                 self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
