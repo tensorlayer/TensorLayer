@@ -3446,6 +3446,7 @@ def keypoint_random_crop2(image, annos, mask=None, size=(368, 368)):
     else:
         return image, annos, None
 
+
 def keypoint_random_crop(image, annos, mask=None, size=(368, 368)):
     """ Randomly crop padded an image and corresponding keypoints using padding without influence scales, given by ``keypoint_random_resize_shortestedge``.
 
@@ -3508,6 +3509,7 @@ def keypoint_random_crop(image, annos, mask=None, size=(368, 368)):
         return resized, adjust_joint_list, resized_mask
 
     return pose_crop(image, annos, mask, x, y, target_size[0], target_size[1])
+
 
 def keypoint_random_rotate(image, annos, mask=None, rg=15.):
     """ Rotate an image and corresponding keypoints.
@@ -3626,6 +3628,7 @@ def keypoint_random_rotate(image, annos, mask=None, rg=15.):
     else:
         return img, joint_list, None
 
+
 def keypoint_random_flip(image, annos, mask=None, prob=0.5):
     """ Flip an image and corresponding keypoints.
 
@@ -3672,6 +3675,7 @@ def keypoint_random_flip(image, annos, mask=None, prob=0.5):
     annos = new_joints
 
     return image, annos, mask
+
 
 def keypoint_random_resize(image, annos, mask=None, zoom_range=(0.8, 1.2)):
     """ Randomly resize an image and corresponding keypoints.
@@ -3720,7 +3724,10 @@ def keypoint_random_resize(image, annos, mask=None, zoom_range=(0.8, 1.2)):
     else:
         return dst, adjust_joint_list, None
 
-def keypoint_random_resize_shortestedge(image, annos, mask=None, min_size=(368, 368), pad_val=(0, 0, np.random.uniform(0.0, 1.0))):
+
+def keypoint_random_resize_shortestedge(
+        image, annos, mask=None, min_size=(368, 368), pad_val=(0, 0, np.random.uniform(0.0, 1.0))
+):
     """ Randomly resize an image and corresponding keypoints based on shorter edge with padding.
     The size of image will be changed.
 
@@ -3779,7 +3786,7 @@ def keypoint_random_resize_shortestedge(image, annos, mask=None, min_size=(368, 
             mw = (_target_width - neww) % 2
             mh = (_target_height - newh) % 2
             # color = np.random.uniform(0.0, 1.0)
-            dst = cv2.copyMakeBorder(dst, ph, ph + mh, pw, pw + mw, cv2.BORDER_CONSTANT, value=pad_val)#(0, 0, color))
+            dst = cv2.copyMakeBorder(dst, ph, ph + mh, pw, pw + mw, cv2.BORDER_CONSTANT, value=pad_val)  #(0, 0, color))
             if mask is not None:
                 mask = cv2.copyMakeBorder(mask, ph, ph + mh, pw, pw + mw, cv2.BORDER_CONSTANT, value=1)
         # adjust meta data
