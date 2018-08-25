@@ -406,16 +406,16 @@ class Network_Sequential_2D_Test(CustomTestCase):
             print("Test: %s - Type: %s" % (cls.test_model, type(cls.test_model)))
 
     def test_get_all_drop_plh(self):
-        self.assertEqual(len(self.model.all_drop), 0)
+        self.assertEqual(len(self.train_model.all_drop), 0)
 
     def test_count_params(self):
-        self.assertEqual(self.model.count_params(), 132197)
+        self.assertEqual(self.train_model.count_params(), 132197)
 
     def test_count_param_tensors(self):
-        self.assertEqual(len(self.model.get_all_params()), 60)
+        self.assertEqual(len(self.train_model.get_all_params()), 60)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 45)
+        self.assertEqual(self.train_model.count_layers(), 45)
 
     '''
     def test_network_dtype(self):
@@ -499,17 +499,19 @@ class Network_Sequential_2D_Test(CustomTestCase):
 
         self.assertEqual(self.model["subpixelconv2d_layer_27"].outputs.shape, (100, 76, 76, 2))
 
-        self.assertEqual(self.model["conv2d_layer_28"].outputs.shape, (100, 38, 38, 8))
+        self.assertEqual(self.train_model["conv2d_layer_28"].outputs.shape, (100, 38, 38, 8))
 
-        self.assertEqual(self.model["subpixelconv2d_layer_29"].outputs.shape, (100, 76, 76, 2))
+        self.assertEqual(self.train_model["subpixelconv2d_layer_29"].outputs.shape, (100, 76, 76, 2))
 
-        self.assertEqual(self.model["ternaryconv2d_layer_30"].outputs.shape, (100, 76, 76, 4))
+        self.assertEqual(self.train_model["ternaryconv2d_layer_30"].outputs.shape, (100, 76, 76, 4))
 
-        self.assertEqual(self.model["ternaryconv2d_layer_31"].outputs.shape, (100, 76, 76, 8))
+        self.assertEqual(self.train_model["ternaryconv2d_layer_31"].outputs.shape, (100, 76, 76, 8))
 
-        self.assertEqual(self.model["separableconv2d_layer_32"].outputs.shape, (100, 76, 76, 4))
+        self.assertEqual(self.train_model["separableconv2d_layer_32"].outputs.shape, (100, 76, 76, 4))
 
-        self.assertEqual(self.model["separableconv2d_layer_33"].outputs.shape, (100, 76, 76, 8))
+        self.assertEqual(self.train_model["separableconv2d_layer_33"].outputs.shape, (100, 76, 76, 8))
+
+        self.assertEqual(self.train_model["separableconv2d_layer_33"].outputs.shape, (100, 76, 76, 8))
     '''
 
 

@@ -1,7 +1,9 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""A file containing various activation functions."""
+# """A file containing various activation functions."""
+
+import tensorlayer as tl
 
 __all__ = ["CompiledNetwork"]
 
@@ -27,6 +29,12 @@ class CompiledNetwork(object):
     def __getattribute__(self, item):
         if item == "all_layers":
             return list(self.all_layers_dict.values())
+
+        if item == "all_params":
+            tl.logging.warn(
+                "`all_params` has been deprecated in favor of `all_weights and will be removed in a future version`"
+            )
+            return self.all_weights
         else:
             return super(CompiledNetwork, self).__getattribute__(item)
 

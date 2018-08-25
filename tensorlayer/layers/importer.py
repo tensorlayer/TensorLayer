@@ -106,7 +106,7 @@ class SlimNetsLayer(Layer):
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-            self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
 
 # @deprecated(
@@ -188,11 +188,12 @@ class KerasLayer(Layer):
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
             if is_train:
-                self._local_weights = self.keras_layer._trainable_weights
+                self._temp_data['local_weights'] = self.keras_layer._trainable_weights
 
-                for var in self._local_weights:  # Keras does not add the vars to the collection
+                for var in self._temp_data['local_weights']:  # Keras does not add the vars to the collection
                     if var.trainable and var not in tf.get_collection(TF_GRAPHKEYS_VARIABLES):
                         tf.add_to_collection(name=TF_GRAPHKEYS_VARIABLES, value=var)
+
 
 
 @deprecated(
@@ -266,4 +267,4 @@ class EstimatorLayer(Layer):
         with tf.variable_scope(self.name) as vs:
             self._temp_data['outputs'] = self.model_fn(self._temp_data['inputs'], **self.layer_args)
 
-            self._local_weights = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=vs.name)
+            self._temp_data['local_weights'] = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=vs.name)

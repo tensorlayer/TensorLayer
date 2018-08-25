@@ -116,6 +116,6 @@ class TimeDistributedLayer(Layer):
                 net = self.layer_class(in_layer, **self.layer_args)
                 x[i] = net.outputs
 
-                self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+                self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self._temp_data['outputs'] = tf.stack(x, axis=1, name=self.name)

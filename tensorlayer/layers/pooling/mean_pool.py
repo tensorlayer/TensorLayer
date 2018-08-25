@@ -62,7 +62,7 @@ class MeanPool1d(Layer):
                 prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=None
             )
 
-            self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
 
 class MeanPool2d(Layer):
@@ -114,7 +114,7 @@ class MeanPool2d(Layer):
                 name=None
             )
 
-            self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
 
 class MeanPool3d(Layer):
@@ -176,4 +176,4 @@ class MeanPool3d(Layer):
                 prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=None
             )
 
-            self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)

@@ -77,14 +77,6 @@ class DropoutLayer(Layer):
 
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
         keep=0.5,
@@ -127,7 +119,7 @@ class DropoutLayer(Layer):
                 # The name of placeholder for keep_prob is the same with the name of the Layer.
                 if self.is_fix:
                     self._temp_data['outputs'] = tf.nn.dropout(
-                        self._temp_data['inputs'], self.keep, seed=self.seed, name=self.name
+                        self._temp_data['inputs'], self.keep, seed=self.seed, name="dropout_op"
                     )
 
                 else:
@@ -137,5 +129,5 @@ class DropoutLayer(Layer):
                     LayersConfig.set_keep[self.name] = keep_plh
 
                     self._temp_data['outputs'] = tf.nn.dropout(
-                        self._temp_data['inputs'], keep_plh, seed=self.seed, name=self.name
+                        self._temp_data['inputs'], keep_plh, seed=self.seed, name="dropout_op"
                     )

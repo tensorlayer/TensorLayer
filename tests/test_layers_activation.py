@@ -20,13 +20,13 @@ class PReLU_Layer_Test(unittest.TestCase):
         in_layer = tl.layers.InputLayer(x, name='input')
 
         net = tl.layers.DenseLayer(in_layer, n_units=10, name='dense_1')
-        cls.net1 = tl.layers.PReluLayer(net, name='prelu_1')
+        cls.net1 = tl.layers.PReluLayer(name='prelu_1')(net)
 
         cls.net1.print_layers()
         cls.net1.print_params(False)
 
-        net2 = tl.layers.DenseLayer(cls.net1, n_units=30, name='dense_2')
-        cls.net2 = tl.layers.PReluLayer(net2, channel_shared=True, name='prelu_2')
+        net2 = tl.layers.DenseLayer(n_units=30, name='dense_2')(cls.net1)
+        cls.net2 = tl.layers.PReluLayer(channel_shared=True, name='prelu_2')(net2)
 
         cls.net2.print_layers()
         cls.net2.print_params(False)

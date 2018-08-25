@@ -536,6 +536,7 @@ class Layer(BaseLayer):
             raise ValueError()
         '''
 
+    # should be renamed `get_all_weights`
     def get_all_params(self, session=None):
         """Return the parameters in a list of array."""
         tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, 'get_all_params'))
@@ -550,6 +551,7 @@ class Layer(BaseLayer):
         return _params
         '''
 
+    # should be renamed `print_weights`
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""
         tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, 'print_params'))
@@ -575,7 +577,9 @@ class Layer(BaseLayer):
         logging.info("  num of params: %d" % self.count_params())
         '''
 
+    # should be renamed `print_network`
     def print_layers(self):
+
         """Print all info of layers in the network."""
         tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, 'print_layers'))
         pass

@@ -62,7 +62,7 @@ class MaxPool1d(Layer):
                 self._temp_data['inputs'], filter_size, strides, padding=padding, data_format=data_format, name=None
             )
 
-            self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
 
 class MaxPool2d(Layer):
@@ -113,7 +113,7 @@ class MaxPool2d(Layer):
                 name=None
             )
 
-            self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
 
 class MaxPool3d(Layer):
@@ -174,4 +174,4 @@ class MaxPool3d(Layer):
                 self._temp_data['inputs'], filter_size, strides, padding=padding, data_format=data_format, name=None
             )
 
-            self._local_weights = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
