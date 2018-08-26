@@ -25,8 +25,8 @@ class QuantizedDense(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
+    # prev_layer : :class:`Layer`
+    #     Previous layer.
     n_units : int
         The number of units of this layer.
     act : activation function
@@ -52,7 +52,7 @@ class QuantizedDense(Layer):
 
     def __init__(
         self,
-        prev_layer,
+        # prev_layer,
         n_units=100,
         act=None,
         bitW=8,

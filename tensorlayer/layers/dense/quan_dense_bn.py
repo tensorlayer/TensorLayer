@@ -28,8 +28,8 @@ class QuantizedDenseWithBN(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
+    # prev_layer : :class:`Layer`
+    #     Previous layer.
     n_units : int
         The number of units of this layer.
     act : activation function
@@ -39,8 +39,8 @@ class QuantizedDenseWithBN(Layer):
         Suggest to use a large value for large dataset.
     epsilon : float
         Eplison.
-    is_train : boolean
-        Is being used for training or inference.
+    # is_train : boolean
+    #     Is being used for training or inference.
     beta_init : initializer or None
         The initializer for initializing beta, if None, skip beta.
         Usually you should not skip beta unless you know what happened.
@@ -75,7 +75,7 @@ class QuantizedDenseWithBN(Layer):
 
     def __init__(
         self,
-        prev_layer,
+        # prev_layer,
         n_units=100,
         act=None,
         decay=0.9,
