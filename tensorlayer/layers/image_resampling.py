@@ -228,30 +228,24 @@ class DownSampling2dLayer(Layer):
                         self._temp_data['inputs'].get_shape()[x_pos]._value,
                         self._temp_data['inputs'].get_shape()[y_pos]._value
                     ]:
-                        size_h = tf.cast(
-                            tf.ceil(int(self._temp_data['inputs'].get_shape()[x_pos]) / float(self.size[0])), tf.int32
-                        )
-                        size_w = tf.cast(
-                            tf.ceil(int(self._temp_data['inputs'].get_shape()[y_pos]) / float(self.size[1])), tf.int32
-                        )
+
+                        size_h = np.ceil(int(self._temp_data['inputs'].get_shape()[x_pos]) / float(self.size[0])).astype(np.int32)
+                        size_w = np.ceil(int(self._temp_data['inputs'].get_shape()[y_pos]) / float(self.size[1])).astype(np.int32)
+
                     else:
-                        size_h = tf.cast(
-                            tf.ceil(tf.shape(self._temp_data['inputs'])[x_pos] / np.float32(self.size[0])), tf.int32
-                        )
-                        size_w = tf.cast(
-                            tf.ceil(tf.shape(self._temp_data['inputs'])[y_pos] / np.float32(self.size[1])), tf.int32
-                        )
+                        size_h = np.ceil(tf.shape(self._temp_data['inputs'])[x_pos] / np.float32(self.size[0])).astype(np.int32)
+                        size_w = np.ceil(tf.shape(self._temp_data['inputs'])[y_pos] / np.float32(self.size[1])).astype(np.int32)
 
                 elif all(isinstance(x, float) for x in self.size):
                     if None not in [
                         self._temp_data['inputs'].get_shape()[x_pos]._value,
                         self._temp_data['inputs'].get_shape()[y_pos]._value
                     ]:
-                        size_h = tf.cast(int(self._temp_data['inputs'].get_shape()[x_pos]) * self.size[0], tf.int32)
-                        size_w = tf.cast(int(self._temp_data['inputs'].get_shape()[y_pos]) * self.size[1], tf.int32)
+                        size_h = np.ceil(int(self._temp_data['inputs'].get_shape()[x_pos]) * self.size[0]).astype(np.int32)
+                        size_w = np.ceil(int(self._temp_data['inputs'].get_shape()[y_pos]) * self.size[1]).astype(np.int32)
                     else:
-                        size_h = tf.shape(self._temp_data['inputs'])[x_pos] * self.size[0]
-                        size_w = tf.shape(self._temp_data['inputs'])[y_pos] * self.size[1]
+                        size_h = np.ceil(tf.shape(self._temp_data['inputs'])[x_pos] * self.size[0]).astype(np.int32)
+                        size_w = np.ceil(tf.shape(self._temp_data['inputs'])[y_pos] * self.size[1]).astype(np.int32)
 
                 else:
                     raise ValueError("all elements of tuple `size` hyperparameter should be either `int` or `float`")
