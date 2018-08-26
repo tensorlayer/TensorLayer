@@ -52,6 +52,7 @@ class TimeDistributedLayer(Layer):
     [TL]    num of params: 5050
 
     """
+
     def __init__(
         self,
         layer_class,

@@ -45,6 +45,7 @@ class DeConv2d(Layer):
         A unique layer name.
 
     """
+
     def __init__(
         self,
         n_filter=32,
@@ -173,6 +174,7 @@ class DeConv3d(Layer):
     name : str
         A unique layer name.
     """
+
     def __init__(
         self,
         n_filter=32,

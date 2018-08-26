@@ -54,6 +54,7 @@ class LambdaLayer(Layer):
     >>> net = LambdaLayer(net, fn=keras_block, name='keras')
 
     """
+
     def __init__(
         self,
         fn,
@@ -130,6 +131,7 @@ class ElementwiseLambdaLayer(Layer):
     >>> std = tl.layers.DenseLayer(net, n_units=200, name='std')
     >>> z = tl.layers.ElementwiseLambdaLayer([noise, mean, std], fn=func, name='z')
     """
+
     def __init__(
         self,
         fn,

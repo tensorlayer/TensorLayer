@@ -45,6 +45,7 @@ class SubpixelConv1d(Layer):
     `Audio Super Resolution Implementation <https://github.com/kuleshov/audio-super-res/blob/master/src/models/layers/subpixel.py>`__.
 
     """
+
     def __init__(self, scale=2, act=None, name='subpixel_conv1d'):
 
         self.scale = scale

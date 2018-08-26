@@ -69,6 +69,7 @@ class TernaryConv2d(Layer):
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=True, name='bn2')
 
     """
+
     def __init__(
         self,
         n_filter=32,

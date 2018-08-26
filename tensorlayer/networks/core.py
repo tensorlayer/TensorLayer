@@ -104,8 +104,7 @@ class BaseNetwork(core.BaseLayer):
 
                         elif all(isinstance(_layer, str) for _layer in layer_factory.prev_layer):
                             compiled_inputs = [
-                                self.all_layers_dict[_layer]._last_compiled_layer
-                                for _layer in layer_factory.prev_layer
+                                self.all_layers_dict[_layer]._last_compiled_layer for _layer in layer_factory.prev_layer
                             ]
                         else:
                             raise ValueError("`prev_layer` should be either a `str` or a list of `str`")

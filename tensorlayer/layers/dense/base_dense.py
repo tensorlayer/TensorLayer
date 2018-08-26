@@ -53,6 +53,7 @@ class DenseLayer(Layer):
     If the layer input has more than two axes, it needs to be flatten by using :class:`FlattenLayer`.
 
     """
+
     def __init__(
         self,
         n_units=100,

@@ -36,6 +36,7 @@ class ExpandDimsLayer(Layer):
     >>> n = tl.layers.ExpandDimsLayer(n, 2)
     [None, 100, 1]
     """
+
     def __init__(
         self,
         axis=0,
@@ -93,6 +94,7 @@ class TileLayer(Layer):
     >>> n = tl.layers.TileLayer(n, [-1, 1, 3])
     [None, 100, 3]
     """
+
     def __init__(self, multiples=None, name='tile'):
 
         self.multiples = multiples

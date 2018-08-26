@@ -68,6 +68,7 @@ class DepthwiseConv2d(Layer):
 
     # https://zhuanlan.zhihu.com/p/31551004  https://github.com/xiaohu2015/DeepLearning_tutorials/blob/master/CNNs/MobileNet.py
     """
+
     def __init__(
         self,
         shape=(3, 3),

@@ -39,6 +39,7 @@ class UpSampling2dLayer(Layer):
         A unique layer name.
 
     """
+
     def __init__(
         self,
         size,
@@ -153,6 +154,7 @@ class DownSampling2dLayer(Layer):
         A unique layer name.
 
     """
+
     def __init__(
         self,
         size,

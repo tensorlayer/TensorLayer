@@ -25,6 +25,7 @@ class SignLayer(Layer):
         A unique layer name.
 
     """
+
     def __init__(
         self,
         name='sign',

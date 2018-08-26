@@ -82,6 +82,7 @@ class ReshapeLayer(Layer):
     (?, 28, 28, 1)
 
     """
+
     def __init__(self, shape, name='reshape'):
 
         if not shape:
@@ -130,6 +131,7 @@ class TransposeLayer(Layer):
     [None, 28, 1, 28]
 
     """
+
     def __init__(self, perm=None, name='transpose'):
 
         if perm is None:

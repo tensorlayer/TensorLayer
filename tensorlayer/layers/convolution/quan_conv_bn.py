@@ -93,6 +93,7 @@ class QuantizedConv2dWithBN(Layer):
     >>> net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
     ...
     """
+
     def __init__(
         self,
         # Quantized Conv 2D Parameters

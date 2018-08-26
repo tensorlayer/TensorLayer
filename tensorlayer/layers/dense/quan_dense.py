@@ -49,6 +49,7 @@ class QuantizedDense(Layer):
         A unique layer name.
 
     """
+
     def __init__(
         self,
         prev_layer,

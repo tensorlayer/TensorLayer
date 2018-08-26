@@ -58,6 +58,7 @@ class DropconnectDenseLayer(Layer):
     - `Wan, L. (2013). Regularization of neural networks using dropconnect <http://machinelearning.wustl.edu/mlpapers/papers/icml2013_wan13>`__
 
     """
+
     def __init__(
         self,
         keep=0.5,

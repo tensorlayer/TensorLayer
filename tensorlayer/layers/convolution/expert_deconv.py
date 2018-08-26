@@ -90,6 +90,7 @@ class DeConv2dLayer(Layer):
     ...         padding='SAME', W_init=w_init, b_init=b_init, name='devcon1_1')
 
     """
+
     def __init__(
         self,
         shape=(3, 3, 128, 256),

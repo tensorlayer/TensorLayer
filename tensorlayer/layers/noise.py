@@ -45,6 +45,7 @@ class GaussianNoiseLayer(Layer):
     (64, 100)
 
     """
+
     def __init__(
         self,
         mean=0.0,

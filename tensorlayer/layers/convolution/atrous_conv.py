@@ -117,6 +117,7 @@ class AtrousConv2dLayer(Layer):
         A unique layer name.
 
     """
+
     def __init__(
         self,
         n_filter=32,

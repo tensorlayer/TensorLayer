@@ -39,6 +39,7 @@ class PadLayer(Layer):
     >>> net = tl.layers.PadLayer(net, [[0, 0], [3, 3], [3, 3], [0, 0]], "REFLECT", name='inpad')
 
     """
+
     def __init__(
         self,
         padding,
@@ -213,6 +214,7 @@ class ZeroPad3d(Layer):
         A unique layer name.
 
     """
+
     def __init__(
         self,
         padding,

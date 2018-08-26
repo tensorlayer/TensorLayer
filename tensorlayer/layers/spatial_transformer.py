@@ -39,6 +39,7 @@ class SpatialTransformer2dAffineLayer(Layer):
     - `TensorFlow/Models <https://github.com/tensorflow/models/tree/master/transformer>`__
 
     """
+
     def __init__(
         self,
         out_size,

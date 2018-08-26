@@ -47,7 +47,7 @@ class SeparableConv1d(Layer):
         A unique layer name.
 
     """
-    
+
     def __init__(
         self,
         n_filter=100,

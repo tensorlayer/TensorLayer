@@ -557,7 +557,6 @@ class Layer(BaseLayer):
 
     # should be renamed `print_network`
     def print_layers(self):
-
         """Print all info of layers in the network."""
         tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, 'print_layers'))
         pass
@@ -703,16 +702,14 @@ class CompiledLayer(object):
     # =============================================== #
 
     @deprecated(
-        end_support_version="2.1.0",
-        instructions="`count_params` has been deprecated in favor of `count_weights`"
+        end_support_version="2.1.0", instructions="`count_params` has been deprecated in favor of `count_weights`"
     )  # TODO: remove this line before releasing TL 2.1.0
     def count_params(self):
         """Returns the number of parameters in the network"""
         return self.count_weights()
 
     @deprecated(
-        end_support_version="2.1.0",
-        instructions="`count_params` has been deprecated in favor of `count_weights`"
+        end_support_version="2.1.0", instructions="`count_params` has been deprecated in favor of `count_weights`"
     )  # TODO: remove this line before releasing TL 2.1.0
     def print_params(self):
         """Returns the number of parameters in the network"""

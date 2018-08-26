@@ -151,17 +151,17 @@ class Network_Sequential_3D_Test(CustomTestCase):
 
         self.assertEqual(self.train_model["pad_layer_2"].outputs.shape, (100, 24, 22, 20, 1))
         self.assertEqual(self.test_model["pad_layer_2"].outputs.shape, (100, 24, 22, 20, 1))
-        
+
         self.assertEqual(self.train_model["zeropad3d_layer_2-1"].outputs.shape, (100, 28, 26, 24, 1))
         self.assertEqual(self.test_model["zeropad3d_layer_2-1"].outputs.shape, (100, 28, 26, 24, 1))
-        
+
         self.assertEqual(self.train_model["zeropad3d_layer_2-2"].outputs.shape, (100, 32, 30, 28, 1))
         self.assertEqual(self.test_model["zeropad3d_layer_2-2"].outputs.shape, (100, 32, 30, 28, 1))
-        
+
         self.assertEqual(self.train_model["zeropad3d_layer_2-3"].outputs.shape, (100, 36, 36, 36, 1))
         self.assertEqual(self.test_model["zeropad3d_layer_2-3"].outputs.shape, (100, 36, 36, 36, 1))
-        
-        self.assertEqual(self.train_model["scale_layer_2"].outputs.shape, (100, 36, 36, 36, 1))        
+
+        self.assertEqual(self.train_model["scale_layer_2"].outputs.shape, (100, 36, 36, 36, 1))
         self.assertEqual(self.test_model["scale_layer_2"].outputs.shape, (100, 36, 36, 36, 1))
 
         self.assertEqual(self.train_model["conv3d_layer_3"].outputs.shape, (100, 36, 36, 36, 8))

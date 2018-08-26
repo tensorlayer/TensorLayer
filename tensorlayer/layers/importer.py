@@ -40,6 +40,7 @@ class SlimNetsLayer(Layer):
     - As TF-Slim stores the layers as dictionary, the ``all_layers`` in this network is not in order ! Fortunately, the ``all_params`` are in order.
 
     """
+
     def __init__(
         self,
         slim_layer,
@@ -114,6 +115,7 @@ class KerasLayer(Layer):
         A unique layer name.
 
     """
+
     def __init__(
         self,
         keras_layer,
@@ -167,7 +169,6 @@ class KerasLayer(Layer):
                     tf.add_to_collection(name=TF_GRAPHKEYS_VARIABLES, value=var)
 
 
-
 @deprecated(
     end_support_version="2.0.0", instructions="This layer is deprecated in favor of :class:`LambdaLayer`"
 )  # TODO: remove this line before releasing TL 2.0.0
@@ -186,6 +187,7 @@ class EstimatorLayer(Layer):
         A unique layer name.
 
     """
+
     def __init__(
         self,
         model_fn,

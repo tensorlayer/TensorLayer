@@ -25,6 +25,7 @@ class ScaleLayer(Layer):
         A unique layer name.
 
     """
+
     def __init__(
         self,
         init_scale=0.05,
@@ -51,6 +52,9 @@ class ScaleLayer(Layer):
 
         with tf.variable_scope(self.name):
             scale = self._get_tf_variable(
-                name="scale", shape=[1], initializer=tf.constant_initializer(value=self.init_scale), dtype=self._temp_data['inputs'].dtype
+                name="scale",
+                shape=[1],
+                initializer=tf.constant_initializer(value=self.init_scale),
+                dtype=self._temp_data['inputs'].dtype
             )
             self._temp_data['outputs'] = tf.multiply(self._temp_data['inputs'], scale)

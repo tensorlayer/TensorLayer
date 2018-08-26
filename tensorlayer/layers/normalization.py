@@ -41,6 +41,7 @@ class LocalResponseNormLayer(Layer):
     name : str
         A unique layer name.
     """
+
     def __init__(
         self,
         depth_radius=None,
@@ -128,6 +129,7 @@ class BatchNormLayer(Layer):
     - `stackoverflow <http://stackoverflow.com/questions/38312668/how-does-one-do-inference-with-batch-normalization-with-tensor-flow>`__
 
     """
+
     def __init__(
         self,
         decay=0.9,
@@ -454,6 +456,7 @@ class SwitchNormLayer(Layer):
     - `Zhihu (CN) <https://zhuanlan.zhihu.com/p/39296570?utm_source=wechat_session&utm_medium=social&utm_oi=984862267107651584>`__
 
     """
+
     def __init__(
         self,
         epsilon=1e-5,
@@ -503,8 +506,12 @@ class SwitchNormLayer(Layer):
             gamma = self._get_tf_variable(name="gamma", shape=[ch], initializer=self.gamma_init)
             beta = self._get_tf_variable(name="beta", shape=[ch], initializer=self.beta_init)
 
-            mean_weight_var = self._get_tf_variable(name="mean_weight", shape=[3], initializer=tf.constant_initializer(1.0))
-            var_weight_var = self._get_tf_variable(name="var_weight", shape=[3], initializer=tf.constant_initializer(1.0))
+            mean_weight_var = self._get_tf_variable(
+                name="mean_weight", shape=[3], initializer=tf.constant_initializer(1.0)
+            )
+            var_weight_var = self._get_tf_variable(
+                name="var_weight", shape=[3], initializer=tf.constant_initializer(1.0)
+            )
 
             mean_weight = tf.nn.softmax(mean_weight_var)
             var_weight = tf.nn.softmax(var_weight_var)

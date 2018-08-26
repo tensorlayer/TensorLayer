@@ -79,6 +79,7 @@ class OneHotInputLayer(Layer):
     (?, 8)
 
     """
+
     def __init__(self, depth, on_value=None, off_value=None, axis=None, dtype=None, name='input'):
 
         if depth is None:
@@ -204,6 +205,7 @@ class Word2vecEmbeddingInputlayer(Layer):
     `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`__
 
     """
+
     def __init__(
         self,
         train_labels=None,
@@ -341,6 +343,7 @@ class EmbeddingInputlayer(Layer):
     >>> net = tl.layers.EmbeddingInputlayer(inputs=x, vocabulary_size=1000, embedding_size=50, dtype=tf.float32, name='embed')
     (8, 50)
     """
+
     def __init__(
         self,
         vocabulary_size=80000,
@@ -423,6 +426,7 @@ class AverageEmbeddingInputlayer(Layer):
     (8, 50)
 
     """
+
     def __init__(
         self,
         vocabulary_size=None,

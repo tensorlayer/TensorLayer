@@ -46,6 +46,7 @@ class Conv1dLayer(Layer):
         A unique layer name
 
     """
+
     def __init__(
         self,
         shape=(5, 1, 5),

@@ -461,40 +461,40 @@ class Network_Sequential_2D_Test(CustomTestCase):
 
         self.assertEqual(self.train_model["upsample2d_layer_2"].outputs.shape, (100, 32, 32, 1))
         self.assertEqual(self.test_model["upsample2d_layer_2"].outputs.shape, (100, 32, 32, 1))
-        
+
         self.assertEqual(self.train_model["downsample2d_layer_2"].outputs.shape, (100, 16, 16, 1))
         self.assertEqual(self.test_model["downsample2d_layer_2"].outputs.shape, (100, 16, 16, 1))
-        
+
         self.assertEqual(self.train_model["noise_layer_2"].outputs.shape, (100, 16, 16, 1))
         self.assertEqual(self.test_model["noise_layer_2"].outputs.shape, (100, 16, 16, 1))
-        
+
         self.assertEqual(self.train_model["LRN_layer_2"].outputs.shape, (100, 16, 16, 1))
         self.assertEqual(self.test_model["LRN_layer_2"].outputs.shape, (100, 16, 16, 1))
-        
+
         self.assertEqual(self.train_model["batchnorm_layer_2"].outputs.shape, (100, 16, 16, 1))
         self.assertEqual(self.test_model["batchnorm_layer_2"].outputs.shape, (100, 16, 16, 1))
-        
+
         self.assertEqual(self.train_model["instance_norm_layer_2"].outputs.shape, (100, 16, 16, 1))
         self.assertEqual(self.test_model["instance_norm_layer_2"].outputs.shape, (100, 16, 16, 1))
-        
+
         self.assertEqual(self.train_model["layernorm_layer_2"].outputs.shape, (100, 16, 16, 1))
         self.assertEqual(self.test_model["layernorm_layer_2"].outputs.shape, (100, 16, 16, 1))
-        
+
         self.assertEqual(self.train_model["switchnorm_layer_2"].outputs.shape, (100, 16, 16, 1))
         self.assertEqual(self.test_model["switchnorm_layer_2"].outputs.shape, (100, 16, 16, 1))
 
         self.assertEqual(self.train_model["pad_layer_3"].outputs.shape, (100, 24, 22, 1))
         self.assertEqual(self.test_model["pad_layer_3"].outputs.shape, (100, 24, 22, 1))
-        
+
         self.assertEqual(self.train_model["zeropad2d_layer_3-1"].outputs.shape, (100, 28, 26, 1))
         self.assertEqual(self.test_model["zeropad2d_layer_3-1"].outputs.shape, (100, 28, 26, 1))
-        
+
         self.assertEqual(self.train_model["zeropad2d_layer_3-2"].outputs.shape, (100, 32, 30, 1))
         self.assertEqual(self.test_model["zeropad2d_layer_3-2"].outputs.shape, (100, 32, 30, 1))
-        
+
         self.assertEqual(self.train_model["zeropad2d_layer_3-3"].outputs.shape, (100, 38, 38, 1))
         self.assertEqual(self.test_model["zeropad2d_layer_3-3"].outputs.shape, (100, 38, 38, 1))
-        
+
         self.assertEqual(self.train_model["scale_layer_3"].outputs.shape, (100, 38, 38, 1))
         self.assertEqual(self.test_model["scale_layer_3"].outputs.shape, (100, 38, 38, 1))
 

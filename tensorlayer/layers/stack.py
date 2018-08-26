@@ -41,6 +41,7 @@ class StackLayer(Layer):
     (?, 3, 10)
 
     """
+
     def __init__(
         self,
         axis=1,
@@ -95,6 +96,7 @@ class UnStackLayer(Layer):
         The list of layer objects unstacked from the input.
 
     """
+
     def __init__(self, num=None, axis=0, name='unstack'):
 
         self.num = num

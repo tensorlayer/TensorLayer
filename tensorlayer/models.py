@@ -108,16 +108,14 @@ class CompiledNetwork(object):
     # =============================================== #
 
     @deprecated(
-        end_support_version="2.1.0",
-        instructions="`count_params` has been deprecated in favor of `count_weights`"
+        end_support_version="2.1.0", instructions="`count_params` has been deprecated in favor of `count_weights`"
     )  # TODO: remove this line before releasing TL 2.1.0
     def count_params(self):
         """Returns the number of parameters in the network"""
         return self.count_weights()
 
     @deprecated(
-        end_support_version="2.1.0",
-        instructions="`get_all_params` has been deprecated in favor of `get_all_weights`"
+        end_support_version="2.1.0", instructions="`get_all_params` has been deprecated in favor of `get_all_weights`"
     )  # TODO: remove this line before releasing TL 2.1.0
     def get_all_params(self):
         return self.get_all_weights()

@@ -44,6 +44,7 @@ class ROIPoolingLayer(Layer):
     - Please install it by the instruction `HERE <https://github.com/tensorlayer/tensorlayer/blob/master/tensorlayer/third_party/roi_pooling/README.md>`__.
 
     """
+
     def __init__(
         self,
         rois,

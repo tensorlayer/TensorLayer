@@ -52,6 +52,7 @@ class ConcatLayer(Layer):
     [TL]   layer   2: concat_layer:0       (?, 1100)          float32
 
     """
+
     def __init__(
         self,
         concat_dim=-1,
@@ -117,6 +118,7 @@ class ElementwiseLayer(Layer):
     [TL]   layer   1: net_1/Relu:0         (?, 500)           float32
     [TL]   layer   2: minimum:0            (?, 500)           float32
     """
+
     def __init__(
         self,
         combine_fn=tf.minimum,

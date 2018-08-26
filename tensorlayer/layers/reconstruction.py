@@ -69,6 +69,7 @@ class ReconLayer(DenseLayer):
     - For rectifying layer, the implementation can be `Glorot (2011). Deep Sparse Rectifier Neural Networks <http://doi.org/10.1.1.208.6449>`__
 
     """
+
     def __init__(
         self,
         x_recon=None,

@@ -87,5 +87,9 @@ class PoolLayer(Layer):
         with tf.variable_scope(self.name):
 
             self._temp_data['outputs'] = self.pool(
-                self._temp_data['inputs'], ksize=self.ksize, strides=self.strides, padding=self.padding, name="pooling_op"
+                self._temp_data['inputs'],
+                ksize=self.ksize,
+                strides=self.strides,
+                padding=self.padding,
+                name="pooling_op"
             )
