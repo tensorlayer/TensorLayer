@@ -1,0 +1,371 @@
+API - Activations
+*****************
+
+To make TensorLayer simple, we minimize the number of activation
+functions as much as we can. So we encourage you to use TensorFlow's
+function. TensorFlow provides "tf.nn.relu", "tf.nn.relu6",
+"tf.nn.elu", "tf.nn.softplus", "tf.nn.softsign" and so on. More
+TensorFlow official activation functions can be found here. For
+parametric activation, please read the layer APIs.
+
+The shortcut of "tensorlayer.activation" is "tensorlayer.act".
+
+
+Your activation
+===============
+
+Customizes activation function in TensorLayer is very easy. The
+following example implements an activation that multiplies its input
+by 2. For more complex activation, TensorFlow API will be required.
+
+   def double_activation(x):
+       return x * 2
+
+A file containing various activation functions.
+
++------------+--------------------------------------------------------------------------------------------+
+| "leaky_re  | leaky_relu can be used through its shortcut: "tl.act.lrelu()".                             |
+| lu"(x[,    |                                                                                            |
+| alpha,     |                                                                                            |
+| name])     |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "leaky_re  | "leaky_relu6()" can be used through its shortcut: "tl.act.lrelu6()".                       |
+| lu6"(x[,   |                                                                                            |
+| alpha,     |                                                                                            |
+| name])     |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "leaky_tw  | "leaky_twice_relu6()" can be used through its shortcut: ":func:`tl.act.ltrelu6()".         |
+| ice_relu6  |                                                                                            |
+| "(x[,      |                                                                                            |
+| alpha_low, |                                                                                            |
+| ...])      |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "ramp"(x[, | Ramp activation function.                                                                  |
+| v_min,     |                                                                                            |
+| v_max,     |                                                                                            |
+| name])     |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "swish"(x  | Swish function.                                                                            |
+| [, name])  |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "sign"(x)  | Sign function.                                                                             |
++------------+--------------------------------------------------------------------------------------------+
+| "hard_tan  | Hard tanh activation function.                                                             |
+| h"(x[,     |                                                                                            |
+| name])     |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "pixel_wi  | Return the softmax outputs of images, every pixels have multiple label, the sum of a pixel |
+| se_softma  | is 1.                                                                                      |
+| x"(x[,     |                                                                                            |
+| name])     |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+
+
+Ramp
+====
+
+tensorlayer.activation.ramp(x, v_min=0, v_max=1, name=None)
+
+   Ramp activation function.
+
+   Parameters:
+      * **x** (*Tensor*) -- input.
+
+      * **v_min** (*float*) -- cap input to v_min as a lower bound.
+
+      * **v_max** (*float*) -- cap input to v_max as a upper bound.
+
+      * **name** (*str*) -- The function name (optional).
+
+   Returns:
+      A "Tensor" in the same type as "x".
+
+   Return type:
+      Tensor
+
+
+Leaky ReLU
+==========
+
+tensorlayer.activation.leaky_relu(x, alpha=0.2, name='leaky_relu')
+
+   leaky_relu can be used through its shortcut: "tl.act.lrelu()".
+
+      Warning: **THIS FUNCTION IS DEPRECATED:** It will be removed
+        after after 2018-09-30. *Instructions for updating:* This API
+        is deprecated. Please use as *tf.nn.leaky_relu*.
+
+   This function is a modified version of ReLU, introducing a nonzero
+   gradient for negative input. Introduced by the paper: Rectifier
+   Nonlinearities Improve Neural Network Acoustic Models [A. L. Maas
+   et al., 2013]
+
+   The function return the following results:
+      * When x < 0: "f(x) = alpha_low * x".
+
+      * When x >= 0: "f(x) = x".
+
+   Parameters:
+      * **x** (*Tensor*) -- Support input type "float", "double",
+        "int32", "int64", "uint8", "int16", or "int8".
+
+      * **alpha** (*float*) -- Slope.
+
+      * **name** (*str*) -- The function name (optional).
+
+   -[ Examples ]-
+
+   >>> import tensorlayer as tl
+   >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')
+
+   Returns:
+      A "Tensor" in the same type as "x".
+
+   Return type:
+      Tensor
+
+   -[ References ]-
+
+   * Rectifier Nonlinearities Improve Neural Network Acoustic Models
+     [A. L. Maas et al., 2013]
+
+
+Leaky ReLU6
+===========
+
+tensorlayer.activation.leaky_relu6(x, alpha=0.2, name='leaky_relu6')
+
+   "leaky_relu6()" can be used through its shortcut:
+   "tl.act.lrelu6()".
+
+   This activation function is a modified version "leaky_relu()"
+   introduced by the following paper: Rectifier Nonlinearities Improve
+   Neural Network Acoustic Models [A. L. Maas et al., 2013]
+
+   This activation function also follows the behaviour of the
+   activation function "tf.nn.relu6()" introduced by the following
+   paper: Convolutional Deep Belief Networks on CIFAR-10 [A.
+   Krizhevsky, 2010]
+
+   The function return the following results:
+      * When x < 0: "f(x) = alpha_low * x".
+
+      * When x in [0, 6]: "f(x) = x".
+
+      * When x > 6: "f(x) = 6".
+
+   Parameters:
+      * **x** (*Tensor*) -- Support input type "float", "double",
+        "int32", "int64", "uint8", "int16", or "int8".
+
+      * **alpha** (*float*) -- Slope.
+
+      * **name** (*str*) -- The function name (optional).
+
+   -[ Examples ]-
+
+   >>> import tensorlayer as tl
+   >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.leaky_relu6(x, 0.2), name='dense')
+
+   Returns:
+      A "Tensor" in the same type as "x".
+
+   Return type:
+      Tensor
+
+   -[ References ]-
+
+   * Rectifier Nonlinearities Improve Neural Network Acoustic Models
+     [A. L. Maas et al., 2013]
+
+   * Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky,
+     2010]
+
+
+Twice Leaky ReLU6
+=================
+
+tensorlayer.activation.leaky_twice_relu6(x, alpha_low=0.2, alpha_high=0.2, name='leaky_relu6')
+
+   "leaky_twice_relu6()" can be used through its shortcut:
+   ":func:`tl.act.ltrelu6()".
+
+   This activation function is a modified version "leaky_relu()"
+   introduced by the following paper: Rectifier Nonlinearities Improve
+   Neural Network Acoustic Models [A. L. Maas et al., 2013]
+
+   This activation function also follows the behaviour of the
+   activation function "tf.nn.relu6()" introduced by the following
+   paper: Convolutional Deep Belief Networks on CIFAR-10 [A.
+   Krizhevsky, 2010]
+
+   This function push further the logic by adding *leaky* behaviour
+   both below zero and above six.
+
+   The function return the following results:
+      * When x < 0: "f(x) = alpha_low * x".
+
+      * When x in [0, 6]: "f(x) = x".
+
+      * When x > 6: "f(x) = 6 + (alpha_high * (x-6))".
+
+   Parameters:
+      * **x** (*Tensor*) -- Support input type "float", "double",
+        "int32", "int64", "uint8", "int16", or "int8".
+
+      * **alpha_low** (*float*) -- Slope for x < 0: "f(x) =
+        alpha_low * x".
+
+      * **alpha_high** (*float*) -- Slope for x < 6: "f(x) = 6
+        (alpha_high * (x-6))".
+
+      * **name** (*str*) -- The function name (optional).
+
+   -[ Examples ]-
+
+   >>> import tensorlayer as tl
+   >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.leaky_twice_relu6(x, 0.2, 0.2), name='dense')
+
+   Returns:
+      A "Tensor" in the same type as "x".
+
+   Return type:
+      Tensor
+
+   -[ References ]-
+
+   * Rectifier Nonlinearities Improve Neural Network Acoustic Models
+     [A. L. Maas et al., 2013]
+
+   * Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky,
+     2010]
+
+
+Swish
+=====
+
+tensorlayer.activation.swish(x, name='swish')
+
+   Swish function.
+
+      See Swish: a Self-Gated Activation Function.
+
+   Parameters:
+      * **x** (*Tensor*) -- input.
+
+      * **name** (*str*) -- function name (optional).
+
+   Returns:
+      A "Tensor" in the same type as "x".
+
+   Return type:
+      Tensor
+
+
+Sign
+====
+
+tensorlayer.activation.sign(x)
+
+   Sign function.
+
+   Clip and binarize tensor using the straight through estimator (STE)
+   for the gradient, usually be used for quantizing values in
+   *Binarized Neural Networks*: https://arxiv.org/abs/1602.02830.
+
+   Parameters:
+      **x** (*Tensor*) -- input.
+
+   -[ Examples ]-
+
+   >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')
+
+   Returns:
+      A "Tensor" in the same type as "x".
+
+   Return type:
+      Tensor
+
+   -[ References ]-
+
+   * *Rectifier Nonlinearities Improve Neural Network Acoustic
+     Models, Maas et al. (2013)*
+
+        http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_fin
+        al.pdf
+
+   * *BinaryNet: Training Deep Neural Networks with Weights and
+     Activations Constrained to +1 or -1, Courbariaux et al. (2016)*
+
+        https://arxiv.org/abs/1602.02830
+
+
+Hard Tanh
+=========
+
+tensorlayer.activation.hard_tanh(x, name='htanh')
+
+   Hard tanh activation function.
+
+   Which is a ramp function with low bound of -1 and upper bound of 1,
+   shortcut is *htanh*.
+
+   Parameters:
+      * **x** (*Tensor*) -- input.
+
+      * **name** (*str*) -- The function name (optional).
+
+   Returns:
+      A "Tensor" in the same type as "x".
+
+   Return type:
+      Tensor
+
+
+Pixel-wise softmax
+==================
+
+tensorlayer.activation.pixel_wise_softmax(x, name='pixel_wise_softmax')
+
+   Return the softmax outputs of images, every pixels have multiple
+   label, the sum of a pixel is 1.
+
+      Warning: **THIS FUNCTION IS DEPRECATED:** It will be removed
+        after after 2018-06-30. *Instructions for updating:* This API
+        will be deprecated soon as tf.nn.softmax can do the same
+        thing.
+
+   Usually be used for image segmentation.
+
+   Parameters:
+      * **x** (*Tensor*) --
+
+        input.
+           * For 2d image, 4D tensor (batch_size, height, weight,
+             channel), where channel >= 2.
+
+           * For 3d image, 5D tensor (batch_size, depth, height,
+             weight, channel), where channel >= 2.
+
+      * **name** (*str*) -- function name (optional)
+
+   Returns:
+      A "Tensor" in the same type as "x".
+
+   Return type:
+      Tensor
+
+   -[ Examples ]-
+
+   >>> outputs = pixel_wise_softmax(network.outputs)
+   >>> dice_loss = 1 - dice_coe(outputs, y_, epsilon=1e-5)
+
+   -[ References ]-
+
+   * tf.reverse
+
+
+Parametric activation
+=====================
+
+See "tensorlayer.layers".
