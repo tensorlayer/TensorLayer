@@ -26,8 +26,8 @@ class TernaryDenseLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
+    # prev_layer : :class:`Layer`
+    #     Previous layer.
     n_units : int
         The number of units of this layer.
     act : activation function
@@ -49,7 +49,7 @@ class TernaryDenseLayer(Layer):
 
     def __init__(
         self,
-        prev_layer,
+        # prev_layer,
         n_units=100,
         act=None,
         gemmlowp_at_inference=False,
@@ -83,10 +83,15 @@ class TernaryDenseLayer(Layer):
         except AttributeError:
             pass
 
+        try:
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
+        except AttributeError:
+            pass
+
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer):
+    def compile(self, prev_layer, is_train=True):
 
         if self._temp_data['inputs'].get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")

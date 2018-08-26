@@ -25,8 +25,8 @@ class BinaryDenseLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
+    # prev_layer : :class:`Layer`
+    #     Previous layer.
     n_units : int
         The number of units of this layer.
     act : activation function
@@ -81,6 +81,11 @@ class BinaryDenseLayer(Layer):
 
         try:
             additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 

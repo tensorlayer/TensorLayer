@@ -90,10 +90,15 @@ class QuantizedDense(Layer):
         except AttributeError:
             pass
 
+        try:
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
+        except AttributeError:
+            pass
+
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer):
+    def compile(self, prev_layer, is_train=True):
 
         if self._temp_data['inputs'].get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
@@ -102,7 +107,7 @@ class QuantizedDense(Layer):
             raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
         n_in = int(self._temp_data['inputs'].get_shape()[-1])
-        self._temp_data['inputs'] = quantize_active_overflow(self._temp_data['inputs'], bitA)
+        self._temp_data['inputs'] = quantize_active_overflow(self._temp_data['inputs'], self.bitA)
 
         with tf.variable_scope(self.name):
 

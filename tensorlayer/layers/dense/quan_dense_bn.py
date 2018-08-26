@@ -103,7 +103,7 @@ class QuantizedDenseWithBN(Layer):
         self.W_init_args = W_init_args
         self.name = name
 
-        super(QuantizedDenseWithBN, self).__init__(prev_layer=prev_layer, W_init_args=W_init_args)
+        super(QuantizedDenseWithBN, self).__init__(W_init_args=W_init_args)
 
     def __str__(self):
         additional_str = []
@@ -115,6 +115,11 @@ class QuantizedDenseWithBN(Layer):
 
         try:
             additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
