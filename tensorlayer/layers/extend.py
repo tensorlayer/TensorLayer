@@ -56,7 +56,7 @@ class ExpandDimsLayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -109,7 +109,7 @@ class TileLayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 

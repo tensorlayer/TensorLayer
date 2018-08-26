@@ -82,8 +82,6 @@ class UnStackLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer
     num : int or None
         The length of the dimension axis. Automatically inferred if None (the default).
     axis : int

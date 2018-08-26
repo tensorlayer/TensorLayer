@@ -106,6 +106,11 @@ class DeConv2d(Layer):
             pass
 
         try:
+            additional_str.append("output_shape: %s" % str(self._temp_data['outputs'].shape))
+        except AttributeError:
+            pass
+
+        try:
             additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
         except AttributeError:
             pass
@@ -222,6 +227,11 @@ class DeConv3d(Layer):
 
         try:
             additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("output_shape: %s" % str(self._temp_data['outputs'].shape))
         except AttributeError:
             pass
 

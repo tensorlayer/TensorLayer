@@ -23,8 +23,6 @@ class PadLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     padding : list of lists of 2 ints, or a Tensor of type int32.
         The int32 values to pad.
     mode : str
@@ -76,7 +74,7 @@ class PadLayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self._temp_data['outputs'].get_shape())
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 
@@ -96,8 +94,6 @@ class ZeroPad1d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     padding : int, or tuple of 2 ints
             - If int, zeros to add at the beginning and end of the padding dimension (axis 1).
             - If tuple of 2 ints, zeros to add at the beginning and at the end of the padding dimension.
@@ -132,7 +128,7 @@ class ZeroPad1d(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -188,7 +184,7 @@ class ZeroPad2d(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -243,7 +239,7 @@ class ZeroPad3d(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 

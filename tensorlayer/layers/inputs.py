@@ -249,7 +249,7 @@ class Word2vecEmbeddingInputlayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self._temp_data['outputs'].get_shape())
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 
@@ -370,7 +370,7 @@ class EmbeddingInputlayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self._temp_data['outputs'].get_shape())
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 
@@ -454,7 +454,7 @@ class AverageEmbeddingInputlayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self._temp_data['outputs'].get_shape())
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 
@@ -463,7 +463,7 @@ class AverageEmbeddingInputlayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        if prev_layer.get_shape().ndims != 2:
+        if self._temp_data['inputs'].get_shape().ndims != 2:
             raise ValueError('inputs must be of size batch_size * batch_sentence_length')
 
         with tf.variable_scope(self.name):

@@ -31,8 +31,6 @@ class ReconLayer(DenseLayer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     x_recon : placeholder or tensor
         The target for reconstruction.
     n_units : int

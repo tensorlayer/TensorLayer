@@ -73,7 +73,6 @@ def atrous_conv1d(
 
     """
     return Conv1dLayer(
-        prev_layer=prev_layer,
         act=act,
         shape=(filter_size, int(prev_layer.outputs.get_shape()[-1]), n_filter),
         stride=stride,
@@ -85,7 +84,7 @@ def atrous_conv1d(
         W_init_args=W_init_args,
         b_init_args=b_init_args,
         name=name,
-    )
+    )(prev_layer)
 
 
 class AtrousConv2dLayer(Layer):
@@ -280,7 +279,7 @@ class AtrousDeConv2dLayer(Layer):
             pass
 
         try:
-            additional_str.append("output_shape: %s" % str(self.out_shape))
+            additional_str.append("output shape: %s" % str(self._temp_data['outputs'].shape))
         except AttributeError:
             pass
 
@@ -313,7 +312,7 @@ class AtrousDeConv2dLayer(Layer):
                 **self.W_init_args
             )
 
-            self.out_shape = compute_deconv2d_output_shape(
+            out_shape = compute_deconv2d_output_shape(
                 self._temp_data['inputs'],
                 self.shape[0],
                 self.shape[1],
@@ -327,7 +326,7 @@ class AtrousDeConv2dLayer(Layer):
             self._temp_data['outputs'] = tf.nn.atrous_conv2d_transpose(
                 self._temp_data['inputs'],
                 filters=weight_matrix,
-                output_shape=self.out_shape,
+                output_shape=out_shape,
                 rate=self.rate,
                 padding=self.padding
             )
@@ -344,7 +343,6 @@ class AtrousDeConv2dLayer(Layer):
                 self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-            #self.out_shape = self._temp_data['outputs'].shape
 
 
 # Alias

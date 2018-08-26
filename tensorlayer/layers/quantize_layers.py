@@ -21,8 +21,6 @@ class SignLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     name : a str
         A unique layer name.
 

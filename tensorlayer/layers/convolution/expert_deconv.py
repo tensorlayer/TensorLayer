@@ -30,8 +30,6 @@ class DeConv2dLayer(Layer):
     shape : tuple of int
         Shape of the filters: (height, width, output_channels, in_channels).
         The filter's ``in_channels`` dimension must match that of value.
-    output_shape : tuple of int
-        Output shape of the deconvolution,
     strides : tuple of int
         The sliding window strides for corresponding input dimensions.
     padding : str
@@ -133,17 +131,17 @@ class DeConv2dLayer(Layer):
             pass
 
         try:
-            additional_str.append("output_shape: %s" % str(self.output_shape))
-        except AttributeError:
-            pass
-
-        try:
             additional_str.append("strides: %s" % str(self.strides))
         except AttributeError:
             pass
 
         try:
             additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("output_shape: %s" % str(self._temp_data['outputs'].shape))
         except AttributeError:
             pass
 
@@ -166,7 +164,7 @@ class DeConv2dLayer(Layer):
                 **self.W_init_args
             )
 
-            self.out_shape = compute_deconv2d_output_shape(
+            out_shape = compute_deconv2d_output_shape(
                 self._temp_data['inputs'],
                 self.shape[0],
                 self.shape[1],
@@ -180,7 +178,7 @@ class DeConv2dLayer(Layer):
             self._temp_data['outputs'] = tf.nn.conv2d_transpose(
                 self._temp_data['inputs'],
                 weight_matrix,
-                output_shape=self.out_shape,
+                output_shape=out_shape,
                 strides=self.strides,
                 padding=self.padding
             )
@@ -208,8 +206,6 @@ class DeConv3dLayer(Layer):
     shape : tuple of int
         The shape of the filters: (depth, height, width, output_channels, in_channels).
         The filter's in_channels dimension must match that of value.
-    output_shape : tuple of int
-        The output shape of the deconvolution.
     strides : tuple of int
         The sliding window strides for corresponding input dimensions.
     padding : str
@@ -268,17 +264,17 @@ class DeConv3dLayer(Layer):
             pass
 
         try:
-            additional_str.append("output_shape: %s" % str(self.output_shape))
-        except AttributeError:
-            pass
-
-        try:
             additional_str.append("strides: %s" % str(self.strides))
         except AttributeError:
             pass
 
         try:
             additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("output_shape: %s" % str(self._temp_data['outputs'].shape))
         except AttributeError:
             pass
 
@@ -302,7 +298,7 @@ class DeConv3dLayer(Layer):
                 **self.W_init_args
             )
 
-            self.out_shape = compute_deconv3d_output_shape(
+            out_shape = compute_deconv3d_output_shape(
                 self._temp_data['inputs'],
                 self.shape[0],
                 self.shape[1],
@@ -318,7 +314,7 @@ class DeConv3dLayer(Layer):
             self._temp_data['outputs'] = tf.nn.conv3d_transpose(
                 self._temp_data['inputs'],
                 weight_matrix,
-                output_shape=self.out_shape,
+                output_shape=out_shape,
                 strides=self.strides,
                 padding=self.padding
             )

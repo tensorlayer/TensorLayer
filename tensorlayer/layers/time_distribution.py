@@ -25,8 +25,6 @@ class TimeDistributedLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer with output size of (batch_size, length, dim).
     layer_class : a :class:`Layer` class
         The layer class name.
     args : dictionary
@@ -56,10 +54,13 @@ class TimeDistributedLayer(Layer):
     """
     def __init__(
         self,
-        layer_class=None,
+        layer_class,
         layer_args=None,
         name='time_distributed',
     ):
+
+        if layer_class is None:
+            raise ValueError('`layer_class` can not be set to `None`')
 
         self.layer_class = layer_class
         self.name = name

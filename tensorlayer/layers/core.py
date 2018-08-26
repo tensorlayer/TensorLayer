@@ -48,10 +48,6 @@ class BaseLayer(object):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer` or None
-        Previous layer (optional), for adding all properties of previous layer(s) to this layer.
-    act : activation function (None by default)
-        The activation function of this layer.
     name : str or None
         A unique layer name.
 
@@ -171,13 +167,8 @@ class Layer(BaseLayer):
         for key in kwargs.keys():
             setattr(self, key, self._argument_dict_checkup(kwargs[key]))
 
-        self.act = self.act if hasattr(self, "act") and self.act not in [None, tf.identity] else None
-
-        if hasattr(self, "prev_layer") and self.prev_layer is not None:
-            if hasattr(self, "is_train"):
-                self.__call__(self.prev_layer, self.is_train)
-            else:
-                self.__call__(self.prev_layer)
+        if hasattr(self, "act"):
+            self.act = self.act if self.act not in [None, tf.identity] else None
 
     # =============================================== #
     #                  PUBLIC METHODS                 #
@@ -357,7 +348,11 @@ class Layer(BaseLayer):
     def _apply_activation(self, logits, **kwargs):
         if not kwargs:
             kwargs = {}
-        return self.act(logits, **kwargs) if self.act is not None else logits
+
+        if hasattr(self, "act"):
+            return self.act(logits, **kwargs) if self.act is not None else logits
+        else:
+            return logits
 
     @private_method
     def _create_compiled_layer(self, is_train):

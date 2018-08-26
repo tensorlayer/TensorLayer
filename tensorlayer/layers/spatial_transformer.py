@@ -28,11 +28,6 @@ class SpatialTransformer2dAffineLayer(Layer):
 
     Parameters
     -----------
-    prev_layer : :class:`Layer`
-        Previous layer.
-    theta_layer : :class:`Layer`
-        The localisation network.
-        - We will use a :class:`DenseLayer` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
     out_size : tuple of int or None
         The size of the output of the network (height, width), the feature maps will be resized by this.
     name : str
@@ -132,20 +127,3 @@ class SpatialTransformer2dAffineLayer(Layer):
 
             # 4. Get all parameters
             self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-    @private_method
-    def _check_inputs(self, prev_layer, theta_layer):
-
-        if isinstance(prev_layer, tl.layers.Layer):
-
-            if theta_layer is None:
-                raise ValueError("`theta_layer` cannot be set to None")
-
-            else:
-                return [prev_layer, theta_layer]
-
-        elif isinstance(prev_layer, (list, tuple)):
-            return prev_layer
-
-        else:
-            return None

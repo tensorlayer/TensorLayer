@@ -49,7 +49,7 @@ class FlattenLayer(Layer):
         additional_str = []
 
         try:
-            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -58,7 +58,7 @@ class FlattenLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        self._temp_data['outputs'] = flatten_reshape(prev_layer.outputs, name=self.name)
+        self._temp_data['outputs'] = flatten_reshape(self._temp_data['inputs'], name=self.name)
 
 
 class ReshapeLayer(Layer):
@@ -96,7 +96,7 @@ class ReshapeLayer(Layer):
         additional_str = []
 
         try:
-            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -105,7 +105,7 @@ class ReshapeLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        self._temp_data['outputs'] = tf.reshape(prev_layer.outputs, shape=self.shape, name=self.name)
+        self._temp_data['outputs'] = tf.reshape(self._temp_data['inputs'], shape=self.shape, name=self.name)
 
 
 class TransposeLayer(Layer):
@@ -149,7 +149,7 @@ class TransposeLayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -158,4 +158,4 @@ class TransposeLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        self._temp_data['outputs'] = tf.transpose(prev_layer.outputs, perm=self.perm, name=self.name)
+        self._temp_data['outputs'] = tf.transpose(self._temp_data['inputs'], perm=self.perm, name=self.name)

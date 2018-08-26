@@ -19,8 +19,6 @@ class ScaleLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     init_scale : float
         The initial value for the scale factor.
     name : a str

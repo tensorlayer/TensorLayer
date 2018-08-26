@@ -301,7 +301,7 @@ class InstanceNormLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        if len(prev_layer.outputs.shape) not in [3, 4]:
+        if len(self._temp_data['inputs'].shape) not in [3, 4]:
             raise RuntimeError("`%s` only accepts input Tensor of dimension 3 or 4." % self.__class__.__name__)
 
         with tf.variable_scope(self.name):
@@ -489,7 +489,7 @@ class SwitchNormLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        if len(prev_layer.outputs.shape) not in [3, 4]:
+        if len(self._temp_data['inputs'].shape) not in [3, 4]:
             raise RuntimeError("`%s` only accepts input Tensor of dimension 3 or 4." % self.__class__.__name__)
 
         with tf.variable_scope(self.name):

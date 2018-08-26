@@ -178,8 +178,6 @@ class EstimatorLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer
     model_fn : function
         A tensor in tensor out function for building model.
     layer_args : dictionary

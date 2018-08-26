@@ -72,7 +72,7 @@ class ConcatLayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self._temp_data['outputs'].get_shape())
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 
@@ -139,7 +139,7 @@ class ElementwiseLayer(Layer):
             pass
 
         try:
-            additional_str.append("out_shape: %s" % self._temp_data['outputs'].get_shape())
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 

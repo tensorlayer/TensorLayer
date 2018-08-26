@@ -21,8 +21,6 @@ class LambdaLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     fn : function
         The function that applies to the outputs of previous layer.
     fn_args : dictionary or None

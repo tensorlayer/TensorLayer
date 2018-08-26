@@ -92,9 +92,6 @@ class Network_Sequential_3D_Test(CustomTestCase):
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
             cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
 
-            print("Train: %s - Type: %s" % (cls.train_model, type(cls.train_model)))
-            print("Test: %s - Type: %s" % (cls.test_model, type(cls.test_model)))
-
     def test_objects_dtype(self):
         self.assertIsInstance(self.train_model, tl.models.CompiledNetwork)
         self.assertIsInstance(self.test_model, tl.models.CompiledNetwork)
