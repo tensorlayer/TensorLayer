@@ -229,20 +229,26 @@ class DownSampling2dLayer(Layer):
                         self._temp_data['inputs'].get_shape()[y_pos]._value
                     ]:
 
-                        size_h = np.ceil(int(self._temp_data['inputs'].get_shape()[x_pos]) / float(self.size[0])).astype(np.int32)
-                        size_w = np.ceil(int(self._temp_data['inputs'].get_shape()[y_pos]) / float(self.size[1])).astype(np.int32)
+                        size_h = np.ceil(int(self._temp_data['inputs'].get_shape()[x_pos]) / float(self.size[0])
+                                        ).astype(np.int32)
+                        size_w = np.ceil(int(self._temp_data['inputs'].get_shape()[y_pos]) / float(self.size[1])
+                                        ).astype(np.int32)
 
                     else:
-                        size_h = np.ceil(tf.shape(self._temp_data['inputs'])[x_pos] / np.float32(self.size[0])).astype(np.int32)
-                        size_w = np.ceil(tf.shape(self._temp_data['inputs'])[y_pos] / np.float32(self.size[1])).astype(np.int32)
+                        size_h = np.ceil(tf.shape(self._temp_data['inputs'])[x_pos] / np.float32(self.size[0])
+                                        ).astype(np.int32)
+                        size_w = np.ceil(tf.shape(self._temp_data['inputs'])[y_pos] / np.float32(self.size[1])
+                                        ).astype(np.int32)
 
                 elif all(isinstance(x, float) for x in self.size):
                     if None not in [
                         self._temp_data['inputs'].get_shape()[x_pos]._value,
                         self._temp_data['inputs'].get_shape()[y_pos]._value
                     ]:
-                        size_h = np.ceil(int(self._temp_data['inputs'].get_shape()[x_pos]) * self.size[0]).astype(np.int32)
-                        size_w = np.ceil(int(self._temp_data['inputs'].get_shape()[y_pos]) * self.size[1]).astype(np.int32)
+                        size_h = np.ceil(int(self._temp_data['inputs'].get_shape()[x_pos]) * self.size[0]
+                                        ).astype(np.int32)
+                        size_w = np.ceil(int(self._temp_data['inputs'].get_shape()[y_pos]) * self.size[1]
+                                        ).astype(np.int32)
                     else:
                         size_h = np.ceil(tf.shape(self._temp_data['inputs'])[x_pos] * self.size[0]).astype(np.int32)
                         size_w = np.ceil(tf.shape(self._temp_data['inputs'])[y_pos] * self.size[1]).astype(np.int32)
