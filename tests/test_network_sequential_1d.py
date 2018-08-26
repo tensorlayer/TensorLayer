@@ -57,16 +57,14 @@ class Network_Sequential_1D_Test(CustomTestCase):
             cls.model.add(tl.layers.DenseLayer(n_units=40, act=tf.nn.relu, name="seq_layer_8"))
             cls.model.add(tl.layers.DropoutLayer(keep=0.5, is_fix=True, name="dropout_layer_8"))
 
-            cls.model.add(tl.layers.DenseLayer(n_units=50, act=tf.nn.relu, name="seq_layer_9"))
+            with tf.variable_scope('test'):
+                cls.model.add(tl.layers.DenseLayer(n_units=50, act=tf.nn.relu, name="seq_layer_9"))
             cls.model.add(tl.layers.DropoutLayer(keep=0.5, is_fix=False, name="dropout_layer_9"))
 
-            cls.model.add(
-                tl.layers.BinaryDenseLayer(
-                    n_units=50,
-                    act=tf.nn.sigmoid,
-                    name='binary_dense'
-                )
-            )
+            # with tf.variable_scope('test', reuse=True): # # TODO:
+            #     cls.model.add(tl.layers.DenseLayer(n_units=50, act=tf.nn.relu, name="seq_layer_9"))
+
+            cls.model.add(tl.layers.BinaryDenseLayer(n_units=50, act=tf.nn.sigmoid, name='binary_dense'))
             cls.model.add(tl.layers.DorefaDenseLayer(n_units=50, name='dorefa_dense'))
             cls.model.add(tl.layers.DropconnectDenseLayer(keep=0.5, n_units=50, name='dropconnect'))
             cls.model.add(tl.layers.QuantizedDenseWithBN(n_units=50, name='quantdensebn'))
@@ -284,7 +282,7 @@ class Network_Sequential_1D_Test(CustomTestCase):
         self.assertEqual(self.train_model["dropout_layer_8"].outputs.shape, (100, 40))
         self.assertEqual(self.test_model["dropout_layer_8"].outputs.shape, (100, 40))
 
-        self.assertEqual(self.train_model["seq_layer_9"].outputs.shape, (100, 50))
+        self.assertEqual(self.train_model["seq_layer_9"].outputs.shape, (100, 50))  # should be `test/seq_layer_9`
         self.assertEqual(self.test_model["seq_layer_9"].outputs.shape, (100, 50))
 
         self.assertEqual(self.train_model["dropout_layer_9"].outputs.shape, (100, 50))
