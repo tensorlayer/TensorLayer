@@ -95,7 +95,7 @@ class ReconLayer(DenseLayer):
         # y : reconstruction outputs; train_params : parameters to train
         # Note that: train_params = [W_encoder, b_encoder, W_decoder, b_encoder]
         y = self._temp_data['outputs']
-        self.train_params = self.all_params[-4:]
+        self.train_params = self.all_weights[-4:]
 
         # =====================================================================
         #
@@ -243,7 +243,7 @@ class ReconLayer(DenseLayer):
                             name=save_name + str(epoch + 1),
                             fig_idx=2012
                         )
-                        files.save_npz([self.all_params[0]], name=save_name + str(epoch + 1) + '.npz')
+                        files.save_npz([self.all_weights[0]], name=save_name + str(epoch + 1) + '.npz')
                     except Exception:
                         raise Exception(
                             "You should change the visualize.W() in ReconLayer.pretrain(), "

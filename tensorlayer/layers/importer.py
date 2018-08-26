@@ -186,13 +186,11 @@ class KerasLayer(Layer):
 
             self._temp_data['outputs'] = self.keras_layer(self._temp_data['inputs'])
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
+            self._temp_data['local_weights'] = self.keras_layer._trainable_weights
 
-            if is_train:
-                self._temp_data['local_weights'] = self.keras_layer._trainable_weights
-
-                for var in self._temp_data['local_weights']:  # Keras does not add the vars to the collection
-                    if var.trainable and var not in tf.get_collection(TF_GRAPHKEYS_VARIABLES):
-                        tf.add_to_collection(name=TF_GRAPHKEYS_VARIABLES, value=var)
+            for var in self._temp_data['local_weights']:  # Keras does not add the vars to the collection
+                if var.trainable and var not in tf.get_collection(TF_GRAPHKEYS_VARIABLES):
+                    tf.add_to_collection(name=TF_GRAPHKEYS_VARIABLES, value=var)
 
 
 

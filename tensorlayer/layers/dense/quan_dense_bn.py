@@ -153,16 +153,16 @@ class QuantizedDenseWithBN(Layer):
                 offset_para = None
 
             moving_mean = self._get_tf_variable(
-                'moving_mean',
-                para_bn_shape,
+                name='moving_mean',
+                shape=para_bn_shape,
                 initializer=tf.constant_initializer(1.),
                 dtype=self._temp_data['inputs'].dtype,
                 trainable=False
             )
 
             moving_variance = self._get_tf_variable(
-                'moving_variance',
-                para_bn_shape,
+                name='moving_variance',
+                shape=para_bn_shape,
                 initializer=tf.constant_initializer(1.),
                 dtype=self._temp_data['inputs'].dtype,
                 trainable=False,

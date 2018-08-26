@@ -147,7 +147,7 @@ def fit(
 
         #Set up summary nodes
         if (tensorboard_weight_histograms):
-            for param in network.all_params:
+            for param in network.all_weights:
                 if hasattr(tf, 'summary') and hasattr(tf.summary, 'histogram'):
                     tl.logging.info('Param name %s' % param.name)
                     tf.summary.histogram(param.name, param)

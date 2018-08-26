@@ -37,14 +37,14 @@ print("\n#################### TEST Train Model ######################\n")
 print(train_model)
 #pprint.pprint(train_model.__dict__)
 pprint.pprint(train_model.all_layers)
-pprint.pprint(train_model.all_params)
+pprint.pprint(train_model.all_weights)
 
 print("\n################### TEST Test Model #######################\n")
 
 print(test_model)
 #pprint.pprint(test_model.__dict__)
 pprint.pprint(test_model.all_layers)
-pprint.pprint(train_model.all_params)
+pprint.pprint(train_model.all_weights)
 
 print("\n################### TEST Get Layer by Name #######################\n")
 

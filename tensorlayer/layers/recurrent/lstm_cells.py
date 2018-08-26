@@ -38,11 +38,11 @@ class BasicConvLSTMCell(ConvRNNCell):
     ):
         """Initialize the basic Conv LSTM cell."""
         # if not state_is_tuple:
-        # logging.warn("%s: Using a concatenated state is slower and will soon be "
+        # logging.warning("%s: Using a concatenated state is slower and will soon be "
         #             "deprecated.  Use state_is_tuple=True.", self)
 
         if input_size is not None:
-            logging.warn("%s: The input_size parameter is deprecated.", self)
+            logging.warning("%s: The input_size parameter is deprecated.", self)
 
         self.shape = shape
         self.filter_size = filter_size

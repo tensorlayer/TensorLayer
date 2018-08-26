@@ -32,22 +32,22 @@ class Layer_Convolution_3D_Test(unittest.TestCase):
     def test_layer_n1(self):
 
         self.assertEqual(len(self.n1.all_layers), 2)
-        self.assertEqual(len(self.n1.all_params), 2)
-        self.assertEqual(self.n1.count_params(), 800)
+        self.assertEqual(len(self.n1.all_weights), 2)
+        self.assertEqual(self.n1.count_weights(), 800)
         self.assertEqual(self.n1.outputs.get_shape().as_list()[1:], [50, 50, 50, 32])
 
     def test_layer_n2(self):
 
         self.assertEqual(len(self.n2.all_layers), 3)
-        self.assertEqual(len(self.n2.all_params), 4)
-        self.assertEqual(self.n2.count_params(), 33696)
+        self.assertEqual(len(self.n2.all_weights), 4)
+        self.assertEqual(self.n2.count_weights(), 33696)
         self.assertEqual(self.n2.outputs.get_shape().as_list()[1:], [99, 99, 99, 128])
 
     def test_layer_n3(self):
 
         self.assertEqual(len(self.n3.all_layers), 4)
-        self.assertEqual(len(self.n3.all_params), 6)
-        self.assertEqual(self.n3.count_params(), 144320)
+        self.assertEqual(len(self.n3.all_weights), 6)
+        self.assertEqual(self.n3.count_weights(), 144320)
         self.assertEqual(self.n3.outputs.get_shape().as_list()[1:], [199, 199, 199, 32])
 
 

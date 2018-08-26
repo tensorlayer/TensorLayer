@@ -418,7 +418,7 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
 
     Examples
     --------
-    >>> tl.visualize.CNN2d(network.all_params[0].eval(), second=10, saveable=True, name='cnn1_mnist', fig_idx=2012)
+    >>> tl.visualize.CNN2d(network.all_weights[0].eval(), second=10, saveable=True, name='cnn1_mnist', fig_idx=2012)
 
     """
     import matplotlib.pyplot as plt
@@ -621,7 +621,7 @@ def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig
 
     Examples
     --------
-    >>> tl.visualize.draw_weights(network.all_params[0].eval(), second=10, saveable=True, name='weight_of_1st_layer', fig_idx=2012)
+    >>> tl.visualize.draw_weights(network.all_weights[0].eval(), second=10, saveable=True, name='weight_of_1st_layer', fig_idx=2012)
 
     """
     if shape is None:

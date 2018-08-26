@@ -41,7 +41,7 @@ class Layer_Pooling_Test(CustomTestCase):
         cls.acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
         # define the optimizer
-        train_params = cls.network.all_params
+        train_params = cls.network.all_weights
         optimizer = tl.optimizers.AMSGrad(learning_rate=1e-4, beta1=0.9, beta2=0.999, epsilon=1e-8)
         cls.train_op = optimizer.minimize(cls.cost, var_list=train_params)
 

@@ -12,11 +12,10 @@ import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 
-from tensorlayer.utils import list_remove_repeat
-
 from tensorlayer import logging
 
 from tensorlayer.decorators import auto_reset_temp_attrs
+from tensorlayer.decorators import deprecated
 from tensorlayer.decorators import layer_autoregister
 from tensorlayer.decorators import overwrite_layername_in_network
 from tensorlayer.decorators import protected_method
@@ -58,7 +57,7 @@ class BaseLayer(object):
 
     Methods
     ---------
-    print_params(details=True, session=None)
+    print_weights(details=True, session=None)
         Print all parameters of this network.
     print_layers()
         Print all outputs of all layers of this network.
@@ -85,7 +84,7 @@ class BaseLayer(object):
     >>> n.print_layers()
     [TL]   layer   0: d1/Identity:0        (?, 80)            float32
     [TL]   layer   1: d2/Identity:0        (?, 80)            float32
-    >>> n.print_params(False)
+    >>> n.print_weights(False)
     [TL]   param   0: d1/W:0               (100, 80)          float32_ref
     [TL]   param   1: d1/b:0               (80,)              float32_ref
     [TL]   param   2: d2/W:0               (80, 80)           float32_ref
@@ -130,7 +129,7 @@ class BaseLayer(object):
         net_new._add_layers(self.all_layers[:-1])
         net_new._add_layers(net_new.outputs)
 
-        net_new._add_params(self.all_params)
+        net_new._add_params(self.all_weights)
         net_new._add_graphs(self.all_graphs)
         net_new._add_dropout_layers(self.all_drop)
         '''
@@ -314,7 +313,17 @@ class Layer(BaseLayer):
         self.graph.update(self.layer_args)
 
         self._add_graphs((self.name, self.graph))
-        '''
+    '''
+
+    @private_method
+    def _check_list_input(self, layer_list):
+        if not isinstance(layer_list, (tuple, list)):
+            raise ValueError('`layer_list` should be of type `list` or `tuple`')
+
+        elif not all(isinstance(layer, CompiledLayer) for layer in layer_list):
+            raise ValueError("`layer_list` should be a list of `CompiledLayer`")
+        else:
+            return layer_list
 
     @private_method
     def _check_self_is_input(self):
@@ -380,7 +389,7 @@ class Layer(BaseLayer):
     def _get_tf_variable(
         self,
         name,
-        dtype,
+        dtype=None,
         shape=None,
         initializer=None,
         regularizer=None,
@@ -393,7 +402,7 @@ class Layer(BaseLayer):
         custom_getter=None,
         constraint=None
     ):
-        if "inputs" in self._temp_data.keys() and isinstance(self._temp_data['inputs'], tf.Tensor):
+        if dtype is None:
             dtype = self._temp_data['inputs'].dtype
 
         w = tf.get_variable(
@@ -498,11 +507,11 @@ class Layer(BaseLayer):
         '''
         if isinstance(params, list):
             for param in params:
-                if param not in self.all_params:
-                    self.all_params.append(param)
+                if param not in self.all_weights:
+                    self.all_weights.append(param)
 
-        elif params not in self.all_params:
-            self.all_params.append(params)
+        elif params not in self.all_weights:
+            self.all_weights.append(params)
         '''
 
     @protected_method
@@ -543,38 +552,12 @@ class Layer(BaseLayer):
         pass
         '''
         _params = []
-        for p in self.all_params:
+        for p in self.all_weights:
             if session is None:
                 _params.append(p.eval())
             else:
                 _params.append(session.run(p))
         return _params
-        '''
-
-    # should be renamed `print_weights`
-    def print_params(self, details=True, session=None):
-        """Print all info of parameters in the network"""
-        tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, 'print_params'))
-        pass
-        '''
-        for i, p in enumerate(self.all_params):
-            if details:
-                try:
-                    val = p.eval(session=session)
-                    logging.info(
-                        "  param {:3}: {:20} {:15}    {} (mean: {:<18}, median: {:<18}, std: {:<18})   ".format(
-                            i, p.name, str(val.shape), p.dtype.name, val.mean(), np.median(val), val.std()
-                        )
-                    )
-                except Exception as e:
-                    logging.info(str(e))
-                    raise Exception(
-                        "Hint: print params details after tl.layers.initialize_global_variables(sess) "
-                        "or use network.print_params(False)."
-                    )
-            else:
-                logging.info("  param {:3}: {:20} {:15}    {}".format(i, p.name, str(p.get_shape()), p.dtype.name))
-        logging.info("  num of params: %d" % self.count_params())
         '''
 
     # should be renamed `print_network`
@@ -649,8 +632,34 @@ class CompiledLayer(object):
                 "An attempt to modify the attribute: `{}` has been detected.".format(self.__class__.__name__, key)
             )
 
-    def count_params(self):
-        """Returns the number of parameters in the network."""
+        def count_weights(self):
+            """Returns the number of parameters in the network."""
+            n_params = 0
+
+            for _i, p in enumerate(self.local_weights):
+
+                n = 1
+                # for s in p.eval().shape:
+                for s in p.get_shape():
+
+                    try:
+                        s = int(s)
+                    except TypeError:
+                        s = 1
+
+                    if s:
+                        n = n * s
+
+                n_params = n_params + n
+
+            return n_params
+
+    # =============================================== #
+    #                  PUBLIC METHODS                 #
+    # =============================================== #
+
+    def count_weights(self):
+        """Returns the number of weights in the network."""
         n_params = 0
 
         for _i, p in enumerate(self.local_weights):
@@ -661,7 +670,7 @@ class CompiledLayer(object):
 
                 try:
                     s = int(s)
-                except TypeError:
+                except (TypeError, ValueError):
                     s = 1
 
                 if s:
@@ -670,3 +679,46 @@ class CompiledLayer(object):
             n_params = n_params + n
 
         return n_params
+
+    # should be renamed `print_weights`
+    def print_weights(self, details=True, session=None):
+        """Print all info of weights in the network"""
+
+        for i, p in enumerate(self.local_weights):
+            if details:
+                try:
+                    val = p.eval(session=session)
+                    logging.info(
+                        "  weight {:3}: {:20} {:15}    {} (mean: {:<18}, median: {:<18}, std: {:<18})   ".format(
+                            i, p.name, str(val.shape), p.dtype.name, val.mean(), np.median(val), val.std()
+                        )
+                    )
+                except Exception as e:
+                    logging.info(str(e))
+                    raise Exception(
+                        "Hint: print_weights can only be used after the session have been initialized "
+                        "or use network.print_weights(False)."
+                    )
+            else:
+                logging.info("  weight {:3}: {:20} {:15}    {}".format(i, p.name, str(p.get_shape()), p.dtype.name))
+        logging.info("  num of weights: %d" % self.count_params())
+
+    # =============================================== #
+    #              TO BE REMOVED/MOVED                #
+    # =============================================== #
+
+    @deprecated(
+        end_support_version="2.1.0",
+        instructions="`count_params` has been deprecated in favor of `count_weights`"
+    )  # TODO: remove this line before releasing TL 2.1.0
+    def count_params(self):
+        """Returns the number of parameters in the network"""
+        return self.count_weights()
+
+    @deprecated(
+        end_support_version="2.1.0",
+        instructions="`count_params` has been deprecated in favor of `count_weights`"
+    )  # TODO: remove this line before releasing TL 2.1.0
+    def print_params(self):
+        """Returns the number of parameters in the network"""
+        return self.count_weights()

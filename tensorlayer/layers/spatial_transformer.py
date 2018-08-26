@@ -89,9 +89,7 @@ class SpatialTransformer2dAffineLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, theta_layer=None, is_train=True):
 
-        super(SpatialTransformer2dAffineLayer, self).compile(self._check_inputs(prev_layer, theta_layer))
-
-        input_layer = self._temp_data['inputs'][0].outputs
+        input_layer = self._temp_data['inputs'][0]
         theta_layer = self._temp_data['inputs'][1]
 
         with tf.variable_scope(self.name) as vs:

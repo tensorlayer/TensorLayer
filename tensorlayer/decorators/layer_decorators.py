@@ -61,7 +61,13 @@ def auto_parse_inputs(method):
 
     @wraps(method)
     def _impl(self, *args, **kwargs):
-        super(self.__class__, self).compile(args[0])  # args[0] => prev_layer
+
+        if len(args) == 2:
+            prev_layer = args[0]  # args[0] => prev_layer
+        else:
+            prev_layer = self._check_list_input(args[:-1])
+
+        super(self.__class__, self).compile(prev_layer)
 
         return method(self, *args, **kwargs)
 

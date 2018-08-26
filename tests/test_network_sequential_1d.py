@@ -154,97 +154,190 @@ class Network_Sequential_1D_Test(CustomTestCase):
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
             cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
 
+            print("Train: %s - Type: %s" % (cls.train_model, type(cls.train_model)))
+            print("Test: %s - Type: %s" % (cls.test_model, type(cls.test_model)))
+
     def test_get_all_drop_plh(self):
         self.assertEqual(len(self.train_model.all_drop), 1)
+        self.assertEqual(len(self.test_model.all_drop), 0)  # In test mode, No Dropout
 
-    def test_count_params(self):
-        self.assertEqual(self.train_model.count_params(), 34193)
+        with self.assertRaises((AttributeError, AssertionError)):
+            self.assertEqual(len(self.model.all_drop), 0)
 
-    def test_count_param_tensors(self):
-        self.assertEqual(len(self.train_model.all_params), 48)
+    def test_count_weights(self):
+        self.assertEqual(self.train_model.count_weights(), 34193)
+        self.assertEqual(self.test_model.count_weights(), 34193)
+
+        with self.assertRaises((AttributeError, AssertionError)):
+            self.assertEqual(self.model.count_weights(), 34193)
+
+    def test_count_weights_tensors(self):
+        self.assertEqual(len(self.train_model.get_all_weights()), 48)
+        self.assertEqual(len(self.test_model.get_all_weights()), 48)
+
+        with self.assertRaises((AttributeError, AssertionError)):
+            self.assertEqual(len(self.model.get_all_weights()), 48)
 
     def test_count_layers(self):
-        self.assertEqual(len(self.train_model.all_layers), 44)
 
-    '''
+        for layer in self.train_model.all_layers:
+            if self.train_model[layer].local_weights != self.test_model[layer].local_weights or layer == 'seq_layer_11':
+                print("\nLayer [%s]:")
+                print("[train]:", self.train_model[layer].local_weights)
+                print("[test]:", self.test_model[layer].local_weights)
+
+        self.assertEqual(self.train_model.count_layers(), 44)
+        self.assertEqual(self.test_model.count_layers(), 44)
+        self.assertEqual(self.model.count_layers(), 44)
+
     def test_network_dtype(self):
 
         with self.assertNotRaises(RuntimeError):
 
-            for layer_name in self.model.all_layers_dict.keys():
-                if self.model[layer_name].outputs.dtype != tf.float16:
+            for layer_name in self.train_model.all_layers:
+
+                if self.train_model[layer_name].outputs.dtype != tf.float16:
                     raise RuntimeError(
-                        "Layer `%s` has an output of type %s, expected %s" %
-                        (layer_name, self.model[layer_name].outputs.dtype, tf.float16)
+                        "[Train Model] - Layer `%s` has an output of type %s, expected %s" %
+                        (layer_name, self.train_model[layer_name].outputs.dtype, tf.float16)
+                    )
+
+                if self.test_model[layer_name].outputs.dtype != tf.float16:
+                    raise RuntimeError(
+                        "[Test Model] - Layer `%s` has an output of type %s, expected %s" %
+                        (layer_name, self.test_model[layer_name].outputs.dtype, tf.float16)
                     )
 
     def test_network_shapes(self):
 
-        self.assertEqual(self.model["input_layer"].outputs.shape, (100, 32))
+        self.assertEqual(self.train_model["input_layer"].outputs.shape, (100, 32))
+        self.assertEqual(self.test_model["input_layer"].outputs.shape, (100, 32))
 
-        self.assertEqual(self.model["expand_layer_1"].outputs.shape, (100, 1, 32))
-        self.assertEqual(self.model["flatten_layer_1"].outputs.shape, (100, 32))
+        self.assertEqual(self.train_model["expand_layer_1"].outputs.shape, (100, 1, 32))
+        self.assertEqual(self.test_model["expand_layer_1"].outputs.shape, (100, 1, 32))
 
-        self.assertEqual(self.model["expand_layer_2"].outputs.shape, (100, 32, 1))
-        self.assertEqual(self.model["tile_layer_2"].outputs.shape, (100, 32, 3))
-        self.assertEqual(self.model["transpose_layer_2"].outputs.shape, (100, 3, 32))
-        self.assertEqual(self.model["flatten_layer_2"].outputs.shape, (100, 96))
+        self.assertEqual(self.train_model["flatten_layer_1"].outputs.shape, (100, 32))
+        self.assertEqual(self.test_model["flatten_layer_1"].outputs.shape, (100, 32))
 
-        self.assertEqual(self.model["seq_layer_1"].outputs.shape, (100, 10))
+        self.assertEqual(self.train_model["expand_layer_2"].outputs.shape, (100, 32, 1))
+        self.assertEqual(self.test_model["expand_layer_2"].outputs.shape, (100, 32, 1))
 
-        self.assertEqual(self.model["seq_layer_2"].outputs.shape, (100, 20))
-        self.assertEqual(self.model["prelu_layer_2"].outputs.shape, (100, 20))
+        self.assertEqual(self.train_model["tile_layer_2"].outputs.shape, (100, 32, 3))
+        self.assertEqual(self.test_model["tile_layer_2"].outputs.shape, (100, 32, 3))
 
-        self.assertEqual(self.model["seq_layer_3"].outputs.shape, (100, 30))
-        self.assertEqual(self.model["prelu_layer_3"].outputs.shape, (100, 30))
+        self.assertEqual(self.train_model["transpose_layer_2"].outputs.shape, (100, 3, 32))
+        self.assertEqual(self.test_model["transpose_layer_2"].outputs.shape, (100, 3, 32))
 
-        self.assertEqual(self.model["seq_layer_4"].outputs.shape, (100, 40))
-        self.assertEqual(self.model["prelu6_layer_4"].outputs.shape, (100, 40))
+        self.assertEqual(self.train_model["flatten_layer_2"].outputs.shape, (100, 96))
+        self.assertEqual(self.test_model["flatten_layer_2"].outputs.shape, (100, 96))
 
-        self.assertEqual(self.model["seq_layer_5"].outputs.shape, (100, 50))
-        self.assertEqual(self.model["prelu6_layer_5"].outputs.shape, (100, 50))
+        self.assertEqual(self.train_model["seq_layer_1"].outputs.shape, (100, 10))
+        self.assertEqual(self.test_model["seq_layer_1"].outputs.shape, (100, 10))
 
-        self.assertEqual(self.model["seq_layer_6"].outputs.shape, (100, 40))
-        self.assertEqual(self.model["ptrelu6_layer_6"].outputs.shape, (100, 40))
+        self.assertEqual(self.train_model["seq_layer_2"].outputs.shape, (100, 20))
+        self.assertEqual(self.test_model["seq_layer_2"].outputs.shape, (100, 20))
 
-        self.assertEqual(self.model["seq_layer_7"].outputs.shape, (100, 50))
-        self.assertEqual(self.model["ptrelu6_layer_7"].outputs.shape, (100, 50))
+        self.assertEqual(self.train_model["prelu_layer_2"].outputs.shape, (100, 20))
+        self.assertEqual(self.test_model["prelu_layer_2"].outputs.shape, (100, 20))
 
-        self.assertEqual(self.model["seq_layer_8"].outputs.shape, (100, 40))
-        self.assertEqual(self.model["dropout_layer_8"].outputs.shape, (100, 40))
+        self.assertEqual(self.train_model["seq_layer_3"].outputs.shape, (100, 30))
+        self.assertEqual(self.test_model["seq_layer_3"].outputs.shape, (100, 30))
 
-        self.assertEqual(self.model["seq_layer_9"].outputs.shape, (100, 50))
-        self.assertEqual(self.model["dropout_layer_9"].outputs.shape, (100, 50))
+        self.assertEqual(self.train_model["prelu_layer_3"].outputs.shape, (100, 30))
+        self.assertEqual(self.test_model["prelu_layer_3"].outputs.shape, (100, 30))
 
-        self.assertEqual(self.model["seq_layer_10"].outputs.shape, (100, 50))
+        self.assertEqual(self.train_model["seq_layer_4"].outputs.shape, (100, 40))
+        self.assertEqual(self.test_model["seq_layer_4"].outputs.shape, (100, 40))
 
-        self.assertEqual(self.model["seq_layer_11"].outputs.shape, (100, 256))
-        self.assertEqual(self.model["lambda_layer_11"].outputs.shape, (100, 256))
-        self.assertEqual(self.model["noise_layer_11"].outputs.shape, (100, 256))
-        self.assertEqual(self.model["batchnorm_layer_11"].outputs.shape, (100, 256))
+        self.assertEqual(self.train_model["prelu6_layer_4"].outputs.shape, (100, 40))
+        self.assertEqual(self.test_model["prelu6_layer_4"].outputs.shape, (100, 40))
 
-        self.assertEqual(self.model["expand_layer_12"].outputs.shape, (100, 256, 1))
-        self.assertEqual(self.model["pad_layer_12"].outputs.shape, (100, 264, 1))
-        self.assertEqual(self.model["zeropad1d_layer_12-1"].outputs.shape, (100, 266, 1))
-        self.assertEqual(self.model["zeropad1d_layer_12-2"].outputs.shape, (100, 271, 1))
-        self.assertEqual(self.model["reshape_layer_12"].outputs.shape, (100, 271))
-        self.assertEqual(self.model["scale_layer_12"].outputs.shape, (100, 271))
+        self.assertEqual(self.train_model["seq_layer_5"].outputs.shape, (100, 50))
+        self.assertEqual(self.test_model["seq_layer_5"].outputs.shape, (100, 50))
 
-        self.assertEqual(self.model["reshape_layer_13"].outputs.shape, (100, 271, 1))
-        self.assertEqual(self.model["conv1d_layer_13"].outputs.shape, (100, 271, 12))
+        self.assertEqual(self.train_model["prelu6_layer_5"].outputs.shape, (100, 50))
+        self.assertEqual(self.test_model["prelu6_layer_5"].outputs.shape, (100, 50))
 
-        self.assertEqual(self.model["conv1d_layer_14"].outputs.shape, (100, 271, 24))
+        self.assertEqual(self.train_model["seq_layer_6"].outputs.shape, (100, 40))
+        self.assertEqual(self.test_model["seq_layer_6"].outputs.shape, (100, 40))
 
-        self.assertEqual(self.model["conv1d_layer_15"].outputs.shape, (100, 271, 12))
+        self.assertEqual(self.train_model["ptrelu6_layer_6"].outputs.shape, (100, 40))
+        self.assertEqual(self.test_model["ptrelu6_layer_6"].outputs.shape, (100, 40))
 
-        self.assertEqual(self.model["conv1d_layer_16"].outputs.shape, (100, 271, 8))
+        self.assertEqual(self.train_model["seq_layer_7"].outputs.shape, (100, 50))
+        self.assertEqual(self.test_model["seq_layer_7"].outputs.shape, (100, 50))
 
-        self.assertEqual(self.model["subpixelconv1d_layer_17"].outputs.shape, (100, 542, 4))
+        self.assertEqual(self.train_model["ptrelu6_layer_7"].outputs.shape, (100, 50))
+        self.assertEqual(self.test_model["ptrelu6_layer_7"].outputs.shape, (100, 50))
 
-        self.assertEqual(self.model["separableconv1d_layer_18"].outputs.shape, (100, 542, 8))
+        self.assertEqual(self.train_model["seq_layer_8"].outputs.shape, (100, 40))
+        self.assertEqual(self.test_model["seq_layer_8"].outputs.shape, (100, 40))
 
-        self.assertEqual(self.model["separableconv1d_layer_19"].outputs.shape, (100, 542, 4))
-    '''
+        self.assertEqual(self.train_model["dropout_layer_8"].outputs.shape, (100, 40))
+        self.assertEqual(self.test_model["dropout_layer_8"].outputs.shape, (100, 40))
+
+        self.assertEqual(self.train_model["seq_layer_9"].outputs.shape, (100, 50))
+        self.assertEqual(self.test_model["seq_layer_9"].outputs.shape, (100, 50))
+
+        self.assertEqual(self.train_model["dropout_layer_9"].outputs.shape, (100, 50))
+        self.assertEqual(self.test_model["dropout_layer_9"].outputs.shape, (100, 50))
+
+        self.assertEqual(self.train_model["seq_layer_10"].outputs.shape, (100, 50))
+        self.assertEqual(self.test_model["seq_layer_10"].outputs.shape, (100, 50))
+
+        self.assertEqual(self.train_model["seq_layer_11"].outputs.shape, (100, 256))
+        self.assertEqual(self.test_model["seq_layer_11"].outputs.shape, (100, 256))
+
+        self.assertEqual(self.train_model["lambda_layer_11"].outputs.shape, (100, 256))
+        self.assertEqual(self.test_model["lambda_layer_11"].outputs.shape, (100, 256))
+
+        self.assertEqual(self.train_model["noise_layer_11"].outputs.shape, (100, 256))
+        self.assertEqual(self.test_model["noise_layer_11"].outputs.shape, (100, 256))
+
+        self.assertEqual(self.train_model["batchnorm_layer_11"].outputs.shape, (100, 256))
+        self.assertEqual(self.test_model["batchnorm_layer_11"].outputs.shape, (100, 256))
+
+        self.assertEqual(self.train_model["expand_layer_12"].outputs.shape, (100, 256, 1))
+        self.assertEqual(self.test_model["expand_layer_12"].outputs.shape, (100, 256, 1))
+
+        self.assertEqual(self.train_model["pad_layer_12"].outputs.shape, (100, 264, 1))
+        self.assertEqual(self.test_model["pad_layer_12"].outputs.shape, (100, 264, 1))
+
+        self.assertEqual(self.train_model["zeropad1d_layer_12-1"].outputs.shape, (100, 266, 1))
+        self.assertEqual(self.test_model["zeropad1d_layer_12-1"].outputs.shape, (100, 266, 1))
+
+        self.assertEqual(self.train_model["zeropad1d_layer_12-2"].outputs.shape, (100, 271, 1))
+        self.assertEqual(self.test_model["zeropad1d_layer_12-2"].outputs.shape, (100, 271, 1))
+
+        self.assertEqual(self.train_model["reshape_layer_12"].outputs.shape, (100, 271))
+        self.assertEqual(self.test_model["reshape_layer_12"].outputs.shape, (100, 271))
+
+        self.assertEqual(self.train_model["scale_layer_12"].outputs.shape, (100, 271))
+        self.assertEqual(self.test_model["scale_layer_12"].outputs.shape, (100, 271))
+
+        self.assertEqual(self.train_model["reshape_layer_13"].outputs.shape, (100, 271, 1))
+        self.assertEqual(self.test_model["reshape_layer_13"].outputs.shape, (100, 271, 1))
+
+        self.assertEqual(self.train_model["conv1d_layer_13"].outputs.shape, (100, 271, 12))
+        self.assertEqual(self.test_model["conv1d_layer_13"].outputs.shape, (100, 271, 12))
+
+        self.assertEqual(self.train_model["conv1d_layer_14"].outputs.shape, (100, 271, 24))
+        self.assertEqual(self.test_model["conv1d_layer_14"].outputs.shape, (100, 271, 24))
+
+        self.assertEqual(self.train_model["conv1d_layer_15"].outputs.shape, (100, 271, 12))
+        self.assertEqual(self.test_model["conv1d_layer_15"].outputs.shape, (100, 271, 12))
+
+        self.assertEqual(self.train_model["conv1d_layer_16"].outputs.shape, (100, 271, 8))
+        self.assertEqual(self.test_model["conv1d_layer_16"].outputs.shape, (100, 271, 8))
+
+        self.assertEqual(self.train_model["subpixelconv1d_layer_17"].outputs.shape, (100, 542, 4))
+        self.assertEqual(self.test_model["subpixelconv1d_layer_17"].outputs.shape, (100, 542, 4))
+
+        self.assertEqual(self.train_model["separableconv1d_layer_18"].outputs.shape, (100, 542, 8))
+        self.assertEqual(self.test_model["separableconv1d_layer_18"].outputs.shape, (100, 542, 8))
+
+        self.assertEqual(self.train_model["separableconv1d_layer_19"].outputs.shape, (100, 542, 4))
+        self.assertEqual(self.test_model["separableconv1d_layer_19"].outputs.shape, (100, 542, 4))
 
 
 if __name__ == '__main__':

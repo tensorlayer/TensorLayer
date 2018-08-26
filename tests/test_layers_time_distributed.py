@@ -40,7 +40,7 @@ class Layer_Time_Distributed_Test(CustomTestCase):
         net = model(cls.x, is_train=True, reuse=False)
 
         cls.net_shape = net.outputs.get_shape().as_list()
-        cls.n_params = net.count_params()
+        cls.n_params = net.count_weights()
         net.print_params(False)
 
     @classmethod

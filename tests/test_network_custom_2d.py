@@ -79,64 +79,74 @@ class CustomNetwork_2D_Test(CustomTestCase):
         self.assertEqual(len(self.train_model.all_drop), 0)
         self.assertEqual(len(self.test_model.all_drop), 0)
 
-        with self.assertRaises(Exception):
+        with self.assertRaises((AttributeError, AssertionError)):
             self.assertEqual(len(self.model.all_drop), 0)
 
-    def test_count_params(self):
-        self.assertEqual(self.train_model.count_params(), 6725)
-        self.assertEqual(self.test_model.count_params(), 6725)
+    def test_count_weights(self):
+        self.assertEqual(self.train_model.count_weights(), 17152)
+        self.assertEqual(self.test_model.count_weights(), 17152)
 
-        with self.assertRaises([AttributeError, AssertionError]):
-            self.assertEqual(self.model.count_params(), 6725)
+        with self.assertRaises((AttributeError, AssertionError)):
+            self.assertEqual(self.model.count_weights(), 17152)
 
-    def test_count_param_tensors(self):
-        self.assertEqual(len(self.train_model.get_all_params()), 10)
-        self.assertEqual(len(self.test_model.get_all_params()), 10)
+    def test_count_weight_tensors(self):
+        self.assertEqual(len(self.train_model.get_all_weights()), 12)
+        self.assertEqual(len(self.test_model.get_all_weights()), 12)
 
-        with self.assertRaises(Exception):
-            self.assertEqual(len(self.model.get_all_params()), 10)
+        with self.assertRaises((AttributeError, AssertionError)):
+            self.assertEqual(len(self.model.get_all_weights()), 12)
 
     def test_count_layers(self):
-        self.assertEqual(self.train_model.count_layers(), 13)
-        self.assertEqual(self.test_model.count_layers(), 13)
-        self.assertEqual(self.model.count_layers(), 13)
+        self.assertEqual(self.train_model.count_layers(), 9)
+        self.assertEqual(self.test_model.count_layers(), 9)
+        self.assertEqual(self.model.count_layers(), 9)
 
-    '''
     def test_network_dtype(self):
 
         with self.assertNotRaises(RuntimeError):
 
-            for layer_name in self.model.all_layers_dict.keys():
-                if self.model[layer_name].outputs.dtype != tf.float16:
+            for layer_name in self.train_model.all_layers:
+
+                if self.train_model[layer_name].outputs.dtype != tf.float16:
                     raise RuntimeError(
-                        "Layer `%s` has an output of type %s, expected %s" %
-                        (layer_name, self.model[layer_name].outputs.dtype, tf.float16)
+                        "[Train Model] - Layer `%s` has an output of type %s, expected %s" %
+                        (layer_name, self.train_model[layer_name].outputs.dtype, tf.float16)
+                    )
+
+                if self.test_model[layer_name].outputs.dtype != tf.float16:
+                    raise RuntimeError(
+                        "[Test Model] - Layer `%s` has an output of type %s, expected %s" %
+                        (layer_name, self.test_model[layer_name].outputs.dtype, tf.float16)
                     )
 
     def test_network_shapes(self):
 
-        self.assertEqual(self.model["input_layer"].outputs.shape, (100, 16, 16, 16))
+        self.assertEqual(self.train_model["input_layer"].outputs.shape, (100, 16, 16, 3))
+        self.assertEqual(self.test_model["input_layer"].outputs.shape, (100, 16, 16, 3))
 
-        self.assertEqual(self.model["reshape_layer_1"].outputs.shape, (100, 16, 16, 16, 1))
+        self.assertEqual(self.train_model["fire_module_1/squeeze"].outputs.shape, (100, 16, 16, 32))
+        self.assertEqual(self.test_model["fire_module_1/squeeze"].outputs.shape, (100, 16, 16, 32))
 
-        self.assertEqual(self.model["pad_layer_2"].outputs.shape, (100, 24, 22, 20, 1))
-        self.assertEqual(self.model["zeropad3d_layer_2-1"].outputs.shape, (100, 28, 26, 24, 1))
-        self.assertEqual(self.model["zeropad3d_layer_2-2"].outputs.shape, (100, 32, 30, 28, 1))
-        self.assertEqual(self.model["zeropad3d_layer_2-3"].outputs.shape, (100, 36, 36, 36, 1))
-        self.assertEqual(self.model["scale_layer_2"].outputs.shape, (100, 36, 36, 36, 1))
+        self.assertEqual(self.train_model["fire_module_1/e1x1"].outputs.shape, (100, 16, 16, 24))
+        self.assertEqual(self.test_model["fire_module_1/e1x1"].outputs.shape, (100, 16, 16, 24))
 
-        self.assertEqual(self.model["conv3d_layer_3"].outputs.shape, (100, 36, 36, 36, 8))
+        self.assertEqual(self.train_model["fire_module_1/e3x3"].outputs.shape, (100, 16, 16, 24))
+        self.assertEqual(self.test_model["fire_module_1/e3x3"].outputs.shape, (100, 16, 16, 24))
 
-        self.assertEqual(self.model["conv3d_layer_4"].outputs.shape, (100, 36, 36, 36, 16))
+        self.assertEqual(self.train_model["fire_module_1/concat"].outputs.shape, (100, 16, 16, 48))
+        self.assertEqual(self.test_model["fire_module_1/concat"].outputs.shape, (100, 16, 16, 48))
 
-        self.assertEqual(self.model["expert_deconv3d_layer_5"].outputs.shape, (100, 71, 71, 71, 8))
+        self.assertEqual(self.train_model["fire_module_2/squeeze"].outputs.shape, (100, 16, 16, 32))
+        self.assertEqual(self.test_model["fire_module_2/squeeze"].outputs.shape, (100, 16, 16, 32))
 
-        self.assertEqual(self.model["expert_deconv3d_layer_6"].outputs.shape, (100, 141, 141, 141, 4))
+        self.assertEqual(self.train_model["fire_module_2/e1x1"].outputs.shape, (100, 16, 16, 24))
+        self.assertEqual(self.test_model["fire_module_2/e1x1"].outputs.shape, (100, 16, 16, 24))
 
-        self.assertEqual(self.model["simple_deconv3d_layer_7"].outputs.shape, (100, 282, 282, 282, 4))
+        self.assertEqual(self.train_model["fire_module_2/e3x3"].outputs.shape, (100, 16, 16, 24))
+        self.assertEqual(self.test_model["fire_module_2/e3x3"].outputs.shape, (100, 16, 16, 24))
 
-        self.assertEqual(self.model["simple_deconv3d_layer_8"].outputs.shape, (100, 564, 564, 564, 8))
-    '''
+        self.assertEqual(self.train_model["fire_module_2/concat"].outputs.shape, (100, 16, 16, 48))
+        self.assertEqual(self.test_model["fire_module_2/concat"].outputs.shape, (100, 16, 16, 48))
 
 
 if __name__ == '__main__':

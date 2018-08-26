@@ -118,27 +118,8 @@ class DeformableConv2d(Layer):
 
         return self._str(additional_str)
 
-    @private_method
-    def _check_inputs(self, prev_layer, offset_layer):
-
-        if isinstance(prev_layer, Layer):
-
-            if offset_layer is None:
-                raise ValueError("`theta_layer` cannot be set to None")
-
-            else:
-                return [prev_layer, offset_layer]
-
-        elif isinstance(prev_layer, (list, tuple)):
-            return prev_layer
-
-        else:
-            return None
-
     @auto_parse_inputs
     def compile(self, prev_layer, offset_layer=None, is_train=True):
-
-        super(DeformableConv2d, self).compile(self._check_inputs(prev_layer, offset_layer))
 
         input_layer = self._temp_data['inputs'][0]
         offset_layer = self._temp_data['inputs'][1]

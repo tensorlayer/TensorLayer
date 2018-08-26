@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """
@@ -233,9 +234,9 @@ class VGG19(VGG19Base):
             net = InputLayer(x, name='input')
             self.net = VGG19Base.vgg19_simple_api(net, end_with)
             self.outputs = self.net.outputs
-            self.all_params = self.net.all_params
+            self.all_weights = self.net.all_weights
             self.all_layers = self.net.all_layers
             self.all_drop = self.net.all_drop
             self.all_graphs = list(self.net.all_graphs)
             self.print_layers = self.net.print_layers
-            self.print_params = self.net.print_params
+            self.print_weights = self.net.print_weights

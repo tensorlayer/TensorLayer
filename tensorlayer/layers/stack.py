@@ -145,7 +145,7 @@ class UnStackLayer(Layer):
             layer.outputs = unstacked_dim
 
             layer.all_drop = self.all_drop
-            layer._add_params(self.all_params)
+            layer._add_params(self.all_weights)
             layer._add_layers(self.all_layers)
             layer._add_layers(layer.outputs)
 

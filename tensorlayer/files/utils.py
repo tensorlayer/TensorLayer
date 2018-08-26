@@ -1585,7 +1585,7 @@ def save_npz(save_list=None, name='model.npz', sess=None):
     --------
     Save model to npz
 
-    >>> tl.files.save_npz(network.all_params, name='model.npz', sess=sess)
+    >>> tl.files.save_npz(network.all_weights, name='model.npz', sess=sess)
 
     Load model from npz (Method 1)
 
@@ -1617,7 +1617,7 @@ def save_npz(save_list=None, name='model.npz', sess=None):
             save_list_var.extend([v.eval() for v in save_list])
         except Exception:
             logging.info(
-                " Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_params, name='model.npz', sess=sess)"
+                " Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_weights, name='model.npz', sess=sess)"
             )
     np.savez(name, params=save_list_var)
     save_list_var = None
@@ -1681,7 +1681,7 @@ def assign_params(sess, params, network):
     """
     ops = []
     for idx, param in enumerate(params):
-        ops.append(network.all_params[idx].assign(param))
+        ops.append(network.all_weights[idx].assign(param))
     if sess is not None:
         sess.run(ops)
     return ops
@@ -1865,15 +1865,15 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
 
     - Save specific parameters.
 
-    >>> tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_params, save_dir='model', printable=True)
+    >>> tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_weights, save_dir='model', printable=True)
 
     - Load latest ckpt.
 
-    >>> tl.files.load_ckpt(sess=sess, var_list=net.all_params, save_dir='model', printable=True)
+    >>> tl.files.load_ckpt(sess=sess, var_list=net.all_weights, save_dir='model', printable=True)
 
     - Load specific ckpt.
 
-    >>> tl.files.load_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_params, save_dir='model', is_latest=False, printable=True)
+    >>> tl.files.load_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_weights, save_dir='model', is_latest=False, printable=True)
 
     """
     if sess is None:
@@ -2052,7 +2052,7 @@ def save_graph_and_params(network=None, name='model', sess=None):
     """
     exists_or_mkdir(name, False)
     save_graph(network, os.path.join(name, 'graph.pkl'))
-    save_npz(save_list=network.all_params, name=os.path.join(name, 'params.npz'), sess=sess)
+    save_npz(save_list=network.all_weights, name=os.path.join(name, 'params.npz'), sess=sess)
 
 
 def load_graph_and_params(name='model', sess=None):

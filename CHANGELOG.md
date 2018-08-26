@@ -116,6 +116,10 @@ To release a new version, please update the changelog as followed:
   - some new test functions have been added in `test_layers_convolution.py`, `test_layers_normalization.py`, `test_layers_core.py` (PR #735)
   - `use_gemm` parameter changed for `gemmlowp_at_inference` (PR #751)
   - `tl.models` has been renamed to `tl.nets` to comply with TF Slim naming convention: https://github.com/tensorflow/models/tree/master/research/slim (PR #755)
+  - `layer.all_params` renamed `layer.all_weights` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
+  - `layer.count_params()` renamed `layer.count_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
+  - `layer.get_all_params()` renamed `layer.get_all_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
+  - `layer.print_params()` renamed `layer.print_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
 - Documentation:
   - documentation now uses mock imports reducing the number of dependencies to compile the documentation (PR #785)
   - fixed and enforced pydocstyle D210, D200, D301, D207, D403, D204, D412, D402, D300, D208 (PR #784)

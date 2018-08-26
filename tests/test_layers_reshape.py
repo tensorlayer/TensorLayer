@@ -26,8 +26,8 @@ class Layer_Shape_Test(unittest.TestCase):
 
         cls.net1_shape = net1.outputs.get_shape().as_list()
         cls.net1_layers = net1.all_layers
-        cls.net1_params = net1.all_params
-        cls.net1_n_params = net1.count_params()
+        cls.net1_params = net1.all_weights
+        cls.net1_n_params = net1.count_weights()
 
         ## Reshape
         net2 = tl.layers.ReshapeLayer(net1, shape=(-1, 28, 28, 1), name='reshape')
@@ -37,8 +37,8 @@ class Layer_Shape_Test(unittest.TestCase):
 
         cls.net2_shape = net2.outputs.get_shape().as_list()
         cls.net2_layers = net2.all_layers
-        cls.net2_params = net2.all_params
-        cls.net2_n_params = net2.count_params()
+        cls.net2_params = net2.all_weights
+        cls.net2_n_params = net2.count_weights()
 
         ## TransposeLayer
         net3 = tl.layers.TransposeLayer(net2, perm=[0, 1, 3, 2], name='trans')
@@ -48,8 +48,8 @@ class Layer_Shape_Test(unittest.TestCase):
 
         cls.net3_shape = net3.outputs.get_shape().as_list()
         cls.net3_layers = net3.all_layers
-        cls.net3_params = net3.all_params
-        cls.net3_n_params = net3.count_params()
+        cls.net3_params = net3.all_weights
+        cls.net3_n_params = net3.count_weights()
 
     @classmethod
     def tearDownClass(cls):

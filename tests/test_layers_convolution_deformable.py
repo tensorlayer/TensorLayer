@@ -31,15 +31,15 @@ class Layer_DeformableConvolution_Test(unittest.TestCase):
     def test_layer_n1(self):
 
         self.assertEqual(len(self.net1.all_layers), 3)
-        self.assertEqual(len(self.net1.all_params), 4)
-        self.assertEqual(self.net1.count_params(), 1400)
+        self.assertEqual(len(self.net1.all_weights), 4)
+        self.assertEqual(self.net1.count_weights(), 1400)
         self.assertEqual(self.net1.outputs.get_shape().as_list()[1:], [299, 299, 32])
 
     def test_layer_n2(self):
 
         self.assertEqual(len(self.net2.all_layers), 5)
-        self.assertEqual(len(self.net2.all_params), 8)
-        self.assertEqual(self.net2.count_params(), 25098)
+        self.assertEqual(len(self.net2.all_weights), 8)
+        self.assertEqual(self.net2.count_weights(), 25098)
         self.assertEqual(self.net2.outputs.get_shape().as_list()[1:], [299, 299, 64])
 
 

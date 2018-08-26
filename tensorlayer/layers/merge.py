@@ -42,7 +42,7 @@ class ConcatLayer(Layer):
     >>> net = tl.layers.ConcatLayer([net1, net2], 1, name ='concat_layer')
     [TL]   ConcatLayer concat_layer, 1100
     >>> tl.layers.initialize_global_variables(sess)
-    >>> net.print_params()
+    >>> net.print_weights()
     [TL]   param   0: relu1_1/W:0          (784, 800)         float32_ref
     [TL]   param   1: relu1_1/b:0          (800,)             float32_ref
     [TL]   param   2: relu2_1/W:0          (784, 300)         float32_ref
@@ -122,7 +122,7 @@ class ElementwiseLayer(Layer):
     >>> net_0 = tl.layers.DenseLayer(inputs, n_units=500, act=tf.nn.relu, name='net_0')
     >>> net_1 = tl.layers.DenseLayer(inputs, n_units=500, act=tf.nn.relu, name='net_1')
     >>> net = tl.layers.ElementwiseLayer([net_0, net_1], combine_fn=tf.minimum, name='minimum')
-    >>> net.print_params(False)
+    >>> net.print_weights(False)
     [TL]   param   0: net_0/W:0            (784, 500)         float32_ref
     [TL]   param   1: net_0/b:0            (500,)             float32_ref
     [TL]   param   2: net_1/W:0            (784, 500)         float32_ref

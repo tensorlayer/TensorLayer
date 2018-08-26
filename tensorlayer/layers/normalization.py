@@ -219,7 +219,7 @@ class BatchNormLayer(Layer):
             if self.beta_init:
 
                 beta = self._get_tf_variable(
-                    'beta',
+                    name='beta',
                     shape=params_shape,
                     initializer=self.beta_init,
                     dtype=self._temp_data['inputs'].dtype,
@@ -231,7 +231,7 @@ class BatchNormLayer(Layer):
 
             if self.gamma_init:
                 gamma = self._get_tf_variable(
-                    'gamma',
+                    name='gamma',
                     shape=params_shape,
                     initializer=self.gamma_init,
                     dtype=self._temp_data['inputs'].dtype,
@@ -243,16 +243,16 @@ class BatchNormLayer(Layer):
             # 2.
 
             moving_mean = self._get_tf_variable(
-                'moving_mean',
-                params_shape,
+                name='moving_mean',
+                shape=params_shape,
                 initializer=self.moving_mean_init,
                 dtype=self._temp_data['inputs'].dtype,
                 trainable=False
             )
 
             moving_variance = self._get_tf_variable(
-                'moving_variance',
-                params_shape,
+                name='moving_variance',
+                shape=params_shape,
                 initializer=self.moving_var_init,
                 dtype=self._temp_data['inputs'].dtype,
                 trainable=False,
@@ -348,13 +348,15 @@ class InstanceNormLayer(Layer):
             mean, var = tf.nn.moments(self._temp_data['inputs'], [1, 2], keep_dims=True)
 
             scale = self._get_tf_variable(
-                'scale', [self._temp_data['inputs'].get_shape()[-1]],
+                name='scale',
+                shape=[self._temp_data['inputs'].get_shape()[-1]],
                 dtype=self._temp_data['inputs'].dtype,
                 initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02)
             )
 
             offset = self._get_tf_variable(
-                'offset', [self._temp_data['inputs'].get_shape()[-1]],
+                name='offset',
+                shape=[self._temp_data['inputs'].get_shape()[-1]],
                 dtype=self._temp_data['inputs'].dtype,
                 initializer=tf.constant_initializer(0.0)
             )
@@ -566,11 +568,11 @@ class SwitchNormLayer(Layer):
             ins_mean, ins_var = tf.nn.moments(self._temp_data['inputs'], [1, 2], keep_dims=True)
             layer_mean, layer_var = tf.nn.moments(self._temp_data['inputs'], [1, 2, 3], keep_dims=True)
 
-            gamma = self._get_tf_variable("gamma", [ch], initializer=self.gamma_init)
-            beta = self._get_tf_variable("beta", [ch], initializer=self.beta_init)
+            gamma = self._get_tf_variable(name="gamma", shape=[ch], initializer=self.gamma_init)
+            beta = self._get_tf_variable(name="beta", shape=[ch], initializer=self.beta_init)
 
-            mean_weight_var = self._get_tf_variable("mean_weight", [3], initializer=tf.constant_initializer(1.0))
-            var_weight_var = self._get_tf_variable("var_weight", [3], initializer=tf.constant_initializer(1.0))
+            mean_weight_var = self._get_tf_variable(name="mean_weight", shape=[3], initializer=tf.constant_initializer(1.0))
+            var_weight_var = self._get_tf_variable(name="var_weight", shape=[3], initializer=tf.constant_initializer(1.0))
 
             mean_weight = tf.nn.softmax(mean_weight_var)
             var_weight = tf.nn.softmax(var_weight_var)

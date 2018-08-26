@@ -141,7 +141,7 @@ class VGG16Base(object):
         for val in sorted(npz.items()):
             logging.info("  Loading params %s" % str(val[1].shape))
             params.append(val[1])
-            if len(self.all_params) == len(params):
+            if len(self.all_weights) == len(params):
                 break
 
         assign_params(sess, params, self.net)
@@ -212,10 +212,10 @@ class VGG16(VGG16Base):
 
             self.outputs = self.net.outputs
 
-            self.all_params = list(self.net.all_params)
+            self.all_weights = list(self.net.all_weights)
             self.all_layers = list(self.net.all_layers)
             self.all_drop = dict(self.net.all_drop)
             self.all_graphs = list(self.net.all_graphs)
 
             self.print_layers = self.net.print_layers
-            self.print_params = self.net.print_params
+            self.print_weights = self.net.print_weights

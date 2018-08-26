@@ -37,20 +37,20 @@ class PReLU_Layer_Test(unittest.TestCase):
 
     def test_net1(self):
         self.assertEqual(len(self.net1.all_layers), 3)
-        self.assertEqual(len(self.net1.all_params), 3)
-        self.assertEqual(self.net1.count_params(), 320)
+        self.assertEqual(len(self.net1.all_weights), 3)
+        self.assertEqual(self.net1.count_weights(), 320)
         self.assertEqual(self.net1.outputs.get_shape().as_list()[1:], [10])
 
-        prelu1_param_shape = self.net1.all_params[-1].get_shape().as_list()
+        prelu1_param_shape = self.net1.all_weights[-1].get_shape().as_list()
         self.assertEqual(prelu1_param_shape, [10])
 
     def test_net2(self):
         self.assertEqual(len(self.net2.all_layers), 5)
-        self.assertEqual(len(self.net2.all_params), 6)
-        self.assertEqual(self.net2.count_params(), 651)
+        self.assertEqual(len(self.net2.all_weights), 6)
+        self.assertEqual(self.net2.count_weights(), 651)
         self.assertEqual(self.net2.outputs.get_shape().as_list()[1:], [30])
 
-        prelu2_param_shape = self.net2.all_params[-1].get_shape().as_list()
+        prelu2_param_shape = self.net2.all_weights[-1].get_shape().as_list()
         self.assertEqual(prelu2_param_shape, [1])
 
 
@@ -81,20 +81,20 @@ class PRelu6_Layer_Test(unittest.TestCase):
 
     def test_net1(self):
         self.assertEqual(len(self.net1.all_layers), 3)
-        self.assertEqual(len(self.net1.all_params), 3)
-        self.assertEqual(self.net1.count_params(), 320)
+        self.assertEqual(len(self.net1.all_weights), 3)
+        self.assertEqual(self.net1.count_weights(), 320)
         self.assertEqual(self.net1.outputs.get_shape().as_list()[1:], [10])
 
-        prelu1_param_shape = self.net1.all_params[-1].get_shape().as_list()
+        prelu1_param_shape = self.net1.all_weights[-1].get_shape().as_list()
         self.assertEqual(prelu1_param_shape, [10])
 
     def test_net2(self):
         self.assertEqual(len(self.net2.all_layers), 5)
-        self.assertEqual(len(self.net2.all_params), 6)
-        self.assertEqual(self.net2.count_params(), 651)
+        self.assertEqual(len(self.net2.all_weights), 6)
+        self.assertEqual(self.net2.count_weights(), 651)
         self.assertEqual(self.net2.outputs.get_shape().as_list()[1:], [30])
 
-        prelu2_param_shape = self.net2.all_params[-1].get_shape().as_list()
+        prelu2_param_shape = self.net2.all_weights[-1].get_shape().as_list()
         self.assertEqual(prelu2_param_shape, [1])
 
 
@@ -125,20 +125,20 @@ class PTRelu6_Layer_Test(unittest.TestCase):
 
     def test_net1(self):
         self.assertEqual(len(self.net1.all_layers), 3)
-        self.assertEqual(len(self.net1.all_params), 4)
-        self.assertEqual(self.net1.count_params(), 330)
+        self.assertEqual(len(self.net1.all_weights), 4)
+        self.assertEqual(self.net1.count_weights(), 330)
         self.assertEqual(self.net1.outputs.get_shape().as_list()[1:], [10])
 
-        prelu1_param_shape = self.net1.all_params[-1].get_shape().as_list()
+        prelu1_param_shape = self.net1.all_weights[-1].get_shape().as_list()
         self.assertEqual(prelu1_param_shape, [10])
 
     def test_net2(self):
         self.assertEqual(len(self.net2.all_layers), 5)
-        self.assertEqual(len(self.net2.all_params), 8)
-        self.assertEqual(self.net2.count_params(), 662)
+        self.assertEqual(len(self.net2.all_weights), 8)
+        self.assertEqual(self.net2.count_weights(), 662)
         self.assertEqual(self.net2.outputs.get_shape().as_list()[1:], [30])
 
-        prelu2_param_shape = self.net2.all_params[-1].get_shape().as_list()
+        prelu2_param_shape = self.net2.all_weights[-1].get_shape().as_list()
         self.assertEqual(prelu2_param_shape, [1])
 
 

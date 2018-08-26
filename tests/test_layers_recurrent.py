@@ -70,8 +70,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
         cls.net1_shape = net1.outputs.get_shape().as_list()
         cls.net1_layers = net1.all_layers
-        cls.net1_params = net1.all_params
-        cls.net1_n_params = net1.count_params()
+        cls.net1_params = net1.all_weights
+        cls.net1_n_params = net1.count_weights()
 
         # =============================== CNN+RNN encoder ===============================
 
@@ -103,8 +103,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
         cls.net2_shape = net2.outputs.get_shape().as_list()
         cls.net2_layers = net2.all_layers
-        cls.net2_params = net2.all_params
-        cls.net2_n_params = net2.count_params()
+        cls.net2_params = net2.all_weights
+        cls.net2_n_params = net2.count_weights()
 
         tl.logging.debug("ALL LAYERS: ##################################################", cls.net2_layers)
 
@@ -130,8 +130,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
         cls.net3_shape = net3.outputs.get_shape().as_list()
         cls.net3_layers = net3.all_layers
-        cls.net3_params = net3.all_params
-        cls.net3_n_params = net3.count_params()
+        cls.net3_params = net3.all_weights
+        cls.net3_n_params = net3.count_weights()
 
         # n_layer=2
         net4 = tl.layers.EmbeddingInputlayer(
@@ -153,8 +153,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
         cls.net4_shape = net4.outputs.get_shape().as_list()
         cls.net4_layers = net4.all_layers
-        cls.net4_params = net4.all_params
-        cls.net4_n_params = net4.count_params()
+        cls.net4_params = net4.all_weights
+        cls.net4_n_params = net4.count_weights()
 
         ## TODO: ConvLSTMLayer
         # image_size = 100
@@ -199,8 +199,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
         cls.net5_shape = net5.outputs.get_shape().as_list()
         cls.net5_rnn_shape = rnn.outputs.get_shape().as_list()
         cls.net5_layers = net5.all_layers
-        cls.net5_params = net5.all_params
-        cls.net5_n_params = net5.count_params()
+        cls.net5_params = net5.all_weights
+        cls.net5_n_params = net5.count_weights()
 
         # n_layer=3
         nin = tl.layers.EmbeddingInputlayer(
@@ -295,8 +295,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
         cls.net9_shape = net9.outputs.get_shape().as_list()
         cls.net9_rnn_shape = rnn.outputs.get_shape().as_list()
         cls.net9_layers = net9.all_layers
-        cls.net9_params = net9.all_params
-        cls.net9_n_params = net9.count_params()
+        cls.net9_params = net9.all_weights
+        cls.net9_n_params = net9.count_weights()
 
         # n_layer=2
         rnn = tl.layers.BiDynamicRNNLayer(
@@ -319,8 +319,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
         cls.net10_shape = net10.outputs.get_shape().as_list()
         cls.net10_rnn_shape = rnn.outputs.get_shape().as_list()
         cls.net10_layers = net10.all_layers
-        cls.net10_params = net10.all_params
-        cls.net10_n_params = net10.count_params()
+        cls.net10_params = net10.all_weights
+        cls.net10_n_params = net10.count_weights()
 
         # =============================== Seq2Seq ===============================
 
@@ -368,8 +368,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
         cls.net11_shape = net11.outputs.get_shape().as_list()
         cls.net11_layers = net11.all_layers
-        cls.net11_params = net11.all_params
-        cls.net11_n_params = net11.count_params()
+        cls.net11_params = net11.all_weights
+        cls.net11_n_params = net11.count_weights()
 
     @classmethod
     def tearDownClass(cls):

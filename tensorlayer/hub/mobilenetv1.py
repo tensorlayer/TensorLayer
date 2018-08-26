@@ -88,12 +88,12 @@ class MobileNetV1(Layer):
 
         self.outputs = self.net.outputs
 
-        self.all_params = list(self.net.all_params)
+        self.all_weights = list(self.net.all_weights)
         self.all_layers = list(self.net.all_layers)
         self.all_drop = dict(self.net.all_drop)
         self.all_graphs = list(self.net.all_graphs)
         self.print_layers = self.net.print_layers
-        self.print_params = self.net.print_params
+        self.print_weights = self.net.print_weights
 
     # @classmethod
     def mobilenetv1(self, x, end_with='out', is_train=False, reuse=None):
@@ -187,5 +187,5 @@ class MobileNetV1(Layer):
             expected_bytes=25600116
         )  # ls -al
         params = load_npz(name=os.path.join(path, 'mobilenet.npz'))
-        assign_params(sess, params[:len(self.net.all_params)], self.net)
+        assign_params(sess, params[:len(self.net.all_weights)], self.net)
         del params

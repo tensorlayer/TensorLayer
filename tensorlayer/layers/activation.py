@@ -87,7 +87,7 @@ class PReluLayer(Layer):
             w_shape = int(self._temp_data['inputs'].get_shape()[-1])
 
         with tf.variable_scope(self.name):
-            alpha_var = self._get_tf_variable(name='alpha', shape=w_shape, initializer=self.a_init, **self.a_init_args)
+            alpha_var = self._get_tf_variable(name='alpha', shape=w_shape, dtype=self._temp_data['inputs'].dtype, initializer=self.a_init, **self.a_init_args)
 
             alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
 
@@ -183,7 +183,7 @@ class PRelu6Layer(Layer):
             w_shape = int(self._temp_data['inputs'].get_shape()[-1])
 
         with tf.variable_scope(self.name):
-            alpha_var = self._get_tf_variable(name='alpha', shape=w_shape, initializer=self.a_init, **self.a_init_args)
+            alpha_var = self._get_tf_variable(name='alpha', shape=w_shape, dtype=self._temp_data['inputs'].dtype, initializer=self.a_init, **self.a_init_args)
 
             alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
 
@@ -284,14 +284,14 @@ class PTRelu6Layer(Layer):
 
             # Alpha for outputs lower than zeros
             alpha_low = self._get_tf_variable(
-                name='alpha_low', shape=w_shape, initializer=self.a_init, **self.a_init_args
+                name='alpha_low', shape=w_shape, dtype=self._temp_data['inputs'].dtype, initializer=self.a_init, **self.a_init_args
             )
 
             alpha_low_constrained = tf.nn.sigmoid(alpha_low, name="constraining_alpha_low_in_0_1")
 
             # Alpha for outputs higher than 6
             alpha_high = self._get_tf_variable(
-                name='alpha_high', shape=w_shape, initializer=self.a_init, **self.a_init_args
+                name='alpha_high', shape=w_shape, dtype=self._temp_data['inputs'].dtype, initializer=self.a_init, **self.a_init_args
             )
 
             alpha_high_constrained = tf.nn.sigmoid(alpha_high, name="constraining_alpha_high_in_0_1")

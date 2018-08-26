@@ -41,9 +41,9 @@ class Layer_Stack_Test(unittest.TestCase):
     def test_StackLayer(self):
         self.assertEqual(self.net_stack.outputs.get_shape().as_list()[-1], 10)
         self.assertEqual(len(self.net_stack.all_layers), 6)
-        self.assertEqual(len(self.net_stack.all_params), 6)
+        self.assertEqual(len(self.net_stack.all_weights), 6)
         self.assertEqual(len(self.net_stack.all_drop), 1)
-        self.assertEqual(self.net_stack.count_params(), 930)
+        self.assertEqual(self.net_stack.count_weights(), 930)
 
     def test_UnStackLayer(self):
 
@@ -52,9 +52,9 @@ class Layer_Stack_Test(unittest.TestCase):
 
             self.assertEqual(shape[-1], 10)
             self.assertEqual(len(n.all_layers), 7)
-            self.assertEqual(len(n.all_params), 6)
+            self.assertEqual(len(n.all_weights), 6)
             self.assertEqual(len(n.all_drop), 1)
-            self.assertEqual(n.count_params(), 930)
+            self.assertEqual(n.count_weights(), 930)
 
 
 if __name__ == '__main__':

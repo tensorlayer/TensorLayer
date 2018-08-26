@@ -180,7 +180,7 @@ class GroupConv2d(Layer):
                     shape=self.n_filter,
                     initializer=self.b_init,
                     dtype=self._temp_data['inputs'].dtype,
-                    trainable=True,
+                    trainable=is_train,
                     **self.b_init_args
                 )
 

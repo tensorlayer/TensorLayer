@@ -48,7 +48,7 @@ class TimeDistributedLayer(Layer):
     [TL] TimeDistributedLayer time_dense: layer_class:DenseLayer
     >>> print(net.outputs._shape)
     (32, 20, 50)
-    >>> net.print_params(False)
+    >>> net.print_weights(False)
     [TL] param   0: (100, 50)          time_dense/dense/W:0
     [TL] param   1: (50,)              time_dense/dense/b:0
     [TL]    num of params: 5050

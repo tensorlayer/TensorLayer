@@ -46,11 +46,11 @@ class Layer_Normalization_Test(unittest.TestCase):
         cls.data["train_network"]["layers"] = net_train.all_layers
         cls.data["eval_network"]["layers"] = net_eval.all_layers
 
-        cls.data["train_network"]["params"] = net_train.all_params
+        cls.data["train_network"]["params"] = net_train.all_weights
 
-        cls.data["train_network"]["n_params"] = net_train.count_params()
+        cls.data["train_network"]["n_params"] = net_train.count_weights()
 
-        print(net_train.count_params())
+        print(net_train.count_weights())
 
     @classmethod
     def tearDownClass(cls):

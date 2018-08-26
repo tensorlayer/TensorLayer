@@ -80,7 +80,7 @@ class BaseNetwork(core.BaseLayer):
             "** Compiling %s `%s` - reuse: %s, is_train: %s **" % (self.__class__.__name__, self.name, reuse, is_train)
         )
 
-        _temp_all_layers = []
+        _temp_all_compiled_layers = []
 
         if len(self.all_layers_dict) == 0:
             raise RuntimeError("This network has no layer registered.")
@@ -95,7 +95,6 @@ class BaseNetwork(core.BaseLayer):
                     for id_layer, layer in enumerate(self.all_layers):
 
                         layer_factory = self.all_layers_dict[layer]
-                        _temp_all_layers.append(self.all_layers_dict[layer])
 
                         if id_layer == 0:
                             compiled_inputs = input_plh
@@ -112,51 +111,23 @@ class BaseNetwork(core.BaseLayer):
                             raise ValueError("`prev_layer` should be either a `str` or a list of `str`")
 
                         network = layer_factory(prev_layer=compiled_inputs, is_train=is_train)
+                        _temp_all_compiled_layers.append(network)
 
             return tl.models.CompiledNetwork(
                 inputs=input_plh,
                 outputs=network.outputs,
-                all_layers=_temp_all_layers,
-                is_train=is_train
+                all_layers=_temp_all_compiled_layers,
+                is_train=is_train,
+                model_scope=self.model_scope,
+                name=self.name,
             )
+
+    def count_layers(self):
+        return len(self.all_layers_dict)
 
     # =============================================== #
     #              TO BE REMOVED/MOVED                #
     # =============================================== #
-
-    def get_all_params(self):
-        """Returns a list of parameters in the network"""
-        tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, 'get_all_params'))
-        pass
-        '''
-        if not self.is_compiled:
-            raise RuntimeError("Impossible to get the network's paramaters if the network is not compiled.")
-
-        return tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.model_scope)        
-        '''
-
-    def count_params(self):
-        """Returns the number of parameters in the network"""
-        tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, 'count_params'))
-        pass
-        '''
-        if not self.is_compiled:
-            raise RuntimeError("Impossible to count the number of paramaters if the network is not compiled.")
-
-        n_params = 0
-        for _i, p in enumerate(self.get_all_params()):
-            n = 1
-            # for s in p.eval().shape:
-            for s in p.get_shape():
-                try:
-                    s = int(s)
-                except ValueError:
-                    s = 1
-                if s:
-                    n = n * s
-            n_params = n_params + n
-        return n_params
-        '''
 
     '''
     def _base_init(self, name=None):
@@ -173,7 +144,6 @@ class BaseNetwork(core.BaseLayer):
         # It does not affect users of the underlying layers, only users of the
         # Network instance.
         self.trainable = True
-        self._is_compiled = False
         self._expects_training_arg = False
         # A list of "extra" variables assigned to attributes of this class, included
         # in self.weights and self.variables. Always empty for graph networks (but

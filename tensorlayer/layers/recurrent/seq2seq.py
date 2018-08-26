@@ -118,7 +118,7 @@ class Seq2Seq(Layer):
     >>> net_out = DenseLayer(net, n_units=10000, act=None, name='output')
     >>> e_loss = tl.cost.cross_entropy_seq_with_mask(logits=net_out.outputs, target_seqs=target_seqs, input_mask=target_mask, return_details=False, name='cost')
     >>> y = tf.nn.softmax(net_out.outputs)
-    >>> net_out.print_params(False)
+    >>> net_out.print_weights(False)
 
     """
 

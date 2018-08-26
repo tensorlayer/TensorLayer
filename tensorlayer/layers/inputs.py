@@ -197,9 +197,9 @@ class Word2vecEmbeddingInputlayer(Layer):
     ...     num_sampled=64, name='word2vec')
     (8, 200)
     >>> cost = net.nce_cost
-    >>> train_params = net.all_params
+    >>> train_params = net.all_weights
     >>> cost = net.nce_cost
-    >>> train_params = net.all_params
+    >>> train_params = net.all_weights
     >>> train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_params)
     >>> normalized_embeddings = net.normalized_embeddings
 
