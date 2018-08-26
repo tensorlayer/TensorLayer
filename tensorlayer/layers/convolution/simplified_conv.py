@@ -21,8 +21,6 @@ class Conv1d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer
     n_filter : int
         The number of filters
     filter_size : int
@@ -64,20 +62,10 @@ class Conv1d(Layer):
     >>> n = DenseLayer(n, 500, tf.nn.relu, name='d1')
     >>> n = DenseLayer(n, 100, tf.nn.relu, name='d2')
     >>> n = DenseLayer(n, 2, None, name='o')
-
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         n_filter=32,
         filter_size=5,
         stride=1,
@@ -99,7 +87,6 @@ class Conv1d(Layer):
         if padding not in ["SAME", "VALID"]:
             raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
 
-        self.prev_layer = prev_layer
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.stride = stride
@@ -182,8 +169,6 @@ class Conv2d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_filter : int
         The number of filters.
     filter_size : tuple of int
@@ -203,8 +188,6 @@ class Conv2d(Layer):
         The arguments for the weight matrix initializer (for TF < 1.5).
     b_init_args : dictionary
         The arguments for the bias vector initializer (for TF < 1.5).
-    use_cudnn_on_gpu : bool
-        Default is False (for TF < 1.5).
     data_format : str
         "NHWC" or "NCHW", default is "NHWC" (for TF < 1.5).
     name : str
@@ -225,20 +208,10 @@ class Conv2d(Layer):
     >>> net = Conv2d(net, 128, (3, 3), act=tf.nn.relu, name='conv2_1')
     >>> net = Conv2d(net, 128, (3, 3), act=tf.nn.relu, name='conv2_2')
     >>> net = MaxPool2d(net, (2, 2), name='pool2')
-
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         n_filter=32,
         filter_size=(3, 3),
         strides=(1, 1),
@@ -260,7 +233,6 @@ class Conv2d(Layer):
         if padding not in ["SAME", "VALID"]:
             raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
 
-        self.prev_layer = prev_layer
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = strides

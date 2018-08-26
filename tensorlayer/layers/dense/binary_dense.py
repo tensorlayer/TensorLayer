@@ -46,14 +46,6 @@ class BinaryDenseLayer(Layer):
 
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
         n_units=100,
@@ -67,14 +59,15 @@ class BinaryDenseLayer(Layer):
     ):
         if gemmlowp_at_inference:
             raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
-        self.n_units=n_units
-        self.act=act,
-        self.gemmlowp_at_inference=gemmlowp_at_inference,
-        self.W_init=W_init
-        self.b_init=b_init
-        self.W_init_args=W_init_args
-        self.b_init_args=b_init_args
-        self.name=name
+
+        self.n_units = n_units
+        self.act = act
+        self.gemmlowp_at_inference = gemmlowp_at_inference
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args
+        self.b_init_args = b_init_args
+        self.name = name
 
         super(BinaryDenseLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
 
@@ -93,9 +86,8 @@ class BinaryDenseLayer(Layer):
 
         return self._str(additional_str)
 
-
     @auto_parse_inputs
-    def compile(self, prev_layer):
+    def compile(self, prev_layer, is_train=True):
 
         if self._temp_data['inputs'].get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")

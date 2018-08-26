@@ -122,11 +122,6 @@ class Seq2Seq(Layer):
 
     """
 
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`net_encode_in` and `net_decode_in` are deprecated, use the functional API instead",
-        deprecated_args=("net_encode_in", "net_decode_in"),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
             self,
             net_encode_in,

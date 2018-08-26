@@ -26,8 +26,6 @@ class FlattenLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     name : str
         A unique layer name.
 
@@ -39,20 +37,10 @@ class FlattenLayer(Layer):
     >>> net = tl.layers.InputLayer(x, name='input')
     >>> net = tl.layers.FlattenLayer(net, name='flatten')
     [?, 784]
-
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
-    def __init__(self, prev_layer=None, name='flatten'):
+    def __init__(self, name='flatten'):
 
-        self.prev_layer = prev_layer
         self.name = name
 
         super(FlattenLayer, self).__init__()
@@ -61,7 +49,7 @@ class FlattenLayer(Layer):
         additional_str = []
 
         try:
-            additional_str.append("out_shape: %s" % self.self._temp_data['outputs'].shape)
+            additional_str.append("out_shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -78,8 +66,6 @@ class ReshapeLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer
     shape : tuple of int
         The output shape, see ``tf.reshape``.
     name : str
@@ -96,22 +82,12 @@ class ReshapeLayer(Layer):
     (?, 28, 28, 1)
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
-    def __init__(self, prev_layer=None, shape=list(), name='reshape'):
+    def __init__(self, shape, name='reshape'):
 
         if not shape:
             raise ValueError("Shape list can not be empty")
 
-        self.prev_layer = prev_layer
-        self._shape = shape
+        self.shape = shape
         self.name = name
 
         super(ReshapeLayer, self).__init__()
@@ -129,7 +105,7 @@ class ReshapeLayer(Layer):
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        self._temp_data['outputs'] = tf.reshape(prev_layer.outputs, shape=self._shape, name=self.name)
+        self._temp_data['outputs'] = tf.reshape(prev_layer.outputs, shape=self.shape, name=self.name)
 
 
 class TransposeLayer(Layer):
@@ -139,8 +115,6 @@ class TransposeLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer
     perm: list of int
         The permutation of the dimensions, similar with ``numpy.transpose``.
     name : str
@@ -156,21 +130,11 @@ class TransposeLayer(Layer):
     [None, 28, 1, 28]
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
-    def __init__(self, prev_layer=None, perm=None, name='transpose'):
+    def __init__(self, perm=None, name='transpose'):
 
         if perm is None:
             raise AssertionError("The `perm` argument cannot be None")
 
-        self.prev_layer = prev_layer
         self.perm = perm
         self.name = name
 

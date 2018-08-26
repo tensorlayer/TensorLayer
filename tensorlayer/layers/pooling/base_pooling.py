@@ -20,8 +20,6 @@ class PoolLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     ksize : tuple of int
         The size of the window for each dimension of the input tensor.
         Note that: len(ksize) >= 4.

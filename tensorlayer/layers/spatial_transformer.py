@@ -44,27 +44,14 @@ class SpatialTransformer2dAffineLayer(Layer):
     - `TensorFlow/Models <https://github.com/tensorflow/models/tree/master/transformer>`__
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` and `theta_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", "theta_layer"),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
-        theta_layer=None,
-        out_size=None,
+        out_size,
         name='spatial_trans_2d_affine',
     ):
 
         if out_size is None:
             out_size = [40, 40]
-
-        self.prev_layer = self._check_inputs(prev_layer, theta_layer)
 
         self.out_size = out_size
         self.name = name
@@ -88,6 +75,15 @@ class SpatialTransformer2dAffineLayer(Layer):
 
     @auto_parse_inputs
     def compile(self, prev_layer, theta_layer=None, is_train=True):
+        """
+        Parameters
+        -----------
+        prev_layer : :class:`Layer`
+            Previous layer.
+        theta_layer : :class:`Layer`
+            The localisation network.
+            - We will use a :class:`DenseLayer` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
+        """
 
         input_layer = self._temp_data['inputs'][0]
         theta_layer = self._temp_data['inputs'][1]

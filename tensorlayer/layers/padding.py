@@ -41,19 +41,9 @@ class PadLayer(Layer):
     >>> net = tl.layers.PadLayer(net, [[0, 0], [3, 3], [3, 3], [0, 0]], "REFLECT", name='inpad')
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
-        padding=None,
+        padding,
         mode='CONSTANT',
         name='pad_layer',
     ):
@@ -66,7 +56,6 @@ class PadLayer(Layer):
         if not isinstance(padding, (int, tuple, list)):
             raise AssertionError()
 
-        self.prev_layer = prev_layer
         self.padding = padding
         self.mode = mode
         self.name = name
@@ -117,18 +106,9 @@ class ZeroPad1d(Layer):
 
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
-        padding=None,
+        padding,
         name='zeropad1d',
     ):
 
@@ -138,7 +118,6 @@ class ZeroPad1d(Layer):
         if isinstance(padding, (tuple, list)) and len(padding) != 2:
             raise AssertionError()
 
-        self.prev_layer = prev_layer
         self.padding = padding
         self.name = name
 
@@ -174,8 +153,6 @@ class ZeroPad2d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     padding : int, or tuple of 2 ints, or tuple of 2 tuples of 2 ints.
             - If int, the same symmetric padding is applied to width and height.
             - If tuple of 2 ints, interpreted as two different symmetric padding values for height and width as ``(symmetric_height_pad, symmetric_width_pad)``.
@@ -185,18 +162,9 @@ class ZeroPad2d(Layer):
 
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
-        padding=None,
+        padding,
         name='zeropad2d',
     ):
 
@@ -206,7 +174,6 @@ class ZeroPad2d(Layer):
         if isinstance(padding, (tuple, list)) and len(padding) != 2:
             raise AssertionError()
 
-        self.prev_layer = prev_layer
         self.padding = padding
         self.name = name
 
@@ -242,8 +209,6 @@ class ZeroPad3d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     padding : int, or tuple of 2 ints, or tuple of 2 tuples of 2 ints.
             - If int, the same symmetric padding is applied to width and height.
             - If tuple of 2 ints, interpreted as two different symmetric padding values for height and width as ``(symmetric_dim1_pad, symmetric_dim2_pad, symmetric_dim3_pad)``.
@@ -252,19 +217,9 @@ class ZeroPad3d(Layer):
         A unique layer name.
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
-        padding=None,
+        padding,
         name='zeropad3d',
     ):
 
@@ -274,7 +229,6 @@ class ZeroPad3d(Layer):
         if isinstance(padding, (tuple, list)) and len(padding) != 3:
             raise AssertionError()
 
-        self.prev_layer = prev_layer
         self.padding = padding
         self.name = name
 

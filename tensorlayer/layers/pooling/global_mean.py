@@ -34,14 +34,6 @@ class GlobalMeanPool1d(Layer):
     [None, 30]
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(self, prev_layer, name='globalmeanpool1d'):
         super(GlobalMeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -70,14 +62,6 @@ class GlobalMeanPool2d(Layer):
     [None, 30]
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(self, prev_layer, name='globalmeanpool2d'):
         super(GlobalMeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -106,14 +90,6 @@ class GlobalMeanPool3d(Layer):
     [None, 30]
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(self, prev_layer, name='globalmeanpool3d'):
         super(GlobalMeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
 

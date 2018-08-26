@@ -28,8 +28,6 @@ class SlimNetsLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     slim_layer : a slim network function
         The network you want to stack onto, end with ``return net, end_points``.
     slim_args : dictionary
@@ -42,19 +40,9 @@ class SlimNetsLayer(Layer):
     - As TF-Slim stores the layers as dictionary, the ``all_layers`` in this network is not in order ! Fortunately, the ``all_params`` are in order.
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
-        slim_layer=None,
+        slim_layer,
         slim_args=None,
         act=None,
         name='tfslim_layer',
@@ -63,7 +51,6 @@ class SlimNetsLayer(Layer):
         if slim_layer is None:
             raise ValueError("slim layer is None")
 
-        self.prev_layer = prev_layer
         self.slim_layer = slim_layer
         self.act = act
         self.name = name
@@ -119,8 +106,6 @@ class KerasLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer
     keras_layer : function
         A tensor in tensor out function for building model.
     keras_args : dictionary
@@ -129,19 +114,9 @@ class KerasLayer(Layer):
         A unique layer name.
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
-        keras_layer=None,
+        keras_layer,
         keras_args=None,
         act=None,
         name='keras_layer',
@@ -150,7 +125,6 @@ class KerasLayer(Layer):
         if keras_layer is None:
             raise ValueError("keras_layer is None")
 
-        self.prev_layer = prev_layer
         self.act = act
         self.name = name
         self.keras_layer = keras_layer(**keras_args)
@@ -214,19 +188,9 @@ class EstimatorLayer(Layer):
         A unique layer name.
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', args='layer_args', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
-        model_fn=None,
+        model_fn,
         layer_args=None,
         act=None,
         name='estimator_layer',
@@ -235,7 +199,6 @@ class EstimatorLayer(Layer):
         if model_fn is None:
             raise ValueError("model_fn is None")
 
-        self.prev_layer = prev_layer
         self.model_fn = model_fn
         self.act = act
         self.name = name

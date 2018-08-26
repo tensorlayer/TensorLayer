@@ -23,8 +23,6 @@ class UpSampling2dLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer with 4-D Tensor of the shape (batch, height, width, channels) or 3-D Tensor of the shape (height, width, channels).
     size : tuple of int/float
         (height, width) scale factor or new size of height and width.
     is_scale : boolean
@@ -41,19 +39,9 @@ class UpSampling2dLayer(Layer):
         A unique layer name.
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
-        size=list(),
+        size,
         is_scale=True,
         method=0,
         align_corners=False,
@@ -66,7 +54,6 @@ class UpSampling2dLayer(Layer):
         if len(size) != 2:
             raise AssertionError("`size` argument should be of length 2")
 
-        self.prev_layer = prev_layer
         self.size = size
         self.is_scale = is_scale
         self.method = method
@@ -150,9 +137,6 @@ class DownSampling2dLayer(Layer):
     <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
 
     Parameters
-    ----------
-    prev_layer : :class:`Layer`
-        Previous layer with 4-D Tensor in the shape of (batch, height, width, channels) or 3-D Tensor in the shape of (height, width, channels).
     size : tuple of int/float
         (height, width) scale factor or new size of height and width.
     is_scale : boolean
@@ -169,19 +153,9 @@ class DownSampling2dLayer(Layer):
         A unique layer name.
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
-        size=list(),
+        size,
         is_scale=True,
         method=0,
         align_corners=False,
@@ -194,7 +168,6 @@ class DownSampling2dLayer(Layer):
         if len(size) != 2:
             raise AssertionError("`size` argument should be of length 2")
 
-        self.prev_layer = prev_layer
         self.size = size
         self.is_scale = is_scale
         self.method = method

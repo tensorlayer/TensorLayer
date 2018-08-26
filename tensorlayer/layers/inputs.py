@@ -23,21 +23,13 @@ class InputLayer(Layer):
 
     Parameters
     ----------
-    inputs : placeholder or tensor
-        The input of a network.
     name : str
         A unique layer name.
 
     """
 
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`inputs` is deprecated, use the functional API instead",
-        deprecated_args=("inputs", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
-    def __init__(self, inputs=None, name='input'):
+    def __init__(self, name='input'):
 
-        self.prev_layer = inputs
         self.name = name
 
         super(InputLayer, self).__init__()
@@ -65,8 +57,6 @@ class OneHotInputLayer(Layer):
 
     Parameters
     ----------
-    inputs : placeholder or tensor
-        The input of a network.
     depth : None or int
         If the input indices is rank N, the output will have rank N+1. The new axis is created at dimension `axis` (default: the new axis is appended at the end).
     on_value : None or number
@@ -89,19 +79,12 @@ class OneHotInputLayer(Layer):
     (?, 8)
 
     """
-
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`inputs` is deprecated, use the functional API instead",
-        deprecated_args=("inputs", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
-    def __init__(self, inputs=None, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name='input'):
+    def __init__(self, depth, on_value=None, off_value=None, axis=None, dtype=None, name='input'):
 
         if depth is None:
             _err = "%s: depth  cannot be set to `None`. It leads to an undefined number of output units" % self.__class__.__name__
             raise RuntimeError(_err)
 
-        self.prev_layer = inputs
         self.depth = depth
         self.on_value = on_value
         self.off_value = off_value
@@ -147,8 +130,6 @@ class Word2vecEmbeddingInputlayer(Layer):
 
     Parameters
     ----------
-    inputs : placeholder or tensor
-        The input of a network. For word inputs, please use integer index format, 2D tensor : [batch_size, num_steps(num_words)]
     train_labels : placeholder
         For word labels. integer index format
     vocabulary_size : int
@@ -178,8 +159,6 @@ class Word2vecEmbeddingInputlayer(Layer):
     ----------
     nce_cost : Tensor
         The NCE loss.
-    outputs : Tensor
-        The embedding layer outputs.
     normalized_embeddings : Tensor
         Normalized embedding matrix.
 
@@ -225,15 +204,8 @@ class Word2vecEmbeddingInputlayer(Layer):
     `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`__
 
     """
-
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`inputs` is deprecated, use the functional API instead",
-        deprecated_args=("inputs", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        inputs=None,
         train_labels=None,
         vocabulary_size=80000,
         embedding_size=200,
@@ -248,7 +220,6 @@ class Word2vecEmbeddingInputlayer(Layer):
         dtype=None,
         name='word2vec',
     ):
-        self.prev_layer = inputs
         self.train_labels = train_labels
 
         self.vocabulary_size = vocabulary_size
@@ -349,8 +320,6 @@ class EmbeddingInputlayer(Layer):
 
     Parameters
     ----------
-    inputs : placeholder
-        The input of a network. For word inputs.
         Please use integer index format, 2D tensor : (batch_size, num_steps(num_words)).
     vocabulary_size : int
         The size of vocabulary, number of words.
@@ -363,11 +332,6 @@ class EmbeddingInputlayer(Layer):
     name : str
         A unique layer name.
 
-    Attributes
-    ----------
-    outputs : tensor
-        The embedding layer output is a 3D tensor in the shape: (batch_size, num_steps(num_words), embedding_size).
-
     Examples
     --------
     >>> import tensorflow as tf
@@ -377,15 +341,8 @@ class EmbeddingInputlayer(Layer):
     >>> net = tl.layers.EmbeddingInputlayer(inputs=x, vocabulary_size=1000, embedding_size=50, dtype=tf.float32, name='embed')
     (8, 50)
     """
-
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`inputs` is deprecated, use the functional API instead",
-        deprecated_args=("inputs", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        inputs=None,
         vocabulary_size=80000,
         embedding_size=200,
         E_init=tf.random_uniform_initializer(-0.1, 0.1),
@@ -393,7 +350,6 @@ class EmbeddingInputlayer(Layer):
         dtype=None,
         name='embedding',
     ):
-        self.prev_layer = inputs
 
         self.vocabulary_size = vocabulary_size
         self.embedding_size = embedding_size
@@ -438,9 +394,6 @@ class AverageEmbeddingInputlayer(Layer):
 
     Parameters
     ----------
-    inputs : placeholder or tensor
-        The network input.
-        For word inputs, please use integer index format, 2D tensor: (batch_size, num_steps(num_words)).
     vocabulary_size : int
         The size of vocabulary.
     embedding_size : int
@@ -470,15 +423,8 @@ class AverageEmbeddingInputlayer(Layer):
     (8, 50)
 
     """
-
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`inputs` is deprecated, use the functional API instead",
-        deprecated_args=("inputs", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        inputs=None,
         vocabulary_size=None,
         embedding_size=None,
         pad_value=0,
@@ -487,7 +433,6 @@ class AverageEmbeddingInputlayer(Layer):
         dtype=None,
         name='average_embedding',
     ):
-        self.prev_layer = inputs
 
         self.vocabulary_size = vocabulary_size
         self.embedding_size = embedding_size

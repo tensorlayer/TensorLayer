@@ -23,8 +23,6 @@ class SubpixelConv1d(Layer):
 
     Parameters
     ------------
-    net : :class:`Layer`
-        Previous layer with output shape of (batch, width, r).
     scale : int
         The up-scaling ratio, a wrong setting will lead to Dimension size error.
     act : activation function
@@ -47,18 +45,8 @@ class SubpixelConv1d(Layer):
     `Audio Super Resolution Implementation <https://github.com/kuleshov/audio-super-res/blob/master/src/models/layers/subpixel.py>`__.
 
     """
+    def __init__(self, scale=2, act=None, name='subpixel_conv1d'):
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
-    def __init__(self, prev_layer=None, scale=2, act=None, name='subpixel_conv1d'):
-
-        self.prev_layer = prev_layer
         self.scale = scale
         self.act = act
         self.name = name
@@ -99,8 +87,6 @@ class SubpixelConv2d(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        Previous layer,
     scale : int
         The up-scaling ratio, a wrong setting will lead to dimension size error.
     n_out_channels : int or None
@@ -150,17 +136,8 @@ class SubpixelConv2d(Layer):
     """
 
     # github/Tetrachrome/subpixel  https://github.com/Tetrachrome/subpixel/blob/master/subpixel.py
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(self, prev_layer=None, scale=2, n_out_channels=None, act=None, name='subpixel_conv2d'):
 
-        self.prev_layer = prev_layer
         self.scale = scale
         self.n_out_channels = n_out_channels
         self.act = act

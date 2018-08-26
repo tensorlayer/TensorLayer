@@ -25,8 +25,6 @@ class PReluLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     channel_shared : boolean
         If True, single weight is shared by all channels.
     a_init : initializer
@@ -42,25 +40,14 @@ class PReluLayer(Layer):
     - `Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky, 2010] <http://www.cs.utoronto.ca/~kriz/conv-cifar10-aug2010.pdf>`__
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         channel_shared=False,
         a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
         a_init_args=None,
         name="PReluLayer"
     ):
 
-        self.prev_layer = prev_layer
         self.channel_shared = channel_shared
         self.a_init = a_init
         self.act = tf.nn.leaky_relu
@@ -120,8 +107,6 @@ class PRelu6Layer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     channel_shared : boolean
         If True, single weight is shared by all channels.
     a_init : initializer
@@ -138,25 +123,14 @@ class PRelu6Layer(Layer):
     - `Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky, 2010] <http://www.cs.utoronto.ca/~kriz/conv-cifar10-aug2010.pdf>`__
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         channel_shared=False,
         a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
         a_init_args=None,
         name="PReLU6_layer"
     ):
 
-        self.prev_layer = prev_layer
         self.channel_shared = channel_shared
         self.a_init = a_init
         self.act = leaky_relu6
@@ -218,8 +192,6 @@ class PTRelu6Layer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     channel_shared : boolean
         If True, single weight is shared by all channels.
     a_init : initializer
@@ -236,25 +208,14 @@ class PTRelu6Layer(Layer):
     - `Rectifier Nonlinearities Improve Neural Network Acoustic Models [A. L. Maas et al., 2013] <https://ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf>`__
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         channel_shared=False,
         a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
         a_init_args=None,
         name="PTReLU6_layer"
     ):
 
-        self.prev_layer = prev_layer
         self.channel_shared = channel_shared
         self.a_init = a_init
         self.act = leaky_twice_relu6

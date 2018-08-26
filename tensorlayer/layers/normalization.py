@@ -30,8 +30,6 @@ class LocalResponseNormLayer(Layer):
 
     Parameters
     -----------
-    prev_layer : :class:`Layer`
-        The previous layer with a 4D output shape.
     depth_radius : int
         Depth radius. 0-D. Half-width of the 1-D normalization window.
     bias : float
@@ -42,20 +40,9 @@ class LocalResponseNormLayer(Layer):
         An exponent.
     name : str
         A unique layer name.
-
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         depth_radius=None,
         bias=None,
         alpha=None,
@@ -63,7 +50,6 @@ class LocalResponseNormLayer(Layer):
         name='lrn_layer',
     ):
 
-        self.prev_layer = prev_layer
         self.depth_radius = depth_radius
         self.bias = bias
         self.alpha = alpha
@@ -117,8 +103,6 @@ class BatchNormLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     decay : float
         A decay factor for `ExponentialMovingAverage`.
         Suggest to use a large value for large dataset.
@@ -144,18 +128,8 @@ class BatchNormLayer(Layer):
     - `stackoverflow <http://stackoverflow.com/questions/38312668/how-does-one-do-inference-with-batch-normalization-with-tensor-flow>`__
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         decay=0.9,
         epsilon=1e-5,
         beta_init=tf.zeros_initializer,
@@ -167,7 +141,6 @@ class BatchNormLayer(Layer):
         name='batchnorm_layer',
     ):
 
-        self.prev_layer = prev_layer
         self.decay = decay
         self.epsilon = epsilon
         self.beta_init = beta_init
@@ -289,34 +262,21 @@ class InstanceNormLayer(Layer):
 
     Parameters
     -----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     act : activation function.
         The activation function of this layer.
     epsilon : float
         Eplison.
     name : str
         A unique layer name
-
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         epsilon=1e-5,
         act=None,
         name='instance_norm',
     ):
 
-        self.prev_layer = prev_layer
         self.epsilon = epsilon
         self.act = act
         self.name = name
@@ -376,26 +336,12 @@ class LayerNormLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     act : activation function
         The activation function of this layer.
-    others : _
-        `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`__.
-
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         center=True,
         scale=True,
         variables_collections=None,
@@ -406,7 +352,6 @@ class LayerNormLayer(Layer):
         name='layernorm'
     ):
 
-        self.prev_layer = prev_layer
         self.center = center
         self.scale = scale
         self.variables_collections = variables_collections
@@ -489,8 +434,6 @@ class SwitchNormLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     act : activation function
         The activation function of this layer.
     epsilon : float
@@ -511,18 +454,8 @@ class SwitchNormLayer(Layer):
     - `Zhihu (CN) <https://zhuanlan.zhihu.com/p/39296570?utm_source=wechat_session&utm_medium=social&utm_oi=984862267107651584>`__
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         epsilon=1e-5,
         beta_init=tf.constant_initializer(0.0),
         gamma_init=tf.constant_initializer(1.0),
@@ -530,7 +463,6 @@ class SwitchNormLayer(Layer):
         name='switchnorm_layer',
     ):
 
-        self.prev_layer = prev_layer
         self.epsilon = epsilon
         self.beta_init = beta_init
         self.gamma_init = gamma_init

@@ -26,12 +26,6 @@ class DepthwiseConv2d(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        Previous layer.
-    filter_size : tuple of int
-        The filter size (height, width).
-    stride : tuple of int
-        The stride step (height, width).
     act : activation function
         The activation function of this layer.
     padding : str
@@ -74,18 +68,8 @@ class DepthwiseConv2d(Layer):
 
     # https://zhuanlan.zhihu.com/p/31551004  https://github.com/xiaohu2015/DeepLearning_tutorials/blob/master/CNNs/MobileNet.py
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         shape=(3, 3),
         strides=(1, 1),
         padding='SAME',
@@ -109,7 +93,6 @@ class DepthwiseConv2d(Layer):
         elif len(strides) != 4:
             raise ValueError("len(strides) should be 4.")
 
-        self.prev_layer = prev_layer
         self.shape = shape
         self.strides = strides
         self.padding = padding

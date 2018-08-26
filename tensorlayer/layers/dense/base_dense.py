@@ -19,8 +19,6 @@ class DenseLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_units : int
         The number of units of this layer.
     act : activation function
@@ -55,18 +53,8 @@ class DenseLayer(Layer):
     If the layer input has more than two axes, it needs to be flatten by using :class:`FlattenLayer`.
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         n_units=100,
         act=None,
         W_init=tf.truncated_normal_initializer(stddev=0.1),
@@ -76,7 +64,6 @@ class DenseLayer(Layer):
         name='dense',
     ):
 
-        self.prev_layer = prev_layer
         self.n_units = n_units
         self.act = act
         self.W_init = W_init

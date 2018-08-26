@@ -22,8 +22,6 @@ class ExpandDimsLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     axis : int
         The dimension index at which to expand the shape of input.
     name : str
@@ -38,23 +36,12 @@ class ExpandDimsLayer(Layer):
     >>> n = tl.layers.ExpandDimsLayer(n, 2)
     [None, 100, 1]
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         axis=0,
         name='expand_dims',
     ):
 
-        self.prev_layer = prev_layer
         self.axis = axis
         self.name = name
 
@@ -89,8 +76,6 @@ class TileLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     multiples: tensor
         Must be one of the following types: int32, int64.
         1-D Length must be the same as the number of dimensions in input.
@@ -108,18 +93,8 @@ class TileLayer(Layer):
     >>> n = tl.layers.TileLayer(n, [-1, 1, 3])
     [None, 100, 3]
     """
+    def __init__(self, multiples=None, name='tile'):
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
-    def __init__(self, prev_layer=None, multiples=None, name='tile'):
-
-        self.prev_layer = prev_layer
         self.multiples = multiples
         self.name = name
 

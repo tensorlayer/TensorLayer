@@ -41,20 +41,12 @@ class StackLayer(Layer):
     (?, 3, 10)
 
     """
-
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`layers` is deprecated, use the functional API instead",
-        deprecated_args=("layers", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        layers=None,
         axis=1,
         name='stack',
     ):
 
-        self.prev_layer = layers
         self.axis = axis
         self.name = name
 
@@ -72,6 +64,14 @@ class StackLayer(Layer):
 
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
+        """
+        Parameters
+        ----------
+        prev_layer : list of :class:`Layer`
+            Previous layers to stack.
+        is_train : boolean
+            Determine if the network will be defined in training mode.
+        """
 
         self._temp_data['outputs'] = tf.stack(self._temp_data['inputs'], axis=self.axis, name=self.name)
 
@@ -97,13 +97,8 @@ class UnStackLayer(Layer):
         The list of layer objects unstacked from the input.
 
     """
+    def __init__(self, num=None, axis=0, name='unstack'):
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    def __init__(self, prev_layer=None, num=None, axis=0, name='unstack'):
-
-        self.prev_layer = prev_layer
         self.num = num
         self.axis = axis
         self.name = name

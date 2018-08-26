@@ -22,20 +22,14 @@ class DeConv2d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_filter : int
         The number of filters.
     filter_size : tuple of int
         The filter size (height, width).
-    out_size : tuple of int
-        Require if TF version < 1.3, (height, width) of output.
     strides : tuple of int
         The stride step (height, width).
     padding : str
         The padding algorithm type: "SAME" or "VALID".
-    batch_size : int or None
-        Require if TF < 1.3, int or None.
         If None, try to find the `batch_size` from the first dim of net.outputs (you should define the `batch_size` in the input placeholder).
     act : activation function
         The activation function of this layer.
@@ -51,18 +45,8 @@ class DeConv2d(Layer):
         A unique layer name.
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', n_out_channel='n_filter', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         n_filter=32,
         filter_size=(3, 3),
         strides=(2, 2),
@@ -86,7 +70,6 @@ class DeConv2d(Layer):
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2, DeConv2d and DeConv2dLayer are different.")
 
-        self.prev_layer = prev_layer
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = strides
@@ -184,20 +167,9 @@ class DeConv3d(Layer):
         The arguments for the bias vector initializer (For TF < 1.3).
     name : str
         A unique layer name.
-
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         n_filter=32,
         filter_size=(3, 3, 3),
         strides=(2, 2, 2),
@@ -218,7 +190,6 @@ class DeConv3d(Layer):
         if padding not in ["SAME", "VALID"]:
             raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
 
-        self.prev_layer = prev_layer
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = strides

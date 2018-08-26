@@ -25,8 +25,6 @@ class DeConv2dLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     act : activation function
         The activation function of this layer.
     shape : tuple of int
@@ -94,18 +92,8 @@ class DeConv2dLayer(Layer):
     ...         padding='SAME', W_init=w_init, b_init=b_init, name='devcon1_1')
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         shape=(3, 3, 128, 256),
         strides=(1, 2, 2, 1),
         padding='SAME',
@@ -125,7 +113,6 @@ class DeConv2dLayer(Layer):
         if data_format not in ["NHWC", "NCHW"]:
             raise ValueError("`data_format` value is not valid, should be either: 'NHWC' or 'NCHW'")
 
-        self.prev_layer = prev_layer
         self.shape = shape
         self.strides = strides
         self.padding = padding
@@ -216,8 +203,6 @@ class DeConv3dLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     act : activation function
         The activation function of this layer.
     shape : tuple of int
@@ -242,17 +227,8 @@ class DeConv3dLayer(Layer):
 
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         shape=(2, 2, 2, 128, 256),
         strides=(1, 2, 2, 2, 1),
         padding='SAME',
@@ -272,7 +248,6 @@ class DeConv3dLayer(Layer):
         if data_format not in ["NDHWC", "NCDHW"]:
             raise ValueError("`data_format` value is not valid, should be either: 'NDHWC' or 'NCDHW'")
 
-        self.prev_layer = prev_layer
         self.shape = shape
         self.strides = strides
         self.padding = padding

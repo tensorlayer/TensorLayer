@@ -29,8 +29,6 @@ class ROIPoolingLayer(Layer):
 
     Parameters
     -----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     rois : tuple of int
         Regions of interest in the format of (feature map index, upper left, bottom right).
     pool_width : int
@@ -46,25 +44,17 @@ class ROIPoolingLayer(Layer):
     - Please install it by the instruction `HERE <https://github.com/tensorlayer/tensorlayer/blob/master/tensorlayer/third_party/roi_pooling/README.md>`__.
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
-        rois=list(),
+        rois,
         pool_height=2,
         pool_width=2,
         name='roipooling_layer',
     ):
 
-        self.prev_layer = prev_layer
+        if not isinstance(rois, tuple):
+            raise ValueError('`rois` should be of type `tuple`')
+
         self.rois = rois
         self.pool_height = pool_height
         self.pool_width = pool_width

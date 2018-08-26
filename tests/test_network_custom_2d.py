@@ -72,8 +72,10 @@ class CustomNetwork_2D_Test(CustomTestCase):
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
             cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
 
-            print("Train: %s - Type: %s" % (cls.train_model, type(cls.train_model)))
-            print("Test: %s - Type: %s" % (cls.test_model, type(cls.test_model)))
+    def test_objects_dtype(self):
+        self.assertIsInstance(self.train_model, tl.models.CompiledNetwork)
+        self.assertIsInstance(self.test_model, tl.models.CompiledNetwork)
+        self.assertIsInstance(self.model, tl.networks.CustomModel)
 
     def test_get_all_drop_plh(self):
         self.assertEqual(len(self.train_model.all_drop), 0)
@@ -101,7 +103,7 @@ class CustomNetwork_2D_Test(CustomTestCase):
         self.assertEqual(self.test_model.count_layers(), 9)
         self.assertEqual(self.model.count_layers(), 9)
 
-    def test_network_dtype(self):
+    def test_layer_outputs_dtype(self):
 
         with self.assertNotRaises(RuntimeError):
 

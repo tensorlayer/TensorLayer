@@ -95,6 +95,11 @@ class Network_Sequential_3D_Test(CustomTestCase):
             print("Train: %s - Type: %s" % (cls.train_model, type(cls.train_model)))
             print("Test: %s - Type: %s" % (cls.test_model, type(cls.test_model)))
 
+    def test_objects_dtype(self):
+        self.assertIsInstance(self.train_model, tl.models.CompiledNetwork)
+        self.assertIsInstance(self.test_model, tl.models.CompiledNetwork)
+        self.assertIsInstance(self.model, tl.networks.Sequential)
+
     def test_get_all_drop_plh(self):
         self.assertEqual(len(self.train_model.all_drop), 0)
         self.assertEqual(len(self.test_model.all_drop), 0)
@@ -121,7 +126,7 @@ class Network_Sequential_3D_Test(CustomTestCase):
         self.assertEqual(self.test_model.count_layers(), 13)
         self.assertEqual(self.model.count_layers(), 13)
 
-    def test_network_dtype(self):
+    def test_layer_outputs_dtype(self):
 
         with self.assertNotRaises(RuntimeError):
 
@@ -139,7 +144,6 @@ class Network_Sequential_3D_Test(CustomTestCase):
                         (layer_name, self.test_model[layer_name].outputs.dtype, tf.float16)
                     )
 
-    '''
     def test_network_shapes(self):
 
         self.assertEqual(self.train_model["input_layer"].outputs.shape, (100, 16, 16, 16))
@@ -180,7 +184,6 @@ class Network_Sequential_3D_Test(CustomTestCase):
 
         self.assertEqual(self.train_model["simple_deconv3d_layer_8"].outputs.shape, (100, 564, 564, 564, 8))
         self.assertEqual(self.test_model["simple_deconv3d_layer_8"].outputs.shape, (100, 564, 564, 564, 8))
-    '''
 
 
 if __name__ == '__main__':

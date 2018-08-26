@@ -22,8 +22,6 @@ class Conv1dLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     shape : tuple of int
         The shape of the filters: (filter_length, in_channels, out_channels).
     stride : int
@@ -48,18 +46,8 @@ class Conv1dLayer(Layer):
         A unique layer name
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         shape=(5, 1, 5),
         stride=1,
         padding='SAME',
@@ -80,7 +68,6 @@ class Conv1dLayer(Layer):
         if padding not in ["SAME", "VALID"]:
             raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
 
-        self.prev_layer = prev_layer
         self.shape = shape
         self.stride = stride
         self.padding = padding
@@ -219,17 +206,8 @@ class Conv2dLayer(Layer):
     ...                   name ='pool_layer1')   # output: (?, 14, 14, 32)
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         shape=(5, 5, 1, 100),
         strides=(1, 1, 1, 1),
         padding='SAME',
@@ -258,7 +236,6 @@ class Conv2dLayer(Layer):
         if gemmlowp_at_inference:
             raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
-        self.prev_layer = prev_layer
         self.shape = shape
         self.strides = strides
         self.padding = padding
@@ -368,17 +345,8 @@ class Conv3dLayer(Layer):
     [None, 50, 50, 50, 32]
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         shape=(2, 2, 2, 3, 32),
         strides=(1, 2, 2, 2, 1),
         padding='SAME',
@@ -398,7 +366,6 @@ class Conv3dLayer(Layer):
         if data_format not in ["NDHWC", "NCDHW"]:
             raise ValueError("`data_format` value is not valid, should be either: 'NDHWC' or 'NCDHW'")
 
-        self.prev_layer = prev_layer
         self.shape = shape
         self.strides = strides
         self.padding = padding

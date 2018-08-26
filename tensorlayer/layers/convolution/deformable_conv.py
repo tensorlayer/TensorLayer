@@ -65,18 +65,8 @@ class DeformableConv2d(Layer):
 
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
-        offset_layer=None,
         n_filter=32,
         filter_size=(3, 3),
         W_init=tf.truncated_normal_initializer(stddev=0.02),
@@ -86,8 +76,6 @@ class DeformableConv2d(Layer):
         act=None,
         name='deformable_conv_2d',
     ):
-
-        self.prev_layer = self._check_inputs(prev_layer, offset_layer)
 
         self.n_filter = n_filter
         self.filter_size = filter_size
@@ -120,6 +108,16 @@ class DeformableConv2d(Layer):
 
     @auto_parse_inputs
     def compile(self, prev_layer, offset_layer=None, is_train=True):
+        """
+        Parameters
+        ----------
+        prev_layer : :class:`Layer`
+            Previous layer.
+        offset_layer : :class:`Layer`
+            To predict the offset of convolution operations.
+            The output shape is (batchsize, input height, input width, 2*(number of element in the convolution kernel))
+            e.g. if apply a 3*3 kernel, the number of the last dimension should be 18 (2*3*3)
+        """
 
         input_layer = self._temp_data['inputs'][0]
         offset_layer = self._temp_data['inputs'][1]

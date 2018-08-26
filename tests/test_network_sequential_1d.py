@@ -154,8 +154,10 @@ class Network_Sequential_1D_Test(CustomTestCase):
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
             cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
 
-            print("Train: %s - Type: %s" % (cls.train_model, type(cls.train_model)))
-            print("Test: %s - Type: %s" % (cls.test_model, type(cls.test_model)))
+    def test_objects_dtype(self):
+        self.assertIsInstance(self.train_model, tl.models.CompiledNetwork)
+        self.assertIsInstance(self.test_model, tl.models.CompiledNetwork)
+        self.assertIsInstance(self.model, tl.networks.Sequential)
 
     def test_get_all_drop_plh(self):
         self.assertEqual(len(self.train_model.all_drop), 1)
@@ -179,18 +181,11 @@ class Network_Sequential_1D_Test(CustomTestCase):
             self.assertEqual(len(self.model.get_all_weights()), 48)
 
     def test_count_layers(self):
-
-        for layer in self.train_model.all_layers:
-            if self.train_model[layer].local_weights != self.test_model[layer].local_weights or layer == 'seq_layer_11':
-                print("\nLayer [%s]:")
-                print("[train]:", self.train_model[layer].local_weights)
-                print("[test]:", self.test_model[layer].local_weights)
-
         self.assertEqual(self.train_model.count_layers(), 44)
         self.assertEqual(self.test_model.count_layers(), 44)
         self.assertEqual(self.model.count_layers(), 44)
 
-    def test_network_dtype(self):
+    def test_layer_outputs_dtype(self):
 
         with self.assertNotRaises(RuntimeError):
 

@@ -20,12 +20,6 @@ __all__ = [
 ]
 
 
-@deprecated_alias(layer='prev_layer', end_support_version="2.0.0")  # TODO: remove this line before releasing TL 2.0.0
-@deprecated_args(
-    end_support_version="2.1.0",
-    instructions="`prev_layer` is deprecated, use the functional API instead",
-    deprecated_args=("prev_layer", ),
-)  # TODO: remove this line before releasing TL 2.1.0
 def atrous_conv1d(
     prev_layer=None,
     n_filter=32,
@@ -100,8 +94,6 @@ class AtrousConv2dLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer with a 4D output tensor in the shape of (batch, height, width, channels).
     n_filter : int
         The number of filters.
     filter_size : tuple of int
@@ -126,18 +118,8 @@ class AtrousConv2dLayer(Layer):
         A unique layer name.
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         n_filter=32,
         filter_size=(3, 3),
         rate=2,
@@ -154,7 +136,6 @@ class AtrousConv2dLayer(Layer):
         if padding not in ["SAME", "VALID"]:
             raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
 
-        self.prev_layer = prev_layer
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.rate = rate
@@ -263,17 +244,8 @@ class AtrousDeConv2dLayer(Layer):
 
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         shape=(3, 3, 128, 256),
         rate=2,
         padding='SAME',
@@ -289,7 +261,6 @@ class AtrousDeConv2dLayer(Layer):
         if padding not in ["SAME", "VALID"]:
             raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
 
-        self.prev_layer = prev_layer
         self.shape = shape
         self.rate = rate
         self.padding = padding

@@ -28,8 +28,6 @@ class QuantizedConv2dWithBN(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_filter : int
         The number of filters.
     filter_size : tuple of int
@@ -95,19 +93,8 @@ class QuantizedConv2dWithBN(Layer):
     >>> net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
     ...
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
-
         # Quantized Conv 2D Parameters
         n_filter=32,
         filter_size=(3, 3),
@@ -149,8 +136,6 @@ class QuantizedConv2dWithBN(Layer):
         # TODO: Implement GEMM
         if gemmlowp_at_inference:
             raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
-
-        self.prev_layer = prev_layer
 
         # Quantized Conv 2D Parameters
         self.n_filter = n_filter

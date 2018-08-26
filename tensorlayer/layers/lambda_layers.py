@@ -56,19 +56,9 @@ class LambdaLayer(Layer):
     >>> net = LambdaLayer(net, fn=keras_block, name='keras')
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
-        fn=None,
+        fn,
         fn_args=None,
         act=None,
         name='lambda_layer',
@@ -76,7 +66,6 @@ class LambdaLayer(Layer):
         if fn is None:
             raise AssertionError("The `fn` argument cannot be None")
 
-        self.prev_layer = prev_layer
         self.fn = fn
         self.act = act
         self.name = name
@@ -143,16 +132,9 @@ class ElementwiseLambdaLayer(Layer):
     >>> std = tl.layers.DenseLayer(net, n_units=200, name='std')
     >>> z = tl.layers.ElementwiseLambdaLayer([noise, mean, std], fn=func, name='z')
     """
-
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`layers` is deprecated, use the functional API instead",
-        deprecated_args=("layers", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        layers=None,
-        fn=None,
+        fn,
         fn_args=None,
         act=None,
         name='elementwiselambda_layer',
@@ -160,7 +142,6 @@ class ElementwiseLambdaLayer(Layer):
         if fn is None:
             raise AssertionError("The `fn` argument cannot be None")
 
-        self.prev_layer = layers
         self.fn = fn
         self.act = act
         self.name = name

@@ -20,8 +20,6 @@ class ConcatLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : list of :class:`Layer`
-        List of layers to concatenate.
     concat_dim : int
         The dimension to concatenate.
     name : str
@@ -54,23 +52,12 @@ class ConcatLayer(Layer):
     [TL]   layer   2: concat_layer:0       (?, 1100)          float32
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         concat_dim=-1,
         name='concat_layer',
     ):
 
-        self.prev_layer = prev_layer
         self.concat_dim = concat_dim
         self.name = name
 
@@ -103,8 +90,6 @@ class ElementwiseLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : list of :class:`Layer`
-        The list of layers to combine.
     combine_fn : a TensorFlow element-wise combine function
         e.g. AND is ``tf.minimum`` ;  OR is ``tf.maximum`` ; ADD is ``tf.add`` ; MUL is ``tf.multiply`` and so on.
         See `TensorFlow Math API <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html#math>`__ .
@@ -132,24 +117,13 @@ class ElementwiseLayer(Layer):
     [TL]   layer   1: net_1/Relu:0         (?, 500)           float32
     [TL]   layer   2: minimum:0            (?, 500)           float32
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         combine_fn=tf.minimum,
         act=None,
         name='elementwise_layer',
     ):
 
-        self.prev_layer = prev_layer
         self.combine_fn = combine_fn
         self.act = act
         self.name = name

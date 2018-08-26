@@ -20,8 +20,6 @@ class GroupConv2d(Layer):
 
     Parameters
     --------------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_filter : int
         The number of filters.
     filter_size : int
@@ -46,17 +44,8 @@ class GroupConv2d(Layer):
         A unique layer name.
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         n_filter=32,
         filter_size=(3, 3),
         strides=(2, 2),
@@ -87,7 +76,6 @@ class GroupConv2d(Layer):
         if gemmlowp_at_inference:
             raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
-        self.prev_layer = prev_layer
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = strides

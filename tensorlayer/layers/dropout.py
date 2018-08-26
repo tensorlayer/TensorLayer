@@ -24,16 +24,12 @@ class DropoutLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     keep : float
         The keeping probability.
         The lower the probability it is, the more activations are set to zero.
     is_fix : boolean
         Fixing probability or nor. Default is False.
         If True, the keeping probability is fixed and cannot be changed via `feed_dict`.
-    is_train : boolean
-        Trainable or not. If False, skip this layer. Default is True.
     seed : int or None
         The seed for random dropout.
     name : str
@@ -123,8 +119,8 @@ class DropoutLayer(Layer):
                     )
 
                 else:
-                    # keep_plh = tf.placeholder(self._temp_data['inputs'].dtype, shape=())
-                    keep_plh = tf.placeholder(tf.float32, shape=())
+                    keep_plh = tf.placeholder(self._temp_data['inputs'].dtype, shape=())
+
                     self._add_local_drop_plh(keep_plh, self.keep)
 
                     LayersConfig.set_keep[self.name] = keep_plh

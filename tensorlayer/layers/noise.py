@@ -23,8 +23,6 @@ class GaussianNoiseLayer(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        Previous layer.
     mean : float
         The mean. Default is 0.
     stddev : float
@@ -47,18 +45,8 @@ class GaussianNoiseLayer(Layer):
     (64, 100)
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        prev_layer=None,
         mean=0.0,
         stddev=1.0,
         is_train=True,
@@ -66,7 +54,6 @@ class GaussianNoiseLayer(Layer):
         name='gaussian_noise_layer',
     ):
 
-        self.prev_layer = prev_layer
         self.mean = mean
         self.stddev = stddev
         self.is_train = is_train
