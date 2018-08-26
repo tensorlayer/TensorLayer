@@ -80,7 +80,7 @@ class QuantizedDenseWithBN(Layer):
         act=None,
         decay=0.9,
         epsilon=1e-5,
-        is_train=False,
+        # is_train=False,
         bitW=8,
         bitA=8,
         gamma_init=tf.ones_initializer,
@@ -90,30 +90,56 @@ class QuantizedDenseWithBN(Layer):
         W_init_args=None,
         name='quantized_dense_with_bn',
     ):
-        super(QuantizedDenseWithBN, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
+        self.n_units = n_units
+        self.act = act
+        self.decay = decay
+        self.epsilon = epsilon
+        self.bitW = bitW
+        self.bitA = bitA
+        self.gamma_init = gamma_init
+        self.beta_init = beta_init
+        self.gemmlowp_at_inference = gemmlowp_at_inference
+        self.W_init = W_init
+        self.W_init_args = W_init_args
+        self.name = name
 
-        logging.info(
-            "QuantizedDenseWithBN  %s: %d %s" %
-            (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
-        )
+        super(QuantizedDenseWithBN, self).__init__(prev_layer=prev_layer, W_init_args=W_init_args)
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("n_units: %d" % self.n_units)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @auto_parse_inputs
+    def compile(self, prev_layer, is_train=True):
 
         if self._temp_data['inputs'].get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
-        if gemmlowp_at_inference:
+        if self.gemmlowp_at_inference:
             raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
         n_in = int(self._temp_data['inputs'].get_shape()[-1])
         x = self._temp_data['inputs']
-        self._temp_data['inputs'] = quantize_active_overflow(self._temp_data['inputs'], bitA)
-        self.n_units = n_units
+        self._temp_data['inputs'] = quantize_active_overflow(self._temp_data['inputs'], self.bitA)
+        self.n_units = self.n_units
 
-        with tf.variable_scope(name):
+        with tf.variable_scope(self.name):
 
             weight_matrix = self._get_tf_variable(
                 name='W',
-                shape=(n_in, n_units),
-                initializer=W_init,
+                shape=(n_in, self.n_units),
+                initializer=self.W_init,
                 dtype=self._temp_data['inputs'].dtype,
                 **self.W_init_args
             )
@@ -122,22 +148,22 @@ class QuantizedDenseWithBN(Layer):
 
             para_bn_shape = mid_out.get_shape()[-1:]
 
-            if gamma_init:
+            if self.gamma_init:
                 scale_para = self._get_tf_variable(
                     name='scale_para',
                     shape=para_bn_shape,
-                    initializer=gamma_init,
+                    initializer=self.gamma_init,
                     dtype=self._temp_data['inputs'].dtype,
                     trainable=is_train
                 )
             else:
                 scale_para = None
 
-            if beta_init:
+            if self.beta_init:
                 offset_para = self._get_tf_variable(
                     name='offset_para',
                     shape=para_bn_shape,
-                    initializer=beta_init,
+                    initializer=self.beta_init,
                     dtype=self._temp_data['inputs'].dtype,
                     trainable=is_train
                 )
@@ -163,11 +189,11 @@ class QuantizedDenseWithBN(Layer):
             mean, variance = tf.nn.moments(mid_out, list(range(len(mid_out.get_shape()) - 1)))
 
             update_moving_mean = moving_averages.assign_moving_average(
-                moving_mean, mean, decay, zero_debias=False
+                moving_mean, mean, self.decay, zero_debias=False
             )  # if zero_debias=True, has bias
 
             update_moving_variance = moving_averages.assign_moving_average(
-                moving_variance, variance, decay, zero_debias=False
+                moving_variance, variance, self.decay, zero_debias=False
             )  # if zero_debias=True, has bias
 
             def mean_var_with_update():
@@ -179,10 +205,10 @@ class QuantizedDenseWithBN(Layer):
             else:
                 mean, var = moving_mean, moving_variance
 
-            _w_fold = w_fold(weight_matrix, scale_para, var, epsilon)
-            _bias_fold = bias_fold(offset_para, scale_para, mean, var, epsilon)
+            _w_fold = w_fold(weight_matrix, scale_para, var, self.epsilon)
+            _bias_fold = bias_fold(offset_para, scale_para, mean, var, self.epsilon)
 
-            weight_matrix = quantize_weight_overflow(_w_fold, bitW)
+            weight_matrix = quantize_weight_overflow(_w_fold, self.bitW)
             # weight_matrix = tl.act.sign(weight_matrix)    # dont update ...
 
             # weight_matrix = tf.Variable(weight_matrix)
