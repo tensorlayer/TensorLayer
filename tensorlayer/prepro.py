@@ -3846,7 +3846,7 @@ def keypoint_random_resize(image, annos, mask=None, zoom_range=(0.8, 1.2)):
 
 
 def keypoint_random_resize_shortestedge(
-        image, annos, mask=None, min_size=(368, 368), pad_val=(0, 0, np.random.uniform(0.0, 1.0))
+    image, annos, mask=None, min_size=(368, 368), pad_val=(0, 0, np.random.uniform(0.0, 1.0))
 ):
     """Randomly resize an image and corresponding keypoints based on shorter edge with padding.
     The size of image will be changed.
