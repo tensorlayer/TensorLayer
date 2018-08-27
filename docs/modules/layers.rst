@@ -142,7 +142,6 @@ Layer list
    AverageEmbeddingInputlayer
 
    DenseLayer
-   ReconLayer
    DropoutLayer
    GaussianNoiseLayer
    DropconnectDenseLayer
