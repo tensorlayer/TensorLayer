@@ -79,7 +79,7 @@ class PoolLayer(Layer):
 
 
 class MaxPool1d(Layer):
-    """Max pooling for 1D signal [batch, length, channel]. Wrapper for `tf.layers.max_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling1d>`__ .
+    """Max pooling for 1D signal.
 
     Parameters
     ----------
@@ -92,10 +92,7 @@ class MaxPool1d(Layer):
     padding : str
         The padding method: 'valid' or 'same'.
     data_format : str
-        One of `channels_last` (default) or `channels_first`.
-        The ordering of the dimensions must match the inputs.
-        channels_last corresponds to inputs with the shape (batch, length, channels);
-        while channels_first corresponds to inputs with shape (batch, channels, length).
+        One of channels_last (default, [batch, length, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
         A unique layer name.
 
@@ -120,12 +117,12 @@ class MaxPool1d(Layer):
 
 
 class MeanPool1d(Layer):
-    """Mean pooling for 1D signal [batch, length, channel]. Wrapper for `tf.layers.average_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling1d>`__ .
+    """Mean pooling for 1D signal.
 
     Parameters
     ------------
     prev_layer : :class:`Layer`
-        The previous layer with a output rank as 3 [batch, length, channel].
+        The previous layer with a output rank as 3.
     filter_size : tuple of int
         Pooling window size.
     strides : tuple of int
@@ -133,10 +130,7 @@ class MeanPool1d(Layer):
     padding : str
         The padding method: 'valid' or 'same'.
     data_format : str
-        One of `channels_last` (default) or `channels_first`.
-        The ordering of the dimensions must match the inputs.
-        channels_last corresponds to inputs with the shape (batch, length, channels);
-        while channels_first corresponds to inputs with shape (batch, channels, length).
+        One of channels_last (default, [batch, length, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
         A unique layer name.
 
@@ -168,25 +162,30 @@ class MeanPool1d(Layer):
 
 
 class MaxPool2d(Layer):
-    """Max pooling for 2D image [batch, height, width, channel].
+    """Max pooling for 2D image.
 
     Parameters
     -----------
     prev_layer : :class:`Layer`
-        The previous layer with a output rank as 4 [batch, height, width, channel].
+        The previous layer with a output rank as 4.
     filter_size : tuple of int
         (height, width) for filter size.
     strides : tuple of int
         (height, width) for strides.
     padding : str
         The padding method: 'valid' or 'same'.
+    data_format : str
+        One of channels_last (default, [batch, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
         A unique layer name.
 
     """
 
     @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool2d'):
+    def __init__(
+            self, prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', data_format='channels_last',
+            name='maxpool2d'
+    ):
         if strides is None:
             strides = filter_size
 
@@ -198,7 +197,7 @@ class MaxPool2d(Layer):
         )
 
         self.outputs = tf.layers.max_pooling2d(
-            self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name
+            self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
 
         self._add_layers(self.outputs)
@@ -217,13 +216,18 @@ class MeanPool2d(Layer):
         (height, width) for strides.
     padding : str
         The padding method: 'valid' or 'same'.
+    data_format : str
+        One of channels_last (default, [batch, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
         A unique layer name.
 
     """
 
     @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='meanpool2d'):
+    def __init__(
+            self, prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', data_format='channels_last',
+            name='meanpool2d'
+    ):
 
         if strides is None:
             strides = filter_size
@@ -236,19 +240,19 @@ class MeanPool2d(Layer):
         )
 
         self.outputs = tf.layers.average_pooling2d(
-            self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name
+            self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
 
         self._add_layers(self.outputs)
 
 
 class MaxPool3d(Layer):
-    """Max pooling for 3D volume [batch, depth, height, width, channel]. Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`__ .
+    """Max pooling for 3D volume.
 
     Parameters
     ------------
     prev_layer : :class:`Layer`
-        The previous layer with a output rank as 5 [batch, depth, height, width, channel].
+        The previous layer with a output rank as 5.
     filter_size : tuple of int
         Pooling window size.
     strides : tuple of int
@@ -256,10 +260,7 @@ class MaxPool3d(Layer):
     padding : str
         The padding method: 'valid' or 'same'.
     data_format : str
-        One of `channels_last` (default) or `channels_first`.
-        The ordering of the dimensions must match the inputs.
-        channels_last corresponds to inputs with the shape (batch, length, channels);
-        while channels_first corresponds to inputs with shape (batch, channels, length).
+        One of channels_last (default, [batch, depth, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
         A unique layer name.
 
@@ -290,12 +291,12 @@ class MaxPool3d(Layer):
 
 
 class MeanPool3d(Layer):
-    """Mean pooling for 3D volume [batch, depth, height, width, channel]. Wrapper for `tf.layers.average_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling3d>`__
+    """Mean pooling for 3D volume.
 
     Parameters
     ------------
     prev_layer : :class:`Layer`
-        The previous layer with a output rank as 5 [batch, depth, height, width, channel].
+        The previous layer with a output rank as 5.
     filter_size : tuple of int
         Pooling window size.
     strides : tuple of int
@@ -303,10 +304,7 @@ class MeanPool3d(Layer):
     padding : str
         The padding method: 'valid' or 'same'.
     data_format : str
-        One of `channels_last` (default) or `channels_first`.
-        The ordering of the dimensions must match the inputs.
-        channels_last corresponds to inputs with the shape (batch, length, channels);
-        while channels_first corresponds to inputs with shape (batch, channels, length).
+        One of channels_last (default, [batch, depth, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
         A unique layer name.
 
@@ -344,6 +342,8 @@ class GlobalMaxPool1d(Layer):
     ------------
     prev_layer : :class:`Layer`
         The previous layer with a output rank as 3 [batch, length, channel].
+    data_format : str
+        One of channels_last (default, [batch, length, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
         A unique layer name.
 
@@ -356,13 +356,19 @@ class GlobalMaxPool1d(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, name='globalmaxpool1d'):
+    def __init__(self, prev_layer, data_format="channels_last", name='globalmaxpool1d'):
         super(GlobalMaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info("GlobalMaxPool1d %s" % self.name)
 
-        self.outputs = tf.reduce_max(self.inputs, axis=1, name=name)
-
+        if data_format == 'channels_last':
+            self.outputs = tf.reduce_max(self.inputs, axis=1, name=name)
+        elif data_format == 'channels_first':
+            self.outputs = tf.reduce_max(self.inputs, axis=2, name=name)
+        else:
+            raise ValueError(
+                "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
+            )
         self._add_layers(self.outputs)
 
 
@@ -373,6 +379,8 @@ class GlobalMeanPool1d(Layer):
     ------------
     prev_layer : :class:`Layer`
         The previous layer with a output rank as 3 [batch, length, channel].
+    data_format : str
+        One of channels_last (default, [batch, length, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
         A unique layer name.
 
@@ -387,13 +395,19 @@ class GlobalMeanPool1d(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, name='globalmeanpool1d'):
+    def __init__(self, prev_layer, data_format='channels_last', name='globalmeanpool1d'):
         super(GlobalMeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info("GlobalMeanPool1d %s" % self.name)
 
-        self.outputs = tf.reduce_mean(self.inputs, axis=1, name=name)
-
+        if data_format == 'channels_last':
+            self.outputs = tf.reduce_mean(self.inputs, axis=1, name=name)
+        elif data_format == 'channels_first':
+            self.outputs = tf.reduce_mean(self.inputs, axis=2, name=name)
+        else:
+            raise ValueError(
+                "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
+            )
         self._add_layers(self.outputs)
 
 
@@ -404,6 +418,8 @@ class GlobalMaxPool2d(Layer):
     ------------
     prev_layer : :class:`Layer`
         The previous layer with a output rank as 4 [batch, height, width, channel].
+    data_format : str
+        One of channels_last (default, [batch, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
         A unique layer name.
 
@@ -418,13 +434,19 @@ class GlobalMaxPool2d(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, name='globalmaxpool2d'):
+    def __init__(self, prev_layer, data_format='channels_last', name='globalmaxpool2d'):
         super(GlobalMaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info("GlobalMaxPool2d %s" % self.name)
 
-        self.outputs = tf.reduce_max(self.inputs, axis=[1, 2], name=name)
-
+        if data_format == 'channels_last':
+            self.outputs = tf.reduce_max(self.inputs, axis=[1, 2], name=name)
+        elif data_format == 'channels_first':
+            self.outputs = tf.reduce_max(self.inputs, axis=[2, 3], name=name)
+        else:
+            raise ValueError(
+                "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
+            )
         self._add_layers(self.outputs)
 
 
@@ -435,6 +457,8 @@ class GlobalMeanPool2d(Layer):
     ------------
     prev_layer : :class:`Layer`
         The previous layer with a output rank as 4 [batch, height, width, channel].
+    data_format : str
+        One of channels_last (default, [batch, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
         A unique layer name.
 
@@ -449,13 +473,19 @@ class GlobalMeanPool2d(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, name='globalmeanpool2d'):
+    def __init__(self, prev_layer, data_format='channels_last', name='globalmeanpool2d'):
         super(GlobalMeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info("GlobalMeanPool2d %s" % self.name)
 
-        self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2], name=name)
-
+        if data_format == 'channels_last':
+            self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2], name=name)
+        elif data_format == 'channels_first':
+            self.outputs = tf.reduce_mean(self.inputs, axis=[2, 3], name=name)
+        else:
+            raise ValueError(
+                "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
+            )
         self._add_layers(self.outputs)
 
 
@@ -466,6 +496,8 @@ class GlobalMaxPool3d(Layer):
     ------------
     prev_layer : :class:`Layer`
         The previous layer with a output rank as 5 [batch, depth, height, width, channel].
+    data_format : str
+        One of channels_last (default, [batch, depth, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
         A unique layer name.
 
@@ -480,13 +512,19 @@ class GlobalMaxPool3d(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, name='globalmaxpool3d'):
+    def __init__(self, prev_layer, data_format='channels_last', name='globalmaxpool3d'):
         super(GlobalMaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info("GlobalMaxPool3d %s" % self.name)
 
-        self.outputs = tf.reduce_max(self.inputs, axis=[1, 2, 3], name=name)
-
+        if data_format == 'channels_last':
+            self.outputs = tf.reduce_max(self.inputs, axis=[1, 2, 3], name=name)
+        elif data_format == 'channels_first':
+            self.outputs = tf.reduce_max(self.inputs, axis=[2, 3, 4], name=name)
+        else:
+            raise ValueError(
+                "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
+            )
         self._add_layers(self.outputs)
 
 
@@ -497,6 +535,8 @@ class GlobalMeanPool3d(Layer):
     ------------
     prev_layer : :class:`Layer`
         The previous layer with a output rank as 5 [batch, depth, height, width, channel].
+    data_format : str
+        One of channels_last (default, [batch, depth, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
         A unique layer name.
 
@@ -511,11 +551,17 @@ class GlobalMeanPool3d(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, name='globalmeanpool3d'):
+    def __init__(self, prev_layer, data_format='channels_last', name='globalmeanpool3d'):
         super(GlobalMeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info("GlobalMeanPool3d %s" % self.name)
 
-        self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2, 3], name=name)
-
+        if data_format == 'channels_last':
+            self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2, 3], name=name)
+        elif data_format == 'channels_first':
+            self.outputs = tf.reduce_mean(self.inputs, axis=[2, 3, 4], name=name)
+        else:
+            raise ValueError(
+                "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
+            )
         self._add_layers(self.outputs)
