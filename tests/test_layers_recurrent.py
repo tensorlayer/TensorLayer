@@ -36,34 +36,32 @@ class Layer_Recurrent_Test(unittest.TestCase):
         input_data = tf.placeholder(tf.int32, [cls.net1_batch_size, cls.num_steps])
 
         net1 = tl.layers.EmbeddingInputlayer(
-            inputs=input_data, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='embedding'
-        )
-        net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop1')
+            vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='embedding'
+        )(input_data)
+        net1 = tl.layers.DropoutLayer(keep=cls.keep_prob, is_fix=True, name='drop1')(net1, is_train=cls.is_train)
         net1 = tl.layers.RNNLayer(
-            net1,
             cell_fn=tf.contrib.rnn.BasicLSTMCell,
             n_hidden=cls.hidden_size,
             n_steps=cls.num_steps,
             return_last=False,
             name='lstm1'
-        )
+        )(net1)
 
         # lstm1 = net1
 
-        net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop2')
+        net1 = tl.layers.DropoutLayer(keep=cls.keep_prob, is_fix=True, name='drop2')(net1, is_train=cls.is_train)
         net1 = tl.layers.RNNLayer(
-            net1,
             cell_fn=tf.contrib.rnn.BasicLSTMCell,
             n_hidden=cls.hidden_size,
             n_steps=cls.num_steps,
             return_last=True,
             name='lstm2'
-        )
+        )(net1)
 
         # lstm2 = net1
 
-        net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop3')
-        net1 = tl.layers.DenseLayer(net1, n_units=cls.vocab_size, name='output')
+        net1 = tl.layers.DropoutLayer(keep=cls.keep_prob, is_fix=True, name='drop3')(net1, is_train=cls.is_train)
+        net1 = tl.layers.DenseLayer(n_units=cls.vocab_size, name='output')(net1)
 
         net1.print_layers()
         net1.print_params(False)
@@ -76,27 +74,26 @@ class Layer_Recurrent_Test(unittest.TestCase):
         # =============================== CNN+RNN encoder ===============================
 
         x2 = tf.placeholder(tf.float32, shape=[cls.net2_batch_size, cls.image_size, cls.image_size, 1])
-        net2 = tl.layers.InputLayer(x2, name='in')
+        net2 = tl.layers.InputLayer(name='in')(x2)
 
-        net2 = tl.layers.Conv2d(net2, n_filter=32, filter_size=(5, 5), strides=(2, 2), act=tf.nn.relu, name='cnn1')
-        net2 = tl.layers.MaxPool2d(net2, filter_size=(2, 2), strides=(2, 2), name='pool1')
-        net2 = tl.layers.Conv2d(net2, n_filter=10, filter_size=(5, 5), strides=(2, 2), act=tf.nn.relu, name='cnn2')
-        net2 = tl.layers.MaxPool2d(net2, filter_size=(2, 2), strides=(2, 2), name='pool2')
+        net2 = tl.layers.Conv2d(n_filter=32, filter_size=(5, 5), strides=(2, 2), act=tf.nn.relu, name='cnn1')(net2)
+        net2 = tl.layers.MaxPool2d(filter_size=(2, 2), strides=(2, 2), name='pool1')(net2)
+        net2 = tl.layers.Conv2d(n_filter=10, filter_size=(5, 5), strides=(2, 2), act=tf.nn.relu, name='cnn2')(net2)
+        net2 = tl.layers.MaxPool2d(filter_size=(2, 2), strides=(2, 2), name='pool2')(net2)
 
-        net2 = tl.layers.FlattenLayer(net2, name='flatten')
-        net2 = tl.layers.ReshapeLayer(net2, shape=(-1, cls.num_steps, int(net2.outputs._shape[-1])))
+        net2 = tl.layers.FlattenLayer(name='flatten')(net2)
+        net2 = tl.layers.ReshapeLayer(shape=(-1, cls.num_steps, int(net2.outputs._shape[-1])))(net2)
 
         net2 = tl.layers.RNNLayer(
-            net2,
             cell_fn=tf.contrib.rnn.BasicLSTMCell,
             n_hidden=200,
             n_steps=cls.num_steps,
             return_last=False,
             return_seq_2d=True,
             name='rnn'
-        )
+        )(net2)
 
-        net2 = tl.layers.DenseLayer(net2, n_units=3, name='out')
+        net2 = tl.layers.DenseLayer(n_units=3, name='out')(net2)
 
         net2.print_layers()
         net2.print_params(False)
@@ -112,18 +109,16 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
         x3 = tf.placeholder(tf.int32, [cls.net3_batch_size, cls.num_steps])
 
-        net3 = tl.layers.EmbeddingInputlayer(
-            inputs=x3, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb'
-        )
+        net3 = tl.layers.EmbeddingInputlayer(vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb'
+        )(x3)
         net3 = tl.layers.BiRNNLayer(
-            net3,
             cell_fn=tf.contrib.rnn.BasicLSTMCell,
             n_hidden=cls.hidden_size,
             n_steps=cls.num_steps,
             return_last=False,
             return_seq_2d=False,
             name='birnn'
-        )
+        )(net3)
 
         net3.print_layers()
         net3.print_params(False)
