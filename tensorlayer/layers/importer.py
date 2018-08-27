@@ -16,7 +16,6 @@ from tensorlayer.decorators import deprecated_args
 __all__ = [
     'SlimNetsLayer',
     'KerasLayer',
-    'EstimatorLayer',
 ]
 
 
@@ -167,65 +166,3 @@ class KerasLayer(Layer):
             for var in self._temp_data['local_weights']:  # Keras does not add the vars to the collection
                 if var.trainable and var not in tf.get_collection(TF_GRAPHKEYS_VARIABLES):
                     tf.add_to_collection(name=TF_GRAPHKEYS_VARIABLES, value=var)
-
-
-@deprecated(
-    end_support_version="2.0.0", instructions="This layer is deprecated in favor of :class:`LambdaLayer`"
-)  # TODO: remove this line before releasing TL 2.0.0
-class EstimatorLayer(Layer):
-    """A layer that accepts a user-defined model.
-
-    It is similar with :class:`KerasLayer`, see `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`__.
-
-    Parameters
-    ----------
-    model_fn : function
-        A tensor in tensor out function for building model.
-    layer_args : dictionary
-        The arguments for the `model_fn`.
-    name : str
-        A unique layer name.
-
-    """
-
-    def __init__(
-        self,
-        model_fn,
-        layer_args=None,
-        act=None,
-        name='estimator_layer',
-    ):
-
-        if model_fn is None:
-            raise ValueError("model_fn is None")
-
-        self.model_fn = model_fn
-        self.act = act
-        self.name = name
-
-        super(EstimatorLayer, self).__init__(layer_args=layer_args)
-
-        logging.warning("This API will be removed, please use `LambdaLayer` instead.")
-
-    def __str__(self):
-        additional_str = []
-
-        try:
-            additional_str.append("layer kind: %s" % self.model_fn.__name__)
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
-        except AttributeError:
-            pass
-
-        return self._str(additional_str)
-
-    @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
-
-        with tf.variable_scope(self.name) as vs:
-            self._temp_data['outputs'] = self.model_fn(self._temp_data['inputs'], **self.layer_args)
-
-            self._temp_data['local_weights'] = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=vs.name)
