@@ -96,7 +96,7 @@ class DorefaDenseLayer(Layer):
             additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
         except AttributeError:
             pass
-            
+
         try:
             additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:

@@ -396,8 +396,8 @@ class Network_Sequential_2D_Test(CustomTestCase):
                     name='separableconv2d_layer_33'
                 )
             )
-            cls.model.add(tl.layers.MaxPool2d(filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool2d'))
-            cls.model.add(tl.layers.MeanPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='meanpool2d'))
+            cls.model.add(tl.layers.MaxPool2d(filter_size=(3, 3), strides=(2, 2), padding='same', name='maxpool2d'))
+            cls.model.add(tl.layers.MeanPool2d(filter_size=(2, 2), strides=(2, 2), padding='same', name='meanpool2d'))
 
             cls.model.add(tl.layers.GlobalMaxPool2d(name='globalmaxpool2d'))
             cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand1'))
@@ -433,7 +433,6 @@ class Network_Sequential_2D_Test(CustomTestCase):
             #
             # cls.train_meanpool2d_model = cls.model3.compile(plh, reuse=False, is_train=True)
             # cls.test_meanpool2d_model = cls.model3.compile(plh, reuse=True, is_train=False)
-
 
     def test_objects_dtype(self):
         self.assertIsInstance(self.train_model, tl.models.CompiledNetwork)
@@ -661,6 +660,7 @@ class Network_Sequential_2D_Test(CustomTestCase):
 
         self.assertEqual(self.train_model["tile2"].outputs.shape, (100, 50, 50, 8))
         self.assertEqual(self.test_model["tile2"].outputs.shape, (100, 50, 50, 8))
+
 
 if __name__ == '__main__':
 

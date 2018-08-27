@@ -80,12 +80,31 @@ class Network_Sequential_3D_Test(CustomTestCase):
                     n_filter=8,
                     filter_size=(3, 3, 3),
                     strides=(2, 2, 2),
-                    padding='SAME',
+                    padding='same',
                     act=tf.nn.relu,
                     b_init=None,
                     name='simple_deconv3d_layer_8'
                 )
             )
+
+            cls.model.add(
+                tl.layers.MaxPool3d(filter_size=(3, 3, 3), strides=(2, 2, 2), padding='same', name='maxpool3d')
+            )
+            cls.model.add(
+                tl.layers.MeanPool3d(filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', name='meanpool3d')
+            )
+
+            cls.model.add(tl.layers.GlobalMaxPool3d(name='globalmaxpool3d'))
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand1_1'))
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand1_2'))
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand1_3'))
+            cls.model.add(tl.layers.TileLayer(multiples=[1, 50, 50, 50, 1], name='tile1'))
+
+            cls.model.add(tl.layers.GlobalMeanPool3d(name='globalmeanpool3d'))
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand2_1'))
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand2_2'))
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand2_3'))
+            cls.model.add(tl.layers.TileLayer(multiples=[1, 50, 50, 50, 1], name='tile2'))
 
             plh = tf.placeholder(tf.float16, (100, 16, 16, 16))
 
@@ -119,9 +138,9 @@ class Network_Sequential_3D_Test(CustomTestCase):
             self.assertEqual(len(self.model.get_all_weights()), 10)
 
     def test_count_layers(self):
-        self.assertEqual(self.train_model.count_layers(), 13)
-        self.assertEqual(self.test_model.count_layers(), 13)
-        self.assertEqual(self.model.count_layers(), 13)
+        self.assertEqual(self.train_model.count_layers(), 25)
+        self.assertEqual(self.test_model.count_layers(), 25)
+        self.assertEqual(self.model.count_layers(), 25)
 
     def test_layer_outputs_dtype(self):
 
@@ -181,6 +200,34 @@ class Network_Sequential_3D_Test(CustomTestCase):
 
         self.assertEqual(self.train_model["simple_deconv3d_layer_8"].outputs.shape, (100, 564, 564, 564, 8))
         self.assertEqual(self.test_model["simple_deconv3d_layer_8"].outputs.shape, (100, 564, 564, 564, 8))
+
+        self.assertEqual(self.train_model["maxpool3d"].outputs.shape, (100, 282, 282, 282, 8))
+        self.assertEqual(self.test_model["maxpool3d"].outputs.shape, (100, 282, 282, 282, 8))
+
+        self.assertEqual(self.train_model["meanpool3d"].outputs.shape, (100, 140, 140, 140, 8))
+        self.assertEqual(self.test_model["meanpool3d"].outputs.shape, (100, 140, 140, 140, 8))
+
+        self.assertEqual(self.train_model["globalmaxpool3d"].outputs.shape, (100, 8))
+        self.assertEqual(self.test_model["globalmaxpool3d"].outputs.shape, (100, 8))
+        self.assertEqual(self.train_model["expand1_1"].outputs.shape, (100, 1, 8))
+        self.assertEqual(self.test_model["expand1_1"].outputs.shape, (100, 1, 8))
+        self.assertEqual(self.train_model["expand1_2"].outputs.shape, (100, 1, 1, 8))
+        self.assertEqual(self.test_model["expand1_2"].outputs.shape, (100, 1, 1, 8))
+        self.assertEqual(self.train_model["expand1_3"].outputs.shape, (100, 1, 1, 1, 8))
+        self.assertEqual(self.test_model["expand1_3"].outputs.shape, (100, 1, 1, 1, 8))
+        self.assertEqual(self.train_model["tile1"].outputs.shape, (100, 50, 50, 50, 8))
+        self.assertEqual(self.test_model["tile1"].outputs.shape, (100, 50, 50, 50, 8))
+
+        self.assertEqual(self.train_model["globalmeanpool3d"].outputs.shape, (100, 8))
+        self.assertEqual(self.test_model["globalmeanpool3d"].outputs.shape, (100, 8))
+        self.assertEqual(self.train_model["expand2_1"].outputs.shape, (100, 1, 8))
+        self.assertEqual(self.test_model["expand2_1"].outputs.shape, (100, 1, 8))
+        self.assertEqual(self.train_model["expand2_2"].outputs.shape, (100, 1, 1, 8))
+        self.assertEqual(self.test_model["expand2_2"].outputs.shape, (100, 1, 1, 8))
+        self.assertEqual(self.train_model["expand2_3"].outputs.shape, (100, 1, 1, 1, 8))
+        self.assertEqual(self.test_model["expand2_3"].outputs.shape, (100, 1, 1, 1, 8))
+        self.assertEqual(self.train_model["tile2"].outputs.shape, (100, 50, 50, 50, 8))
+        self.assertEqual(self.test_model["tile2"].outputs.shape, (100, 50, 50, 50, 8))
 
 
 if __name__ == '__main__':

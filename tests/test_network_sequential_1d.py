@@ -397,7 +397,8 @@ class Network_Sequential_1D_Test(CustomTestCase):
 
         self.assertEqual(self.train_model["tile2"].outputs.shape, (100, 100, 4))
         self.assertEqual(self.test_model["tile2"].outputs.shape, (100, 100, 4))
-        
+
+
 if __name__ == '__main__':
 
     tf.logging.set_verbosity(tf.logging.DEBUG)
