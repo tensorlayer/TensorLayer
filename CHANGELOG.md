@@ -90,6 +90,7 @@ To release a new version, please update the changelog as followed:
   - Release SwitchNormLayer (PR #737)
   - Release QuanConv2d, QuanConv2dWithBN, QuanDenseLayer, QuanDenseLayerWithBN (PR#735)
   - Update Core Layer to support graph (PR ＃751)
+  - All Pooling layers support `data_format` (PR #809)
 - Setup:
   - Creation of installation flaggs `all_dev`, `all_cpu_dev`, and `all_gpu_dev` (PR #739)
 - Examples:
@@ -147,7 +148,7 @@ To release a new version, please update the changelog as followed:
 - @DEKHTIARJonathan: #739 #747 #750 #754
 - @lgarithm: #705 #700
 - @OwenLiuzZ: #698 #710 #775 #776
-- @zsdonghao: #711 #712 #734 #736 #737 #700 #751
+- @zsdonghao: #711 #712 #734 #736 #737 #700 #751 #809
 - @luomai: #700 #751 #766 #802
 - @XJTUWYD: #735
 - @mutewall: #735
