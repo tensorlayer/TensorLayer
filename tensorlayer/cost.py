@@ -259,7 +259,7 @@ def dice_coe(output, target, loss_type='jaccard', axis=(1, 2, 3), smooth=1e-5):
     # epsilon = 1e-5
     # dice = tf.clip_by_value(dice, 0, 1.0-epsilon) # if all empty, dice = 1
     # new haodong
-    dice = (2. * inse + smooth) / (l + r + smooth)
+    dice = (2. * inse + smooth) / (l +r+ smooth)
     ##
     dice = tf.reduce_mean(dice, name='dice_coe')
     return dice
@@ -298,7 +298,7 @@ def dice_hard_coe(output, target, threshold=0.5, axis=(1, 2, 3), smooth=1e-5):
     # epsilon = 1e-5
     # hard_dice = tf.clip_by_value(hard_dice, 0, 1.0-epsilon)
     # new haodong
-    hard_dice = (2. * inse + smooth) / (l + r + smooth)
+    hard_dice = (2. * inse + smooth) / (l +r+ smooth)
     ##
     hard_dice = tf.reduce_mean(hard_dice, name='hard_dice')
     return hard_dice
