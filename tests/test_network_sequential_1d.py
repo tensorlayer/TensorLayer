@@ -160,6 +160,17 @@ class Network_Sequential_1D_Test(CustomTestCase):
                 )
             )
 
+            cls.model.add(tl.layers.MaxPool1d(filter_size=3, strides=2, padding='valid', name='maxpool1d'))
+            cls.model.add(tl.layers.MeanPool1d(filter_size=3, strides=2, padding='same', name='meanpool1d'))
+
+            cls.model.add(tl.layers.GlobalMaxPool1d(name='globalmaxpool1d'))
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand1'))
+            cls.model.add(tl.layers.TileLayer(multiples=[1, 100, 1], name='tile1'))
+
+            cls.model.add(tl.layers.GlobalMeanPool1d(name='globalmeanpool1d'))
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand2'))
+            cls.model.add(tl.layers.TileLayer(multiples=[1, 100, 1], name='tile2'))
+
             plh = tf.placeholder(tf.float16, (100, 32))
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
@@ -192,9 +203,9 @@ class Network_Sequential_1D_Test(CustomTestCase):
             self.assertEqual(len(self.model.get_all_weights()), 63)
 
     def test_count_layers(self):
-        self.assertEqual(self.train_model.count_layers(), 50)
-        self.assertEqual(self.test_model.count_layers(), 50)
-        self.assertEqual(self.model.count_layers(), 50)
+        self.assertEqual(self.train_model.count_layers(), 58)
+        self.assertEqual(self.test_model.count_layers(), 58)
+        self.assertEqual(self.model.count_layers(), 58)
 
     def test_layer_outputs_dtype(self):
 
@@ -363,7 +374,30 @@ class Network_Sequential_1D_Test(CustomTestCase):
         self.assertEqual(self.train_model["separableconv1d_layer_19"].outputs.shape, (100, 542, 4))
         self.assertEqual(self.test_model["separableconv1d_layer_19"].outputs.shape, (100, 542, 4))
 
+        self.assertEqual(self.train_model["maxpool1d"].outputs.shape, (100, 270, 4))
+        self.assertEqual(self.test_model["maxpool1d"].outputs.shape, (100, 270, 4))
 
+        self.assertEqual(self.train_model["meanpool1d"].outputs.shape, (100, 135, 4))
+        self.assertEqual(self.test_model["meanpool1d"].outputs.shape, (100, 135, 4))
+
+        self.assertEqual(self.train_model["globalmaxpool1d"].outputs.shape, (100, 4))
+        self.assertEqual(self.test_model["globalmaxpool1d"].outputs.shape, (100, 4))
+
+        self.assertEqual(self.train_model["expand1"].outputs.shape, (100, 1, 4))
+        self.assertEqual(self.test_model["expand1"].outputs.shape, (100, 1, 4))
+
+        self.assertEqual(self.train_model["tile1"].outputs.shape, (100, 100, 4))
+        self.assertEqual(self.test_model["tile1"].outputs.shape, (100, 100, 4))
+
+        self.assertEqual(self.train_model["globalmeanpool1d"].outputs.shape, (100, 4))
+        self.assertEqual(self.test_model["globalmeanpool1d"].outputs.shape, (100, 4))
+
+        self.assertEqual(self.train_model["expand2"].outputs.shape, (100, 1, 4))
+        self.assertEqual(self.test_model["expand2"].outputs.shape, (100, 1, 4))
+
+        self.assertEqual(self.train_model["tile2"].outputs.shape, (100, 100, 4))
+        self.assertEqual(self.test_model["tile2"].outputs.shape, (100, 100, 4))
+        
 if __name__ == '__main__':
 
     tf.logging.set_verbosity(tf.logging.DEBUG)
