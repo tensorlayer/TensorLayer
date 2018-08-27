@@ -23,8 +23,8 @@ class RNNLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
+    # prev_layer : :class:`Layer`
+    #     Previous layer with output shape of [batch, n_steps, n_features].
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
             - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
@@ -190,7 +190,13 @@ class RNNLayer(Layer):
 
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
+        """
 
+        Parameters
+        ----------
+        prev_layer : :class:`Layer`
+            Previous layer with output shape of [batch, n_steps, n_features].
+        """
         if 'GRU' in self.cell_fn.__name__:
             try:
                 self.cell_init_args.pop('state_is_tuple')
@@ -239,14 +245,14 @@ class RNNLayer(Layer):
         # outputs, state = rnn.rnn(cell, inputs, initial_state=self._initial_state)
         outputs = []
 
-        if 'reuse' in getfullargspec(cell_fn.__init__).args:
-            self.cell = cell = cell_fn(
+        if 'reuse' in getfullargspec(self.cell_fn.__init__).args:
+            self.cell = cell = self.cell_fn(
                 num_units=self.n_hidden, reuse=tf.get_variable_scope().reuse, **self.cell_init_args
             )
         else:
-            self.cell = cell = cell_fn(num_units=self.n_hidden, **self.cell_init_args)
+            self.cell = cell = self.cell_fn(num_units=self.n_hidden, **self.cell_init_args)
 
-        if initial_state is None:
+        if self.initial_state is None:
             self.initial_state = cell.zero_state(
                 batch_size, dtype=self._temp_data['inputs'].dtype
             )  #dtype=tf.float32)  # 1.2.3
@@ -265,11 +271,11 @@ class RNNLayer(Layer):
 
             logging.info("     n_params : %d" % (len(rnn_variables)))
 
-            if return_last:
+            if self.return_last:
                 # 2D Tensor [batch_size, n_hidden]
                 self._temp_data['outputs'] = outputs[-1]
             else:
-                if return_seq_2d:
+                if self.return_seq_2d:
                     # PTB tutorial: stack dense layer after that, or compute the cost from the output
                     # 2D Tensor [n_example, n_hidden]
 
