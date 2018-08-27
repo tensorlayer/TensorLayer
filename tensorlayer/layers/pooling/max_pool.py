@@ -128,7 +128,7 @@ class MaxPool2d(Layer):
         self.padding = padding
         self.data_format = data_format
         self.name = name
-        super(MaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
+        super(MaxPool2d, self).__init__(name=name)
 
     def __str__(self):
         additional_str = []
