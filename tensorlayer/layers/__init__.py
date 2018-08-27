@@ -27,7 +27,6 @@ from .object_detection import *
 from .padding import *
 from .pooling import *
 from .quantize_layers import *
-# from .reconstruction import *
 from .recurrent import *
 from .reshape import *
 from .scale import *
@@ -54,7 +53,6 @@ __all__ += object_detection.__all__
 __all__ += padding.__all__
 __all__ += pooling.__all__
 __all__ += quantize_layers.__all__
-__all__ += reconstruction.__all__
 __all__ += recurrent.__all__
 __all__ += reshape.__all__
 __all__ += scale.__all__
