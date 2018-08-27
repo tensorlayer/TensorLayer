@@ -402,10 +402,39 @@ class Network_Sequential_2D_Test(CustomTestCase):
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
             cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
 
+            # ## Max Pooling 2d
+            # cls.model2 = tl.networks.Sequential(name="My_Sequential_2D_Network_Max_Pooling")
+            # cls.model2.add(tl.layers.MaxPool2d(filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool2d'))
+            # cls.model2.add(tl.layers.GlobalMaxPool2d(name='globalmaxpool2d'))
+            #
+            # plh = tf.placeholder(tf.float16, (10, 20, 20))
+            #
+            # cls.train_maxpool2d_model = cls.model2.compile(plh, reuse=False, is_train=True)
+            # cls.test_maxpool2d_model = cls.model2.compile(plh, reuse=True, is_train=False)
+            #
+            # ## Mean Pooling 2d
+            # cls.model3 = tl.networks.Sequential(name="My_Sequential_2D_Network_Mean_Pooling")
+            # cls.model3.add(tl.layers.MeanPool2d(filter_size=(3, 3), strides=(2, 2), padding='SAME', name='meanpool2d'))
+            # cls.model3.add(tl.layers.GlobalMeanPool2d(name='globalmeanpool2d'))
+            #
+            # plh = tf.placeholder(tf.float16, (10, 20, 20))
+            #
+            # cls.train_meanpool2d_model = cls.model3.compile(plh, reuse=False, is_train=True)
+            # cls.test_meanpool2d_model = cls.model3.compile(plh, reuse=True, is_train=False)
+
+
     def test_objects_dtype(self):
         self.assertIsInstance(self.train_model, tl.models.CompiledNetwork)
         self.assertIsInstance(self.test_model, tl.models.CompiledNetwork)
         self.assertIsInstance(self.model, tl.networks.Sequential)
+        # # max pool
+        # self.assertIsInstance(self.train_maxpool2d_model, tl.models.CompiledNetwork)
+        # self.assertIsInstance(self.test_maxpool2d_model, tl.models.CompiledNetwork)
+        # self.assertIsInstance(self.model2, tl.networks.Sequential)
+        # # mean pool
+        # self.assertIsInstance(self.train_meanpool2d_model, tl.models.CompiledNetwork)
+        # self.assertIsInstance(self.test_meanpool2d_model, tl.models.CompiledNetwork)
+        # self.assertIsInstance(self.model3, tl.networks.Sequential)
 
     def test_get_all_drop_plh(self):
         self.assertEqual(len(self.train_model.all_drop), 0)
