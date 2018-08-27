@@ -86,6 +86,10 @@ class DenseLayer(Layer):
         except AttributeError:
             pass
 
+        try:
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
+        except AttributeError:
+            pass
         return self._str(additional_str)
 
     @auto_parse_inputs

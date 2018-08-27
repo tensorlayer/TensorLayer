@@ -126,7 +126,7 @@ class RNNLayer(Layer):
 
     def __init__(
         self,
-        prev_layer,
+        # prev_layer,
         cell_fn,
         cell_init_args=None,
         n_hidden=100,
@@ -141,20 +141,61 @@ class RNNLayer(Layer):
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
 
-        super(RNNLayer, self).__init__(prev_layer=prev_layer, cell_init_args=cell_init_args, name=name)
+        self.cell_fn = cell_fn
+        self.cell_init_args = cell_init_args
+        self.n_hidden = n_hidden
+        self.initializer = initializer
+        self.n_steps = n_steps
+        self.initial_state = initial_state
+        self.return_last = return_last
+        self.return_seq_2d = return_seq_2d
+        self.name = name
 
-        if 'GRU' in cell_fn.__name__:
+        super(RNNLayer, self).__init__(cell_init_args=cell_init_args)
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("n_hidden: %d" % self.n_hidden)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("n_steps: %d" % self.n_steps)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("cell_fn: %s" % self.cell_fn.__name__)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("input shape: %s" % self._temp_data['inputs'].shape)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
+        except AttributeError:
+            pass
+        return self._str(additional_str)
+        # logging.info(
+        #     "RNNLayer %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s " % (
+        #         self.name, n_hidden, n_steps, self._temp_data['inputs'].get_shape().ndims,
+        #         self._temp_data['inputs'].get_shape(), cell_fn.__name__
+        #     )
+        # )
+
+    @auto_parse_inputs
+    def compile(self, prev_layer, is_train=True):
+
+        if 'GRU' in self.cell_fn.__name__:
             try:
                 self.cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning('pop state_is_tuple fails.')
-
-        logging.info(
-            "RNNLayer %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s " % (
-                self.name, n_hidden, n_steps, self._temp_data['inputs'].get_shape().ndims,
-                self._temp_data['inputs'].get_shape(), cell_fn.__name__
-            )
-        )
 
         # You can get the dimension by .get_shape() or ._shape, and check the
         # dimension by .with_rank() as follow.
@@ -199,9 +240,11 @@ class RNNLayer(Layer):
         outputs = []
 
         if 'reuse' in getfullargspec(cell_fn.__init__).args:
-            self.cell = cell = cell_fn(num_units=n_hidden, reuse=tf.get_variable_scope().reuse, **self.cell_init_args)
+            self.cell = cell = cell_fn(
+                num_units=self.n_hidden, reuse=tf.get_variable_scope().reuse, **self.cell_init_args
+            )
         else:
-            self.cell = cell = cell_fn(num_units=n_hidden, **self.cell_init_args)
+            self.cell = cell = cell_fn(num_units=self.n_hidden, **self.cell_init_args)
 
         if initial_state is None:
             self.initial_state = cell.zero_state(
@@ -210,8 +253,8 @@ class RNNLayer(Layer):
 
         state = self.initial_state
 
-        with tf.variable_scope(name, initializer=initializer) as vs:
-            for time_step in range(n_steps):
+        with tf.variable_scope(self.name, initializer=self.initializer) as vs:
+            for time_step in range(self.n_steps):
                 if time_step > 0: tf.get_variable_scope().reuse_variables()
                 (cell_output, state) = cell(self._temp_data['inputs'][:, time_step, :], state)
                 outputs.append(cell_output)
@@ -230,13 +273,13 @@ class RNNLayer(Layer):
                     # PTB tutorial: stack dense layer after that, or compute the cost from the output
                     # 2D Tensor [n_example, n_hidden]
 
-                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden])
+                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [-1, self.n_hidden])
 
                 else:
                     # <akara>: stack more RNN layer after that
                     # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
 
-                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [-1, n_steps, n_hidden])
+                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [-1, self.n_steps, self.n_hidden])
 
         self.final_state = state
 
@@ -442,7 +485,7 @@ class BiRNNLayer(Layer):
                 initial_state_bw=self.bw_initial_state
             )
 
-            if return_last:
+            if self.return_last:
                 raise Exception("Do not support return_last at the moment.")
                 # self._temp_data['outputs'] = outputs[-1]
             else:
