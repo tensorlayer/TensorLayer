@@ -36,10 +36,12 @@ class GlobalMeanPool1d(Layer):
     [None, 30]
     """
 
-    def __init__(self, prev_layer, name='globalmeanpool1d'):
+    def __init__(self, #prev_layer,
+        data_format='channels_last',
+        name='globalmeanpool1d'):
         self.data_format = data_format
         self.name = name
-        super(GlobalMeanPool1d, self).__init__(name=name)
+        super(GlobalMeanPool1d, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -88,10 +90,12 @@ class GlobalMeanPool2d(Layer):
     [None, 30]
     """
 
-    def __init__(self, prev_layer, name='globalmeanpool2d'):
+    def __init__(self, #prev_layer,
+        data_format='channels_last',
+        name='globalmeanpool2d'):
         self.data_format = data_format
         self.name = name
-        super(GlobalMeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
+        super(GlobalMeanPool2d, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -140,10 +144,12 @@ class GlobalMeanPool3d(Layer):
     [None, 30]
     """
 
-    def __init__(self, prev_layer, name='globalmeanpool3d'):
+    def __init__(self, #prev_layer,
+        data_format='channels_last',
+        name='globalmeanpool3d'):
         self.data_format = data_format
         self.name = name
-        super(GlobalMeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
+        super(GlobalMeanPool3d, self).__init__()
 
     def __str__(self):
         additional_str = []

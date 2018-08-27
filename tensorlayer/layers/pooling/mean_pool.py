@@ -48,7 +48,7 @@ class MeanPool1d(Layer):
         self.padding = padding
         self.data_format = data_format
         self.name = name
-        super(MeanPool1d, self).__init__(name=name)
+        super(MeanPool1d, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -126,6 +126,7 @@ class MeanPool2d(Layer):
         filter_size=(3, 3),
         strides=(2, 2),
         padding='SAME',
+        data_format='channels_last',
         name='meanpool2d'
     ):
 
@@ -136,13 +137,13 @@ class MeanPool2d(Layer):
         self.padding = padding
         self.data_format = data_format
         self.name = name
-        super(MeanPool2d, self).__init__(name=name)
+        super(MeanPool2d, self).__init__()
 
     def __str__(self):
         additional_str = []
 
         try:
-            additional_str.append("filter_size: %d" % self.filter_size)
+            additional_str.append("filter_size: %s" % str(self.filter_size))
         except AttributeError:
             pass
 
@@ -228,13 +229,13 @@ class MeanPool3d(Layer):
         self.padding = padding
         self.data_format = data_format
         self.name = name
-        super(MeanPool3d, self).__init__(name=name)
+        super(MeanPool3d, self).__init__()
 
     def __str__(self):
         additional_str = []
 
         try:
-            additional_str.append("filter_size: %d" % self.filter_size)
+            additional_str.append("filter_size: %s" % str(self.filter_size))
         except AttributeError:
             pass
 

@@ -396,6 +396,18 @@ class Network_Sequential_2D_Test(CustomTestCase):
                     name='separableconv2d_layer_33'
                 )
             )
+            cls.model.add(tl.layers.MaxPool2d(filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool2d'))
+            cls.model.add(tl.layers.MeanPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='meanpool2d'))
+
+            cls.model.add(tl.layers.GlobalMaxPool2d(name='globalmaxpool2d'))
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand1'))
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand2'))
+            cls.model.add(tl.layers.TileLayer(multiples=[1, 50, 50, 1], name='tile'))
+
+            cls.model.add(tl.layers.GlobalMeanPool2d(name='globalmeanpool2d'))
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand3'))
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand4'))
+            cls.model.add(tl.layers.TileLayer(multiples=[1, 50, 50, 1], name='tile2'))
 
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 
@@ -458,9 +470,9 @@ class Network_Sequential_2D_Test(CustomTestCase):
             self.assertEqual(len(self.model.get_all_weights()), 60)
 
     def test_count_layers(self):
-        self.assertEqual(self.train_model.count_layers(), 45)
-        self.assertEqual(self.test_model.count_layers(), 45)
-        self.assertEqual(self.model.count_layers(), 45)
+        self.assertEqual(self.train_model.count_layers(), 55)
+        self.assertEqual(self.test_model.count_layers(), 55)
+        self.assertEqual(self.model.count_layers(), 55)
 
     def test_layer_outputs_dtype(self):
 
@@ -620,6 +632,35 @@ class Network_Sequential_2D_Test(CustomTestCase):
         self.assertEqual(self.train_model["separableconv2d_layer_33"].outputs.shape, (100, 76, 76, 8))
         self.assertEqual(self.test_model["separableconv2d_layer_33"].outputs.shape, (100, 76, 76, 8))
 
+        self.assertEqual(self.train_model["maxpool2d"].outputs.shape, (100, 38, 38, 8))
+        self.assertEqual(self.test_model["maxpool2d"].outputs.shape, (100, 38, 38, 8))
+
+        self.assertEqual(self.train_model["meanpool2d"].outputs.shape, (100, 19, 19, 8))
+        self.assertEqual(self.test_model["meanpool2d"].outputs.shape, (100, 19, 19, 8))
+
+        self.assertEqual(self.train_model["globalmaxpool2d"].outputs.shape, (100, 8))
+        self.assertEqual(self.test_model["globalmaxpool2d"].outputs.shape, (100, 8))
+
+        self.assertEqual(self.train_model["expand1"].outputs.shape, (100, 1, 8))
+        self.assertEqual(self.test_model["expand1"].outputs.shape, (100, 1, 8))
+
+        self.assertEqual(self.train_model["expand2"].outputs.shape, (100, 1, 1, 8))
+        self.assertEqual(self.test_model["expand2"].outputs.shape, (100, 1, 1, 8))
+
+        self.assertEqual(self.train_model["tile"].outputs.shape, (100, 50, 50, 8))
+        self.assertEqual(self.test_model["tile"].outputs.shape, (100, 50, 50, 8))
+
+        self.assertEqual(self.train_model["globalmeanpool2d"].outputs.shape, (100, 8))
+        self.assertEqual(self.test_model["globalmeanpool2d"].outputs.shape, (100, 8))
+
+        self.assertEqual(self.train_model["expand3"].outputs.shape, (100, 1, 8))
+        self.assertEqual(self.test_model["expand3"].outputs.shape, (100, 1, 8))
+
+        self.assertEqual(self.train_model["expand4"].outputs.shape, (100, 1, 1, 8))
+        self.assertEqual(self.test_model["expand4"].outputs.shape, (100, 1, 1, 8))
+
+        self.assertEqual(self.train_model["tile2"].outputs.shape, (100, 50, 50, 8))
+        self.assertEqual(self.test_model["tile2"].outputs.shape, (100, 50, 50, 8))
 
 if __name__ == '__main__':
 

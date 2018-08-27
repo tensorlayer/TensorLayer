@@ -34,10 +34,12 @@ class GlobalMaxPool1d(Layer):
     [None, 30]
     """
 
-    def __init__(self, prev_layer, name='globalmaxpool1d'):
+    def __init__(self, #prev_layer,
+        data_format='channels_last',
+        name='globalmaxpool1d'):
         self.data_format = data_format
         self.name = name
-        super(GlobalMaxPool1d, self).__init__(name=name)
+        super(GlobalMaxPool1d, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -86,10 +88,12 @@ class GlobalMaxPool2d(Layer):
     [None, 30]
     """
 
-    def __init__(self, prev_layer, name='globalmaxpool2d'):
+    def __init__(self, #prev_layer,
+        data_format='channels_last',
+        name='globalmaxpool2d'):
         self.data_format = data_format
         self.name = name
-        super(GlobalMaxPool2d, self).__init__(name=name)
+        super(GlobalMaxPool2d, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -138,10 +142,12 @@ class GlobalMaxPool3d(Layer):
     [None, 30]
     """
 
-    def __init__(self, prev_layer, name='globalmaxpool3d'):
+    def __init__(self, #prev_layer,
+        data_format='channels_last',
+        name='globalmaxpool3d'):
         self.data_format = data_format
         self.name = name
-        super(GlobalMaxPool3d, self).__init__(name=name)
+        super(GlobalMaxPool3d, self).__init__()
 
     def __str__(self):
         additional_str = []

@@ -48,13 +48,13 @@ class MaxPool1d(Layer):
         self.padding = padding
         self.data_format = data_format
         self.name = name
-        super(MaxPool1d, self).__init__(name=name)
+        super(MaxPool1d, self).__init__()
 
     def __str__(self):
         additional_str = []
 
         try:
-            additional_str.append("filter_size: %d" % self.filter_size)
+            additional_str.append("filter_size: %s" % str(self.filter_size))
         except AttributeError:
             pass
 
@@ -128,13 +128,13 @@ class MaxPool2d(Layer):
         self.padding = padding
         self.data_format = data_format
         self.name = name
-        super(MaxPool2d, self).__init__(name=name)
+        super(MaxPool2d, self).__init__()
 
     def __str__(self):
         additional_str = []
 
         try:
-            additional_str.append("filter_size: %d" % self.filter_size)
+            additional_str.append("filter_size: %s" % str(self.filter_size))
         except AttributeError:
             pass
 
@@ -220,13 +220,13 @@ class MaxPool3d(Layer):
         self.padding = padding
         self.data_format = data_format
         self.name = name
-        super(MaxPool3d, self).__init__(name=name)
+        super(MaxPool3d, self).__init__()
 
     def __str__(self):
         additional_str = []
 
         try:
-            additional_str.append("filter_size: %d" % self.filter_size)
+            additional_str.append("filter_size: %s" % str(self.filter_size))
         except AttributeError:
             pass
 
