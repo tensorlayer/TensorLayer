@@ -81,6 +81,7 @@ To release a new version, please update the changelog as followed:
   - Add `tl.files.save_graph_and_params` (PR ＃751)
   - Add `tl.files.load_graph_and_params` (PR ＃751)
   - Add `tl.models.CompiledNetwork` class (PR ＃755)
+  - Add `tl.prepro.keypoint_random_xxx` (PR #787)
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
@@ -142,12 +143,12 @@ To release a new version, please update the changelog as followed:
 ### Dependencies Update
 - tensorflow>=1.8,<1.9 => tensorflow>=1.6,<1.11 (PR #739 and PR #798)
 - tensorflow-gpu>=1.8,<1.9 => tensorflow-gpu>=1.6,<1.11 (PR #739 and PR #798)
-- pymongo>=3.6,<3.7 => pymongo>=3.6,<3.8 (PR #750)
 - numpy>=1.14,<1.15 => numpy>=1.14,<1.16 (PR #754)
-- tqdm>=4.23,<4.24 => tqdm>=4.23,<4.25 (PR #798)
+- pymongo>=3.6,<3.7 => pymongo>=3.6,<3.8 (PR #750)
 - pytest>=3.6,<3.7 => tqdm>=3.6,<3.8 (PR #798)
-- yapf>=0.21,<0.22 => yapf>=0.21,<0.23 (PR #798)
+- pytest-xdist>=1.22,<1.23 => pytest-xdist>=1.22,<1.24 (PR #805 and #806)
 - tqdm>=4.23,<4.25 => tqdm>=4.23,<4.26 (PR #798)
+- yapf>=0.21,<0.22 => yapf>=0.22,<0.24 (PR #798 #808)
 
 ### Contributors
 - @DEKHTIARJonathan: #739 #747 #750 #754 #755 #798
@@ -159,6 +160,7 @@ To release a new version, please update the changelog as followed:
 - @mutewall: #735
 - @thangvubk: #759
 - @JunbinWang: #796
+- @boldjoel: #787
 
 ## [1.9.1] - 2018-07-30
 

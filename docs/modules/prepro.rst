@@ -87,6 +87,13 @@ Some of the code in this package are borrowed from Keras.
    obj_box_shift
    obj_box_zoom
 
+   keypoint_random_crop
+   keypoint_random_crop2
+   keypoint_random_rotate
+   keypoint_random_flip
+   keypoint_random_resize
+   keypoint_random_resize_shortestedge
+
    pad_sequences
    remove_pad_sequences
    process_sequences
@@ -416,8 +423,30 @@ Image Aug - Zoom
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: obj_box_zoom
 
+Keypoints
+------------
 
+Image Aug - Crop
+^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: keypoint_random_crop
 
+.. autofunction:: keypoint_random_crop2
+
+Image Aug - Rotate
+^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: keypoint_random_rotate
+
+Image Aug - Flip
+^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: keypoint_random_flip
+
+Image Aug - Resize
+^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: keypoint_random_resize
+
+Image Aug - Resize Shortest Edge
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: keypoint_random_resize_shortestedge
 
 
 Sequence
