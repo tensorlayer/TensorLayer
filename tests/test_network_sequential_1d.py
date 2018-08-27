@@ -61,19 +61,6 @@ class Network_Sequential_1D_Test(CustomTestCase):
             cls.model.add(tl.layers.DropoutLayer(keep=0.5, is_fix=False, name="dropout_layer_9"))
 
             cls.model.add(
-                tl.layers.BinaryDenseLayer(
-                    n_units=50,
-                    act=tf.nn.sigmoid,
-                    name='binary_dense'
-                )
-            )
-            cls.model.add(tl.layers.DorefaDenseLayer(n_units=50, name='dorefa_dense'))
-            cls.model.add(tl.layers.DropconnectDenseLayer(keep=0.5, n_units=50, name='dropconnect'))
-            cls.model.add(tl.layers.QuantizedDenseWithBN(n_units=50, name='quantdensebn'))
-            cls.model.add(tl.layers.QuantizedDense(n_units=50, name='quantdense'))
-            cls.model.add(tl.layers.TernaryDenseLayer(n_units=50, name='ternarydense'))
-
-            cls.model.add(
                 tl.layers.SlimNetsLayer(
                     slim_layer=slim.fully_connected,
                     slim_args={
@@ -162,6 +149,25 @@ class Network_Sequential_1D_Test(CustomTestCase):
                 )
             )
 
+            cls.model.add(tl.layers.FlattenLayer(name="flatten_layer_20"))
+
+            cls.model.add(
+                tl.layers.BinaryDenseLayer(
+                    n_units=10,
+                    act=tf.nn.sigmoid,
+                    name='binary_dense_layer_21'
+                )
+            )
+            cls.model.add(tl.layers.DorefaDenseLayer(n_units=20, name='dorefa_dense_layer_22'))
+
+            cls.model.add(tl.layers.DropconnectDenseLayer(keep=0.5, n_units=30, name='dropconnect_layer_23'))
+
+            cls.model.add(tl.layers.QuantizedDenseWithBN(n_units=40, name='quant_dense_bn_layer_24'))
+
+            cls.model.add(tl.layers.QuantizedDense(n_units=30, name='quant_dense_layer_25'))
+
+            cls.model.add(tl.layers.TernaryDenseLayer(n_units=20, name='ternary_dense_layer_26'))
+
             plh = tf.placeholder(tf.float16, (100, 32))
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
@@ -180,11 +186,11 @@ class Network_Sequential_1D_Test(CustomTestCase):
             self.assertEqual(len(self.model.all_drop), 0)
 
     def test_count_weights(self):
-        self.assertEqual(self.train_model.count_weights(), 49643)
-        self.assertEqual(self.test_model.count_weights(), 49643)
+        self.assertEqual(self.train_model.count_weights(), 59943)
+        self.assertEqual(self.test_model.count_weights(), 59943)
 
         with self.assertRaises((AttributeError, AssertionError)):
-            self.assertEqual(self.model.count_weights(), 49643)
+            self.assertEqual(self.model.count_weights(), 59943)
 
     def test_count_weights_tensors(self):
         self.assertEqual(len(self.train_model.get_all_weights()), 63)
@@ -194,9 +200,9 @@ class Network_Sequential_1D_Test(CustomTestCase):
             self.assertEqual(len(self.model.get_all_weights()), 63)
 
     def test_count_layers(self):
-        self.assertEqual(self.train_model.count_layers(), 50)
-        self.assertEqual(self.test_model.count_layers(), 50)
-        self.assertEqual(self.model.count_layers(), 50)
+        self.assertEqual(self.train_model.count_layers(), 51)
+        self.assertEqual(self.test_model.count_layers(), 51)
+        self.assertEqual(self.model.count_layers(), 51)
 
     def test_layer_outputs_dtype(self):
 
@@ -290,24 +296,6 @@ class Network_Sequential_1D_Test(CustomTestCase):
         self.assertEqual(self.train_model["dropout_layer_9"].outputs.shape, (100, 50))
         self.assertEqual(self.test_model["dropout_layer_9"].outputs.shape, (100, 50))
 
-        self.assertEqual(self.train_model["binary_dense"].outputs.shape, (100, 50))
-        self.assertEqual(self.test_model["binary_dense"].outputs.shape, (100, 50))
-
-        self.assertEqual(self.train_model["dorefa_dense"].outputs.shape, (100, 50))
-        self.assertEqual(self.test_model["dorefa_dense"].outputs.shape, (100, 50))
-
-        self.assertEqual(self.train_model["dropconnect"].outputs.shape, (100, 50))
-        self.assertEqual(self.test_model["dropconnect"].outputs.shape, (100, 50))
-
-        self.assertEqual(self.train_model["quantdensebn"].outputs.shape, (100, 50))
-        self.assertEqual(self.test_model["quantdensebn"].outputs.shape, (100, 50))
-
-        self.assertEqual(self.train_model["quantdense"].outputs.shape, (100, 50))
-        self.assertEqual(self.test_model["quantdense"].outputs.shape, (100, 50))
-
-        self.assertEqual(self.train_model["ternarydense"].outputs.shape, (100, 50))
-        self.assertEqual(self.test_model["ternarydense"].outputs.shape, (100, 50))
-
         self.assertEqual(self.train_model["seq_layer_10"].outputs.shape, (100, 50))
         self.assertEqual(self.test_model["seq_layer_10"].outputs.shape, (100, 50))
 
@@ -364,6 +352,27 @@ class Network_Sequential_1D_Test(CustomTestCase):
 
         self.assertEqual(self.train_model["separableconv1d_layer_19"].outputs.shape, (100, 542, 4))
         self.assertEqual(self.test_model["separableconv1d_layer_19"].outputs.shape, (100, 542, 4))
+
+        self.assertEqual(self.train_model["flatten_layer_20"].outputs.shape, (100, 2168))
+        self.assertEqual(self.test_model["flatten_layer_20"].outputs.shape, (100, 2168))
+
+        self.assertEqual(self.train_model["binary_dense_layer_21"].outputs.shape, (100, 10))
+        self.assertEqual(self.test_model["binary_dense_layer_21"].outputs.shape, (100, 10))
+
+        self.assertEqual(self.train_model["dorefa_dense_layer_22"].outputs.shape, (100, 20))
+        self.assertEqual(self.test_model["dorefa_dense_layer_22"].outputs.shape, (100, 20))
+
+        self.assertEqual(self.train_model["dropconnect_layer_23"].outputs.shape, (100, 30))
+        self.assertEqual(self.test_model["dropconnect_layer_23"].outputs.shape, (100, 30))
+
+        self.assertEqual(self.train_model["quant_dense_bn_layer_24"].outputs.shape, (100, 40))
+        self.assertEqual(self.test_model["quant_dense_bn_layer_24"].outputs.shape, (100, 40))
+
+        self.assertEqual(self.train_model["quant_dense_layer_25"].outputs.shape, (100, 30))
+        self.assertEqual(self.test_model["quant_dense_layer_25"].outputs.shape, (100, 30))
+
+        self.assertEqual(self.train_model["ternary_dense_layer_26"].outputs.shape, (100, 20))
+        self.assertEqual(self.test_model["ternary_dense_layer_26"].outputs.shape, (100, 20))
 
 
 if __name__ == '__main__':

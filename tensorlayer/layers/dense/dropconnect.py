@@ -76,8 +76,6 @@ class DropconnectDenseLayer(Layer):
         self.act = act
         self.W_init = W_init
         self.b_init = b_init
-        self.W_init_args = W_init_args
-        self.b_init_args = b_init_args
         self.name = name
 
         super(DropconnectDenseLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
@@ -100,15 +98,11 @@ class DropconnectDenseLayer(Layer):
         except AttributeError:
             pass
 
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
+
         if self._temp_data['inputs'].get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2")
 
@@ -123,13 +117,12 @@ class DropconnectDenseLayer(Layer):
                 **self.W_init_args
             )
 
-            if is_train is True:
-                keep_plh = tf.placeholder(self._temp_data['inputs'].dtype, shape=())
-                self._add_local_drop_plh(keep_plh, self.keep)
-                LayersConfig.set_keep[self.name] = keep_plh
-                weight_dropconnect = tf.nn.dropout(weight_matrix, keep_plh)
-            else:
-                weight_dropconnect = weight_matrix
+            keep_plh = tf.placeholder(self._temp_data['inputs'].dtype, shape=())
+            self._add_local_drop_plh(keep_plh, self.keep)
+
+            LayersConfig.set_keep[self.name] = keep_plh
+
+            weight_dropconnect = tf.nn.dropout(weight_matrix, keep_plh)
 
             self._temp_data['outputs'] = tf.matmul(self._temp_data['inputs'], weight_dropconnect)
 

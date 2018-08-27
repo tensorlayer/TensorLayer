@@ -25,8 +25,6 @@ class BinaryDenseLayer(Layer):
 
     Parameters
     ----------
-    # prev_layer : :class:`Layer`
-    #     Previous layer.
     n_units : int
         The number of units of this layer.
     act : activation function
@@ -65,8 +63,6 @@ class BinaryDenseLayer(Layer):
         self.gemmlowp_at_inference = gemmlowp_at_inference
         self.W_init = W_init
         self.b_init = b_init
-        self.W_init_args = W_init_args
-        self.b_init_args = b_init_args
         self.name = name
 
         super(BinaryDenseLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
@@ -84,11 +80,6 @@ class BinaryDenseLayer(Layer):
         except AttributeError:
             pass
 
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -100,6 +91,7 @@ class BinaryDenseLayer(Layer):
         n_in = int(self._temp_data['inputs'].get_shape()[-1])
 
         with tf.variable_scope(self.name):
+
             weight_matrix = self._get_tf_variable(
                 name='W',
                 shape=(n_in, self.n_units),

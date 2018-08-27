@@ -28,8 +28,6 @@ class QuantizedDenseWithBN(Layer):
 
     Parameters
     ----------
-    # prev_layer : :class:`Layer`
-    #     Previous layer.
     n_units : int
         The number of units of this layer.
     act : activation function
@@ -39,8 +37,6 @@ class QuantizedDenseWithBN(Layer):
         Suggest to use a large value for large dataset.
     epsilon : float
         Eplison.
-    # is_train : boolean
-    #     Is being used for training or inference.
     beta_init : initializer or None
         The initializer for initializing beta, if None, skip beta.
         Usually you should not skip beta unless you know what happened.
@@ -55,8 +51,6 @@ class QuantizedDenseWithBN(Layer):
         Suggest to use a large value for large dataset.
     epsilon : float
         Eplison.
-    is_train : boolean
-        Is being used for training or inference.
     beta_init : initializer or None
         The initializer for initializing beta, if None, skip beta.
         Usually you should not skip beta unless you know what happened.
@@ -75,35 +69,38 @@ class QuantizedDenseWithBN(Layer):
 
     def __init__(
         self,
-        # prev_layer,
         n_units=100,
         act=None,
         decay=0.9,
         epsilon=1e-5,
-        # is_train=False,
         bitW=8,
         bitA=8,
-        gamma_init=tf.ones_initializer,
-        beta_init=tf.zeros_initializer,
         gemmlowp_at_inference=False,
         W_init=tf.truncated_normal_initializer(stddev=0.1),
+        gamma_init=tf.ones_initializer,
+        beta_init=tf.zeros_initializer,
         W_init_args=None,
+        gamma_init_args=None,
+        beta_init_args=None,
         name='quantized_dense_with_bn',
     ):
+
+        if gemmlowp_at_inference:
+            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
+
         self.n_units = n_units
         self.act = act
         self.decay = decay
         self.epsilon = epsilon
         self.bitW = bitW
         self.bitA = bitA
-        self.gamma_init = gamma_init
-        self.beta_init = beta_init
         self.gemmlowp_at_inference = gemmlowp_at_inference
         self.W_init = W_init
-        self.W_init_args = W_init_args
+        self.gamma_init = gamma_init
+        self.beta_init = beta_init
         self.name = name
 
-        super(QuantizedDenseWithBN, self).__init__(W_init_args=W_init_args)
+        super(QuantizedDenseWithBN, self).__init__(W_init_args=W_init_args, gamma_init_args=gamma_init_args, beta_init_args=beta_init_args)
 
     def __str__(self):
         additional_str = []
@@ -118,11 +115,6 @@ class QuantizedDenseWithBN(Layer):
         except AttributeError:
             pass
 
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -131,12 +123,10 @@ class QuantizedDenseWithBN(Layer):
         if self._temp_data['inputs'].get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
-        if self.gemmlowp_at_inference:
-            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
-
         n_in = int(self._temp_data['inputs'].get_shape()[-1])
-        x = self._temp_data['inputs']
-        self._temp_data['inputs'] = quantize_active_overflow(self._temp_data['inputs'], self.bitA)
+
+        quantized_inputs = quantize_active_overflow(self._temp_data['inputs'], self.bitA)
+
         self.n_units = self.n_units
 
         with tf.variable_scope(self.name):
@@ -145,11 +135,11 @@ class QuantizedDenseWithBN(Layer):
                 name='W',
                 shape=(n_in, self.n_units),
                 initializer=self.W_init,
-                dtype=self._temp_data['inputs'].dtype,
+                dtype=quantized_inputs.dtype,
                 **self.W_init_args
             )
 
-            mid_out = tf.matmul(x, weight_matrix)
+            mid_out = tf.matmul(self._temp_data['inputs'], weight_matrix)
 
             para_bn_shape = mid_out.get_shape()[-1:]
 
@@ -158,8 +148,9 @@ class QuantizedDenseWithBN(Layer):
                     name='scale_para',
                     shape=para_bn_shape,
                     initializer=self.gamma_init,
-                    dtype=self._temp_data['inputs'].dtype,
-                    trainable=is_train
+                    dtype=quantized_inputs.dtype,
+                    trainable=is_train,
+                    **self.W_init_args
                 )
             else:
                 scale_para = None
@@ -169,8 +160,9 @@ class QuantizedDenseWithBN(Layer):
                     name='offset_para',
                     shape=para_bn_shape,
                     initializer=self.beta_init,
-                    dtype=self._temp_data['inputs'].dtype,
-                    trainable=is_train
+                    dtype=quantized_inputs.dtype,
+                    trainable=is_train,
+                    **self.W_init_args
                 )
             else:
                 offset_para = None
@@ -179,7 +171,7 @@ class QuantizedDenseWithBN(Layer):
                 name='moving_mean',
                 shape=para_bn_shape,
                 initializer=tf.constant_initializer(1.),
-                dtype=self._temp_data['inputs'].dtype,
+                dtype=quantized_inputs.dtype,
                 trainable=False
             )
 
@@ -187,7 +179,7 @@ class QuantizedDenseWithBN(Layer):
                 name='moving_variance',
                 shape=para_bn_shape,
                 initializer=tf.constant_initializer(1.),
-                dtype=self._temp_data['inputs'].dtype,
+                dtype=quantized_inputs.dtype,
                 trainable=False,
             )
 
@@ -218,8 +210,8 @@ class QuantizedDenseWithBN(Layer):
 
             # weight_matrix = tf.Variable(weight_matrix)
 
-            self._temp_data['outputs'] = tf.matmul(self._temp_data['inputs'], weight_matrix)
-            # self._temp_data['outputs'] = xnor_gemm(self._temp_data['inputs'], weight_matrix) # TODO
+            self._temp_data['outputs'] = tf.matmul(quantized_inputs, weight_matrix)
+            # self._temp_data['outputs'] = xnor_gemm(quantized_inputs, weight_matrix) # TODO
 
             self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], _bias_fold, name='bias_add')
 

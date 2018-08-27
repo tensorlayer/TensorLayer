@@ -26,8 +26,6 @@ class TernaryDenseLayer(Layer):
 
     Parameters
     ----------
-    # prev_layer : :class:`Layer`
-    #     Previous layer.
     n_units : int
         The number of units of this layer.
     act : activation function
@@ -49,7 +47,6 @@ class TernaryDenseLayer(Layer):
 
     def __init__(
         self,
-        # prev_layer,
         n_units=100,
         act=None,
         gemmlowp_at_inference=False,
@@ -60,14 +57,16 @@ class TernaryDenseLayer(Layer):
         name='ternary_dense',
     ):
 
+        if gemmlowp_at_inference:
+            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
+
         self.n_units = n_units
         self.act = act
         self.gemmlowp_at_inference = gemmlowp_at_inference
         self.W_init = W_init
         self.b_init = b_init
-        self.W_init_args = W_init_args
-        self.b_init_args = b_init_args
         self.name = name
+
         super(TernaryDenseLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
 
     def __str__(self):
@@ -83,11 +82,6 @@ class TernaryDenseLayer(Layer):
         except AttributeError:
             pass
 
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -95,9 +89,6 @@ class TernaryDenseLayer(Layer):
 
         if self._temp_data['inputs'].get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
-
-        if self.gemmlowp_at_inference:
-            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
         n_in = int(self._temp_data['inputs'].get_shape()[-1])
 
@@ -113,6 +104,7 @@ class TernaryDenseLayer(Layer):
 
             # weight_matrix = tl.act.sign(weight_matrix)    # dont update ...
             alpha = compute_alpha(weight_matrix)
+
             weight_matrix = ternary_operation(weight_matrix)
             weight_matrix = tf.multiply(alpha, weight_matrix)
             # weight_matrix = tf.Variable(weight_matrix)

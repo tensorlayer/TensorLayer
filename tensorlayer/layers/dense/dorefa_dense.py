@@ -64,6 +64,10 @@ class DorefaDenseLayer(Layer):
         b_init_args=None,
         name='dorefa_dense',
     ):
+
+        if gemmlowp_at_inference:
+            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
+
         self.bitW = bitW
         self.bitA = bitA
         self.n_units = n_units
@@ -71,8 +75,6 @@ class DorefaDenseLayer(Layer):
         self.gemmlowp_at_inference = gemmlowp_at_inference
         self.W_init = W_init
         self.b_init = b_init
-        self.W_init_args = W_init_args
-        self.b_init_args = b_init_args
         self.name = name
 
         super(DorefaDenseLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
@@ -96,11 +98,6 @@ class DorefaDenseLayer(Layer):
             additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
         except AttributeError:
             pass
-            
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
-        except AttributeError:
-            pass
 
         return self._str(additional_str)
 
@@ -110,12 +107,9 @@ class DorefaDenseLayer(Layer):
         if self._temp_data['inputs'].get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
-        if self.gemmlowp_at_inference:
-            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
-
         n_in = int(self._temp_data['inputs'].get_shape()[-1])
 
-        self._temp_data['inputs'] = quantize_active(cabs(self._temp_data['inputs']), self.bitA)
+        quantized_inputs = quantize_active(cabs(self._temp_data['inputs']), self.bitA)
 
         with tf.variable_scope(self.name):
 
@@ -123,16 +117,15 @@ class DorefaDenseLayer(Layer):
                 name='W',
                 shape=(n_in, self.n_units),
                 initializer=self.W_init,
-                dtype=self._temp_data['inputs'].dtype,
+                dtype=quantized_inputs.dtype,
                 **self.W_init_args
             )
             # weight_matrix = tl.act.sign(weight_matrix)    # dont update ...
             weight_matrix = quantize_weight(weight_matrix, self.bitW)
             # weight_matrix = tf.Variable(weight_matrix)
-            # print(weight_matrix)
 
-            self._temp_data['outputs'] = tf.matmul(self._temp_data['inputs'], weight_matrix)
-            # self._temp_data['outputs'] = xnor_gemm(self._temp_data['inputs'], weight_matrix) # TODO
+            self._temp_data['outputs'] = tf.matmul(quantized_inputs, weight_matrix)
+            # self._temp_data['outputs'] = xnor_gemm(quantized_inputs, weight_matrix) # TODO
 
             if self.b_init:
                 try:
@@ -140,16 +133,15 @@ class DorefaDenseLayer(Layer):
                         name='b',
                         shape=(self.n_units),
                         initializer=self.b_init,
-                        dtype=self._temp_data['inputs'].dtype,
+                        dtype=quantized_inputs.dtype,
                         **self.b_init_args
                     )
 
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = self._get_tf_variable(
-                        name='b', initializer=self.b_init, dtype=self._temp_data['inputs'].dtype, **self.b_init_args
+                        name='b', initializer=self.b_init, dtype=quantized_inputs.dtype, **self.b_init_args
                     )
 
                 self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
-                # self._temp_data['outputs'] = xnor_gemm(self._temp_data['inputs'], weight_matrix) + b # TODO
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
