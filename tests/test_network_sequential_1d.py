@@ -155,13 +155,7 @@ class Network_Sequential_1D_Test(CustomTestCase):
 
             cls.model.add(tl.layers.FlattenLayer(name="flatten_layer_20"))
 
-            cls.model.add(
-                tl.layers.BinaryDenseLayer(
-                    n_units=10,
-                    act=tf.nn.sigmoid,
-                    name='binary_dense_layer_21'
-                )
-            )
+            cls.model.add(tl.layers.BinaryDenseLayer(n_units=10, act=tf.nn.sigmoid, name='binary_dense_layer_21'))
 
             cls.model.add(tl.layers.DorefaDenseLayer(n_units=20, name='dorefa_dense_layer_22'))
 
@@ -422,7 +416,7 @@ class Network_Sequential_1D_Test(CustomTestCase):
         self.assertEqual(self.train_model["tile_layer_30"].outputs.shape, (100, 100, 2))
         self.assertEqual(self.test_model["tile_layer_30"].outputs.shape, (100, 100, 2))
 
-        
+
 if __name__ == '__main__':
 
     tf.logging.set_verbosity(tf.logging.DEBUG)

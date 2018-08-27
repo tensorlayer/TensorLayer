@@ -88,10 +88,14 @@ class Network_Sequential_3D_Test(CustomTestCase):
             )
 
             cls.model.add(
-                tl.layers.MaxPool3d(filter_size=(3, 3, 3), strides=(2, 2, 2), padding='same', name='maxpool_3d_layer_9')
+                tl.layers.MaxPool3d(
+                    filter_size=(3, 3, 3), strides=(2, 2, 2), padding='same', name='maxpool_3d_layer_9'
+                )
             )
             cls.model.add(
-                tl.layers.MeanPool3d(filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', name='meanpool_3d_layer_10')
+                tl.layers.MeanPool3d(
+                    filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', name='meanpool_3d_layer_10'
+                )
             )
 
             cls.model.add(tl.layers.GlobalMaxPool3d(name='global_maxpool_3d_layer_11'))

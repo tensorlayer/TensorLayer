@@ -33,14 +33,7 @@ class MeanPool1d(Layer):
 
     """
 
-    def __init__(
-        self,
-        filter_size=3,
-        strides=2,
-        padding='same',
-        data_format='channels_last',
-        name='meanpool_1d'
-    ):
+    def __init__(self, filter_size=3, strides=2, padding='same', data_format='channels_last', name='meanpool_1d'):
 
         if data_format not in ["channels_last", "channels_first"]:
             raise ValueError(
@@ -115,13 +108,9 @@ class MeanPool2d(Layer):
         A unique layer name.
 
     """
+
     def __init__(
-        self,
-        filter_size=(3, 3),
-        strides=(2, 2),
-        padding='same',
-        data_format='channels_last',
-        name='meanpool_2d'
+        self, filter_size=(3, 3), strides=(2, 2), padding='same', data_format='channels_last', name='meanpool_2d'
     ):
 
         if data_format not in ["channels_last", "channels_first"]:
@@ -202,12 +191,7 @@ class MeanPool3d(Layer):
     """
 
     def __init__(
-        self,
-        filter_size=(3, 3, 3),
-        strides=(2, 2, 2),
-        padding='same',
-        data_format='channels_last',
-        name='meanpool3d'
+        self, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='same', data_format='channels_last', name='meanpool3d'
     ):
 
         if data_format not in ["channels_last", "channels_first"]:

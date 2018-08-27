@@ -33,14 +33,7 @@ class MaxPool1d(Layer):
 
     """
 
-    def __init__(
-        self,
-        filter_size=3,
-        strides=2,
-        padding='same',
-        data_format='channels_last',
-        name='maxpool_1d'
-    ):
+    def __init__(self, filter_size=3, strides=2, padding='same', data_format='channels_last', name='maxpool_1d'):
 
         if data_format not in ["channels_last", "channels_first"]:
             raise ValueError(
@@ -117,12 +110,7 @@ class MaxPool2d(Layer):
     """
 
     def __init__(
-        self,
-        filter_size=(3, 3),
-        strides=(2, 2),
-        padding='same',
-        data_format='channels_last',
-        name='maxpool_2d'
+        self, filter_size=(3, 3), strides=(2, 2), padding='same', data_format='channels_last', name='maxpool_2d'
     ):
 
         if data_format not in ["channels_last", "channels_first"]:
@@ -202,12 +190,7 @@ class MaxPool3d(Layer):
     """
 
     def __init__(
-        self,
-        filter_size=(3, 3, 3),
-        strides=(2, 2, 2),
-        padding='same',
-        data_format='channels_last',
-        name='maxpool_3d'
+        self, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='same', data_format='channels_last', name='maxpool_3d'
     ):
 
         if data_format not in ["channels_last", "channels_first"]:

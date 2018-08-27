@@ -100,7 +100,9 @@ class QuantizedDenseWithBN(Layer):
         self.beta_init = beta_init
         self.name = name
 
-        super(QuantizedDenseWithBN, self).__init__(W_init_args=W_init_args, gamma_init_args=gamma_init_args, beta_init_args=beta_init_args)
+        super(QuantizedDenseWithBN, self).__init__(
+            W_init_args=W_init_args, gamma_init_args=gamma_init_args, beta_init_args=beta_init_args
+        )
 
     def __str__(self):
         additional_str = []

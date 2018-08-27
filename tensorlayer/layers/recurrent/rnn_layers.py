@@ -177,7 +177,7 @@ class RNNLayer(Layer):
             pass
 
         return self._str(additional_str)
-        
+
         # logging.info(
         #     "RNNLayer %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s " % (
         #         self.name, n_hidden, n_steps, self._temp_data['inputs'].get_shape().ndims,
