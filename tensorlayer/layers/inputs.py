@@ -322,6 +322,8 @@ class EmbeddingInputlayer(Layer):
         The size of vocabulary, number of words.
     embedding_size : int
         The number of embedding dimensions.
+    embedding_dtype : TF Data Type (default: tf.float32)
+        The dtype of the embeddings
     E_init : initializer
         The initializer for the embedding matrix.
     E_init_args : dictionary
@@ -343,9 +345,9 @@ class EmbeddingInputlayer(Layer):
         self,
         vocabulary_size=80000,
         embedding_size=200,
+        embedding_dtype=tf.float32,
         E_init=tf.random_uniform_initializer(-0.1, 0.1),
         E_init_args=None,
-        dtype=None,
         name='embedding',
     ):
 
@@ -354,7 +356,7 @@ class EmbeddingInputlayer(Layer):
         self.emb_shape = [self.vocabulary_size, self.embedding_size]
 
         self.E_init = E_init
-        self.dtype = dtype
+        self.embedding_dtype = embedding_dtype
         self.name = name
 
         super(EmbeddingInputlayer, self).__init__(E_init_args=E_init_args)
@@ -367,6 +369,11 @@ class EmbeddingInputlayer(Layer):
         except AttributeError:
             pass
 
+        try:
+            additional_str.append("embedding_dtype: %s" % self.embedding_dtype)
+        except AttributeError:
+            pass
+
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -374,11 +381,25 @@ class EmbeddingInputlayer(Layer):
 
         with tf.variable_scope(self.name):
 
+            if self._temp_data['inputs'].dtype not in [tf.int32, tf.int64]:
+                raise ValueError("The inputs of this layer should be of type: `tf.int32` or `tf.int64`")
+
             embeddings = self._get_tf_variable(
-                name='embeddings', shape=self.emb_shape, initializer=self.E_init, dtype=self.dtype, **self.E_init_args
+                name='embeddings',
+                shape=self.emb_shape,
+                initializer=self.E_init,
+                dtype=self.embedding_dtype,
+                **self.E_init_args
             )
 
-            self._temp_data['outputs'] = tf.nn.embedding_lookup(embeddings, self._temp_data['inputs'])
+            self._temp_data['outputs'] = tf.nn.embedding_lookup(
+                params=embeddings,
+                ids=self._temp_data['inputs'],
+                partition_strategy='mod',
+                name=None,
+                validate_indices=True,
+                max_norm=None
+            )
 
 
 class AverageEmbeddingInputlayer(Layer):
