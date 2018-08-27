@@ -99,11 +99,6 @@ class DeformableConv2d(Layer):
         except AttributeError:
             pass
 
-        try:
-            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs

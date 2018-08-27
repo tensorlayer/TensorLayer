@@ -46,12 +46,6 @@ class GlobalMaxPool1d(Layer):
 
     def __str__(self):
         additional_str = []
-
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -110,12 +104,6 @@ class GlobalMaxPool2d(Layer):
     def __str__(self):
 
         additional_str = []
-
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -173,12 +161,6 @@ class GlobalMaxPool3d(Layer):
 
     def __str__(self):
         additional_str = []
-
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs

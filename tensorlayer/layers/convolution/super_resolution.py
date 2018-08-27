@@ -62,11 +62,6 @@ class SubpixelConv1d(Layer):
         except AttributeError:
             pass
 
-        try:
-            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -156,11 +151,6 @@ class SubpixelConv2d(Layer):
 
         try:
             additional_str.append("n_out_channels: %d" % self.n_out_channels)
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
         except AttributeError:
             pass
 

@@ -47,12 +47,6 @@ class FlattenLayer(Layer):
 
     def __str__(self):
         additional_str = []
-
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -95,12 +89,6 @@ class ReshapeLayer(Layer):
 
     def __str__(self):
         additional_str = []
-
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -147,11 +135,6 @@ class TransposeLayer(Layer):
 
         try:
             additional_str.append("perm: %s" % self.perm)
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 

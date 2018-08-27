@@ -250,11 +250,6 @@ class Word2vecEmbeddingInputlayer(Layer):
         except AttributeError:
             pass
 
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].get_shape())
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -372,11 +367,6 @@ class EmbeddingInputlayer(Layer):
         except AttributeError:
             pass
 
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].get_shape())
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -454,11 +444,6 @@ class AverageEmbeddingInputlayer(Layer):
 
         try:
             additional_str.append("embedding shape: %s" % self.emb_shape)
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 

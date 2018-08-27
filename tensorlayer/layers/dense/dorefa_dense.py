@@ -94,10 +94,6 @@ class DorefaDenseLayer(Layer):
             additional_str.append("bitA: %d" % self.bitA)
         except AttributeError:
             pass
-        try:
-            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
-        except AttributeError:
-            pass
 
         return self._str(additional_str)
 

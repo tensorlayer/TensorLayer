@@ -170,11 +170,6 @@ class AtrousConv2dLayer(Layer):
         except AttributeError:
             pass
 
-        try:
-            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -280,22 +275,12 @@ class AtrousDeConv2dLayer(Layer):
             pass
 
         try:
-            additional_str.append("output shape: %s" % str(self._temp_data['outputs'].shape))
-        except AttributeError:
-            pass
-
-        try:
             additional_str.append("rate: %d" % self.rate)
         except AttributeError:
             pass
 
         try:
             additional_str.append("padding: %s" % self.padding)
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
         except AttributeError:
             pass
 

@@ -72,11 +72,6 @@ class ConcatLayer(Layer):
         except AttributeError:
             pass
 
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].get_shape())
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -137,11 +132,6 @@ class ElementwiseLayer(Layer):
 
         try:
             additional_str.append("fn: %s" % self.combine_fn.__name__)
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].get_shape())
         except AttributeError:
             pass
 

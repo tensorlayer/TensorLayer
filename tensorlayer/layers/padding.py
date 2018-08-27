@@ -74,11 +74,6 @@ class PadLayer(Layer):
         except AttributeError:
             pass
 
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].get_shape())
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -125,11 +120,6 @@ class ZeroPad1d(Layer):
 
         try:
             additional_str.append("padding: %s" % str(self.padding))
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -184,11 +174,6 @@ class ZeroPad2d(Layer):
         except AttributeError:
             pass
 
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -237,11 +222,6 @@ class ZeroPad3d(Layer):
 
         try:
             additional_str.append("padding: %s" % str(self.padding))
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 

@@ -130,17 +130,12 @@ class TernaryConv2d(Layer):
             pass
 
         try:
-            additional_str.append("stride: %s" % str(self.strides))
+            additional_str.append("strides: %s" % str(self.strides))
         except AttributeError:
             pass
 
         try:
             additional_str.append("padding: %s" % self.padding)
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
         except AttributeError:
             pass
 

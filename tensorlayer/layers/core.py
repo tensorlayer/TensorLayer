@@ -327,8 +327,24 @@ class Layer(BaseLayer):
     @private_method
     def _str(self, additional_str=list()):
 
+        if len(additional_str) == 0:
+            additional_str = []
+
+        if hasattr(self, 'act'):
+
+            try:
+                additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
+            except AttributeError:
+                pass
+
+        try:
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
+        except AttributeError:
+            pass
+
         if len(additional_str) > 0:
             additional_str = ", ".join(additional_str)
+
         else:
             additional_str = None
 

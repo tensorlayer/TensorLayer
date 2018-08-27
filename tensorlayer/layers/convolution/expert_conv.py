@@ -99,11 +99,6 @@ class Conv1dLayer(Layer):
         except AttributeError:
             pass
 
-        try:
-            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -268,11 +263,6 @@ class Conv2dLayer(Layer):
         except AttributeError:
             pass
 
-        try:
-            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
-        except AttributeError:
-            pass
-
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -393,11 +383,6 @@ class Conv3dLayer(Layer):
 
         try:
             additional_str.append("padding: %s" % self.padding)
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
         except AttributeError:
             pass
 
