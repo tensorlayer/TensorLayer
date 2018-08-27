@@ -112,12 +112,16 @@ class DropconnectDenseLayer(Layer):
                 **self.W_init_args
             )
 
-            keep_plh = tf.placeholder(self._temp_data['inputs'].dtype, shape=())
-            self._add_local_drop_plh(keep_plh, self.keep)
+            if is_train:
+                keep_plh = tf.placeholder(self._temp_data['inputs'].dtype, shape=())
+                self._add_local_drop_plh(keep_plh, self.keep)
 
-            LayersConfig.set_keep[self.name] = keep_plh
+                LayersConfig.set_keep[self.name] = keep_plh
 
-            weight_dropconnect = tf.nn.dropout(weight_matrix, keep_plh)
+                weight_dropconnect = tf.nn.dropout(weight_matrix, keep_plh)
+
+            else:
+                weight_dropconnect = weight_matrix
 
             self._temp_data['outputs'] = tf.matmul(self._temp_data['inputs'], weight_dropconnect)
 
