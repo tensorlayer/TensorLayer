@@ -25,8 +25,8 @@ class DynamicRNNLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer
+    # prev_layer : :class:`Layer`
+    #     Previous layer
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
             - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
@@ -120,49 +120,107 @@ class DynamicRNNLayer(Layer):
     """
 
     def __init__(
-            self,
-            prev_layer,
-            cell_fn,  #tf.nn.rnn_cell.LSTMCell,
-            cell_init_args=None,
-            n_hidden=256,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
-            sequence_length=None,
-            initial_state=None,
-            dropout=None,
-            n_layer=1,
-            return_last=None,
-            return_seq_2d=False,
-            dynamic_rnn_init_args=None,
-            name='dyrnn',
+        self,
+        # prev_layer,
+        cell_fn=None,
+        cell_init_args=None,
+        n_hidden=256,
+        initializer=tf.random_uniform_initializer(-0.1, 0.1),
+        sequence_length=None,
+        initial_state=None,
+        dropout=None,
+        n_layer=1,
+        return_last=False,
+        return_seq_2d=False,
+        dynamic_rnn_init_args=None,
+        name='dyrnn',
     ):
         if cell_fn is None:
-            raise Exception("Please put in cell_fn")
+            cell_fn = tf.contrib.rnn.BasicLSTMCell
 
-        super(DynamicRNNLayer, self).__init__(
-            prev_layer=prev_layer,
-            cell_init_args=cell_init_args,
-            dynamic_rnn_init_args=dynamic_rnn_init_args,
-            name=name
-        )
-
-        if self.cell_init_args:
-            self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True
+        if cell_init_args and ('LSTM' in cell_fn.__name__):
+            cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True,
 
         if 'GRU' in cell_fn.__name__:
             try:
-                self.cell_init_args.pop('state_is_tuple')
+                cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
 
-        if return_last is None:
-            return_last = True
+        self.cell_fn = cell_fn
+        self.cell_init_args = cell_init_args
+        self.n_hidden = n_hidden
+        self.initializer = initializer
+        self.sequence_length = sequence_length
+        self.initial_state = initial_state
+        self.dropout = dropout
+        self.n_layer = n_layer
+        self.return_last = return_last
+        self.return_seq_2d = return_seq_2d
+        self.dynamic_rnn_init_args = dynamic_rnn_init_args
+        self.name = name
 
-        logging.info(
-            "DynamicRNNLayer %s: n_hidden: %d, in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d" % (
-                self.name, n_hidden, self._temp_data['inputs'].get_shape().ndims, self._temp_data['inputs'].get_shape(),
-                cell_fn.__name__, dropout, n_layer
-            )
+        super(DynamicRNNLayer, self).__init__(
+            cell_init_args=cell_init_args,
+            dynamic_rnn_init_args=dynamic_rnn_init_args,
         )
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("n_hidden: %d" % self.n_hidden)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("cell_fn: %s" % self.cell_fn.__name__)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("dropout: %s" % str(self.dropout))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("n_layer: %d" % self.n_layer)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("return_last: %s" % str(return_last))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("return_seq_2d: %s" % str(return_seq_2d))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("input shape: %s" % self._temp_data['inputs'].get_shape())
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+        # logging.info(
+        #     "DynamicRNNLayer %s: n_hidden: %d, in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d" % (
+        #         self.name, n_hidden, self._temp_data['inputs'].get_shape().ndims, self._temp_data['inputs'].get_shape(),
+        #         cell_fn.__name__, dropout, n_layer
+        #     )
+        # )
+
+    @auto_parse_inputs
+    def compile(self, prev_layer, is_train=True):
+        """Compile.
+
+        Parameters
+        ----------
+        prev_layer : :class:`Layer`
+            Previous layer.
+        is_train : unused
+        """
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
@@ -180,20 +238,20 @@ class DynamicRNNLayer(Layer):
             batch_size = array_ops.shape(self._temp_data['inputs'])[0]
             logging.info("       non specified batch_size, uses a tensor instead.")
 
-        self.batch_size = batch_size
+        # self.batch_size = batch_size
 
         # Creats the cell function
         # cell_instance_fn=lambda: cell_fn(num_units=n_hidden, **self.cell_init_args) # HanSheng
-        rnn_creator = lambda: cell_fn(num_units=n_hidden, **self.cell_init_args)
+        rnn_creator = lambda: self.cell_fn(num_units=self.n_hidden, **self.cell_init_args)
 
         # Apply dropout
-        if dropout:
-            if isinstance(dropout, (tuple, list)):
-                in_keep_prob = dropout[0]
-                out_keep_prob = dropout[1]
+        if self.dropout:
+            if isinstance(self.dropout, (tuple, list)):
+                in_keep_prob = self.dropout[0]
+                out_keep_prob = self.dropout[1]
 
-            elif isinstance(dropout, float):
-                in_keep_prob, out_keep_prob = dropout, dropout
+            elif isinstance(self.dropout, float):
+                in_keep_prob, out_keep_prob = self.dropout, self.dropout
 
             else:
                 raise Exception("Invalid dropout type (must be a 2-D tuple of " "float)")
@@ -212,40 +270,42 @@ class DynamicRNNLayer(Layer):
             cell_creator = rnn_creator
         self.cell = cell_creator()
         # Apply multiple layers
-        if n_layer > 1:
+        if self.n_layer > 1:
             try:
                 MultiRNNCell_fn = tf.contrib.rnn.MultiRNNCell
             except Exception:
                 MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
 
             # cell_instance_fn2=cell_instance_fn # HanSheng
-            if dropout:
+            if self.dropout:
                 try:
                     # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)], state_is_tuple=True) # HanSheng
                     self.cell = MultiRNNCell_fn(
-                        [cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)], state_is_tuple=True
+                        [cell_creator(is_last=i == self.n_layer - 1) for i in range(self.n_layer)], state_is_tuple=True
                     )
                 except Exception:  # when GRU
                     # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)]) # HanSheng
-                    self.cell = MultiRNNCell_fn([cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)])
+                    self.cell = MultiRNNCell_fn(
+                        [cell_creator(is_last=i == self.n_layer - 1) for i in range(self.n_layer)]
+                    )
             else:
                 try:
-                    self.cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)], state_is_tuple=True)
+                    self.cell = MultiRNNCell_fn([cell_creator() for _ in range(self.n_layer)], state_is_tuple=True)
                 except Exception:  # when GRU
-                    self.cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
+                    self.cell = MultiRNNCell_fn([cell_creator() for _ in range(self.n_layer)])
 
         # self.cell=cell_instance_fn() # HanSheng
 
         # Initialize initial_state
-        if initial_state is None:
+        if self.initial_state is None:
             self.initial_state = self.cell.zero_state(
                 batch_size, dtype=self._temp_data['inputs'].dtype
             )  # dtype=tf.float32)
         else:
-            self.initial_state = initial_state
+            self.initial_state = self.initial_state
 
         # Computes sequence_length
-        if sequence_length is None:
+        if self.sequence_length is None:
 
             sequence_length = retrieve_seq_length_op(
                 self._temp_data['inputs']
@@ -253,7 +313,7 @@ class DynamicRNNLayer(Layer):
             )
 
         # Main - Computes outputs and last_states
-        with tf.variable_scope(name, initializer=initializer) as vs:
+        with tf.variable_scope(self.name, initializer=self.initializer) as vs:
             outputs, last_states = tf.nn.dynamic_rnn(
                 cell=self.cell,
                 # inputs=X
@@ -267,7 +327,7 @@ class DynamicRNNLayer(Layer):
 
             # logging.info("     n_params : %d" % (len(rnn_variables)))
             # Manage the outputs
-            if return_last:
+            if self.return_last:
                 # [batch_size, n_hidden]
                 # outputs = tf.transpose(tf.pack(outputs), [1, 0, 2])
                 self._temp_data['outputs'] = advanced_indexing_op(outputs, sequence_length)
@@ -276,10 +336,10 @@ class DynamicRNNLayer(Layer):
                 # [batch_size, n_step(max), n_hidden]
                 # self._temp_data['outputs'] = result[0]["outputs"]
                 # self._temp_data['outputs'] = outputs    # it is 3d, but it is a list
-                if return_seq_2d:
+                if self.return_seq_2d:
                     # PTB tutorial:
                     # 2D Tensor [n_example, n_hidden]
-                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden])
+                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [-1, self.n_hidden])
 
                 else:
                     # <akara>:
@@ -287,8 +347,12 @@ class DynamicRNNLayer(Layer):
                     max_length = tf.shape(outputs)[1]
                     batch_size = tf.shape(outputs)[0]
 
-                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [batch_size, max_length, n_hidden])
+                    self._temp_data['outputs'
+                                   ] = tf.reshape(tf.concat(outputs, 1),
+                                                  [batch_size, max_length, self.n_hidden])
                     # self._temp_data['outputs'] = tf.reshape(tf.concat(1, outputs), [-1, max_length, n_hidden])
+
+            self._temp_data['local_weights'] = rnn_variables
 
         # Final state
         self.final_state = last_states
@@ -303,8 +367,8 @@ class BiDynamicRNNLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
+    # prev_layer : :class:`Layer`
+    #     Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
             - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__.
@@ -376,57 +440,113 @@ class BiDynamicRNNLayer(Layer):
 
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
+    # @deprecated_alias(
+    #     layer='prev_layer', end_support_version="2.0.0"
+    # )  # TODO: remove this line before releasing TL 2.0.0
+    # @deprecated_args(
+    #     end_support_version="2.1.0",
+    #     instructions="`prev_layer` is deprecated, use the functional API instead",
+    #     deprecated_args=("prev_layer", ),
+    # )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
-            self,
-            prev_layer,
-            cell_fn,  #tf.nn.rnn_cell.LSTMCell,
-            cell_init_args=None,
-            n_hidden=256,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
-            sequence_length=None,
-            fw_initial_state=None,
-            bw_initial_state=None,
-            dropout=None,
-            n_layer=1,
-            return_last=False,
-            return_seq_2d=False,
-            dynamic_rnn_init_args=None,
-            name='bi_dyrnn_layer',
+        self,
+        # prev_layer,
+        cell_fn=None,
+        cell_init_args=None,
+        n_hidden=256,
+        initializer=tf.random_uniform_initializer(-0.1, 0.1),
+        sequence_length=None,
+        fw_initial_state=None,
+        bw_initial_state=None,
+        dropout=None,
+        n_layer=1,
+        return_last=False,
+        return_seq_2d=False,
+        dynamic_rnn_init_args=None,
+        name='bi_dyrnn_layer',
     ):
-        super(BiDynamicRNNLayer, self).__init__(
-            prev_layer=prev_layer,
-            cell_init_args=cell_init_args,
-            dynamic_rnn_init_args=dynamic_rnn_init_args,
-            name=name
-        )
+        if cell_fn is None:
+            cell_fn = tf.contrib.rnn.BasicLSTMCell
 
-        if self.cell_init_args:
-            self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True,
+        if cell_init_args and ('LSTM' in cell_fn.__name__):
+            cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True,
 
         if 'GRU' in cell_fn.__name__:
             try:
-                self.cell_init_args.pop('state_is_tuple')
+                cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
 
-        if cell_fn is None:
-            raise Exception("Please put in cell_fn")
+        self.cell_fn = cell_fn
+        self.cell_init_args = cell_init_args
+        self.n_hidden = n_hidden
+        self.initializer = initializer
+        self.sequence_length = sequence_length
+        self.fw_initial_state = fw_initial_state
+        self.bw_initial_state = bw_initial_state
+        self.dropout = dropout
+        self.n_layer = n_layer
+        self.return_last = return_last
+        self.return_seq_2d = return_seq_2d
+        self.dynamic_rnn_init_args = dynamic_rnn_init_args
+        self.name = name
 
-        logging.info(
-            "BiDynamicRNNLayer %s: n_hidden: %d in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d" % (
-                self.name, n_hidden, self._temp_data['inputs'].get_shape().ndims, self._temp_data['inputs'].get_shape(),
-                cell_fn.__name__, dropout, n_layer
-            )
+        super(BiDynamicRNNLayer, self).__init__(
+            cell_init_args=cell_init_args,
+            dynamic_rnn_init_args=dynamic_rnn_init_args,
         )
 
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("n_hidden: %d" % self.n_hidden)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("n_steps: %d" % self.n_steps)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("cell_fn: %s" % self.cell_fn.__name__)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("return_last: %s" % str(return_last))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("return_seq_2d: %s" % str(return_seq_2d))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("input shape: %s" % self._temp_data['inputs'].shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+        # logging.info(
+        #     "BiDynamicRNNLayer %s: n_hidden: %d in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d" % (
+        #         self.name, n_hidden, self._temp_data['inputs'].get_shape().ndims, self._temp_data['inputs'].get_shape(),
+        #         cell_fn.__name__, dropout, n_layer
+        #     )
+        # )
+
+    @auto_parse_inputs
+    def compile(self, prev_layer, is_train=True):
+        """Compile.
+
+        Parameters
+        ----------
+        prev_layer : :class:`Layer`
+            Previous layer with output shape of [batch, n_steps, n_features].
+        is_train : unused
+        """
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
             self._temp_data['inputs'].get_shape().with_rank(3)
@@ -446,18 +566,18 @@ class BiDynamicRNNLayer(Layer):
 
         self.batch_size = batch_size
 
-        with tf.variable_scope(name, initializer=initializer) as vs:
+        with tf.variable_scope(self.name, initializer=self.initializer) as vs:
             # Creats the cell function
             # cell_instance_fn=lambda: cell_fn(num_units=n_hidden, **self.cell_init_args) # HanSheng
-            rnn_creator = lambda: cell_fn(num_units=n_hidden, **self.cell_init_args)
+            rnn_creator = lambda: self.cell_fn(num_units=self.n_hidden, **self.cell_init_args)
 
             # Apply dropout
-            if dropout:
-                if isinstance(dropout, (tuple, list)):
-                    in_keep_prob = dropout[0]
-                    out_keep_prob = dropout[1]
-                elif isinstance(dropout, float):
-                    in_keep_prob, out_keep_prob = dropout, dropout
+            if self.dropout:
+                if isinstance(self.dropout, (tuple, list)):
+                    in_keep_prob = self.dropout[0]
+                    out_keep_prob = self.dropout[1]
+                elif isinstance(self.dropout, float):
+                    in_keep_prob, out_keep_prob = self.dropout, self.dropout
                 else:
                     raise Exception("Invalid dropout type (must be a 2-D tuple of " "float)")
                 try:
@@ -484,10 +604,10 @@ class BiDynamicRNNLayer(Layer):
             # self.bw_cell=cell_instance_fn()
             # Initial state of RNN
 
-            self.fw_initial_state = fw_initial_state
-            self.bw_initial_state = bw_initial_state
+            # self.fw_initial_state = fw_initial_state
+            # self.bw_initial_state = bw_initial_state
             # Computes sequence_length
-            if sequence_length is None:
+            if self.sequence_length is None:
 
                 sequence_length = retrieve_seq_length_op(
                     self._temp_data['inputs']
@@ -496,12 +616,12 @@ class BiDynamicRNNLayer(Layer):
 
             if n_layer > 1:
                 if dropout:
-                    self.fw_cell = [cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)]
-                    self.bw_cell = [cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)]
+                    self.fw_cell = [cell_creator(is_last=i == self.n_layer - 1) for i in range(self.n_layer)]
+                    self.bw_cell = [cell_creator(is_last=i == self.n_layer - 1) for i in range(self.n_layer)]
 
                 else:
-                    self.fw_cell = [cell_creator() for _ in range(n_layer)]
-                    self.bw_cell = [cell_creator() for _ in range(n_layer)]
+                    self.fw_cell = [cell_creator() for _ in range(self.n_layer)]
+                    self.bw_cell = [cell_creator() for _ in range(self.n_layer)]
 
                 outputs, states_fw, states_bw = stack_bidirectional_dynamic_rnn(
                     cells_fw=self.fw_cell,
@@ -535,16 +655,16 @@ class BiDynamicRNNLayer(Layer):
             # Manage the outputs
             outputs = tf.concat(outputs, 2)
 
-            if return_last:
+            if self.return_last:
                 # [batch_size, 2 * n_hidden]
                 raise NotImplementedError("Return last is not implemented yet.")
                 # self._temp_data['outputs'] = advanced_indexing_op(outputs, sequence_length)
             else:
                 # [batch_size, n_step(max), 2 * n_hidden]
-                if return_seq_2d:
+                if self.return_seq_2d:
                     # PTB tutorial:
                     # 2D Tensor [n_example, 2 * n_hidden]
-                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [-1, 2 * n_hidden])
+                    self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [-1, 2 * self.n_hidden])
 
                 else:
                     # <akara>:
@@ -554,7 +674,9 @@ class BiDynamicRNNLayer(Layer):
 
                     self._temp_data['outputs'
                                    ] = tf.reshape(tf.concat(outputs, 1),
-                                                  [batch_size, max_length, 2 * n_hidden])
+                                                  [batch_size, max_length, 2 * self.n_hidden])
+
+            self._temp_data['local_weights'] = rnn_variables
 
         # Final state
         self.fw_final_states = states_fw
