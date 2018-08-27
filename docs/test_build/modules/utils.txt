@@ -1,0 +1,425 @@
+API - Utility
+*************
+
++------------+--------------------------------------------------------------------------------------------+
+| "fit"(ses  | Training a given non time-series network by the given cost function, training data,        |
+| s,         | batch_size, n_epoch etc.                                                                   |
+| network,   |                                                                                            |
+| train_op,  |                                                                                            |
+| cost,      |                                                                                            |
+| X_train,   |                                                                                            |
+| ...)       |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "test"(se  | Test a given non time-series network by the given test data and metric.                    |
+| ss,        |                                                                                            |
+| network,   |                                                                                            |
+| acc,       |                                                                                            |
+| X_test,    |                                                                                            |
+| y_test, x, |                                                                                            |
+| ...)       |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "predict"  | Return the predict results of given non time-series network.                               |
+| (sess,     |                                                                                            |
+| network,   |                                                                                            |
+| X, x,      |                                                                                            |
+| y_op[, ba  |                                                                                            |
+| tch_size]) |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "evaluati  | Input the predicted results, targets results and the number of class, return the confusion |
+| on"([y_te  | matrix, F1-score of each class, accuracy and macro F1-score.                               |
+| st,        |                                                                                            |
+| y_predict, |                                                                                            |
+| n_classes  |                                                                                            |
+| ])         |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "class_ba  | Input the features and labels, return the features and labels after oversampling.          |
+| lancing_o  |                                                                                            |
+| versample  |                                                                                            |
+| "([X_trai  |                                                                                            |
+| n, ...])   |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "get_rand  | Return a list of random integer by the given range and quantity.                           |
+| om_int"([  |                                                                                            |
+| min_v,     |                                                                                            |
+| max_v,     |                                                                                            |
+| number,    |                                                                                            |
+| seed])     |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "dict_to_  | Input a dictionary, return a dictionary that all items are set to one.                     |
+| one"(dp_d  |                                                                                            |
+| ict)       |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "list_str  | Inputs "['a', 'b', 'c']", returns "{'a': 0, 'b': 1, 'c': 2}".                              |
+| ing_to_di  |                                                                                            |
+| ct"(strin  |                                                                                            |
+| g)         |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "flatten_  | Input a list of list, return a list that all items are in a list.                          |
+| list"(lis  |                                                                                            |
+| t_of_list) |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "exit_ten  | Close TensorFlow session, TensorBoard and Nvidia-process if available.                     |
+| sorflow"(  |                                                                                            |
+| [sess,     |                                                                                            |
+| port])     |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "open_ten  | Open Tensorboard.                                                                          |
+| sorboard"  |                                                                                            |
+| ([log_dir, |                                                                                            |
+| port])     |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "clear_al  | Clears all the placeholder variables of keep prob, including keeping probabilities of all  |
+| l_placeho  | dropout, denoising, dropconnect etc.                                                       |
+| lder_vari  |                                                                                            |
+| ables"([p  |                                                                                            |
+| rintable]) |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "set_gpu_  | Set the GPU memory fraction for the application.                                           |
+| fraction"  |                                                                                            |
+| ([gpu_fra  |                                                                                            |
+| ction])    |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+
+
+Training, testing and predicting
+================================
+
+
+Training
+--------
+
+tensorlayer.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_size=100, n_epoch=100, print_freq=5, X_val=None, y_val=None, eval_train=True, tensorboard=False, tensorboard_epoch_freq=5, tensorboard_weight_histograms=True, tensorboard_graph_vis=True)
+
+   Training a given non time-series network by the given cost
+   function, training data, batch_size, n_epoch etc.
+
+   * MNIST example click here.
+
+   * In order to control the training details, the authors HIGHLY
+     recommend "tl.iterate" see two MNIST examples 1, 2.
+
+   Parameters:
+      * **sess** (*Session*) -- TensorFlow Session.
+
+      * **network** (*TensorLayer layer*) -- the network to be
+        trained.
+
+      * **train_op** (*TensorFlow optimizer*) -- The optimizer for
+        training e.g. tf.train.AdamOptimizer.
+
+      * **X_train** (*numpy.array*) -- The input of training data
+
+      * **y_train** (*numpy.array*) -- The target of training data
+
+      * **x** (*placeholder*) -- For inputs.
+
+      * **y** (*placeholder*) -- For targets.
+
+      * **acc** (*TensorFlow expression** or **None*) -- Metric for
+        accuracy or others. If None, would not print the information.
+
+      * **batch_size** (*int*) -- The batch size for training and
+        evaluating.
+
+      * **n_epoch** (*int*) -- The number of training epochs.
+
+      * **print_freq** (*int*) -- Print the training information
+        every "print_freq" epochs.
+
+      * **X_val** (*numpy.array** or **None*) -- The input of
+        validation data. If None, would not perform validation.
+
+      * **y_val** (*numpy.array** or **None*) -- The target of
+        validation data. If None, would not perform validation.
+
+      * **eval_train** (*boolean*) -- Whether to evaluate the model
+        during training. If X_val and y_val are not None, it reflects
+        whether to evaluate the model on training data.
+
+      * **tensorboard** (*boolean*) -- If True, summary data will be
+        stored to the log/ directory for visualization with
+        tensorboard. See also detailed tensorboard_X settings for
+        specific configurations of features. (default False) Also runs
+        *tl.layers.initialize_global_variables(sess)* internally in
+        fit() to setup the summary nodes.
+
+      * **tensorboard_epoch_freq** (*int*) -- How many epochs
+        between storing tensorboard checkpoint for visualization to
+        log/ directory (default 5).
+
+      * **tensorboard_weight_histograms** (*boolean*) -- If True
+        updates tensorboard data in the logs/ directory for
+        visualization of the weight histograms every
+        tensorboard_epoch_freq epoch (default True).
+
+      * **tensorboard_graph_vis** (*boolean*) -- If True stores the
+        graph in the tensorboard summaries saved to log/ (default
+        True).
+
+   -[ Examples ]-
+
+   See tutorial_mnist_simple.py
+
+   >>> tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_,
+   ...            acc=acc, batch_size=500, n_epoch=200, print_freq=5,
+   ...            X_val=X_val, y_val=y_val, eval_train=False)
+   >>> tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_,
+   ...            acc=acc, batch_size=500, n_epoch=200, print_freq=5,
+   ...            X_val=X_val, y_val=y_val, eval_train=False,
+   ...            tensorboard=True, tensorboard_weight_histograms=True, tensorboard_graph_vis=True)
+
+   -[ Notes ]-
+
+   If tensorboard=True, the *global_variables_initializer* will be run
+   inside the fit function in order to initialize the automatically
+   generated summary nodes used for tensorboard visualization, thus
+   *tf.global_variables_initializer().run()* before the *fit()* call
+   will be undefined.
+
+
+Evaluation
+----------
+
+tensorlayer.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None)
+
+   Test a given non time-series network by the given test data and
+   metric.
+
+   Parameters:
+      * **sess** (*Session*) -- TensorFlow session.
+
+      * **network** (*TensorLayer layer*) -- The network.
+
+      * **acc** (*TensorFlow expression** or **None*) --
+
+        Metric for accuracy or others.
+           * If None, would not print the information.
+
+      * **X_test** (*numpy.array*) -- The input of testing data.
+
+      * **y_test** (*numpy array*) -- The target of testing data
+
+      * **x** (*placeholder*) -- For inputs.
+
+      * **y** (*placeholder*) -- For targets.
+
+      * **batch_size** (*int** or **None*) -- The batch size for
+        testing, when dataset is large, we should use minibatche for
+        testing; if dataset is small, we can set it to None.
+
+      * **cost** (*TensorFlow expression** or **None*) -- Metric for
+        cost or others. If None, would not print the information.
+
+   -[ Examples ]-
+
+   See tutorial_mnist_simple.py
+
+   >>> tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)
+
+
+Prediction
+----------
+
+tensorlayer.utils.predict(sess, network, X, x, y_op, batch_size=None)
+
+   Return the predict results of given non time-series network.
+
+   Parameters:
+      * **sess** (*Session*) -- TensorFlow Session.
+
+      * **network** (*TensorLayer layer*) -- The network.
+
+      * **X** (*numpy.array*) -- The inputs.
+
+      * **x** (*placeholder*) -- For inputs.
+
+      * **y_op** (*placeholder*) -- The argmax expression of softmax
+        outputs.
+
+      * **batch_size** (*int** or **None*) -- The batch size for
+        prediction, when dataset is large, we should use minibatche
+        for prediction; if dataset is small, we can set it to None.
+
+   -[ Examples ]-
+
+   See tutorial_mnist_simple.py
+
+   >>> y = network.outputs
+   >>> y_op = tf.argmax(tf.nn.softmax(y), 1)
+   >>> print(tl.utils.predict(sess, network, X_test, x, y_op))
+
+
+Evaluation functions
+====================
+
+tensorlayer.utils.evaluation(y_test=None, y_predict=None, n_classes=None)
+
+   Input the predicted results, targets results and the number of
+   class, return the confusion matrix, F1-score of each class,
+   accuracy and macro F1-score.
+
+   Parameters:
+      * **y_test** (*list*) -- The target results
+
+      * **y_predict** (*list*) -- The predicted results
+
+      * **n_classes** (*int*) -- The number of classes
+
+   -[ Examples ]-
+
+   >>> c_mat, f1, acc, f1_macro = tl.utils.evaluation(y_test, y_predict, n_classes)
+
+
+Class balancing functions
+=========================
+
+tensorlayer.utils.class_balancing_oversample(X_train=None, y_train=None, printable=True)
+
+   Input the features and labels, return the features and labels after
+   oversampling.
+
+   Parameters:
+      * **X_train** (*numpy.array*) -- The inputs.
+
+      * **y_train** (*numpy.array*) -- The targets.
+
+   -[ Examples ]-
+
+   One X
+
+   >>> X_train, y_train = class_balancing_oversample(X_train, y_train, printable=True)
+
+   Two X
+
+   >>> X, y = tl.utils.class_balancing_oversample(X_train=np.hstack((X1, X2)), y_train=y, printable=False)
+   >>> X1 = X[:, 0:5]
+   >>> X2 = X[:, 5:]
+
+
+Random functions
+================
+
+tensorlayer.utils.get_random_int(min_v=0, max_v=10, number=5, seed=None)
+
+   Return a list of random integer by the given range and quantity.
+
+   Parameters:
+      * **min_v** (*number*) -- The minimum value.
+
+      * **max_v** (*number*) -- The maximum value.
+
+      * **number** (*int*) -- Number of value.
+
+      * **seed** (*int** or **None*) -- The seed for random.
+
+   -[ Examples ]-
+
+   >>> r = get_random_int(min_v=0, max_v=10, number=5)
+   [10, 2, 3, 3, 7]
+
+
+Dictionary and list
+===================
+
+
+Set all items in dictionary to one
+----------------------------------
+
+tensorlayer.utils.dict_to_one(dp_dict)
+
+   Input a dictionary, return a dictionary that all items are set to
+   one.
+
+   Used for disable dropout, dropconnect layer and so on.
+
+   Parameters:
+      **dp_dict** (*dictionary*) -- The dictionary contains key and
+      number, e.g. keeping probabilities.
+
+   -[ Examples ]-
+
+   >>> dp_dict = dict_to_one( network.all_drop )
+   >>> dp_dict = dict_to_one( network.all_drop )
+   >>> feed_dict.update(dp_dict)
+
+
+Convert list of string to dictionary
+------------------------------------
+
+tensorlayer.utils.list_string_to_dict(string)
+
+   Inputs "['a', 'b', 'c']", returns "{'a': 0, 'b': 1, 'c': 2}".
+
+
+Flatten a list
+--------------
+
+tensorlayer.utils.flatten_list(list_of_list)
+
+   Input a list of list, return a list that all items are in a list.
+
+   Parameters:
+      **list_of_list** (*a list of list*) --
+
+   -[ Examples ]-
+
+   >>> tl.utils.flatten_list([[1, 2, 3],[4, 5],[6]])
+   [1, 2, 3, 4, 5, 6]
+
+
+Close TF session and associated processes
+=========================================
+
+tensorlayer.utils.exit_tensorflow(sess=None, port=6006)
+
+   Close TensorFlow session, TensorBoard and Nvidia-process if
+   available.
+
+   Parameters:
+      * **sess** (*Session*) -- TensorFlow Session.
+
+      * **tb_port** (*int*) -- TensorBoard port you want to close,
+        *6006* as default.
+
+
+Open TensorBoard
+================
+
+tensorlayer.utils.open_tensorboard(log_dir='/tmp/tensorflow', port=6006)
+
+   Open Tensorboard.
+
+   Parameters:
+      * **log_dir** (*str*) -- Directory where your tensorboard logs
+        are saved
+
+      * **port** (*int*) -- TensorBoard port you want to open, 6006
+        is tensorboard default
+
+
+Clear TensorFlow placeholder
+============================
+
+tensorlayer.utils.clear_all_placeholder_variables(printable=True)
+
+   Clears all the placeholder variables of keep prob, including
+   keeping probabilities of all dropout, denoising, dropconnect etc.
+
+   Parameters:
+      **printable** (*boolean*) -- If True, print all deleted
+      variables.
+
+
+Set GPU functions
+=================
+
+tensorlayer.utils.set_gpu_fraction(gpu_fraction=0.3)
+
+   Set the GPU memory fraction for the application.
+
+   Parameters:
+      **gpu_fraction** (*float*) -- Fraction of GPU memory, (0 ~ 1]
+
+   -[ References ]-
+
+   * TensorFlow using GPU

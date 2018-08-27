@@ -1,0 +1,179 @@
+Examples
+********
+
+
+Basics
+======
+
+   * Multi-layer perceptron (MNIST). Classification task, see
+     tutorial_mnist_simple.py.
+
+   * Multi-layer perceptron (MNIST). Classification with dropout
+     using iterator, see method1 (**use placeholder**) and method2
+     (**use reuse**).
+
+   * Denoising Autoencoder (MNIST). Classification task, see
+     tutorial_mnist_autoencoder_cnn.py.
+
+   * Stacked Denoising Autoencoder and Fine-Tuning (MNIST). A MLP
+     classification task, see tutorial_mnist_autoencoder_cnn.py.
+
+   * Convolutional Network (MNIST). Classification task, see
+     tutorial_mnist_autoencoder_cnn.py.
+
+   * Convolutional Network (CIFAR-10). Classification task, see
+     tutorial_cifar10.py and tutorial_cifar10_tfrecord.py.
+
+   * TensorFlow dataset API for object detection see here.
+
+   * Merge TF-Slim into TensorLayer. tutorial_inceptionV3_tfslim.py.
+
+   * Merge Keras into TensorLayer. tutorial_keras.py.
+
+   * Data augmentation with TFRecord. Effective way to load and pre-
+     process data, see tutorial_tfrecord*.py and
+     tutorial_cifar10_tfrecord.py.
+
+   * Data augmentation with Dataset API. Effective way to load and
+     pre-process data, see tutorial_cifar10_datasetapi.py.
+
+   * Data augmentation with TensorLayer. See
+     tutorial_image_preprocess.py (for quick test only).
+
+   * Float 16 half-precision model, see tutorial_mnist_float16.py.
+
+   * Transparent distributed training. mnist by luomai.
+
+
+Vision
+======
+
+   * Arbitrary Style Transfer in Real-time with Adaptive Instance
+     Normalization, see examples.
+
+   * ArcFace: Additive Angular Margin Loss for Deep Face
+     Recognition, see InsignFace.
+
+   * BinaryNet. Model compression, see mnist cifar10.
+
+   * Ternary Weight Network. Model compression, see mnist cifar10.
+
+   * DoReFa-Net. Model compression, see mnist cifar10.
+
+   * QuanCNN. Model compression, sees mnist cifar10.
+
+   * Wide ResNet (CIFAR) by ritchieng.
+
+   * Spatial Transformer Networks by zsdonghao.
+
+   * U-Net for brain tumor segmentation by zsdonghao.
+
+   * Variational Autoencoder (VAE) for (CelebA) by yzwxx.
+
+   * Variational Autoencoder (VAE) for (MNIST) by BUPTLdy.
+
+   * Image Captioning - Reimplementation of Google's im2txt by
+     zsdonghao.
+
+
+Adversarial Learning
+====================
+
+   * DCGAN (CelebA). Generating images by Deep Convolutional
+     Generative Adversarial Networks by zsdonghao.
+
+   * Generative Adversarial Text to Image Synthesis by zsdonghao.
+
+   * Unsupervised Image to Image Translation with Generative
+     Adversarial Networks by zsdonghao.
+
+   * Improved CycleGAN with resize-convolution by luoxier.
+
+   * Super Resolution GAN by zsdonghao.
+
+   * BEGAN: Boundary Equilibrium Generative Adversarial Networks by
+     2wins.
+
+   * DAGAN: Fast Compressed Sensing MRI Reconstruction by nebulaV.
+
+
+Natural Language Processing
+===========================
+
+   * Recurrent Neural Network (LSTM). Apply multiple LSTM to PTB
+     dataset for language modeling, see
+     tutorial_ptb_lstm_state_is_tuple.py.
+
+   * Word Embedding (Word2vec). Train a word embedding matrix, see
+     >>`tutorial_word2vec_basic.py <https://github.com/tensorlayer/te
+     nsorlayer/blob/master/example/text_word_embedding/tutorial\_word
+     2vec_basic.py>`__<<.
+
+   * Restore Embedding matrix. Restore a pre-train embedding matrix,
+     see tutorial_generate_text.py.
+
+   * Text Generation. Generates new text scripts, using LSTM
+     network, see tutorial_generate_text.py.
+
+   * Chinese Text Anti-Spam by pakrchen.
+
+   * Chatbot in 200 lines of code for Seq2Seq.
+
+   * FastText Sentence Classification (IMDB), see
+     tutorial_imdb_fasttext.py by tomtung.
+
+
+Reinforcement Learning
+======================
+
+   * Policy Gradient / Network (Atari Ping Pong), see
+     tutorial_atari_pong.py.
+
+   * Deep Q-Network (Frozen lake), see tutorial_frozenlake_dqn.py.
+
+   * Q-Table learning algorithm (Frozen lake), see
+     tutorial_frozenlake_q_table.py.
+
+   * Asynchronous Policy Gradient using TensorDB (Atari Ping Pong)
+     by nebulaV.
+
+   * AC for discrete action space (Cartpole), see
+     tutorial_cartpole_ac.py.
+
+   * A3C for continuous action space (Bipedal Walker), see
+     tutorial_bipedalwalker_a3c*.py.
+
+   * DAGGER for (Gym Torcs) by zsdonghao.
+
+   * TRPO for continuous and discrete action space by jjkke88.
+
+
+Pretrained Models
+=================
+
+   * VGG 16 (ImageNet). Classification task, see tl.models.VGG16 or
+     tutorial_vgg16.py.
+
+   * VGG 19 (ImageNet). Classification task, see tutorial_vgg19.py.
+
+   * InceptionV3 (ImageNet). Classification task, see
+     tutorial_inceptionV3_tfslim.py.
+
+   * SqueezeNet (ImageNet). Model compression, see
+     tl.models.SqueezeNetV1 or tutorial_squeezenet.py.
+
+   * MobileNet (ImageNet). Model compression, see
+     tl.models.MobileNetV1 or tutorial_mobilenet.py.
+
+   * More CNN implementations of TF-Slim can be connected to
+     TensorLayer via SlimNetsLayer.
+
+   * All pretrained models in pretrained-models.
+
+
+Miscellaneous
+=============
+
+   * TensorDB by fangde see tl_paper.
+
+   * A simple web service - TensorFlask by JoelKronander.

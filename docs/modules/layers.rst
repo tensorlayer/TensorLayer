@@ -256,8 +256,6 @@ Layer list
    PRelu6Layer
    PTRelu6Layer
 
-   MultiplexerLayer
-
    flatten_reshape
    clear_layers_name
    initialize_rnn_state
@@ -297,7 +295,7 @@ The following is an example implementation of a layer that multiplies its input 
           self.outputs = self.inputs * 2
 
           # update layer (customized)
-          
+
 
 Your Dense Layer
 ^^^^^^^^^^^^^^^^
@@ -336,8 +334,8 @@ At the end, for a layer with parameters, we also append the parameters into ``al
             self.outputs = self._apply_activation(tf.matmul(self.inputs, W) + b)
 
         # update layer (customized)
-        
-        
+
+
 
 .. -----------------------------------------------------------
 ..                        Basic Layers
@@ -585,14 +583,6 @@ see `Slim-model <https://github.com/tensorflow/models/tree/master/research/slim>
 
 
 
-
-.. -----------------------------------------------------------
-..                    Flow Control Layer
-.. -----------------------------------------------------------
-
-Flow Control Layer
-----------------------
-.. autoclass:: MultiplexerLayer
 
 .. -----------------------------------------------------------
 ..                  Image Resampling Layers

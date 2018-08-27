@@ -19,8 +19,10 @@ class GlobalMeanPool1d(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        The previous layer with a output rank as 3 [batch, length, channel].
+    # prev_layer : :class:`Layer`
+    #     The previous layer with a output rank as 3 [batch, length, channel] or [batch, channel, length].
+    data_format : str
+        One of channels_last (default, [batch, length, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
         A unique layer name.
 
@@ -35,11 +37,33 @@ class GlobalMeanPool1d(Layer):
     """
 
     def __init__(self, prev_layer, name='globalmeanpool1d'):
-        super(GlobalMeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
+        self.data_format = data_format
+        self.name = name
+        super(GlobalMeanPool1d, self).__init__(name=name)
 
-        logging.info("GlobalMeanPool1d %s" % self.name)
+    def __str__(self):
+        additional_str = []
+        try:
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
+        except AttributeError:
+            pass
+        return self._str(additional_str)
 
-        self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=1, name=name)
+    @auto_parse_inputs
+    def compile(self, prev_layer, is_train=True):
+        """Compile.
+
+        Parameters
+        -----------
+        prev_layer : :class:`Layer`
+            The previous layer with a output rank as 3 [batch, length, channel] or [batch, channel, length].
+        """
+        if self.data_format == 'channels_last':
+            self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=1, name=self.name)
+        elif self.data_format == 'channels_first':
+            self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=2, name=self.name)
+        else:
+            raise Exception("data_format should be channels_last or channels_first")
 
 
 class GlobalMeanPool2d(Layer):
@@ -47,8 +71,10 @@ class GlobalMeanPool2d(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        The previous layer with a output rank as 4 [batch, height, width, channel].
+    # prev_layer : :class:`Layer`
+    #     The previous layer with a output rank as 4 [batch, height, width, channel] or [batch, channel, height, width].
+    data_format : str
+        One of channels_last (default, [batch, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
         A unique layer name.
 
@@ -63,11 +89,33 @@ class GlobalMeanPool2d(Layer):
     """
 
     def __init__(self, prev_layer, name='globalmeanpool2d'):
+        self.data_format = data_format
+        self.name = name
         super(GlobalMeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("GlobalMeanPool2d %s" % self.name)
+    def __str__(self):
+        additional_str = []
+        try:
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
+        except AttributeError:
+            pass
+        return self._str(additional_str)
 
-        self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=[1, 2], name=name)
+    @auto_parse_inputs
+    def compile(self, prev_layer, is_train=True):
+        """Compile.
+
+        Parameters
+        -----------
+        prev_layer : :class:`Layer`
+            The previous layer with a output rank as 4 [batch, height, width, channel] or [batch, channel, height, width]
+        """
+        if self.data_format == 'channels_last':
+            self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=[1, 2], name=self.name)
+        elif self.data_format == 'channels_first':
+            self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=[2, 3], name=self.name)
+        else:
+            raise Exception("data_format should be channels_last or channels_first")
 
 
 class GlobalMeanPool3d(Layer):
@@ -75,8 +123,10 @@ class GlobalMeanPool3d(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        The previous layer with a output rank as 5 [batch, depth, height, width, channel].
+    # prev_layer : :class:`Layer`
+    #     The previous layer with a output rank as 5 [batch, depth, height, width, channel] or [batch, channel, depth, height, width].
+    data_format : str
+        One of channels_last (default, [batch, depth, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
         A unique layer name.
 
@@ -91,8 +141,30 @@ class GlobalMeanPool3d(Layer):
     """
 
     def __init__(self, prev_layer, name='globalmeanpool3d'):
+        self.data_format = data_format
+        self.name = name
         super(GlobalMeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("GlobalMeanPool3d %s" % self.name)
+    def __str__(self):
+        additional_str = []
+        try:
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
+        except AttributeError:
+            pass
+        return self._str(additional_str)
 
-        self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=[1, 2, 3], name=name)
+    @auto_parse_inputs
+    def compile(self, prev_layer, is_train=True):
+        """Compile.
+
+        Parameters
+        -----------
+        prev_layer : :class:`Layer`
+            The previous layer with a output rank as 5 [batch, depth, height, width, channel] or [batch, channel, depth, height, width].
+        """
+        if self.data_format == 'channels_last':
+            self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=[1, 2, 3], name=self.name)
+        elif self.data_format == 'channels_first':
+            self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=[2, 3, 4], name=self.name)
+        else:
+            raise Exception("data_format should be channels_last or channels_first")

@@ -83,7 +83,13 @@ class PoolLayer(Layer):
 
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
+        """Compile.
 
+        Parameters
+        ------------
+        prev_layer : :class:`Layer`
+            The previous layer.
+        """
         with tf.variable_scope(self.name):
 
             self._temp_data['outputs'] = self.pool(

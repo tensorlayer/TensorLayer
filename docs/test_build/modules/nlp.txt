@@ -1,0 +1,930 @@
+API - Natural Language Processing
+*********************************
+
+Natural Language Processing and Word Representation.
+
++------------+--------------------------------------------------------------------------------------------+
+| "generate  | Generate a training batch for the Skip-Gram model.                                         |
+| _skip_gra  |                                                                                            |
+| m_batch"(  |                                                                                            |
+| data, bat  |                                                                                            |
+| ch_size,   |                                                                                            |
+| ...)       |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "sample"(  | Sample an index from a probability array.                                                  |
+| [a, tempe  |                                                                                            |
+| rature])   |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "sample_t  | Sample from "top_k" probabilities.                                                         |
+| op"([a,    |                                                                                            |
+| top_k])    |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "SimpleVo  | Simple vocabulary wrapper, see create_vocab().                                             |
+| cabulary"  |                                                                                            |
+| (vocab,    |                                                                                            |
+| unk_id)    |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "Vocabula  | Create Vocabulary class from a given vocabulary and its id-word, word- id convert.         |
+| ry"(vocab  |                                                                                            |
+| _file[, s  |                                                                                            |
+| tart_word, |                                                                                            |
+| ...])      |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "process_  | Seperate a sentence string into a list of string words, add start_word and end_word, see   |
+| sentence"  | "create_vocab()" and "tutorial_tfrecord3.py".                                              |
+| (sentence  |                                                                                            |
+| [, start_  |                                                                                            |
+| word,      |                                                                                            |
+| ...])      |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "create_v  | Creates the vocabulary of word to word_id.                                                 |
+| ocab"(sen  |                                                                                            |
+| tences, w  |                                                                                            |
+| ord_count  |                                                                                            |
+| s_output_  |                                                                                            |
+| file)      |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "simple_r  | Read context from file without any preprocessing.                                          |
+| ead_words  |                                                                                            |
+| "([filena  |                                                                                            |
+| me])       |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "read_wor  | Read list format context from a file.                                                      |
+| ds"([file  |                                                                                            |
+| name,      |                                                                                            |
+| replace])  |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "read_ana  | Reads through an analogy question file, return its id format.                              |
+| logies_fi  |                                                                                            |
+| le"([eval  |                                                                                            |
+| _file,     |                                                                                            |
+| word2id])  |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "build_vo  | Build vocabulary.                                                                          |
+| cab"(data) |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "build_re  | Given a dictionary that maps word to integer id.                                           |
+| verse_dic  |                                                                                            |
+| tionary"(  |                                                                                            |
+| word_to_i  |                                                                                            |
+| d)         |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "build_wo  | Build the words dictionary and replace rare words with 'UNK' token.                        |
+| rds_datas  |                                                                                            |
+| et"([word  |                                                                                            |
+| s, ...])   |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "save_voc  | Save the vocabulary to a file so the model can be reloaded.                                |
+| ab"([coun  |                                                                                            |
+| t, name])  |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "words_to  | Convert a list of string (words) to IDs.                                                   |
+| _word_ids  |                                                                                            |
+| "([data,   |                                                                                            |
+| word_to_i  |                                                                                            |
+| d,         |                                                                                            |
+| unk_key])  |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "word_ids  | Convert a list of integer to strings (words).                                              |
+| _to_words  |                                                                                            |
+| "(data, i  |                                                                                            |
+| d_to_word) |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "basic_to  | Very basic tokenizer: split the sentence into a list of tokens.                            |
+| kenizer"(  |                                                                                            |
+| sentence[, |                                                                                            |
+| _WORD_SPL  |                                                                                            |
+| IT])       |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "create_v  | Create vocabulary file (if it does not exist yet) from data file.                          |
+| ocabulary  |                                                                                            |
+| "(vocabul  |                                                                                            |
+| ary_path,  |                                                                                            |
+| ...[,      |                                                                                            |
+| ...])      |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "initiali  | Initialize vocabulary from file, return the *word_to_id* (dictionary) and *id_to_word*     |
+| ze_vocabu  | (list).                                                                                    |
+| lary"(voc  |                                                                                            |
+| abulary_p  |                                                                                            |
+| ath)       |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "sentence  | Convert a string to list of integers representing token-ids.                               |
+| _to_token  |                                                                                            |
+| _ids"(sen  |                                                                                            |
+| tence, vo  |                                                                                            |
+| cabulary)  |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "data_to_  | Tokenize data file and turn into token-ids using given vocabulary file.                    |
+| token_ids  |                                                                                            |
+| "(data_pa  |                                                                                            |
+| th, targe  |                                                                                            |
+| t_path,    |                                                                                            |
+| ...)       |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+| "moses_mu  | Calculate the bleu score for hypotheses and references using the MOSES ulti-bleu.perl      |
+| lti_bleu"  | script.                                                                                    |
+| (hypothes  |                                                                                            |
+| es, refer  |                                                                                            |
+| ences[,    |                                                                                            |
+| ...])      |                                                                                            |
++------------+--------------------------------------------------------------------------------------------+
+
+
+Iteration function for training embedding matrix
+================================================
+
+tensorlayer.nlp.generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_index=0)
+
+   Generate a training batch for the Skip-Gram model.
+
+   See Word2Vec example.
+
+   Parameters:
+      * **data** (*list of data*) -- To present context, usually a
+        list of integers.
+
+      * **batch_size** (*int*) -- Batch size to return.
+
+      * **num_skips** (*int*) -- How many times to reuse an input to
+        generate a label.
+
+      * **skip_window** (*int*) -- How many words to consider left
+        and right.
+
+      * **data_index** (*int*) -- Index of the context location.
+        This code use *data_index* to instead of yield like
+        "tl.iterate".
+
+   Returns:
+      * **batch** (*list of data*) -- Inputs.
+
+      * **labels** (*list of data*) -- Labels
+
+      * **data_index** (*int*) -- Index of the context location.
+
+   -[ Examples ]-
+
+   Setting num_skips=2, skip_window=1, use the right and left words.
+   In the same way, num_skips=4, skip_window=2 means use the nearby 4
+   words.
+
+   >>> data = [1,2,3,4,5,6,7,8,9,10,11]
+   >>> batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data, batch_size=8, num_skips=2, skip_window=1, data_index=0)
+   >>> print(batch)
+   [2 2 3 3 4 4 5 5]
+   >>> print(labels)
+   [[3]
+   [1]
+   [4]
+   [2]
+   [5]
+   [3]
+   [4]
+   [6]]
+
+
+Sampling functions
+==================
+
+
+Simple sampling
+---------------
+
+tensorlayer.nlp.sample(a=None, temperature=1.0)
+
+   Sample an index from a probability array.
+
+   Parameters:
+      * **a** (*list of float*) -- List of probabilities.
+
+      * **temperature** (*float** or **None*) --
+
+        The higher the more uniform. When a = [0.1, 0.2, 0.7],
+           * temperature = 0.7, the distribution will be sharpen
+             [0.05048273,  0.13588945,  0.81362782]
+
+           * temperature = 1.0, the distribution will be the same
+             [0.1,    0.2,    0.7]
+
+           * temperature = 1.5, the distribution will be filtered
+             [0.16008435,  0.25411807,  0.58579758]
+
+           * If None, it will be "np.argmax(a)"
+
+   -[ Notes ]-
+
+   * No matter what is the temperature and input list, the sum of
+     all probabilities will be one. Even if input list = [1, 100,
+     200], the sum of all probabilities will still be one.
+
+   * For large vocabulary size, choice a higher temperature or
+     "tl.nlp.sample_top" to avoid error.
+
+
+Sampling from top k
+-------------------
+
+tensorlayer.nlp.sample_top(a=None, top_k=10)
+
+   Sample from "top_k" probabilities.
+
+   Parameters:
+      * **a** (*list of float*) -- List of probabilities.
+
+      * **top_k** (*int*) -- Number of candidates to be considered.
+
+
+Vector representations of words
+===============================
+
+
+Simple vocabulary class
+-----------------------
+
+class tensorlayer.nlp.SimpleVocabulary(vocab, unk_id)
+
+   Simple vocabulary wrapper, see create_vocab().
+
+   Parameters:
+      * **vocab** (*dictionary*) -- A dictionary that maps word to
+        ID.
+
+      * **unk_id** (*int*) -- The ID for 'unknown' word.
+
+
+Vocabulary class
+----------------
+
+class tensorlayer.nlp.Vocabulary(vocab_file, start_word='<S>', end_word='</S>', unk_word='<UNK>', pad_word='<PAD>')
+
+   Create Vocabulary class from a given vocabulary and its id-word,
+   word-id convert. See create_vocab() and "tutorial_tfrecord3.py".
+
+   Parameters:
+      * **vocab_file** (*str*) -- The file contains the vocabulary
+        (can be created via "tl.nlp.create_vocab"), where the words
+        are the first whitespace-separated token on each line (other
+        tokens are ignored) and the word ids are the corresponding
+        line numbers.
+
+      * **start_word** (*str*) -- Special word denoting sentence
+        start.
+
+      * **end_word** (*str*) -- Special word denoting sentence end.
+
+      * **unk_word** (*str*) -- Special word denoting unknown words.
+
+   vocab
+
+      *dictionary* -- A dictionary that maps word to ID.
+
+   reverse_vocab
+
+      *list of int* -- A list that maps ID to word.
+
+   start_id
+
+      *int* -- For start ID.
+
+   end_id
+
+      *int* -- For end ID.
+
+   unk_id
+
+      *int* -- For unknown ID.
+
+   pad_id
+
+      *int* -- For Padding ID.
+
+   -[ Examples ]-
+
+   The vocab file looks like follow, includes *start_word* ,
+   *end_word* ...
+
+   >>> a 969108
+   >>> <S> 586368
+   >>> </S> 586368
+   >>> . 440479
+   >>> on 213612
+   >>> of 202290
+   >>> the 196219
+   >>> in 182598
+   >>> with 152984
+   >>> and 139109
+   >>> is 97322
+
+
+Process sentence
+----------------
+
+tensorlayer.nlp.process_sentence(sentence, start_word='<S>', end_word='</S>')
+
+   Seperate a sentence string into a list of string words, add
+   start_word and end_word, see "create_vocab()" and
+   "tutorial_tfrecord3.py".
+
+   Parameters:
+      * **sentence** (*str*) -- A sentence.
+
+      * **start_word** (*str** or **None*) -- The start word. If
+        None, no start word will be appended.
+
+      * **end_word** (*str** or **None*) -- The end word. If None,
+        no end word will be appended.
+
+   Returns:
+      A list of strings that separated into words.
+
+   Return type:
+      list of str
+
+   -[ Examples ]-
+
+   >>> c = "how are you?"
+   >>> c = tl.nlp.process_sentence(c)
+   >>> print(c)
+   ['<S>', 'how', 'are', 'you', '?', '</S>']
+
+   -[ Notes ]-
+
+   * You have to install the following package.
+
+   * Installing NLTK
+
+   * Installing NLTK data
+
+
+Create vocabulary
+-----------------
+
+tensorlayer.nlp.create_vocab(sentences, word_counts_output_file, min_word_count=1)
+
+   Creates the vocabulary of word to word_id.
+
+   See "tutorial_tfrecord3.py".
+
+   The vocabulary is saved to disk in a text file of word counts. The
+   id of each word in the file is its corresponding 0-based line
+   number.
+
+   Parameters:
+      * **sentences** (*list of list of str*) -- All sentences for
+        creating the vocabulary.
+
+      * **word_counts_output_file** (*str*) -- The file name.
+
+      * **min_word_count** (*int*) -- Minimum number of occurrences
+        for a word.
+
+   Returns:
+      The simple vocabulary object, see "Vocabulary" for more.
+
+   Return type:
+      "SimpleVocabulary"
+
+   -[ Examples ]-
+
+   Pre-process sentences
+
+   >>> captions = ["one two , three", "four five five"]
+   >>> processed_capts = []
+   >>> for c in captions:
+   >>>     c = tl.nlp.process_sentence(c, start_word="<S>", end_word="</S>")
+   >>>     processed_capts.append(c)
+   >>> print(processed_capts)
+   ...[['<S>', 'one', 'two', ',', 'three', '</S>'], ['<S>', 'four', 'five', 'five', '</S>']]
+
+   Create vocabulary
+
+   >>> tl.nlp.create_vocab(processed_capts, word_counts_output_file='vocab.txt', min_word_count=1)
+   Creating vocabulary.
+     Total words: 8
+     Words in vocabulary: 8
+     Wrote vocabulary file: vocab.txt
+
+   Get vocabulary object
+
+   >>> vocab = tl.nlp.Vocabulary('vocab.txt', start_word="<S>", end_word="</S>", unk_word="<UNK>")
+   INFO:tensorflow:Initializing vocabulary from file: vocab.txt
+   [TL] Vocabulary from vocab.txt : <S> </S> <UNK>
+   vocabulary with 10 words (includes start_word, end_word, unk_word)
+       start_id: 2
+       end_id: 3
+       unk_id: 9
+       pad_id: 0
+
+
+Read words from file
+====================
+
+
+Simple read file
+----------------
+
+tensorlayer.nlp.simple_read_words(filename='nietzsche.txt')
+
+   Read context from file without any preprocessing.
+
+   Parameters:
+      **filename** (*str*) -- A file path (like .txt file)
+
+   Returns:
+      The context in a string.
+
+   Return type:
+      str
+
+
+Read file
+---------
+
+tensorlayer.nlp.read_words(filename='nietzsche.txt', replace=None)
+
+   Read list format context from a file.
+
+   For customized read_words method, see "tutorial_generate_text.py".
+
+   Parameters:
+      * **filename** (*str*) -- a file path.
+
+      * **replace** (*list of str*) -- replace original string by
+        target string.
+
+   Returns:
+      The context in a list (split using space).
+
+   Return type:
+      list of str
+
+
+Read analogy question file
+==========================
+
+tensorlayer.nlp.read_analogies_file(eval_file='questions-words.txt', word2id=None)
+
+   Reads through an analogy question file, return its id format.
+
+   Parameters:
+      * **eval_file** (*str*) -- The file name.
+
+      * **word2id** (*dictionary*) -- a dictionary that maps word to
+        ID.
+
+   Returns:
+      A "[n_examples, 4]" numpy array containing the analogy
+      question's word IDs.
+
+   Return type:
+      numpy.array
+
+   -[ Examples ]-
+
+   The file should be in this format
+
+   >>> : capital-common-countries
+   >>> Athens Greece Baghdad Iraq
+   >>> Athens Greece Bangkok Thailand
+   >>> Athens Greece Beijing China
+   >>> Athens Greece Berlin Germany
+   >>> Athens Greece Bern Switzerland
+   >>> Athens Greece Cairo Egypt
+   >>> Athens Greece Canberra Australia
+   >>> Athens Greece Hanoi Vietnam
+   >>> Athens Greece Havana Cuba
+
+   Get the tokenized analogy question data
+
+   >>> words = tl.files.load_matt_mahoney_text8_dataset()
+   >>> data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size, True)
+   >>> analogy_questions = tl.nlp.read_analogies_file(eval_file='questions-words.txt', word2id=dictionary)
+   >>> print(analogy_questions)
+   [[ 3068  1248  7161  1581]
+   [ 3068  1248 28683  5642]
+   [ 3068  1248  3878   486]
+   ...,
+   [ 1216  4309 19982 25506]
+   [ 1216  4309  3194  8650]
+   [ 1216  4309   140   312]]
+
+
+Build vocabulary, word dictionary and word tokenization
+=======================================================
+
+
+Build dictionary from word to id
+--------------------------------
+
+tensorlayer.nlp.build_vocab(data)
+
+   Build vocabulary.
+
+   Given the context in list format. Return the vocabulary, which is a
+   dictionary for word to id. e.g. {'campbell': 2587, 'atlantic':
+   2247, 'aoun': 6746 .... }
+
+   Parameters:
+      **data** (*list of str*) -- The context in list format
+
+   Returns:
+      that maps word to unique ID. e.g. {'campbell': 2587, 'atlantic':
+      2247, 'aoun': 6746 .... }
+
+   Return type:
+      dictionary
+
+   -[ References ]-
+
+   * tensorflow.models.rnn.ptb.reader
+
+   -[ Examples ]-
+
+   >>> data_path = os.getcwd() + '/simple-examples/data'
+   >>> train_path = os.path.join(data_path, "ptb.train.txt")
+   >>> word_to_id = build_vocab(read_txt_words(train_path))
+
+
+Build dictionary from id to word
+--------------------------------
+
+tensorlayer.nlp.build_reverse_dictionary(word_to_id)
+
+   Given a dictionary that maps word to integer id. Returns a reverse
+   dictionary that maps a id to word.
+
+   Parameters:
+      **word_to_id** (*dictionary*) -- that maps word to ID.
+
+   Returns:
+      A dictionary that maps IDs to words.
+
+   Return type:
+      dictionary
+
+
+Build dictionaries for id to word etc
+-------------------------------------
+
+tensorlayer.nlp.build_words_dataset(words=None, vocabulary_size=50000, printable=True, unk_key='UNK')
+
+   Build the words dictionary and replace rare words with 'UNK' token.
+   The most common word has the smallest integer id.
+
+   Parameters:
+      * **words** (*list of str** or **byte*) -- The context in list
+        format. You may need to do preprocessing on the words, such as
+        lower case, remove marks etc.
+
+      * **vocabulary_size** (*int*) -- The maximum vocabulary size,
+        limiting the vocabulary size. Then the script replaces rare
+        words with 'UNK' token.
+
+      * **printable** (*boolean*) -- Whether to print the read
+        vocabulary size of the given words.
+
+      * **unk_key** (*str*) -- Represent the unknown words.
+
+   Returns:
+      * **data** (*list of int*) -- The context in a list of ID.
+
+      * **count** (*list of tuple and list*) --
+
+        Pair words and IDs.
+           * count[0] is a list : the number of rare words
+
+           * count[1:] are tuples : the number of occurrence of each
+             word
+
+           * e.g. [['UNK', 418391], (b'the', 1061396), (b'of',
+             593677), (b'and', 416629), (b'one', 411764)]
+
+      * **dictionary** (*dictionary*) -- It is *word_to_id* that
+        maps word to ID.
+
+      * **reverse_dictionary** (*a dictionary*) -- It is
+        *id_to_word* that maps ID to word.
+
+   -[ Examples ]-
+
+   >>> words = tl.files.load_matt_mahoney_text8_dataset()
+   >>> vocabulary_size = 50000
+   >>> data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size)
+
+   -[ References ]-
+
+   * tensorflow/examples/tutorials/word2vec/word2vec_basic.py
+
+
+Save vocabulary
+---------------
+
+tensorlayer.nlp.save_vocab(count=None, name='vocab.txt')
+
+   Save the vocabulary to a file so the model can be reloaded.
+
+   Parameters:
+      **count** (*a list of tuple and list*) -- count[0] is a list :
+      the number of rare words, count[1:] are tuples : the number of
+      occurrence of each word, e.g. [['UNK', 418391], (b'the',
+      1061396), (b'of', 593677), (b'and', 416629), (b'one', 411764)]
+
+   -[ Examples ]-
+
+   >>> words = tl.files.load_matt_mahoney_text8_dataset()
+   >>> vocabulary_size = 50000
+   >>> data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size, True)
+   >>> tl.nlp.save_vocab(count, name='vocab_text8.txt')
+   >>> vocab_text8.txt
+   UNK 418391
+   the 1061396
+   of 593677
+   and 416629
+   one 411764
+   in 372201
+   a 325873
+   to 316376
+
+
+Convert words to IDs and IDs to words
+=====================================
+
+These functions can be done by "Vocabulary" class.
+
+
+List of Words to IDs
+--------------------
+
+tensorlayer.nlp.words_to_word_ids(data=None, word_to_id=None, unk_key='UNK')
+
+   Convert a list of string (words) to IDs.
+
+   Parameters:
+      * **data** (*list of string** or **byte*) -- The context in
+        list format
+
+      * **word_to_id** (*a dictionary*) -- that maps word to ID.
+
+      * **unk_key** (*str*) -- Represent the unknown words.
+
+   Returns:
+      A list of IDs to represent the context.
+
+   Return type:
+      list of int
+
+   -[ Examples ]-
+
+   >>> words = tl.files.load_matt_mahoney_text8_dataset()
+   >>> vocabulary_size = 50000
+   >>> data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size, True)
+   >>> context = [b'hello', b'how', b'are', b'you']
+   >>> ids = tl.nlp.words_to_word_ids(words, dictionary)
+   >>> context = tl.nlp.word_ids_to_words(ids, reverse_dictionary)
+   >>> print(ids)
+   [6434, 311, 26, 207]
+   >>> print(context)
+   [b'hello', b'how', b'are', b'you']
+
+   -[ References ]-
+
+   * tensorflow.models.rnn.ptb.reader
+
+
+List of IDs to Words
+--------------------
+
+tensorlayer.nlp.word_ids_to_words(data, id_to_word)
+
+   Convert a list of integer to strings (words).
+
+   Parameters:
+      * **data** (*list of int*) -- The context in list format.
+
+      * **id_to_word** (*dictionary*) -- a dictionary that maps ID
+        to word.
+
+   Returns:
+      A list of string or byte to represent the context.
+
+   Return type:
+      list of str
+
+   -[ Examples ]-
+
+   >>> see ``tl.nlp.words_to_word_ids``
+
+
+Functions for translation
+=========================
+
+
+Word Tokenization
+-----------------
+
+tensorlayer.nlp.basic_tokenizer(sentence, _WORD_SPLIT=re.compile(b'([., !?"\':;)(])'))
+
+   Very basic tokenizer: split the sentence into a list of tokens.
+
+   Parameters:
+      * **sentence** (*tensorflow.python.platform.gfile.GFile
+        Object*) --
+
+      * **_WORD_SPLIT** (*regular expression for word spliting.*) --
+
+   -[ Examples ]-
+
+   >>> see create_vocabulary
+   >>> from tensorflow.python.platform import gfile
+   >>> train_path = "wmt/giga-fren.release2"
+   >>> with gfile.GFile(train_path + ".en", mode="rb") as f:
+   >>>    for line in f:
+   >>>       tokens = tl.nlp.basic_tokenizer(line)
+   >>>       tl.logging.info(tokens)
+   >>>       exit()
+   [b'Changing', b'Lives', b'|', b'Changing', b'Society', b'|', b'How',
+     b'It', b'Works', b'|', b'Technology', b'Drives', b'Change', b'Home',
+     b'|', b'Concepts', b'|', b'Teachers', b'|', b'Search', b'|', b'Overview',
+     b'|', b'Credits', b'|', b'HHCC', b'Web', b'|', b'Reference', b'|',
+     b'Feedback', b'Virtual', b'Museum', b'of', b'Canada', b'Home', b'Page']
+
+   -[ References ]-
+
+   * Code from "/tensorflow/models/rnn/translation/data_utils.py"
+
+
+Create or read vocabulary
+-------------------------
+
+tensorlayer.nlp.create_vocabulary(vocabulary_path, data_path, max_vocabulary_size, tokenizer=None, normalize_digits=True, _DIGIT_RE=re.compile(b'\\d'), _START_VOCAB=None)
+
+   Create vocabulary file (if it does not exist yet) from data file.
+
+   Data file is assumed to contain one sentence per line. Each
+   sentence is tokenized and digits are normalized (if
+   normalize_digits is set). Vocabulary contains the most-frequent
+   tokens up to max_vocabulary_size. We write it to vocabulary_path in
+   a one-token-per-line format, so that later token in the first line
+   gets id=0, second line gets id=1, and so on.
+
+   Parameters:
+      * **vocabulary_path** (*str*) -- Path where the vocabulary
+        will be created.
+
+      * **data_path** (*str*) -- Data file that will be used to
+        create vocabulary.
+
+      * **max_vocabulary_size** (*int*) -- Limit on the size of the
+        created vocabulary.
+
+      * **tokenizer** (*function*) -- A function to use to tokenize
+        each data sentence. If None, basic_tokenizer will be used.
+
+      * **normalize_digits** (*boolean*) -- If true, all digits are
+        replaced by *0*.
+
+      * **_DIGIT_RE** (*regular expression function*) -- Default is
+        "re.compile(br"\d")".
+
+      * **_START_VOCAB** (*list of str*) -- The pad, go, eos and unk
+        token, default is "[b"_PAD", b"_GO", b"_EOS", b"_UNK"]".
+
+   -[ References ]-
+
+   * Code from "/tensorflow/models/rnn/translation/data_utils.py"
+
+tensorlayer.nlp.initialize_vocabulary(vocabulary_path)
+
+   Initialize vocabulary from file, return the *word_to_id*
+   (dictionary) and *id_to_word* (list).
+
+   We assume the vocabulary is stored one-item-per-line, so a file
+   will result in a vocabulary {"dog": 0, "cat": 1}, and this function
+   will also return the reversed-vocabulary ["dog", "cat"].
+
+   Parameters:
+      **vocabulary_path** (*str*) -- Path to the file containing the
+      vocabulary.
+
+   Returns:
+      * **vocab** (*dictionary*) -- a dictionary that maps word to
+        ID.
+
+      * **rev_vocab** (*list of int*) -- a list that maps ID to
+        word.
+
+   -[ Examples ]-
+
+   >>> Assume 'test' contains
+   dog
+   cat
+   bird
+   >>> vocab, rev_vocab = tl.nlp.initialize_vocabulary("test")
+   >>> print(vocab)
+   >>> {b'cat': 1, b'dog': 0, b'bird': 2}
+   >>> print(rev_vocab)
+   >>> [b'dog', b'cat', b'bird']
+
+   Raises:
+      ValueError : if the provided vocabulary_path does not exist.
+
+
+Convert words to IDs and IDs to words
+-------------------------------------
+
+tensorlayer.nlp.sentence_to_token_ids(sentence, vocabulary, tokenizer=None, normalize_digits=True, UNK_ID=3, _DIGIT_RE=re.compile(b'\\d'))
+
+   Convert a string to list of integers representing token-ids.
+
+   For example, a sentence "I have a dog" may become tokenized into
+   ["I", "have", "a", "dog"] and with vocabulary {"I": 1, "have": 2,
+   "a": 4, "dog": 7"} this function will return [1, 2, 4, 7].
+
+   Parameters:
+      * **sentence** (*tensorflow.python.platform.gfile.GFile
+        Object*) -- The sentence in bytes format to convert to token-
+        ids, see "basic_tokenizer()" and "data_to_token_ids()".
+
+      * **vocabulary** (*dictionary*) -- Mmapping tokens to
+        integers.
+
+      * **tokenizer** (*function*) -- A function to use to tokenize
+        each sentence. If None, "basic_tokenizer" will be used.
+
+      * **normalize_digits** (*boolean*) -- If true, all digits are
+        replaced by 0.
+
+   Returns:
+      The token-ids for the sentence.
+
+   Return type:
+      list of int
+
+tensorlayer.nlp.data_to_token_ids(data_path, target_path, vocabulary_path, tokenizer=None, normalize_digits=True, UNK_ID=3, _DIGIT_RE=re.compile(b'\\d'))
+
+   Tokenize data file and turn into token-ids using given vocabulary
+   file.
+
+   This function loads data line-by-line from data_path, calls the
+   above sentence_to_token_ids, and saves the result to target_path.
+   See comment for sentence_to_token_ids on the details of token-ids
+   format.
+
+   Parameters:
+      * **data_path** (*str*) -- Path to the data file in one-
+        sentence-per-line format.
+
+      * **target_path** (*str*) -- Path where the file with token-
+        ids will be created.
+
+      * **vocabulary_path** (*str*) -- Path to the vocabulary file.
+
+      * **tokenizer** (*function*) -- A function to use to tokenize
+        each sentence. If None, "basic_tokenizer" will be used.
+
+      * **normalize_digits** (*boolean*) -- If true, all digits are
+        replaced by 0.
+
+   -[ References ]-
+
+   * Code from "/tensorflow/models/rnn/translation/data_utils.py"
+
+
+Metrics
+=======
+
+
+BLEU
+----
+
+tensorlayer.nlp.moses_multi_bleu(hypotheses, references, lowercase=False)
+
+   Calculate the bleu score for hypotheses and references using the
+   MOSES ulti-bleu.perl script.
+
+   Parameters:
+      * **hypotheses** (*numpy.array.string*) -- A numpy array of
+        strings where each string is a single example.
+
+      * **references** (*numpy.array.string*) -- A numpy array of
+        strings where each string is a single example.
+
+      * **lowercase** (*boolean*) -- If True, pass the "-lc" flag to
+        the multi-bleu script
+
+   -[ Examples ]-
+
+   >>> hypotheses = ["a bird is flying on the sky"]
+   >>> references = ["two birds are flying on the sky", "a bird is on the top of the tree", "an airplane is on the sky",]
+   >>> score = tl.nlp.moses_multi_bleu(hypotheses, references)
+
+   Returns:
+      The BLEU score
+
+   Return type:
+      float
+
+   -[ References ]-
+
+   * Google/seq2seq/metric/bleu
