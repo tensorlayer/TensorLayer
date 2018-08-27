@@ -172,6 +172,19 @@ class Network_Sequential_1D_Test(CustomTestCase):
             cls.model.add(tl.layers.QuantizedDense(n_units=30, name='quant_dense_layer_25'))
 
             cls.model.add(tl.layers.TernaryDenseLayer(n_units=20, name='ternary_dense_layer_26'))
+            cls.model.add(tl.layers.ReshapeLayer(shape=(-1, 10, 2), name='reshape_layer_26'))
+
+            cls.model.add(tl.layers.MaxPool1d(filter_size=3, strides=2, padding='valid', name='maxpool_1d_layer_27'))
+
+            cls.model.add(tl.layers.MeanPool1d(filter_size=3, strides=2, padding='same', name='meanpool_1d_layer_28'))
+
+            cls.model.add(tl.layers.GlobalMaxPool1d(name='globalmaxpool_1d_layer_29'))
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand_layer_29'))
+            cls.model.add(tl.layers.TileLayer(multiples=[1, 100, 1], name='tile_layer_29'))
+
+            cls.model.add(tl.layers.GlobalMeanPool1d(name='global_meanpool_1d_layer_30'))
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand_layer_30'))
+            cls.model.add(tl.layers.TileLayer(multiples=[1, 100, 1], name='tile_layer_30'))
 
             plh = tf.placeholder(tf.float16, (100, 32))
 
@@ -205,9 +218,9 @@ class Network_Sequential_1D_Test(CustomTestCase):
             self.assertEqual(len(self.model.get_all_weights()), 63)
 
     def test_count_layers(self):
-        self.assertEqual(self.train_model.count_layers(), 51)
-        self.assertEqual(self.test_model.count_layers(), 51)
-        self.assertEqual(self.model.count_layers(), 51)
+        self.assertEqual(self.train_model.count_layers(), 60)
+        self.assertEqual(self.test_model.count_layers(), 60)
+        self.assertEqual(self.model.count_layers(), 60)
 
     def test_layer_outputs_dtype(self):
 
@@ -382,7 +395,34 @@ class Network_Sequential_1D_Test(CustomTestCase):
         self.assertEqual(self.train_model["ternary_dense_layer_26"].outputs.shape, (100, 20))
         self.assertEqual(self.test_model["ternary_dense_layer_26"].outputs.shape, (100, 20))
 
+        self.assertEqual(self.train_model["reshape_layer_26"].outputs.shape, (100, 10, 2))
+        self.assertEqual(self.test_model["reshape_layer_26"].outputs.shape, (100, 10, 2))
 
+        self.assertEqual(self.train_model["maxpool_1d_layer_27"].outputs.shape, (100, 4, 2))
+        self.assertEqual(self.test_model["maxpool_1d_layer_27"].outputs.shape, (100, 4, 2))
+
+        self.assertEqual(self.train_model["meanpool_1d_layer_28"].outputs.shape, (100, 2, 2))
+        self.assertEqual(self.test_model["meanpool_1d_layer_28"].outputs.shape, (100, 2, 2))
+
+        self.assertEqual(self.train_model["globalmaxpool_1d_layer_29"].outputs.shape, (100, 2))
+        self.assertEqual(self.test_model["globalmaxpool_1d_layer_29"].outputs.shape, (100, 2))
+
+        self.assertEqual(self.train_model["expand_layer_29"].outputs.shape, (100, 1, 2))
+        self.assertEqual(self.test_model["expand_layer_29"].outputs.shape, (100, 1, 2))
+
+        self.assertEqual(self.train_model["tile_layer_29"].outputs.shape, (100, 100, 2))
+        self.assertEqual(self.test_model["tile_layer_29"].outputs.shape, (100, 100, 2))
+
+        self.assertEqual(self.train_model["global_meanpool_1d_layer_30"].outputs.shape, (100, 2))
+        self.assertEqual(self.test_model["global_meanpool_1d_layer_30"].outputs.shape, (100, 2))
+
+        self.assertEqual(self.train_model["expand_layer_30"].outputs.shape, (100, 1, 2))
+        self.assertEqual(self.test_model["expand_layer_30"].outputs.shape, (100, 1, 2))
+
+        self.assertEqual(self.train_model["tile_layer_30"].outputs.shape, (100, 100, 2))
+        self.assertEqual(self.test_model["tile_layer_30"].outputs.shape, (100, 100, 2))
+
+        
 if __name__ == '__main__':
 
     tf.logging.set_verbosity(tf.logging.DEBUG)
