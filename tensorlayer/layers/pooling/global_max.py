@@ -19,8 +19,6 @@ class GlobalMaxPool1d(Layer):
 
     Parameters
     ------------
-    # prev_layer : :class:`Layer`
-    #     The previous layer with a output rank as 3 [batch, length, channel] or [batch, channel, length].
     data_format : str
         One of channels_last (default, [batch, length, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
@@ -34,17 +32,26 @@ class GlobalMaxPool1d(Layer):
     [None, 30]
     """
 
-    def __init__(self, prev_layer, name='globalmaxpool1d'):
+    def __init__(self, data_format, name='globalmaxpool1d'):
+
+        if data_format not in ["channels_last", "channels_first"]:
+            raise ValueError(
+                "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
+            )
+
         self.data_format = data_format
         self.name = name
-        super(GlobalMaxPool1d, self).__init__(name=name)
+
+        super(GlobalMaxPool1d, self).__init__()
 
     def __str__(self):
         additional_str = []
+
         try:
             additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
+
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -58,10 +65,14 @@ class GlobalMaxPool1d(Layer):
         """
         if self.data_format == 'channels_last':
             self._temp_data['outputs'] = tf.reduce_max(self._temp_data['inputs'], axis=1, name=self.name)
+
         elif self.data_format == 'channels_first':
             self._temp_data['outputs'] = tf.reduce_max(self._temp_data['inputs'], axis=2, name=self.name)
+
         else:
-            raise Exception("data_format should be channels_last or channels_first")
+            raise ValueError(
+                "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
+            )
 
 
 class GlobalMaxPool2d(Layer):
@@ -69,8 +80,6 @@ class GlobalMaxPool2d(Layer):
 
     Parameters
     ------------
-    # prev_layer : :class:`Layer`
-    #     The previous layer with a output rank as 4 [batch, height, width, channel] or [batch, channel, height, width].
     data_format : str
         One of channels_last (default, [batch, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
@@ -86,17 +95,27 @@ class GlobalMaxPool2d(Layer):
     [None, 30]
     """
 
-    def __init__(self, prev_layer, name='globalmaxpool2d'):
+    def __init__(self, data_format, name='globalmaxpool2d'):
+
+        if data_format not in ["channels_last", "channels_first"]:
+            raise ValueError(
+                "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
+            )
+
         self.data_format = data_format
         self.name = name
-        super(GlobalMaxPool2d, self).__init__(name=name)
+
+        super(GlobalMaxPool2d, self).__init__()
 
     def __str__(self):
+
         additional_str = []
+
         try:
             additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
+
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -110,10 +129,14 @@ class GlobalMaxPool2d(Layer):
         """
         if self.data_format == 'channels_last':
             self._temp_data['outputs'] = tf.reduce_max(self._temp_data['inputs'], axis=[1, 2], name=self.name)
+
         elif self.data_format == 'channels_first':
             self._temp_data['outputs'] = tf.reduce_max(self._temp_data['inputs'], axis=[2, 3], name=self.name)
+
         else:
-            raise Exception("data_format should be channels_last or channels_first")
+            raise ValueError(
+                "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
+            )
 
 
 class GlobalMaxPool3d(Layer):
@@ -121,8 +144,6 @@ class GlobalMaxPool3d(Layer):
 
     Parameters
     ------------
-    # prev_layer : :class:`Layer`
-    #     The previous layer with a output rank as 5 [batch, depth, height, width, channel] or [batch, channel, depth, height, width].
     data_format : str
         One of channels_last (default, [batch, depth, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
@@ -138,17 +159,26 @@ class GlobalMaxPool3d(Layer):
     [None, 30]
     """
 
-    def __init__(self, prev_layer, name='globalmaxpool3d'):
+    def __init__(self, data_format, name='globalmaxpool3d'):
+
+        if data_format not in ["channels_last", "channels_first"]:
+            raise ValueError(
+                "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
+            )
+
         self.data_format = data_format
         self.name = name
+
         super(GlobalMaxPool3d, self).__init__(name=name)
 
     def __str__(self):
         additional_str = []
+
         try:
             additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
+
         return self._str(additional_str)
 
     @auto_parse_inputs
@@ -162,7 +192,11 @@ class GlobalMaxPool3d(Layer):
         """
         if self.data_format == 'channels_last':
             self._temp_data['outputs'] = tf.reduce_max(self._temp_data['inputs'], axis=[1, 2, 3], name=self.name)
+
         elif self.data_format == 'channels_first':
             self._temp_data['outputs'] = tf.reduce_max(self._temp_data['inputs'], axis=[2, 3, 4], name=self.name)
+
         else:
-            raise Exception("data_format should be channels_last or channels_first")
+            raise ValueError(
+                "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
+            )

@@ -20,8 +20,6 @@ class MeanPool1d(Layer):
 
     Parameters
     ------------
-    # prev_layer : :class:`Layer`
-    #     The previous layer with a output rank as 3 [batch, length, channel] or [batch, channel, length].
     filter_size : tuple of int
         Pooling window size.
     strides : tuple of int
@@ -36,19 +34,26 @@ class MeanPool1d(Layer):
     """
 
     def __init__(
-        self,  #prev_layer,
+        self,
         filter_size=3,
         strides=2,
         padding='valid',
         data_format='channels_last',
-        name='meanpool1d'
+        name='meanpool_1d'
     ):
+
+        if data_format not in ["channels_last", "channels_first"]:
+            raise ValueError(
+                "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
+            )
+
         self.filter_size = filter_size
         self.strides = strides
         self.padding = padding
         self.data_format = data_format
         self.name = name
-        super(MeanPool1d, self).__init__(name=name)
+
+        super(MeanPool1d, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -59,12 +64,17 @@ class MeanPool1d(Layer):
             pass
 
         try:
-            additional_str.append("stride: %s" % self.stride)
+            additional_str.append("strides: %s" % self.strides)
         except AttributeError:
             pass
 
         try:
             additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -82,12 +92,12 @@ class MeanPool1d(Layer):
         with tf.variable_scope(self.name) as vs:
 
             self._temp_data['outputs'] = tf.layers.average_pooling1d(
-                prev_layer.outputs,
-                self.filter_size,
-                self.strides,
+                inputs=prev_layer.outputs,
+                pool_size=self.filter_size,
+                strides=self.strides,
                 padding=self.padding,
                 data_format=self.data_format,
-                name=None
+                name="avg_pooling_1d_op"
             )
 
             self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
@@ -98,8 +108,6 @@ class MeanPool2d(Layer):
 
     Parameters
     -----------
-    # prev_layer : :class:`Layer`
-    #     The previous layer with a output rank as 4 [batch, height, width, channel] or [batch, channel, height, width]
     filter_size : tuple of int
         (height, width) for filter size.
     strides : tuple of int
@@ -112,31 +120,30 @@ class MeanPool2d(Layer):
         A unique layer name.
 
     """
-
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
-        self,  # prev_layer,
+        self,
         filter_size=(3, 3),
         strides=(2, 2),
         padding='SAME',
-        name='meanpool2d'
+        data_format='channels_last',
+        name='meanpool_2d'
     ):
+
+        if data_format not in ["channels_last", "channels_first"]:
+            raise ValueError(
+                "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
+            )
 
         if strides is None:
             strides = filter_size
+
         self.filter_size = filter_size
         self.strides = strides
         self.padding = padding
         self.data_format = data_format
         self.name = name
-        super(MeanPool2d, self).__init__(name=name)
+
+        super(MeanPool2d, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -147,12 +154,17 @@ class MeanPool2d(Layer):
             pass
 
         try:
-            additional_str.append("stride: %s" % self.stride)
+            additional_str.append("strides: %s" % self.strides)
         except AttributeError:
             pass
 
         try:
             additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -170,12 +182,12 @@ class MeanPool2d(Layer):
         with tf.variable_scope(self.name) as vs:
 
             self._temp_data['outputs'] = tf.layers.average_pooling2d(
-                self._temp_data['inputs'],
-                self.filter_size,
-                self.strides,
+                inputs=self._temp_data['inputs'],
+                pool_size=self.filter_size,
+                strides=self.strides,
                 padding=self.padding,
-                data_format='channels_last',
-                name=None
+                data_format=self.data_format,
+                name="avg_pooling_2d_op"
             )
 
             self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
@@ -186,8 +198,6 @@ class MeanPool3d(Layer):
 
     Parameters
     ------------
-    # prev_layer : :class:`Layer`
-    #     The previous layer with a output rank as 5 [batch, depth, height, width, channel] or [batch, channel, depth, height, width].
     filter_size : tuple of int
         Pooling window size.
     strides : tuple of int
@@ -199,36 +209,29 @@ class MeanPool3d(Layer):
     name : str
         A unique layer name.
 
-    # Returns
-    # -------
-    # :class:`Layer`
-    #     A mean pooling 3-D layer with a output rank as 5.
-
     """
 
-    @deprecated_alias(
-        layer='prev_layer', end_support_version="2.0.0"
-    )  # TODO: remove this line before releasing TL 2.0.0
-    @deprecated_args(
-        end_support_version="2.1.0",
-        instructions="`prev_layer` is deprecated, use the functional API instead",
-        deprecated_args=("prev_layer", ),
-    )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        # prev_layer,
         filter_size=(3, 3, 3),
         strides=(2, 2, 2),
         padding='valid',
         data_format='channels_last',
         name='meanpool3d'
     ):
+
+        if data_format not in ["channels_last", "channels_first"]:
+            raise ValueError(
+                "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
+            )
+
         self.filter_size = filter_size
         self.strides = strides
         self.padding = padding
         self.data_format = data_format
         self.name = name
-        super(MeanPool3d, self).__init__(name=name)
+
+        super(MeanPool3d, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -239,12 +242,17 @@ class MeanPool3d(Layer):
             pass
 
         try:
-            additional_str.append("stride: %s" % self.stride)
+            additional_str.append("strides: %s" % self.strides)
         except AttributeError:
             pass
 
         try:
             additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
         except AttributeError:
             pass
 
@@ -262,12 +270,12 @@ class MeanPool3d(Layer):
         with tf.variable_scope(self.name) as vs:
 
             self._temp_data['outputs'] = tf.layers.average_pooling3d(
-                prev_layer.outputs,
-                self.filter_size,
-                self.strides,
+                inputs=prev_layer.outputs,
+                pool_size=self.filter_size,
+                strides=self.strides,
                 padding=self.padding,
                 data_format=self.data_format,
-                name=None
+                name="avg_pooling_3d_op"
             )
 
             self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)

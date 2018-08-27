@@ -16,7 +16,6 @@ from .core import *
 from .dense import *
 from .dropout import *
 from .extend import *
-# from .flow_control import *
 from .image_resampling import *
 from .importer import *
 from .inputs import *
@@ -44,7 +43,6 @@ __all__ += core.__all__
 __all__ += dense.__all__
 __all__ += dropout.__all__
 __all__ += extend.__all__
-__all__ += flow_control.__all__
 __all__ += image_resampling.__all__
 __all__ += importer.__all__
 __all__ += inputs.__all__
