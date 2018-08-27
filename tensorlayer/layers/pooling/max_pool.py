@@ -37,7 +37,7 @@ class MaxPool1d(Layer):
         self,
         filter_size=3,
         strides=2,
-        padding='valid',
+        padding='same',
         data_format='channels_last',
         name='maxpool_1d'
     ):
@@ -120,7 +120,7 @@ class MaxPool2d(Layer):
         self,
         filter_size=(3, 3),
         strides=(2, 2),
-        padding='SAME',
+        padding='same',
         data_format='channels_last',
         name='maxpool_2d'
     ):
@@ -205,7 +205,7 @@ class MaxPool3d(Layer):
         self,
         filter_size=(3, 3, 3),
         strides=(2, 2, 2),
-        padding='valid',
+        padding='same',
         data_format='channels_last',
         name='maxpool_3d'
     ):

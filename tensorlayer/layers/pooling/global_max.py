@@ -157,7 +157,7 @@ class GlobalMaxPool3d(Layer):
         self.data_format = data_format
         self.name = name
 
-        super(GlobalMaxPool3d, self).__init__(name=name)
+        super(GlobalMaxPool3d, self).__init__()
 
     def __str__(self):
         additional_str = []

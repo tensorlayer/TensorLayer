@@ -37,7 +37,7 @@ class MeanPool1d(Layer):
         self,
         filter_size=3,
         strides=2,
-        padding='valid',
+        padding='same',
         data_format='channels_last',
         name='meanpool_1d'
     ):
@@ -119,7 +119,7 @@ class MeanPool2d(Layer):
         self,
         filter_size=(3, 3),
         strides=(2, 2),
-        padding='SAME',
+        padding='same',
         data_format='channels_last',
         name='meanpool_2d'
     ):
@@ -205,7 +205,7 @@ class MeanPool3d(Layer):
         self,
         filter_size=(3, 3, 3),
         strides=(2, 2, 2),
-        padding='valid',
+        padding='same',
         data_format='channels_last',
         name='meanpool3d'
     ):
