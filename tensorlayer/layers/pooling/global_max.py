@@ -32,7 +32,7 @@ class GlobalMaxPool1d(Layer):
     [None, 30]
     """
 
-    def __init__(self, data_format, name='globalmaxpool1d'):
+    def __init__(self, data_format="channels_last", name='globalmaxpool1d'):
 
         if data_format not in ["channels_last", "channels_first"]:
             raise ValueError(
@@ -95,7 +95,7 @@ class GlobalMaxPool2d(Layer):
     [None, 30]
     """
 
-    def __init__(self, data_format, name='globalmaxpool2d'):
+    def __init__(self, data_format="channels_last", name='globalmaxpool2d'):
 
         if data_format not in ["channels_last", "channels_first"]:
             raise ValueError(
@@ -159,7 +159,7 @@ class GlobalMaxPool3d(Layer):
     [None, 30]
     """
 
-    def __init__(self, data_format, name='globalmaxpool3d'):
+    def __init__(self, data_format="channels_last", name='globalmaxpool3d'):
 
         if data_format not in ["channels_last", "channels_first"]:
             raise ValueError(

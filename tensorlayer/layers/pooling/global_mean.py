@@ -34,7 +34,7 @@ class GlobalMeanPool1d(Layer):
     [None, 30]
     """
 
-    def __init__(self, data_format, name='globalmeanpool1d'):
+    def __init__(self, data_format="channels_last", name='globalmeanpool1d'):
 
         if data_format not in ["channels_last", "channels_first"]:
             raise ValueError(
@@ -97,7 +97,7 @@ class GlobalMeanPool2d(Layer):
     [None, 30]
     """
 
-    def __init__(self, data_format, name='globalmeanpool2d'):
+    def __init__(self, data_format="channels_last", name='globalmeanpool2d'):
 
         if data_format not in ["channels_last", "channels_first"]:
             raise ValueError(
@@ -160,7 +160,7 @@ class GlobalMeanPool3d(Layer):
     [None, 30]
     """
 
-    def __init__(self, data_format, name='globalmeanpool3d'):
+    def __init__(self, data_format="channels_last", name='globalmeanpool3d'):
 
         if data_format not in ["channels_last", "channels_first"]:
             raise ValueError(

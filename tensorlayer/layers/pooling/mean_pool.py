@@ -149,12 +149,12 @@ class MeanPool2d(Layer):
         additional_str = []
 
         try:
-            additional_str.append("filter_size: %d" % self.filter_size)
+            additional_str.append("filter_size: %s" % str(self.filter_size))
         except AttributeError:
             pass
 
         try:
-            additional_str.append("strides: %s" % self.strides)
+            additional_str.append("strides: %s" % str(self.strides))
         except AttributeError:
             pass
 
@@ -237,12 +237,12 @@ class MeanPool3d(Layer):
         additional_str = []
 
         try:
-            additional_str.append("filter_size: %d" % self.filter_size)
+            additional_str.append("filter_size: %s" % str(self.filter_size))
         except AttributeError:
             pass
 
         try:
-            additional_str.append("strides: %s" % self.strides)
+            additional_str.append("strides: %s" % str(self.strides))
         except AttributeError:
             pass
 
