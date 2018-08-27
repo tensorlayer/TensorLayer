@@ -180,12 +180,12 @@ class RNNLayer(Layer):
             pass
 
         try:
-            additional_str.append("return_last: %s" % str(return_last))
+            additional_str.append("return_last: %s" % str(self.return_last))
         except AttributeError:
             pass
 
         try:
-            additional_str.append("return_seq_2d: %s" % str(return_seq_2d))
+            additional_str.append("return_seq_2d: %s" % str(self.return_seq_2d))
         except AttributeError:
             pass
 
@@ -449,12 +449,12 @@ class BiRNNLayer(Layer):
             pass
 
         try:
-            additional_str.append("return_last: %s" % str(return_last))
+            additional_str.append("return_last: %s" % str(self.return_last))
         except AttributeError:
             pass
 
         try:
-            additional_str.append("return_seq_2d: %s" % str(return_seq_2d))
+            additional_str.append("return_seq_2d: %s" % str(self.return_seq_2d))
         except AttributeError:
             pass
 

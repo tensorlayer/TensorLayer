@@ -110,7 +110,7 @@ class Layer_Recurrent_Test(unittest.TestCase):
         x3 = tf.placeholder(tf.int32, [cls.net3_batch_size, cls.num_steps])
 
         net3 = tl.layers.EmbeddingInputlayer(
-            vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb'
+            vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, dtype=tf.float32, name='emb'
         )(x3)
         net3 = tl.layers.BiRNNLayer(
             cell_fn=tf.contrib.rnn.BasicLSTMCell,

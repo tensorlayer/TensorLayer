@@ -730,3 +730,15 @@ class CompiledLayer(object):
     def print_params(self):
         """Returns the number of parameters in the network"""
         return self.count_weights()
+
+    # should be renamed `print_network`
+    def print_layers(self):
+        """Print all info of layers in the network."""
+        # tl.logging.fatal("THIS FUNCTION WILL BE REMOVED SOON: %s.%s()" % (self.__class__.__name__, 'print_layers'))
+        # pass
+
+        for i, layer in enumerate(self.all_layers):
+            # logging.info("  layer %d: %s" % (i, str(layer)))
+            logging.info(
+                "  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name)
+            )
