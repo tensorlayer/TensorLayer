@@ -90,6 +90,7 @@ To release a new version, please update the changelog as followed:
   - Release SwitchNormLayer (PR #737)
   - Release QuantizedConv2d, QuantizedConv2dWithBN, QuantizedDense, QuantizedDenseWithBN (PR#735)
   - Update Core Layer to support graph (PR ＃751)
+  - All Pooling layers support `data_format` (PR #809)
 - Setup:
   - Creation of installation flags `all_dev`, `all_cpu_dev`, and `all_gpu_dev` (PR #739)
 - Tests:
@@ -98,19 +99,21 @@ To release a new version, please update the changelog as followed:
   - `test_network_sequential_1d.py` has been introduced to test the class `tl.networks.Sequential` with 1D data Layers (PR #755).
   - `test_network_sequential_2d.py` has been introduced to test the class `tl.networks.Sequential` with 2D data Layers (PR #755).
   - `test_network_sequential_3d.py` has been introduced to test the class `tl.networks.Sequential` with 3D data Layers (PR #755).
-- Tutorials:
+  - `test_network_sequential_rnn.py` has been introduced to test the class `tl.networks.Sequential` with 3D data Layers (PR #755).
+- Examples:
   - `tutorial_models_vgg19` has been introduced to show how to use `tl.model.vgg19` (PR #698).
   - fix bug of `tutorial_bipedalwalker_a3c_continuous_action.py` (PR #734, Issue #732)
   - `tutorial_models_vgg16` and `tutorial_models_vgg19` has been changed the input scale from [0,255] to [0,1](PR #710)
   - `tutorial_mnist_distributed_trainer.py` and `tutorial_cifar10_distributed_trainer.py` are added to explain the uses of Distributed Trainer (PR #700)
   - add `tutorial_quanconv_cifar10.py` and `tutorial_quanconv_mnist.py` (PR #735)
   - add `tutorial_work_with_onnx.py`(PR #775)
-- Examples:
+  - change `examples/` folder structure (PR #802) 
+- Applications:
   - [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/abs/1703.06868) (PR #799)
 
 ### Changed
 - API:
-  - function minibatches changed to avoid wasting samples.(PR #762)
+  - function mini-batches changed to avoid wasting samples.(PR #762)
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
   - Dockerfiles merged and refactored into one file (PR #747)
   - LazyImports move to the most **top level** imports as possible (PR #739)
@@ -154,8 +157,8 @@ To release a new version, please update the changelog as followed:
 - @DEKHTIARJonathan: #739 #747 #750 #754 #755 #798
 - @lgarithm: #705 #700
 - @OwenLiuzZ: #698 #710 #775 #776
-- @zsdonghao: #711 #712 #734 #736 #737 #700 #751
-- @luomai: #700 #751 #766
+- @zsdonghao: #711 #712 #734 #736 #737 #700 #751 #809
+- @luomai: #700 #751 #766 #802
 - @XJTUWYD: #735
 - @mutewall: #735
 - @thangvubk: #759

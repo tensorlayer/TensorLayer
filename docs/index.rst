@@ -31,8 +31,8 @@ to the library as a developer.
   :caption: Starting with TensorLayer
 
   user/installation
-  user/tutorial
-  user/example
+  user/tutorials
+  user/examples
   user/contributing
   user/get_involved
   user/faq

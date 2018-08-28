@@ -1,0 +1,19 @@
+{
+  "info": {"description": "This is cat dataset.",
+           "url": "http://tensorlayer.org",
+           "version": "1.0.0",
+           "year": 2016,
+           "contributor": "Hao Dong",
+           "date_created": "2016-09-30 12:11:50.00000"},
+  "images":[
+    {"file_name":"img1.jpg", "caption":"a yellow cat looks up"},
+    {"file_name":"img2.jpg", "caption":"a grey cat with yellow eyes"},
+    {"file_name":"img3.jpg", "caption":"grey cat with yellow eyes"},
+    {"file_name":"img4.jpg", "caption":"yellow cat looks at you"},
+    {"file_name":"img5.jpg", "caption":"a yellow cat stands up"},
+    {"file_name":"img6.jpg", "caption":"a small cat sits down"},
+    {"file_name":"img7.jpg", "caption":"it is a white cat with white eyes"},
+    {"file_name":"img8.jpg", "caption":"it shows a head of cat"},
+    {"file_name":"img9.jpg", "caption":"a black cat is running very fast"}
+    ]
+}
