@@ -14,7 +14,7 @@ from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 from tensorlayer.layers.utils.reshape import flatten_reshape
 from tensorlayer.layers.utils.spatial_transformer import transformer
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import private_method
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
@@ -69,18 +69,21 @@ class SpatialTransformer2dAffineLayer(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer, theta_layer=None):
+    def __call__(self, prev_layer, theta_layer, is_train=True):
         """
-        Parameters
-        -----------
         prev_layer : :class:`Layer`
             Previous layer.
         theta_layer : :class:`Layer`
             The localisation network.
             - We will use a :class:`DenseLayer` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
+        is_train: boolean (default: True)
+            Set the TF Variable in training mode and may impact the behaviour of the layer.
         """
+        return super(DeformableConv2d, self).__call__(prev_layer=[prev_layer, theta_layer], is_train=is_train)
 
+
+    def compile(self):
+        
         input_layer = self._temp_data['inputs'][0]
         theta_layer = self._temp_data['inputs'][1]
 

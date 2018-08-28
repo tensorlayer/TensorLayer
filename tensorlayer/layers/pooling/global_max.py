@@ -7,7 +7,7 @@ from tensorlayer.layers.core import Layer
 
 from tensorlayer import logging
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -48,15 +48,9 @@ class GlobalMaxPool1d(Layer):
         additional_str = []
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
-        """Compile.
 
-        Parameters
-        -----------
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 3 [batch, length, channel] or [batch, channel, length].
-        """
+    def compile(self):
+
         if self.data_format == 'channels_last':
             self._temp_data['outputs'] = tf.reduce_max(self._temp_data['inputs'], axis=1, name=self.name)
 
@@ -106,15 +100,9 @@ class GlobalMaxPool2d(Layer):
         additional_str = []
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
-        """Compile.
 
-        Parameters
-        -----------
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 4 [batch, height, width, channel] or [batch, channel, height, width].
-        """
+    def compile(self):
+        
         if self.data_format == 'channels_last':
             self._temp_data['outputs'] = tf.reduce_max(self._temp_data['inputs'], axis=[1, 2], name=self.name)
 
@@ -163,15 +151,9 @@ class GlobalMaxPool3d(Layer):
         additional_str = []
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
-        """Compile.
 
-        Parameters
-        -----------
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 5 [batch, depth, height, width, channel] or [batch, channel, depth, height, width].
-        """
+    def compile(self):
+
         if self.data_format == 'channels_last':
             self._temp_data['outputs'] = tf.reduce_max(self._temp_data['inputs'], axis=[1, 2, 3], name=self.name)
 

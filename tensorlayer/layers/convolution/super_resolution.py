@@ -5,7 +5,7 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -64,8 +64,8 @@ class SubpixelConv1d(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+
+    def compile(self):
 
         with tf.variable_scope(self.name):
 
@@ -132,7 +132,7 @@ class SubpixelConv2d(Layer):
     """
 
     # github/Tetrachrome/subpixel  https://github.com/Tetrachrome/subpixel/blob/master/subpixel.py
-    def __init__(self, prev_layer=None, scale=2, n_out_channels=None, act=None, name='subpixel_conv2d'):
+    def __init__(self, scale=2, n_out_channels=None, act=None, name='subpixel_conv2d'):
 
         self.scale = scale
         self.n_out_channels = n_out_channels
@@ -156,8 +156,8 @@ class SubpixelConv2d(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+
+    def compile(self):
 
         if self.n_out_channels is None:
 

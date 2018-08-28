@@ -8,7 +8,7 @@ from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer import logging
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -68,19 +68,13 @@ class MeanPool1d(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
-        """Compile.
 
-        Parameters
-        -----------
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 3 [batch, length, channel] or [batch, channel, length].
-        """
+    def compile(self):
+
         with tf.variable_scope(self.name) as vs:
 
             self._temp_data['outputs'] = tf.layers.average_pooling1d(
-                inputs=prev_layer.outputs,
+                inputs=self._temp_data['inputs'],
                 pool_size=self.filter_size,
                 strides=self.strides,
                 padding=self.padding,
@@ -149,15 +143,9 @@ class MeanPool2d(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
-        """Compile.
 
-        Parameters
-        -----------
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 4 [batch, height, width, channel] or [batch, channel, height, width].
-        """
+    def compile(self):
+        
         with tf.variable_scope(self.name) as vs:
 
             self._temp_data['outputs'] = tf.layers.average_pooling2d(
@@ -227,19 +215,12 @@ class MeanPool3d(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
-        """Compile.
 
-        Parameters
-        -----------
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 5 [batch, depth, height, width, channel] or [batch, channel, depth, height, width].
-        """
+    def compile(self):
         with tf.variable_scope(self.name) as vs:
 
             self._temp_data['outputs'] = tf.layers.average_pooling3d(
-                inputs=prev_layer.outputs,
+                inputs=self._temp_data['inputs'],
                 pool_size=self.filter_size,
                 strides=self.strides,
                 padding=self.padding,

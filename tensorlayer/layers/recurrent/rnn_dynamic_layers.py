@@ -9,7 +9,7 @@ from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -25,8 +25,6 @@ class DynamicRNNLayer(Layer):
 
     Parameters
     ----------
-    # prev_layer : :class:`Layer`
-    #     Previous layer
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
             - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
@@ -121,7 +119,6 @@ class DynamicRNNLayer(Layer):
 
     def __init__(
         self,
-        # prev_layer,
         cell_fn=None,
         cell_init_args=None,
         n_hidden=256,
@@ -211,15 +208,8 @@ class DynamicRNNLayer(Layer):
         #     )
         # )
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
-        """Compile.
 
-        Parameters
-        ----------
-        prev_layer : :class:`Layer`
-            Previous layer.
-        """
+    def compile(self):
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
@@ -366,8 +356,6 @@ class BiDynamicRNNLayer(Layer):
 
     Parameters
     ----------
-    # prev_layer : :class:`Layer`
-    #     Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
             - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__.
@@ -439,17 +427,8 @@ class BiDynamicRNNLayer(Layer):
 
     """
 
-    # @deprecated_alias(
-    #     layer='prev_layer', end_support_version="2.0.0"
-    # )  # TODO: remove this line before releasing TL 2.0.0
-    # @deprecated_args(
-    #     end_support_version="2.1.0",
-    #     instructions="`prev_layer` is deprecated, use the functional API instead",
-    #     deprecated_args=("prev_layer", ),
-    # )  # TODO: remove this line before releasing TL 2.1.0
     def __init__(
         self,
-        # prev_layer,
         cell_fn=None,
         cell_init_args=None,
         n_hidden=256,
@@ -536,15 +515,9 @@ class BiDynamicRNNLayer(Layer):
         #     )
         # )
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
-        """Compile.
 
-        Parameters
-        ----------
-        prev_layer : :class:`Layer`
-            Previous layer with output shape of [batch, n_steps, n_features].
-        """
+    def compile(self):
+        
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
             self._temp_data['inputs'].get_shape().with_rank(3)

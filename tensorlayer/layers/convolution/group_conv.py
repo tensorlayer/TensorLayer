@@ -5,7 +5,7 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 from tensorlayer.decorators import private_method
@@ -122,8 +122,8 @@ class GroupConv2d(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+    
+    def compile(self):
 
         input_channels = int(self._temp_data['inputs'].get_shape()[-1])
 

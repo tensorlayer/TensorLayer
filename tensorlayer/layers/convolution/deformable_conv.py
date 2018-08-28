@@ -7,7 +7,7 @@ from tensorlayer.layers.core import Layer
 
 from tensorlayer import logging
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 from tensorlayer.decorators import private_method
@@ -23,12 +23,6 @@ class DeformableConv2d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
-    offset_layer : :class:`Layer`
-        To predict the offset of convolution operations.
-        The output shape is (batchsize, input height, input width, 2*(number of element in the convolution kernel))
-        e.g. if apply a 3*3 kernel, the number of the last dimension should be 18 (2*3*3)
     n_filter : int
         The number of filters.
     filter_size : tuple of int
@@ -101,18 +95,21 @@ class DeformableConv2d(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer, offset_layer=None):
+    def __call__(self, prev_layer, offset_layer, is_train=True):
         """
-        Parameters
-        ----------
         prev_layer : :class:`Layer`
             Previous layer.
         offset_layer : :class:`Layer`
             To predict the offset of convolution operations.
             The output shape is (batchsize, input height, input width, 2*(number of element in the convolution kernel))
             e.g. if apply a 3*3 kernel, the number of the last dimension should be 18 (2*3*3)
+        is_train: boolean (default: True)
+            Set the TF Variable in training mode and may impact the behaviour of the layer.
         """
+        return super(DeformableConv2d, self).__call__(prev_layer=[prev_layer, offset_layer], is_train=is_train)
+
+
+    def compile(self):
 
         input_layer = self._temp_data['inputs'][0]
         offset_layer = self._temp_data['inputs'][1]

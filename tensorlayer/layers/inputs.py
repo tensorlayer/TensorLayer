@@ -5,7 +5,7 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
@@ -45,8 +45,8 @@ class InputLayer(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+    
+    def compile(self):
 
         self._temp_data['outputs'] = self._temp_data['inputs']
 
@@ -110,8 +110,8 @@ class OneHotInputLayer(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+    
+    def compile(self):
 
         self._temp_data['outputs'] = tf.one_hot(
             self._temp_data['inputs'],
@@ -259,8 +259,8 @@ class Word2vecEmbeddingInputlayer(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+    
+    def compile(self):
 
         # Look up embeddings for inputs.
         # Note: a row of 'embeddings' is the vector representation of a word.
@@ -390,8 +390,8 @@ class EmbeddingInputlayer(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+    
+    def compile(self):
 
         with tf.variable_scope(self.name):
 
@@ -490,8 +490,8 @@ class AverageEmbeddingInputlayer(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+    
+    def compile(self):
 
         if self._temp_data['inputs'].get_shape().ndims != 2:
             raise ValueError('inputs must be of size batch_size * batch_sentence_length')

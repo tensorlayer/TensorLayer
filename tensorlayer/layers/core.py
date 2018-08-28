@@ -177,6 +177,12 @@ class Layer(BaseLayer):
         return self._str()
 
     def __call__(self, prev_layer=None, is_train=True):
+        """
+        prev_layer : :class:`Layer`
+            Previous layer.
+        is_train: boolean (default: True)
+            Set the TF Variable in training mode and may impact the behaviour of the layer.
+        """
 
         run_compilation = False
 
@@ -213,15 +219,9 @@ class Layer(BaseLayer):
 
         if run_compilation:
 
-            self._temp_data = {
-                'inputs': None,
-                'outputs': None,
-                'local_weights': list(),
-                'local_drop': dict(),
-                'is_train': is_train
-            }
+            self.parse_inputs(prev_layer, is_train)
 
-            self.compile(prev_layer)
+            self.compile()
 
             return self._create_compiled_layer()
 
@@ -234,10 +234,19 @@ class Layer(BaseLayer):
 
     @abstractmethod
     @private_method
-    def compile(self, prev_layer):
+    def compile(self):
+        raise NotImplementedError("This method should be overwritten by the derived class")
 
-        if 'inputs' in self._temp_data.keys() and self._temp_data['inputs'] is not None:
-            return
+    @private_method
+    def parse_inputs(self, prev_layer, is_train):
+
+        self._temp_data = {
+            'inputs': None,
+            'outputs': None,
+            'local_weights': list(),
+            'local_drop': dict(),
+            'is_train': is_train
+        }
 
         if isinstance(prev_layer, CompiledLayer):
             # 1. for normal layer have only 1 input i.e. DenseLayer
@@ -317,7 +326,7 @@ class Layer(BaseLayer):
         self.graph.update(self.layer_args)
 
         self._add_graphs((self.name, self.graph))
-    '''
+        '''
 
     @private_method
     def _check_list_input(self, layer_list):

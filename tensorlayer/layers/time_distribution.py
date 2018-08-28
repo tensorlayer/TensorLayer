@@ -8,7 +8,7 @@ from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer.layers.inputs import InputLayer
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -83,8 +83,8 @@ class TimeDistributedLayer(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+    
+    def compile(self):
 
         if not isinstance(self._temp_data['inputs'], tf.Tensor):
             self._temp_data['inputs'] = tf.transpose(tf.stack(self._temp_data['inputs']), [1, 0, 2])

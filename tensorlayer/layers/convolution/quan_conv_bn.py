@@ -13,7 +13,7 @@ from tensorlayer.layers.utils.quantization import quantize_weight_overflow
 from tensorflow.python.training import moving_averages
 from tensorlayer import logging
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -187,14 +187,14 @@ class QuantizedConv2dWithBN(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+    
+    def compile(self):
 
         try:
-            input_channels = int(prev_layer.outputs.get_shape()[-1])
+            input_channels = int(self._temp_data['inputs'].get_shape()[-1])
         except TypeError:  # if input_channels is ?, it happens when using Spatial Transformer Net
             input_channels = 1
-            logging.warning("[warnings] unknow input channels, set to 1")
+            logging.warning("[warnings] unknown input channels, set to 1")
 
         w_shape = (self.filter_size[0], self.filter_size[1], input_channels, self.n_filter)
         strides = (1, self.strides[0], self.strides[1], 1)

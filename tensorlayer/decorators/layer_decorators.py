@@ -10,26 +10,8 @@ import tensorflow as tf
 from tensorlayer.decorators.utils import get_network_obj
 
 __all__ = [
-    'auto_parse_inputs', 'force_return_self', 'layer_autoregister', 'overwrite_layername_in_network'
+    'force_return_self', 'layer_autoregister', 'overwrite_layername_in_network'
 ]
-
-
-def auto_parse_inputs(method):
-    """decorator that automatically parse `prev_layer` compilation Layers"""
-
-    @wraps(method)
-    def _impl(self, *args, **kwargs):
-
-        if len(args) == 1:
-            prev_layer = args[0]
-        else:
-            prev_layer = args
-
-        super(self.__class__, self).compile(prev_layer)
-
-        return method(self, *args, **kwargs)
-
-    return _impl
 
 
 def force_return_self(method):

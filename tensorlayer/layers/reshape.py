@@ -7,7 +7,7 @@ from tensorlayer.layers.core import Layer
 
 from tensorlayer.layers.utils.reshape import flatten_reshape
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -49,8 +49,8 @@ class FlattenLayer(Layer):
         additional_str = []
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+    
+    def compile(self):
 
         self._temp_data['outputs'] = flatten_reshape(self._temp_data['inputs'], name=self.name)
 
@@ -91,8 +91,8 @@ class ReshapeLayer(Layer):
         additional_str = []
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+    
+    def compile(self):
 
         self._temp_data['outputs'] = tf.reshape(self._temp_data['inputs'], shape=self.shape, name=self.name)
 
@@ -140,7 +140,7 @@ class TransposeLayer(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+    
+    def compile(self):
 
         self._temp_data['outputs'] = tf.transpose(self._temp_data['inputs'], perm=self.perm, name=self.name)

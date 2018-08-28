@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -81,8 +81,8 @@ class LambdaLayer(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+    
+    def compile(self):
 
         with tf.variable_scope(self.name) as vs:
             self._temp_data['outputs'] = self.fn(self._temp_data['inputs'], **self.fn_args)
@@ -153,8 +153,8 @@ class ElementwiseLambdaLayer(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+    
+    def compile(self):
 
         with tf.variable_scope(self.name) as vs:
             self._temp_data['outputs'] = self.fn(*self._temp_data['inputs'], **self.fn_args)

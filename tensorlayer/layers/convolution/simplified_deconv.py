@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -108,8 +108,8 @@ class DeConv2d(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+
+    def compile(self):
 
         is_name_reuse = tf.get_variable_scope().reuse
 
@@ -141,8 +141,6 @@ class DeConv3d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_filter : int
         The number of filters.
     filter_size : tuple of int
@@ -224,8 +222,8 @@ class DeConv3d(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+
+    def compile(self):
 
         is_name_reuse = tf.get_variable_scope().reuse
 

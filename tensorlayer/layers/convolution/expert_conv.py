@@ -5,7 +5,7 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -101,8 +101,8 @@ class Conv1dLayer(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+
+    def compile(self):
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
@@ -144,8 +144,6 @@ class Conv2dLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     act : activation function
         The activation function of this layer.
     shape : tuple of int
@@ -267,8 +265,8 @@ class Conv2dLayer(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+
+    def compile(self):
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
@@ -310,8 +308,6 @@ class Conv3dLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     shape : tuple of int
         Shape of the filters: (filter_depth, filter_height, filter_width, in_channels, out_channels).
     strides : tuple of int
@@ -392,8 +388,8 @@ class Conv3dLayer(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+
+    def compile(self):
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(

@@ -11,7 +11,7 @@ from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer import logging
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -23,8 +23,6 @@ class RNNLayer(Layer):
 
     Parameters
     ----------
-    # prev_layer : :class:`Layer`
-    #     Previous layer with output shape of [batch, n_steps, n_features].
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
             - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
@@ -125,7 +123,6 @@ class RNNLayer(Layer):
 
     def __init__(
         self,
-        # prev_layer,
         cell_fn=None,
         cell_init_args=None,
         n_hidden=100,
@@ -202,15 +199,9 @@ class RNNLayer(Layer):
         #     )
         # )
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
-        """Compile.
 
-        Parameters
-        ----------
-        prev_layer : :class:`Layer`
-            Previous layer with output shape of [batch, n_steps, n_features].
-        """
+    def compile(self):
+
         if 'GRU' in self.cell_fn.__name__:
             try:
                 self.cell_init_args.pop('state_is_tuple')
@@ -310,8 +301,6 @@ class BiRNNLayer(Layer):
 
     Parameters
     ----------
-    # prev_layer : :class:`Layer`
-    #     Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell.
             - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__.
@@ -372,12 +361,8 @@ class BiRNNLayer(Layer):
 
     """
 
-    # @deprecated_alias(
-    #     layer='prev_layer', end_support_version="2.0.0"
-    # )  # TODO: remove this line before releasing TL 2.0.0
     def __init__(
         self,
-        # prev_layer,
         cell_fn=None,
         cell_init_args=None,
         n_hidden=100,
@@ -470,15 +455,8 @@ class BiRNNLayer(Layer):
         #     )
         # )
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
-        """Compile.
 
-        Parameters
-        ----------
-        prev_layer : :class:`Layer`
-            Previous layer.
-        """
+    def compile(self):
 
         fixed_batch_size = self._temp_data['inputs'].get_shape().with_rank_at_least(1)[0]
 

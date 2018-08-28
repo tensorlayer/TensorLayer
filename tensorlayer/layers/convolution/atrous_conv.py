@@ -9,7 +9,7 @@ from tensorlayer.layers.utils import compute_deconv2d_output_shape
 
 from tensorlayer.layers.convolution.expert_conv import Conv1dLayer
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -172,8 +172,8 @@ class AtrousConv2dLayer(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+
+    def compile(self):
 
         with tf.variable_scope(self.name):
             shape = [
@@ -214,8 +214,6 @@ class AtrousDeConv2dLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer with a 4D output tensor in the shape of (batch, height, width, channels).
     shape : tuple of int
         The shape of the filters: (filter_height, filter_width, out_channels, in_channels).
     output_shape : tuple of int
@@ -255,6 +253,7 @@ class AtrousDeConv2dLayer(Layer):
     ):
 
         padding = padding.upper()
+        
         if padding not in ["SAME", "VALID"]:
             raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
 
@@ -288,8 +287,8 @@ class AtrousDeConv2dLayer(Layer):
 
         return self._str(additional_str)
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
+
+    def compile(self):
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(

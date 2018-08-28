@@ -10,7 +10,7 @@ from tensorlayer.layers.recurrent.lstm_cells import BasicConvLSTMCell
 
 from tensorlayer import logging
 
-from tensorlayer.decorators import auto_parse_inputs
+
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -22,8 +22,6 @@ class ConvLSTMLayer(Layer):
 
     Parameters
     ----------
-    # prev_layer : :class:`Layer`
-    #     Previous layer
     cell_shape : tuple of int
         The shape of each cell width * height
     filter_size : tuple of int
@@ -73,7 +71,6 @@ class ConvLSTMLayer(Layer):
 
     def __init__(
         self,
-        # prev_layer,
         cell_shape=None,
         feature_map=1,
         filter_size=(3, 3),
@@ -149,15 +146,9 @@ class ConvLSTMLayer(Layer):
         #     )
         # )
 
-    @auto_parse_inputs
-    def compile(self, prev_layer):
-        """Compile.
 
-        Parameters
-        ----------
-        prev_layer : :class:`Layer`
-            Previous layer with output shape of [batch, n_steps, n_features].
-        """
+    def compile(self):
+        
         # You can get the dimension by .get_shape() or ._shape, and check the
         # dimension by .with_rank() as follow.
         # self._temp_data['inputs'].get_shape().with_rank(2)
