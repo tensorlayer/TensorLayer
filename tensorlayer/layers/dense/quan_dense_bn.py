@@ -131,8 +131,9 @@ class QuantizedDenseWithBN(Layer):
             weight_matrix = self._get_tf_variable(
                 name='W',
                 shape=(n_in, self.n_units),
-                initializer=self.W_init,
                 dtype=quantized_inputs.dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
                 **self.W_init_args
             )
 
@@ -144,9 +145,9 @@ class QuantizedDenseWithBN(Layer):
                 scale_para = self._get_tf_variable(
                     name='scale_para',
                     shape=para_bn_shape,
-                    initializer=self.gamma_init,
                     dtype=quantized_inputs.dtype,
                     trainable=self._temp_data['is_train'],
+                    initializer=self.gamma_init,
                     **self.W_init_args
                 )
             else:
@@ -156,9 +157,9 @@ class QuantizedDenseWithBN(Layer):
                 offset_para = self._get_tf_variable(
                     name='offset_para',
                     shape=para_bn_shape,
-                    initializer=self.beta_init,
                     dtype=quantized_inputs.dtype,
                     trainable=self._temp_data['is_train'],
+                    initializer=self.beta_init,
                     **self.W_init_args
                 )
             else:
@@ -167,17 +168,17 @@ class QuantizedDenseWithBN(Layer):
             moving_mean = self._get_tf_variable(
                 name='moving_mean',
                 shape=para_bn_shape,
-                initializer=tf.constant_initializer(1.),
                 dtype=quantized_inputs.dtype,
-                trainable=False
+                trainable=False,
+                initializer=tf.constant_initializer(1.)
             )
 
             moving_variance = self._get_tf_variable(
                 name='moving_variance',
                 shape=para_bn_shape,
-                initializer=tf.constant_initializer(1.),
                 dtype=quantized_inputs.dtype,
                 trainable=False,
+                initializer=tf.constant_initializer(1.),
             )
 
             mean, variance = tf.nn.moments(mid_out, list(range(len(mid_out.get_shape()) - 1)))

@@ -94,12 +94,22 @@ class SpatialTransformer2dAffineLayer(Layer):
             # 2.1 W
             w_shape = (int(theta_layer.outputs.get_shape()[-1]), 6)
 
-            weight_matrix = self._get_tf_variable(name='W', initializer=tf.zeros(w_shape), dtype=input_layer.dtype)
+            weight_matrix = self._get_tf_variable(
+                name='W',
+                dtype=input_layer.dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=tf.zeros(w_shape),
+            )
 
             # 2.2 b
             identity = tf.constant(np.array([[1., 0, 0], [0, 1., 0]]).astype('float32').flatten())
 
-            b = self._get_tf_variable(name='b', initializer=identity, dtype=input_layer.dtype)
+            b = self._get_tf_variable(
+                name='b',
+                dtype=input_layer.dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=identity,
+            )
 
             # 2.3 transformation matrix
             self.theta = tf.nn.tanh(tf.matmul(theta_layer.outputs, weight_matrix) + b)

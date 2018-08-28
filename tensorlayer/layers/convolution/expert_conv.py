@@ -108,8 +108,9 @@ class Conv1dLayer(Layer):
             weight_matrix = self._get_tf_variable(
                 name='W_conv1d',
                 shape=self.shape,
-                initializer=self.W_init,
                 dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
                 **self.W_init_args
             )
 
@@ -125,9 +126,10 @@ class Conv1dLayer(Layer):
             if self.b_init:
                 b = self._get_tf_variable(
                     name='b_conv1d',
-                    shape=(self.shape[-1]),
-                    initializer=self.b_init,
+                    shape=(self.shape[-1], ),
                     dtype=self._temp_data['inputs'].dtype,
+                    trainable=self._temp_data['is_train'],
+                    initializer=self.b_init,
                     **self.b_init_args
                 )
 
@@ -272,8 +274,9 @@ class Conv2dLayer(Layer):
             weight_matrix = self._get_tf_variable(
                 name='W_conv2d',
                 shape=self.shape,
-                initializer=self.W_init,
                 dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
                 **self.W_init_args
             )
 
@@ -290,8 +293,9 @@ class Conv2dLayer(Layer):
                 b = self._get_tf_variable(
                     name='b_conv2d',
                     shape=(self.shape[-1]),
-                    initializer=self.b_init,
                     dtype=self._temp_data['inputs'].dtype,
+                    trainable=self._temp_data['is_train'],
+                    initializer=self.b_init,
                     **self.b_init_args
                 )
 
@@ -395,8 +399,9 @@ class Conv3dLayer(Layer):
             weight_matrix = self._get_tf_variable(
                 name='W_conv3d',
                 shape=self.shape,
-                initializer=self.W_init,
                 dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
                 **self.W_init_args
             )
 
@@ -412,8 +417,9 @@ class Conv3dLayer(Layer):
                 b = self._get_tf_variable(
                     name='b_conv3d',
                     shape=(self.shape[-1]),
-                    initializer=self.b_init,
                     dtype=self._temp_data['inputs'].dtype,
+                    trainable=self._temp_data['is_train'],
+                    initializer=self.b_init,
                     **self.b_init_args
                 )
 

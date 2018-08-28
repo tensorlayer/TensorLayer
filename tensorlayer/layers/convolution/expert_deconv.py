@@ -150,8 +150,9 @@ class DeConv2dLayer(Layer):
             weight_matrix = self._get_tf_variable(
                 name='W_deconv2d',
                 shape=self.shape,
-                initializer=self.W_init,
                 dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
                 **self.W_init_args
             )
 
@@ -177,9 +178,10 @@ class DeConv2dLayer(Layer):
             if self.b_init:
                 b = self._get_tf_variable(
                     name='b_deconv2d',
-                    shape=(self.shape[-2]),
-                    initializer=self.b_init,
+                    shape=(self.shape[-2], ),
                     dtype=self._temp_data['inputs'].dtype,
+                    trainable=self._temp_data['is_train'],
+                    initializer=self.b_init,
                     **self.b_init_args
                 )
                 self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
@@ -274,8 +276,9 @@ class DeConv3dLayer(Layer):
             weight_matrix = self._get_tf_variable(
                 name='W_deconv3d',
                 shape=self.shape,
-                initializer=self.W_init,
                 dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
                 **self.W_init_args
             )
 
@@ -303,9 +306,10 @@ class DeConv3dLayer(Layer):
             if self.b_init:
                 b = self._get_tf_variable(
                     name='b_deconv3d',
-                    shape=(self.shape[-2]),
-                    initializer=self.b_init,
+                    shape=(self.shape[-2], ),
                     dtype=self._temp_data['inputs'].dtype,
+                    trainable=self._temp_data['is_train'],
+                    initializer=self.b_init,
                     **self.b_init_args
                 )
 

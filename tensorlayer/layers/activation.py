@@ -79,6 +79,7 @@ class PReluLayer(Layer):
                 name='alpha',
                 shape=w_shape,
                 dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
                 initializer=self.a_init,
                 **self.a_init_args
             )
@@ -169,6 +170,7 @@ class PRelu6Layer(Layer):
                 name='alpha',
                 shape=w_shape,
                 dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
                 initializer=self.a_init,
                 **self.a_init_args
             )
@@ -263,6 +265,7 @@ class PTRelu6Layer(Layer):
                 name='alpha_low',
                 shape=w_shape,
                 dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
                 initializer=self.a_init,
                 **self.a_init_args
             )
@@ -274,6 +277,7 @@ class PTRelu6Layer(Layer):
                 name='alpha_high',
                 shape=w_shape,
                 dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
                 initializer=self.a_init,
                 **self.a_init_args
             )

@@ -143,8 +143,9 @@ class DepthwiseConv2d(Layer):
             weight_matrix = self._get_tf_variable(
                 name='W_depthwise2d',
                 shape=w_shape,
-                initializer=self.W_init,
                 dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
                 **self.W_init_args
             )
 
@@ -159,9 +160,10 @@ class DepthwiseConv2d(Layer):
             if self.b_init:
                 b = self._get_tf_variable(
                     name='b_depthwise2d',
-                    shape=(input_channels * self.depth_multiplier),
-                    initializer=self.b_init,
+                    shape=(input_channels * self.depth_multiplier, ),
                     dtype=self._temp_data['inputs'].dtype,
+                    trainable=self._temp_data['is_train'],
+                    initializer=self.b_init,
                     **self.b_init_args
                 )
 

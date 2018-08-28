@@ -179,8 +179,9 @@ class DeformableConv2d(Layer):
             weight_matrix = self._get_tf_variable(
                 name='W_deformableconv2d',
                 shape=(1, 1, w_shape[0] * w_shape[1], w_shape[-2], w_shape[-1]),
-                initializer=self.W_init,
                 dtype=input_layer.dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
                 **self.W_init_args
             )
 
@@ -190,8 +191,9 @@ class DeformableConv2d(Layer):
                 b = self._get_tf_variable(
                     name='b_deformableconv2d',
                     shape=(w_shape[-1]),
-                    initializer=self.b_init,
                     dtype=input_layer.dtype,
+                    trainable=self._temp_data['is_train'],
+                    initializer=self.b_init,
                     **self.b_init_args
                 )
 

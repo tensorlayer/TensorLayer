@@ -101,8 +101,9 @@ class QuantizedDense(Layer):
             weight_matrix = self._get_tf_variable(
                 name='W',
                 shape=(n_in, self.n_units),
-                initializer=self.W_init,
                 dtype=quantized_inputs.dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
                 **self.W_init_args
             )
 
@@ -115,13 +116,18 @@ class QuantizedDense(Layer):
                     b = self._get_tf_variable(
                         name='b',
                         shape=(self.n_units, ),
-                        initializer=self.b_init,
                         dtype=quantized_inputs.dtype,
+                        trainable=self._temp_data['is_train'],
+                        initializer=self.b_init,
                         **self.b_init_args
                     )
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = self._get_tf_variable(
-                        name='b', initializer=self.b_init, dtype=quantized_inputs.dtype, **self.b_init_args
+                        name='b',
+                        dtype=quantized_inputs.dtype,
+                        trainable=self._temp_data['is_train'],
+                        initializer=self.b_init,
+                        **self.b_init_args
                     )
 
                 self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')

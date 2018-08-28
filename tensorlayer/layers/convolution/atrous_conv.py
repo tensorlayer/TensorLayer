@@ -184,8 +184,9 @@ class AtrousConv2dLayer(Layer):
             weight_matrix = self._get_tf_variable(
                 name='W_atrous_conv2d',
                 shape=shape,
-                initializer=self.W_init,
                 dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
                 **self.W_init_args
             )
 
@@ -197,8 +198,9 @@ class AtrousConv2dLayer(Layer):
                 b = self._get_tf_variable(
                     name='b_atrous_conv2d',
                     shape=(self.n_filter, ),
-                    initializer=self.b_init,
                     dtype=self._temp_data['inputs'].dtype,
+                    trainable=self._temp_data['is_train'],
+                    initializer=self.b_init,
                     **self.b_init_args
                 )
 
@@ -293,8 +295,9 @@ class AtrousDeConv2dLayer(Layer):
             weight_matrix = self._get_tf_variable(
                 name='W_atrous_conv2d_transpose',
                 shape=self.shape,
-                initializer=self.W_init,
                 dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
                 **self.W_init_args
             )
 
@@ -320,9 +323,10 @@ class AtrousDeConv2dLayer(Layer):
             if self.b_init:
                 b = self._get_tf_variable(
                     name='b_atrous_conv2d_transpose',
-                    shape=(self.shape[-2]),
-                    initializer=self.b_init,
+                    shape=(self.shape[-2],),
                     dtype=self._temp_data['inputs'].dtype,
+                    trainable=self._temp_data['is_train'],
+                    initializer=self.b_init,
                     **self.b_init_args
                 )
 

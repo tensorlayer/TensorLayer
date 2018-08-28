@@ -157,8 +157,9 @@ class BinaryConv2d(Layer):
             weight_matrix = self._get_tf_variable(
                 name='W_conv2d',
                 shape=w_shape,
-                initializer=self.W_init,
                 dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
                 **self.W_init_args
             )
 
@@ -178,8 +179,9 @@ class BinaryConv2d(Layer):
                 b = self._get_tf_variable(
                     name='b_conv2d',
                     shape=(w_shape[-1]),
-                    initializer=self.b_init,
                     dtype=self._temp_data['inputs'].dtype,
+                    trainable=self._temp_data['is_train'],
+                    initializer=self.b_init,
                     **self.b_init_args
                 )
 

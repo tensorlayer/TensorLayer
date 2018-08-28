@@ -138,9 +138,9 @@ class GroupConv2d(Layer):
             We = self._get_tf_variable(
                 name='W',
                 shape=[self.filter_size[0], self.filter_size[1], input_channels / self.n_group, self.n_filter],
-                initializer=self.W_init,
                 dtype=self._temp_data['inputs'].dtype,
                 trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
                 **self.W_init_args
             )
 
@@ -161,9 +161,9 @@ class GroupConv2d(Layer):
                 b = self._get_tf_variable(
                     name='b',
                     shape=self.n_filter,
-                    initializer=self.b_init,
                     dtype=self._temp_data['inputs'].dtype,
                     trainable=self._temp_data['is_train'],
+                    initializer=self.b_init,
                     **self.b_init_args
                 )
 

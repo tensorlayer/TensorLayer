@@ -112,8 +112,9 @@ class DropconnectDenseLayer(Layer):
             weight_matrix = self._get_tf_variable(
                 name='W',
                 shape=(n_in, self.n_units),
-                initializer=self.W_init,
                 dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
                 **self.W_init_args
             )
 
@@ -133,9 +134,10 @@ class DropconnectDenseLayer(Layer):
             if self.b_init:
                 b = self._get_tf_variable(
                     name='b',
-                    shape=(self.n_units),
-                    initializer=self.b_init,
+                    shape=(self.n_units, ),
                     dtype=self._temp_data['inputs'].dtype,
+                    trainable=self._temp_data['is_train'],
+                    initializer=self.b_init,
                     **self.b_init_args
                 )
 

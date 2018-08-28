@@ -54,7 +54,8 @@ class ScaleLayer(Layer):
             scale = self._get_tf_variable(
                 name="scale",
                 shape=[1],
+                dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
                 initializer=tf.constant_initializer(value=self.init_scale),
-                dtype=self._temp_data['inputs'].dtype
             )
             self._temp_data['outputs'] = tf.multiply(self._temp_data['inputs'], scale)
