@@ -9,7 +9,6 @@ from tensorlayer.layers.utils import compute_deconv2d_output_shape
 
 from tensorlayer.layers.convolution.expert_conv import Conv1dLayer
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -172,7 +171,6 @@ class AtrousConv2dLayer(Layer):
 
         return self._str(additional_str)
 
-
     def compile(self):
 
         with tf.variable_scope(self.name):
@@ -253,7 +251,7 @@ class AtrousDeConv2dLayer(Layer):
     ):
 
         padding = padding.upper()
-        
+
         if padding not in ["SAME", "VALID"]:
             raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
 
@@ -286,7 +284,6 @@ class AtrousDeConv2dLayer(Layer):
             pass
 
         return self._str(additional_str)
-
 
     def compile(self):
 
@@ -322,7 +319,7 @@ class AtrousDeConv2dLayer(Layer):
             if self.b_init:
                 b = self._get_tf_variable(
                     name='b_atrous_conv2d_transpose',
-                    shape=(self.shape[-2],),
+                    shape=(self.shape[-2], ),
                     dtype=self._temp_data['inputs'].dtype,
                     trainable=self._temp_data['is_train'],
                     initializer=self.b_init,

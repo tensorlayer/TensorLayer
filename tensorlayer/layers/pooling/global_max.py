@@ -7,7 +7,6 @@ from tensorlayer.layers.core import Layer
 
 from tensorlayer import logging
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -47,7 +46,6 @@ class GlobalMaxPool1d(Layer):
     def __str__(self):
         additional_str = []
         return self._str(additional_str)
-
 
     def compile(self):
 
@@ -100,9 +98,8 @@ class GlobalMaxPool2d(Layer):
         additional_str = []
         return self._str(additional_str)
 
-
     def compile(self):
-        
+
         if self.data_format == 'channels_last':
             self._temp_data['outputs'] = tf.reduce_max(self._temp_data['inputs'], axis=[1, 2], name=self.name)
 
@@ -150,7 +147,6 @@ class GlobalMaxPool3d(Layer):
     def __str__(self):
         additional_str = []
         return self._str(additional_str)
-
 
     def compile(self):
 

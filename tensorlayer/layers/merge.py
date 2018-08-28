@@ -5,7 +5,6 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -74,7 +73,6 @@ class ConcatLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         self._temp_data['outputs'] = tf.concat(self._temp_data['inputs'], self.concat_dim, name=self.name)
@@ -137,7 +135,6 @@ class ElementwiseLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         self._temp_data['outputs'] = self._temp_data['inputs'][0]

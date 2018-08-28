@@ -5,7 +5,6 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
@@ -45,7 +44,6 @@ class InputLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         self._temp_data['outputs'] = self._temp_data['inputs']
@@ -110,7 +108,6 @@ class OneHotInputLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         self._temp_data['outputs'] = tf.one_hot(
@@ -259,7 +256,6 @@ class Word2vecEmbeddingInputlayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         # Look up embeddings for inputs.
@@ -390,7 +386,6 @@ class EmbeddingInputlayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         with tf.variable_scope(self.name):
@@ -490,7 +485,6 @@ class AverageEmbeddingInputlayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         if self._temp_data['inputs'].get_shape().ndims != 2:

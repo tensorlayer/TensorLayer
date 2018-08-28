@@ -11,7 +11,6 @@ from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer import logging
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -198,7 +197,6 @@ class RNNLayer(Layer):
         #         self._temp_data['inputs'].get_shape(), cell_fn.__name__
         #     )
         # )
-
 
     def compile(self):
 
@@ -454,7 +452,6 @@ class BiRNNLayer(Layer):
         #         self._temp_data['inputs'].get_shape(), cell_fn.__name__, dropout, n_layer
         #     )
         # )
-
 
     def compile(self):
 

@@ -8,7 +8,6 @@ from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer import logging
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -67,7 +66,6 @@ class MaxPool1d(Layer):
             pass
 
         return self._str(additional_str)
-
 
     def compile(self):
 
@@ -143,7 +141,6 @@ class MaxPool2d(Layer):
 
         return self._str(additional_str)
 
-
     def compile(self):
 
         with tf.variable_scope(self.name) as vs:
@@ -214,9 +211,8 @@ class MaxPool3d(Layer):
 
         return self._str(additional_str)
 
-
     def compile(self):
-        
+
         with tf.variable_scope(self.name) as vs:
 
             self._temp_data['outputs'] = tf.layers.max_pooling3d(

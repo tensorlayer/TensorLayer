@@ -13,7 +13,6 @@ from tensorlayer.layers.utils.quantization import quantize_weight_overflow
 
 from tensorlayer import logging
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -114,7 +113,6 @@ class QuantizedDenseWithBN(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         if self._temp_data['inputs'].get_shape().ndims != 2:

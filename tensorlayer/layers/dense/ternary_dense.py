@@ -10,7 +10,6 @@ from tensorlayer.layers.utils.ternary import ternary_operation
 
 from tensorlayer import logging
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -79,7 +78,6 @@ class TernaryDenseLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         if self._temp_data['inputs'].get_shape().ndims != 2:

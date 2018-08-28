@@ -5,7 +5,6 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -76,7 +75,6 @@ class PadLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         self._temp_data['outputs'] = tf.pad(
@@ -125,7 +123,6 @@ class ZeroPad1d(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         # TODO: Stop using Keras
@@ -176,7 +173,6 @@ class ZeroPad2d(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         # TODO: Stop using Keras
@@ -227,7 +223,6 @@ class ZeroPad3d(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         # TODO: Stop using Keras

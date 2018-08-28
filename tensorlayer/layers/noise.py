@@ -7,7 +7,6 @@ from tensorlayer.layers.core import Layer
 
 from tensorlayer import logging
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -79,7 +78,6 @@ class GaussianNoiseLayer(Layer):
         else:
             return self._skipped_layer_str()
 
-    
     def compile(self):
 
         if self._temp_data['is_train']:

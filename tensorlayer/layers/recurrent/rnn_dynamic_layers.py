@@ -9,7 +9,6 @@ from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -207,7 +206,6 @@ class DynamicRNNLayer(Layer):
         #         cell_fn.__name__, dropout, n_layer
         #     )
         # )
-
 
     def compile(self):
 
@@ -515,9 +513,8 @@ class BiDynamicRNNLayer(Layer):
         #     )
         # )
 
-
     def compile(self):
-        
+
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
             self._temp_data['inputs'].get_shape().with_rank(3)

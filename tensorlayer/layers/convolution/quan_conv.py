@@ -10,7 +10,6 @@ from tensorlayer.layers.utils import quantize_weight_overflow
 
 from tensorlayer import logging
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -150,7 +149,6 @@ class QuantizedConv2d(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         try:

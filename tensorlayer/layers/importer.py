@@ -8,7 +8,6 @@ from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer import logging
 
-
 from tensorlayer.decorators import deprecated
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
@@ -67,7 +66,6 @@ class SlimNetsLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         slim_layers = []
@@ -142,7 +140,6 @@ class KerasLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         current_varscope = tf.get_variable_scope()

@@ -9,7 +9,6 @@ from tensorlayer.layers.utils.quantization import quantize
 
 from tensorlayer import logging
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -139,7 +138,6 @@ class BinaryConv2d(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         try:

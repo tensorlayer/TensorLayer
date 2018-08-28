@@ -8,7 +8,6 @@ from tensorlayer.layers.core import Layer
 from tensorlayer.activation import leaky_relu6
 from tensorlayer.activation import leaky_twice_relu6
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -66,7 +65,6 @@ class PReluLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         if self.channel_shared:
@@ -157,7 +155,6 @@ class PRelu6Layer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         if self.channel_shared:
@@ -250,7 +247,6 @@ class PTRelu6Layer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         if self.channel_shared:

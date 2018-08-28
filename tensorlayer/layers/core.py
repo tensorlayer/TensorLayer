@@ -385,8 +385,7 @@ class Layer(BaseLayer):
     @private_method
     def _skipped_layer_str(self):
         return "  -> [Not Training] - `%s` is skipped. Output shape: %s" % (
-            self.__class__.__name__,
-            self._temp_data['outputs'].shape
+            self.__class__.__name__, self._temp_data['outputs'].shape
         )
 
     @private_method

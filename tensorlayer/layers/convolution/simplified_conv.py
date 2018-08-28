@@ -6,7 +6,6 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -130,7 +129,6 @@ class Conv1d(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         is_name_reuse = tf.get_variable_scope().reuse
@@ -271,7 +269,6 @@ class Conv2d(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         is_name_reuse = tf.get_variable_scope().reuse

@@ -7,7 +7,6 @@ from tensorlayer.layers.core import Layer
 
 from tensorlayer.layers.utils.quantization import quantize
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -35,7 +34,6 @@ class SignLayer(Layer):
 
         super(SignLayer, self).__init__()
 
-    
     def compile(self):
 
         with tf.variable_scope(self.name):

@@ -5,7 +5,6 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -58,7 +57,6 @@ class ExpandDimsLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         with tf.variable_scope(self.name):
@@ -107,7 +105,6 @@ class TileLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         with tf.variable_scope(self.name):

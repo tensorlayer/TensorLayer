@@ -9,9 +9,7 @@ import tensorflow as tf
 
 from tensorlayer.decorators.utils import get_network_obj
 
-__all__ = [
-    'force_return_self', 'layer_autoregister', 'overwrite_layername_in_network'
-]
+__all__ = ['force_return_self', 'layer_autoregister', 'overwrite_layername_in_network']
 
 
 def force_return_self(method):

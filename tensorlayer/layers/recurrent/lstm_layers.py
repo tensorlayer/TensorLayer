@@ -10,7 +10,6 @@ from tensorlayer.layers.recurrent.lstm_cells import BasicConvLSTMCell
 
 from tensorlayer import logging
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -146,9 +145,8 @@ class ConvLSTMLayer(Layer):
         #     )
         # )
 
-
     def compile(self):
-        
+
         # You can get the dimension by .get_shape() or ._shape, and check the
         # dimension by .with_rank() as follow.
         # self._temp_data['inputs'].get_shape().with_rank(2)

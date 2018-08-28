@@ -5,7 +5,6 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -63,7 +62,6 @@ class StackLayer(Layer):
 
         return self._str(additional_str)
 
-
     def compile(self):
         self._temp_data['outputs'] = tf.stack(self._temp_data['inputs'], axis=self.axis, name=self.name)
 
@@ -115,7 +113,6 @@ class UnStackLayer(Layer):
             pass
 
         return self._str(additional_str)
-
 
     def compile(self):
 

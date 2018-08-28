@@ -5,7 +5,6 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -76,9 +75,8 @@ class PoolLayer(Layer):
 
         return self._str(additional_str)
 
-
     def compile(self):
-        
+
         with tf.variable_scope(self.name):
 
             self._temp_data['outputs'] = self.pool(

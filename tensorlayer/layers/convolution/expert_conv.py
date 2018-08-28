@@ -5,7 +5,6 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -100,7 +99,6 @@ class Conv1dLayer(Layer):
             pass
 
         return self._str(additional_str)
-
 
     def compile(self):
 
@@ -265,7 +263,6 @@ class Conv2dLayer(Layer):
 
         return self._str(additional_str)
 
-
     def compile(self):
 
         with tf.variable_scope(self.name):
@@ -387,7 +384,6 @@ class Conv3dLayer(Layer):
             pass
 
         return self._str(additional_str)
-
 
     def compile(self):
 

@@ -8,7 +8,6 @@ from tensorlayer.layers.core import Layer
 from tensorlayer.layers.utils import compute_deconv2d_output_shape
 from tensorlayer.layers.utils import compute_deconv3d_output_shape
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -143,7 +142,6 @@ class DeConv2dLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         with tf.variable_scope(self.name):
@@ -268,7 +266,6 @@ class DeConv3dLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         with tf.variable_scope(self.name):

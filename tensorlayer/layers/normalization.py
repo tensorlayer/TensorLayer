@@ -9,7 +9,6 @@ from tensorflow.python.training import moving_averages
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -84,7 +83,6 @@ class LocalResponseNormLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         with tf.variable_scope(self.name):
@@ -171,7 +169,6 @@ class BatchNormLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         x_shape = self._temp_data['inputs'].get_shape()
@@ -286,7 +283,6 @@ class InstanceNormLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         if len(self._temp_data['inputs'].shape) not in [3, 4]:
@@ -297,7 +293,9 @@ class InstanceNormLayer(Layer):
 
             scale = self._get_tf_variable(
                 name='scale',
-                shape=[self._temp_data['inputs'].get_shape()[-1], ],
+                shape=[
+                    self._temp_data['inputs'].get_shape()[-1],
+                ],
                 dtype=self._temp_data['inputs'].dtype,
                 trainable=self._temp_data['is_train'],
                 initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02)
@@ -305,7 +303,9 @@ class InstanceNormLayer(Layer):
 
             offset = self._get_tf_variable(
                 name='offset',
-                shape=[self._temp_data['inputs'].get_shape()[-1], ],
+                shape=[
+                    self._temp_data['inputs'].get_shape()[-1],
+                ],
                 dtype=self._temp_data['inputs'].dtype,
                 trainable=self._temp_data['is_train'],
                 initializer=tf.constant_initializer(0.0)
@@ -388,7 +388,6 @@ class LayerNormLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         is_name_reuse = tf.get_variable_scope().reuse
@@ -467,7 +466,6 @@ class SwitchNormLayer(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         if len(self._temp_data['inputs'].shape) not in [3, 4]:
@@ -483,7 +481,9 @@ class SwitchNormLayer(Layer):
 
             gamma = self._get_tf_variable(
                 name="gamma",
-                shape=[ch, ],
+                shape=[
+                    ch,
+                ],
                 dtype=self._temp_data['inputs'].dtype,
                 trainable=self._temp_data['is_train'],
                 initializer=self.gamma_init

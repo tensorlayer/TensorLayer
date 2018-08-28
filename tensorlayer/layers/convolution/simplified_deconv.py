@@ -6,7 +6,6 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -107,7 +106,6 @@ class DeConv2d(Layer):
             pass
 
         return self._str(additional_str)
-
 
     def compile(self):
 
@@ -221,7 +219,6 @@ class DeConv3d(Layer):
             pass
 
         return self._str(additional_str)
-
 
     def compile(self):
 

@@ -7,7 +7,6 @@ from tensorlayer.layers.core import Layer
 
 from tensorlayer import logging
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 from tensorlayer.decorators import private_method
@@ -107,7 +106,6 @@ class DeformableConv2d(Layer):
             Set the TF Variable in training mode and may impact the behaviour of the layer.
         """
         return super(DeformableConv2d, self).__call__(prev_layer=[prev_layer, offset_layer], is_train=is_train)
-
 
     def compile(self):
 

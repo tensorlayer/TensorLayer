@@ -5,7 +5,6 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -63,7 +62,6 @@ class SubpixelConv1d(Layer):
             pass
 
         return self._str(additional_str)
-
 
     def compile(self):
 
@@ -155,7 +153,6 @@ class SubpixelConv2d(Layer):
             pass
 
         return self._str(additional_str)
-
 
     def compile(self):
 

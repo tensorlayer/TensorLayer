@@ -10,7 +10,6 @@ from tensorlayer.layers.utils import ternary_operation
 
 from tensorlayer import logging
 
-
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
@@ -141,7 +140,6 @@ class TernaryConv2d(Layer):
 
         return self._str(additional_str)
 
-    
     def compile(self):
 
         try:
