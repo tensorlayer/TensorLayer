@@ -102,7 +102,7 @@ class Conv1dLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
@@ -266,7 +266,7 @@ class Conv2dLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
@@ -389,7 +389,7 @@ class Conv3dLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(

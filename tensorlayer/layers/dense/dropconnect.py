@@ -101,7 +101,7 @@ class DropconnectDenseLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         if self._temp_data['inputs'].get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2")
@@ -117,7 +117,7 @@ class DropconnectDenseLayer(Layer):
                 **self.W_init_args
             )
 
-            if is_train:
+            if self._temp_data['is_train']:
                 keep_plh = tf.placeholder(self._temp_data['inputs'].dtype, shape=())
                 self._add_local_drop_plh(keep_plh, self.keep)
 

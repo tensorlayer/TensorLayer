@@ -27,8 +27,6 @@ class GaussianNoiseLayer(Layer):
         The mean. Default is 0.
     stddev : float
         The standard deviation. Default is 1.
-    is_train : boolean
-        Is trainable layer. If False, skip this layer. default is True.
     seed : int or None
         The seed for random noise.
     name : str
@@ -50,14 +48,12 @@ class GaussianNoiseLayer(Layer):
         self,
         mean=0.0,
         stddev=1.0,
-        is_train=True,
         seed=None,
         name='gaussian_noise_layer',
     ):
 
         self.mean = mean
         self.stddev = stddev
-        self.is_train = is_train
         self.seed = seed
         self.name = name
 
@@ -84,9 +80,9 @@ class GaussianNoiseLayer(Layer):
             return self._skipped_layer_str()
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
-        if is_train:
+        if self._temp_data['is_train']:
             with tf.variable_scope(self.name):
                 noise = tf.random_normal(
                     shape=self._temp_data['inputs'].get_shape(),
@@ -99,4 +95,3 @@ class GaussianNoiseLayer(Layer):
 
         else:
             self._temp_data['outputs'] = self._temp_data['inputs']
-

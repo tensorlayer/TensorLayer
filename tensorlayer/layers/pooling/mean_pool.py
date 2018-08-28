@@ -69,7 +69,7 @@ class MeanPool1d(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
         """Compile.
 
         Parameters
@@ -150,7 +150,7 @@ class MeanPool2d(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
         """Compile.
 
         Parameters
@@ -228,7 +228,7 @@ class MeanPool3d(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
         """Compile.
 
         Parameters

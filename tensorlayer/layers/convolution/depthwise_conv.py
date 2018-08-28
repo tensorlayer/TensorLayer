@@ -49,17 +49,17 @@ class DepthwiseConv2d(Layer):
     ---------
     >>> net = InputLayer(x, name='input')
     >>> net = Conv2d(net, 32, (3, 3), (2, 2), b_init=None, name='cin')
-    >>> net = BatchNormLayer(net, act=tf.nn.relu, is_train=is_train, name='bnin')
+    >>> net = BatchNormLayer(net, act=tf.nn.relu, name='bnin')
     ...
     >>> net = DepthwiseConv2d(net, (3, 3), (1, 1), b_init=None, name='cdw1')
-    >>> net = BatchNormLayer(net, act=tf.nn.relu, is_train=is_train, name='bn11')
+    >>> net = BatchNormLayer(net, act=tf.nn.relu, name='bn11')
     >>> net = Conv2d(net, 64, (1, 1), (1, 1), b_init=None, name='c1')
-    >>> net = BatchNormLayer(net, act=tf.nn.relu, is_train=is_train, name='bn12')
+    >>> net = BatchNormLayer(net, act=tf.nn.relu, name='bn12')
     ...
     >>> net = DepthwiseConv2d(net, (3, 3), (2, 2), b_init=None, name='cdw2')
-    >>> net = BatchNormLayer(net, act=tf.nn.relu, is_train=is_train, name='bn21')
+    >>> net = BatchNormLayer(net, act=tf.nn.relu, name='bn21')
     >>> net = Conv2d(net, 128, (1, 1), (1, 1), b_init=None, name='c2')
-    >>> net = BatchNormLayer(net, act=tf.nn.relu, is_train=is_train, name='bn22')
+    >>> net = BatchNormLayer(net, act=tf.nn.relu, name='bn22')
 
     References
     -----------
@@ -127,7 +127,7 @@ class DepthwiseConv2d(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         try:
             input_channels = int(self._temp_data['inputs'].get_shape()[-1])

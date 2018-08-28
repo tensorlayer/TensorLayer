@@ -44,8 +44,6 @@ class QuantizedConv2dWithBN(Layer):
         Suggest to use a large value for large dataset.
     epsilon : float
         Eplison.
-    is_train : boolean
-        Is being used for training or inference.
     beta_init : initializer or None
         The initializer for initializing beta, if None, skip beta.
         Usually you should not skip beta unless you know what happened.
@@ -60,8 +58,6 @@ class QuantizedConv2dWithBN(Layer):
         Suggest to use a large value for large dataset.
     epsilon : float
         Eplison.
-    is_train : boolean
-        Is being used for training or inference.
     beta_init : initializer or None
         The initializer for initializing beta, if None, skip beta.
         Usually you should not skip beta unless you know what happened.
@@ -86,10 +82,10 @@ class QuantizedConv2dWithBN(Layer):
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, [None, 256, 256, 3])
     >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.QuantizedConv2dWithBN(net, 64, (5, 5), (1, 1),  act=tf.nn.relu, padding='SAME', is_train=is_train, bitW=bitW, bitA=bitA, name='qconv2dbn1')
+    >>> net = tl.layers.QuantizedConv2dWithBN(net, 64, (5, 5), (1, 1),  act=tf.nn.relu, padding='SAME', bitW=bitW, bitA=bitA, name='qconv2dbn1')
     >>> net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
     ...
-    >>> net = tl.layers.QuantizedConv2dWithBN(net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train=is_train,  bitW=bitW, bitA=bitA, name='qconv2dbn2')
+    >>> net = tl.layers.QuantizedConv2dWithBN(net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qconv2dbn2')
     >>> net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
     ...
     """
@@ -112,7 +108,6 @@ class QuantizedConv2dWithBN(Layer):
         # BatchNorm Parameters
         decay=0.9,
         epsilon=1e-5,
-        is_train=False,
         gamma_init=tf.ones_initializer,
         beta_init=tf.zeros_initializer,
 
@@ -153,7 +148,6 @@ class QuantizedConv2dWithBN(Layer):
         # BatchNorm Parameters
         self.decay = decay
         self.epsilon = epsilon
-        self.is_train = is_train
         self.gamma_init = gamma_init
         self.beta_init = beta_init
 
@@ -194,7 +188,7 @@ class QuantizedConv2dWithBN(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         try:
             input_channels = int(prev_layer.outputs.get_shape()[-1])
@@ -234,7 +228,7 @@ class QuantizedConv2dWithBN(Layer):
                     shape=para_bn_shape,
                     initializer=self.gamma_init,
                     dtype=quantized_inputs.dtype,
-                    trainable=is_train
+                    trainable=self._temp_data['is_train']
                 )
             else:
                 scale_para = None
@@ -245,7 +239,7 @@ class QuantizedConv2dWithBN(Layer):
                     shape=para_bn_shape,
                     initializer=self.beta_init,
                     dtype=quantized_inputs.dtype,
-                    trainable=is_train
+                    trainable=self._temp_data['is_train']
                 )
             else:
                 offset_para = None
@@ -280,7 +274,7 @@ class QuantizedConv2dWithBN(Layer):
                 with tf.control_dependencies([update_moving_mean, update_moving_variance]):
                     return tf.identity(mean), tf.identity(variance)
 
-            if is_train:
+            if self._temp_data['is_train']:
                 mean, var = mean_var_with_update()
             else:
                 mean, var = moving_mean, moving_variance

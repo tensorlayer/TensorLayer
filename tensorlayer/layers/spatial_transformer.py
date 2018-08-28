@@ -70,7 +70,7 @@ class SpatialTransformer2dAffineLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, theta_layer=None, is_train=True):
+    def compile(self, prev_layer, theta_layer=None):
         """
         Parameters
         -----------

@@ -102,7 +102,7 @@ class DeformableConv2d(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, offset_layer=None, is_train=True):
+    def compile(self, prev_layer, offset_layer=None):
         """
         Parameters
         ----------

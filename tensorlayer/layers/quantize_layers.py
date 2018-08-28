@@ -36,7 +36,7 @@ class SignLayer(Layer):
         super(SignLayer, self).__init__()
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         with tf.variable_scope(self.name):
             self._temp_data['outputs'] = quantize(self._temp_data['inputs'])

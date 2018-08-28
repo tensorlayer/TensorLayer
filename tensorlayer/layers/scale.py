@@ -48,7 +48,7 @@ class ScaleLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         with tf.variable_scope(self.name):
             scale = self._get_tf_variable(

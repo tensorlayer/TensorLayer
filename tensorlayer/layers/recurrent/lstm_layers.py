@@ -150,14 +150,13 @@ class ConvLSTMLayer(Layer):
         # )
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
         """Compile.
 
         Parameters
         ----------
         prev_layer : :class:`Layer`
             Previous layer with output shape of [batch, n_steps, n_features].
-        is_train : unused
         """
         # You can get the dimension by .get_shape() or ._shape, and check the
         # dimension by .with_rank() as follow.

@@ -50,7 +50,7 @@ class FlattenLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         self._temp_data['outputs'] = flatten_reshape(self._temp_data['inputs'], name=self.name)
 
@@ -92,7 +92,7 @@ class ReshapeLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         self._temp_data['outputs'] = tf.reshape(self._temp_data['inputs'], shape=self.shape, name=self.name)
 
@@ -141,6 +141,6 @@ class TransposeLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         self._temp_data['outputs'] = tf.transpose(self._temp_data['inputs'], perm=self.perm, name=self.name)

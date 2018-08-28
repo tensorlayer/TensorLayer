@@ -65,7 +65,7 @@ class SubpixelConv1d(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         with tf.variable_scope(self.name):
 
@@ -157,7 +157,7 @@ class SubpixelConv2d(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         if self.n_out_channels is None:
 

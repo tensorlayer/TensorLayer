@@ -14,7 +14,6 @@ import tensorlayer as tl
 
 from tensorlayer import logging
 
-from tensorlayer.decorators import auto_reset_temp_attrs
 from tensorlayer.decorators import deprecated
 from tensorlayer.decorators import layer_autoregister
 from tensorlayer.decorators import overwrite_layername_in_network
@@ -177,20 +176,21 @@ class Layer(BaseLayer):
     def __str__(self):
         return self._str()
 
-    @auto_reset_temp_attrs
     def __call__(self, prev_layer=None, is_train=True):
+
+        run_compilation = False
 
         if prev_layer is None and not self._check_self_is_input():
             raise ValueError("No previous_layer has been given to the layer `%s`" % self.name)
 
+        elif isinstance(prev_layer, tl.layers.Layer):  # Manual Compile Mode
+            self.prev_layer = prev_layer.name
+
         elif isinstance(prev_layer, tf.Tensor) and self._check_self_is_input():
-            self.compile(prev_layer, is_train)
+            run_compilation = True
 
         elif isinstance(prev_layer, tl.layers.CompiledLayer):
-            self.compile(prev_layer, is_train)
-
-        elif isinstance(prev_layer, tl.layers.Layer):
-            self.prev_layer = prev_layer.name
+            run_compilation = True
 
         elif isinstance(prev_layer, (list, tuple)):
 
@@ -199,7 +199,8 @@ class Layer(BaseLayer):
                 if any(not hasattr(layer, "outputs") or layer.outputs is None for layer in prev_layer):
                     raise ValueError("A `CompiledLayer` in the layer's inputs contains no output or is None")
 
-                self.compile(prev_layer, is_train)
+                else:
+                    run_compilation = True
 
             elif all(isinstance(layer, tl.layers.Layer) for layer in prev_layer):
                 self.prev_layer = [layer.name for layer in prev_layer]
@@ -210,8 +211,20 @@ class Layer(BaseLayer):
         else:
             self.prev_layer = prev_layer
 
-        if self._temp_data is not None:
-            return self._create_compiled_layer(is_train=is_train)
+        if run_compilation:
+
+            self._temp_data = {
+                'inputs': None,
+                'outputs': None,
+                'local_weights': list(),
+                'local_drop': dict(),
+                'is_train': is_train
+            }
+
+            self.compile(prev_layer)
+
+            return self._create_compiled_layer()
+
         else:
             return self
 
@@ -221,7 +234,7 @@ class Layer(BaseLayer):
 
     @abstractmethod
     @private_method
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         if 'inputs' in self._temp_data.keys() and self._temp_data['inputs'] is not None:
             return
@@ -238,7 +251,7 @@ class Layer(BaseLayer):
             # self._add_dropout_layers(prev_layer.all_drop)
             # self._add_graphs(prev_layer.all_graphs)
 
-        elif isinstance(prev_layer, list):
+        elif isinstance(prev_layer, (list, tuple)):
             # 2. for layer have multiply inputs i.e. ConcatLayer
 
             self._temp_data['inputs'] = [layer.outputs for layer in prev_layer]
@@ -378,7 +391,7 @@ class Layer(BaseLayer):
             return logits
 
     @private_method
-    def _create_compiled_layer(self, is_train):
+    def _create_compiled_layer(self):
         self._last_compiled_layer = type("Compiled_" + self.__class__.__name__, (CompiledLayer, ), {})(
             layers_to_compile=self,
             inputs=self._temp_data['inputs'],

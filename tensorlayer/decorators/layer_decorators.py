@@ -10,8 +10,7 @@ import tensorflow as tf
 from tensorlayer.decorators.utils import get_network_obj
 
 __all__ = [
-    'auto_parse_inputs', 'auto_reset_temp_attrs', 'force_return_self', 'layer_autoregister',
-    'overwrite_layername_in_network'
+    'auto_parse_inputs', 'force_return_self', 'layer_autoregister', 'overwrite_layername_in_network'
 ]
 
 
@@ -21,33 +20,12 @@ def auto_parse_inputs(method):
     @wraps(method)
     def _impl(self, *args, **kwargs):
 
-        if len(args) == 2:
-            prev_layer = args[0]  # args[0] => prev_layer
+        if len(args) == 1:
+            prev_layer = args[0]
         else:
-            prev_layer = self._check_list_input(args[:-1])
+            prev_layer = args
 
         super(self.__class__, self).compile(prev_layer)
-
-        return method(self, *args, **kwargs)
-
-    return _impl
-
-
-def auto_reset_temp_attrs(method):
-    """decorator that reset the `_temp_data` attribute for Layers"""
-
-    @wraps(method)
-    def _impl(self, *args, **kwargs):
-
-        if 'is_train' in kwargs.keys():
-
-            self._temp_data = {
-                'inputs': None,
-                'outputs': None,
-                'local_weights': list(),
-                'local_drop': dict(),
-                'is_train': kwargs["is_train"]
-            }
 
         return method(self, *args, **kwargs)
 

@@ -123,7 +123,7 @@ class GroupConv2d(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         input_channels = int(self._temp_data['inputs'].get_shape()[-1])
 
@@ -140,7 +140,7 @@ class GroupConv2d(Layer):
                 shape=[self.filter_size[0], self.filter_size[1], input_channels / self.n_group, self.n_filter],
                 initializer=self.W_init,
                 dtype=self._temp_data['inputs'].dtype,
-                trainable=is_train,
+                trainable=self._temp_data['is_train'],
                 **self.W_init_args
             )
 
@@ -163,7 +163,7 @@ class GroupConv2d(Layer):
                     shape=self.n_filter,
                     initializer=self.b_init,
                     dtype=self._temp_data['inputs'].dtype,
-                    trainable=is_train,
+                    trainable=self._temp_data['is_train'],
                     **self.b_init_args
                 )
 

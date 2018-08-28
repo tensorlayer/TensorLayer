@@ -85,7 +85,7 @@ class LocalResponseNormLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         with tf.variable_scope(self.name):
             self._temp_data['outputs'] = tf.nn.local_response_normalization(
@@ -111,8 +111,6 @@ class BatchNormLayer(Layer):
         Eplison.
     act : activation function
         The activation function of this layer.
-    is_train : boolean
-        Is being used for training or inference.
     beta_init : initializer or None
         The initializer for initializing beta, if None, skip beta.
         Usually you should not skip beta unless you know what happened.
@@ -139,7 +137,6 @@ class BatchNormLayer(Layer):
         moving_mean_init=tf.zeros_initializer,
         moving_var_init=tf.constant_initializer(1.),
         act=None,
-        is_train=False,
         name='batchnorm_layer',
     ):
 
@@ -150,7 +147,6 @@ class BatchNormLayer(Layer):
         self.moving_mean_init = moving_mean_init
         self.moving_var_init = moving_var_init
         self.act = act
-        self.is_train = is_train
         self.name = name
 
         for initializer in ['beta_init', 'gamma_init', 'moving_mean_init', 'moving_var_init']:
@@ -176,7 +172,7 @@ class BatchNormLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         x_shape = self._temp_data['inputs'].get_shape()
         params_shape = x_shape[-1:]
@@ -193,7 +189,7 @@ class BatchNormLayer(Layer):
                     shape=params_shape,
                     initializer=self.beta_init,
                     dtype=self._temp_data['inputs'].dtype,
-                    trainable=is_train
+                    trainable=self._temp_data['is_train']
                 )
 
             else:
@@ -205,7 +201,7 @@ class BatchNormLayer(Layer):
                     shape=params_shape,
                     initializer=self.gamma_init,
                     dtype=self._temp_data['inputs'].dtype,
-                    trainable=is_train,
+                    trainable=self._temp_data['is_train'],
                 )
             else:
                 gamma = None
@@ -244,7 +240,7 @@ class BatchNormLayer(Layer):
                 with tf.control_dependencies([update_moving_mean, update_moving_variance]):
                     return tf.identity(mean), tf.identity(variance)
 
-            if is_train:
+            if self._temp_data['is_train']:
                 mean, var = mean_var_with_update()
             else:
                 mean, var = moving_mean, moving_variance
@@ -291,7 +287,7 @@ class InstanceNormLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         if len(self._temp_data['inputs'].shape) not in [3, 4]:
             raise RuntimeError("`%s` only accepts input Tensor of dimension 3 or 4." % self.__class__.__name__)
@@ -391,7 +387,7 @@ class LayerNormLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         is_name_reuse = tf.get_variable_scope().reuse
 
@@ -406,7 +402,7 @@ class LayerNormLayer(Layer):
                 begin_norm_axis=self.begin_norm_axis,
                 begin_params_axis=self.begin_params_axis,
                 reuse=is_name_reuse,
-                trainable=is_train,
+                trainable=self._temp_data['is_train'],
                 scope='var',
             )
 
@@ -470,7 +466,7 @@ class SwitchNormLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         if len(self._temp_data['inputs'].shape) not in [3, 4]:
             raise RuntimeError("`%s` only accepts input Tensor of dimension 3 or 4." % self.__class__.__name__)

@@ -82,7 +82,7 @@ class LambdaLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         with tf.variable_scope(self.name) as vs:
             self._temp_data['outputs'] = self.fn(self._temp_data['inputs'], **self.fn_args)
@@ -154,7 +154,7 @@ class ElementwiseLambdaLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         with tf.variable_scope(self.name) as vs:
             self._temp_data['outputs'] = self.fn(*self._temp_data['inputs'], **self.fn_args)

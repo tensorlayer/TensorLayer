@@ -109,7 +109,7 @@ class DeConv2d(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         is_name_reuse = tf.get_variable_scope().reuse
 
@@ -127,7 +127,7 @@ class DeConv2d(Layer):
                 bias_initializer=self.b_init,
                 use_bias=(True if self.b_init else False),
                 reuse=is_name_reuse,
-                trainable=is_train,
+                trainable=self._temp_data['is_train'],
                 name=None
             )
 
@@ -225,7 +225,7 @@ class DeConv3d(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         is_name_reuse = tf.get_variable_scope().reuse
 
@@ -243,7 +243,7 @@ class DeConv3d(Layer):
                 bias_initializer=self.b_init,
                 use_bias=(True if self.b_init else False),
                 reuse=is_name_reuse,
-                trainable=is_train,
+                trainable=self._temp_data['is_train'],
                 name=None
             )
 

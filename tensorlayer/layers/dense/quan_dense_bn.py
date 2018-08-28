@@ -115,7 +115,7 @@ class QuantizedDenseWithBN(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         if self._temp_data['inputs'].get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
@@ -146,7 +146,7 @@ class QuantizedDenseWithBN(Layer):
                     shape=para_bn_shape,
                     initializer=self.gamma_init,
                     dtype=quantized_inputs.dtype,
-                    trainable=is_train,
+                    trainable=self._temp_data['is_train'],
                     **self.W_init_args
                 )
             else:
@@ -158,7 +158,7 @@ class QuantizedDenseWithBN(Layer):
                     shape=para_bn_shape,
                     initializer=self.beta_init,
                     dtype=quantized_inputs.dtype,
-                    trainable=is_train,
+                    trainable=self._temp_data['is_train'],
                     **self.W_init_args
                 )
             else:
@@ -194,7 +194,7 @@ class QuantizedDenseWithBN(Layer):
                 with tf.control_dependencies([update_moving_mean, update_moving_variance]):
                     return tf.identity(mean), tf.identity(variance)
 
-            if is_train:
+            if self._temp_data['is_train']:
                 mean, var = mean_var_with_update()
             else:
                 mean, var = moving_mean, moving_variance

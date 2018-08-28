@@ -67,7 +67,7 @@ class PReluLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         if self.channel_shared:
             w_shape = (1, )
@@ -157,7 +157,7 @@ class PRelu6Layer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         if self.channel_shared:
             w_shape = (1, )
@@ -249,7 +249,7 @@ class PTRelu6Layer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         if self.channel_shared:
             w_shape = (1, )

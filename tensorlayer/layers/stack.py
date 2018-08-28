@@ -64,14 +64,12 @@ class StackLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
         """
         Parameters
         ----------
         prev_layer : list of :class:`Layer`
             Previous layers to stack.
-        is_train : boolean
-            Determine if the network will be defined in training mode.
         """
 
         self._temp_data['outputs'] = tf.stack(self._temp_data['inputs'], axis=self.axis, name=self.name)
@@ -126,7 +124,7 @@ class UnStackLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         self._temp_data['outputs'] = tf.unstack(self._temp_data['inputs'], num=self.num, axis=self.axis, name=self.name)
         self.n_outputs = len(self._temp_data['outputs'])

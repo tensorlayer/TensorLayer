@@ -126,7 +126,7 @@ class SeparableConv1d(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         is_name_reuse = tf.get_variable_scope().reuse
 
@@ -146,7 +146,7 @@ class SeparableConv1d(Layer):
                 depthwise_initializer=self.depthwise_init,
                 pointwise_initializer=self.pointwise_init,
                 bias_initializer=self.b_init,
-                trainable=is_train,
+                trainable=self._temp_data['is_train'],
                 reuse=is_name_reuse,
                 name=None
             )
@@ -263,7 +263,7 @@ class SeparableConv2d(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         is_name_reuse = tf.get_variable_scope().reuse
 
@@ -282,7 +282,7 @@ class SeparableConv2d(Layer):
                 depthwise_initializer=self.depthwise_init,
                 pointwise_initializer=self.pointwise_init,
                 bias_initializer=self.b_init,
-                trainable=is_train,
+                trainable=self._temp_data['is_train'],
                 reuse=is_name_reuse,
                 activation=None,
                 name=None

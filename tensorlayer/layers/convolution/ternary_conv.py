@@ -61,12 +61,12 @@ class TernaryConv2d(Layer):
     >>> net = tl.layers.InputLayer(x, name='input')
     >>> net = tl.layers.TernaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='ternary_conv2d_1')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
-    >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=True, name='bn1')
+    >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, name='bn1')
     ...
     >>> net = tl.layers.SignLayer(net)
     >>> net = tl.layers.TernaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='ternary_conv2d_2')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
-    >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=True, name='bn2')
+    >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, name='bn2')
 
     """
 
@@ -142,7 +142,7 @@ class TernaryConv2d(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         try:
             input_channels = int(self._temp_data['inputs'].get_shape()[-1])

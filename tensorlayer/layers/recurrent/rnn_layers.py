@@ -82,17 +82,16 @@ class RNNLayer(Layer):
     >>> vocab_size = 3000
     >>> hidden_size = 256
     >>> keep_prob = 0.8
-    >>> is_train = True
     >>> input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
     >>> net = tl.layers.EmbeddingInputlayer(inputs=input_data, vocabulary_size=vocab_size,
     ...     embedding_size=hidden_size, name='embed')
-    >>> net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_train, name='drop1')
+    >>> net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, name='drop1')
     >>> net = tl.layers.RNNLayer(net, cell_fn=tf.contrib.rnn.BasicLSTMCell,
     ...     n_hidden=hidden_size, n_steps=num_steps, return_last=False, name='lstm1')
-    >>> net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_train, name='drop2')
+    >>> net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, name='drop2')
     >>> net = tl.layers.RNNLayer(net, cell_fn=tf.contrib.rnn.BasicLSTMCell,
     ...     n_hidden=hidden_size, n_steps=num_steps, return_last=True, name='lstm2')
-    >>> net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_train, name='drop3')
+    >>> net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, name='drop3')
     >>> net = tl.layers.DenseLayer(net, n_units=vocab_size, name='output')
 
     - For CNN+LSTM
@@ -204,14 +203,13 @@ class RNNLayer(Layer):
         # )
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
         """Compile.
 
         Parameters
         ----------
         prev_layer : :class:`Layer`
             Previous layer with output shape of [batch, n_steps, n_features].
-        is_train : unused
         """
         if 'GRU' in self.cell_fn.__name__:
             try:
@@ -473,14 +471,13 @@ class BiRNNLayer(Layer):
         # )
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
         """Compile.
 
         Parameters
         ----------
         prev_layer : :class:`Layer`
             Previous layer.
-        is_train : unused
         """
 
         fixed_batch_size = self._temp_data['inputs'].get_shape().with_rank_at_least(1)[0]

@@ -65,7 +65,7 @@ class DeConv2dLayer(Layer):
     >>> print(net_h0.outputs._shape)
     (64, 8192)
     >>> net_h0 = tl.layers.ReshapeLayer(net_h0, shape=(-1, 4, 4, 512), name='g/h0/reshape')
-    >>> net_h0 = tl.layers.BatchNormLayer(net_h0, act=tf.nn.relu, is_train=is_train, name='g/h0/batch_norm')
+    >>> net_h0 = tl.layers.BatchNormLayer(net_h0, act=tf.nn.relu, name='g/h0/batch_norm')
     >>> print(net_h0.outputs._shape)
     (64, 4, 4, 512)
     >>> net_h1 = tl.layers.DeConv2dLayer(net_h0,
@@ -73,7 +73,7 @@ class DeConv2dLayer(Layer):
     ...                            output_shape=(batch_size, 8, 8, 256),
     ...                            strides=(1, 2, 2, 1),
     ...                            act=None, name='g/h1/decon2d')
-    >>> net_h1 = tl.layers.BatchNormLayer(net_h1, act=tf.nn.relu, is_train=is_train, name='g/h1/batch_norm')
+    >>> net_h1 = tl.layers.BatchNormLayer(net_h1, act=tf.nn.relu, name='g/h1/batch_norm')
     >>> print(net_h1.outputs._shape)
     (64, 8, 8, 256)
 
@@ -144,7 +144,7 @@ class DeConv2dLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
@@ -267,7 +267,7 @@ class DeConv3dLayer(Layer):
         return self._str(additional_str)
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
         with tf.variable_scope(self.name):
 

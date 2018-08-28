@@ -109,9 +109,9 @@ class DropoutLayer(Layer):
             return self._skipped_layer_str()
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
 
-        if is_train:
+        if self._temp_data['is_train']:
 
             with tf.variable_scope(self.name):
                 # The name of placeholder for keep_prob is the same with the name of the Layer.

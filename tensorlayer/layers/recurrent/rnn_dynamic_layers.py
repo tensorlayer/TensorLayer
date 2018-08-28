@@ -212,14 +212,13 @@ class DynamicRNNLayer(Layer):
         # )
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
         """Compile.
 
         Parameters
         ----------
         prev_layer : :class:`Layer`
             Previous layer.
-        is_train : unused
         """
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
@@ -538,14 +537,13 @@ class BiDynamicRNNLayer(Layer):
         # )
 
     @auto_parse_inputs
-    def compile(self, prev_layer, is_train=True):
+    def compile(self, prev_layer):
         """Compile.
 
         Parameters
         ----------
         prev_layer : :class:`Layer`
             Previous layer with output shape of [batch, n_steps, n_features].
-        is_train : unused
         """
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
