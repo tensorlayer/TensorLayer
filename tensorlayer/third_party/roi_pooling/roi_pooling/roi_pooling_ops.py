@@ -12,7 +12,7 @@ roi_pooling_module = tf.load_op_library(lib_path)
 def roi_pooling(input, rois, pool_height, pool_width):
     """
       returns a tensorflow operation for computing the Region of Interest Pooling
-    
+
       @arg input: feature maps on which to perform the pooling operation
       @arg rois: list of regions of interest in the format (feature map index, upper left, bottom right)
       @arg pool_width: size of the pooling sections

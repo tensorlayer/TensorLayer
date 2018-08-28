@@ -159,7 +159,7 @@ class Sequential(BaseNetwork):
         if self._layers and isinstance(self._layers[0], InputLayer):
             return self._layers[1:]
         return self._layers
-    
+
     def pop(self):
         """Removes the last layer in the model.
         Raises:
@@ -246,5 +246,5 @@ class Sequential(BaseNetwork):
             layer = layer_module.deserialize(conf, custom_objects=custom_objects)
             model.add(layer)
         return model
-    
+
     '''

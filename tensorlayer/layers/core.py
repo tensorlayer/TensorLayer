@@ -347,9 +347,9 @@ class Layer(BaseLayer):
         return isinstance(self, input_layers)
 
     @private_method
-    def _str(self, additional_str=list()):
+    def _str(self, additional_str=None):
 
-        if len(additional_str) == 0:
+        if additional_str is None or len(additional_str) == 0:
             additional_str = []
 
         if hasattr(self, 'act'):
