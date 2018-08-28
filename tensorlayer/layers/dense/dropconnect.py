@@ -93,6 +93,11 @@ class DropconnectDenseLayer(Layer):
         except AttributeError:
             pass
 
+        try:
+            additional_str.append("dropconnect active: %r" % self._temp_data['is_train'])
+        except AttributeError:
+            pass
+
         return self._str(additional_str)
 
     @auto_parse_inputs

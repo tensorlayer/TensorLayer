@@ -88,28 +88,30 @@ class DropoutLayer(Layer):
         super(DropoutLayer, self).__init__()
 
     def __str__(self):
+
         additional_str = []
 
-        try:
-            additional_str.append("keep: %f" % self.keep)
-        except AttributeError:
-            pass
+        if self._temp_data['is_train']:
 
-        try:
-            additional_str.append("is_fix: %s" % self.is_fix)
-        except AttributeError:
-            pass
+            try:
+                additional_str.append("keep: %f" % self.keep)
+            except AttributeError:
+                pass
 
-        return self._str(additional_str)
+            try:
+                additional_str.append("is_fix: %s" % self.is_fix)
+            except AttributeError:
+                pass
+
+            return self._str(additional_str)
+
+        else:
+            return self._skipped_layer_str()
 
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        if is_train is False:
-            logging.info("  -> [Not Training] - skip `%s`" % self.__class__.__name__)
-            self._temp_data['outputs'] = self._temp_data['inputs']
-
-        else:
+        if is_train:
 
             with tf.variable_scope(self.name):
                 # The name of placeholder for keep_prob is the same with the name of the Layer.
@@ -128,3 +130,6 @@ class DropoutLayer(Layer):
                     self._temp_data['outputs'] = tf.nn.dropout(
                         self._temp_data['inputs'], keep_plh, seed=self.seed, name="dropout_op"
                     )
+
+        else:
+            self._temp_data['outputs'] = self._temp_data['inputs']

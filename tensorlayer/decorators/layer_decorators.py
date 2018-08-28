@@ -13,47 +13,6 @@ __all__ = [
     'auto_parse_inputs', 'auto_reset_temp_attrs', 'force_return_self', 'layer_autoregister',
     'overwrite_layername_in_network'
 ]
-'''
-def force_return_self(func):
-    """decorator to overwrite return value with `self` object"""
-
-    def func_wrapper(self, *args, **kwargs):
-        """decorator wrapper function"""
-        func(self, *args, **kwargs)
-
-        return self
-
-    return func_wrapper
-
-
-def auto_reset_temp_attrs(func):
-    """decorator to overwrite return value with `self` object"""
-
-    def func_wrapper(self, *args, **kwargs):
-        """decorator wrapper function"""
-        self._temp_data = {
-            'inputs': None,
-            'outputs': None,
-            'local_weights': [],
-            'local_drop': [],
-        }
-
-        return func(self, *args, **kwargs)
-
-    return func_wrapper
-
-
-def auto_parse_inputs(func):
-    """decorator to overwrite return value with `self` object"""
-
-    def func_wrapper(self, *args, **kwargs):
-        """decorator wrapper function"""
-        super(self.__class__, self).compile(args[0])  # args[0] => prev_layer
-
-        return func(self, *args, **kwargs)
-
-    return func_wrapper
-'''
 
 
 def auto_parse_inputs(method):
@@ -79,12 +38,17 @@ def auto_reset_temp_attrs(method):
 
     @wraps(method)
     def _impl(self, *args, **kwargs):
-        self._temp_data = {
-            'inputs': None,
-            'outputs': None,
-            'local_weights': list(),
-            'local_drop': dict(),
-        }
+
+        if 'is_train' in kwargs.keys():
+
+            self._temp_data = {
+                'inputs': None,
+                'outputs': None,
+                'local_weights': list(),
+                'local_drop': dict(),
+                'is_train': kwargs["is_train"]
+            }
+
         return method(self, *args, **kwargs)
 
     return _impl

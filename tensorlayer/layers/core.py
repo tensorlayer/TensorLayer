@@ -157,7 +157,7 @@ class Layer(BaseLayer):
 
         super(Layer, self).__init__(*args, **kwargs)
 
-        self._temp_data = dict()
+        self._temp_data = None
         self._last_compiled_layer = None
 
         self.prev_layer = None
@@ -210,7 +210,7 @@ class Layer(BaseLayer):
         else:
             self.prev_layer = prev_layer
 
-        if self._temp_data['outputs'] is not None:
+        if self._temp_data is not None:
             return self._create_compiled_layer(is_train=is_train)
         else:
             return self
@@ -361,6 +361,13 @@ class Layer(BaseLayer):
         return _str
 
     @private_method
+    def _skipped_layer_str(self):
+        return "  -> [Not Training] - `%s` is skipped. Output shape: %s" % (
+            self.__class__.__name__,
+            self._temp_data['outputs'].shape
+        )
+
+    @private_method
     def _apply_activation(self, logits, **kwargs):
         if not kwargs:
             kwargs = {}
@@ -378,7 +385,7 @@ class Layer(BaseLayer):
             outputs=self._temp_data['outputs'],
             local_weights=self._temp_data['local_weights'],
             local_drop=self._temp_data['local_drop'],
-            is_train=is_train
+            is_train=self._temp_data['is_train'],
         )
 
         return self._last_compiled_layer

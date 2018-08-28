@@ -66,26 +66,27 @@ class GaussianNoiseLayer(Layer):
     def __str__(self):
         additional_str = []
 
-        try:
-            additional_str.append("mean: %s" % self.mean)
-        except AttributeError:
-            pass
+        if self._temp_data['is_train']:
 
-        try:
-            additional_str.append("stddev: %s" % self.stddev)
-        except AttributeError:
-            pass
+            try:
+                additional_str.append("mean: %s" % self.mean)
+            except AttributeError:
+                pass
 
-        return self._str(additional_str)
+            try:
+                additional_str.append("stddev: %s" % self.stddev)
+            except AttributeError:
+                pass
+
+            return self._str(additional_str)
+
+        else:
+            return self._skipped_layer_str()
 
     @auto_parse_inputs
     def compile(self, prev_layer, is_train=True):
 
-        if is_train is False:
-            logging.info("  -> [Not Training] - skip `%s`" % self.__class__.__name__)
-            self._temp_data['outputs'] = self._temp_data['inputs']
-
-        else:
+        if is_train:
             with tf.variable_scope(self.name):
                 noise = tf.random_normal(
                     shape=self._temp_data['inputs'].get_shape(),
@@ -95,3 +96,7 @@ class GaussianNoiseLayer(Layer):
                     dtype=self._temp_data['inputs'].dtype
                 )
                 self._temp_data['outputs'] = tf.add(self._temp_data['inputs'], noise)
+
+        else:
+            self._temp_data['outputs'] = self._temp_data['inputs']
+
