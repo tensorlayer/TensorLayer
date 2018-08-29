@@ -488,9 +488,10 @@ def cosine_similarity(v1, v2):
     - `Wiki <https://en.wikipedia.org/wiki/Cosine_similarity>`__.
 
     """
-    return tf.reduce_sum(
-        tf.multiply(v1, v2), 1
-    ) / (tf.sqrt(tf.reduce_sum(tf.multiply(v1, v1), 1)) * tf.sqrt(tf.reduce_sum(tf.multiply(v2, v2), 1)))
+
+    return tf.reduce_sum(tf.multiply(v1, v2), 1) / \
+        (tf.sqrt(tf.reduce_sum(tf.multiply(v1, v1), 1)) *
+         tf.sqrt(tf.reduce_sum(tf.multiply(v2, v2), 1)))
 
 
 # Regularization Functions
