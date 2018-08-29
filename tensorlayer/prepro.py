@@ -3414,7 +3414,7 @@ def keypoint_random_crop2(image, annos, mask=None, size=(368, 368)):
             mask = mask[crop_range_y:crop_range_y + _target_width, :]
         new_joints = []
 
-        for people in annos: # TODO : speed up with affine transform
+        for people in annos:  # TODO : speed up with affine transform
             new_keypoints = []
             for keypoints in people:
 
@@ -3484,7 +3484,7 @@ def keypoint_random_crop(image, annos, mask=None, size=(368, 368)):
             if x <= joint[0][0] < x + target_size[0] and y <= joint[0][1] < y + target_size[1]:
                 break
 
-    def pose_crop(image, annos, mask, x, y, w, h): # TODO : speed up with affine transform
+    def pose_crop(image, annos, mask, x, y, w, h):  # TODO : speed up with affine transform
         # adjust image
         target_size = (w, h)
 
@@ -3590,7 +3590,7 @@ def keypoint_random_rotate(image, annos, mask=None, rg=15.):
     img = ret[newy:newy + newh, newx:newx + neww]
     # adjust meta data
     adjust_joint_list = []
-    for joint in annos: # TODO : speed up with affine transform
+    for joint in annos:  # TODO : speed up with affine transform
         adjust_joint = []
         for point in joint:
             if point[0] < -100 or point[1] < -100:
@@ -3629,7 +3629,9 @@ def keypoint_random_rotate(image, annos, mask=None, rg=15.):
         return img, joint_list, None
 
 
-def keypoint_random_flip(image, annos, mask=None, prob=0.5, flip_list=(0, 1, 5, 6, 7, 2, 3, 4, 11, 12, 13, 8, 9, 10, 15, 14, 17, 16, 18)):
+def keypoint_random_flip(
+        image, annos, mask=None, prob=0.5, flip_list=(0, 1, 5, 6, 7, 2, 3, 4, 11, 12, 13, 8, 9, 10, 15, 14, 17, 16, 18)
+):
     """Flip an image and corresponding keypoints.
 
     Parameters
@@ -3659,7 +3661,7 @@ def keypoint_random_flip(image, annos, mask=None, prob=0.5, flip_list=(0, 1, 5, 
     image = cv2.flip(image, 1)
     mask = cv2.flip(mask, 1)
     new_joints = []
-    for people in annos: # TODO : speed up with affine transform
+    for people in annos:  # TODO : speed up with affine transform
         new_keypoints = []
         for k in flip_list:
             point = people[k]
@@ -3800,7 +3802,7 @@ def keypoint_random_resize_shortestedge(
                 mask = cv2.copyMakeBorder(mask, ph, ph + mh, pw, pw + mw, cv2.BORDER_CONSTANT, value=1)
         # adjust meta data
         adjust_joint_list = []
-        for joint in annos: # TODO : speed up with affine transform
+        for joint in annos:  # TODO : speed up with affine transform
             adjust_joint = []
             for point in joint:
                 if point[0] < -100 or point[1] < -100:
