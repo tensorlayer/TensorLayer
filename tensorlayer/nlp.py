@@ -17,10 +17,10 @@ import numpy as np
 
 import tensorflow as tf
 from tensorflow.python.platform import gfile
-
+from tensorlayer.lazy_imports import LazyImport
 import tensorlayer as tl
 
-import nltk
+nltk = LazyImport("nltk")
 
 __all__ = [
     'generate_skip_gram_batch',
