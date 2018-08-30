@@ -28,9 +28,9 @@ from skimage.morphology import binary_dilation as _binary_dilation
 from skimage.morphology import binary_erosion as _binary_erosion
 
 from six.moves import range
-
+from tensorlayer.lazy_imports import LazyImport
 import PIL
-import cv2  #TODO Remove
+cv2 = LazyImport("cv2")
 import math
 import random
 
