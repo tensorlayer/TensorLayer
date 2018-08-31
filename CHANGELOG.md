@@ -94,7 +94,7 @@ To release a new version, please update the changelog as followed:
 - Setup:
   - Creation of installation flaggs `all_dev`, `all_cpu_dev`, and `all_gpu_dev` (PR #739)
 - Examples:
-  - change folder struction (PR #802) 
+  - change folder struction (PR #802)
   - `tutorial_models_vgg19` has been introduced to show how to use `tl.model.vgg19` (PR #698).
   - fix bug of `tutorial_bipedalwalker_a3c_continuous_action.py` (PR #734, Issue #732)
   - `tutorial_models_vgg16` and `tutorial_models_vgg19` has been changed the input scale from [0,255] to [0,1](PR #710)
@@ -129,6 +129,7 @@ To release a new version, please update the changelog as followed:
 - Dockerfiles import error fixed - issue #733 (PR #747)
 - Fix a typo in `absolute_difference_error` in file: `tensorlayer/cost.py` - Issue #753 (PR #759)
 - Fix the bug of scaling the learning rate of trainer (PR #776)
+- log error instead of info when npz file not found. (PR #812)
 
 ### Security
 
