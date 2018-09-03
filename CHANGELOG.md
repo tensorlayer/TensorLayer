@@ -56,6 +56,7 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Dependencies Update
+- autopep8>=1.3,<1.4 => autopep8>=1.3,<1.5 (PR #815)
 
 ### Contributors
 
@@ -68,6 +69,26 @@ To release a new version, please update the changelog as followed:
 <!-- YOU CAN EDIT FROM HERE -->
 
 ## [Unreleased]
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+### Dependencies Update
+
+### Contributors
+
+- @DEKHTIARJonathan: #815
+
+## [1.10.0] - 2018-09-02
 
 ### Added
 
@@ -130,8 +151,6 @@ To release a new version, please update the changelog as followed:
 - Fix a typo in `absolute_difference_error` in file: `tensorlayer/cost.py` - Issue #753 (PR #759)
 - Fix the bug of scaling the learning rate of trainer (PR #776)
 - log error instead of info when npz file not found. (PR #812)
-
-### Security
 
 ### Dependencies Update
 
@@ -332,7 +351,8 @@ To release a new version, please update the changelog as followed:
 
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...master
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/master...1.10.0
+[1.10.0]: https://github.com/tensorlayer/tensorlayer/compare/1.10.0...1.9.1
 [1.9.1]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...1.9.0
 [1.9.0]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...1.8.5
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5
