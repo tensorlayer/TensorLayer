@@ -142,6 +142,7 @@ To release a new version, please update the changelog as followed:
 ### Removed
 
   - `conv_layers()`  has been removed in both vgg16 and vgg19(PR #710)
+  - graph API (PR #818)
 
 ### Fixed
 
@@ -168,7 +169,7 @@ To release a new version, please update the changelog as followed:
 - @DEKHTIARJonathan: #739 #747 #750 #754
 - @lgarithm: #705 #700
 - @OwenLiuzZ: #698 #710 #775 #776
-- @zsdonghao: #711 #712 #734 #736 #737 #700 #751 #809
+- @zsdonghao: #711 #712 #734 #736 #737 #700 #751 #809 #818
 - @luomai: #700 #751 #766 #802
 - @XJTUWYD: #735
 - @mutewall: #735
