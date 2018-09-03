@@ -56,7 +56,6 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Dependencies Update
-- autopep8>=1.3,<1.4 => autopep8>=1.3,<1.5 (PR #815)
 
 ### Contributors
 
@@ -83,6 +82,7 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Dependencies Update
+- autopep8>=1.3,<1.4 => autopep8>=1.3,<1.5 (PR #815)
 
 ### Contributors
 
