@@ -72,6 +72,7 @@ To release a new version, please update the changelog as followed:
 ### Added
 
 ### Changed
+ - remove 'tensorboard' param, replaced by 'tensorboard_dir' in `tensorlayer/utils.py` with customizable tensorboard directory (PR #819)
 
 ### Deprecated
 
@@ -86,6 +87,7 @@ To release a new version, please update the changelog as followed:
 - pytest-cov>=2.5,<2.6 => pytest-cov>=2.5,<2.7 (PR #820)
 
 ### Contributors
+- @ndiy: #819 
 
 - @DEKHTIARJonathan: #815 #820
 
