@@ -55,9 +55,9 @@ matrix:
 install:
   - |
     if [[ -v _DOC_AND_YAPF_TEST ]]; then
-        pip install tensorflow 
+        pip install tensorflow
         pip install yapf
-        pip install -e .[doc]
+        pip install -r requirements/requirements_doc.txt
     else
         pip install tensorflow==$_TF_VERSION
         pip install -e .[all_cpu_dev]
