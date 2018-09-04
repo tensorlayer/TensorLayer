@@ -127,3 +127,4 @@ update_tl.py
 *.gz
 *.npz
 venv_doc/
+venv_py2/

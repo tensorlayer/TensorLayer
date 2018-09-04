@@ -107,7 +107,7 @@ class Trainer(object):
             self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32, num_epochs=100,
             prefetch_buffer_size=None, shuffle_data=False, shuffle_seed=0, checkpoint_dir=None,
             scaling_learning_rate=True, log_step_size=1, validation_dataset=None, build_validation_func=None,
-            max_iteration=math.inf
+            max_iteration=float('inf')
     ):
         # Initialize Horovod.
         hvd.init()

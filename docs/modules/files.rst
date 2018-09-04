@@ -31,13 +31,14 @@ Load benchmark dataset, save and restore model, save and load variables.
    load_and_assign_npz
    save_npz_dict
    load_and_assign_npz_dict
+   save_ckpt
+   load_ckpt
+
+..
    save_graph
    load_graph
    save_graph_and_params
    load_graph_and_params
-   save_ckpt
-   load_ckpt
-
 
    save_any_to_npy
    load_npy_to_any
@@ -183,21 +184,22 @@ Load network from dict (npz)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: load_and_assign_npz_dict
 
-Save network architecture as a graph
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: save_graph
+..
+  Save network architecture as a graph
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  .. autofunction:: save_graph
 
-Load network architecture from a graph
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: load_graph
+  Load network architecture from a graph
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  .. autofunction:: load_graph
 
-Save network architecture and parameters
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: save_graph_and_params
+  Save network architecture and parameters
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  .. autofunction:: save_graph_and_params
 
-Load network architecture and parameters
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: load_graph_and_params
+  Load network architecture and parameters
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  .. autofunction:: load_graph_and_params
 
 Save network into ckpt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

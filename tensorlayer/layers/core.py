@@ -116,13 +116,9 @@ class Layer(object):
 
         self.inputs = None
         self.outputs = None
-        self.graph = {}
         self.all_layers = list()
         self.all_params = list()
         self.all_drop = dict()
-        self.all_graphs = list()
-
-        self.layer_args = self._get_init_args(skip=4)
 
         if name is None:
             raise ValueError('Layer must have a name.')
@@ -146,7 +142,6 @@ class Layer(object):
             self._add_layers(prev_layer.all_layers)
             self._add_params(prev_layer.all_params)
             self._add_dropout_layers(prev_layer.all_drop)
-            self._add_graphs(prev_layer.all_graphs)
 
         elif isinstance(prev_layer, list):
             # 2. for layer have multiply inputs i.e. ConcatLayer
@@ -156,7 +151,6 @@ class Layer(object):
             self._add_layers(sum([l.all_layers for l in prev_layer], []))
             self._add_params(sum([l.all_params for l in prev_layer], []))
             self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
-            self._add_graphs(sum([l.all_graphs for l in prev_layer], []))
 
         elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
             if self.__class__.__name__ not in ['InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer',
@@ -165,48 +159,14 @@ class Layer(object):
 
             self.inputs = prev_layer
 
-            self._add_graphs(
-                (
-                    self.inputs.name,  # .split(':')[0],
-                    {
-                        'shape': self.inputs.get_shape().as_list(),
-                        'dtype': self.inputs.dtype.name,
-                        'class': 'placeholder',
-                        'prev_layer': None
-                    }
-                )
-            )
-
         elif prev_layer is not None:
             # 4. tl.models
             self._add_layers(prev_layer.all_layers)
             self._add_params(prev_layer.all_params)
             self._add_dropout_layers(prev_layer.all_drop)
-            self._add_graphs(prev_layer.all_graphs)
 
             if hasattr(prev_layer, "outputs"):
                 self.inputs = prev_layer.outputs
-
-        # TL Graph
-        if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
-            _list = []
-            for layer in prev_layer:
-                _list.append(layer.name)
-            self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': _list})
-        elif prev_layer is None:  #
-            self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': None})
-        else:  # normal layers e.g. Conv2d
-            self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer.name})
-        # if act:  ## convert activation from function to string
-        #     try:
-        #         act = act.__name__
-        #     except:
-        #         pass
-        #     self.graph.update({'act': act})
-        # print(self.layer_args)
-        self.graph.update(self.layer_args)
-        # print(self.graph)
-        self._add_graphs((self.name, self.graph))
 
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""
@@ -278,7 +238,6 @@ class Layer(object):
         net_new._add_layers(net_new.outputs)
 
         net_new._add_params(self.all_params)
-        net_new._add_graphs(self.all_graphs)
         net_new._add_dropout_layers(self.all_drop)
 
         return net_new
@@ -352,17 +311,6 @@ class Layer(object):
             self.all_params.append(params)
 
         self.all_params = list_remove_repeat(self.all_params)
-
-    @protected_method
-    def _add_graphs(self, graphs):
-
-        if isinstance(graphs, list):
-            self.all_graphs.extend(list(graphs))
-
-        else:
-            self.all_graphs.append(graphs)
-
-        # self.all_graphs = list_remove_repeat(self.all_graphs) # cannot repeat
 
     @protected_method
     def _add_dropout_layers(self, drop_layers):
