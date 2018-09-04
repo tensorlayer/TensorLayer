@@ -72,6 +72,7 @@ To release a new version, please update the changelog as followed:
 ### Added
 
 ### Changed
+ - remove 'tensorboard' param, replaced by 'tensorboard_dir' in untils.fit function. A folder path must be passed which is equivalent to previous 'tensoboard' param set True. Default value None will disable output against tensorboard
 
 ### Deprecated
 
