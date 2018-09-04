@@ -84,10 +84,11 @@ To release a new version, please update the changelog as followed:
 
 ### Dependencies Update
 - autopep8>=1.3,<1.4 => autopep8>=1.3,<1.5 (PR #815)
+- pytest-cov>=2.5,<2.6 => pytest-cov>=2.5,<2.7 (PR #820)
 
 ### Contributors
 
-- @DEKHTIARJonathan: #815
+- @DEKHTIARJonathan: #815 #820
 
 ## [1.10.0] - 2018-09-02
 
