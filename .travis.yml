@@ -57,7 +57,7 @@ install:
     if [[ -v _DOC_AND_YAPF_TEST ]]; then
         pip install tensorflow 
         pip install yapf
-        pip install -r requirements/requirements_doc.txt
+        pip install -e .[doc]
     else
         pip install tensorflow==$_TF_VERSION
         pip install -e .[all_cpu_dev]
