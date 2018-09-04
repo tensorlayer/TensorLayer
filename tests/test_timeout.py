@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, multiprocessing
+import os
+import platform
+import time
+
 import unittest
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import tensorflow as tf
@@ -12,8 +16,6 @@ try:
     from tests.unittests_helper import CustomTestCase
 except ImportError:
     from unittests_helper import CustomTestCase
-
-import platform
 
 if platform.system() != "Windows":
     import signal
@@ -668,13 +670,12 @@ class Layer_Timeoutt_Test(CustomTestCase):
 
         with self.assertNotRaises(TimeoutError):
             try:
-                #with Timeout(3):
-                import time
-                start_time = time.time()
+                with Timeout(40):
+                    start_time = time.time()
 
-                _ = self.inception_v4_net(self.input_plh, reuse=False, is_train=False)
+                    _ = self.inception_v4_net(self.input_plh, reuse=False, is_train=False)
 
-                print("Seconds Elapsed:", int(time.time() - start_time))
+                    tl.logging.info("Seconds Elapsed [Not Reused]: %d" % int(time.time() - start_time))
 
             except WindowsError:
                 tl.logging.warn("This unittest can not run on Windows")
@@ -683,14 +684,12 @@ class Layer_Timeoutt_Test(CustomTestCase):
 
         with self.assertNotRaises(TimeoutError):
             try:
-                # with Timeout(3):
+                with Timeout(40):
+                    start_time = time.time()
 
-                import time
-                start_time = time.time()
+                    _ = self.inception_v4_net(self.input_plh, reuse=True, is_train=False)
 
-                _ = self.inception_v4_net(self.input_plh, reuse=True, is_train=False)
-
-                print("Seconds Elapsed:", int(time.time() - start_time))
+                    tl.logging.info("Seconds Elapsed [Reused Model]: %d" % int(time.time() - start_time))
 
             except WindowsError:
                 tl.logging.warn("This unittest can not run on Windows")
