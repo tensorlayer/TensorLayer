@@ -804,6 +804,9 @@ BinaryConv2d
 
 Ternary Dense Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+TernaryDenseLayer
+"""""""""""""""""""""
 .. autoclass:: TernaryDenseLayer
 
 Ternary Convolutions
@@ -849,10 +852,6 @@ QuanConv2dWithBN
 """""""""""""""""""""
 .. autoclass:: QuanConv2dWithBN
 
-DoReFa
-^^^^^^^^^^^^^^
-
-see Convolutional and Dense APIs.
 
 .. -----------------------------------------------------------
 ..                  Recurrent Layers

@@ -71,6 +71,28 @@ To release a new version, please update the changelog as followed:
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+### Dependencies Update
+- autopep8>=1.3,<1.4 => autopep8>=1.3,<1.5 (PR #815)
+- pytest-cov>=2.5,<2.6 => pytest-cov>=2.5,<2.7 (PR #820)
+
+### Contributors
+
+- @DEKHTIARJonathan: #815 #820
+
+## [1.10.0] - 2018-09-02
+
+### Added
+
 - API:
   - Add `tl.model.vgg19` (PR #698)
   - Add `tl.logging.contrib.hyperdash` (PR #739)
@@ -130,8 +152,6 @@ To release a new version, please update the changelog as followed:
 - Fix a typo in `absolute_difference_error` in file: `tensorlayer/cost.py` - Issue #753 (PR #759)
 - Fix the bug of scaling the learning rate of trainer (PR #776)
 - log error instead of info when npz file not found. (PR #812)
-
-### Security
 
 ### Dependencies Update
 
@@ -332,7 +352,8 @@ To release a new version, please update the changelog as followed:
 
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...master
-[1.9.1]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...1.9.0
-[1.9.0]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...1.8.5
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.10.0...master
+[1.10.0]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...1.10.0
+[1.9.1]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...1.9.1
+[1.9.0]: https://github.com/tensorlayer/tensorlayer/compare/1.8.5...1.9.0
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5
