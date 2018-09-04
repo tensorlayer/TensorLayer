@@ -4,8 +4,6 @@
 import sys
 import unittest
 
-import tensorlayer as tl
-
 from tests.utils import list_all_py_files
 from tests.utils import CustomTestCase
 
@@ -45,7 +43,7 @@ class YAPF_Style_Test(CustomTestCase):
                     print(diff)
                     self.badly_formatted_files.append(file)
             except Exception as e:
-                tl.logging.error("Error while processing file: `%s`\n" "Error: %s" % (file, str(e)))
+                print("Error while processing file: `%s`\n" "Error: %s" % (file, str(e)))
 
         with self.assertNotRaises(Exception):
 
