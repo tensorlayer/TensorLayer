@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import
-
 import os
 import time
 
@@ -14,6 +12,8 @@ import tensorflow as tf
 import tensorlayer as tl
 
 from tests.utils import WindowsError
+from tests.utils import TimeoutError
+
 from tests.utils import TimeoutContext
 from tests.utils import CustomTestCase
 

@@ -1462,7 +1462,7 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
                             vis = None
 
                         # if len(joint_pos) == 16:
-                        if ((is_16_pos_only ==True) and (len(joint_pos) == 16)) or (is_16_pos_only == False):
+                        if ((is_16_pos_only == True) and (len(joint_pos) == 16)) or (is_16_pos_only == False):
                             # only use image with 16 key points / or use all
                             data = {
                                 'filename': img_fn,

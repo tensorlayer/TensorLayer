@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import
-
 import sys
 import unittest
+
+import tensorlayer as tl
 
 from tests.utils import list_all_py_files
 from tests.utils import CustomTestCase
@@ -33,15 +33,19 @@ class YAPF_Style_Test(CustomTestCase):
 
         for file in list_all_py_files():
 
-            print(file)
-            code = _read_utf_8_file(file)
+            try:
 
-            # https://pypi.python.org/pypi/yapf/0.20.2#example-as-a-module
-            diff, changed = FormatCode(code, filename=file, style_config='setup.cfg', print_diff=True)
+                print(file)
+                code = _read_utf_8_file(file)
 
-            if changed:
-                print(diff)
-                self.badly_formatted_files.append(file)
+                # https://pypi.python.org/pypi/yapf/0.20.2#example-as-a-module
+                diff, changed = FormatCode(code, filename=file, style_config='setup.cfg', print_diff=True)
+
+                if changed:
+                    print(diff)
+                    self.badly_formatted_files.append(file)
+            except Exception as e:
+                tl.logging.error("Error while processing file: `%s`\n" "Error: %s" % (file, str(e)))
 
         with self.assertNotRaises(Exception):
 
