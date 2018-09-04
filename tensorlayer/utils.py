@@ -113,7 +113,7 @@ def fit(
     if X_train.shape[0] < batch_size:
         raise AssertionError("Number of training examples should be bigger than the batch size")
 
-    if (tensorboard_dir):
+    if tensorboard_dir is not None:
         tl.logging.info("Setting up tensorboard ...")
         #Set up tensorboard summaries and saver
         tl.files.exists_or_mkdir(tensorboard_dir)
@@ -141,7 +141,7 @@ def fit(
 
         #Initalize all variables and summaries
         tl.layers.initialize_global_variables(sess)
-        tl.logging.info("Finished! use $tensorboard --logdir=" + tensorboard_dir + "/ to start server")
+        tl.logging.info("Finished! use `$tensorboard --logdir=%s/` to start tensorboard" % tensorboard_dir)
 
     tl.logging.info("Start training the network ...")
     start_time_begin = time.time()
@@ -158,7 +158,7 @@ def fit(
             n_step += 1
         loss_ep = loss_ep / n_step
 
-        if tensorboard and hasattr(tf, 'summary'):
+        if tensorboard_dir is not None and hasattr(tf, 'summary'):
             if epoch + 1 == 1 or (epoch + 1) % tensorboard_epoch_freq == 0:
                 for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
                     dp_dict = dict_to_one(network.all_drop)  # disable noise layers
