@@ -3,6 +3,10 @@
 import unittest
 from contextlib import contextmanager
 
+__all__ = [
+    'CustomTestCase',
+]
+
 
 class CustomTestCase(unittest.TestCase):
 

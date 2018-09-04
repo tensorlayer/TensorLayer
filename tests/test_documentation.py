@@ -1,4 +1,5 @@
-#!/usr/bin/env pytest
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import os
 import unittest

@@ -13,17 +13,14 @@ import tensorlayer as tl
 
 from tensorlayer.logging.contrib import hyperdash as hd
 
-try:
-    from tests.unittests_helper import CustomTestCase
-except ImportError:
-    from unittests_helper import CustomTestCase
+from tests.utils import CustomTestCase
 
 
 class TL_Logger_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.apikey = os.getenv('HYPERDASH_APIKEY', default="test_api_key")
+        cls.apikey = os.getenv('HYPERDASH_APIKEY', "test_api_key")
 
     def test_apikey_unset(self):
 
@@ -56,7 +53,7 @@ class TL_Logger_Test(CustomTestCase):
                     # Record a numerical performance metric
                     exp.metric(name="accuracy", value=accuracy)
 
-                    time.sleep(1)
+                    time.sleep(0.1)
 
             train_dogs_vs_cats()
 
@@ -77,7 +74,7 @@ class TL_Logger_Test(CustomTestCase):
                     # Record a numerical performance metric
                     exp.metric(name="accuracy", value=accuracy)
 
-                    time.sleep(1)
+                    time.sleep(0.1)
 
             train_dogs_vs_cats()
 
@@ -102,7 +99,7 @@ class TL_Logger_Test(CustomTestCase):
                     # Record a numerical performance metric
                     exp.metric(name="accuracy", value=accuracy)
 
-                    time.sleep(1)
+                    time.sleep(0.1)
 
                 # Cleanup and mark that the experiment successfully completed
                 exp.end()
@@ -128,7 +125,7 @@ class TL_Logger_Test(CustomTestCase):
                     # Record a numerical performance metric
                     exp.metric(name="accuracy", value=accuracy)
 
-                    time.sleep(1)
+                    time.sleep(0.1)
 
                 # Cleanup and mark that the experiment successfully completed
                 exp.end()

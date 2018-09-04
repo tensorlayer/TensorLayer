@@ -1,5 +1,13 @@
 import os
 
+__all__ = [
+    'list_all_py_files',
+]
+
+_excludes = [
+    'tensorlayer/db.py',
+]
+
 
 def _list_py_files(root):
     for root, _dirs, files in os.walk(root):
@@ -8,11 +16,6 @@ def _list_py_files(root):
         for file in files:
             if file.endswith('.py'):
                 yield os.path.join(root, file)
-
-
-_excludes = [
-    'tensorlayer/db.py',
-]
 
 
 def list_all_py_files():

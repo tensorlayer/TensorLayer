@@ -9,10 +9,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 import tensorlayer as tl
 
-try:
-    from tests.unittests_helper import CustomTestCase
-except ImportError:
-    from unittests_helper import CustomTestCase
+from tests.utils import CustomTestCase
 
 
 def model(x, is_train, reuse):
@@ -27,7 +24,7 @@ def model(x, is_train, reuse):
         # nt = Conv2d(nin, 16, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME', name='tc1')
         # nt = Conv2d(nt, 8, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME', name='tc2')
         ## 2. Spatial transformer module (sampler)
-        n = tl.layers.SpatialTransformer2dAffineLayer(nin, theta_layer=nt, out_size=[40, 40], name='spatial')
+        n = tl.layers.SpatialTransformer2dAffineLayer(nin, theta_layer=nt, out_size=(40, 40), name='spatial')
         s = n
         ## 3. Classifier
         n = tl.layers.Conv2d(

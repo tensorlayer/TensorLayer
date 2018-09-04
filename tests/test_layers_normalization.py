@@ -9,6 +9,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 import tensorlayer as tl
 
+from tests.utils import CustomTestCase
+
 
 def model(x, is_train=True, reuse=False):
     with tf.variable_scope("model", reuse=reuse):
@@ -26,7 +28,7 @@ def model(x, is_train=True, reuse=False):
     return n
 
 
-class Layer_Normalization_Test(unittest.TestCase):
+class Layer_Normalization_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
