@@ -90,7 +90,7 @@ class MobileNetV1(Layer):
         self.all_params = list(self.net.all_params)
         self.all_layers = list(self.net.all_layers)
         self.all_drop = dict(self.net.all_drop)
-        self.all_graphs = list(self.net.all_graphs)
+        # self.all_graphs = list(self.net.all_graphs) # remove graph
         self.print_layers = self.net.print_layers
         self.print_params = self.net.print_params
 
