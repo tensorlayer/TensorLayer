@@ -5,10 +5,7 @@ import unittest
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-try:
-    import tests.testing as testing
-except ImportError:
-    import testing
+from tests.utils import list_all_py_files
 
 from pydocstyle.checker import check
 from pydocstyle.checker import violations
@@ -49,7 +46,7 @@ class PyDOC_Style_Test(unittest.TestCase):
             'D202',  # No blank lines allowed after function docstring
         ]
 
-        for filename in testing.list_all_py_files():
+        for filename in list_all_py_files():
             print(filename)
             for err in check([filename]):
                 if not err.code in _disabled_checks:

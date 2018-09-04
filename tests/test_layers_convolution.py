@@ -9,8 +9,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 import tensorlayer as tl
 
+from tests.utils import CustomTestCase
 
-class Layer_Convolution_1D_Test(unittest.TestCase):
+
+class Layer_Convolution_1D_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -55,7 +57,7 @@ class Layer_Convolution_1D_Test(unittest.TestCase):
         self.assertEqual(self.n3.outputs.get_shape().as_list()[1:], [23, 32])
 
 
-class Layer_Convolution_2D_Test(unittest.TestCase):
+class Layer_Convolution_2D_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -199,7 +201,7 @@ class Layer_Convolution_2D_Test(unittest.TestCase):
         self.assertEqual(self.n12.outputs.get_shape().as_list()[1:], [96, 96, 64])
 
 
-class Layer_Convolution_3D_Test(unittest.TestCase):
+class Layer_Convolution_3D_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -242,7 +244,7 @@ class Layer_Convolution_3D_Test(unittest.TestCase):
         self.assertEqual(self.n3.outputs.get_shape().as_list()[1:], [24, 64, 64, 32])
 
 
-class Layer_DeformableConvolution_Test(unittest.TestCase):
+class Layer_DeformableConvolution_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):

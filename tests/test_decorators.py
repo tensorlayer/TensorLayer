@@ -11,10 +11,7 @@ import tensorlayer as tl
 
 from tensorlayer.decorators import private_method
 
-try:
-    from tests.unittests_helper import CustomTestCase
-except ImportError:
-    from unittests_helper import CustomTestCase
+from tests.utils import CustomTestCase
 
 
 class Layer_Pooling_Test(CustomTestCase):

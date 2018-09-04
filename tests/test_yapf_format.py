@@ -4,12 +4,8 @@
 import sys
 import unittest
 
-try:
-    import tests.testing as testing
-    from tests.unittests_helper import CustomTestCase
-except ImportError:
-    import testing
-    from unittests_helper import CustomTestCase
+from tests.utils import list_all_py_files
+from tests.utils import CustomTestCase
 
 from yapf.yapflib.yapf_api import FormatCode
 
@@ -29,11 +25,11 @@ class YAPF_Style_Test(CustomTestCase):
     def setUpClass(cls):
 
         cls.badly_formatted_files = list()
-        cls.files_2_test = testing.list_all_py_files()
+        cls.files_2_test = list_all_py_files()
 
     def test_files_format(self):
 
-        for file in testing.list_all_py_files():
+        for file in list_all_py_files():
 
             print(file)
             code = _read_utf_8_file(file)

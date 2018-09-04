@@ -1462,7 +1462,7 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
                             vis = None
 
                         # if len(joint_pos) == 16:
-                        if ((is_16_pos_only == True) and (len(joint_pos) == 16)) or (is_16_pos_only == False):
+                        if ((is_16_pos_only ==True) and (len(joint_pos) == 16)) or (is_16_pos_only == False):
                             # only use image with 16 key points / or use all
                             data = {
                                 'filename': img_fn,
@@ -1894,6 +1894,7 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
         logging.info(e)
         logging.info("[*] load ckpt fail ...")
 
+
 '''
 def save_graph(network=None, name='graph.pkl'):
     """Save the architecture of TL model into a pickle file. No parameters be saved.
@@ -2060,6 +2061,7 @@ def load_graph_and_params(name='model', sess=None):
     load_and_assign_npz(sess=sess, name=os.path.join(name, 'params.npz'), network=network)
     return network
 '''
+
 
 def save_any_to_npy(save_dict=None, name='file.npy'):
     """Save variables to `.npy` file.

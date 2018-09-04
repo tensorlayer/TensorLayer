@@ -11,8 +11,10 @@ import tensorlayer as tl
 
 import numpy as np
 
+from tests.utils import CustomTestCase
 
-class Array_Op_Alphas_Test(unittest.TestCase):
+
+class Array_Op_Alphas_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -182,7 +184,7 @@ class Array_Op_Alphas_Test(unittest.TestCase):
         np.array_equal(self._b4, b4)
 
 
-class Array_Op_Alphas_Like_Test(unittest.TestCase):
+class Array_Op_Alphas_Like_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):

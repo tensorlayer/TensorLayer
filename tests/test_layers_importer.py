@@ -7,19 +7,16 @@ import unittest
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import tensorflow as tf
-import tensorlayer as tl
-
-import keras as k
 
 from tensorflow.contrib.slim.python.slim.nets.inception_v3 import inception_v3
 from tensorflow.contrib.slim.python.slim.nets.inception_v3 import inception_v3_arg_scope
 
 slim = tf.contrib.slim
+keras = tf.keras
 
-try:
-    from tests.unittests_helper import CustomTestCase
-except ImportError:
-    from unittests_helper import CustomTestCase
+import tensorlayer as tl
+
+from tests.utils import CustomTestCase
 
 
 class Layer_Importer_Test(CustomTestCase):
@@ -48,12 +45,12 @@ class Layer_Importer_Test(CustomTestCase):
     def test_lambda_layer(self):
 
         def keras_block(x):
-            x = k.layers.Dropout(0.8)(x)
-            x = k.layers.Dense(100, activation='relu')(x)
-            # x = k.layers.Dropout(0.8)(x)
-            # x = k.layers.Dense(100, activation='relu')(x)
-            x = k.layers.Dropout(0.5)(x)
-            logits = k.layers.Dense(10, activation='linear')(x)
+            x = keras.layers.Dropout(0.8)(x)
+            x = keras.layers.Dense(100, activation='relu')(x)
+            # x = keras.layers.Dropout(0.8)(x)
+            # x = keras.layers.Dense(100, activation='relu')(x)
+            x = keras.layers.Dropout(0.5)(x)
+            logits = keras.layers.Dense(10, activation='linear')(x)
 
             return logits
 

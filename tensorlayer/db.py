@@ -1,7 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-'''
 import pickle
 import time
 import os
@@ -11,7 +10,7 @@ from datetime import datetime
 import gridfs
 import pymongo
 
-from tensorlayer.files import load_graph_and_params
+# from tensorlayer.files import load_graph_and_params
 from tensorlayer.files import exists_or_mkdir
 from tensorlayer.files import del_folder
 
@@ -745,4 +744,3 @@ class TensorHub(object):
             if key is not '_id':
                 string += str(key) + ": " + str(value) + " / "
         return string
-'''

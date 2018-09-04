@@ -11,10 +11,7 @@ import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 
-try:
-    from tests.unittests_helper import CustomTestCase
-except ImportError:
-    from unittests_helper import CustomTestCase
+from tests.utils import CustomTestCase
 
 
 class Util_Predict_Test(CustomTestCase):
