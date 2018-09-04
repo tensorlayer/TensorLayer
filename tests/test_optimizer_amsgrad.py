@@ -65,7 +65,7 @@ class Layer_Pooling_Test(CustomTestCase):
                 # train the network
                 tl.utils.fit(
                     sess, self.network, self.train_op, self.cost, X_train, y_train, self.x, self.y_, acc=self.acc,
-                    batch_size=500, n_epoch=2, print_freq=1, X_val=X_val, y_val=y_val, eval_train=False
+                    batch_size=500, n_epoch=1, print_freq=1, X_val=X_val, y_val=y_val, eval_train=False
                 )
 
 
