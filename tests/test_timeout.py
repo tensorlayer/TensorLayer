@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+
 import os
 import time
 
@@ -17,7 +19,10 @@ from tests.utils import CustomTestCase
 
 from tests.utils.custom_networks import InceptionV4_Network
 
-NETWORK_CREATION_TIMEOUT = 80 # Seconds before timeout
+if os.getenv("TRAVIS", value=None) is not None:
+    NETWORK_CREATION_TIMEOUT = 120 # Seconds before timeout
+else:
+    NETWORK_CREATION_TIMEOUT = 40 # Seconds before timeout
 
 ######################################################################################
 #                                                                                    #

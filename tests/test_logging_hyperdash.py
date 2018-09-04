@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+
 import os
 import unittest
 
@@ -20,7 +22,7 @@ class TL_Logger_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.apikey = os.getenv('HYPERDASH_APIKEY', default="test_api_key")
+        cls.apikey = os.getenv('HYPERDASH_APIKEY', value="test_api_key")
 
     def test_apikey_unset(self):
 

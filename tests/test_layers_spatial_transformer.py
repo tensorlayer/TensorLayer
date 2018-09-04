@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+
 import os
 import unittest
 
@@ -24,7 +26,7 @@ def model(x, is_train, reuse):
         # nt = Conv2d(nin, 16, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME', name='tc1')
         # nt = Conv2d(nt, 8, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME', name='tc2')
         ## 2. Spatial transformer module (sampler)
-        n = tl.layers.SpatialTransformer2dAffineLayer(nin, theta_layer=nt, out_size=[40, 40], name='spatial')
+        n = tl.layers.SpatialTransformer2dAffineLayer(nin, theta_layer=nt, out_size=(40, 40), name='spatial')
         s = n
         ## 3. Classifier
         n = tl.layers.Conv2d(
