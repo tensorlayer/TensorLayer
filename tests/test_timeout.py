@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import time, os, multiprocessing
+import os, multiprocessing
 import unittest
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
