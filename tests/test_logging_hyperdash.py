@@ -22,7 +22,7 @@ class TL_Logger_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.apikey = os.getenv('HYPERDASH_APIKEY', value="test_api_key")
+        cls.apikey = os.getenv('HYPERDASH_APIKEY', "test_api_key")
 
     def test_apikey_unset(self):
 
