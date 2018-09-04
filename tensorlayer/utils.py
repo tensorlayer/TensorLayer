@@ -141,7 +141,7 @@ def fit(
 
         #Initalize all variables and summaries
         tl.layers.initialize_global_variables(sess)
-        tl.logging.info("Finished! use `$tensorboard --logdir=%s/` to start tensorboard" % tensorboard_dir)
+        tl.logging.info("Finished! use `tensorboard --logdir=%s/` to start tensorboard" % tensorboard_dir)
 
     tl.logging.info("Start training the network ...")
     start_time_begin = time.time()
