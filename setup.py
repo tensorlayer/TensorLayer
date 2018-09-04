@@ -89,7 +89,7 @@ ext_modules = []
 
 
 # Readthedocs requires TF 1.5.0 to build properly
-if os.environ.get('READTHEDOCS', None) == 'True':
+if 'READTHEDOCS' in os.environ:
     ext_modules = [
         Extension('install_requirements_for_rtd', []),
     ]
