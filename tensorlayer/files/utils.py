@@ -41,7 +41,8 @@ import numpy as np
 
 import tensorflow as tf
 from tensorflow.python.platform import gfile
-import tensorlayer as tl  # it is used in eval() of _graph2net
+
+import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer import nlp
 from tensorlayer import utils
@@ -71,10 +72,10 @@ __all__ = [
     'save_ckpt',
     'save_npz',
     'save_npz_dict',
-    'save_graph',
-    'load_graph',
-    'save_graph_and_params',
-    'load_graph_and_params',
+    #'save_graph',
+    #'load_graph',
+    #'save_graph_and_params',
+    #'load_graph_and_params',
 ]
 
 
@@ -1893,7 +1894,7 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
         logging.info(e)
         logging.info("[*] load ckpt fail ...")
 
-
+'''
 def save_graph(network=None, name='graph.pkl'):
     """Save the architecture of TL model into a pickle file. No parameters be saved.
 
@@ -2058,7 +2059,7 @@ def load_graph_and_params(name='model', sess=None):
     network = load_graph(name=os.path.join(name, 'graph.pkl'))
     load_and_assign_npz(sess=sess, name=os.path.join(name, 'params.npz'), network=network)
     return network
-
+'''
 
 def save_any_to_npy(save_dict=None, name='file.npy'):
     """Save variables to `.npy` file.

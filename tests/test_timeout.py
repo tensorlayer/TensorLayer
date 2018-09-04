@@ -13,6 +13,53 @@ try:
 except ImportError:
     from unittests_helper import CustomTestCase
 
+import platform
+
+if platform.system() != "Windows":
+    import signal
+else:
+    signal = None
+
+######################################################################################
+#                                                                                    #
+#                                 TIMEOUT UTILS                                      #
+#                                                                                    #
+######################################################################################
+
+
+class TimeoutError(Exception):
+    pass
+
+
+class WindowsError(Exception):
+    pass
+
+
+class Timeout():
+    """Timeout class using ALARM signal."""
+
+    def __init__(self, sec):
+        self.sec = sec
+
+    def __enter__(self):
+        if signal is None:
+            raise WindowsError("Windows is not supported for this test")
+
+        signal.signal(signal.SIGALRM, self.raise_timeout)
+        signal.alarm(self.sec)
+
+    def __exit__(self, *args):
+        signal.alarm(0)  # disable alarm
+
+    def raise_timeout(self, *args):
+        raise TimeoutError("A timeout error have been raised.")
+
+######################################################################################
+#                                                                                    #
+#                                   LAYER UTILS                                      #
+#                                                                                    #
+######################################################################################
+
 
 def activation_module(layer, activation_fn, leaky_relu_alpha=0.2, name=None):
 
@@ -137,6 +184,13 @@ def dense_module(
     layer = activation_module(layer, activation_fn)
 
     return layer, logits
+
+
+######################################################################################
+#                                                                                    #
+#                                INCEPTION BLOCKS                                    #
+#                                                                                    #
+######################################################################################
 
 
 def block_inception_a(inputs, scope=None, is_train=False):
@@ -402,6 +456,13 @@ def block_inception_c(inputs, scope=None, is_train=False):
         return tl.layers.ConcatLayer([branch_0, branch_1, branch_2, branch_3], concat_dim=3, name='concat_layer')
 
 
+######################################################################################
+#                                                                                    #
+#                                INCEPTION Network                                   #
+#                                                                                    #
+######################################################################################
+
+
 class InceptionV4_Network(object):
     """InceptionV4 model.
     """
@@ -576,50 +637,66 @@ class InceptionV4_Network(object):
 
             return net
 
+######################################################################################
+#                                                                                    #
+#                                UNITTEST TIMEOUT                                    #
+#                                                                                    #
+######################################################################################
 
 class Layer_Timeoutt_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        # with Timeout(100):
 
-        def build_net():
-            input_plh = tf.placeholder(tf.float32, [None, 299, 299, 3], name='input_placeholder')
+        #######################################################################
+        ####  =============    Placeholders Declaration      ============= ####
+        #######################################################################
 
-            #######################################################################
-            ####  =============        Model Declaration         ============= ####
-            #######################################################################
-            inception_v4_net = InceptionV4_Network(include_FC_head=True, flatten_output=False)
+        cls.input_plh = tf.placeholder(tf.float32, [None, 299, 299, 3], name='input_placeholder')
 
-            cls.network = inception_v4_net(input_plh, reuse=False, is_train=False)
-            cls.network_reuse = inception_v4_net(input_plh, reuse=True, is_train=False)
+        #######################################################################
+        ####  =============        Model Declaration         ============= ####
+        #######################################################################
 
-        p = multiprocessing.Process(target=build_net)
-        p.start()
-
-        # Wait for X seconds or until process finishes
-        p.join(100)  # we can reduce the time, when our API are faster
-
-        # If thread is still active
-        if p.is_alive():
-            print("running... let's kill it...")
-            # Terminate
-            p.terminate()
-            p.join()
-            raise Exception("timeout, too slow to build networks")
+        cls.inception_v4_net = InceptionV4_Network(include_FC_head=True, flatten_output=False)
 
     @classmethod
     def tearDownClass(cls):
         tf.reset_default_graph()
 
-    def test_reuse(self):
-        pass
-        # self.assertEqual(self.network.count_params(), 42712937)
-        # self.assertEqual(self.network_reuse.count_params(), 42712937)
+    def test_timeout_not_reuse(self):
+
+        with self.assertNotRaises(TimeoutError):
+            try:
+                #with Timeout(3):
+                import time
+                start_time = time.time()
+
+                _ = self.inception_v4_net(self.input_plh, reuse=False, is_train=False)
+
+                print("Seconds Elapsed:", int(time.time() - start_time))
+
+            except WindowsError:
+                tl.logging.warn("This unittest can not run on Windows")
+
+    def test_timeout_reuse(self):
+
+        with self.assertNotRaises(TimeoutError):
+            try:
+                # with Timeout(3):
+
+                import time
+                start_time = time.time()
+
+                _ = self.inception_v4_net(self.input_plh, reuse=True, is_train=False)
+
+                print("Seconds Elapsed:", int(time.time() - start_time))
+
+            except WindowsError:
+                tl.logging.warn("This unittest can not run on Windows")
 
 
 if __name__ == '__main__':
-    # main()
 
     tf.logging.set_verbosity(tf.logging.DEBUG)
     tl.logging.set_verbosity(tl.logging.DEBUG)
