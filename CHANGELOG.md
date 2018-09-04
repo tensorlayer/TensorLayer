@@ -72,7 +72,7 @@ To release a new version, please update the changelog as followed:
 ### Added
 
 ### Changed
- - remove 'tensorboard' param, replaced by 'tensorboard_dir' in 'untils.py'. A folder path must be passed which is equivalent to previous 'tensoboard' param set True. Default value None will disable output against tensorboard (PR #819)
+ - remove 'tensorboard' param, replaced by 'tensorboard_dir' in `tensorlayer/utils.py` with customizable tensorboard directory (PR #819)
 
 ### Deprecated
 
