@@ -1641,7 +1641,7 @@ def load_npz(path='', name='model.npz'):
     - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
 
     """
-    d = np.load(path + name)
+    d = np.load(os.path.join(path, name))
     return d['params']
 
 
