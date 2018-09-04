@@ -20,9 +20,9 @@ from tests.utils import CustomTestCase
 from tests.utils.custom_networks import InceptionV4_Network
 
 if os.getenv("TRAVIS", value=None) is not None:
-    NETWORK_CREATION_TIMEOUT = 120 # Seconds before timeout
+    NETWORK_CREATION_TIMEOUT = 120  # Seconds before timeout
 else:
-    NETWORK_CREATION_TIMEOUT = 40 # Seconds before timeout
+    NETWORK_CREATION_TIMEOUT = 40  # Seconds before timeout
 
 ######################################################################################
 #                                                                                    #
