@@ -598,7 +598,7 @@ class Layer_Timeoutt_Test(CustomTestCase):
         p.start()
 
         # Wait for X seconds or until process finishes
-        p.join(100)  # we can reduce the time, when our API are faster
+        p.join(240)  # we can reduce the time, when our API are faster
 
         # If thread is still active
         if p.is_alive():
