@@ -128,3 +128,4 @@ update_tl.py
 *.npz
 venv_doc/
 venv_py2/
+docs/build_test/
