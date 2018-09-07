@@ -70,6 +70,7 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
+- unittest `tests\test_timeout.py` has been added to ensure the network creation process does not freeze.
 
 ### Changed
  - remove 'tensorboard' param, replaced by 'tensorboard_dir' in `tensorlayer/utils.py` with customizable tensorboard directory (PR #819)
@@ -77,6 +78,7 @@ To release a new version, please update the changelog as followed:
 ### Deprecated
 
 ### Removed
+- TL Graph API removed. Memory Leaks Issues with this API, will be fixed and integrated in TL 2.0 (PR #818)
 
 ### Fixed
 
@@ -85,11 +87,13 @@ To release a new version, please update the changelog as followed:
 ### Dependencies Update
 - autopep8>=1.3,<1.4 => autopep8>=1.3,<1.5 (PR #815)
 - pytest-cov>=2.5,<2.6 => pytest-cov>=2.5,<2.7 (PR #820)
+- pytest>=3.6,<3.8 => pytest>=3.6,<3.9 (PR #823)
+- imageio>=2.3,<2.4 => imageio>=2.3,<2.5 (PR #823)
 
 ### Contributors
+- @DEKHTIARJonathan: #815 #818 #820 #823
 - @ndiy: #819 
-
-- @DEKHTIARJonathan: #815 #820
+- @zsdonghao: #818
 
 ## [1.10.0] - 2018-09-02
 

@@ -78,8 +78,8 @@ class Conv1d(Layer):
 
         logging.info(
             "Conv1d %s: n_filter: %d filter_size: %s stride: %d pad: %s act: %s dilation_rate: %d" % (
-                self.name, n_filter, filter_size, stride, padding, self.act.__name__
-                if self.act is not None else 'No Activation', dilation_rate
+                self.name, n_filter, filter_size, stride, padding,
+                self.act.__name__ if self.act is not None else 'No Activation', dilation_rate
             )
         )
 
@@ -183,8 +183,8 @@ class Conv2d(Layer):
 
         logging.info(
             "Conv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
-                self.name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, n_filter, str(filter_size), str(strides), padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
         # with tf.variable_scope(name) as vs:

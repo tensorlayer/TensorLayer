@@ -68,8 +68,8 @@ class GroupConv2d(Layer):
 
         logging.info(
             "GroupConv2d %s: n_filter: %d size: %s strides: %s n_group: %d pad: %s act: %s" % (
-                self.name, n_filter, str(filter_size), str(strides), n_group, padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, n_filter, str(filter_size), str(strides), n_group, padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
