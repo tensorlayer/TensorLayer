@@ -133,8 +133,8 @@ class AtrousConv2dLayer(Layer):
 
         logging.info(
             "AtrousConv2dLayer %s: n_filter: %d filter_size: %s rate: %d pad: %s act: %s" % (
-                self.name, n_filter, filter_size, rate, padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, n_filter, filter_size, rate, padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
@@ -209,8 +209,8 @@ class AtrousDeConv2dLayer(Layer):
 
         logging.info(
             "AtrousDeConv2dLayer %s: shape: %s output_shape: %s rate: %d pad: %s act: %s" % (
-                self.name, shape, output_shape, rate, padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, shape, output_shape, rate, padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 

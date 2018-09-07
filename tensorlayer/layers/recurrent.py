@@ -1622,9 +1622,9 @@ class Seq2Seq(Layer):
             network_decode = DynamicRNNLayer(
                 net_decode_in, cell_fn=cell_fn, cell_init_args=self.cell_init_args, n_hidden=n_hidden,
                 initializer=initializer,
-                initial_state=(network_encode.final_state if initial_state_decode is None else
-                               initial_state_decode), dropout=dropout, n_layer=n_layer,
-                sequence_length=decode_sequence_length, return_last=False, return_seq_2d=return_seq_2d, name='decode'
+                initial_state=(network_encode.final_state if initial_state_decode is None else initial_state_decode),
+                dropout=dropout, n_layer=n_layer, sequence_length=decode_sequence_length, return_last=False,
+                return_seq_2d=return_seq_2d, name='decode'
             )
             self.outputs = network_decode.outputs
 

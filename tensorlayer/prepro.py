@@ -1228,10 +1228,10 @@ def rgb_to_hsv(rgb):
     rc = np.zeros_like(r)
     gc = np.zeros_like(g)
     bc = np.zeros_like(b)
-    rc[mask] = (maxc -r)[mask] / (maxc - minc)[mask]
+    rc[mask] = (maxc - r)[mask] / (maxc - minc)[mask]
     gc[mask] = (maxc - g)[mask] / (maxc - minc)[mask]
     bc[mask] = (maxc - b)[mask] / (maxc - minc)[mask]
-    hsv[..., 0] = np.select([r== maxc, g == maxc], [bc - gc, 2.0 + rc - bc], default=4.0 + gc - rc)
+    hsv[..., 0] = np.select([r == maxc, g == maxc], [bc - gc, 2.0 + rc - bc], default=4.0 + gc - rc)
     hsv[..., 0] = (hsv[..., 0] / 6.0) % 1.0
     return hsv
 
@@ -1766,9 +1766,9 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
     final_affine_matrix = transform_matrix[:2, :2]
     final_offset = transform_matrix[:2, 2]
     channel_images = [
-        ndi.interpolation.affine_transform(
-            x_channel, final_affine_matrix, final_offset, order=order, mode=fill_mode, cval=cval
-        ) for x_channel in x
+        ndi.interpolation.
+        affine_transform(x_channel, final_affine_matrix, final_offset, order=order, mode=fill_mode, cval=cval)
+        for x_channel in x
     ]
     x = np.stack(channel_images, axis=0)
     x = np.rollaxis(x, 0, channel_index + 1)
@@ -3114,7 +3114,7 @@ def process_sequences(sequences, end_id=0, pad_val=0, is_shorten=True, remain_en
                     max_length = i_w
                 if remain_end_id is False:
                     seq[i_w] = pad_val  # set end_id to pad_val
-            elif is_end == True:
+            elif is_end ==True:
                 seq[i_w] = pad_val
 
     if remain_end_id is True:
