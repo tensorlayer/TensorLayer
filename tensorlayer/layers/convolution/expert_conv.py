@@ -71,8 +71,8 @@ class Conv1dLayer(Layer):
 
         logging.info(
             "Conv1dLayer %s: shape: %s stride: %s pad: %s act: %s" % (
-                self.name, str(shape), str(stride), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, str(shape), str(stride), padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
@@ -193,8 +193,8 @@ class Conv2dLayer(Layer):
 
         logging.info(
             "Conv2dLayer %s: shape: %s strides: %s pad: %s act: %s" % (
-                self.name, str(shape), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, str(shape), str(strides), padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
@@ -281,8 +281,8 @@ class Conv3dLayer(Layer):
 
         logging.info(
             "Conv3dLayer %s: shape: %s strides: %s pad: %s act: %s" % (
-                self.name, str(shape), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, str(shape), str(strides), padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 

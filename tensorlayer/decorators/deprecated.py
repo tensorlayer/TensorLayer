@@ -44,8 +44,8 @@ def deprecated(wrapped=None, date='', instructions='', warn_once=True):
                     '%s: `%s.%s` (in file: %s) is deprecated and will be removed %s.\n'
                     'Instructions for updating: %s\n' % (
                         "Class" if inspect.isclass(wrapped) else "Function", wrapped.__module__, class_or_func_name,
-                        wrapped.__code__.co_filename, 'in a future version'
-                        if date is None else ('after %s' % date), instructions
+                        wrapped.__code__.co_filename, 'in a future version' if date is None else
+                        ('after %s' % date), instructions
                     )
                 )
 

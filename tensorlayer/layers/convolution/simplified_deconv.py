@@ -77,8 +77,8 @@ class DeConv2d(Layer):
 
         logging.info(
             "DeConv2d %s: n_filters: %s strides: %s pad: %s act: %s" % (
-                self.name, str(n_filter), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, str(n_filter), str(strides), padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
@@ -152,8 +152,8 @@ class DeConv3d(Layer):
 
         logging.info(
             "DeConv3d %s: n_filters: %s strides: %s pad: %s act: %s" % (
-                self.name, str(n_filter), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, str(n_filter), str(strides), padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
