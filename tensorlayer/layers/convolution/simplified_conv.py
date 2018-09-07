@@ -36,7 +36,7 @@ class Conv1d(Layer):
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     data_format : str
-        Default is 'NWC' as it is a 1D CNN.
+        channels_last 'NWC' (default) or channels_first.
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -117,6 +117,8 @@ class Conv2d(Layer):
         The activation function of this layer.
     padding : str
         The padding algorithm type: "SAME" or "VALID".
+    data_format : str
+        "channels_last" (NHWC, default) or "channels_first" (NCHW). 
     W_init : initializer
         The initializer for the the weight matrix.
     b_init : initializer or None
@@ -127,8 +129,6 @@ class Conv2d(Layer):
         The arguments for the bias vector initializer (for TF < 1.5).
     use_cudnn_on_gpu : bool
         Default is False (for TF < 1.5).
-    data_format : str
-        "NHWC" or "NCHW", default is "NHWC" (for TF < 1.5).
     name : str
         A unique layer name.
 
@@ -159,13 +159,13 @@ class Conv2d(Layer):
             strides=(1, 1),
             act=None,
             padding='SAME',
+            data_format='channels_last',
             dilation_rate=(1, 1),
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
             use_cudnn_on_gpu=None,
-            data_format=None,
             name='conv2d',
     ):
         # if len(strides) != 2:
@@ -194,7 +194,7 @@ class Conv2d(Layer):
             kernel_size=filter_size,
             strides=strides,
             padding=padding,
-            data_format='channels_last',
+            data_format=data_format,
             dilation_rate=dilation_rate,
             activation=self.act,
             use_bias=(False if b_init is None else True),
