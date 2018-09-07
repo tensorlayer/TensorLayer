@@ -33,7 +33,7 @@ class Conv1d(Layer):
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     data_format : str
-        Default is 'NWC' as it is a 1D CNN.
+        channels_last 'NWC' (default) or channels_first.
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -182,7 +182,7 @@ class Conv2d(Layer):
     b_init_args : dictionary
         The arguments for the bias vector initializer (for TF < 1.5).
     data_format : str
-        "NHWC" or "NCHW", default is "NHWC" (for TF < 1.5).
+        "channels_last" (NHWC, default) or "channels_first" (NCHW).
     name : str
         A unique layer name.
 

@@ -29,9 +29,10 @@ class DeConv2d(Layer):
         The stride step (height, width).
     padding : str
         The padding algorithm type: "SAME" or "VALID".
-        If None, try to find the `batch_size` from the first dim of net.outputs (you should define the `batch_size` in the input placeholder).
     act : activation function
         The activation function of this layer.
+    data_format : str
+        "channels_last" (NHWC, default) or "channels_first" (NCHW).
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -149,6 +150,8 @@ class DeConv3d(Layer):
         The padding algorithm type: "SAME" or "VALID".
     act : activation function
         The activation function of this layer.
+    data_format : str
+        "channels_last" (NDHWC, default) or "channels_first" (NCDHW). 
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
