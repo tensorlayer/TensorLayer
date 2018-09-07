@@ -84,8 +84,8 @@ class SeparableConv1d(Layer):
 
         logging.info(
             "SeparableConv1d  %s: n_filter: %d filter_size: %s filter_size: %s depth_multiplier: %d act: %s" % (
-                self.name, n_filter, str(filter_size), str(strides), depth_multiplier, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, n_filter, str(filter_size), str(strides), depth_multiplier,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
         # with tf.variable_scope(name) as vs:
@@ -196,8 +196,8 @@ class SeparableConv2d(Layer):
 
         logging.info(
             "SeparableConv2d  %s: n_filter: %d filter_size: %s filter_size: %s depth_multiplier: %d act: %s" % (
-                self.name, n_filter, str(filter_size), str(strides), depth_multiplier, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, n_filter, str(filter_size), str(strides), depth_multiplier,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
