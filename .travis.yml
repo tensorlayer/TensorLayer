@@ -9,7 +9,7 @@ branches:
   only:
     - master
     - TensorLayer-1.x
-    - /\d+\.\d+(\.\d+)?(\S*)?$/
+    - /^\d+\.\d+(\.\d+)?(\S*)?$/
 
 python:
   - "3.6"
