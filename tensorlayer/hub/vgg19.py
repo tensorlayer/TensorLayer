@@ -74,13 +74,11 @@ class VGG19Base(object):
             # Convert RGB to BGR
             red, green, blue = tf.split(rgb_scaled, 3, 3)
 
-            bgr = tf.concat(
-                [
-                    blue - VGG_MEAN[0],
-                    green - VGG_MEAN[1],
-                    red - VGG_MEAN[2],
-                ], axis=3
-            )
+            bgr = tf.concat([
+                blue - VGG_MEAN[0],
+                green - VGG_MEAN[1],
+                red - VGG_MEAN[2],
+            ], axis=3)
 
             net_in.outputs = bgr
 

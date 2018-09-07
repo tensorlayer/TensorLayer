@@ -12,10 +12,7 @@ import tensorlayer as tl
 import tensorflow.contrib.slim as slim
 import tensorflow.keras as keras
 
-try:
-    from tests.unittests_helper import CustomTestCase
-except ImportError:
-    from unittests_helper import CustomTestCase
+from tests.utils import CustomTestCase
 
 
 class Network_Sequential_1D_Test(CustomTestCase):
@@ -105,9 +102,8 @@ class Network_Sequential_1D_Test(CustomTestCase):
 
             cls.model.add(tl.layers.ReshapeLayer(shape=(-1, 271, 1), name='reshape_layer_13'))
             cls.model.add(
-                tl.layers.Conv1dLayer(
-                    shape=(5, 1, 12), stride=1, padding='SAME', act=tf.nn.relu, name='conv1d_layer_13'
-                )
+                tl.layers.
+                Conv1dLayer(shape=(5, 1, 12), stride=1, padding='SAME', act=tf.nn.relu, name='conv1d_layer_13')
             )
 
             cls.model.add(
@@ -117,9 +113,8 @@ class Network_Sequential_1D_Test(CustomTestCase):
             )
 
             cls.model.add(
-                tl.layers.Conv1d(
-                    n_filter=12, filter_size=5, stride=1, padding='SAME', act=tf.nn.relu, name='conv1d_layer_15'
-                )
+                tl.layers.
+                Conv1d(n_filter=12, filter_size=5, stride=1, padding='SAME', act=tf.nn.relu, name='conv1d_layer_15')
             )
 
             cls.model.add(

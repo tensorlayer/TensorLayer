@@ -295,8 +295,8 @@ class DynamicRNNLayer(Layer):
         if self.sequence_length is None:
 
             sequence_length = retrieve_seq_length_op(
-                self._temp_data['inputs']
-                if isinstance(self._temp_data['inputs'], tf.Tensor) else tf.stack(self._temp_data['inputs'])
+                self._temp_data['inputs'] if isinstance(self._temp_data['inputs'], tf.Tensor) else tf.
+                stack(self._temp_data['inputs'])
             )
 
         # Main - Computes outputs and last_states
@@ -334,9 +334,10 @@ class DynamicRNNLayer(Layer):
                     max_length = tf.shape(outputs)[1]
                     batch_size = tf.shape(outputs)[0]
 
-                    self._temp_data['outputs'
-                                   ] = tf.reshape(tf.concat(outputs, 1),
-                                                  [batch_size, max_length, self.n_hidden])
+                    self._temp_data['outputs'] = tf.reshape(
+                        tf.concat(outputs, 1),
+                        [batch_size, max_length, self.n_hidden]
+                    )
                     # self._temp_data['outputs'] = tf.reshape(tf.concat(1, outputs), [-1, max_length, n_hidden])
 
             self._temp_data['local_weights'] = rnn_variables
@@ -578,8 +579,8 @@ class BiDynamicRNNLayer(Layer):
             if self.sequence_length is None:
 
                 sequence_length = retrieve_seq_length_op(
-                    self._temp_data['inputs']
-                    if isinstance(self._temp_data['inputs'], tf.Tensor) else tf.stack(self._temp_data['inputs'])
+                    self._temp_data['inputs'] if isinstance(self._temp_data['inputs'], tf.Tensor) else tf.
+                    stack(self._temp_data['inputs'])
                 )
 
             if n_layer > 1:
@@ -640,9 +641,10 @@ class BiDynamicRNNLayer(Layer):
                     max_length = tf.shape(outputs)[1]
                     batch_size = tf.shape(outputs)[0]
 
-                    self._temp_data['outputs'
-                                   ] = tf.reshape(tf.concat(outputs, 1),
-                                                  [batch_size, max_length, 2 * self.n_hidden])
+                    self._temp_data['outputs'] = tf.reshape(
+                        tf.concat(outputs, 1),
+                        [batch_size, max_length, 2 * self.n_hidden]
+                    )
 
             self._temp_data['local_weights'] = rnn_variables
 

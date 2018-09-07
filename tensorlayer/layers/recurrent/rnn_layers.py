@@ -571,8 +571,9 @@ class BiRNNLayer(Layer):
                     # <akara>: stack more RNN layer after that
                     # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
 
-                    self._temp_data['outputs'
-                                   ] = tf.reshape(tf.concat(outputs, 1), [-1, self.n_steps, self.n_hidden * 2])
+                    self._temp_data['outputs'] = tf.reshape(
+                        tf.concat(outputs, 1), [-1, self.n_steps, self.n_hidden * 2]
+                    )
 
             self.fw_final_state = fw_state
             self.bw_final_state = bw_state

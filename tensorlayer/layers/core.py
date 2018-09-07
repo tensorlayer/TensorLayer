@@ -727,9 +727,8 @@ class CompiledLayer(object):
                 try:
                     val = p.eval(session=session)
                     logging.info(
-                        "  weight {:3}: {:20} {:15}    {} (mean: {:<18}, median: {:<18}, std: {:<18})   ".format(
-                            i, p.name, str(val.shape), p.dtype.name, val.mean(), np.median(val), val.std()
-                        )
+                        "  weight {:3}: {:20} {:15}    {} (mean: {:<18}, median: {:<18}, std: {:<18})   ".
+                        format(i, p.name, str(val.shape), p.dtype.name, val.mean(), np.median(val), val.std())
                     )
                 except Exception as e:
                     logging.info(str(e))

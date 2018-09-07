@@ -57,7 +57,8 @@ def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=No
     # Now the computation.
     with tf.variable_scope(scope or "Conv"):
         matrix = tf.get_variable(
-            "Matrix", [filter_size[0], filter_size[1], total_arg_size_depth, num_features], dtype=dtype
+            "Matrix",
+            [filter_size[0], filter_size[1], total_arg_size_depth, num_features], dtype=dtype
         )
         if len(args) == 1:
             res = tf.nn.conv2d(args[0], matrix, strides=[1, 1, 1, 1], padding='SAME')
@@ -66,7 +67,8 @@ def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=No
         if not bias:
             return res
         bias_term = tf.get_variable(
-            "Bias", [num_features], dtype=dtype, initializer=tf.constant_initializer(bias_start, dtype=dtype)
+            "Bias",
+            [num_features], dtype=dtype, initializer=tf.constant_initializer(bias_start, dtype=dtype)
         )
     return res + bias_term
 
