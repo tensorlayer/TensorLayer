@@ -1,9 +1,9 @@
 keras>=2.2,<2.3
 pycodestyle>=2.0,<2.5
 pydocstyle>=2.1,<2.2
-pytest>=3.6,<3.8
+pytest==3.8.0
 pytest-cache>=1.0,<1.1
 pytest-cov>=2.5,<2.7
 pytest-xdist>=1.22,<1.24
 sphinx>=1.7,<1.8
-yapf>=0.22,<0.24
+yapf==0.24.0
