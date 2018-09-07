@@ -43,13 +43,13 @@ for i in range(num_episodes):
         ## Get new state and reward from environment
         s1, r, d, _ = env.step(a)
         ## Update Q-Table with new knowledge
-        Q[s, a] = Q[s, a] + lr * (r+ lambd * np.max(Q[s1, :]) - Q[s, a])
+        Q[s, a] = Q[s, a] + lr * (r + lambd * np.max(Q[s1, :]) - Q[s, a])
         rAll += r
         s = s1
-        if d == True:
+        if d ==True:
             break
     rList.append(rAll)
-    running_reward = r if running_reward is None else running_reward * 0.99 +r* 0.01
+    running_reward = r if running_reward is None else running_reward * 0.99 + r * 0.01
     print("Episode [%d/%d] sum reward: %f running reward: %f took: %.5fs %s" % \
         (i, num_episodes, rAll, running_reward, time.time() - episode_time, '' if rAll == 0 else ' !!!!!!!!'))
 

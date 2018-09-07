@@ -9,8 +9,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 import tensorlayer as tl
 
+from tests.utils import CustomTestCase
 
-class PReLU_Layer_Test(unittest.TestCase):
+
+class PReLU_Layer_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -54,7 +56,7 @@ class PReLU_Layer_Test(unittest.TestCase):
         self.assertEqual(prelu2_param_shape, [1])
 
 
-class PRelu6_Layer_Test(unittest.TestCase):
+class PRelu6_Layer_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -98,7 +100,7 @@ class PRelu6_Layer_Test(unittest.TestCase):
         self.assertEqual(prelu2_param_shape, [1])
 
 
-class PTRelu6_Layer_Test(unittest.TestCase):
+class PTRelu6_Layer_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):

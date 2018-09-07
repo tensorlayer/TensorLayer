@@ -215,7 +215,6 @@ class VGG16(VGG16Base):
             self.all_weights = list(self.net.all_weights)
             self.all_layers = list(self.net.all_layers)
             self.all_drop = dict(self.net.all_drop)
-            self.all_graphs = list(self.net.all_graphs)
 
             self.print_layers = self.net.print_layers
             self.print_weights = self.net.print_weights

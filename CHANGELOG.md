@@ -70,6 +70,65 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
+- Tests:
+  - `test_model_compilednetwork.py` has been introduced to test the class `tl.models.CompiledNetwork` (PR #755).
+  - `test_network_custom_2d.py` has been introduced to test the class `tl.networks.CustomModel` (PR #755).
+  - `test_network_sequential_1d.py` has been introduced to test the class `tl.networks.Sequential` with 1D data Layers (PR #755).
+  - `test_network_sequential_2d.py` has been introduced to test the class `tl.networks.Sequential` with 2D data Layers (PR #755).
+  - `test_network_sequential_3d.py` has been introduced to test the class `tl.networks.Sequential` with 3D data Layers (PR #755).
+  - `test_network_sequential_rnn.py` has been introduced to test the class `tl.networks.Sequential` with 3D data Layers (PR #755).
+
+### Changed
+- API:
+  - `tl.models` has been renamed to `tl.nets` to comply with TF Slim naming convention: https://github.com/tensorflow/models/tree/master/research/slim (PR #755)
+  - `layer.all_params` renamed `layer.all_weights` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
+  - `layer.count_params()` renamed `layer.count_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
+  - `layer.get_all_params()` renamed `layer.get_all_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
+  - `layer.print_params()` renamed `layer.print_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
+
+### Dependencies Update
+
+### Deprecated
+
+### Fixed
+
+### Removed
+
+### Security
+
+### Contributors
+- @DEKHTIARJonathan: #755
+- @zsdonghao: #755
+
+## [1.10.1] - 2018-09-07
+
+### Added
+- unittest `tests\test_timeout.py` has been added to ensure the network creation process does not freeze.
+
+### Changed
+ - remove 'tensorboard' param, replaced by 'tensorboard_dir' in `tensorlayer/utils.py` with customizable tensorboard directory (PR #819)
+
+### Removed
+- TL Graph API removed. Memory Leaks Issues with this API, will be fixed and integrated in TL 2.0 (PR #818)
+
+### Fixed
+- Issue #817 fixed: TL 1.10.0 - Memory Leaks and very slow network creation.
+
+### Dependencies Update
+- autopep8>=1.3,<1.4 => autopep8>=1.3,<1.5 (PR #815)
+- pytest-cov>=2.5,<2.6 => pytest-cov>=2.5,<2.7 (PR #820)
+- pytest>=3.6,<3.8 => pytest>=3.6,<3.9 (PR #823)
+- imageio>=2.3,<2.4 => imageio>=2.3,<2.5 (PR #823)
+
+### Contributors
+- @DEKHTIARJonathan: #815 #818 #820 #823
+- @ndiy: #819
+- @zsdonghao: #818
+
+## [1.10.0] - 2018-09-02
+
+### Added
+
 - API:
   - Add `tl.model.vgg19` (PR #698)
   - Add `tl.logging.contrib.hyperdash` (PR #739)
@@ -80,7 +139,6 @@ To release a new version, please update the changelog as followed:
   - Add `tl.files.load_graph_` (PR ＃751)
   - Add `tl.files.save_graph_and_params` (PR ＃751)
   - Add `tl.files.load_graph_and_params` (PR ＃751)
-  - Add `tl.models.CompiledNetwork` class (PR ＃755)
   - Add `tl.prepro.keypoint_random_xxx` (PR #787)
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
@@ -88,62 +146,52 @@ To release a new version, please update the changelog as followed:
   - Update database (PR ＃751)
 - Layer:
   - Release SwitchNormLayer (PR #737)
-  - Release QuantizedConv2d, QuantizedConv2dWithBN, QuantizedDense, QuantizedDenseWithBN (PR#735)
+  - Release QuanConv2d, QuanConv2dWithBN, QuanDenseLayer, QuanDenseLayerWithBN (PR#735)
   - Update Core Layer to support graph (PR ＃751)
   - All Pooling layers support `data_format` (PR #809)
 - Setup:
-  - Creation of installation flags `all_dev`, `all_cpu_dev`, and `all_gpu_dev` (PR #739)
-- Tests:
-  - `test_model_compilednetwork.py` has been introduced to test the class `tl.models.CompiledNetwork` (PR #755).
-  - `test_network_custom_2d.py` has been introduced to test the class `tl.networks.CustomModel` (PR #755).
-  - `test_network_sequential_1d.py` has been introduced to test the class `tl.networks.Sequential` with 1D data Layers (PR #755).
-  - `test_network_sequential_2d.py` has been introduced to test the class `tl.networks.Sequential` with 2D data Layers (PR #755).
-  - `test_network_sequential_3d.py` has been introduced to test the class `tl.networks.Sequential` with 3D data Layers (PR #755).
-  - `test_network_sequential_rnn.py` has been introduced to test the class `tl.networks.Sequential` with 3D data Layers (PR #755).
+  - Creation of installation flaggs `all_dev`, `all_cpu_dev`, and `all_gpu_dev` (PR #739)
 - Examples:
+  - change folder struction (PR #802)
   - `tutorial_models_vgg19` has been introduced to show how to use `tl.model.vgg19` (PR #698).
   - fix bug of `tutorial_bipedalwalker_a3c_continuous_action.py` (PR #734, Issue #732)
   - `tutorial_models_vgg16` and `tutorial_models_vgg19` has been changed the input scale from [0,255] to [0,1](PR #710)
   - `tutorial_mnist_distributed_trainer.py` and `tutorial_cifar10_distributed_trainer.py` are added to explain the uses of Distributed Trainer (PR #700)
   - add `tutorial_quanconv_cifar10.py` and `tutorial_quanconv_mnist.py` (PR #735)
   - add `tutorial_work_with_onnx.py`(PR #775)
-  - change `examples/` folder structure (PR #802) 
 - Applications:
   - [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/abs/1703.06868) (PR #799)
 
 ### Changed
-- API:
-  - function mini-batches changed to avoid wasting samples.(PR #762)
+
+  - function minibatches changed to avoid wasting samples.(PR #762)
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
   - Dockerfiles merged and refactored into one file (PR #747)
   - LazyImports move to the most **top level** imports as possible (PR #739)
   - some new test functions have been added in `test_layers_convolution.py`, `test_layers_normalization.py`, `test_layers_core.py` (PR #735)
-  - `use_gemm` parameter changed for `gemmlowp_at_inference` (PR #751)
-  - `tl.models` has been renamed to `tl.nets` to comply with TF Slim naming convention: https://github.com/tensorflow/models/tree/master/research/slim (PR #755)
-  - `layer.all_params` renamed `layer.all_weights` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
-  - `layer.count_params()` renamed `layer.count_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
-  - `layer.get_all_params()` renamed `layer.get_all_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
-  - `layer.print_params()` renamed `layer.print_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
-- Documentation:
   - documentation now uses mock imports reducing the number of dependencies to compile the documentation (PR #785)
   - fixed and enforced pydocstyle D210, D200, D301, D207, D403, D204, D412, D402, D300, D208 (PR #784)
 
 ### Deprecated
+
   - `tl.logging.warn` has been deprecated in favor of `tl.logging.warning` (PR #739)
 
 ### Removed
+
   - `conv_layers()`  has been removed in both vgg16 and vgg19(PR #710)
+  - graph API (PR #818)
 
 ### Fixed
+
 - import error caused by matplotlib on OSX (PR #705)
 - missing import in tl.prepro (PR #712)
 - Dockerfiles import error fixed - issue #733 (PR #747)
 - Fix a typo in `absolute_difference_error` in file: `tensorlayer/cost.py` - Issue #753 (PR #759)
 - Fix the bug of scaling the learning rate of trainer (PR #776)
-
-### Security
+- log error instead of info when npz file not found. (PR #812)
 
 ### Dependencies Update
+
 - tensorflow>=1.8,<1.9 => tensorflow>=1.6,<1.11 (PR #739 and PR #798)
 - tensorflow-gpu>=1.8,<1.9 => tensorflow-gpu>=1.6,<1.11 (PR #739 and PR #798)
 - numpy>=1.14,<1.15 => numpy>=1.14,<1.16 (PR #754)
@@ -154,10 +202,11 @@ To release a new version, please update the changelog as followed:
 - yapf>=0.21,<0.22 => yapf>=0.22,<0.24 (PR #798 #808)
 
 ### Contributors
-- @DEKHTIARJonathan: #739 #747 #750 #754 #755 #798
+
+- @DEKHTIARJonathan: #739 #747 #750 #754
 - @lgarithm: #705 #700
 - @OwenLiuzZ: #698 #710 #775 #776
-- @zsdonghao: #711 #712 #734 #736 #737 #700 #751 #809
+- @zsdonghao: #711 #712 #734 #736 #737 #700 #751 #809 #818
 - @luomai: #700 #751 #766 #802
 - @XJTUWYD: #735
 - @mutewall: #735
@@ -340,7 +389,9 @@ To release a new version, please update the changelog as followed:
 
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...master
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.10.1...master
+[1.10.1]: https://github.com/tensorlayer/tensorlayer/compare/1.10.0...1.10.1
+[1.10.0]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...1.10.0
 [1.9.1]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...1.9.1
 [1.9.0]: https://github.com/tensorlayer/tensorlayer/compare/1.8.5...1.9.0
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5

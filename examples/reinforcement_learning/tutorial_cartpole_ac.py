@@ -133,7 +133,7 @@ class Critic(object):
 
         with tf.variable_scope('squared_TD_error'):
             # TD_error = r + lambd * V(newS) - V(S)
-            self.td_error = self.r+ LAMBDA * self.v_ - self.v
+            self.td_error = self.r + LAMBDA * self.v_ - self.v
             self.loss = tf.square(self.td_error)
 
         with tf.variable_scope('train'):

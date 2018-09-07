@@ -79,7 +79,7 @@ with tf.Session() as sess:
             ## Choose an action by greedily (with e chance of random action) from the Q-network
             a, allQ = sess.run([predict, y], feed_dict={inputs: [to_one_hot(s, 16)]})
             ## e-Greedy Exploration !!! sample random action
-            if np.random.rand(1) <e:
+            if np.random.rand(1) < e:
                 a[0] = env.action_space.sample()
             ## Get new state and reward from environment
             s1, r, d, _ = env.step(a[0])
@@ -88,7 +88,7 @@ with tf.Session() as sess:
             ## Obtain maxQ' and set our target value for chosen action.
             maxQ1 = np.max(Q1)  # in Q-Learning, policy is greedy, so we use "max" to select the next action.
             targetQ = allQ
-            targetQ[0, a[0]] = r+ lambd * maxQ1
+            targetQ[0, a[0]] = r + lambd * maxQ1
             ## Train network using target and predicted Q values
             # it is not real target Q value, it is just an estimation,
             # but check the Q-Learning update formula:

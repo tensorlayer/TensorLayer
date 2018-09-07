@@ -41,7 +41,8 @@ import numpy as np
 
 import tensorflow as tf
 from tensorflow.python.platform import gfile
-import tensorlayer as tl  # it is used in eval() of _graph2net
+
+import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer import nlp
 from tensorlayer import utils
@@ -71,10 +72,10 @@ __all__ = [
     'save_ckpt',
     'save_npz',
     'save_npz_dict',
-    'save_graph',
-    'load_graph',
-    'save_graph_and_params',
-    'load_graph_and_params',
+    #'save_graph',
+    #'load_graph',
+    #'save_graph_and_params',
+    #'load_graph_and_params',
 ]
 
 
@@ -1649,7 +1650,7 @@ def load_npz(path='', name='model.npz'):
     - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
 
     """
-    d = np.load(path + name)
+    d = np.load(os.path.join(path, name))
     return d['params']
 
 
@@ -1714,8 +1715,8 @@ def load_and_assign_npz(sess=None, name=None, network=None):
     if sess is None:
         raise ValueError("session is None.")
     if not os.path.exists(name):
-        logging.info("[!] Load {} failed!".format(name))
-        return False
+        logging.error("file {} doesn't exist.".format(name))
+        return
     else:
         params = load_npz(name=name)
         assign_params(sess, params, network)
@@ -1769,8 +1770,8 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
         raise ValueError("session is None.")
 
     if not os.path.exists(name):
-        logging.info("[!] Load {} failed!".format(name))
-        return False
+        logging.error("file {} doesn't exist.".format(name))
+        return
 
     params = np.load(name)
     if len(params.keys()) != len(set(params.keys())):
@@ -1903,6 +1904,7 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
         logging.info("[*] load ckpt fail ...")
 
 
+'''
 def save_graph(network=None, name='graph.pkl'):
     """Save the architecture of TL model into a pickle file. No parameters be saved.
 
@@ -2068,6 +2070,7 @@ def load_graph_and_params(name='model', sess=None):
     network = load_graph(name=os.path.join(name, 'graph.pkl'))
     load_and_assign_npz(sess=sess, name=os.path.join(name, 'params.npz'), network=network)
     return network
+'''
 
 
 def save_any_to_npy(save_dict=None, name='file.npy'):

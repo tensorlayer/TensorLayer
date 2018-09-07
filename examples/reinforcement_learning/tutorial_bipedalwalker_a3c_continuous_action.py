@@ -194,7 +194,7 @@ class Worker(object):
                 s_, r, done, _info = self.env.step(a)
 
                 # set robot falls reward to -2 instead of -100
-                if r== -100: r = -2
+                if r == -100: r = -2
 
                 ep_r += r
                 buffer_s.append(s)
@@ -211,8 +211,9 @@ class Worker(object):
                     buffer_v_target = []
 
                     for r in buffer_r[::-1]:  # reverse buffer r
-                        v_s_ = r+ GAMMA * v_s_
+                        v_s_ = r + GAMMA * v_s_
                         buffer_v_target.append(v_s_)
+                        
                     buffer_v_target.reverse()
 
                     buffer_s, buffer_a, buffer_v_target = (

@@ -12,6 +12,7 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
 
 from .core_utils import *
 from .deconv import *
+from .list_dict_utils import *
 from .merge import *
 from .quantization import *
 from .recurrent import *
@@ -22,6 +23,7 @@ from .ternary import *
 __all__ = []
 __all__ += core_utils.__all__
 __all__ += deconv.__all__
+__all__ += list_dict_utils.__all__
 __all__ += merge.__all__
 __all__ += quantization.__all__
 __all__ += recurrent.__all__

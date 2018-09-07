@@ -3,8 +3,6 @@
 
 """Deep learning and Reinforcement learning library for Researchers and Engineers"""
 
-from __future__ import absolute_import
-
 import os
 from distutils.version import LooseVersion
 

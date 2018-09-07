@@ -9,8 +9,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 import tensorlayer as tl
 
+from tests.utils import CustomTestCase
 
-class Core_Helpers_Test(unittest.TestCase):
+
+class Core_Helpers_Test(CustomTestCase):
 
     def test_LayersConfig(self):
         with self.assertRaises(TypeError):
@@ -20,7 +22,7 @@ class Core_Helpers_Test(unittest.TestCase):
         self.assertIsInstance(tl.layers.LayersConfig.set_keep, dict)
 
 
-class Layer_Core_Test(unittest.TestCase):
+class Layer_Core_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):

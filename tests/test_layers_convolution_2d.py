@@ -9,8 +9,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 import tensorlayer as tl
 
+from tests.utils import CustomTestCase
 
-class Layer_Convolution_2D_Test(unittest.TestCase):
+
+class Layer_Convolution_2D_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):

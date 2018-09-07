@@ -4,7 +4,7 @@
 """Deep learning and Reinforcement learning library for Researchers and Engineers"""
 
 # Use the following formatting: (major, minor, patch, prerelease)
-VERSION = (1, 9, 1, "")
+VERSION = (1, 10, 1, "")
 __shortversion__ = '.'.join(map(str, VERSION[:3]))
 __version__ = '.'.join(map(str, VERSION[:3])) + "".join(VERSION[3:])
 

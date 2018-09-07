@@ -1,7 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-from tensorlayer.utils import list_remove_repeat
+from tensorlayer.layers.utils import list_remove_repeat
 
 __all__ = [
     'merge_networks',
@@ -36,22 +36,18 @@ def merge_networks(layers=None):
 
     all_params = []
     all_layers = []
-    all_graphs = []
     all_drop = {}
 
     for l in layers:
         all_params.extend(l.all_weights)
         all_layers.extend(l.all_layers)
-        all_graphs.extend(l.all_graphs)
         all_drop.update(l.all_drop)
 
     layer.all_weights = list(all_params)
     layer.all_layers = list(all_layers)
-    layer.all_graphs = list(all_graphs)
     layer.all_drop = dict(all_drop)
 
     layer.all_layers = list_remove_repeat(layer.all_layers)
     layer.all_weights = list_remove_repeat(layer.all_weights)
-    layer.all_graphs = list_remove_repeat(layer.all_graphs)
 
     return layer

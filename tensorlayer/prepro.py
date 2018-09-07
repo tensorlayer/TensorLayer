@@ -28,9 +28,9 @@ from skimage.morphology import binary_dilation as _binary_dilation
 from skimage.morphology import binary_erosion as _binary_erosion
 
 from six.moves import range
-
+from tensorlayer.lazy_imports import LazyImport
 import PIL
-import cv2  #TODO Remove
+cv2 = LazyImport("cv2")
 import math
 import random
 
@@ -226,7 +226,7 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
 
 
 def rotation(
-    x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1
+        x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1
 ):
     """Rotate an image randomly or non-randomly.
 
@@ -272,7 +272,7 @@ def rotation(
 
 
 def rotation_multi(
-    x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1
+        x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1
 ):
     """Rotate multiple images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
@@ -482,16 +482,8 @@ def flip_axis_multi(x, axis, is_random=False):
 
 # shift
 def shift(
-    x,
-    wrg=0.1,
-    hrg=0.1,
-    is_random=False,
-    row_index=0,
-    col_index=1,
-    channel_index=2,
-    fill_mode='nearest',
-    cval=0.,
-    order=1
+        x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0.,
+        order=1
 ):
     """Shift an image randomly or non-randomly.
 
@@ -534,16 +526,8 @@ def shift(
 
 
 def shift_multi(
-    x,
-    wrg=0.1,
-    hrg=0.1,
-    is_random=False,
-    row_index=0,
-    col_index=1,
-    channel_index=2,
-    fill_mode='nearest',
-    cval=0.,
-    order=1
+        x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0.,
+        order=1
 ):
     """Shift images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
@@ -578,7 +562,8 @@ def shift_multi(
 
 # shear
 def shear(
-    x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1
+        x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0.,
+        order=1
 ):
     """Shear an image randomly or non-randomly.
 
@@ -623,7 +608,8 @@ def shear(
 
 
 def shear_multi(
-    x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1
+        x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0.,
+        order=1
 ):
     """Shear images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
@@ -656,15 +642,8 @@ def shear_multi(
 
 
 def shear2(
-    x,
-    shear=(0.1, 0.1),
-    is_random=False,
-    row_index=0,
-    col_index=1,
-    channel_index=2,
-    fill_mode='nearest',
-    cval=0.,
-    order=1
+        x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0.,
+        order=1
 ):
     """Shear an image randomly or non-randomly.
 
@@ -713,15 +692,8 @@ def shear2(
 
 
 def shear_multi2(
-    x,
-    shear=(0.1, 0.1),
-    is_random=False,
-    row_index=0,
-    col_index=1,
-    channel_index=2,
-    fill_mode='nearest',
-    cval=0.,
-    order=1
+        x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0.,
+        order=1
 ):
     """Shear images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
@@ -760,18 +732,8 @@ def shear_multi2(
 
 # swirl
 def swirl(
-    x,
-    center=None,
-    strength=1,
-    radius=100,
-    rotation=0,
-    output_shape=None,
-    order=1,
-    mode='constant',
-    cval=0,
-    clip=True,
-    preserve_range=False,
-    is_random=False
+        x, center=None, strength=1, radius=100, rotation=0, output_shape=None, order=1, mode='constant', cval=0,
+        clip=True, preserve_range=False, is_random=False
 ):
     """Swirl an image randomly or non-randomly, see `scikit-image swirl API <http://scikit-image.org/docs/dev/api/skimage.transform.html#skimage.transform.swirl>`__
     and `example <http://scikit-image.org/docs/dev/auto_examples/plot_swirl.html>`__.
@@ -835,17 +797,8 @@ def swirl(
     if max_v > 1:  # Note: the input of this fn should be [-1, 1], rescale is required.
         x = x / max_v
     swirled = skimage.transform.swirl(
-        x,
-        center=center,
-        strength=strength,
-        radius=radius,
-        rotation=rotation,
-        output_shape=output_shape,
-        order=order,
-        mode=mode,
-        cval=cval,
-        clip=clip,
-        preserve_range=preserve_range
+        x, center=center, strength=strength, radius=radius, rotation=rotation, output_shape=output_shape, order=order,
+        mode=mode, cval=cval, clip=clip, preserve_range=preserve_range
     )
     if max_v > 1:
         swirled = swirled * max_v
@@ -853,18 +806,8 @@ def swirl(
 
 
 def swirl_multi(
-    x,
-    center=None,
-    strength=1,
-    radius=100,
-    rotation=0,
-    output_shape=None,
-    order=1,
-    mode='constant',
-    cval=0,
-    clip=True,
-    preserve_range=False,
-    is_random=False
+        x, center=None, strength=1, radius=100, rotation=0, output_shape=None, order=1, mode='constant', cval=0,
+        clip=True, preserve_range=False, is_random=False
 ):
     """Swirl multiple images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
@@ -900,17 +843,8 @@ def swirl_multi(
         if max_v > 1:  # Note: the input of this fn should be [-1, 1], rescale is required.
             data = data / max_v
         swirled = skimage.transform.swirl(
-            data,
-            center=center,
-            strength=strength,
-            radius=radius,
-            rotation=rotation,
-            output_shape=output_shape,
-            order=order,
-            mode=mode,
-            cval=cval,
-            clip=clip,
-            preserve_range=preserve_range
+            data, center=center, strength=strength, radius=radius, rotation=rotation, output_shape=output_shape,
+            order=order, mode=mode, cval=cval, clip=clip, preserve_range=preserve_range
         )
         if max_v > 1:
             swirled = swirled * max_v
@@ -1033,15 +967,8 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
 
 # zoom
 def zoom(
-    x,
-    zoom_range=(0.9, 1.1),
-    is_random=False,
-    row_index=0,
-    col_index=1,
-    channel_index=2,
-    fill_mode='nearest',
-    cval=0.,
-    order=1
+        x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
+        cval=0., order=1
 ):
     """Zoom in and out of a single image, randomly or non-randomly.
 
@@ -1090,15 +1017,8 @@ def zoom(
 
 
 def zoom_multi(
-    x,
-    zoom_range=(0.9, 1.1),
-    is_random=False,
-    row_index=0,
-    col_index=1,
-    channel_index=2,
-    fill_mode='nearest',
-    cval=0.,
-    order=1
+        x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
+        cval=0., order=1
 ):
     """Zoom in and out of images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
@@ -1511,7 +1431,7 @@ def pixel_value_scale(im, val=0.9, clip=None, is_random=False):
 
 # normailization
 def samplewise_norm(
-    x, rescale=None, samplewise_center=False, samplewise_std_normalization=False, channel_index=2, epsilon=1e-7
+        x, rescale=None, samplewise_center=False, samplewise_std_normalization=False, channel_index=2, epsilon=1e-7
 ):
     """Normalize an image by rescale, samplewise centering and samplewise centering in order.
 
@@ -1856,7 +1776,8 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
 
 
 def projective_transform_by_points(
-    x, src, dst, map_args=None, output_shape=None, order=1, mode='constant', cval=0.0, clip=True, preserve_range=False
+        x, src, dst, map_args=None, output_shape=None, order=1, mode='constant', cval=0.0, clip=True,
+        preserve_range=False
 ):
     """Projective transform by given coordinates, usually 4 coordinates.
 
@@ -1925,14 +1846,7 @@ def projective_transform_by_points(
     m = transform.ProjectiveTransform()
     m.estimate(dst, src)
     warped = transform.warp(
-        x,
-        m,
-        map_args=map_args,
-        output_shape=output_shape,
-        order=order,
-        mode=mode,
-        cval=cval,
-        clip=clip,
+        x, m, map_args=map_args, output_shape=output_shape, order=order, mode=mode, cval=cval, clip=clip,
         preserve_range=preserve_range
     )
     return warped
@@ -2619,16 +2533,8 @@ def obj_box_imresize(im, coords=None, size=None, interp='bicubic', mode=None, is
 
 
 def obj_box_crop(
-    im,
-    classes=None,
-    coords=None,
-    wrg=100,
-    hrg=100,
-    is_rescale=False,
-    is_center=False,
-    is_random=False,
-    thresh_wh=0.02,
-    thresh_wh2=12.
+        im, classes=None, coords=None, wrg=100, hrg=100, is_rescale=False, is_center=False, is_random=False,
+        thresh_wh=0.02, thresh_wh2=12.
 ):
     """Randomly or centrally crop an image, and compute the new bounding box coordinates.
     Objects outside the cropped image will be removed.
@@ -2780,22 +2686,8 @@ def obj_box_crop(
 
 
 def obj_box_shift(
-    im,
-    classes=None,
-    coords=None,
-    wrg=0.1,
-    hrg=0.1,
-    row_index=0,
-    col_index=1,
-    channel_index=2,
-    fill_mode='nearest',
-    cval=0.,
-    order=1,
-    is_rescale=False,
-    is_center=False,
-    is_random=False,
-    thresh_wh=0.02,
-    thresh_wh2=12.
+        im, classes=None, coords=None, wrg=0.1, hrg=0.1, row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
+        cval=0., order=1, is_rescale=False, is_center=False, is_random=False, thresh_wh=0.02, thresh_wh2=12.
 ):
     """Shift an image randomly or non-randomly, and compute the new bounding box coordinates.
     Objects outside the cropped image will be removed.
@@ -2929,21 +2821,9 @@ def obj_box_shift(
 
 
 def obj_box_zoom(
-    im,
-    classes=None,
-    coords=None,
-    zoom_range=(0.9, 1.1),
-    row_index=0,
-    col_index=1,
-    channel_index=2,
-    fill_mode='nearest',
-    cval=0.,
-    order=1,
-    is_rescale=False,
-    is_center=False,
-    is_random=False,
-    thresh_wh=0.02,
-    thresh_wh2=12.
+        im, classes=None, coords=None, zoom_range=(0.9,
+                                                   1.1), row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
+        cval=0., order=1, is_rescale=False, is_center=False, is_random=False, thresh_wh=0.02, thresh_wh2=12.
 ):
     """Zoom in and out of a single image, randomly or non-randomly, and compute the new bounding box coordinates.
     Objects outside the cropped image will be removed.
@@ -3534,7 +3414,7 @@ def keypoint_random_crop2(image, annos, mask=None, size=(368, 368)):
             mask = mask[crop_range_y:crop_range_y + _target_width, :]
         new_joints = []
 
-        for people in annos:
+        for people in annos:  # TODO : speed up with affine transform
             new_keypoints = []
             for keypoints in people:
 
@@ -3568,7 +3448,7 @@ def keypoint_random_crop2(image, annos, mask=None, size=(368, 368)):
 
 
 def keypoint_random_crop(image, annos, mask=None, size=(368, 368)):
-    """Randomly crop padded an image and corresponding keypoints using padding without influence scales, given by ``keypoint_random_resize_shortestedge``.
+    """Randomly crop an image and corresponding keypoints without influence scales, given by ``keypoint_random_resize_shortestedge``.
 
     Parameters
     -----------
@@ -3604,7 +3484,7 @@ def keypoint_random_crop(image, annos, mask=None, size=(368, 368)):
             if x <= joint[0][0] < x + target_size[0] and y <= joint[0][1] < y + target_size[1]:
                 break
 
-    def pose_crop(image, annos, mask, x, y, w, h):
+    def pose_crop(image, annos, mask, x, y, w, h):  # TODO : speed up with affine transform
         # adjust image
         target_size = (w, h)
 
@@ -3710,7 +3590,7 @@ def keypoint_random_rotate(image, annos, mask=None, rg=15.):
     img = ret[newy:newy + newh, newx:newx + neww]
     # adjust meta data
     adjust_joint_list = []
-    for joint in annos:
+    for joint in annos:  # TODO : speed up with affine transform
         adjust_joint = []
         for point in joint:
             if point[0] < -100 or point[1] < -100:
@@ -3749,7 +3629,9 @@ def keypoint_random_rotate(image, annos, mask=None, rg=15.):
         return img, joint_list, None
 
 
-def keypoint_random_flip(image, annos, mask=None, prob=0.5):
+def keypoint_random_flip(
+        image, annos, mask=None, prob=0.5, flip_list=(0, 1, 5, 6, 7, 2, 3, 4, 11, 12, 13, 8, 9, 10, 15, 14, 17, 16, 18)
+):
     """Flip an image and corresponding keypoints.
 
     Parameters
@@ -3762,13 +3644,15 @@ def keypoint_random_flip(image, annos, mask=None, prob=0.5):
         The mask if available.
     prob : float, 0 to 1
         The probability to flip the image, if 1, always flip the image.
+    flip_list : tuple of int
+        Denotes how the keypoints number be changed after flipping. Default COCO format.
 
     Returns
     ----------
     preprocessed image, annos, mask
 
     """
-    flip_list = [0, 1, 5, 6, 7, 2, 3, 4, 11, 12, 13, 8, 9, 10, 15, 14, 17, 16, 18]
+
     _prob = np.random.uniform(0, 1.0)
     if _prob < prob:
         return image, annos, mask
@@ -3777,7 +3661,7 @@ def keypoint_random_flip(image, annos, mask=None, prob=0.5):
     image = cv2.flip(image, 1)
     mask = cv2.flip(mask, 1)
     new_joints = []
-    for people in annos:
+    for people in annos:  # TODO : speed up with affine transform
         new_keypoints = []
         for k in flip_list:
             point = people[k]
@@ -3799,7 +3683,7 @@ def keypoint_random_flip(image, annos, mask=None, prob=0.5):
 
 def keypoint_random_resize(image, annos, mask=None, zoom_range=(0.8, 1.2)):
     """Randomly resize an image and corresponding keypoints.
-    The size of image will be changed.
+    The height and width of image will be changed independently, so the scale will be changed.
 
     Parameters
     -----------
@@ -3809,7 +3693,7 @@ def keypoint_random_resize(image, annos, mask=None, zoom_range=(0.8, 1.2)):
         The keypoints annotation of people.
     mask : single channel image or None
         The mask if available.
-    zoom_range : tuple or two floats
+    zoom_range : tuple of two floats
         The minimum and maximum factor to zoom in or out, e.g (0.5, 1) means zoom out 1~2 times.
 
     Returns
@@ -3831,7 +3715,7 @@ def keypoint_random_resize(image, annos, mask=None, zoom_range=(0.8, 1.2)):
         mask = cv2.resize(mask, (neww, newh), interpolation=cv2.INTER_AREA)
     # adjust meta data
     adjust_joint_list = []
-    for joint in annos:
+    for joint in annos:  # TODO : speed up with affine transform
         adjust_joint = []
         for point in joint:
             if point[0] < -100 or point[1] < -100:
@@ -3846,10 +3730,12 @@ def keypoint_random_resize(image, annos, mask=None, zoom_range=(0.8, 1.2)):
 
 
 def keypoint_random_resize_shortestedge(
-    image, annos, mask=None, min_size=(368, 368), pad_val=(0, 0, np.random.uniform(0.0, 1.0))
+        image, annos, mask=None, min_size=(368, 368), zoom_range=(0.8, 1.2),
+        pad_val=(0, 0, np.random.uniform(0.0, 1.0))
 ):
-    """Randomly resize an image and corresponding keypoints based on shorter edge with padding.
-    The size of image will be changed.
+    """Randomly resize an image and corresponding keypoints based on shorter edgeself.
+    If the resized image is smaller than `min_size`, uses padding to make shape matchs `min_size`.
+    The height and width of image will be changed together, the scale would not be changed.
 
     Parameters
     -----------
@@ -3861,6 +3747,10 @@ def keypoint_random_resize_shortestedge(
         The mask if available.
     min_size : tuple of two int
         The minimum size of height and width.
+    zoom_range : tuple of two floats
+        The minimum and maximum factor to zoom in or out, e.g (0.5, 1) means zoom out 1~2 times.
+    pad_val : int/float, or tuple of int or random function
+        The three padding values for RGB channels respectively.
 
     Returns
     ----------
@@ -3879,15 +3769,16 @@ def keypoint_random_resize_shortestedge(
     ratio_h = _target_height / height
     ratio = min(ratio_w, ratio_h)
     target_size = int(min(width * ratio + 0.5, height * ratio + 0.5))
-    random_target = np.random.uniform(0.95, 1.6)
+    random_target = np.random.uniform(zoom_range[0], zoom_range[1])
     target_size = int(target_size * random_target)
 
     # target_size = int(min(_network_w, _network_h) * random.uniform(0.7, 1.5))
 
     def pose_resize_shortestedge(image, annos, mask, target_size):
-        _target_height = 368
-        _target_width = 368
-        img = image
+        """ """
+        # _target_height = 368
+        # _target_width = 368
+        # img = image
         height, width, _ = np.shape(image)
 
         # adjust image
@@ -3897,7 +3788,7 @@ def keypoint_random_resize_shortestedge(
         else:
             newh, neww = int(scale * height + 0.5), target_size
 
-        dst = cv2.resize(img, (neww, newh), interpolation=cv2.INTER_AREA)
+        dst = cv2.resize(image, (neww, newh), interpolation=cv2.INTER_AREA)
         mask = cv2.resize(mask, (neww, newh), interpolation=cv2.INTER_AREA)
         pw = ph = 0
         if neww < _target_width or newh < _target_height:
@@ -3911,7 +3802,7 @@ def keypoint_random_resize_shortestedge(
                 mask = cv2.copyMakeBorder(mask, ph, ph + mh, pw, pw + mw, cv2.BORDER_CONSTANT, value=1)
         # adjust meta data
         adjust_joint_list = []
-        for joint in annos:
+        for joint in annos:  # TODO : speed up with affine transform
             adjust_joint = []
             for point in joint:
                 if point[0] < -100 or point[1] < -100:

@@ -1,8 +1,10 @@
-#! /usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import unittest
-import warnings
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 from sphinx.application import Sphinx
 
@@ -10,16 +12,14 @@ from sphinx.application import Sphinx
 class DocTest(unittest.TestCase):
     source_dir = u'docs/'
     config_dir = u'docs/'
-    output_dir = u'docs/build_test'
-    doctree_dir = u'docs/build_test/doctrees'
+    output_dir = u'docs/test_build'
+    doctree_dir = u'docs/test_build/doctrees'
 
     all_files = True
 
     @classmethod
     def setUpClass(cls):
-
-        warnings.resetwarnings()
-        warnings.simplefilter("ignore", DeprecationWarning)
+        os.environ["SPHINXBUILD"] = "1"
 
     def test_html_documentation(self):
         app = Sphinx(

@@ -28,7 +28,6 @@ __all__ = [
     'predict',
     'evaluation',
     'dict_to_one',
-    'list_remove_repeat',
     'flatten_list',
     'class_balancing_oversample',
     'get_random_int',
@@ -41,25 +40,9 @@ __all__ = [
 
 
 def fit(
-    sess,
-    network,
-    train_op,
-    cost,
-    X_train,
-    y_train,
-    x,
-    y_,
-    acc=None,
-    batch_size=100,
-    n_epoch=100,
-    print_freq=5,
-    X_val=None,
-    y_val=None,
-    eval_train=True,
-    tensorboard=False,
-    tensorboard_epoch_freq=5,
-    tensorboard_weight_histograms=True,
-    tensorboard_graph_vis=True
+        sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_size=100, n_epoch=100, print_freq=5,
+        X_val=None, y_val=None, eval_train=True, tensorboard_dir=None, tensorboard_epoch_freq=5,
+        tensorboard_weight_histograms=True, tensorboard_graph_vis=True
 ):
     """Training a given non time-series network by the given cost function, training data, batch_size, n_epoch etc.
 
@@ -97,9 +80,8 @@ def fit(
     eval_train : boolean
         Whether to evaluate the model during training.
         If X_val and y_val are not None, it reflects whether to evaluate the model on training data.
-    tensorboard : boolean
-        If True, summary data will be stored to the log/ directory for visualization with tensorboard.
-        See also detailed tensorboard_X settings for specific configurations of features. (default False)
+    tensorboard_dir : string
+        path to log dir, if set, summary data will be stored to the tensorboard_dir/ directory for visualization with tensorboard. (default None)
         Also runs `tl.layers.initialize_global_variables(sess)` internally in fit() to setup the summary nodes.
     tensorboard_epoch_freq : int
         How many epochs between storing tensorboard checkpoint for visualization to log/ directory (default 5).
@@ -123,7 +105,7 @@ def fit(
 
     Notes
     --------
-    If tensorboard=True, the `global_variables_initializer` will be run inside the fit function
+    If tensorboard_dir not None, the `global_variables_initializer` will be run inside the fit function
     in order to initialize the automatically generated summary nodes used for tensorboard visualization,
     thus `tf.global_variables_initializer().run()` before the `fit()` call will be undefined.
 
@@ -131,23 +113,23 @@ def fit(
     if X_train.shape[0] < batch_size:
         raise AssertionError("Number of training examples should be bigger than the batch size")
 
-    if (tensorboard):
+    if tensorboard_dir is not None:
         tl.logging.info("Setting up tensorboard ...")
         #Set up tensorboard summaries and saver
-        tl.files.exists_or_mkdir('logs/')
+        tl.files.exists_or_mkdir(tensorboard_dir)
 
         #Only write summaries for more recent TensorFlow versions
         if hasattr(tf, 'summary') and hasattr(tf.summary, 'FileWriter'):
             if tensorboard_graph_vis:
-                train_writer = tf.summary.FileWriter('logs/train', sess.graph)
-                val_writer = tf.summary.FileWriter('logs/validation', sess.graph)
+                train_writer = tf.summary.FileWriter(tensorboard_dir + '/train', sess.graph)
+                val_writer = tf.summary.FileWriter(tensorboard_dir + '/validation', sess.graph)
             else:
-                train_writer = tf.summary.FileWriter('logs/train')
-                val_writer = tf.summary.FileWriter('logs/validation')
+                train_writer = tf.summary.FileWriter(tensorboard_dir + '/train')
+                val_writer = tf.summary.FileWriter(tensorboard_dir + '/validation')
 
         #Set up summary nodes
         if (tensorboard_weight_histograms):
-            for param in network.all_weights:
+            for param in network.all_params:
                 if hasattr(tf, 'summary') and hasattr(tf.summary, 'histogram'):
                     tl.logging.info('Param name %s' % param.name)
                     tf.summary.histogram(param.name, param)
@@ -159,7 +141,7 @@ def fit(
 
         #Initalize all variables and summaries
         tl.layers.initialize_global_variables(sess)
-        tl.logging.info("Finished! use $tensorboard --logdir=logs/ to start server")
+        tl.logging.info("Finished! use `tensorboard --logdir=%s/` to start tensorboard" % tensorboard_dir)
 
     tl.logging.info("Start training the network ...")
     start_time_begin = time.time()
@@ -176,7 +158,7 @@ def fit(
             n_step += 1
         loss_ep = loss_ep / n_step
 
-        if tensorboard and hasattr(tf, 'summary'):
+        if tensorboard_dir is not None and hasattr(tf, 'summary'):
             if epoch + 1 == 1 or (epoch + 1) % tensorboard_epoch_freq == 0:
                 for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
                     dp_dict = dict_to_one(network.all_drop)  # disable noise layers
@@ -426,35 +408,6 @@ def dict_to_one(dp_dict):
     return {x: 1 for x in dp_dict}
 
 
-def list_remove_repeat(x):
-    """Remove the repeated items in a list, and return the processed list.
-    You may need it to create merged layer like Concat, Elementwise and etc.
-
-    Parameters
-    ----------
-    x : list
-        Input
-
-    Returns
-    -------
-    list
-        A list that after removing it's repeated items
-
-    Examples
-    -------
-    >>> l = [2, 3, 4, 2, 3]
-    >>> l = list_remove_repeat(l)
-    [2, 3, 4]
-
-    """
-    y = []
-    for i in x:
-        if i not in y:
-            y.append(i)
-
-    return y
-
-
 def flatten_list(list_of_list):
     """Input a list of list, return a list that all items are in a list.
 
@@ -620,9 +573,8 @@ def exit_tensorflow(sess=None, port=6006):
 
     elif _platform == "darwin":
         tl.logging.info('OS X: %s' % text)
-        subprocess.Popen(
-            "lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill", shell=True
-        )  # kill tensorboard
+        subprocess.Popen("lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill",
+                         shell=True)  # kill tensorboard
     elif _platform == "win32":
         raise NotImplementedError("this function is not supported on the Windows platform")
 

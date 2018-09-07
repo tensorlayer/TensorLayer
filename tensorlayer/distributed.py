@@ -104,22 +104,10 @@ class Trainer(object):
     """
 
     def __init__(
-        self,
-        training_dataset,
-        build_training_func,
-        optimizer,
-        optimizer_args,
-        batch_size=32,
-        num_epochs=100,
-        prefetch_buffer_size=None,
-        shuffle_data=False,
-        shuffle_seed=0,
-        checkpoint_dir=None,
-        scaling_learning_rate=True,
-        log_step_size=1,
-        validation_dataset=None,
-        build_validation_func=None,
-        max_iteration=math.inf
+            self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32, num_epochs=100,
+            prefetch_buffer_size=None, shuffle_data=False, shuffle_seed=0, checkpoint_dir=None,
+            scaling_learning_rate=True, log_step_size=1, validation_dataset=None, build_validation_func=None,
+            max_iteration=float('inf')
     ):
         # Initialize Horovod.
         hvd.init()
@@ -143,9 +131,8 @@ class Trainer(object):
         # Get the shard of the dataset based on my local rank
         if shuffle_data:
             training_dataset = training_dataset.shuffle(buffer_size=10000, seed=shuffle_seed)
-        training_dataset = training_dataset.shard(
-            num_shards=hvd.size(), index=hvd.rank()
-        ).batch(batch_size).repeat(num_epochs)
+        training_dataset = training_dataset.shard(num_shards=hvd.size(),
+                                                  index=hvd.rank()).batch(batch_size).repeat(num_epochs)
         if prefetch_buffer_size:
             training_dataset.prefetch(buffer_size=prefetch_buffer_size)
         training_iterator = training_dataset.make_one_shot_iterator()
@@ -259,7 +246,7 @@ class Trainer(object):
                 logging.info(log_str)
 
 
-@deprecated(end_support_version="2.0.0", instructions="Using the TensorLayer distributed trainer.")
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 class TaskSpecDef(object):
     """Specification for a distributed task.
 
@@ -390,16 +377,12 @@ class TaskSpecDef(object):
             raise Exception('You need more than one worker instance to use one as evaluator')
 
         return TaskSpecDef(
-            task_type=self.type,
-            index=self._index,
-            trial=self.trial,
-            ps_hosts=self.ps_hosts,
-            worker_hosts=self.worker_hosts[:-1],
-            master=self.master
+            task_type=self.type, index=self._index, trial=self.trial, ps_hosts=self.ps_hosts,
+            worker_hosts=self.worker_hosts[:-1], master=self.master
         )
 
 
-@deprecated(end_support_version="2.0.0", instructions="Using the TensorLayer distributed trainer.")
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 def create_task_spec_def():
     """Returns the a :class:`TaskSpecDef` based on the environment variables for distributed training.
 
@@ -415,39 +398,25 @@ def create_task_spec_def():
         task_data = env.get('task', None) or {'type': 'master', 'index': 0}
         cluster_data = env.get('cluster', None) or {'ps': None, 'worker': None, 'master': None}
         return TaskSpecDef(
-            task_type=task_data['type'],
-            index=task_data['index'],
-            trial=task_data['trial'] if 'trial' in task_data else None,
-            ps_hosts=cluster_data['ps'],
-            worker_hosts=cluster_data['worker'],
-            master=cluster_data['master'] if 'master' in cluster_data else None
+            task_type=task_data['type'], index=task_data['index'], trial=task_data['trial'] if 'trial' in task_data else
+            None, ps_hosts=cluster_data['ps'], worker_hosts=cluster_data['worker'], master=cluster_data['master']
+            if 'master' in cluster_data else None
         )
     elif 'JOB_NAME' in os.environ:
         # JOB_NAME, TASK_INDEX, PS_HOSTS, WORKER_HOSTS and MASTER_HOST are used in TensorPort
         return TaskSpecDef(
-            task_type=os.environ['JOB_NAME'],
-            index=os.environ['TASK_INDEX'],
-            ps_hosts=os.environ.get('PS_HOSTS', None),
-            worker_hosts=os.environ.get('WORKER_HOSTS', None),
-            master=os.environ.get('MASTER_HOST', None)
+            task_type=os.environ['JOB_NAME'], index=os.environ['TASK_INDEX'], ps_hosts=os.environ.get('PS_HOSTS', None),
+            worker_hosts=os.environ.get('WORKER_HOSTS', None), master=os.environ.get('MASTER_HOST', None)
         )
     else:
         raise Exception('You need to setup TF_CONFIG or JOB_NAME to define the task.')
 
 
-@deprecated(end_support_version="2.0.0", instructions="Using the TensorLayer distributed trainer.")
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 def create_distributed_session(
-    task_spec=None,
-    checkpoint_dir=None,
-    scaffold=None,
-    hooks=None,
-    chief_only_hooks=None,
-    save_checkpoint_secs=600,
-    save_summaries_steps=object(),
-    save_summaries_secs=object(),
-    config=None,
-    stop_grace_period_secs=120,
-    log_step_count_steps=100
+        task_spec=None, checkpoint_dir=None, scaffold=None, hooks=None, chief_only_hooks=None, save_checkpoint_secs=600,
+        save_summaries_steps=object(), save_summaries_secs=object(), config=None, stop_grace_period_secs=120,
+        log_step_count_steps=100
 ):
     """Creates a distributed session.
 
@@ -533,22 +502,14 @@ def create_distributed_session(
     target = task_spec.target() if task_spec is not None else None
     is_chief = task_spec.is_master() if task_spec is not None else True
     return tf.train.MonitoredTrainingSession(
-        master=target,
-        is_chief=is_chief,
-        checkpoint_dir=checkpoint_dir,
-        scaffold=scaffold,
-        save_checkpoint_secs=save_checkpoint_secs,
-        save_summaries_steps=save_summaries_steps,
-        save_summaries_secs=save_summaries_secs,
-        log_step_count_steps=log_step_count_steps,
-        stop_grace_period_secs=stop_grace_period_secs,
-        config=config,
-        hooks=hooks,
-        chief_only_hooks=chief_only_hooks
+        master=target, is_chief=is_chief, checkpoint_dir=checkpoint_dir, scaffold=scaffold,
+        save_checkpoint_secs=save_checkpoint_secs, save_summaries_steps=save_summaries_steps,
+        save_summaries_secs=save_summaries_secs, log_step_count_steps=log_step_count_steps,
+        stop_grace_period_secs=stop_grace_period_secs, config=config, hooks=hooks, chief_only_hooks=chief_only_hooks
     )
 
 
-@deprecated(end_support_version="2.0.0", instructions="Using the TensorLayer distributed trainer.")
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 class StopAtTimeHook(session_run_hook.SessionRunHook):
     """Hook that requests stop after a specified time.
 
@@ -571,7 +532,7 @@ class StopAtTimeHook(session_run_hook.SessionRunHook):
             run_context.request_stop()
 
 
-@deprecated(end_support_version="2.0.0", instructions="Using the TensorLayer distributed trainer.")
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 class LoadCheckpoint(session_run_hook.SessionRunHook):
     """Hook that loads a checkpoint after the session is created.
 

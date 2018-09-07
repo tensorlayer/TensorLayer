@@ -9,10 +9,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 import tensorlayer as tl
 
-try:
-    from tests.unittests_helper import CustomTestCase
-except ImportError:
-    from unittests_helper import CustomTestCase
+from tests.utils import CustomTestCase
 
 
 class Layer_Pooling_Test(CustomTestCase):
@@ -41,7 +38,7 @@ class Layer_Pooling_Test(CustomTestCase):
         cls.acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
         # define the optimizer
-        train_params = cls.network.all_weights
+        train_params = cls.network.all_params
         optimizer = tl.optimizers.AMSGrad(learning_rate=1e-4, beta1=0.9, beta2=0.999, epsilon=1e-8)
         cls.train_op = optimizer.minimize(cls.cost, var_list=train_params)
 
@@ -65,21 +62,8 @@ class Layer_Pooling_Test(CustomTestCase):
 
                 # train the network
                 tl.utils.fit(
-                    sess,
-                    self.network,
-                    self.train_op,
-                    self.cost,
-                    X_train,
-                    y_train,
-                    self.x,
-                    self.y_,
-                    acc=self.acc,
-                    batch_size=500,
-                    n_epoch=2,
-                    print_freq=1,
-                    X_val=X_val,
-                    y_val=y_val,
-                    eval_train=False
+                    sess, self.network, self.train_op, self.cost, X_train, y_train, self.x, self.y_, acc=self.acc,
+                    batch_size=500, n_epoch=1, print_freq=1, X_val=X_val, y_val=y_val, eval_train=False
                 )
 
 
