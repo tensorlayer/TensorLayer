@@ -113,8 +113,8 @@ class DeConv2dLayer(Layer):
 
         logging.info(
             "DeConv2dLayer %s: shape: %s out_shape: %s strides: %s pad: %s act: %s" % (
-                self.name, str(shape), str(output_shape), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, str(shape), str(output_shape), str(strides), padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
@@ -196,8 +196,8 @@ class DeConv3dLayer(Layer):
 
         logging.info(
             "DeConv3dLayer %s: shape: %s out_shape: %s strides: %s pad: %s act: %s" % (
-                self.name, str(shape), str(output_shape), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, str(shape), str(output_shape), str(strides), padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
