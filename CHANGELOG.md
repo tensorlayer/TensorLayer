@@ -47,15 +47,15 @@ To release a new version, please update the changelog as followed:
 
 ### Changed
 
-### Deprecated
+### Dependencies Update
 
-### Removed
+### Deprecated
 
 ### Fixed
 
-### Security
+### Removed
 
-### Dependencies Update
+### Security
 
 ### Contributors
 
@@ -70,20 +70,18 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
-- unittest `tests\test_timeout.py` has been added to ensure the network creation process does not freeze.
 
 ### Changed
 
-### Deprecated
+### Dependencies Update
 
-### Removed
-- TL Graph API removed. Memory Leaks Issues with this API, will be fixed and integrated in TL 2.0 (PR #818)
+### Deprecated
 
 ### Fixed
 
-### Security
+### Removed
 
-### Dependencies Update
+### Security
 
 ### Contributors
 
