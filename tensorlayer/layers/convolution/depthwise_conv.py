@@ -95,8 +95,8 @@ class DepthwiseConv2d(Layer):
 
         logging.info(
             "DepthwiseConv2d %s: shape: %s strides: %s pad: %s act: %s" % (
-                self.name, str(shape), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, str(shape), str(strides), padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
