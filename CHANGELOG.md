@@ -47,15 +47,15 @@ To release a new version, please update the changelog as followed:
 
 ### Changed
 
-### Deprecated
+### Dependencies Update
 
-### Removed
+### Deprecated
 
 ### Fixed
 
-### Security
+### Removed
 
-### Dependencies Update
+### Security
 
 ### Contributors
 
