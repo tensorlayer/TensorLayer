@@ -1,3 +1,3 @@
-# [Applications](https://github.com/tensorlayer/tensorlayer) for productive-level applications
-# [Example List](http://tensorlayer.readthedocs.io/en/latest/user/example.html) for tutorials
+# [Applications](https://github.com/tensorlayer) for productive-level applications
+# [Example List](https://tensorlayer.readthedocs.io/en/stable/user/examples.html) for tutorials
 # [Awesome-TensorLayer](https://github.com/tensorlayer/awesome-tensorlayer) for all resources
