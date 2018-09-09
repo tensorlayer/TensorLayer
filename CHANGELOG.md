@@ -47,15 +47,15 @@ To release a new version, please update the changelog as followed:
 
 ### Changed
 
-### Deprecated
+### Dependencies Update
 
-### Removed
+### Deprecated
 
 ### Fixed
 
-### Security
+### Removed
 
-### Dependencies Update
+### Security
 
 ### Contributors
 
@@ -72,24 +72,43 @@ To release a new version, please update the changelog as followed:
 ### Added
 
 ### Changed
- - remove 'tensorboard' param, replaced by 'tensorboard_dir' in `tensorlayer/utils.py` with customizable tensorboard directory (PR #819)
+
+### Dependencies Update
 
 ### Deprecated
 
-### Removed
-
 ### Fixed
 
+### Removed
+
 ### Security
+
+### Contributors
+
+## [1.10.1] - 2018-09-07
+
+### Added
+- unittest `tests\test_timeout.py` has been added to ensure the network creation process does not freeze.
+
+### Changed
+ - remove 'tensorboard' param, replaced by 'tensorboard_dir' in `tensorlayer/utils.py` with customizable tensorboard directory (PR #819)
+
+### Removed
+- TL Graph API removed. Memory Leaks Issues with this API, will be fixed and integrated in TL 2.0 (PR #818)
+
+### Fixed
+- Issue #817 fixed: TL 1.10.0 - Memory Leaks and very slow network creation.
 
 ### Dependencies Update
 - autopep8>=1.3,<1.4 => autopep8>=1.3,<1.5 (PR #815)
 - pytest-cov>=2.5,<2.6 => pytest-cov>=2.5,<2.7 (PR #820)
+- pytest>=3.6,<3.8 => pytest>=3.6,<3.9 (PR #823)
+- imageio>=2.3,<2.4 => imageio>=2.3,<2.5 (PR #823)
 
 ### Contributors
+- @DEKHTIARJonathan: #815 #818 #820 #823
 - @ndiy: #819 
-
-- @DEKHTIARJonathan: #815 #820
+- @zsdonghao: #818
 
 ## [1.10.0] - 2018-09-02
 
@@ -355,7 +374,8 @@ To release a new version, please update the changelog as followed:
 
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.10.0...master
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.10.1...master
+[1.10.1]: https://github.com/tensorlayer/tensorlayer/compare/1.10.0...1.10.1
 [1.10.0]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...1.10.0
 [1.9.1]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...1.9.1
 [1.9.0]: https://github.com/tensorlayer/tensorlayer/compare/1.8.5...1.9.0

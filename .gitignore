@@ -67,6 +67,7 @@ instance/
 # Sphinx documentation
 docs/_build/
 docs/test_build/
+docs/build_test/
 
 # PyBuilder
 target/
@@ -94,6 +95,8 @@ venv.bak/
 venv_/
 venv2/
 venv3/
+venv_doc/
+venv_py2/
 
 # Spyder project settings
 .spyderproject
@@ -126,5 +129,3 @@ update_tl.py
 # Data Files and ByteCode files
 *.gz
 *.npz
-venv_doc/
-venv_py2/
