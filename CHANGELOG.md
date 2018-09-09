@@ -74,6 +74,7 @@ To release a new version, please update the changelog as followed:
 ### Changed
 
 ### Dependencies Update
+- yapf>=0.22,<0.24 => yapf>=0.22,<0.25 (PR #829)
 
 ### Deprecated
 
