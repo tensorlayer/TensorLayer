@@ -109,7 +109,7 @@ To release a new version, please update the changelog as followed:
  - remove 'tensorboard' param, replaced by 'tensorboard_dir' in `tensorlayer/utils.py` with customizable tensorboard directory (PR #819)
 
 ### Removed
-- TL Graph API removed. Memory Leaks Issues with this API, will be fixed and integrated in TL 2.0 (PR #818)
+- TL Graph API removed. Memory Leaks Issues with Graph API, will be fixed and integrated in TL 2.0 (PR #818)
 
 ### Fixed
 - Issue #817 fixed: TL 1.10.0 - Memory Leaks and very slow network creation.
