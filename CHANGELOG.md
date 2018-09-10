@@ -87,6 +87,7 @@ To release a new version, please update the changelog as followed:
   - `layer.print_params()` renamed `layer.print_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
 
 ### Dependencies Update
+- yapf>=0.22,<0.24 => yapf>=0.22,<0.25 (PR #829)
 
 ### Deprecated
 
