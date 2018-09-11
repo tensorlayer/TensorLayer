@@ -18,7 +18,7 @@ __all__ = ['DorefaConv2d']
 
 
 class DorefaConv2d(Layer):
-    """The :class:`DorefaConv2d` class is a binary fully connected layer, which weights are 'bitW' bits and the output of the previous layer
+    """The :class:`DorefaConv2d` class is a 2D quantized convolutional layer, which weights are 'bitW' bits and the output of the previous layer
     are 'bitA' bits while inferencing.
 
     Note that, the bias vector would not be binarized.
