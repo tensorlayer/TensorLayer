@@ -63,6 +63,8 @@ TensorLayer has a fast growing usage among top researchers and engineers, from u
 Imperial College London, UC Berkeley, Carnegie Mellon University, Stanford University, and
 University of Technology of Compiegne (UTC), and companies like Google, Microsoft, Alibaba, Tencent, Xiaomi, and Bloomberg.
 
+# Mass Examples can be found [here](https://github.com/tensorlayer/awesome-tensorlayer/blob/master/readme.md)
+
 # Install
 
 TensorLayer has pre-requisites including TensorFlow, numpy, and others. For GPU support, CUDA and cuDNN are required.
