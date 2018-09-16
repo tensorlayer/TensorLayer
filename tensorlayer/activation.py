@@ -249,7 +249,7 @@ def sign(x):
        https://arxiv.org/abs/1602.02830
 
     """
-    with tf.get_default_graph().gradient_override_map({"sign": "QuantizeGrad"}):
+    with tf.get_default_graph().gradient_override_map({"Sign": "QuantizeGrad"}):
         return tf.sign(x, name='sign')
 
 
