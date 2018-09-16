@@ -27,13 +27,20 @@
 
 <br/>
 
+<a href="https://github.com/tensorlayer/awesome-tensorlayer/blob/master/readme.md" target="\_blank">
+	<div align="left">
+		<img src="img/join_slack.png" width="30%"/>
+	</div>
+</a>
+
 <a href="https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc" target="\_blank">
-	<div align="center">
-		<img src="img/join_slack.png" width="40%"/>
+	<div align="right">
+		<img src="img/join_slack.png" width="30%"/>
 	</div>
 </a>
 
 <br/>
+
 
 TensorLayer is a novel TensorFlow-based deep learning and reinforcement learning library designed for researchers and engineers. It provides a large collection of customizable neural layers / functions that are key to build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software by the [ACM Multimedia Society](http://www.acmmm.org/2017/mm-2017-awardees/).
 
