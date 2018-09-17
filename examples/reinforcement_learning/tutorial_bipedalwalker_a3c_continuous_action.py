@@ -213,7 +213,7 @@ class Worker(object):
                     for r in buffer_r[::-1]:  # reverse buffer r
                         v_s_ = r + GAMMA * v_s_
                         buffer_v_target.append(v_s_)
-                        
+
                     buffer_v_target.reverse()
 
                     buffer_s, buffer_a, buffer_v_target = (

@@ -99,7 +99,7 @@ with tf.Session() as sess:
             rAll += r
             s = s1
             ## Reduce chance of random action if an episode is done.
-            if d == True:
+            if d ==True:
                 e = 1. / ((i / 50) + 10)  # reduce e, GLIE: Greey in the limit with infinite Exploration
                 break
 
