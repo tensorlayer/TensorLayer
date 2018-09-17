@@ -54,11 +54,11 @@ def model(x, is_train):
     with tf.variable_scope("model", reuse=tf.AUTO_REUSE):
         net = InputLayer(x, name='input')
         net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', b_init=None, name='cnn1')
-        net = BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch1')
+        net = BatchNormLayer(net, decay=0.99, is_train=is_train, act=tf.nn.relu, name='batch1')
         net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
 
         net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', b_init=None, name='cnn2')
-        net = BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch2')
+        net = BatchNormLayer(net, decay=0.99, is_train=is_train, act=tf.nn.relu, name='batch2')
         net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
 
         net = FlattenLayer(net, name='flatten')
