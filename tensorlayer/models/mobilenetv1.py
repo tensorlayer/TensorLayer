@@ -164,16 +164,16 @@ class MobileNetV1(Layer):
         # ref: https://github.com/keras-team/keras/blob/master/keras/applications/mobilenet.py
         with tf.variable_scope(name):
             n = Conv2d(n, n_filter, filter_size, strides, b_init=None, name='conv')
-            n = BatchNormLayer(n, act=tf.nn.relu6, is_train=is_train, name='batchnorm')
+            n = BatchNormLayer(n, decay=0.99, act=tf.nn.relu6, is_train=is_train, name='batchnorm')
         return n
 
     @classmethod
     def depthwise_conv_block(cls, n, n_filter, strides=(1, 1), is_train=False, name="depth_block"):
         with tf.variable_scope(name):
             n = DepthwiseConv2d(n, (3, 3), strides, b_init=None, name='depthwise')
-            n = BatchNormLayer(n, act=tf.nn.relu6, is_train=is_train, name='batchnorm1')
+            n = BatchNormLayer(n, decay=0.99, act=tf.nn.relu6, is_train=is_train, name='batchnorm1')
             n = Conv2d(n, n_filter, (1, 1), (1, 1), b_init=None, name='conv')
-            n = BatchNormLayer(n, act=tf.nn.relu6, is_train=is_train, name='batchnorm2')
+            n = BatchNormLayer(n, decay=0.99, act=tf.nn.relu6, is_train=is_train, name='batchnorm2')
         return n
 
     def restore_params(self, sess, path='models'):

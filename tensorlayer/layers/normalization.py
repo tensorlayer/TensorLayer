@@ -121,6 +121,8 @@ class BatchNormLayer(Layer):
             "BatchNormLayer %s: decay: %f epsilon: %f act: %s is_train: %s" %
             (self.name, decay, epsilon, self.act.__name__ if self.act is not None else 'No Activation', is_train)
         )
+        if decay > 1:
+            raise Exception("decay should be between 0 to 1")
 
         x_shape = self.inputs.get_shape()
         params_shape = x_shape[-1:]

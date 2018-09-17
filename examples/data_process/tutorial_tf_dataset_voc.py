@@ -81,6 +81,7 @@ def _map_fn(filename, annotation):
     image, annotation = tf.py_func(_data_aug_fn, [image, annotation], [tf.float32, tf.string])
     return image, annotation
 
+
 ds = tf.data.Dataset().from_generator(generator, output_types=(tf.string, tf.string))
 ds = ds.shuffle(shuffle_buffer_size)
 ds = ds.map(_map_fn, num_parallel_calls=multiprocessing.cpu_count())
