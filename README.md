@@ -4,7 +4,6 @@
     </div>
 </a>
 
-[![Mentioned in Awesome TensorLayer](https://awesome.re/mentioned-badge.svg)](https://github.com/tensorlayer/awesome-tensorlayer)
 [![English Documentation](https://img.shields.io/badge/documentation-english-blue.svg)](https://tensorlayer.readthedocs.io/)
 [![Chinese Documentation](https://img.shields.io/badge/documentation-%E4%B8%AD%E6%96%87-blue.svg)](https://tensorlayercn.readthedocs.io/)
 [![Chinese Book](https://img.shields.io/badge/book-%E4%B8%AD%E6%96%87-blue.svg)](http://www.broadview.com.cn/book/5059/)
@@ -37,7 +36,7 @@
 
 TensorLayer is a novel TensorFlow-based deep learning and reinforcement learning library designed for researchers and engineers. It provides a large collection of customizable neural layers / functions that are key to build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software by the [ACM Multimedia Society](http://www.acmmm.org/2017/mm-2017-awardees/).
 
-# Why another deep learning library: TensorLayer
+# Features
 
 As deep learning practitioners, we have been looking for a library that can address various development
  purposes. This library is easy to adopt by providing diverse examples, tutorials and pre-trained models.
@@ -63,7 +62,16 @@ TensorLayer has a fast growing usage among top researchers and engineers, from u
 Imperial College London, UC Berkeley, Carnegie Mellon University, Stanford University, and
 University of Technology of Compiegne (UTC), and companies like Google, Microsoft, Alibaba, Tencent, Xiaomi, and Bloomberg.
 
-# Install
+# Tutorials, Examples and Applications
+
+<a href="https://github.com/tensorlayer/awesome-tensorlayer/blob/master/readme.md" target="\_blank">
+	<div align="center">
+		<img src="img/awesome-mentioned.png" width="40%"/>
+	</div>
+</a>
+
+
+# Installation Guide
 
 TensorLayer has pre-requisites including TensorFlow, numpy, and others. For GPU support, CUDA and cuDNN are required.
 The simplest way to install TensorLayer is to use the **Py**thon **P**ackage **I**ndex (PyPI):
