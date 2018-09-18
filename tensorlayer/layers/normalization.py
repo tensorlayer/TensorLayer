@@ -138,6 +138,9 @@ class BatchNormLayer(Layer):
         name='batchnorm_layer',
     ):
 
+        if decay > 1:
+            raise ValueError("`decay` should be between 0 to 1")
+
         self.decay = decay
         self.epsilon = epsilon
         self.beta_init = beta_init

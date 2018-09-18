@@ -107,7 +107,7 @@ def read_and_decode(filename, is_train=None):
     img = tf.decode_raw(features['img_raw'], tf.float32)
     img = tf.reshape(img, [32, 32, 3])
     # img = tf.cast(img, tf.float32) #* (1. / 255) - 0.5
-    if is_train == True:
+    if is_train ==True:
         # 1. Randomly crop a [height, width] section of the image.
         img = tf.random_crop(img, [24, 24, 3])
 
@@ -228,11 +228,11 @@ with tf.device('/cpu:0'):
         with tf.variable_scope("model", reuse=reuse):
             net = InputLayer(x_crop, name='input')
             net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn1')
-            net = BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch1')
+            net = BatchNormLayer(net, decay=0.99, is_train=is_train, act=tf.nn.relu, name='batch1')
             net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
 
             net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn2')
-            net = BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch2')
+            net = BatchNormLayer(net, decay=0.99, is_train=is_train, act=tf.nn.relu, name='batch2')
             net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
 
             net = FlattenLayer(net, name='flatten')
