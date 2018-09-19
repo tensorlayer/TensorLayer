@@ -76,7 +76,7 @@ To release a new version, please update the changelog as followed:
 ### Dependencies Update
 - yapf>=0.22,<0.24 => yapf>=0.22,<0.25 (PR #829)
 - sphinx>=1.7,<1.8 => sphinx>=1.7,<1.9 (PR #842)
-- sphinx>=matplotlib>=2.2,<2.3 => matplotlib>=2.2,<3.1 (PR #845)
+- matplotlib>=2.2,<2.3 => matplotlib>=2.2,<3.1 (PR #845)
 
 ### Deprecated
 
