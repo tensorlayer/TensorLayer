@@ -1,6 +1,6 @@
 imageio>=2.3,<2.5
 lxml>=4.2,<4.3
-matplotlib==3.0.0
+matplotlib>=2.2,3.1
 numpy>=1.14,<1.16
 progressbar2>=3.38,<3.39
 requests>=2.19,<2.20
