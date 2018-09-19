@@ -159,7 +159,6 @@ class BatchNormLayer(Layer):
                 gamma = None
 
             # 2.
-
             moving_mean = tf.get_variable(
                 'moving_mean', params_shape, initializer=moving_mean_init, dtype=LayersConfig.tf_dtype, trainable=False
             )
@@ -173,25 +172,22 @@ class BatchNormLayer(Layer):
             )
 
             # 3.
-            # These ops will only be preformed when training.
-            mean, variance = tf.nn.moments(self.inputs, axis)
-
-            update_moving_mean = moving_averages.assign_moving_average(
-                moving_mean, mean, decay, zero_debias=False
-            )  # if zero_debias=True, has bias
-
-            update_moving_variance = moving_averages.assign_moving_average(
-                moving_variance, variance, decay, zero_debias=False
-            )  # if zero_debias=True, has bias
-
-            def mean_var_with_update():
-                with tf.control_dependencies([update_moving_mean, update_moving_variance]):
-                    return tf.identity(mean), tf.identity(variance)
-
             if is_train:
+                update_moving_mean = moving_averages.assign_moving_average(
+                    moving_mean, mean, decay, zero_debias=False
+                )  # if zero_debias=True, has bias
+
+                update_moving_variance = moving_averages.assign_moving_average(
+                    moving_variance, variance, decay, zero_debias=False
+                )  # if zero_debias=True, has bias
+
+                def mean_var_with_update():
+                    with tf.control_dependencies([update_moving_mean, update_moving_variance]):
+                        return tf.identity(mean), tf.identity(variance)
+
                 mean, var = mean_var_with_update()
             else:
-                mean, var = moving_mean, moving_variance
+                mean, var = tf.nn.moments(self.inputs, axis)
 
             self.outputs = self._apply_activation(
                 tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon)
