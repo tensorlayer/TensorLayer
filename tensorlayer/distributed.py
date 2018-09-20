@@ -53,18 +53,9 @@ class Trainer(object):
         You can disable it using the option `scaling_learning_rate`
     batch_size : int
         The training mini-batch size (i.e., number of samples per batch).
-    num_epochs : int
-        The number of training epochs.
     prefetch_buffer_size: int or None
         The dataset prefetch buffer size. Set this parameter to overlap the GPU training and data preparation
         if the data preparation is heavy.
-    shuffle_data : boolean
-        If the training data need to be shuffled or not. Default is False.
-    shuffle_seed : int
-        The random seed that control the data shuffling process. Default is 0.
-        Internally, the trainer is using the tf.data.shuffle() to shuffle data. Note that it is preferable to
-        let all the trainer use the same random seed
-        in order to guarantee an identical data shuffling order across different GPUs.
     checkpoint_dir : None or str
         The path to the TensorFlow model checkpoint. Note that only one trainer master would checkpoints its model.
         If None, checkpoint is disabled.
@@ -104,8 +95,8 @@ class Trainer(object):
     """
 
     def __init__(
-            self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32, num_epochs=100,
-            prefetch_buffer_size=None, shuffle_data=False, shuffle_seed=0, checkpoint_dir=None,
+            self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32,
+            prefetch_buffer_size=None, checkpoint_dir=None,
             scaling_learning_rate=True, log_step_size=1, validation_dataset=None, build_validation_func=None,
             max_iteration=float('inf')
     ):
@@ -129,10 +120,8 @@ class Trainer(object):
             self._validation_metrics = None
 
         # Get the shard of the dataset based on my local rank
-        if shuffle_data:
-            training_dataset = training_dataset.shuffle(buffer_size=10000, seed=shuffle_seed)
         training_dataset = training_dataset.shard(num_shards=hvd.size(),
-                                                  index=hvd.rank()).batch(batch_size).repeat(num_epochs)
+                                                  index=hvd.rank()).batch(batch_size)
         if prefetch_buffer_size:
             training_dataset.prefetch(buffer_size=prefetch_buffer_size)
         training_iterator = training_dataset.make_one_shot_iterator()
@@ -196,6 +185,8 @@ class Trainer(object):
 
     @property
     def validation_metrics(self):
+        """A helper function to compute validation related metrics"""
+
         if (self._validation_iterator is None) or (self._validation_metrics is None):
             raise AttributeError('Validation is not setup.')
 
@@ -218,17 +209,8 @@ class Trainer(object):
         """Train a mini-batch."""
         self._sess.run(self._train_op)
 
-    def train_to_end(self):
-        """Train the model until the end of the dataset."""
-        while not self._sess.should_stop():
-            # Run a training step synchronously.
-            try:
-                self.train_on_batch()
-            except tf.errors.OutOfRangeError:
-                break
-
     def train_and_validate_to_end(self, validate_step_size=50):
-        """Train the model until the end of the dataset, and validate every N mini-batches.
+        """A helper function that shows how to train and validate a model at the same time.
 
         Parameters
         ----------
