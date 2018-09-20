@@ -44,6 +44,7 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
+- Python 3.7 is officially supported (PR #848)
 
 ### Changed
 
