@@ -3,6 +3,8 @@ language: python
 
 dist: xenial
 
+sudo: true
+
 addons:
   apt:
     update: false
