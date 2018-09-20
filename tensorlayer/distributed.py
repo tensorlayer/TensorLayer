@@ -95,10 +95,9 @@ class Trainer(object):
     """
 
     def __init__(
-            self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32,
-            prefetch_size=None, checkpoint_dir=None,
-            scaling_learning_rate=True, log_step_size=1, validation_dataset=None, build_validation_func=None,
-            max_iteration=float('inf')
+            self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32, prefetch_size=None,
+            checkpoint_dir=None, scaling_learning_rate=True, log_step_size=1, validation_dataset=None,
+            build_validation_func=None, max_iteration=float('inf')
     ):
         # Initialize Horovod.
         hvd.init()
@@ -122,8 +121,7 @@ class Trainer(object):
             self._validation_metrics = None
 
         # Get the shard of the dataset based on my local rank
-        training_dataset = training_dataset.shard(num_shards=hvd.size(),
-                                                  index=hvd.rank()).batch(batch_size)
+        training_dataset = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size)
 
         training_dataset.prefetch(buffer_size=prefetch_size)
         training_iterator = training_dataset.make_one_shot_iterator()
@@ -382,9 +380,9 @@ def create_task_spec_def():
         task_data = env.get('task', None) or {'type': 'master', 'index': 0}
         cluster_data = env.get('cluster', None) or {'ps': None, 'worker': None, 'master': None}
         return TaskSpecDef(
-            task_type=task_data['type'], index=task_data['index'],
-            trial=task_data['trial'] if 'trial' in task_data else None, ps_hosts=cluster_data['ps'],
-            worker_hosts=cluster_data['worker'], master=cluster_data['master'] if 'master' in cluster_data else None
+            task_type=task_data['type'], index=task_data['index'], trial=task_data['trial'] if 'trial' in task_data else
+            None, ps_hosts=cluster_data['ps'], worker_hosts=cluster_data['worker'], master=cluster_data['master']
+            if 'master' in cluster_data else None
         )
     elif 'JOB_NAME' in os.environ:
         # JOB_NAME, TASK_INDEX, PS_HOSTS, WORKER_HOSTS and MASTER_HOST are used in TensorPort
