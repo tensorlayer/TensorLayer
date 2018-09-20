@@ -102,7 +102,7 @@ if __name__ == '__main__':
     # validation_dataset = training_dataset.map(data_aug_valid, num_parallel_calls=multiprocessing.cpu_count())
     trainer = tl.distributed.Trainer(
         build_training_func=build_train, training_dataset=training_dataset, optimizer=tf.train.AdamOptimizer,
-        optimizer_args={'learning_rate': 0.0001}, batch_size=128, prefetch_buffer_size=4096
+        optimizer_args={'learning_rate': 0.0001}, batch_size=128, prefetch_buffer_size=128
         # validation_dataset=validation_dataset, build_validation_func=build_validation
     )
 

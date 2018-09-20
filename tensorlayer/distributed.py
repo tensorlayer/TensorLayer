@@ -53,7 +53,7 @@ class Trainer(object):
         You can disable it using the option `scaling_learning_rate`
     batch_size : int
         The training mini-batch size (i.e., number of samples per batch).
-    prefetch_buffer_size: int or None
+    prefetch_size: int or None
         The dataset prefetch buffer size. Set this parameter to overlap the GPU training and data preparation
         if the data preparation is heavy.
     checkpoint_dir : None or str
@@ -96,7 +96,7 @@ class Trainer(object):
 
     def __init__(
             self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32,
-            prefetch_buffer_size=None, checkpoint_dir=None,
+            prefetch_size=None, checkpoint_dir=None,
             scaling_learning_rate=True, log_step_size=1, validation_dataset=None, build_validation_func=None,
             max_iteration=float('inf')
     ):
@@ -105,11 +105,13 @@ class Trainer(object):
         self.is_master = hvd.rank() == 0
         self._last_global_step = 0
 
+        if prefetch_size is None:
+            prefetch_size = batch_size
+
         # Define the loss for validation dataset
         if validation_dataset:
             validation_dataset = validation_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size)
-            if prefetch_buffer_size:
-                validation_dataset.prefetch(buffer_size=prefetch_buffer_size)
+            validation_dataset.prefetch(buffer_size=prefetch_size)
             self._validation_iterator = validation_dataset.make_initializable_iterator()
             next_example, next_label = self._validation_iterator.get_next()
             _, self._validation_metrics = build_validation_func(next_example, next_label)
@@ -122,8 +124,8 @@ class Trainer(object):
         # Get the shard of the dataset based on my local rank
         training_dataset = training_dataset.shard(num_shards=hvd.size(),
                                                   index=hvd.rank()).batch(batch_size)
-        if prefetch_buffer_size:
-            training_dataset.prefetch(buffer_size=prefetch_buffer_size)
+
+        training_dataset.prefetch(buffer_size=prefetch_size)
         training_iterator = training_dataset.make_one_shot_iterator()
         self._training_network, loss, log_tensors = build_training_func(*training_iterator.get_next())
 
