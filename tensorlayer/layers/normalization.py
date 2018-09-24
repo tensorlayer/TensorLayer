@@ -88,7 +88,7 @@ def _bias_scale(x, b, data_format):
 
 
 def _bias_add(x, b, data_format):
-    """Alternative inplementation of tf.nn.bias_add which is compatiable with tensorRT."""
+    """Alternative implementation of tf.nn.bias_add which is compatiable with tensorRT."""
     if data_format == 'NHWC':
         return tf.add(x, b)
     elif data_format == 'NCHW':
