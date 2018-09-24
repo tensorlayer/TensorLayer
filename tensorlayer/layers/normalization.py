@@ -69,14 +69,30 @@ class LocalResponseNormLayer(Layer):
         self._add_layers(self.outputs)
 
 
-def bias_scale(x, b, data_format):
-    """The multiplication analog of tf.nn.bias_add."""
-    if data_format == 'channels_last':
+def _to_channel_first_bias(b):
+    """Reshape [c] to [c, 1, 1]."""
+    channel_size = int(b.shape[0])
+    new_shape = (channel_size, 1, 1)
+    # new_shape = [-1, 1, 1]  # doesn't work with tensorRT
+    return tf.reshape(b, new_shape)
+
+
+def _bias_scale(x, b, data_format):
+    """The multiplication counter part of tf.nn.bias_add."""
+    if data_format == 'NHWC':
         return x * b
-    elif data_format == 'channels_first':
-        return tf.nn.depthwise_conv2d(
-            x, tf.reshape(b, [1, 1, -1, 1]), [1, 1, 1, 1], padding='VALID', data_format='NCHW'
-        )
+    elif data_format == 'NCHW':
+        return x * _to_channel_first_bias(b)
+    else:
+        raise ValueError('invalid data_format: %s' % data_format)
+
+
+def _bias_add(x, b, data_format):
+    """Alternative inplementation of tf.nn.bias_add which is compatiable with tensorRT."""
+    if data_format == 'NHWC':
+        return tf.add(x, b)
+    elif data_format == 'NCHW':
+        return tf.add(x, _to_channel_first_bias(b))
     else:
         raise ValueError('invalid data_format: %s' % data_format)
 
@@ -91,9 +107,12 @@ def batch_normalization(x, mean, variance, offset, scale, variance_epsilon, data
         a = math_ops.cast(inv, x.dtype)
         b = math_ops.cast(offset - mean * inv if offset is not None else -mean * inv, x.dtype)
 
-        # return a * x + b with customized data_format
+        # Return a * x + b with customized data_format.
+        # Currently TF doesn't have bias_scale, and tensorRT has bug in converting tf.nn.bias_add
+        # So we reimplemted them to allow make the model work with tensorRT.
+        # See https://github.com/tensorlayer/openpose-plus/issues/75 for more details.
         df = {'channels_first': 'NCHW', 'channels_last': 'NHWC'}
-        return tf.nn.bias_add(bias_scale(x, a, data_format), b, df[data_format])
+        return _bias_add(_bias_scale(x, a, df[data_format]), b, df[data_format])
 
 
 class BatchNormLayer(Layer):
