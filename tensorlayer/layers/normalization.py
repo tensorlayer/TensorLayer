@@ -330,7 +330,11 @@ class GroupNormLayer(Layer):
             "GroupNormLayer %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-        channels = self.inputs.get_shape().as_list()[-1]
+        shape = self.inputs.get_shape().as_list()
+        if len(shape) != 4:
+            raise Exception("GroupNormLayer only support 2D images in NHWC format")
+
+        channels = shape[-1]
         if groups > channels:
             raise ValueError('Invalid groups %d for %d channels.' % (groups, channels))
         if channels % groups != 0:
