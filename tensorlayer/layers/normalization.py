@@ -17,14 +17,7 @@ __all__ = [
     'BatchNormLayer',
     'InstanceNormLayer',
     'LayerNormLayer',
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
     'GroupNormLayer',
->>>>>>> 7ad85ded... Add GroupNormLayer
-=======
-    'GroupNormLayer',
->>>>>>> 24bacc0f... minor modification
     'SwitchNormLayer',
 ]
 
@@ -289,8 +282,6 @@ class LayerNormLayer(Layer):
 
         logging.info(
             "LayerNormLayer %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
-<<<<<<< HEAD
-=======
         )
 
         with tf.variable_scope(name) as vs:
@@ -411,7 +402,6 @@ class SwitchNormLayer(Layer):
         logging.info(
             "SwitchNormLayer %s: epsilon: %f act: %s" %
             (self.name, epsilon, self.act.__name__ if self.act is not None else 'No Activation')
->>>>>>> 7ad85ded... Add GroupNormLayer
         )
 
         with tf.variable_scope(name) as vs:
