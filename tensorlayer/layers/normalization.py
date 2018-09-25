@@ -18,9 +18,13 @@ __all__ = [
     'InstanceNormLayer',
     'LayerNormLayer',
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     'GroupNormLayer',
 >>>>>>> 7ad85ded... Add GroupNormLayer
+=======
+    'GroupNormLayer',
+>>>>>>> 24bacc0f... minor modification
     'SwitchNormLayer',
 ]
 
