@@ -7,6 +7,7 @@ from tensorflow.python.training import moving_averages
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+from tensorlayer.layers.utils import get_collection_trainable
 
 from tensorlayer import logging
 
@@ -356,7 +357,8 @@ class GroupNormLayer(Layer):
             self.outputs = tf.reshape(x, tf.shape(self.inputs)) * gamma + beta
             self.outputs = self._apply_activation(self.outputs)
 
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            variables =  get_collection_trainable(self.name)
+            # tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self._add_layers(self.outputs)
         self._add_params(variables)
