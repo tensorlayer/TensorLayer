@@ -315,15 +315,15 @@ class GroupNormLayer(Layer):
         The previous layer.
     act : activation function
         The activation function of this layer.
-    others : _
-        `tf.contrib.layers.group_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/group_norm>`__.
+    epsilon : float
+        Eplison.
+    name : str
+        A unique layer name
 
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-            self, prev_layer, groups=32, epsilon=1e-06, act=None, name='groupnorm'
-    ):
+    def __init__(self, prev_layer, groups=32, epsilon=1e-06, act=None, name='groupnorm'):
         super(GroupNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
         logging.info(
@@ -337,19 +337,20 @@ class GroupNormLayer(Layer):
             raise ValueError('%d channels is not commensurate with %d groups.' % (channels, groups))
 
         with tf.variable_scope(name) as vs:
-            int_shape = tf.concat([tf.shape(self.inputs)[0:3],
-                                   tf.convert_to_tensor([groups,
-                                                         channels // groups])],
-                                  axis=0)
+            int_shape = tf.concat(
+                [tf.shape(self.inputs)[0:3],
+                 tf.convert_to_tensor([groups, channels // groups])], axis=0
+            )
 
             x = tf.reshape(self.inputs, int_shape)
             mean, var = tf.nn.moments(x, [1, 2, 4], keep_dims=True)
             x = (x - mean) / tf.sqrt(var + epsilon)
 
-            gamma = tf.get_variable('gamma', [channels, ], initializer=tf.ones_initializer())
-            beta = tf.get_variable('beta', [channels, ], initializer=tf.zeros_initializer())
+            gamma = tf.get_variable('gamma', channels, initializer=tf.ones_initializer())
+            beta = tf.get_variable('beta', channels, initializer=tf.zeros_initializer())
 
             self.outputs = tf.reshape(x, tf.shape(self.inputs)) * gamma + beta
+            self.outputs = self._apply_activation(self.outputs)
 
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
