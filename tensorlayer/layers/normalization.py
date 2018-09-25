@@ -17,6 +17,10 @@ __all__ = [
     'BatchNormLayer',
     'InstanceNormLayer',
     'LayerNormLayer',
+<<<<<<< HEAD
+=======
+    'GroupNormLayer',
+>>>>>>> 7ad85ded... Add GroupNormLayer
     'SwitchNormLayer',
 ]
 
@@ -281,6 +285,129 @@ class LayerNormLayer(Layer):
 
         logging.info(
             "LayerNormLayer %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
+<<<<<<< HEAD
+=======
+        )
+
+        with tf.variable_scope(name) as vs:
+            self.outputs = tf.contrib.layers.layer_norm(
+                self.inputs,
+                center=center,
+                scale=scale,
+                activation_fn=self.act,
+                reuse=reuse,
+                variables_collections=variables_collections,
+                outputs_collections=outputs_collections,
+                trainable=trainable,
+                begin_norm_axis=begin_norm_axis,
+                begin_params_axis=begin_params_axis,
+                scope='var',
+            )
+
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+        self._add_layers(self.outputs)
+        self._add_params(variables)
+
+
+class GroupNormLayer(Layer):
+    """The :class:`GroupNormLayer` layer is for Group Normalization.
+    See `tf.contrib.layers.group_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/group_norm>`__.
+
+    Parameters
+    -----------
+    prev_layer : :class:`Layer`
+        The previous layer.
+    act : activation function
+        The activation function of this layer.
+    others : _
+        `tf.contrib.layers.group_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/group_norm>`__.
+
+    """
+
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(
+            self, prev_layer, groups=32, epsilon=1e-06, act=None, name='groupnorm'
+    ):
+        super(GroupNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+
+        logging.info(
+            "GroupNormLayer %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
+        )
+
+        channels = self.inputs.get_shape().as_list()[-1]
+        if groups > channels:
+            raise ValueError('Invalid groups %d for %d channels.' % (groups, channels))
+        if channels % groups != 0:
+            raise ValueError('%d channels is not commensurate with %d groups.' % (channels, groups))
+
+        with tf.variable_scope(name) as vs:
+            int_shape = tf.concat([tf.shape(self.inputs)[0:3],
+                                   tf.convert_to_tensor([groups,
+                                                         channels // groups])],
+                                  axis=0)
+
+            x = tf.reshape(self.inputs, int_shape)
+            mean, var = tf.nn.moments(x, [1, 2, 4], keep_dims=True)
+            x = (x - mean) / tf.sqrt(var + epsilon)
+
+            gamma = tf.get_variable('gamma', [channels, ], initializer=tf.ones_initializer())
+            beta = tf.get_variable('beta', [channels, ], initializer=tf.zeros_initializer())
+
+            self.outputs = tf.reshape(x, tf.shape(self.inputs)) * gamma + beta
+
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+        self._add_layers(self.outputs)
+        self._add_params(variables)
+
+
+class SwitchNormLayer(Layer):
+    """
+    The :class:`SwitchNormLayer` is a switchable normalization.
+
+    Parameters
+    ----------
+    prev_layer : :class:`Layer`
+        The previous layer.
+    act : activation function
+        The activation function of this layer.
+    epsilon : float
+        Eplison.
+    beta_init : initializer or None
+        The initializer for initializing beta, if None, skip beta.
+        Usually you should not skip beta unless you know what happened.
+    gamma_init : initializer or None
+        The initializer for initializing gamma, if None, skip gamma.
+        When the batch normalization layer is use instead of 'biases', or the next layer is linear, this can be
+        disabled since the scaling can be done by the next layer. see `Inception-ResNet-v2 <https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_resnet_v2.py>`__
+    name : str
+        A unique layer name.
+
+    References
+    ----------
+    - `Differentiable Learning-to-Normalize via Switchable Normalization <https://arxiv.org/abs/1806.10779>`__
+    - `Zhihu (CN) <https://zhuanlan.zhihu.com/p/39296570?utm_source=wechat_session&utm_medium=social&utm_oi=984862267107651584>`__
+
+    """
+
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(
+            self,
+            prev_layer,
+            act=None,
+            epsilon=1e-5,
+            beta_init=tf.constant_initializer(0.0),
+            gamma_init=tf.constant_initializer(1.0),
+            moving_mean_init=tf.zeros_initializer(),
+            name='switchnorm_layer',
+    ):
+        super(SwitchNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+
+        logging.info(
+            "SwitchNormLayer %s: epsilon: %f act: %s" %
+            (self.name, epsilon, self.act.__name__ if self.act is not None else 'No Activation')
+>>>>>>> 7ad85ded... Add GroupNormLayer
         )
 
         with tf.variable_scope(name) as vs:

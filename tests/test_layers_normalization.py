@@ -7,6 +7,9 @@ import unittest
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import tensorflow as tf
+# import tensorlayer as tl
+import sys
+sys.path.append('c:/Users/Dongkyu/Desktop/tensorlayer/')
 import tensorlayer as tl
 
 from tests.utils import CustomTestCase
@@ -21,6 +24,10 @@ def model(x, is_train=True, reuse=False):
         n = tl.layers.LocalResponseNormLayer(n, name='norm_local')
         n = tl.layers.LayerNormLayer(n, reuse=reuse, name='norm_layer')
         n = tl.layers.InstanceNormLayer(n, name='norm_instance')
+<<<<<<< HEAD
+=======
+        n = tl.layers.GroupNormLayer(n, groups=40, name='groupnorm')
+>>>>>>> 7ad85ded... Add GroupNormLayer
         n = tl.layers.SwitchNormLayer(n, name='switchnorm')
         n = tl.layers.QuanConv2dWithBN(n, n_filter=3, is_train=is_train, name='quan_cnn_with_bn')
         n = tl.layers.FlattenLayer(n, name='flatten')
@@ -59,6 +66,7 @@ class Layer_Normalization_Test(CustomTestCase):
         tf.reset_default_graph()
 
     def test_all_layers(self):
+<<<<<<< HEAD
         self.assertEqual(len(self.data["train_network"]["layers"]), 11)
         self.assertEqual(len(self.data["eval_network"]["layers"]), 11)
 
@@ -67,6 +75,16 @@ class Layer_Normalization_Test(CustomTestCase):
 
     def test_n_params(self):
         self.assertEqual(self.data["train_network"]["n_params"], 362938)
+=======
+        self.assertEqual(len(self.data["train_network"]["layers"]), 12)
+        self.assertEqual(len(self.data["eval_network"]["layers"]), 12)
+
+    def test_all_params(self):
+        self.assertEqual(len(self.data["train_network"]["params"]), 28)
+
+    def test_n_params(self):
+        self.assertEqual(self.data["train_network"]["n_params"], 363098)
+>>>>>>> 7ad85ded... Add GroupNormLayer
 
 
 if __name__ == '__main__':
