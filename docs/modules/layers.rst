@@ -198,6 +198,7 @@ Layer list
    LocalResponseNormLayer
    InstanceNormLayer
    LayerNormLayer
+   GroupNormLayer
    SwitchNormLayer
 
    ROIPoolingLayer
@@ -672,6 +673,10 @@ Instance Normalization
 Layer Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: LayerNormLayer
+
+Group Normalization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: GroupNormLayer
 
 Switch Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
