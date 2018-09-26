@@ -95,9 +95,19 @@ class Trainer(object):
     """
 
     def __init__(
-            self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32, prefetch_size=None,
-            checkpoint_dir=None, scaling_learning_rate=True, log_step_size=1, validation_dataset=None,
-            build_validation_func=None, max_iteration=float('inf')
+        self,
+        training_dataset,
+        build_training_func,
+        optimizer,
+        optimizer_args,
+        batch_size=32,
+        prefetch_size=None,
+        checkpoint_dir=None,
+        scaling_learning_rate=True,
+        log_step_size=1,
+        validation_dataset=None,
+        build_validation_func=None,
+        max_iteration=float('inf')
     ):
         # Initialize Horovod.
         hvd.init()
@@ -124,7 +134,7 @@ class Trainer(object):
         training_dataset = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size)
 
         training_dataset.prefetch(buffer_size=prefetch_size)
-        
+
         training_iterator = training_dataset.make_one_shot_iterator()
         self._training_network, loss, log_tensors = build_training_func(*training_iterator.get_next())
 

@@ -459,7 +459,8 @@ class GroupNormLayer(Layer):
                     tf.shape(self.inputs)[0:1],
                     tf.convert_to_tensor([groups, channels // groups]),
                     tf.shape(self.inputs)[2:4]
-                ], axis=0
+                ],
+                axis=0
             )
         else:
             raise ValueError("data_format must be 'channels_last' or 'channels_first'.")
