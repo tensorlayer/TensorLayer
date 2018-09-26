@@ -271,7 +271,7 @@ class RNNLayer(Layer):
             # Retrieve just the RNN variables.
             # rnn_variables = [v for v in tf.all_variables() if v.name.startswith(vs.name)]
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
+            self._temp_data['local_weights'] = rnn_variables
             logging.info("     n_params : %d" % (len(rnn_variables)))
 
             if self.return_last:
@@ -471,8 +471,8 @@ class BiRNNLayer(Layer):
         except Exception:
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps, n_features]")
 
-        with tf.variable_scope(name, initializer=self.initializer) as vs:
-            rnn_creator = lambda: cell_fn(num_units=self.n_hidden, **self.cell_init_args)
+        with tf.variable_scope(self.name, initializer=self.initializer) as vs:
+            rnn_creator = lambda: self.cell_fn(num_units=self.n_hidden, **self.cell_init_args)
             # Apply dropout
             if self.dropout:
 
