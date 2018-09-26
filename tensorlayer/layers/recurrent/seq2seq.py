@@ -197,9 +197,21 @@ class Seq2Seq(Layer):
         except AttributeError:
             pass
 
+        try:
+            if self.dropout and self._temp_data['is_train']:
+                additional_str.append('\n             enable dropout as `is_train` is True')
+            elif self.dropout and (self._temp_data['is_train'] is False):
+                additional_str.append('\n             disable dropout as `is_train` is True')
+        except AttributeError:
+            pass
+
         return self._str(additional_str)
 
     def compile(self, network_encode, net_decode_in):
+        """
+
+        is_train
+        """
         with tf.variable_scope(self.name):
             # tl.layers.set_name_reuse(reuse)
             # network = InputLayer(self._temp_data['inputs'], name=name+'/input')
@@ -223,7 +235,9 @@ class Seq2Seq(Layer):
                 cell_init_args=self.cell_init_args,
                 n_hidden=self.n_hidden,
                 initializer=self.initializer,
-                initial_state=(network_encode.final_state if self.initial_state_decode is None else self.initial_state_decode),
+                initial_state=(
+                    network_encode.final_state if self.initial_state_decode is None else self.initial_state_decode
+                ),
                 dropout=self.dropout,
                 n_layer=self.n_layer,
                 sequence_length=self.decode_sequence_length,

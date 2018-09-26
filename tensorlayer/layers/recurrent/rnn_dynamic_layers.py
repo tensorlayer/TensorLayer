@@ -199,6 +199,14 @@ class DynamicRNNLayer(Layer):
         except AttributeError:
             pass
 
+        try:
+            if self.dropout and self._temp_data['is_train']:
+                additional_str.append('\n             enable dropout as `is_train` is True')
+            elif self.dropout and (self._temp_data['is_train'] is False):
+                additional_str.append('\n             disable dropout as `is_train` is False')
+        except AttributeError:
+            pass
+
         return self._str(additional_str)
         # logging.info(
         #     "DynamicRNNLayer %s: n_hidden: %d, in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d" % (
@@ -232,7 +240,7 @@ class DynamicRNNLayer(Layer):
         rnn_creator = lambda: self.cell_fn(num_units=self.n_hidden, **self.cell_init_args)
 
         # Apply dropout
-        if self.dropout:
+        if self.dropout and self._temp_data['is_train']:
             if isinstance(self.dropout, (tuple, list)):
                 in_keep_prob = self.dropout[0]
                 out_keep_prob = self.dropout[1]
@@ -264,7 +272,7 @@ class DynamicRNNLayer(Layer):
                 MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
 
             # cell_instance_fn2=cell_instance_fn # HanSheng
-            if self.dropout:
+            if self.dropout and self._temp_data['is_train']:
                 try:
                     # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)], state_is_tuple=True) # HanSheng
                     self.cell = MultiRNNCell_fn(
@@ -306,7 +314,7 @@ class DynamicRNNLayer(Layer):
                 # inputs=X
                 inputs=self._temp_data['inputs'],
                 # dtype=tf.float64,
-                sequence_length=sequence_length,
+                sequence_length=self.sequence_length,
                 initial_state=self.initial_state,
                 **self.dynamic_rnn_init_args
             )
@@ -332,7 +340,6 @@ class DynamicRNNLayer(Layer):
                     # <akara>:
                     # 3D Tensor [batch_size, n_steps(max), n_hidden]
                     max_length = tf.shape(outputs)[1]
-                    batch_size = tf.shape(outputs)[0]
 
                     self._temp_data['outputs'] = tf.reshape(
                         tf.concat(outputs, 1),
@@ -345,7 +352,7 @@ class DynamicRNNLayer(Layer):
         # Final state
         self.final_state = last_states
 
-        self.sequence_length = sequence_length
+        # self.sequence_length = sequence_length
 
 
 class BiDynamicRNNLayer(Layer):
@@ -506,6 +513,14 @@ class BiDynamicRNNLayer(Layer):
         except AttributeError:
             pass
 
+        try:
+            if self.dropout and self._temp_data['is_train']:
+                additional_str.append('\n             enable dropout as `is_train` is True')
+            elif self.dropout and (self._temp_data['is_train'] is False):
+                additional_str.append('\n             disable dropout as `is_train` is False')
+        except AttributeError:
+            pass
+
         return self._str(additional_str)
         # logging.info(
         #     "BiDynamicRNNLayer %s: n_hidden: %d in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d" % (
@@ -541,7 +556,7 @@ class BiDynamicRNNLayer(Layer):
             rnn_creator = lambda: self.cell_fn(num_units=self.n_hidden, **self.cell_init_args)
 
             # Apply dropout
-            if self.dropout:
+            if self.dropout and self._temp_data['is_train']:
                 if isinstance(self.dropout, (tuple, list)):
                     in_keep_prob = self.dropout[0]
                     out_keep_prob = self.dropout[1]
@@ -578,13 +593,13 @@ class BiDynamicRNNLayer(Layer):
             # Computes sequence_length
             if self.sequence_length is None:
 
-                sequence_length = retrieve_seq_length_op(
+                self.sequence_length = retrieve_seq_length_op(
                     self._temp_data['inputs'] if isinstance(self._temp_data['inputs'], tf.Tensor) else tf.
                     stack(self._temp_data['inputs'])
                 )
 
-            if n_layer > 1:
-                if dropout:
+            if self.n_layer > 1:
+                if self.dropout and self._temp_data['is_train']:
                     self.fw_cell = [cell_creator(is_last=i == self.n_layer - 1) for i in range(self.n_layer)]
                     self.bw_cell = [cell_creator(is_last=i == self.n_layer - 1) for i in range(self.n_layer)]
 
@@ -596,7 +611,7 @@ class BiDynamicRNNLayer(Layer):
                     cells_fw=self.fw_cell,
                     cells_bw=self.bw_cell,
                     inputs=self._temp_data['inputs'],
-                    sequence_length=sequence_length,
+                    sequence_length=self.sequence_length,
                     initial_states_fw=self.fw_initial_state,
                     initial_states_bw=self.bw_initial_state,
                     dtype=self._temp_data['inputs'].dtype,
@@ -610,7 +625,7 @@ class BiDynamicRNNLayer(Layer):
                     cell_fw=self.fw_cell,
                     cell_bw=self.bw_cell,
                     inputs=self._temp_data['inputs'],
-                    sequence_length=sequence_length,
+                    sequence_length=self.sequence_length,
                     initial_state_fw=self.fw_initial_state,
                     initial_state_bw=self.bw_initial_state,
                     dtype=self._temp_data['inputs'].dtype,
@@ -639,7 +654,7 @@ class BiDynamicRNNLayer(Layer):
                     # <akara>:
                     # 3D Tensor [batch_size, n_steps(max), 2 * n_hidden]
                     max_length = tf.shape(outputs)[1]
-                    batch_size = tf.shape(outputs)[0]
+                    # batch_size = tf.shape(outputs)[0]
 
                     self._temp_data['outputs'] = tf.reshape(
                         tf.concat(outputs, 1),
@@ -652,4 +667,4 @@ class BiDynamicRNNLayer(Layer):
         self.fw_final_states = states_fw
         self.bw_final_states = states_bw
 
-        self.sequence_length = sequence_length
+        # self.sequence_length = sequence_length
