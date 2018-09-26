@@ -70,6 +70,8 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
+- Layer:
+  - Release `GroupNormLayer` (PR #850)
 
 ### Changed
 
@@ -87,6 +89,7 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Contributors
+- @2wins: #850
 
 ## [1.10.1] - 2018-09-07
 
