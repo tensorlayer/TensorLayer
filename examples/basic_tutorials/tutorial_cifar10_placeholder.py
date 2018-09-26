@@ -15,24 +15,24 @@ sess = tf.InteractiveSession()
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
 
 
-def model(x, y_, reuse):
+def model(x_crop, y_, reuse):
     W_init = tf.truncated_normal_initializer(stddev=5e-2)
     W_init2 = tf.truncated_normal_initializer(stddev=0.04)
     b_init2 = tf.constant_initializer(value=0.1)
     with tf.variable_scope("model", reuse=reuse):
-        net = InputLayer(x, name='input')
-        net = Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn1')
-        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
-        net = LocalResponseNormLayer(net, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm1')
+        net = InputLayer(name='input')(x_crop)
+        net = Conv2d(64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn1')(net)
+        net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(net)
+        net = LocalResponseNormLayer(depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm1')(net)
 
-        net = Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn2')
-        net = LocalResponseNormLayer(net, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm2')
-        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
+        net = Conv2d(64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn2')(net)
+        net = LocalResponseNormLayer(depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm2')(net)
+        net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(net)
 
-        net = FlattenLayer(net, name='flatten')
-        net = DenseLayer(net, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')
-        net = DenseLayer(net, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')
-        net = DenseLayer(net, 10, act=None, W_init=W_init2, name='output')
+        net = FlattenLayer(name='flatten')(net)
+        net = DenseLayer(384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')(net)
+        net = DenseLayer(192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')(net)
+        net = DenseLayer(n_units=10, act=None, W_init=W_init2, name='output')(net)
         y = net.outputs
 
         ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -42,31 +42,32 @@ def model(x, y_, reuse):
             L2 += tf.contrib.layers.l2_regularizer(0.004)(p)
         cost = ce + L2
 
-        correct_prediction = tf.equal(tf.argmax(y, 1), y_)
+        # correct_prediction = tf.equal(tf.argmax(tf.nn.softmax(y), 1), y_)
+        correct_prediction = tf.equal(tf.cast(tf.argmax(y, 1), tf.int32), y_)
         acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
         return net, cost, acc
 
 
-def model_batch_norm(x, y_, reuse, is_train):
+def model_batch_norm(x_crop, y_, reuse, is_train):
     """Batch normalization should be placed before rectifier."""
     W_init = tf.truncated_normal_initializer(stddev=5e-2)
     W_init2 = tf.truncated_normal_initializer(stddev=0.04)
     b_init2 = tf.constant_initializer(value=0.1)
     with tf.variable_scope("model", reuse=reuse):
-        net = InputLayer(x, name='input')
-        net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn1')
-        net = BatchNormLayer(net, decay=0.99, is_train=is_train, act=tf.nn.relu, name='batch1')
-        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
+        net = InputLayer(name='input')(x_crop)
+        net = Conv2d(64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn1')(net)
+        net = BatchNormLayer(decay=0.99, act=tf.nn.relu, name='batch1')(net, is_train=is_train)
+        net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(net)
 
-        net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn2')
-        net = BatchNormLayer(net, decay=0.99, is_train=is_train, act=tf.nn.relu, name='batch2')
-        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
+        net = Conv2d(64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn2')(net)
+        net = BatchNormLayer(decay=0.99, act=tf.nn.relu, name='batch2')(net, is_train=is_train)
+        net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(net)
 
-        net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
-        net = DenseLayer(net, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')
-        net = DenseLayer(net, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')
-        net = DenseLayer(net, 10, act=None, W_init=W_init2, name='output')
+        net = FlattenLayer(name='flatten')
+        net = DenseLayer(384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')(net)
+        net = DenseLayer(192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')(net)
+        net = DenseLayer(n_units=10, act=None, W_init=W_init2, name='output')(net)
         y = net.outputs
 
         ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -76,7 +77,7 @@ def model_batch_norm(x, y_, reuse, is_train):
             L2 += tf.contrib.layers.l2_regularizer(0.004)(p)
         cost = ce + L2
 
-        correct_prediction = tf.equal(tf.argmax(y, 1), y_)
+        correct_prediction = tf.equal(tf.cast(tf.argmax(y, 1), tf.int32), y_)
         acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
         return net, cost, acc
@@ -128,8 +129,11 @@ print_freq = 1
 batch_size = 128
 
 train_params = network.all_params
-train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08,
-                                  use_locking=False).minimize(cost, var_list=train_params)
+train_op = tf.train.AdamOptimizer(
+    learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False
+).minimize(
+    cost, var_list=train_params
+)
 
 tl.layers.initialize_global_variables(sess)
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """Using Dataset API and tf.image can obtain the best performance."""
 
 import time
@@ -26,19 +27,19 @@ def model_batch_norm(x_crop, y_, is_train, reuse):
     W_init2 = tf.truncated_normal_initializer(stddev=0.04)
     b_init2 = tf.constant_initializer(value=0.1)
     with tf.variable_scope("model", reuse=reuse):
-        net = InputLayer(x_crop, name='input')
-        net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn1')
-        net = BatchNormLayer(net, decay=0.99, is_train=is_train, act=tf.nn.relu, name='batch1')
-        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
+        net = InputLayer(name='input')(x_crop)
+        net = Conv2d(64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn1')(net)
+        net = BatchNormLayer(decay=0.99, act=tf.nn.relu, name='batch1')(net, is_train=is_train)
+        net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(net)
 
-        net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn2')
-        net = BatchNormLayer(net, decay=0.99, is_train=is_train, act=tf.nn.relu, name='batch2')
-        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
+        net = Conv2d(64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn2')(net)
+        net = BatchNormLayer(decay=0.99, act=tf.nn.relu, name='batch2')(net, is_train=is_train)
+        net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(net)
 
-        net = FlattenLayer(net, name='flatten')
-        net = DenseLayer(net, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')
-        net = DenseLayer(net, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')
-        net = DenseLayer(net, n_units=10, act=None, W_init=W_init2, name='output')
+        net = FlattenLayer(name='flatten')
+        net = DenseLayer(384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')(net)
+        net = DenseLayer(192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')(net)
+        net = DenseLayer(n_units=10, act=None, W_init=W_init2, name='output')(net)
         y = net.outputs
 
         ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -100,8 +101,9 @@ def _map_fn_test(img, target):
 
 
 # dataset API and augmentation
-ds = tf.data.Dataset().from_generator(generator_train, output_types=(tf.float32,
-                                                                     tf.int32))  # , output_shapes=((24, 24, 3), (1)))
+ds = tf.data.Dataset().from_generator(
+    generator_train, output_types=(tf.float32, tf.int32)
+)  # , output_shapes=((24, 24, 3), (1)))
 ds = ds.map(_map_fn_train, num_parallel_calls=multiprocessing.cpu_count())
 ds = ds.repeat(n_epoch)
 ds = ds.shuffle(shuffle_buffer_size)
@@ -109,8 +111,9 @@ ds = ds.prefetch(buffer_size=4096)
 ds = ds.batch(batch_size)
 value = ds.make_one_shot_iterator().get_next()
 
-ds = tf.data.Dataset().from_generator(generator_test, output_types=(tf.float32,
-                                                                    tf.int32))  # , output_shapes=((24, 24, 3), (1)))
+ds = tf.data.Dataset().from_generator(
+    generator_test, output_types=(tf.float32, tf.int32)
+)  # , output_shapes=((24, 24, 3), (1)))
 ds = ds.shuffle(shuffle_buffer_size)
 ds = ds.map(_map_fn_test, num_parallel_calls=multiprocessing.cpu_count())
 ds = ds.repeat(n_epoch)
