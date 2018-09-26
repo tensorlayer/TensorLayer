@@ -22,7 +22,7 @@ class CustomNetwork_2D_Test(CustomTestCase):
             def fire_module(inputs, squeeze_depth, expand_depth, name):
                 """Fire module: squeeze input filters, then apply spatial convolutions."""
 
-                with tf.variable_scope(name, "fire", [inputs]):
+                with tf.variable_scope(name):
                     squeezed = tl.layers.Conv2d(
                         n_filter=squeeze_depth,
                         filter_size=(1, 1),
