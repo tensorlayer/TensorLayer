@@ -74,6 +74,9 @@ To release a new version, please update the changelog as followed:
   - Release `GroupNormLayer` (PR #850)
 - Tests:
   - `test_model_compilednetwork.py` has been introduced to test the class `tl.models.CompiledNetwork` (PR #755).
+  - `test_network_custom_input_layers.py` has been introduced to test the class `tl.networks.CustomModel` (PR #755).
+  - `test_network_custom_multiple_inputs.py` has been introduced to test the class `tl.networks.CustomModel` (PR #755).
+  - `test_network_custom_multiple_outputs.py` has been introduced to test the class `tl.networks.CustomModel` (PR #755).
   - `test_network_custom_2d.py` has been introduced to test the class `tl.networks.CustomModel` (PR #755).
   - `test_network_sequential_1d.py` has been introduced to test the class `tl.networks.Sequential` with 1D data Layers (PR #755).
   - `test_network_sequential_2d.py` has been introduced to test the class `tl.networks.Sequential` with 2D data Layers (PR #755).

@@ -128,8 +128,6 @@ class Word2vecEmbeddingInputlayer(Layer):
 
     Parameters
     ----------
-    train_labels : placeholder
-        For word labels. integer index format
     vocabulary_size : int
         The size of vocabulary, number of words
     embedding_size : int
@@ -207,7 +205,6 @@ class Word2vecEmbeddingInputlayer(Layer):
 
     def __init__(
         self,
-        train_labels=None,
         vocabulary_size=80000,
         embedding_size=200,
         num_sampled=64,
@@ -221,7 +218,6 @@ class Word2vecEmbeddingInputlayer(Layer):
         nce_b_init_args=None,
         name='word2vec',
     ):
-        self.train_labels = train_labels
 
         self.vocabulary_size = vocabulary_size
         self.embedding_size = embedding_size
@@ -256,7 +252,25 @@ class Word2vecEmbeddingInputlayer(Layer):
 
         return self._str(additional_str)
 
+    def __call__(self, prev_layer, train_labels, is_train=True):
+        """
+        prev_layer : :class:`Layer`
+            Previous layer.
+        train_labels : placeholder
+            For word labels. integer index format
+        is_train: boolean (default: True)
+            Set the TF Variable in training mode and may impact the behaviour of the layer.
+        """
+        return super(Word2vecEmbeddingInputlayer, self).__call__(
+            prev_layer=[prev_layer, train_labels],
+            is_train=is_train
+        )
+
+
     def compile(self):
+
+        input_plh = self._temp_data['inputs'][0]
+        train_labels_plh = self._temp_data['inputs'][1]
 
         # Look up embeddings for inputs.
         # Note: a row of 'embeddings' is the vector representation of a word.
@@ -277,7 +291,7 @@ class Word2vecEmbeddingInputlayer(Layer):
                 **self.E_init_args
             )
 
-            self._temp_data['outputs'] = tf.nn.embedding_lookup(embeddings, self._temp_data['inputs'])
+            self._temp_data['outputs'] = tf.nn.embedding_lookup(embeddings, input_plh)
 
             # Construct the variables for the NCE loss (i.e. negative sampling)
             nce_weights = self._get_tf_variable(
@@ -307,7 +321,7 @@ class Word2vecEmbeddingInputlayer(Layer):
                     weights=nce_weights,
                     biases=nce_biases,
                     inputs=self._temp_data['outputs'],
-                    labels=self.train_labels,
+                    labels=train_labels_plh,
                     num_sampled=self.num_sampled,
                     num_classes=self.vocabulary_size,
                     **self.nce_loss_args
