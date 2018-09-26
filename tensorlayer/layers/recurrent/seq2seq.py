@@ -138,58 +138,97 @@ class Seq2Seq(Layer):
             return_seq_2d=False,
             name='seq2seq',
     ):
-        super(Seq2Seq, self).__init__(
-            prev_layer=[net_encode_in, net_decode_in], cell_init_args=cell_init_args, name=name
-        )
+
+        self.cell_fn = cell_fn
+        self.cell_init_args = cell_init_args
+        self.n_hidden = n_hidden
+        self.initializer = initializer
+        self.encode_sequence_length = encode_sequence_length
+        self.decode_sequence_length = decode_sequence_length
+        self.initial_state_encode = initial_state_encode
+        self.initial_state_decode = initial_state_decode
+        self.dropout = dropout
+        self.n_layer = n_layer
+        self.return_seq_2d = return_seq_2d
+        self.name = name
 
         if self.cell_init_args:
             self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True,
 
-        if cell_fn is None:
+        if self.cell_fn is None:
             raise ValueError("cell_fn cannot be set to None")
 
-        if 'GRU' in cell_fn.__name__:
+        if 'GRU' in self.cell_fn.__name__:
             try:
-                cell_init_args.pop('state_is_tuple')
+                self.cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
+        # super(Seq2Seq, self).__init__(
+        #     prev_layer=[net_encode_in, net_decode_in], cell_init_args=cell_init_args, name=name
+        # )
 
-        logging.info(
-            "[*] Seq2Seq %s: n_hidden: %d cell_fn: %s dropout: %s n_layer: %d" %
-            (self.name, n_hidden, cell_fn.__name__, dropout, n_layer)
-        )
+        # logging.info(
+        #     "[*] Seq2Seq %s: n_hidden: %d cell_fn: %s dropout: %s n_layer: %d" %
+        #     (self.name, n_hidden, cell_fn.__name__, dropout, n_layer)
+        # )
 
-        with tf.variable_scope(name):
+        super(Seq2Seq, self).__init__(cell_init_args=cell_init_args)
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("n_hidden: %d" % self.n_hidden)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("cell_fn: %s" % self.cell_fn)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("dropout: %s" % self.dropout)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("n_layer: %s" % self.n_layer)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def compile(self, network_encode, net_decode_in):
+        with tf.variable_scope(self.name):
             # tl.layers.set_name_reuse(reuse)
             # network = InputLayer(self._temp_data['inputs'], name=name+'/input')
             network_encode = DynamicRNNLayer(
-                net_encode_in,
-                cell_fn=cell_fn,
+                cell_fn=self.cell_fn,
                 cell_init_args=self.cell_init_args,
-                n_hidden=n_hidden,
-                initializer=initializer,
-                initial_state=initial_state_encode,
-                dropout=dropout,
-                n_layer=n_layer,
-                sequence_length=encode_sequence_length,
+                n_hidden=self.n_hidden,
+                initializer=self.initializer,
+                initial_state=self.initial_state_encode,
+                dropout=self.dropout,
+                n_layer=self.n_layer,
+                sequence_length=self.encode_sequence_length,
                 return_last=False,
                 return_seq_2d=True,
                 name='encode'
-            )
+            )(net_encode_in)
             # vs.reuse_variables()
-            # tl.layers.set_name_reuse(True)
             network_decode = DynamicRNNLayer(
                 net_decode_in,
-                cell_fn=cell_fn,
+                cell_fn=self.cell_fn,
                 cell_init_args=self.cell_init_args,
-                n_hidden=n_hidden,
-                initializer=initializer,
-                initial_state=(network_encode.final_state if initial_state_decode is None else initial_state_decode),
-                dropout=dropout,
-                n_layer=n_layer,
-                sequence_length=decode_sequence_length,
+                n_hidden=self.n_hidden,
+                initializer=self.initializer,
+                initial_state=(network_encode.final_state if self.initial_state_decode is None else self.initial_state_decode),
+                dropout=self.dropout,
+                n_layer=self.n_layer,
+                sequence_length=self.decode_sequence_length,
                 return_last=False,
-                return_seq_2d=return_seq_2d,
+                return_seq_2d=self.return_seq_2d,
                 name='decode'
             )
             self._temp_data['outputs'] = network_decode.outputs
@@ -205,7 +244,14 @@ class Seq2Seq(Layer):
         self.final_state_decode = network_decode.final_state
 
         # self.sequence_length = sequence_length
+        self._add_layers(network_encode.all_layers)
+        # self._add_params(network_encode.all_params)
+        # self._add_dropout_layers(network_encode.all_drop)
 
-        self._add_dropout_layers(network_encode.all_drop)
+        self._add_layers(network_decode.all_layers)
+        # self._add_params(network_decode.all_params)
+        # self._add_dropout_layers(network_decode.all_drop)
 
-        self._add_dropout_layers(network_decode.all_drop)
+        # self._add_layers(self.outputs)
+
+        self._temp_data['local_weights'] = network_encode.all_weights + network_decode.all_weights
