@@ -70,6 +70,8 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
+- Layer:
+  - Release `GroupNormLayer` (PR #850)
 - Tests:
   - `test_model_compilednetwork.py` has been introduced to test the class `tl.models.CompiledNetwork` (PR #755).
   - `test_network_custom_2d.py` has been introduced to test the class `tl.networks.CustomModel` (PR #755).
@@ -100,6 +102,7 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Contributors
+- @2wins: #850
 - @DEKHTIARJonathan: #755
 - @zsdonghao: #755
 
