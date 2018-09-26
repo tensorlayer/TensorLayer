@@ -8,6 +8,7 @@ from tensorflow.python.training import moving_averages
 
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+from tensorlayer.layers.utils import get_collection_trainable
 
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
@@ -17,6 +18,7 @@ __all__ = [
     'BatchNormLayer',
     'InstanceNormLayer',
     'LayerNormLayer',
+    'GroupNormLayer',
     'SwitchNormLayer',
 ]
 
@@ -413,6 +415,81 @@ class LayerNormLayer(Layer):
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
             self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+
+class GroupNormLayer(Layer):
+    """The :class:`GroupNormLayer` layer is for Group Normalization.
+    See `tf.contrib.layers.group_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/group_norm>`__.
+
+    Parameters
+    -----------
+    prev_layer : :class:`Layer`
+        The previous layer.
+    act : activation function
+        The activation function of this layer.
+    epsilon : float
+        Eplison.
+    name : str
+        A unique layer name
+
+    """
+
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(self, prev_layer, groups=32, epsilon=1e-06, act=None, data_format='channels_last', name='groupnorm'):
+        super(GroupNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+
+        logging.info(
+            "GroupNormLayer %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
+        )
+
+        shape = self.inputs.get_shape().as_list()
+        if len(shape) != 4:
+            raise Exception("GroupNormLayer only supports 2D images.")
+
+        if data_format == 'channels_last':
+            channels = shape[-1]
+            int_shape = tf.concat(
+                [tf.shape(self.inputs)[0:3],
+                 tf.convert_to_tensor([groups, channels // groups])], axis=0
+            )
+        elif data_format == 'channels_first':
+            channels = shape[1]
+            int_shape = tf.concat(
+                [
+                    tf.shape(self.inputs)[0:1],
+                    tf.convert_to_tensor([groups, channels // groups]),
+                    tf.shape(self.inputs)[2:4]
+                ],
+                axis=0
+            )
+        else:
+            raise ValueError("data_format must be 'channels_last' or 'channels_first'.")
+
+        if groups > channels:
+            raise ValueError('Invalid groups %d for %d channels.' % (groups, channels))
+        if channels % groups != 0:
+            raise ValueError('%d channels is not commensurate with %d groups.' % (channels, groups))
+
+        with tf.variable_scope(name):
+            x = tf.reshape(self.inputs, int_shape)
+            if data_format == 'channels_last':
+                mean, var = tf.nn.moments(x, [1, 2, 4], keep_dims=True)
+                gamma = tf.get_variable('gamma', channels, initializer=tf.ones_initializer())
+                beta = tf.get_variable('beta', channels, initializer=tf.zeros_initializer())
+            else:
+                mean, var = tf.nn.moments(x, [2, 3, 4], keep_dims=True)
+                gamma = tf.get_variable('gamma', [1, channels, 1, 1], initializer=tf.ones_initializer())
+                beta = tf.get_variable('beta', [1, channels, 1, 1], initializer=tf.zeros_initializer())
+
+            x = (x - mean) / tf.sqrt(var + epsilon)
+
+            self.outputs = tf.reshape(x, tf.shape(self.inputs)) * gamma + beta
+            self.outputs = self._apply_activation(self.outputs)
+
+        variables = get_collection_trainable(self.name)
+
+        self._add_layers(self.outputs)
+        self._add_params(variables)
 
 
 class SwitchNormLayer(Layer):

@@ -70,6 +70,8 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
+- Layer:
+  - Release `GroupNormLayer` (PR #850)
 - Tests:
   - `test_model_compilednetwork.py` has been introduced to test the class `tl.models.CompiledNetwork` (PR #755).
   - `test_network_custom_2d.py` has been introduced to test the class `tl.networks.CustomModel` (PR #755).
@@ -90,6 +92,7 @@ To release a new version, please update the changelog as followed:
 - yapf>=0.22,<0.24 => yapf>=0.22,<0.25 (PR #829)
 - sphinx>=1.7,<1.8 => sphinx>=1.7,<1.9 (PR #842)
 - matplotlib>=2.2,<2.3 => matplotlib>=2.2,<3.1 (PR #845)
+- scikit-learn>=0.19,<0.20 => scikit-learn>=0.19,<0.21 (PR #851)
 
 ### Deprecated
 
@@ -100,6 +103,7 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Contributors
+- @2wins: #850
 - @DEKHTIARJonathan: #755
 - @zsdonghao: #755
 
