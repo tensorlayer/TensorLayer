@@ -40,8 +40,7 @@ class CustomModel(BaseNetwork, ABC):
                 if layer.__class__.__name__ not in tl.layers.inputs.__all__:
                     raise RuntimeError(
                         "The returned input_layer (type: %s) contains a layer (type: %s) which is not "
-                        "a known input layer: %s"
-                        % (type(inputs), type(layer), tl.layers.inputs.__all__)
+                        "a known input layer: %s" % (type(inputs), type(layer), tl.layers.inputs.__all__)
                     )
 
         elif isinstance(inputs, tl.layers.Layer):
@@ -61,15 +60,13 @@ class CustomModel(BaseNetwork, ABC):
                 if not isinstance(layer, tl.layers.Layer):
                     raise RuntimeError(
                         "The returned output_layer (type: %s) contains a layer (type: %s) which is not "
-                        "an instance of type `tl.layers.Layer`" %
-                        (type(outputs), type(layer))
+                        "an instance of type `tl.layers.Layer`" % (type(outputs), type(layer))
                     )
 
         elif not isinstance(outputs, tl.layers.Layer):
             raise RuntimeError(
                 "The returned output_layer (type: %s) is not an instance of  type "
-                "`tl.layers.Layer` or Tuple/List of `tl.layers.Layer`" %
-                (type(inputs))
+                "`tl.layers.Layer` or Tuple/List of `tl.layers.Layer`" % (type(inputs))
             )
 
         return inputs, outputs

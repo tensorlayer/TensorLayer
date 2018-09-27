@@ -193,9 +193,9 @@ class Layer(BaseLayer):
             self.prev_layer = prev_layer.name
 
         elif self.__class__.__name__ in tl.layers.inputs.__all__ and (
-            isinstance(prev_layer, tf.Tensor) or (
-                isinstance(prev_layer, (tuple, list)) and all(isinstance(x, tf.Tensor) for x in prev_layer)
-            )
+            isinstance(prev_layer, tf.Tensor) or
+            (isinstance(prev_layer,
+                        (tuple, list)) and all(isinstance(x, tf.Tensor) for x in prev_layer))
         ):
             run_compilation = True
 

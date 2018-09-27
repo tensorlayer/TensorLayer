@@ -17,7 +17,6 @@ class CustomNetwork_AverageEmbeddingInputlayer_Test(CustomTestCase):
     @classmethod
     def setUpClass(cls):
 
-
         cls.vocab_size = 100000
         cls.embedding_size = 50
         cls.n_labels = 2
@@ -30,9 +29,7 @@ class CustomNetwork_AverageEmbeddingInputlayer_Test(CustomTestCase):
 
                     # Network structure
                     input_layer = tl.layers.AverageEmbeddingInputlayer(
-                        vocabulary_size=cls.vocab_size,
-                        embedding_size=cls.embedding_size,
-                        name="input_avg_emb_layer_1"
+                        vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name="input_avg_emb_layer_1"
                     )
 
                     network = tl.layers.DenseLayer(n_units=cls.n_labels, name="dense_layer_2")(input_layer)
@@ -111,7 +108,6 @@ class CustomNetwork_EmbeddingInputlayer_Test(CustomTestCase):
     @classmethod
     def setUpClass(cls):
 
-
         cls.vocab_size = 100000
         cls.embedding_size = 50
         cls.n_labels = 2
@@ -124,9 +120,7 @@ class CustomNetwork_EmbeddingInputlayer_Test(CustomTestCase):
 
                     # Network structure
                     input_layer = tl.layers.EmbeddingInputlayer(
-                        vocabulary_size=cls.vocab_size,
-                        embedding_size=cls.embedding_size,
-                        name="input_emb_layer_1"
+                        vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name="input_emb_layer_1"
                     )
 
                     network = tl.layers.DenseLayer(n_units=cls.n_labels, name="dense_layer_2")(input_layer)
@@ -135,7 +129,11 @@ class CustomNetwork_EmbeddingInputlayer_Test(CustomTestCase):
 
             cls.model = MyCustomNetwork(name="my_custom_network_2")
 
-            plh = tf.placeholder(tf.int32, shape=[100,], name='inputs')
+            plh = tf.placeholder(
+                tf.int32, shape=[
+                    100,
+                ], name='inputs'
+            )
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
             cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
@@ -204,7 +202,6 @@ class CustomNetwork_Word2vecEmbeddingInputlayer_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-
 
         cls.vocab_size = 100000
         cls.embedding_size = 50
@@ -297,7 +294,6 @@ class CustomNetwork_OneHotInputLayer_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-
 
         cls.vocab_size = 100000
         cls.embedding_size = 50

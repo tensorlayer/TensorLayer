@@ -262,10 +262,8 @@ class Word2vecEmbeddingInputlayer(Layer):
             Set the TF Variable in training mode and may impact the behaviour of the layer.
         """
         return super(Word2vecEmbeddingInputlayer, self).__call__(
-            prev_layer=[prev_layer, train_labels],
-            is_train=is_train
+            prev_layer=[prev_layer, train_labels], is_train=is_train
         )
-
 
     def compile(self):
 

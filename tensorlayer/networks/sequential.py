@@ -70,7 +70,6 @@ class Sequential(BaseNetwork):
         with tf.variable_scope(self.name):
             self.inputs = layers.InputLayer(name='input_layer')
             self.add(self.inputs)
-
             '''
             # Add to the model any layers passed to the constructor.
             if layers:

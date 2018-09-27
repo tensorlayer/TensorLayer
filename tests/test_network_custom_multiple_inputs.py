@@ -11,6 +11,7 @@ import tensorlayer as tl
 
 from tests.utils import CustomTestCase
 
+
 class CustomNetwork_Multiple_Outputs_Test(CustomTestCase):
 
     @classmethod
