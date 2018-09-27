@@ -105,23 +105,26 @@ class Network_Sequential_RNN_Test(CustomTestCase):
     def test_get_all_drop_plh(self):
         self.assertEqual(len(self.train_model.all_drop), 0)
         self.assertEqual(len(self.test_model.all_drop), 0)
+
         with self.assertRaises((AttributeError, AssertionError)):
             self.assertEqual(len(self.model.all_drop), 0)
 
         self.assertEqual(len(self.train_model.all_drop), 0)
         self.assertEqual(len(self.test_model.all_drop), 0)
+
         with self.assertRaises((AttributeError, AssertionError)):
             self.assertEqual(len(self.model.all_drop), 0)
 
     def test_count_weights(self):
-        print(self.train_model.count_weights())
         self.assertEqual(self.train_model.count_weights(), 127440)
         self.assertEqual(self.test_model.count_weights(), 127440)
+
         with self.assertRaises((AttributeError, AssertionError)):
             self.assertEqual(self.model.count_weights(), 127440)
 
         self.assertEqual(self.train_model2.count_weights(), 48040)
         self.assertEqual(self.test_model2.count_weights(), 48040)
+
         with self.assertRaises((AttributeError, AssertionError)):
             self.assertEqual(self.model2.count_weights(), 48040)
 
@@ -141,6 +144,7 @@ class Network_Sequential_RNN_Test(CustomTestCase):
         self.assertEqual(self.train_model.count_layers(), 6)
         self.assertEqual(self.test_model.count_layers(), 6)
         self.assertEqual(self.model.count_layers(), 6)
+
         ## dynamic length RNNs
         self.assertEqual(self.train_model2.count_layers(), 4)
         self.assertEqual(self.test_model2.count_layers(), 4)
@@ -149,41 +153,27 @@ class Network_Sequential_RNN_Test(CustomTestCase):
     def test_layer_outputs_dtype(self):
 
         with self.assertNotRaises(RuntimeError):
-            ## fixed length RNNs
-            self.assertEqual(self.train_model["embedding"].outputs.dtype, tf.float32)
-            self.assertEqual(self.test_model["embedding"].outputs.dtype, tf.float32)
 
-            self.assertEqual(self.train_model["rnn"].outputs.dtype, tf.float32)
-            self.assertEqual(self.test_model["rnn"].outputs.dtype, tf.float32)
+            for train_model, test_model in [(self.train_model, self.test_model), (self.train_model2, self.test_model2)]:
 
-            self.assertEqual(self.train_model["birnn"].outputs.dtype, tf.float32)
-            self.assertEqual(self.test_model["birnn"].outputs.dtype, tf.float32)
+                for layer_name in train_model.all_layers:
 
-            self.assertEqual(self.train_model["convlstm"].outputs.dtype, tf.float32)
-            self.assertEqual(self.test_model["convlstm"].outputs.dtype, tf.float32)
+                    if layer_name in ["input_layer"]:
+                        target_dtype = tf.int32
+                    else:
+                        target_dtype = tf.float32
 
-            ## dynamic length RNNs
-            self.assertEqual(self.train_model2["embedding"].outputs.dtype, tf.float32)
-            self.assertEqual(self.test_model2["embedding"].outputs.dtype, tf.float32)
+                    if train_model[layer_name].outputs.dtype != target_dtype:
+                        raise RuntimeError(
+                            "[Train Model] - Layer `%s` has an output of type %s, expected %s" %
+                            (layer_name, train_model[layer_name].outputs.dtype, target_dtype)
+                        )
 
-            self.assertEqual(self.train_model2["dynamicrnn"].outputs.dtype, tf.float32)
-            self.assertEqual(self.test_model2["dynamicrnn"].outputs.dtype, tf.float32)
-
-            self.assertEqual(self.train_model2["bidynamicrnn"].outputs.dtype, tf.float32)
-            self.assertEqual(self.test_model2["bidynamicrnn"].outputs.dtype, tf.float32)
-            # for layer_name in self.train_model.all_layers:
-            #
-            #     if self.train_model[layer_name].outputs.dtype != tf.float32:
-            #         raise RuntimeError(
-            #             "[Train Model] - Layer `%s` has an output of type %s, expected %s" %
-            #             (layer_name, self.train_model[layer_name].outputs.dtype, tf.float16)
-            #         )
-            #
-            #     if self.test_model[layer_name].outputs.dtype != tf.float32:
-            #         raise RuntimeError(
-            #             "[Test Model] - Layer `%s` has an output of type %s, expected %s" %
-            #             (layer_name, self.test_model[layer_name].outputs.dtype, tf.float16)
-            #         )
+                    if test_model[layer_name].outputs.dtype != target_dtype:
+                        raise RuntimeError(
+                            "[Test Model] - Layer `%s` has an output of type %s, expected %s" %
+                            (layer_name, test_model[layer_name].outputs.dtype, target_dtype)
+                        )
 
     def test_network_shapes(self):
         ## fixed length RNNs
@@ -199,14 +189,19 @@ class Network_Sequential_RNN_Test(CustomTestCase):
         ## dynamic RNNs
         tensor_shape = [k._value for k in self.train_model2["embedding"].outputs.shape]
         self.assertEqual(tensor_shape, [100, None, 50])
+
         tensor_shape = [k._value for k in self.test_model2["embedding"].outputs.shape]
         self.assertEqual(tensor_shape, [100, None, 50])
+
         tensor_shape = [k._value for k in self.train_model2["dynamicrnn"].outputs.shape]
         self.assertEqual(tensor_shape, [100, None, 20])
+
         tensor_shape = [k._value for k in self.test_model2["dynamicrnn"].outputs.shape]
         self.assertEqual(tensor_shape, [100, None, 20])
+
         tensor_shape = [k._value for k in self.train_model2["bidynamicrnn"].outputs.shape]
         self.assertEqual(tensor_shape, [100, None, 30 * 2])
+
         tensor_shape = [k._value for k in self.test_model2["bidynamicrnn"].outputs.shape]
         self.assertEqual(tensor_shape, [100, None, 30 * 2])
 
