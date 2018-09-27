@@ -405,6 +405,11 @@ class Layer(BaseLayer):
 
     @private_method
     def _create_compiled_layer(self):
+        kwargs = {
+            key:val for key, val in self._temp_data.items()
+            if key not in ['inputs', 'outputs', 'local_weights', 'local_drop', 'is_train']
+        }
+
         self._last_compiled_layer = type("Compiled_" + self.__class__.__name__, (CompiledLayer, ), {})(
             layers_to_compile=self,
             inputs=self._temp_data['inputs'],
@@ -412,6 +417,7 @@ class Layer(BaseLayer):
             local_weights=self._temp_data['local_weights'],
             local_drop=self._temp_data['local_drop'],
             is_train=self._temp_data['is_train'],
+            **kwargs
         )
 
         return self._last_compiled_layer
@@ -628,7 +634,7 @@ class Layer(BaseLayer):
 
 class CompiledLayer(object):
 
-    def __init__(self, layers_to_compile, inputs, outputs, local_weights, local_drop, is_train):
+    def __init__(self, layers_to_compile, inputs, outputs, local_weights, local_drop, is_train, **kwargs):
 
         self.hyperparameters = dict()
 
@@ -654,6 +660,9 @@ class CompiledLayer(object):
         self.local_drop = local_drop
 
         self.is_train = is_train
+
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
 
         self.name = self.hyperparameters["name"]
 
