@@ -36,6 +36,9 @@ class BaseNetwork(core.BaseLayer):
         self.all_layers = list()
         self.all_layers_dict = dict()
 
+        self.inputs = None
+        self.outputs = None
+
         self.name = name
 
         if self.name is None:
@@ -74,7 +77,7 @@ class BaseNetwork(core.BaseLayer):
         self.all_layers_dict[layer.name] = layer
         self.all_layers.append(layer.name)
 
-    def compile(self, input_plh, reuse=False, is_train=True):
+    def compile(self, inputs, reuse=False, is_train=True):
 
         logging.info(
             "** Compiling %s `%s` - reuse: %s, is_train: %s **" % (self.__class__.__name__, self.name, reuse, is_train)
@@ -92,12 +95,23 @@ class BaseNetwork(core.BaseLayer):
 
                 with tf.variable_scope(self.name, reuse=reuse):
 
-                    for id_layer, layer in enumerate(self.all_layers):
+                    for layer in self.all_layers:
 
                         layer_factory = self.all_layers_dict[layer]
 
-                        if id_layer == 0:
-                            compiled_inputs = input_plh
+                        if layer_factory.__class__.__name__ in tl.layers.inputs.__all__:
+                            if isinstance(self.inputs, (tuple, list)):
+                                try:
+                                    plh_idx = self.inputs.index(layer_factory)
+                                    compiled_inputs = inputs[plh_idx]
+
+                                except ValueError:
+                                    raise RuntimeError(
+                                        "Error in the model definition, one of the input layers (%s) is not defined in `model.inputs`"
+                                        % layer_factory.name
+                                    )
+                            else:
+                                compiled_inputs = inputs
 
                         elif isinstance(layer_factory.prev_layer, str):
                             compiled_inputs = self.all_layers_dict[layer_factory.prev_layer]._last_compiled_layer
@@ -106,6 +120,7 @@ class BaseNetwork(core.BaseLayer):
                             compiled_inputs = [
                                 self.all_layers_dict[_layer]._last_compiled_layer for _layer in layer_factory.prev_layer
                             ]
+
                         else:
                             raise ValueError("`prev_layer` should be either a `str` or a list of `str`")
 
@@ -113,7 +128,7 @@ class BaseNetwork(core.BaseLayer):
                         _temp_all_compiled_layers.append(network)
 
             return tl.models.CompiledNetwork(
-                inputs=input_plh,
+                inputs=inputs,
                 outputs=network.outputs,
                 all_layers=_temp_all_compiled_layers,
                 is_train=is_train,

@@ -35,7 +35,7 @@ class CustomNetwork_Multiple_Outputs_Test(CustomTestCase):
             cls.model = MyCustomNetwork(name="my_custom_network")
 
             plh_1 = tf.placeholder(tf.float16, shape=(100, 50))
-            plh_2 = tf.placeholder(tf.float16, shape=(100, 50))
+            plh_2 = tf.placeholder(tf.float16, shape=(100, 30))
 
             cls.train_model = cls.model.compile((plh_1, plh_2), reuse=False, is_train=True)
             cls.test_model = cls.model.compile((plh_1, plh_2), reuse=True, is_train=False)
@@ -53,11 +53,11 @@ class CustomNetwork_Multiple_Outputs_Test(CustomTestCase):
             self.assertEqual(len(self.model.all_drop), 0)
 
     def test_count_weights(self):
-        self.assertEqual(self.train_model.count_weights(), 1530)
-        self.assertEqual(self.test_model.count_weights(), 1530)
+        self.assertEqual(self.train_model.count_weights(), 1330)
+        self.assertEqual(self.test_model.count_weights(), 1330)
 
         with self.assertRaises((AttributeError, AssertionError)):
-            self.assertEqual(self.model.count_weights(), 1530)
+            self.assertEqual(self.model.count_weights(), 1330)
 
     def test_count_weight_tensors(self):
         self.assertEqual(len(self.train_model.get_all_weights()), 4)
@@ -67,9 +67,9 @@ class CustomNetwork_Multiple_Outputs_Test(CustomTestCase):
             self.assertEqual(len(self.model.get_all_weights()), 4)
 
     def test_count_layers(self):
-        self.assertEqual(self.train_model.count_layers(), 3)
-        self.assertEqual(self.test_model.count_layers(), 3)
-        self.assertEqual(self.model.count_layers(), 3)
+        self.assertEqual(self.train_model.count_layers(), 5)
+        self.assertEqual(self.test_model.count_layers(), 5)
+        self.assertEqual(self.model.count_layers(), 5)
 
     def test_layer_outputs_dtype(self):
 
@@ -93,8 +93,11 @@ class CustomNetwork_Multiple_Outputs_Test(CustomTestCase):
 
     def test_network_shapes(self):
 
-        self.assertEqual(self.train_model["data_plh"].outputs.shape, (100, 50))
-        self.assertEqual(self.test_model["data_plh"].outputs.shape, (100, 50))
+        self.assertEqual(self.train_model["data_plh_1"].outputs.shape, (100, 50))
+        self.assertEqual(self.test_model["data_plh_1"].outputs.shape, (100, 50))
+
+        self.assertEqual(self.train_model["data_plh_2"].outputs.shape, (100, 30))
+        self.assertEqual(self.test_model["data_plh_2"].outputs.shape, (100, 30))
 
         self.assertEqual(self.train_model["dense_layer_1"].outputs.shape, (100, 20))
         self.assertEqual(self.test_model["dense_layer_1"].outputs.shape, (100, 20))

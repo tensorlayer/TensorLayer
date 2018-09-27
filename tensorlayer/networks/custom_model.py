@@ -21,7 +21,7 @@ class CustomModel(BaseNetwork, ABC):
     def __init__(self, name):
         super(CustomModel, self).__init__(name)
 
-        self.input_layer, self.output_layer = self._check_model_implementation(self.model())
+        self.inputs, self.outputs = self._check_model_implementation(self.model())
 
     @abstractmethod
     def model(self):
@@ -31,48 +31,48 @@ class CustomModel(BaseNetwork, ABC):
     def _check_model_implementation(self, model):
 
         if len(model) != 2:
-            raise RuntimeError("The method: CustomModel.model() should return two layers: input_layer and output_layer")
+            raise RuntimeError("The method: CustomModel.model() should return two layers: `inputs` and `outputs`")
         else:
-            input_layer, output_layer = model
+            inputs, outputs = model
 
-        if isinstance(input_layer, (list, tuple)):
-            for layer in input_layer:
+        if isinstance(inputs, (list, tuple)):
+            for layer in inputs:
                 if layer.__class__.__name__ not in tl.layers.inputs.__all__:
                     raise RuntimeError(
                         "The returned input_layer (type: %s) contains a layer (type: %s) which is not "
                         "a known input layer: %s"
-                        % (type(input_layer), type(layer), tl.layers.inputs.__all__)
+                        % (type(inputs), type(layer), tl.layers.inputs.__all__)
                     )
 
-        elif isinstance(input_layer, tl.layers.Layer):
-            if input_layer.__class__.__name__ not in tl.layers.inputs.__all__:
+        elif isinstance(inputs, tl.layers.Layer):
+            if inputs.__class__.__name__ not in tl.layers.inputs.__all__:
                 raise RuntimeError(
                     "The returned input_layer (type: %s) is not an instance of a known input layer: %s" %
-                    (type(input_layer), tl.layers.inputs.__all__)
+                    (type(inputs), tl.layers.inputs.__all__)
                 )
         else:
             raise RuntimeError(
                 "The returned input_layer (type: %s) is not an instance of Layer type or Tuple/List of Layers" %
-                (type(input_layer))
+                (type(inputs))
             )
 
-        if isinstance(output_layer, (list, tuple)):
-            for layer in output_layer:
+        if isinstance(outputs, (list, tuple)):
+            for layer in outputs:
                 if not isinstance(layer, tl.layers.Layer):
                     raise RuntimeError(
                         "The returned output_layer (type: %s) contains a layer (type: %s) which is not "
                         "an instance of type `tl.layers.Layer`" %
-                        (type(output_layer), type(layer))
+                        (type(outputs), type(layer))
                     )
 
-        elif not isinstance(output_layer, tl.layers.Layer):
+        elif not isinstance(outputs, tl.layers.Layer):
             raise RuntimeError(
                 "The returned output_layer (type: %s) is not an instance of  type "
                 "`tl.layers.Layer` or Tuple/List of `tl.layers.Layer`" %
-                (type(input_layer))
+                (type(inputs))
             )
 
-        return input_layer, output_layer
+        return inputs, outputs
 
     def __getitem__(self, layer_name):
         return self.all_layers_dict[layer_name]

@@ -65,10 +65,12 @@ class Sequential(BaseNetwork):
 
         super(Sequential, self).__init__(name)
 
-        self._last_layer = None
+        self.outputs = None
 
         with tf.variable_scope(self.name):
-            self.add(layers.InputLayer(name='input_layer'))
+            self.inputs = layers.InputLayer(name='input_layer')
+            self.add(self.inputs)
+
             '''
             # Add to the model any layers passed to the constructor.
             if layers:
@@ -78,7 +80,7 @@ class Sequential(BaseNetwork):
 
     def add(self, layer):
         self.register_new_layer(layer)
-        self._last_layer = layer(self._last_layer)
+        self.outputs = layer(self.outputs)
 
     def count_layers(self):
         return len(self.all_layers_dict)
