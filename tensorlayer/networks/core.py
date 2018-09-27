@@ -125,7 +125,7 @@ class BaseNetwork(core.BaseLayer):
                             raise ValueError("`prev_layer` should be either a `str` or a list of `str`")
 
 
-                        if isinstance(compiled_inputs, (tuple, list)):
+                        if isinstance(compiled_inputs, (tuple, list)) and not isinstance(layer_factory, tl.layers.ConcatLayer):
                             network = layer_factory(*compiled_inputs, is_train=is_train)
                         else:
                             network = layer_factory(prev_layer=compiled_inputs, is_train=is_train)
