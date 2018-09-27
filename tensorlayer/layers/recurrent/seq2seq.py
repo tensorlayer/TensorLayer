@@ -123,8 +123,8 @@ class Seq2Seq(Layer):
 
     def __init__(
             self,
-            net_encode_in,
-            net_decode_in,
+            # net_encode_in,
+            # net_decode_in,
             cell_fn,  #tf.nn.rnn_cell.LSTMCell,
             cell_init_args=None,
             n_hidden=256,
