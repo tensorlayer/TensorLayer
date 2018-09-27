@@ -207,5 +207,3 @@ class Seq2Seq(Layer):
         # self.sequence_length = sequence_length
 
         self._add_dropout_layers(network_encode.all_drop)
-
-        self._add_dropout_layers(network_decode.all_drop)
