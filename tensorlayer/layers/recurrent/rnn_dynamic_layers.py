@@ -634,7 +634,7 @@ class BiDynamicRNNLayer(Layer):
 
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-            logging.info("     n_params : %d" % (len(rnn_variables)))
+            # logging.info("     n_params : %d" % (len(rnn_variables)))
 
             # Manage the outputs
             outputs = tf.concat(outputs, 2)

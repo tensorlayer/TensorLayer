@@ -328,6 +328,8 @@ class Word2vecEmbeddingInputlayer(Layer):
 
             self.normalized_embeddings = tf.nn.l2_normalize(embeddings, 1)
 
+            self._temp_data['nce_cost'] = nce_cost
+            self._temp_data['normalized_embeddings'] = normalized_embeddings
 
 class EmbeddingInputlayer(Layer):
     """
