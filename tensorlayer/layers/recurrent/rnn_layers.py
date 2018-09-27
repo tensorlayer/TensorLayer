@@ -189,6 +189,11 @@ class RNNLayer(Layer):
         except AttributeError:
             pass
 
+        try:
+            additional_str.append("num weights: %d" % self.n_weights)
+        except AttributeError:
+            pass
+
         return self._str(additional_str)
 
         # logging.info(
@@ -271,8 +276,10 @@ class RNNLayer(Layer):
             # Retrieve just the RNN variables.
             # rnn_variables = [v for v in tf.all_variables() if v.name.startswith(vs.name)]
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-            logging.info("     n_params : %d" % (len(rnn_variables)))
+            # rnn_variables = get_collection_trainable(self.name)
+            self._temp_data['local_weights'] = rnn_variables
+            # logging.info("     n_params : %d" % (len(rnn_variables)))
+            self.n_weights = len(rnn_variables)
 
             if self.return_last:
                 # 2D Tensor [batch_size, n_hidden]
@@ -444,14 +451,20 @@ class BiRNNLayer(Layer):
         except AttributeError:
             pass
 
-        return self._str(additional_str)
+        try:
+            additional_str.append("num weights: %d" % self.n_weights)
+        except AttributeError:
+            pass
 
-        # logging.info(
-        #     "BiRNNLayer %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d " % (
-        #         self.name, n_hidden, n_steps, self._temp_data['inputs'].get_shape().ndims,
-        #         self._temp_data['inputs'].get_shape(), cell_fn.__name__, dropout, n_layer
-        #     )
-        # )
+        try:
+            if self.dropout and self._temp_data['is_train']:
+                additional_str.append('\n             enable dropout as `is_train` is True')
+            elif self.dropout and (self._temp_data['is_train'] is False):
+                additional_str.append('\n             disable dropout as `is_train` is False')
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
 
     def compile(self):
 
@@ -471,11 +484,11 @@ class BiRNNLayer(Layer):
         except Exception:
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps, n_features]")
 
-        with tf.variable_scope(name, initializer=self.initializer) as vs:
-            rnn_creator = lambda: cell_fn(num_units=self.n_hidden, **self.cell_init_args)
+        with tf.variable_scope(self.name, initializer=self.initializer) as vs:
+            rnn_creator = lambda: self.cell_fn(num_units=self.n_hidden, **self.cell_init_args)
             # Apply dropout
-            if self.dropout:
-
+            if self.dropout and self._temp_data['is_train']:
+                # logging.info('enable dropout as is_train is True')
                 if isinstance(self.dropout, (tuple, list)):  # type(dropout) in [tuple, list]:
                     in_keep_prob = self.dropout[0]
                     out_keep_prob = self.dropout[1]
@@ -493,6 +506,7 @@ class BiRNNLayer(Layer):
                 )
 
             else:
+                # logging.info('disable dropout as is_train is False')
                 cell_creator = rnn_creator
 
             self.fw_cell = cell_creator()
@@ -582,4 +596,4 @@ class BiRNNLayer(Layer):
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
             self._temp_data['local_weights'] = rnn_variables
 
-        logging.info("     n_params : %d" % (len(rnn_variables)))
+        self.n_weights = len(rnn_variables)

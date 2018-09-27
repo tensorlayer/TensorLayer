@@ -130,7 +130,7 @@ class BatchNormLayer(Layer):
 
     def __init__(
         self,
-        decay=0.9,
+        decay=0.99,
         epsilon=1e-5,
         beta_init=tf.zeros_initializer,
         gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
@@ -169,6 +169,11 @@ class BatchNormLayer(Layer):
 
         try:
             additional_str.append("epsilon: %s" % self.epsilon)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("is_train: %s" % self._temp_data['is_train'])
         except AttributeError:
             pass
 
