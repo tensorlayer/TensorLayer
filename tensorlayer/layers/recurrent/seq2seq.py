@@ -221,7 +221,7 @@ class Seq2Seq(Layer):
 
             # tl.layers.set_name_reuse(reuse)
             # network = InputLayer(self._temp_data['inputs'], name=name+'/input')
-            network_encode = DynamicRNNLayer(
+            network_encode_layer = DynamicRNNLayer(
                 cell_fn=self.cell_fn,
                 cell_init_args=self.cell_init_args,
                 n_hidden=self.n_hidden,
@@ -233,15 +233,17 @@ class Seq2Seq(Layer):
                 return_last=False,
                 return_seq_2d=True,
                 name='encode'
-            )(net_encode_in)
+            )
 
-            network_decode = DynamicRNNLayer(
+            network_encode_compiled = network_encode_layer(net_encode_in)
+
+            network_decode_layer = DynamicRNNLayer(
                 cell_fn=self.cell_fn,
                 cell_init_args=self.cell_init_args,
                 n_hidden=self.n_hidden,
                 initializer=self.initializer,
                 initial_state=(
-                    network_encode.final_state if self.initial_state_decode is None else self.initial_state_decode
+                    network_encode_layer.final_state if self.initial_state_decode is None else self.initial_state_decode
                 ),
                 dropout=self.dropout,
                 n_layer=self.n_layer,
@@ -249,18 +251,20 @@ class Seq2Seq(Layer):
                 return_last=False,
                 return_seq_2d=self.return_seq_2d,
                 name='decode'
-            )(net_decode_in)
+            )
 
-            self._temp_data['outputs'] = network_decode.outputs
+            network_decode_compiled = network_decode_layer(network_encode_compiled)
+
+            self._temp_data['outputs'] = network_decode_compiled.outputs
 
             # rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         # Initial state
-        self.initial_state_encode = network_encode.initial_state
-        self.initial_state_decode = network_decode.initial_state
+        self.initial_state_encode = network_encode_layer.initial_state
+        self.initial_state_decode = network_decode_layer.initial_state
 
         # Final state
-        self.final_state_encode = network_encode.final_state
-        self.final_state_decode = network_decode.final_state
+        self.final_state_encode = network_encode_layer.final_state
+        self.final_state_decode = network_decode_layer.final_state
 
-        self._temp_data['local_weights'] = network_encode.local_weights + network_decode.local_weights
+        self._temp_data['local_weights'] = network_encode_compiled.local_weights + network_decode_compiled.local_weights
