@@ -260,11 +260,11 @@ class Seq2Seq(Layer):
             # rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         # Initial state
-        self._temp_data['initial_state_encode'] = network_encode_layer.initial_state
-        self._temp_data['initial_state_decode'] = network_decode_layer.initial_state
+        self._temp_data['initial_state_encode'] = network_encode_compiled.initial_state
+        self._temp_data['initial_state_decode'] = network_encode_compiled.initial_state
 
         # Final state
-        self._temp_data['final_state_encode'] = network_encode_layer.final_state
-        self._temp_data['final_state_decode'] = network_decode_layer.final_state
+        self._temp_data['final_state_encode'] = network_decode_compiled.final_state
+        self._temp_data['final_state_decode'] = network_decode_compiled.final_state
 
         self._temp_data['local_weights'] = network_encode_compiled.local_weights + network_decode_compiled.local_weights
