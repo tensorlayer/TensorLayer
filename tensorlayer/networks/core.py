@@ -124,7 +124,12 @@ class BaseNetwork(core.BaseLayer):
                         else:
                             raise ValueError("`prev_layer` should be either a `str` or a list of `str`")
 
-                        network = layer_factory(prev_layer=compiled_inputs, is_train=is_train)
+
+                        if isinstance(compiled_inputs, (tuple, list)):
+                            network = layer_factory(*compiled_inputs, is_train=is_train)
+                        else:
+                            network = layer_factory(prev_layer=compiled_inputs, is_train=is_train)
+
                         _temp_all_compiled_layers.append(network)
 
             return tl.models.CompiledNetwork(

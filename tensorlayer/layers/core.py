@@ -186,13 +186,17 @@ class Layer(BaseLayer):
 
         run_compilation = False
 
-        if prev_layer is None and not self._check_self_is_input():
+        if prev_layer is None and self.__class__.__name__ not in tl.layers.inputs.__all__:
             raise ValueError("No previous_layer has been given to the layer `%s`" % self.name)
 
         elif isinstance(prev_layer, tl.layers.Layer):  # Manual Compile Mode
             self.prev_layer = prev_layer.name
 
-        elif isinstance(prev_layer, tf.Tensor) and self._check_self_is_input():
+        elif self.__class__.__name__ in tl.layers.inputs.__all__ and (
+            isinstance(prev_layer, tf.Tensor) or (
+                isinstance(prev_layer, (tuple, list)) and all(isinstance(x, tf.Tensor) for x in prev_layer)
+            )
+        ):
             run_compilation = True
 
         elif isinstance(prev_layer, tl.layers.CompiledLayer):
@@ -212,7 +216,15 @@ class Layer(BaseLayer):
                 self.prev_layer = [layer.name for layer in prev_layer]
 
             else:
-                raise ValueError("Not all layers given in `prev_layer` are either `CompiledLayer or `Layer` instance")
+                if isinstance(prev_layer, (tuple, list)):
+                    additional_details = " - Contents: %s" % [type(x) for x in prev_layer]
+                else:
+                    additional_details = ""
+
+                raise ValueError(
+                    "Not all layers given in `prev_layer` are either `CompiledLayer or `Layer` instance.\n"
+                    "Received `prev_layer` - Type: %s%s" % (type(prev_layer), additional_details)
+                )
 
         else:
             self.prev_layer = prev_layer
@@ -263,15 +275,16 @@ class Layer(BaseLayer):
         elif isinstance(prev_layer, (list, tuple)):
             # 2. for layer have multiply inputs i.e. ConcatLayer
 
-            self._temp_data['inputs'] = [layer.outputs for layer in prev_layer]
+            if self.__class__.__name__ in tl.layers.inputs.__all__:
+                self._temp_data['inputs'] = prev_layer
+            else:
+                self._temp_data['inputs'] = [layer.outputs for layer in prev_layer]
 
-            #
-            #
             # self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
             # self._add_graphs(sum([l.all_graphs for l in prev_layer], []))
 
         elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
-            if not self._check_self_is_input():
+            if self.__class__.__name__ not in tl.layers.inputs.__all__:
                 raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
 
             self._temp_data['inputs'] = prev_layer
@@ -337,14 +350,6 @@ class Layer(BaseLayer):
             raise ValueError("`layer_list` should be a list of `CompiledLayer`")
         else:
             return layer_list
-
-    @private_method
-    def _check_self_is_input(self):
-
-        input_layers_module = importlib.import_module('tensorlayer.layers.inputs')
-        input_layers = tuple([getattr(input_layers_module, layer) for layer in tl.layers.inputs.__all__])
-
-        return isinstance(self, input_layers)
 
     @private_method
     def _str(self, additional_str=None):
