@@ -349,10 +349,8 @@ class DynamicRNNLayer(Layer):
 
             self._temp_data['local_weights'] = rnn_variables
 
-        # Final state
-        self.final_state = last_states
-
-        # self.sequence_length = sequence_length
+        self._temp_data['final_state'] = last_states
+        self._temp_data['sequence_length'] = sequence_length
 
 
 class BiDynamicRNNLayer(Layer):
@@ -634,7 +632,7 @@ class BiDynamicRNNLayer(Layer):
 
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-            logging.info("     n_params : %d" % (len(rnn_variables)))
+            # logging.info("     n_params : %d" % (len(rnn_variables)))
 
             # Manage the outputs
             outputs = tf.concat(outputs, 2)
@@ -664,7 +662,7 @@ class BiDynamicRNNLayer(Layer):
             self._temp_data['local_weights'] = rnn_variables
 
         # Final state
-        self.fw_final_states = states_fw
-        self.bw_final_states = states_bw
+        self._temp_data['fw_final_states'] = states_fw
+        self._temp_data['bw_final_states'] = states_bw
 
-        # self.sequence_length = sequence_length
+        self._temp_data['sequence_length'] = sequence_length
