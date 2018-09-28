@@ -349,6 +349,7 @@ class DynamicRNNLayer(Layer):
 
             self._temp_data['local_weights'] = rnn_variables
 
+        self._temp_data['initial_state'] = self.initial_state
         self._temp_data['final_state'] = last_states
         self._temp_data['sequence_length'] = self.sequence_length
 
@@ -661,7 +662,10 @@ class BiDynamicRNNLayer(Layer):
 
             self._temp_data['local_weights'] = rnn_variables
 
-        # Final state
+        # Initial states
+        self._temp_data['fw_initial_state'] = self.fw_initial_state
+        self._temp_data['bw_initial_state'] = self.bw_initial_state
+        # Final states
         self._temp_data['fw_final_states'] = states_fw
         self._temp_data['bw_final_states'] = states_bw
 

@@ -298,6 +298,7 @@ class RNNLayer(Layer):
                     self._temp_data['outputs'] = tf.reshape(tf.concat(outputs, 1), [-1, self.n_steps, self.n_hidden])
 
         self._temp_data['final_state'] = state
+        self._temp_data['initial_state'] = self.initial_state
 
 
 class BiRNNLayer(Layer):
@@ -588,12 +589,14 @@ class BiRNNLayer(Layer):
                     self._temp_data['outputs'] = tf.reshape(
                         tf.concat(outputs, 1), [-1, self.n_steps, self.n_hidden * 2]
                     )
-
-            self._temp_data['fw_final_state'] = fw_state
-            self._temp_data['bw_final_state'] = bw_state
-
             # Retrieve just the RNN variables.
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
             self._temp_data['local_weights'] = rnn_variables
 
+        # Initial states
+        self._temp_data['fw_initial_state'] = self.fw_initial_state
+        self._temp_data['bw_initial_state'] = self.bw_initial_state
+        # Final states
+        self._temp_data['fw_final_state'] = fw_state
+        self._temp_data['bw_final_state'] = bw_state
         self.n_weights = len(rnn_variables)
