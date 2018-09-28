@@ -3620,7 +3620,8 @@ def keypoint_random_crop(image, annos, mask=None, size=(368, 368)):
                     adjust_joint.append((-1000, -1000))
                     continue
                 new_x, new_y = point[0] - x, point[1] - y
-                if new_x > 367 or new_y > 367:
+                # should not crop outside the image
+                if new_x > w - 1 or new_y > h - 1:
                     adjust_joint.append((-1000, -1000))
                     continue
                 adjust_joint.append((new_x, new_y))
