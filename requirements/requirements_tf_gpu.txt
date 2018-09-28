@@ -1,1 +1,1 @@
-tensorflow-gpu>=1.6,<1.11
+tensorflow-gpu>=1.6,<1.12
