@@ -236,7 +236,7 @@ class Seq2Seq(Layer):
                 name='encode'
             )
 
-            network_encode_compiled = network_encode_layer(net_encode_in)
+            network_encode_compiled = network_encode_layer(net_encode_in, is_train=self._temp_data['is_train'])
 
             network_decode_layer = DynamicRNNLayer(
                 cell_fn=self.cell_fn,
@@ -254,7 +254,7 @@ class Seq2Seq(Layer):
                 name='decode'
             )
 
-            network_decode_compiled = network_decode_layer(net_decode_in)
+            network_decode_compiled = network_decode_layer(net_decode_in, is_train=self._temp_data['is_train'])
 
             self._temp_data['outputs'] = network_decode_compiled.outputs
 
