@@ -567,6 +567,7 @@ class GlobalMeanPool3d(Layer):
             )
         self._add_layers(self.outputs)
 
+
 class CornerPool2d(Layer):
     """The :class:`CornerPool2d` class is 2D corner pool, see `here <https://arxiv.org/abs/1808.01244/>`__.
 
@@ -591,7 +592,6 @@ class CornerPool2d(Layer):
     >>> n = tl.layers.CornerPool2d(n,(3,3),'TopLeft',name='cornerpool2d')
     [None, 100, 100, 30]
     """
-
 
     def __init__(
         self,
