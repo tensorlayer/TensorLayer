@@ -16,7 +16,9 @@ __all__ = [
 
 
 class UpSampling2dLayer(Layer):
-    """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer, see `tf.image.resize_images <https://www.tensorflow.org/api_docs/python/tf/image/resize_images>`__.
+    """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer.
+
+    See `tf.image.resize_images <https://www.tensorflow.org/api_docs/python/tf/image/resize_images>`__.
 
     Parameters
     ----------
@@ -36,7 +38,6 @@ class UpSampling2dLayer(Layer):
         If True, align the corners of the input and output. Default is False.
     name : str
         A unique layer name.
-
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -61,18 +62,18 @@ class UpSampling2dLayer(Layer):
 
         if len(self.inputs.get_shape()) == 3:
             if is_scale:
-                size_h = size[0] * int(self.inputs.get_shape()[0])
-                size_w = size[1] * int(self.inputs.get_shape()[1])
-                size = [int(size_h), int(size_w)]
+                size_h = size[0] * tf.shape(self.inputs)[0]
+                size_w = size[1] * tf.shape(self.inputs)[1]
+                size = [size_h, size_w]
 
         elif len(self.inputs.get_shape()) == 4:
             if is_scale:
-                size_h = size[0] * int(self.inputs.get_shape()[1])
-                size_w = size[1] * int(self.inputs.get_shape()[2])
-                size = [int(size_h), int(size_w)]
+                size_h = size[0] * tf.shape(self.inputs)[1]
+                size_w = size[1] * tf.shape(self.inputs)[2]
+                size = [size_h, size_w]
 
         else:
-            raise Exception("Donot support shape %s" % self.inputs.get_shape())
+            raise Exception("Donot support shape %s" % tf.shape(self.inputs))
 
         with tf.variable_scope(name):
             try:
@@ -88,7 +89,9 @@ class UpSampling2dLayer(Layer):
 
 
 class DownSampling2dLayer(Layer):
-    """The :class:`DownSampling2dLayer` class is down-sampling 2D layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
+    """The :class:`DownSampling2dLayer` class is down-sampling 2D layer.
+
+    See `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
 
     Parameters
     ----------
@@ -108,7 +111,6 @@ class DownSampling2dLayer(Layer):
         If True, exactly align all 4 corners of the input and output. Default is False.
     name : str
         A unique layer name.
-
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -133,18 +135,18 @@ class DownSampling2dLayer(Layer):
 
         if len(self.inputs.get_shape()) == 3:
             if is_scale:
-                size_h = size[0] * int(self.inputs.get_shape()[0])
-                size_w = size[1] * int(self.inputs.get_shape()[1])
-                size = [int(size_h), int(size_w)]
+                size_h = size[0] * tf.shape(self.inputs)[0]
+                size_w = size[1] * tf.shape(self.inputs)[1]
+                size = [size_h, size_w]
 
         elif len(self.inputs.get_shape()) == 4:
             if is_scale:
-                size_h = size[0] * int(self.inputs.get_shape()[1])
-                size_w = size[1] * int(self.inputs.get_shape()[2])
-                size = [int(size_h), int(size_w)]
+                size_h = size[0] * tf.shape(self.inputs)[1]
+                size_w = size[1] * tf.shape(self.inputs)[2]
+                size = [size_h, size_w]
 
         else:
-            raise Exception("Do not support shape %s" % self.inputs.get_shape())
+            raise Exception("Do not support shape %s" % tf.shape(self.inputs))
 
         with tf.variable_scope(name):
             try:

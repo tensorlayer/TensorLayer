@@ -22,10 +22,12 @@ tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 
-def make_dataset(images, labels):
+def make_dataset(images, labels, num_epochs=1, shuffle_data_seed=0):
     img = tf.data.Dataset.from_tensor_slices(images)
     lab = tf.data.Dataset.from_tensor_slices(np.array(labels, dtype=np.int64))
-    return tf.data.Dataset.zip((img, lab))
+    dataset = tf.data.Dataset.zip((img, lab))
+    dataset = dataset.repeat(num_epochs).shuffle(buffer_size=10000, seed=shuffle_data_seed)
+    return dataset
 
 
 def data_aug_train(img, ann):
@@ -54,11 +56,11 @@ def model(x, is_train):
     with tf.variable_scope("model", reuse=tf.AUTO_REUSE):
         net = InputLayer(x, name='input')
         net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', b_init=None, name='cnn1')
-        net = BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch1')
+        net = BatchNormLayer(net, decay=0.99, is_train=is_train, act=tf.nn.relu, name='batch1')
         net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
 
         net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', b_init=None, name='cnn2')
-        net = BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch2')
+        net = BatchNormLayer(net, decay=0.99, is_train=is_train, act=tf.nn.relu, name='batch2')
         net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
 
         net = FlattenLayer(net, name='flatten')
@@ -99,8 +101,8 @@ if __name__ == '__main__':
     # validation_dataset = make_dataset(X_test, y_test)
     # validation_dataset = training_dataset.map(data_aug_valid, num_parallel_calls=multiprocessing.cpu_count())
     trainer = tl.distributed.Trainer(
-        build_training_func=build_train, training_dataset=training_dataset, batch_size=128,
-        optimizer=tf.train.RMSPropOptimizer, optimizer_args={'learning_rate': 0.0001}
+        build_training_func=build_train, training_dataset=training_dataset, optimizer=tf.train.AdamOptimizer,
+        optimizer_args={'learning_rate': 0.0001}, batch_size=128, prefetch_size=128
         # validation_dataset=validation_dataset, build_validation_func=build_validation
     )
 

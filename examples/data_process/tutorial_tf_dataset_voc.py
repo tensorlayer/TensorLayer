@@ -83,9 +83,10 @@ def _map_fn(filename, annotation):
 
 
 ds = tf.data.Dataset().from_generator(generator, output_types=(tf.string, tf.string))
+ds = ds.shuffle(shuffle_buffer_size)
 ds = ds.map(_map_fn, num_parallel_calls=multiprocessing.cpu_count())
 ds = ds.repeat(n_epoch)
-ds = ds.shuffle(shuffle_buffer_size)
+ds = ds.prefetch(buffer_size=2048)
 ds = ds.batch(batch_size)
 value = ds.make_one_shot_iterator().get_next()
 

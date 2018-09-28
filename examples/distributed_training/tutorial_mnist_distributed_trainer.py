@@ -9,10 +9,12 @@ tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 
-def make_dataset(images, labels):
+def make_dataset(images, labels, num_epochs=1, shuffle_data_seed=0):
     ds1 = tf.data.Dataset.from_tensor_slices(images)
     ds2 = tf.data.Dataset.from_tensor_slices(np.array(labels, dtype=np.int64))
-    return tf.data.Dataset.zip((ds1, ds2))
+    dataset = tf.data.Dataset.zip((ds1, ds2))
+    dataset = dataset.repeat(num_epochs).shuffle(buffer_size=10000, seed=shuffle_data_seed)
+    return dataset
 
 
 def model(x, is_train):
@@ -52,8 +54,8 @@ if __name__ == '__main__':
     training_dataset = make_dataset(X_train, y_train)
     # validation_dataset = make_dataset(X_val, y_val)
     trainer = tl.distributed.Trainer(
-        build_training_func=build_train, training_dataset=training_dataset, batch_size=32,
-        optimizer=tf.train.RMSPropOptimizer, optimizer_args={'learning_rate': 0.001}
+        build_training_func=build_train, training_dataset=training_dataset, optimizer=tf.train.AdamOptimizer,
+        optimizer_args={'learning_rate': 0.001}, batch_size=500, prefetch_size=500
         # validation_dataset=validation_dataset, build_validation_func=build_validation
     )
 

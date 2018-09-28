@@ -199,6 +199,7 @@ Layer list
    LocalResponseNormLayer
    InstanceNormLayer
    LayerNormLayer
+   GroupNormLayer
    SwitchNormLayer
 
    ROIPoolingLayer
@@ -674,6 +675,10 @@ Layer Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: LayerNormLayer
 
+Group Normalization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: GroupNormLayer
+
 Switch Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: SwitchNormLayer
@@ -809,6 +814,9 @@ BinaryConv2d
 
 Ternary Dense Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+TernaryDenseLayer
+"""""""""""""""""""""
 .. autoclass:: TernaryDenseLayer
 
 Ternary Convolutions
@@ -854,10 +862,6 @@ QuanConv2dWithBN
 """""""""""""""""""""
 .. autoclass:: QuanConv2dWithBN
 
-DoReFa
-^^^^^^^^^^^^^^
-
-see Convolutional and Dense APIs.
 
 .. -----------------------------------------------------------
 ..                  Recurrent Layers

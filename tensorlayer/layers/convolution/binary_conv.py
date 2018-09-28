@@ -103,8 +103,8 @@ class BinaryConv2d(Layer):
 
         logging.info(
             "BinaryConv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
-                self.name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, n_filter, str(filter_size), str(strides), padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 

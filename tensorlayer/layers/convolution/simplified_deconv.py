@@ -35,11 +35,10 @@ class DeConv2d(Layer):
         The stride step (height, width).
     padding : str
         The padding algorithm type: "SAME" or "VALID".
-    batch_size : int or None
-        Require if TF < 1.3, int or None.
-        If None, try to find the `batch_size` from the first dim of net.outputs (you should define the `batch_size` in the input placeholder).
     act : activation function
         The activation function of this layer.
+    data_format : str
+        "channels_last" (NHWC, default) or "channels_first" (NCHW).
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -61,11 +60,12 @@ class DeConv2d(Layer):
             prev_layer,
             n_filter=32,
             filter_size=(3, 3),
-            out_size=(30, 30),  # remove
+            # out_size=(30, 30),  # remove
             strides=(2, 2),
             padding='SAME',
-            batch_size=None,  # remove
+            # batch_size=None,  # remove
             act=None,
+            data_format='channels_last',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,  # TODO: Remove when TF <1.3 not supported
@@ -77,8 +77,8 @@ class DeConv2d(Layer):
 
         logging.info(
             "DeConv2d %s: n_filters: %s strides: %s pad: %s act: %s" % (
-                self.name, str(n_filter), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, str(n_filter), str(strides), padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
@@ -86,8 +86,8 @@ class DeConv2d(Layer):
             raise ValueError("len(strides) should be 2, DeConv2d and DeConv2dLayer are different.")
 
         conv2d_transpose = tf.layers.Conv2DTranspose(
-            filters=n_filter, kernel_size=filter_size, strides=strides, padding=padding, activation=self.act,
-            kernel_initializer=W_init, bias_initializer=b_init, name=name
+            filters=n_filter, kernel_size=filter_size, strides=strides, padding=padding, data_format=data_format,
+            activation=self.act, kernel_initializer=W_init, bias_initializer=b_init, name=name
         )
 
         self.outputs = conv2d_transpose(self.inputs)
@@ -116,6 +116,8 @@ class DeConv3d(Layer):
         The padding algorithm type: "SAME" or "VALID".
     act : activation function
         The activation function of this layer.
+    data_format : str
+        "channels_last" (NDHWC, default) or "channels_first" (NCDHW). 
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -138,6 +140,7 @@ class DeConv3d(Layer):
             strides=(2, 2, 2),
             padding='SAME',
             act=None,
+            data_format='channels_last',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,  # TODO: Remove when TF <1.3 not supported
@@ -149,15 +152,15 @@ class DeConv3d(Layer):
 
         logging.info(
             "DeConv3d %s: n_filters: %s strides: %s pad: %s act: %s" % (
-                self.name, str(n_filter), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, str(n_filter), str(strides), padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
         # with tf.variable_scope(name) as vs:
         nn = tf.layers.Conv3DTranspose(
             filters=n_filter, kernel_size=filter_size, strides=strides, padding=padding, activation=self.act,
-            kernel_initializer=W_init, bias_initializer=b_init, name=name
+            data_format=data_format, kernel_initializer=W_init, bias_initializer=b_init, name=name
         )
 
         self.outputs = nn(self.inputs)

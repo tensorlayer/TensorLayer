@@ -54,11 +54,31 @@ class VGG19Base(object):
             # with pixels values in the range of 0-255 and subtracts the mean image
             # values (calculated over the entire ImageNet training set).
 
-            # Rescale the input tensor with pixels values in the range of 0-255
-            net_in.outputs = net_in.outputs * 255.0
+            # # Rescale the input tensor with pixels values in the range of 0-255
+            # net_in.outputs = net_in.outputs * 255.0
+            # red, green, blue = tf.split(net_in.outputs, 3, 3)
+            VGG_MEAN = [103.939, 116.779, 123.68]
+            #
+            # bgr = tf.concat([
+            #     blue - VGG_MEAN[0],
+            #     green - VGG_MEAN[1],
+            #     red - VGG_MEAN[2],
+            # ], axis=3)
+            # # mean = tf.constant([103.939, 116.779, 123.68], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
+            # # net_in.outputs = net_in.outputs - mean
+            # net_in.outputs = bgr
+            rgb = net_in.outputs
+            rgb_scaled = rgb * 255.0
+            # Convert RGB to BGR
+            red, green, blue = tf.split(rgb_scaled, 3, 3)
 
-            mean = tf.constant([103.939, 116.779, 123.68], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
-            net_in.outputs = net_in.outputs - mean
+            bgr = tf.concat([
+                blue - VGG_MEAN[0],
+                green - VGG_MEAN[1],
+                red - VGG_MEAN[2],
+            ], axis=3)
+
+            net_in.outputs = bgr
 
         layers = [
             # conv1
@@ -163,6 +183,8 @@ class VGG19Base(object):
             b = np.asarray(val[1][1])
             print("  Loading %s: %s, %s" % (val[0], W.shape, b.shape))
             params.extend([W, b])
+            if len(self.all_params) == len(params):
+                break
 
         print("Restoring model from npz file")
         assign_params(sess, params, self.net)
@@ -234,6 +256,5 @@ class VGG19(VGG19Base):
             self.all_params = self.net.all_params
             self.all_layers = self.net.all_layers
             self.all_drop = self.net.all_drop
-            self.all_graphs = list(self.net.all_graphs)
             self.print_layers = self.net.print_layers
             self.print_params = self.net.print_params

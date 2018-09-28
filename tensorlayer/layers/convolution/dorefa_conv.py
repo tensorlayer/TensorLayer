@@ -18,7 +18,7 @@ __all__ = ['DorefaConv2d']
 
 
 class DorefaConv2d(Layer):
-    """The :class:`DorefaConv2d` class is a binary fully connected layer, which weights are 'bitW' bits and the output of the previous layer
+    """The :class:`DorefaConv2d` class is a 2D quantized convolutional layer, which weights are 'bitW' bits and the output of the previous layer
     are 'bitA' bits while inferencing.
 
     Note that, the bias vector would not be binarized.
@@ -111,8 +111,8 @@ class DorefaConv2d(Layer):
 
         logging.info(
             "DorefaConv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
-                self.name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                self.name, n_filter, str(filter_size), str(strides), padding,
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
