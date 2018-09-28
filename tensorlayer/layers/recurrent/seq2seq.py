@@ -210,14 +210,15 @@ class Seq2Seq(Layer):
         is_train: boolean (default: True)
             Set the TF Variable in training mode and may impact the behaviour of the layer.
         """
+
         return super(Seq2Seq, self).__call__(prev_layer=[net_encode_in, net_decode_in], is_train=is_train)
 
     def compile(self):
 
         with tf.variable_scope(self.name):
 
-            net_encode_in = self._temp_data['inputs'][0]
-            net_decode_in = self._temp_data['inputs'][1]
+            net_encode_in = self._temp_data['unprocessed_inputs'][0]
+            net_decode_in = self._temp_data['unprocessed_inputs'][1]
 
             # tl.layers.set_name_reuse(reuse)
             # network = InputLayer(self._temp_data['inputs'], name=name+'/input')
@@ -253,7 +254,7 @@ class Seq2Seq(Layer):
                 name='decode'
             )
 
-            network_decode_compiled = network_decode_layer(network_encode_compiled)
+            network_decode_compiled = network_decode_layer(net_decode_in)
 
             self._temp_data['outputs'] = network_decode_compiled.outputs
 

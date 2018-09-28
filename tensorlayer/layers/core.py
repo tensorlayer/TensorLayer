@@ -186,31 +186,57 @@ class Layer(BaseLayer):
 
         run_compilation = False
 
+        ##############################
+        #        Sanity Check        #
+        ##############################
+
         if prev_layer is None and self.__class__.__name__ not in tl.layers.inputs.__all__:
             raise ValueError("No previous_layer has been given to the layer `%s`" % self.name)
+
+        ##############################
+        #     Manual Compilation     #
+        ##############################
 
         elif isinstance(prev_layer, tl.layers.Layer):  # Manual Compile Mode
             self.prev_layer = prev_layer.name
 
-        elif self.__class__.__name__ in tl.layers.inputs.__all__ and (
-            isinstance(prev_layer, tf.Tensor) or
-            (isinstance(prev_layer,
-                        (tuple, list)) and all(isinstance(x, tf.Tensor) for x in prev_layer))
-        ):
-            run_compilation = True
+        ##############################
+        #         Compilation        #
+        ##############################
 
         elif isinstance(prev_layer, tl.layers.CompiledLayer):
             run_compilation = True
 
+        ##############################
+        #        Input Layers        #
+        ##############################
+
+        elif self.__class__.__name__ in tl.layers.inputs.__all__ and (
+            isinstance(prev_layer, tf.Tensor) or
+            (isinstance(prev_layer, (tuple, list)) and all(isinstance(x, tf.Tensor) for x in prev_layer))
+        ):
+            run_compilation = True
+
+        ##############################
+        #       Input is a List      #
+        ##############################
+
         elif isinstance(prev_layer, (list, tuple)):
+
+            # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            #    List of CompiledLayers
+            # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
             if all(isinstance(layer, tl.layers.CompiledLayer) for layer in prev_layer):
 
                 if any(not hasattr(layer, "outputs") or layer.outputs is None for layer in prev_layer):
                     raise ValueError("A `CompiledLayer` in the layer's inputs contains no output or is None")
 
-                else:
-                    run_compilation = True
+                run_compilation = True
+
+            # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            #         List of Layers
+            # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
             elif all(isinstance(layer, tl.layers.Layer) for layer in prev_layer):
                 self.prev_layer = [layer.name for layer in prev_layer]
@@ -225,6 +251,10 @@ class Layer(BaseLayer):
                     "Not all layers given in `prev_layer` are either `CompiledLayer or `Layer` instance.\n"
                     "Received `prev_layer` - Type: %s%s" % (type(prev_layer), additional_details)
                 )
+
+        ##############################
+        #   Input is a smthg else    #
+        ##############################
 
         else:
             self.prev_layer = prev_layer
@@ -254,10 +284,11 @@ class Layer(BaseLayer):
 
         self._temp_data = {
             'inputs': None,
+            'unprocessed_inputs':prev_layer,
             'outputs': None,
             'local_weights': list(),
             'local_drop': dict(),
-            'is_train': is_train
+            'is_train': is_train,
         }
 
         if isinstance(prev_layer, CompiledLayer):
@@ -407,7 +438,7 @@ class Layer(BaseLayer):
     def _create_compiled_layer(self):
         kwargs = {
             key:val for key, val in self._temp_data.items()
-            if key not in ['inputs', 'outputs', 'local_weights', 'local_drop', 'is_train']
+            if key not in ['inputs', 'unprocessed_inputs', 'outputs', 'local_weights', 'local_drop', 'is_train']
         }
 
         self._last_compiled_layer = type("Compiled_" + self.__class__.__name__, (CompiledLayer, ), {})(
