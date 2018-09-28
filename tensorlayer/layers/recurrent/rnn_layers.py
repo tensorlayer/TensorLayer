@@ -516,7 +516,7 @@ class BiRNNLayer(Layer):
             if self.n_layer > 1:
                 MultiRNNCell_fn = tf.contrib.rnn.MultiRNNCell
 
-                if self.dropout:
+                if self.dropout and self._temp_data['is_train']:
                     try:
                         self.fw_cell = MultiRNNCell_fn(
                             [cell_creator(is_last=i == self.n_layer - 1) for i in range(self.n_layer)],
