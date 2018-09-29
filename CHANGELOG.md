@@ -73,12 +73,12 @@ To release a new version, please update the changelog as followed:
 - Layer:
   - Release `GroupNormLayer` (PR #850)
 - Fast affine transformation
-  - `affine_rotation_matrix`
-  - `affine_horizontal_flip_matrix`
-  - `affine_shift_matrix`
-  - `affine_shear_matrix`
-  - `affine_zoom_matrix`
-  - `examples/data_process/tutorial_fast_affine_transform.py` 
+  - `affine_rotation_matrix` (PR #857)
+  - `affine_horizontal_flip_matrix` (PR #857)
+  - `affine_shift_matrix` (PR #857)
+  - `affine_shear_matrix` (PR #857)
+  - `affine_zoom_matrix` (PR #857)
+  - `examples/data_process/tutorial_fast_affine_transform.py` (PR #857)
 
 ### Changed
 
@@ -98,8 +98,10 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Contributors
+
 - @2wins: #850
 - @DEKHTIARJonathan: #853
+- @zsdonghao: #857
 
 ## [1.10.1] - 2018-09-07
 
