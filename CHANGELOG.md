@@ -85,7 +85,7 @@ To release a new version, please update the changelog as followed:
 ### Deprecated
 
 ### Fixed
-- Correct offset calculation in `tl.prepro.transform_matrix_offset_center`
+- Correct offset calculation in `tl.prepro.transform_matrix_offset_center` (PR #855)
 
 ### Removed
 
