@@ -12,7 +12,15 @@ Some of the code in this package are borrowed from Keras.
 
 .. autosummary::
 
-   threading_data
+   affine_rotation_matrix
+   affine_horizontal_flip_matrix
+   affine_shift_matrix
+   affine_shear_matrix
+   affine_zoom_matrix
+
+   transform_matrix_offset_center
+   affine_transfrom
+   projective_transform_by_points
 
    rotation
    rotation_multi
@@ -55,10 +63,6 @@ Some of the code in this package are borrowed from Keras.
    channel_shift_multi
 
    drop
-
-   transform_matrix_offset_center
-   apply_transform
-   projective_transform_by_points
 
    array_to_img
 
@@ -103,10 +107,46 @@ Some of the code in this package are borrowed from Keras.
    sequences_get_mask
 
 
+..
+  Threading
+  ------------
+  .. autofunction:: threading_data
 
-Threading
-------------
-.. autofunction:: threading_data
+Affine Transform
+------------------
+
+Get rotation matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_rotation_matrix
+
+Get flippling matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_horizontal_flip_matrix
+
+Get shifting matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_shift_matrix
+
+Get shearing matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_shear_matrix
+
+Get zomming matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_zoom_matrix
+
+Transform matrix offset
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: transform_matrix_offset_center
+
+Apply affine transform by matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_transfrom
+
+Projective transform by points
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: projective_transform_by_points
+
 
 Images
 -----------
@@ -202,18 +242,6 @@ Channel shift
 Noise
 ^^^^^^^^^^^^^^
 .. autofunction:: drop
-
-Transform matrix offset
-^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: transform_matrix_offset_center
-
-Apply affine transform by matrix
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: apply_transform
-
-Projective transform by points
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: projective_transform_by_points
 
 Numpy and PIL
 ^^^^^^^^^^^^^^

@@ -72,6 +72,13 @@ To release a new version, please update the changelog as followed:
 ### Added
 - Layer:
   - Release `GroupNormLayer` (PR #850)
+- Fast affine transformation
+  - `affine_rotation_matrix`
+  - `affine_horizontal_flip_matrix`
+  - `affine_shift_matrix`
+  - `affine_shear_matrix`
+  - `affine_zoom_matrix`
+  - `examples/data_process/tutorial_fast_affine_transform.py` 
 
 ### Changed
 
