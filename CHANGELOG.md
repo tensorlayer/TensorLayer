@@ -85,13 +85,14 @@ To release a new version, please update the changelog as followed:
 ### Deprecated
 
 ### Fixed
+- Correct offset calculation in `tl.prepro.transform_matrix_offset_center`
 
 ### Removed
 
 ### Security
 
 ### Contributors
-- @2wins: #850
+- @2wins: #850 #855
 - @DEKHTIARJonathan: #853
 
 ## [1.10.1] - 2018-09-07
