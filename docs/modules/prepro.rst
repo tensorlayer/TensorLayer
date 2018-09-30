@@ -1,12 +1,80 @@
-API - Preprocessing
+API - Data Preprocessing
 =========================
 
+Tutorials
+-------------
 
-We provide abundant data augmentation and processing functions by using Numpy, Scipy, Threading and Queue.
+Python can be fast!
+^^^^^^^^^^^^^^^^^^^^^^^
+
+TensorFlow provides ``tf.data`` for XXX
+
+`tf.image`
+
+However, it is hard XXX
+
+For example, it is hard to transform the image along with coordinates which is common in object detection and pose estimation.
+
+
+
+(XXX) We provide abundant data augmentation and processing functions by using Numpy, Scipy, Threading and Queue.
 However, we recommend you to use TensorFlow operation function like ``tf.image.central_crop``,
 more TensorFlow data augmentation method can be found
 `here <https://www.tensorflow.org/api_guides/python/image.html>`_ and ``tutorial_cifar10_tfrecord.py``.
-Some of the code in this package are borrowed from Keras.
+
+
+Magic for Fast Transformation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Let do some math
+
+
+code in `here <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process/tutorial_fast_affine_transform.py>`__.
+
+
+The direct way to apply rotation, shifting, flippling, zooming and shearing to an image in pure Python is as follows,
+
+
+.. code-block:: python
+
+    image = tl.vis.read_image('tiger.jpeg')
+
+    xx = tl.prepro.rotation(image, rg=20, is_random=False)
+    xx = tl.prepro.shift(xx, wrg=0.2, hrg=0.2, is_random=False)
+    xx = tl.prepro.flip_axis(xx, axis=1, is_random=False)
+    xx = tl.prepro.zoom(xx, zoom_range=(0.8, 1.5), is_random=False)
+    xx = tl.prepro.shear(xx, intensity=0.2, is_random=False)
+
+    tl.vis.save_image(xx, '_result_slow.png')
+
+
+<insert image here>
+
+Therefore, all transformations can be combined into one:
+
+.. code-block:: python
+
+    # 1. get all affine transform matrices
+    M_rotate = tl.prepro.affine_rotation_matrix(rg=20, is_random=False)
+    M_flip = tl.prepro.affine_horizontal_flip_matrix(is_random=False)
+    M_shift = tl.prepro.affine_shift_matrix(wrg=0.2, hrg=0.2, h=h, w=w, is_random=False)
+    M_shear = tl.prepro.affine_shear_matrix(intensity=0.2, is_random=False)
+    M_zoom = tl.prepro.affine_zoom_matrix(zoom_range=(0.8, 1.5), is_random=False)
+
+    # 2. combine all affine transform matrices to one matrix, the rotation is the first transformation
+    M_combined = M_rotate.dot(M_shift).dot(M_flip).dot(M_zoom).dot(M_shear)
+
+    # 2. transfrom the matrix from Cartesian coordinate (the origin in the middle of image)
+    # to Image coordinate (the origin on the top-left of image)
+    transform_matrix = tl.prepro.transform_matrix_offset_center(M_combined, h, w)
+
+    # 3. then we can transfrom the image once for all transformations
+    result = tl.prepro.affine_transfrom(image, transform_matrix)
+
+    tl.vis.save_image(result, '_result_fast.png')
+
+Our experiments show that XXX GPU
+
 
 .. automodule:: tensorlayer.prepro
 
