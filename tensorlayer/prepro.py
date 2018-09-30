@@ -1799,8 +1799,8 @@ def transform_matrix_offset_center(matrix, x, y):
     - See ``tl.prepro.rotation``, ``tl.prepro.shear``, ``tl.prepro.zoom``.
 
     """
-    o_x = float(x) / 2 + 0.5
-    o_y = float(y) / 2 + 0.5
+    o_x = (x - 1) / 2.0
+    o_y = (y - 1) / 2.0
     offset_matrix = np.array([[1, 0, o_x], [0, 1, o_y], [0, 0, 1]])
     reset_matrix = np.array([[1, 0, -o_x], [0, 1, -o_y], [0, 0, 1]])
     transform_matrix = np.dot(np.dot(offset_matrix, matrix), reset_matrix)

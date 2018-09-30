@@ -106,6 +106,7 @@ To release a new version, please update the changelog as followed:
 ### Deprecated
 
 ### Fixed
+- Correct offset calculation in `tl.prepro.transform_matrix_offset_center` (PR #855)
 
 ### Removed
 - `tl.layers.EstimatorLayer` has been removed in favor of `tl.layers.LambdaLayer` (PR #755)
@@ -115,7 +116,7 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Contributors
-- @2wins: #850
+- @2wins: #850 #855
 - @DEKHTIARJonathan: #755 #853
 - @zsdonghao: #755
 
