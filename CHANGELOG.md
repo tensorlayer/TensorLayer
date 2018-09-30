@@ -110,6 +110,7 @@ To release a new version, please update the changelog as followed:
 ### Removed
 - `tl.layers.EstimatorLayer` has been removed in favor of `tl.layers.LambdaLayer` (PR #755)
 - `tl.layers.ReconLayer` has been removed in favor of `tl.layers.DenseLayer` (#755)
+- `tl.layers.MultiplexerLayer` has been removed in favor of eager execution mode (#755)
 
 ### Security
 
