@@ -13,8 +13,9 @@ TensorFlow provides ``tf.data`` for XXX
 
 However, it is hard XXX
 
-For example, it is hard to transform the image along with coordinates which is common in object detection and pose estimation.
+ `tf.py_func`
 
+For example, it is hard to transform the image along with coordinates which is common in object detection and pose estimation.
 
 
 (XXX) We provide abundant data augmentation and processing functions by using Numpy, Scipy, Threading and Queue.
@@ -25,15 +26,7 @@ more TensorFlow data augmentation method can be found
 
 Magic for Fast Transformation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Let do some math
-
-
-code in `here <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process/tutorial_fast_affine_transform.py>`__.
-
-
 The direct way to apply rotation, shifting, flippling, zooming and shearing to an image in pure Python is as follows,
-
 
 .. code-block:: python
 
@@ -47,8 +40,12 @@ The direct way to apply rotation, shifting, flippling, zooming and shearing to a
 
     tl.vis.save_image(xx, '_result_slow.png')
 
+Let do some math
 
 <insert image here>
+
+
+
 
 Therefore, all transformations can be combined into one:
 
@@ -73,7 +70,10 @@ Therefore, all transformations can be combined into one:
 
     tl.vis.save_image(result, '_result_fast.png')
 
-Our experiments show that XXX GPU
+Our experiments show that using Python for data augmentation would not be the training bottleneck
+
+The code of this tutorial can be found `here <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process/tutorial_fast_affine_transform.py>`__.
+
 
 
 .. automodule:: tensorlayer.prepro
