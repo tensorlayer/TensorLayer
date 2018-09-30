@@ -213,7 +213,7 @@ class MaxPool3d(Layer):
 
     def compile(self):
 
-        with tf.variable_scope(self.name) as vs:
+        with tf.variable_scope(self.name):
 
             self._temp_data['outputs'] = tf.layers.max_pooling3d(
                 inputs=self._temp_data['inputs'],
@@ -223,5 +223,3 @@ class MaxPool3d(Layer):
                 data_format=self.data_format,
                 name="maxpool_3d_op"
             )
-
-            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)

@@ -223,5 +223,3 @@ class MeanPool3d(Layer):
                 data_format=self.data_format,
                 name="avg_pooling_3d_op"
             )
-
-            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)

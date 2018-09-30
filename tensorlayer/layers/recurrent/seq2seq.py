@@ -244,7 +244,8 @@ class Seq2Seq(Layer):
                 n_hidden=self.n_hidden,
                 initializer=self.initializer,
                 initial_state=(
-                    network_encode_compiled.final_state if self.initial_state_decode is None else self.initial_state_decode
+                    network_encode_compiled.final_state
+                    if self.initial_state_decode is None else self.initial_state_decode
                 ),
                 dropout=self.dropout,
                 n_layer=self.n_layer,

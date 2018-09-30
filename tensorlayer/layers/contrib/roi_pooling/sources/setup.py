@@ -22,7 +22,11 @@ class MyInstall(DistutilsInstall):
 
 
 setup(
-    name='roi-pooling', version='1.0', description='ROI pooling as a custom TensorFlow operation',
-    author='deepsense.io', packages=['roi_pooling'], package_data={'roi_pooling':
-                                                                   ['roi_pooling.so']}, cmdclass={'install': MyInstall}
+    name='roi-pooling',
+    version='1.0',
+    description='ROI pooling as a custom TensorFlow operation',
+    author='deepsense.io',
+    packages=['roi_pooling'],
+    package_data={'roi_pooling': ['roi_pooling.so']},
+    cmdclass={'install': MyInstall}
 )

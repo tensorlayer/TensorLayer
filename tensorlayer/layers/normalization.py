@@ -23,80 +23,6 @@ __all__ = [
 ]
 
 
-class LocalResponseNormLayer(Layer):
-    """The :class:`LocalResponseNormLayer` layer is for Local Response Normalization.
-    See ``tf.nn.local_response_normalization`` or ``tf.nn.lrn`` for new TF version.
-    The 4-D input tensor is a 3-D array of 1-D vectors (along the last dimension), and each vector is normalized independently.
-    Within a given vector, each component is divided by the weighted square-sum of inputs within depth_radius.
-
-    Parameters
-    -----------
-    depth_radius : int
-        Depth radius. 0-D. Half-width of the 1-D normalization window.
-    bias : float
-        An offset which is usually positive and shall avoid dividing by 0.
-    alpha : float
-        A scale factor which is usually positive.
-    beta : float
-        An exponent.
-    name : str
-        A unique layer name.
-    """
-
-    def __init__(
-        self,
-        depth_radius=None,
-        bias=None,
-        alpha=None,
-        beta=None,
-        name='lrn_layer',
-    ):
-
-        self.depth_radius = depth_radius
-        self.bias = bias
-        self.alpha = alpha
-        self.beta = beta
-        self.name = name
-
-        super(LocalResponseNormLayer, self).__init__()
-
-    def __str__(self):
-        additional_str = []
-
-        try:
-            additional_str.append("depth_radius: %s" % self.depth_radius)
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("bias: %s" % self.bias)
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("alpha: %s" % self.alpha)
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("beta: %s" % self.beta)
-        except AttributeError:
-            pass
-
-        return self._str(additional_str)
-
-    def compile(self):
-
-        with tf.variable_scope(self.name):
-            self._temp_data['outputs'] = tf.nn.local_response_normalization(
-                self._temp_data['inputs'],
-                depth_radius=self.depth_radius,
-                bias=self.bias,
-                alpha=self.alpha,
-                beta=self.beta
-            )
-
-
 class BatchNormLayer(Layer):
     """
     The :class:`BatchNormLayer` is a batch normalization layer for both fully-connected and convolution outputs.
@@ -330,6 +256,81 @@ class InstanceNormLayer(Layer):
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
 
+class GroupNormLayer(Layer):
+    """The :class:`GroupNormLayer` layer is for Group Normalization.
+    See `tf.contrib.layers.group_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/group_norm>`__.
+
+    Parameters
+    -----------
+    prev_layer : :class:`Layer`
+        The previous layer.
+    act : activation function
+        The activation function of this layer.
+    epsilon : float
+        Eplison.
+    name : str
+        A unique layer name
+
+    """
+
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(self, prev_layer, groups=32, epsilon=1e-06, act=None, data_format='channels_last', name='groupnorm'):
+        super(GroupNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+
+        logging.info(
+            "GroupNormLayer %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
+        )
+
+        shape = self.inputs.get_shape().as_list()
+        if len(shape) != 4:
+            raise Exception("GroupNormLayer only supports 2D images.")
+
+        if data_format == 'channels_last':
+            channels = shape[-1]
+            int_shape = tf.concat(
+                [tf.shape(self.inputs)[0:3],
+                 tf.convert_to_tensor([groups, channels // groups])], axis=0
+            )
+        elif data_format == 'channels_first':
+            channels = shape[1]
+            int_shape = tf.concat(
+                [
+                    tf.shape(self.inputs)[0:1],
+                    tf.convert_to_tensor([groups, channels // groups]),
+                    tf.shape(self.inputs)[2:4]
+                ],
+                axis=0
+            )
+        else:
+            raise ValueError("data_format must be 'channels_last' or 'channels_first'.")
+
+        if groups > channels:
+            raise ValueError('Invalid groups %d for %d channels.' % (groups, channels))
+        if channels % groups != 0:
+            raise ValueError('%d channels is not commensurate with %d groups.' % (channels, groups))
+
+        with tf.variable_scope(name):
+            x = tf.reshape(self.inputs, int_shape)
+            if data_format == 'channels_last':
+                mean, var = tf.nn.moments(x, [1, 2, 4], keep_dims=True)
+                gamma = tf.get_variable('gamma', channels, initializer=tf.ones_initializer())
+                beta = tf.get_variable('beta', channels, initializer=tf.zeros_initializer())
+            else:
+                mean, var = tf.nn.moments(x, [2, 3, 4], keep_dims=True)
+                gamma = tf.get_variable('gamma', [1, channels, 1, 1], initializer=tf.ones_initializer())
+                beta = tf.get_variable('beta', [1, channels, 1, 1], initializer=tf.zeros_initializer())
+
+            x = (x - mean) / tf.sqrt(var + epsilon)
+
+            self.outputs = tf.reshape(x, tf.shape(self.inputs)) * gamma + beta
+            self.outputs = self._apply_activation(self.outputs)
+
+        variables = get_collection_trainable(self.name)
+
+        self._add_layers(self.outputs)
+        self._add_params(variables)
+
+
 class LayerNormLayer(Layer):
     """
     The :class:`LayerNormLayer` class is for layer normalization, see `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`__.
@@ -422,79 +423,78 @@ class LayerNormLayer(Layer):
             self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
 
-class GroupNormLayer(Layer):
-    """The :class:`GroupNormLayer` layer is for Group Normalization.
-    See `tf.contrib.layers.group_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/group_norm>`__.
+class LocalResponseNormLayer(Layer):
+    """The :class:`LocalResponseNormLayer` layer is for Local Response Normalization.
+    See ``tf.nn.local_response_normalization`` or ``tf.nn.lrn`` for new TF version.
+    The 4-D input tensor is a 3-D array of 1-D vectors (along the last dimension), and each vector is normalized independently.
+    Within a given vector, each component is divided by the weighted square-sum of inputs within depth_radius.
 
     Parameters
     -----------
-    prev_layer : :class:`Layer`
-        The previous layer.
-    act : activation function
-        The activation function of this layer.
-    epsilon : float
-        Eplison.
+    depth_radius : int
+        Depth radius. 0-D. Half-width of the 1-D normalization window.
+    bias : float
+        An offset which is usually positive and shall avoid dividing by 0.
+    alpha : float
+        A scale factor which is usually positive.
+    beta : float
+        An exponent.
     name : str
-        A unique layer name
-
+        A unique layer name.
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, groups=32, epsilon=1e-06, act=None, data_format='channels_last', name='groupnorm'):
-        super(GroupNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+    def __init__(
+        self,
+        depth_radius=None,
+        bias=None,
+        alpha=None,
+        beta=None,
+        name='lrn_layer',
+    ):
 
-        logging.info(
-            "GroupNormLayer %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
-        )
+        self.depth_radius = depth_radius
+        self.bias = bias
+        self.alpha = alpha
+        self.beta = beta
+        self.name = name
 
-        shape = self.inputs.get_shape().as_list()
-        if len(shape) != 4:
-            raise Exception("GroupNormLayer only supports 2D images.")
+        super(LocalResponseNormLayer, self).__init__()
 
-        if data_format == 'channels_last':
-            channels = shape[-1]
-            int_shape = tf.concat(
-                [tf.shape(self.inputs)[0:3],
-                 tf.convert_to_tensor([groups, channels // groups])], axis=0
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("depth_radius: %s" % self.depth_radius)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("bias: %s" % self.bias)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("alpha: %s" % self.alpha)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("beta: %s" % self.beta)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def compile(self):
+
+        with tf.variable_scope(self.name):
+            self._temp_data['outputs'] = tf.nn.local_response_normalization(
+                self._temp_data['inputs'],
+                depth_radius=self.depth_radius,
+                bias=self.bias,
+                alpha=self.alpha,
+                beta=self.beta
             )
-        elif data_format == 'channels_first':
-            channels = shape[1]
-            int_shape = tf.concat(
-                [
-                    tf.shape(self.inputs)[0:1],
-                    tf.convert_to_tensor([groups, channels // groups]),
-                    tf.shape(self.inputs)[2:4]
-                ],
-                axis=0
-            )
-        else:
-            raise ValueError("data_format must be 'channels_last' or 'channels_first'.")
-
-        if groups > channels:
-            raise ValueError('Invalid groups %d for %d channels.' % (groups, channels))
-        if channels % groups != 0:
-            raise ValueError('%d channels is not commensurate with %d groups.' % (channels, groups))
-
-        with tf.variable_scope(name):
-            x = tf.reshape(self.inputs, int_shape)
-            if data_format == 'channels_last':
-                mean, var = tf.nn.moments(x, [1, 2, 4], keep_dims=True)
-                gamma = tf.get_variable('gamma', channels, initializer=tf.ones_initializer())
-                beta = tf.get_variable('beta', channels, initializer=tf.zeros_initializer())
-            else:
-                mean, var = tf.nn.moments(x, [2, 3, 4], keep_dims=True)
-                gamma = tf.get_variable('gamma', [1, channels, 1, 1], initializer=tf.ones_initializer())
-                beta = tf.get_variable('beta', [1, channels, 1, 1], initializer=tf.zeros_initializer())
-
-            x = (x - mean) / tf.sqrt(var + epsilon)
-
-            self.outputs = tf.reshape(x, tf.shape(self.inputs)) * gamma + beta
-            self.outputs = self._apply_activation(self.outputs)
-
-        variables = get_collection_trainable(self.name)
-
-        self._add_layers(self.outputs)
-        self._add_params(variables)
 
 
 class SwitchNormLayer(Layer):

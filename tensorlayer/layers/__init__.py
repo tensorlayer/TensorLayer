@@ -12,6 +12,7 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
 
 from .activation import *
 from .convolution import *
+from .contrib import *
 from .core import *
 from .dense import *
 from .dropout import *
@@ -23,7 +24,6 @@ from .lambda_layers import *
 from .merge import *
 from .noise import *
 from .normalization import *
-from .object_detection import *
 from .padding import *
 from .pooling import *
 from .quantize_layers import *
@@ -37,6 +37,7 @@ from .utils import *
 
 __all__ = []
 __all__ += activation.__all__
+__all__ += contrib.__all__
 __all__ += convolution.__all__
 __all__ += core.__all__
 __all__ += dense.__all__
@@ -49,7 +50,6 @@ __all__ += lambda_layers.__all__
 __all__ += merge.__all__
 __all__ += noise.__all__
 __all__ += normalization.__all__
-__all__ += object_detection.__all__
 __all__ += padding.__all__
 __all__ += pooling.__all__
 __all__ += quantize_layers.__all__

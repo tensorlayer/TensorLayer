@@ -23,7 +23,7 @@ class Network_Sequential_2D_Test(CustomTestCase):
         with tf.variable_scope("test_scope"):
             cls.model = tl.networks.Sequential(name="My_Sequential_2D_Network")
 
-            cls.model.add(tl.layers.ReshapeLayer(shape=[-1, 16, 16, 1], name="reshape_layer_1"))
+            cls.model.add(tl.layers.ReshapeLayer(shape=(-1, 16, 16, 1), name="reshape_layer_1"))
 
             cls.model.add(
                 tl.layers.

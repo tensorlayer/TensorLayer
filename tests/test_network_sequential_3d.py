@@ -20,7 +20,7 @@ class Network_Sequential_3D_Test(CustomTestCase):
         with tf.variable_scope("test_scope"):
             cls.model = tl.networks.Sequential(name="My_Sequential_3D_Network")
 
-            cls.model.add(tl.layers.ReshapeLayer(shape=[-1, 16, 16, 16, 1], name="reshape_layer_1"))
+            cls.model.add(tl.layers.ReshapeLayer(shape=(-1, 16, 16, 16, 1), name="reshape_layer_1"))
 
             cls.model.add(tl.layers.PadLayer(padding=[[0, 0], [4, 4], [3, 3], [2, 2], [0, 0]], name='pad_layer_2'))
             cls.model.add(tl.layers.ZeroPad3d(padding=2, name='zeropad3d_layer_2-1'))

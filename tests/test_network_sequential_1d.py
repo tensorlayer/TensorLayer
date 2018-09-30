@@ -167,7 +167,7 @@ class Network_Sequential_1D_Test(CustomTestCase):
 
             cls.model.add(tl.layers.MeanPool1d(filter_size=3, strides=2, padding='same', name='meanpool_1d_layer_28'))
 
-            cls.model.add(tl.layers.GlobalMaxPool1d(name='globalmaxpool_1d_layer_29'))
+            cls.model.add(tl.layers.GlobalMaxPool1d(name='global_maxpool_1d_layer_29'))
             cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand_layer_29'))
             cls.model.add(tl.layers.TileLayer(multiples=[1, 100, 1], name='tile_layer_29'))
 
@@ -393,8 +393,8 @@ class Network_Sequential_1D_Test(CustomTestCase):
         self.assertEqual(self.train_model["meanpool_1d_layer_28"].outputs.shape, (100, 2, 2))
         self.assertEqual(self.test_model["meanpool_1d_layer_28"].outputs.shape, (100, 2, 2))
 
-        self.assertEqual(self.train_model["globalmaxpool_1d_layer_29"].outputs.shape, (100, 2))
-        self.assertEqual(self.test_model["globalmaxpool_1d_layer_29"].outputs.shape, (100, 2))
+        self.assertEqual(self.train_model["global_maxpool_1d_layer_29"].outputs.shape, (100, 2))
+        self.assertEqual(self.test_model["global_maxpool_1d_layer_29"].outputs.shape, (100, 2))
 
         self.assertEqual(self.train_model["expand_layer_29"].outputs.shape, (100, 1, 2))
         self.assertEqual(self.test_model["expand_layer_29"].outputs.shape, (100, 1, 2))

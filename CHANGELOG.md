@@ -90,6 +90,11 @@ To release a new version, please update the changelog as followed:
   - `layer.count_params()` renamed `layer.count_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
   - `layer.get_all_params()` renamed `layer.get_all_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
   - `layer.print_params()` renamed `layer.print_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
+  - `tl.layers.ROIPoolingLayer` has been moved to `tl.layers.contrib.ROIPoolingLayer` (PR #755)
+  - `tl.layers.QuanDenseLayer` renamed to `tl.layers.QuantizedDense` (PR #755)
+  - `tl.layers.QuanDenseLayerWithBN` renamed to `tl.layers.QuantizedDenseWithBN` (PR #755)
+  - `tl.layers.QuanConv2d` renamed to `tl.layers.QuantizedConv2d` (PR #755)
+  - `tl.layers.QuanConv2dWithBN` renamed to `tl.layers.QuantizedConv2dWithBN` (PR #755)
 
 ### Dependencies Update
 - yapf>=0.22,<0.24 => yapf>=0.22,<0.25 (PR #829)
@@ -103,6 +108,8 @@ To release a new version, please update the changelog as followed:
 ### Fixed
 
 ### Removed
+- `tl.layers.EstimatorLayer` has been removed in favor of `tl.layers.LambdaLayer` (PR #755)
+- `tl.layers.ReconLayer` has been removed in favor of `tl.layers.DenseLayer` (#755)
 
 ### Security
 

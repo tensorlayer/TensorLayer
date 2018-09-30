@@ -213,7 +213,8 @@ class Layer(BaseLayer):
 
         elif self.__class__.__name__ in tl.layers.inputs.__all__ and (
             isinstance(prev_layer, tf.Tensor) or
-            (isinstance(prev_layer, (tuple, list)) and all(isinstance(x, tf.Tensor) for x in prev_layer))
+            (isinstance(prev_layer,
+                        (tuple, list)) and all(isinstance(x, tf.Tensor) for x in prev_layer))
         ):
             run_compilation = True
 
@@ -284,7 +285,7 @@ class Layer(BaseLayer):
 
         self._temp_data = {
             'inputs': None,
-            'unprocessed_inputs':prev_layer,
+            'unprocessed_inputs': prev_layer,
             'outputs': None,
             'local_weights': list(),
             'local_drop': dict(),
@@ -437,7 +438,8 @@ class Layer(BaseLayer):
     @private_method
     def _create_compiled_layer(self):
         kwargs = {
-            key:val for key, val in self._temp_data.items()
+            key: val
+            for key, val in self._temp_data.items()
             if key not in ['inputs', 'unprocessed_inputs', 'outputs', 'local_weights', 'local_drop', 'is_train']
         }
 

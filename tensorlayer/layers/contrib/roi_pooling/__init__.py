@@ -12,7 +12,7 @@ from tensorlayer.decorators import deprecated_args
 from tensorlayer.lazy_imports import LazyImport
 
 try:
-    roi_pooling = LazyImport("tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops")
+    roi_pooling = LazyImport("tensorlayer.layers.contrib.roi_pooling.sources.roi_pooling.roi_pooling_ops")
 except Exception as e:
     tl.logging.error(e)
     tl.logging.error("HINT: 1. https://github.com/deepsense-ai/roi-pooling  2. tensorlayer/third_party/roi_pooling")

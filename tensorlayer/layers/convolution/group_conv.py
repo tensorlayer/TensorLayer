@@ -142,15 +142,25 @@ class GroupConv2d(Layer):
                 **self.W_init_args
             )
 
+            def _exec_conv2d(inputs, n_filters):
+                return tf.nn.conv2d(
+                    input=inputs,
+                    filter=n_filters,
+                    strides=[1, self.strides[0], self.strides[1], 1],
+                    padding=self.padding,
+                    data_format=self.data_format,
+                    use_cudnn_on_gpu=self.use_cudnn_on_gpu
+                )
+
             if self.n_group == 1:
-                self._temp_data['outputs'] = self.exec_conv2d(self._temp_data['inputs'], We)
+                self._temp_data['outputs'] = _exec_conv2d(self._temp_data['inputs'], We)
 
             else:
                 input_groups = tf.split(axis=3, num_or_size_splits=self.n_group, value=self._temp_data['inputs'])
                 weights_groups = tf.split(axis=3, num_or_size_splits=self.n_group, value=We)
 
                 conv_groups = [
-                    self.exec_conv2d(inputs, n_filters) for inputs, n_filters in zip(input_groups, weights_groups)
+                    _exec_conv2d(inputs, n_filters) for inputs, n_filters in zip(input_groups, weights_groups)
                 ]
 
                 self._temp_data['outputs'] = tf.concat(axis=3, values=conv_groups)
@@ -168,14 +178,3 @@ class GroupConv2d(Layer):
                 self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-
-    @private_method
-    def exec_conv2d(self, inputs, n_filters):
-        return tf.nn.conv2d(
-            input=inputs,
-            filter=n_filters,
-            strides=[1, self.strides[0], self.strides[1], 1],
-            padding=self.padding,
-            data_format=self.data_format,
-            use_cudnn_on_gpu=self.use_cudnn_on_gpu
-        )

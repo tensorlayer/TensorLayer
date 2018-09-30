@@ -32,8 +32,13 @@ def _RoiPoolingGrad(op, *grads):
 
     orig_output_grad = grads[0]
     output_grad = roi_pooling_module.roi_pooling_grad(
-        orig_inputs, orig_rois, orig_output, orig_argmax_output, orig_output_grad,
-        pool_height=op.get_attr('pool_height'), pool_width=op.get_attr('pool_width')
+        orig_inputs,
+        orig_rois,
+        orig_output,
+        orig_argmax_output,
+        orig_output_grad,
+        pool_height=op.get_attr('pool_height'),
+        pool_width=op.get_attr('pool_width')
     )
     return [output_grad, None]
 

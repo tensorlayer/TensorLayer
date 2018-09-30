@@ -151,7 +151,7 @@ class DeConv3d(Layer):
     act : activation function
         The activation function of this layer.
     data_format : str
-        "channels_last" (NDHWC, default) or "channels_first" (NCDHW). 
+        "channels_last" (NDHWC, default) or "channels_first" (NCDHW).
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
