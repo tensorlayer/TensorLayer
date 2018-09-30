@@ -43,6 +43,7 @@ __all__ = [
     'affine_horizontal_flip_matrix',
     'affine_shift_matrix',
     'affine_shear_matrix',
+    'affine_shear_matrix2',
     'affine_zoom_matrix',
     'transform_matrix_offset_center',
     'affine_transfrom',
@@ -352,6 +353,34 @@ def affine_shear_matrix(intensity=0.1, is_random=False):
                             [0, 0, 1]])
     return shear_matrix
 
+
+def affine_shear_matrix2(x, shear=(0.1, 0.1), is_random=False):
+    """Get affine transform matrix for shearing.
+
+    Parameters
+    -----------
+    shear : tuple of two floats
+        Percentage of shear for height and width direction (0, 1).
+    is_random : boolean
+        If True, randomly shear. Default is False.
+
+    Returns
+    -------
+    numpy.array
+        An affine transform matrix.
+
+    """
+    if len(shear) != 2:
+        raise AssertionError(
+            "shear should be tuple of 2 floats, or you want to use tl.prepro.shear rather than tl.prepro.shear2 ?"
+        )
+
+    if is_random:
+        shear[0] = np.random.uniform(-shear[0], shear[0])
+        shear[1] = np.random.uniform(-shear[1], shear[1])
+
+    shear_matrix = np.array([[1, shear[0], 0], [shear[1], 1, 0], [0, 0, 1]])
+    return shear_matrix
 
 def affine_zoom_matrix(zoom_range=(0.9, 1.1), is_random=False):
     """Get affine transform matrix for zooming.

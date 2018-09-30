@@ -84,6 +84,7 @@ The code of this tutorial can be found `here <https://github.com/tensorlayer/ten
    affine_horizontal_flip_matrix
    affine_shift_matrix
    affine_shear_matrix
+   affine_shear_matrix2
    affine_zoom_matrix
 
    transform_matrix_offset_center
@@ -198,6 +199,10 @@ Get shifting matrix
 Get shearing matrix
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: affine_shear_matrix
+
+Get shearing matrix V2
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_shear_matrix2
 
 Get zomming matrix
 ^^^^^^^^^^^^^^^^^^^^^^^^^
