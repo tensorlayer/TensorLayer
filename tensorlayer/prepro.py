@@ -382,6 +382,7 @@ def affine_shear_matrix2(x, shear=(0.1, 0.1), is_random=False):
     shear_matrix = np.array([[1, shear[0], 0], [shear[1], 1, 0], [0, 0, 1]])
     return shear_matrix
 
+
 def affine_zoom_matrix(zoom_range=(0.9, 1.1), is_random=False):
     """Get affine transform matrix for zooming.
 

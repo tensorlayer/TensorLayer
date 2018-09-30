@@ -32,10 +32,10 @@ def fast_affine_transfrom(image):
     M_zoom = tl.prepro.affine_zoom_matrix(zoom_range=(0.8, 1.5), is_random=False)
     # 2. combine all affine transform matrices to one matrix, the rotation is the first transformation
     M_combined = M_rotate.dot(M_shift).dot(M_flip).dot(M_zoom).dot(M_shear)
-    # 2. transfrom the matrix from Cartesian coordinate (the origin in the middle of image)
+    # 3. transfrom the matrix from Cartesian coordinate (the origin in the middle of image)
     # to Image coordinate (the origin on the top-left of image)
     transform_matrix = tl.prepro.transform_matrix_offset_center(M_combined, h, w)
-    # 3. then we can transfrom the image once for all transformations
+    # 4. then we can transfrom the image once for all transformations
     result = tl.prepro.affine_transfrom(image, transform_matrix)
     return result
 
