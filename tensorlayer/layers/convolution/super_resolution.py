@@ -68,11 +68,13 @@ class SubpixelConv1d(Layer):
         with tf.variable_scope(self.name):
 
             self._temp_data['outputs'] = tf.transpose(self._temp_data['inputs'], [2, 1, 0])  # (r, w, b)
+
             self._temp_data['outputs'] = tf.batch_to_space_nd(self._temp_data['outputs'],
                                                               [self.scale], [[0, 0]])  # (1, r*w, b)
+
             self._temp_data['outputs'] = tf.transpose(self._temp_data['outputs'], [2, 1, 0])
 
-            self._apply_activation(self._temp_data['outputs'])
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
 
 class SubpixelConv2d(Layer):
@@ -183,4 +185,4 @@ class SubpixelConv2d(Layer):
 
             self._temp_data['outputs'] = tf.depth_to_space(self._temp_data['inputs'], self.scale)
 
-            self._apply_activation(self._temp_data['outputs'])
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])

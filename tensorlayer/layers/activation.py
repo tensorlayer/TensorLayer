@@ -280,7 +280,7 @@ class PTRelu6Layer(Layer):
 
             alpha_high_constrained = tf.nn.sigmoid(alpha_high, name="constraining_alpha_high_in_0_1")
 
-        self._temp_data['outputs'] = self._temp_data['outputs'] = self._apply_activation(
+        self._temp_data['outputs'] = self._apply_activation(
             self._temp_data['inputs'], **{
                 'alpha_low': alpha_low_constrained,
                 'alpha_high': alpha_high_constrained,

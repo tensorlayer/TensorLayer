@@ -21,9 +21,9 @@ class GroupConv2d(Layer):
     --------------
     n_filter : int
         The number of filters.
-    filter_size : int
+    filter_size : tuple of ints
         The filter size.
-    stride : int
+    stride : tuple of ints
         The stride step.
     n_group : int
         The number of groups.

@@ -142,5 +142,3 @@ class DropconnectDenseLayer(Layer):
                 self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-
-        # self.all_drop.update({LayersConfig.set_keep[name]: keep})

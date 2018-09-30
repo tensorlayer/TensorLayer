@@ -314,7 +314,7 @@ class Word2vecEmbeddingInputlayer(Layer):
             # tf.nce_loss automatically draws a new sample of the negative labels
             # each time we evaluate the loss.
 
-            self.nce_cost = tf.reduce_mean(
+            self._temp_data['nce_cost'] = tf.reduce_mean(
                 tf.nn.nce_loss(
                     weights=nce_weights,
                     biases=nce_biases,
@@ -326,10 +326,8 @@ class Word2vecEmbeddingInputlayer(Layer):
                 )
             )
 
-            self.normalized_embeddings = tf.nn.l2_normalize(embeddings, 1)
+            self._temp_data['normalized_embeddings'] = tf.nn.l2_normalize(embeddings, 1)
 
-            self._temp_data['nce_cost'] = nce_cost
-            self._temp_data['normalized_embeddings'] = normalized_embeddings
 
 class EmbeddingInputlayer(Layer):
     """

@@ -323,9 +323,8 @@ class BiRNNLayer(Layer):
         If None, `initial_state` is zero state.
     bw_initial_state : None or backward RNN State
         If None, `initial_state` is zero state.
-    dropout : tuple of float or int
+    dropout : float
         The input and output keep probability (input_keep_prob, output_keep_prob).
-        If one int, input and output keep probability are the same.
     n_layer : int
         The number of RNN layers, default is 1.
     return_last : boolean

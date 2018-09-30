@@ -19,9 +19,9 @@ class MaxPool1d(Layer):
 
     Parameters
     ----------
-    filter_size : tuple of int
+    filter_size : int
         Pooling window size.
-    strides : tuple of int
+    strides : int
         Strides of the pooling operation.
     padding : str
         The padding method: 'valid' or 'same'.
