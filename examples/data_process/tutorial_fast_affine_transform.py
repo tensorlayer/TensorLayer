@@ -4,6 +4,7 @@ Demo of fast affine transfromation
 Detailed description in https://tensorlayer.readthedocs.io/en/stable/modules/prepro.html
 """
 import tensorlayer as tl
+import numpy as np
 import time
 
 # tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -51,30 +52,27 @@ def example3():
     """ C. in practice, we use TF dataset API to load and process image for training """
     n_data = 100
     imgs_file_list = ['tiger.jpeg'] * n_data
-    train_targets = [1.] * n_data
+    train_targets = [np.ones(1)] * n_data
 
     def generator():
         assert len(imgs_file_list) == len(train_targets)
         for _input, _target in zip(imgs_file_list, train_targets):
-            yield _input, cPickle.dumps(_target)
-            # yield _input, _target
+            yield _input, _target
 
     def _map_fn(image_path, target):
-        # target = tf.cast(target, tf.int64)
         image = tf.read_file(image_path)
         image = tf.image.decode_jpeg(image, channels=3)  # get RGB with 0~1
         image = tf.image.convert_image_dtype(image, dtype=tf.float32)
         image = tf.py_func(fast_affine_transfrom, [image], [tf.float32])
         # image = tf.reshape(image, (h, w, 3))
         target = tf.reshape(target, ())
-        return image, target  #resultmap, mask
+        return image, target
 
     import tensorflow as tf
     import multiprocessing
-    import _pickle as cPickle
     n_epoch = 10
     batch_size = 5
-    dataset = tf.data.Dataset().from_generator(generator, output_types=(tf.string, tf.string))
+    dataset = tf.data.Dataset().from_generator(generator, output_types=(tf.string, tf.int64))
     dataset = dataset.shuffle(buffer_size=4096)  # shuffle before loading images
     dataset = dataset.repeat(n_epoch)
     dataset = dataset.map(_map_fn, num_parallel_calls=multiprocessing.cpu_count())
