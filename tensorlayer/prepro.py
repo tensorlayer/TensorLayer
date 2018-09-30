@@ -45,6 +45,7 @@ __all__ = [
     'affine_shear_matrix',
     'affine_shear_matrix2',
     'affine_zoom_matrix',
+    'affine_respective_zoom_matrix'
     'transform_matrix_offset_center',
     'affine_transfrom',
     'projective_transform_by_points',
@@ -65,6 +66,7 @@ __all__ = [
     'elastic_transform',
     'elastic_transform_multi',
     'zoom',
+    'respective_zoom'
     'zoom_multi',
     'brightness',
     'brightness_multi',
@@ -354,7 +356,7 @@ def affine_shear_matrix(intensity=0.1, is_random=False):
     return shear_matrix
 
 
-def affine_shear_matrix2(x, shear=(0.1, 0.1), is_random=False):
+def affine_shear_matrix2(shear=(0.1, 0.1), is_random=False):
     """Get affine transform matrix for shearing.
 
     Parameters
@@ -383,19 +385,18 @@ def affine_shear_matrix2(x, shear=(0.1, 0.1), is_random=False):
     return shear_matrix
 
 
-def affine_zoom_matrix(zoom_range=(0.9, 1.1), is_random=False):
-    """Get affine transform matrix for zooming.
+def affine_zoom_matrix(
+    zoom_range=(0.8, 1.1)):
+    """Get affine transform matrix for zooming/scaling that height and width are changed together.
 
     Parameters
     -----------
     x : numpy.array
         An image with dimension of [row, col, channel] (default).
-    zoom_range : list or tuple
-        Zoom range for height and width.
-            - If is_random=False, (h, w) are the fixed zoom factor for row and column axies, factor small than one is zoom in.
-            - If is_random=True, (h, w) are (min zoom out, max zoom out) for x and y with different random zoom in/out factor, e.g (0.5, 1) zoom in 1~2 times.
-    is_random : boolean
-        If True, randomly zoom. Default is False.
+    zoom_range : float or tuple of 2 floats
+        The zooming/scaling ratio, greater than 1 means larger.
+            - float, a fixed ratio.
+            - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
 
     Returns
     -------
@@ -403,18 +404,60 @@ def affine_zoom_matrix(zoom_range=(0.9, 1.1), is_random=False):
         An affine transform matrix.
 
     """
-    if len(zoom_range) != 2:
-        raise Exception('zoom_range should be a tuple or list of two floats. ' 'Received arg: ', zoom_range)
-    if is_random:
-        if zoom_range[0] == 1 and zoom_range[1] == 1:
-            zx, zy = 1, 1
-            tl.logging.info(" random_zoom : not zoom in/out")
-        else:
-            zx, zy = np.random.uniform(zoom_range[0], zoom_range[1], 2)
+
+    if isinstance(zoom_range, (float, int)):
+        scale = zoom_range
+    elif isinstance(zoom_range, tuple):
+        scale = np.random.uniform(zoom_range[0], zoom_range[1])
     else:
-        zx, zy = zoom_range
-    zoom_matrix = np.array([[zx, 0, 0], \
-                            [0, zy, 0], \
+        raise Exception("zoom_range: float or tuple of 2 floats")
+
+    zoom_matrix = np.array([[1/scale, 0, 0], \
+                            [0, 1/scale, 0], \
+                            [0, 0, 1]])
+    return zoom_matrix
+
+
+def affine_respective_zoom_matrix(
+    h_range=1.1, w_range=0.8):
+    """Get affine transform matrix for zooming/scaling that height and width are changed independently.
+
+    Parameters
+    -----------
+    x : numpy.array
+        An image with dimension of [row, col, channel] (default).
+    h_range : float or tuple of 2 floats
+        The zooming/scaling ratio of height, greater than 1 means larger.
+            - float, a fixed ratio.
+            - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
+    w_range : float or tuple of 2 floats
+        The zooming/scaling ratio of width, greater than 1 means larger.
+            - float, a fixed ratio.
+            - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
+
+    Returns
+    -------
+    numpy.array
+        An affine transform matrix.
+
+    """
+
+    if isinstance(h_range, (float, int)):
+        zx = h_range
+    elif isinstance(h_range, tuple):
+        zx = np.random.uniform(h_range[0], h_range[1])
+    else:
+        raise Exception("h_range: float or tuple of 2 floats")
+
+    if isinstance(w_range, (float, int)):
+        zy = w_range
+    elif isinstance(w_range, tuple):
+        zy = np.random.uniform(w_range[0], w_range[1])
+    else:
+        raise Exception("w_range: float or tuple of 2 floats")
+
+    zoom_matrix = np.array([[1/zx, 0, 0], \
+                            [0, 1/zy, 0], \
                             [0, 0, 1]])
     return zoom_matrix
 
@@ -1319,21 +1362,19 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
 
 # zoom
 def zoom(
-        x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
+        x, zoom_range=(0.9, 1.1), row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
         cval=0., order=1
 ):
-    """Zoom in and out of a single image, randomly or non-randomly.
+    """Zooming/Scaling a single image that height and width are changed together.
 
     Parameters
     -----------
     x : numpy.array
         An image with dimension of [row, col, channel] (default).
-    zoom_range : list or tuple
-        Zoom range for height and width.
-            - If is_random=False, (h, w) are the fixed zoom factor for row and column axies, factor small than one is zoom in.
-            - If is_random=True, (h, w) are (min zoom out, max zoom out) for x and y with different random zoom in/out factor, e.g (0.5, 1) zoom in 1~2 times.
-    is_random : boolean
-        If True, randomly zoom. Default is False.
+    zoom_range : float or tuple of 2 floats
+        The zooming/scaling ratio, greater than 1 means larger.
+            - float, a fixed ratio.
+            - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
     row_index col_index and channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : str
@@ -1349,19 +1390,46 @@ def zoom(
         A processed image.
 
     """
-    if len(zoom_range) != 2:
-        raise Exception('zoom_range should be a tuple or list of two floats. ' 'Received arg: ', zoom_range)
-    if is_random:
-        if zoom_range[0] == 1 and zoom_range[1] == 1:
-            zx, zy = 1, 1
-            tl.logging.info(" random_zoom : not zoom in/out")
-        else:
-            zx, zy = np.random.uniform(zoom_range[0], zoom_range[1], 2)
-    else:
-        zx, zy = zoom_range
-    # tl.logging.info(zx, zy)
-    zoom_matrix = np.array([[zx, 0, 0], [0, zy, 0], [0, 0, 1]])
+    zoom_matrix = affine_zoom_matrix(zoom_range=zoom_range)
+    h, w = x.shape[row_index], x.shape[col_index]
+    transform_matrix = transform_matrix_offset_center(zoom_matrix, h, w)
+    x = affine_transfrom(x, transform_matrix, channel_index, fill_mode, cval, order)
+    return x
 
+def respective_zoom(
+        x, h_range=(0.9, 1.1), w_range=(0.9, 1.1), row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
+        cval=0., order=1
+):
+    """Zooming/Scaling a single image that height and width are changed independently.
+
+    Parameters
+    -----------
+    x : numpy.array
+        An image with dimension of [row, col, channel] (default).
+    h_range : float or tuple of 2 floats
+        The zooming/scaling ratio of height, greater than 1 means larger.
+            - float, a fixed ratio.
+            - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
+    w_range : float or tuple of 2 floats
+        The zooming/scaling ratio of width, greater than 1 means larger.
+            - float, a fixed ratio.
+            - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
+    row_index col_index and channel_index : int
+        Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
+    fill_mode : str
+        Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`, see `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+    cval : float
+        Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
+    order : int
+        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.affine_transfrom`` and `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
+
+    """
+    zoom_matrix = affine_respective_zoom_matrix(h_range=h_range, w_range=w_range)
     h, w = x.shape[row_index], x.shape[col_index]
     transform_matrix = transform_matrix_offset_center(zoom_matrix, h, w)
     x = affine_transfrom(x, transform_matrix, channel_index, fill_mode, cval, order)

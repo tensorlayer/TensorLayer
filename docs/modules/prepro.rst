@@ -1,4 +1,4 @@
-API - Data Preprocessing
+respective_API - Data Preprocessing
 =========================
 
 Tutorials
@@ -86,6 +86,7 @@ The code of this tutorial can be found `here <https://github.com/tensorlayer/ten
    affine_shear_matrix
    affine_shear_matrix2
    affine_zoom_matrix
+   affine_respective_zoom_matrix
 
    transform_matrix_offset_center
    affine_transfrom
@@ -110,6 +111,7 @@ The code of this tutorial can be found `here <https://github.com/tensorlayer/ten
    elastic_transform_multi
 
    zoom
+   respective_zoom
    zoom_multi
 
    brightness
@@ -204,7 +206,11 @@ Get shearing matrix V2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: affine_shear_matrix2
 
-Get zomming matrix
+Get zooming matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_zoom_matrix
+
+Get seperated zooming matrix
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: affine_zoom_matrix
 
@@ -272,6 +278,10 @@ Zoom
 ^^^^^^^^^
 .. autofunction:: zoom
 .. autofunction:: zoom_multi
+
+Respective Zoom
+^^^^^^^^^^^^^^^^^
+.. autofunction:: respective_zoom
 
 Brightness
 ^^^^^^^^^^^^

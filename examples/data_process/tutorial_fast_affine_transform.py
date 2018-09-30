@@ -16,10 +16,10 @@ def example1():
     st = time.time()
     for _ in range(100):  # try 100 times and compute the averaged speed
         xx = tl.prepro.rotation(image, rg=20, is_random=False)
-        xx = tl.prepro.shift(xx, wrg=0.2, hrg=0.2, is_random=False)
         xx = tl.prepro.flip_axis(xx, axis=1, is_random=False)
-        xx = tl.prepro.zoom(xx, zoom_range=(0.8, 1.5), is_random=False)
         xx = tl.prepro.shear(xx, intensity=0.2, is_random=False)
+        xx = tl.prepro.zoom(xx, zoom_range=0.8)
+        xx = tl.prepro.shift(xx, wrg=0.2, hrg=0.2, is_random=False)
     print("apply transforms one-by-one took %fs for each image" % ((time.time() - st) / 100))
     tl.vis.save_image(xx, '_result_slow.png')
 
@@ -29,9 +29,9 @@ def fast_affine_transfrom(image):
     M_flip = tl.prepro.affine_horizontal_flip_matrix(is_random=False)
     M_shift = tl.prepro.affine_shift_matrix(wrg=0.2, hrg=0.2, h=h, w=w, is_random=False)
     M_shear = tl.prepro.affine_shear_matrix(intensity=0.2, is_random=False)
-    M_zoom = tl.prepro.affine_zoom_matrix(zoom_range=(0.8, 1.5), is_random=False)
+    M_zoom = tl.prepro.affine_zoom_matrix(zoom_range=0.8)
     # 2. combine all affine transform matrices to one matrix, the rotation is the first transformation
-    M_combined = M_rotate.dot(M_shift).dot(M_flip).dot(M_zoom).dot(M_shear)
+    M_combined = M_rotate.dot(M_flip).dot(M_shear).dot(M_zoom).dot(M_shift)
     # 3. transfrom the matrix from Cartesian coordinate (the origin in the middle of image)
     # to Image coordinate (the origin on the top-left of image)
     transform_matrix = tl.prepro.transform_matrix_offset_center(M_combined, h, w)
