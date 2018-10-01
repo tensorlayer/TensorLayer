@@ -60,6 +60,10 @@ class CustomNetwork_2D_Test(CustomTestCase):
                     net = fire_module(input_layer, 32, 24, "fire_module_1")
                     net = fire_module(net, 32, 24, "fire_module_2")
 
+                    with tf.variable_scope("deformable_conv"):
+                        offset1 = tl.layers.Conv2d(n_filter=18, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='offset_layer')(net)
+                        net = tl.layers.DeformableConv2d(n_filter=32, filter_size=(3, 3), act=tf.nn.relu, name='deformable_conv_layer')(net, offset1)
+
                     return input_layer, net
 
             cls.model = MyCustomNetwork(name="my_custom_network")
@@ -82,23 +86,23 @@ class CustomNetwork_2D_Test(CustomTestCase):
             self.assertEqual(len(self.model.all_drop), 0)
 
     def test_count_weights(self):
-        self.assertEqual(self.train_model.count_weights(), 17152)
-        self.assertEqual(self.test_model.count_weights(), 17152)
+        self.assertEqual(self.train_model.count_weights(), 38802)
+        self.assertEqual(self.test_model.count_weights(), 38802)
 
         with self.assertRaises((AttributeError, AssertionError)):
-            self.assertEqual(self.model.count_weights(), 17152)
+            self.assertEqual(self.model.count_weights(), 38802)
 
     def test_count_weight_tensors(self):
-        self.assertEqual(len(self.train_model.get_all_weights()), 12)
-        self.assertEqual(len(self.test_model.get_all_weights()), 12)
+        self.assertEqual(len(self.train_model.get_all_weights()), 16)
+        self.assertEqual(len(self.test_model.get_all_weights()), 16)
 
         with self.assertRaises((AttributeError, AssertionError)):
-            self.assertEqual(len(self.model.get_all_weights()), 12)
+            self.assertEqual(len(self.model.get_all_weights()), 16)
 
     def test_count_layers(self):
-        self.assertEqual(self.train_model.count_layers(), 9)
-        self.assertEqual(self.test_model.count_layers(), 9)
-        self.assertEqual(self.model.count_layers(), 9)
+        self.assertEqual(self.train_model.count_layers(), 11)
+        self.assertEqual(self.test_model.count_layers(), 11)
+        self.assertEqual(self.model.count_layers(), 11)
 
     def test_layer_outputs_dtype(self):
 
@@ -146,6 +150,12 @@ class CustomNetwork_2D_Test(CustomTestCase):
 
         self.assertEqual(self.train_model["fire_module_2/concat"].outputs.shape, (100, 16, 16, 48))
         self.assertEqual(self.test_model["fire_module_2/concat"].outputs.shape, (100, 16, 16, 48))
+
+        self.assertEqual(self.train_model["deformable_conv/offset_layer"].outputs.shape, (100, 16, 16, 18))
+        self.assertEqual(self.test_model["deformable_conv/offset_layer"].outputs.shape, (100, 16, 16, 18))
+
+        self.assertEqual(self.train_model["deformable_conv/deformable_conv_layer"].outputs.shape, (100, 16, 16, 32))
+        self.assertEqual(self.test_model["deformable_conv/deformable_conv_layer"].outputs.shape, (100, 16, 16, 32))
 
 
 if __name__ == '__main__':
