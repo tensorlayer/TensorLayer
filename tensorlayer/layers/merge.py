@@ -137,9 +137,11 @@ class ElementwiseLayer(Layer):
 
     def build(self):
 
-        self._temp_data['outputs'] = self._temp_data['inputs'][0]
+        with tf.variable_scope(self.name):
 
-        for layer in self._temp_data['inputs'][1:]:
-            self._temp_data['outputs'] = self.combine_fn(self._temp_data['outputs'], layer, name=self.name)
+            self._temp_data['outputs'] = self._temp_data['inputs'][0]
 
-        self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
+            for layer in self._temp_data['inputs'][1:]:
+                self._temp_data['outputs'] = self.combine_fn(self._temp_data['outputs'], layer, name=self.name)
+
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])

@@ -153,8 +153,6 @@ class ElementwiseLambdaLayer(Layer):
 
     def build(self):
 
-        with tf.variable_scope(self.name) as vs:
+        with tf.variable_scope(self.name):
             self._temp_data['outputs'] = self.fn(*self._temp_data['inputs'], **self.fn_args)
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
