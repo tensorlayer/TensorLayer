@@ -66,7 +66,7 @@ Therefore, all transformations can be combined into one:
     transform_matrix = tl.prepro.transform_matrix_offset_center(M_combined, h, w)
 
     # 3. then we can transfrom the image once for all transformations
-    result = tl.prepro.affine_transfrom(image, transform_matrix)
+    result = tl.prepro.affine_transform(image, transform_matrix)
 
     tl.vis.save_image(result, '_result_fast.png')
 
@@ -89,7 +89,8 @@ The code of this tutorial can be found `here <https://github.com/tensorlayer/ten
    affine_respective_zoom_matrix
 
    transform_matrix_offset_center
-   affine_transfrom
+   affine_transform
+   affine_transform_cv2
    projective_transform_by_points
 
    rotation
@@ -220,7 +221,11 @@ Transform matrix offset
 
 Apply affine transform by matrix
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: affine_transfrom
+.. autofunction:: affine_transform
+
+Apply affine transform by matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_transform_cv2
 
 Projective transform by points
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
