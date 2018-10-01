@@ -25,11 +25,11 @@ applied independently and are hard to jointly optimize. Mostly importantly,
 a pipeline of independent image operations can significantly
 reduces the quality of input images, thus affecting training accuracy.
 
-TensorLayer address these two limitations by providing a flexible
-and high-performance image augmentation Python API, compatible with
-the ``tf.image``. This API is based on affine transformation.
-It allows you to combine multiple image operations into
-a single fast operation, offering up to 100x performance improvement (for example in
+TensorLayer addresses these limitations by providing a flexible
+and high-performance visual data augmentation Python API.
+This API bases on affine transformation and fast matrix computation libraries (i.e., ``cv2.wrapAffine`` and ``np.apply_affine_transform``).
+It allows you to combine multiple image processing functions into
+a single fast operation, offering 78x performance improvement (for example in
 `openpose-plus <https://github.com/tensorlayer/openpose-plus>`_).
 The following example illustrates the rationale
 behind this tremendous speed up.
