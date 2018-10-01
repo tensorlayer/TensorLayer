@@ -82,7 +82,7 @@ class SpatialTransformer2dAffineLayer(Layer):
             prev_layer=[prev_layer, theta_layer], is_train=is_train
         )
 
-    def compile(self):
+    def build(self):
 
         input_layer = self._temp_data['inputs'][0]
         theta_layer = self._temp_data['inputs'][1]

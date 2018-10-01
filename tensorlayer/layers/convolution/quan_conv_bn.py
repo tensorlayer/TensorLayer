@@ -186,7 +186,7 @@ class QuantizedConv2dWithBN(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         try:
             input_channels = int(self._temp_data['inputs'].get_shape()[-1])

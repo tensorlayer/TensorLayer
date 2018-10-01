@@ -203,7 +203,7 @@ class RNNLayer(Layer):
         #     )
         # )
 
-    def compile(self):
+    def build(self):
 
         if 'GRU' in self.cell_fn.__name__:
             try:
@@ -466,7 +466,7 @@ class BiRNNLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         fixed_batch_size = self._temp_data['inputs'].get_shape().with_rank_at_least(1)[0]
 

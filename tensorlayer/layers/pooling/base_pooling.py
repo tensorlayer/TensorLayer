@@ -75,7 +75,7 @@ class PoolLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name):
 

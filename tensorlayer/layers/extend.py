@@ -57,7 +57,7 @@ class ExpandDimsLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name):
             self._temp_data['outputs'] = tf.expand_dims(self._temp_data['inputs'], axis=self.axis)
@@ -105,7 +105,7 @@ class TileLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name):
             self._temp_data['outputs'] = tf.tile(self._temp_data['inputs'], multiples=self.multiples)

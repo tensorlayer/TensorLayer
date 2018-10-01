@@ -20,7 +20,7 @@ from tensorlayer.decorators import overwrite_layername_in_network
 from tensorlayer.decorators import protected_method
 from tensorlayer.decorators import private_method
 
-__all__ = ['LayersConfig', 'TF_GRAPHKEYS_VARIABLES', 'Layer', 'BaseLayer', 'CompiledLayer']
+__all__ = ['LayersConfig', 'TF_GRAPHKEYS_VARIABLES', 'Layer', 'BaseLayer', 'BuiltLayer']
 
 
 @six.add_metaclass(ABCMeta)
@@ -157,7 +157,7 @@ class Layer(BaseLayer):
         super(Layer, self).__init__(*args, **kwargs)
 
         self._temp_data = None
-        self._last_compiled_layer = None
+        self._last_built_layer = None
 
         self.prev_layer = None
 
@@ -184,7 +184,7 @@ class Layer(BaseLayer):
             Set the TF Variable in training mode and may impact the behaviour of the layer.
         """
 
-        run_compilation = False
+        build_layer = False
 
         ##############################
         #        Sanity Check        #
@@ -194,18 +194,18 @@ class Layer(BaseLayer):
             raise ValueError("No previous_layer has been given to the layer `%s`" % self.name)
 
         ##############################
-        #     Manual Compilation     #
+        #     Manual Layer Build     #
         ##############################
 
-        elif isinstance(prev_layer, tl.layers.Layer):  # Manual Compile Mode
+        elif isinstance(prev_layer, tl.layers.Layer):  # Manual Layer Build Mode
             self.prev_layer = prev_layer.name
 
         ##############################
-        #         Compilation        #
+        #         Layer Build        #
         ##############################
 
-        elif isinstance(prev_layer, tl.layers.CompiledLayer):
-            run_compilation = True
+        elif isinstance(prev_layer, tl.layers.BuiltLayer):
+            build_layer = True
 
         ##############################
         #        Input Layers        #
@@ -216,7 +216,7 @@ class Layer(BaseLayer):
             (isinstance(prev_layer,
                         (tuple, list)) and all(isinstance(x, tf.Tensor) for x in prev_layer))
         ):
-            run_compilation = True
+            build_layer = True
 
         ##############################
         #       Input is a List      #
@@ -225,15 +225,15 @@ class Layer(BaseLayer):
         elif isinstance(prev_layer, (list, tuple)):
 
             # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            #    List of CompiledLayers
+            #    List of BuiltLayers
             # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-            if all(isinstance(layer, tl.layers.CompiledLayer) for layer in prev_layer):
+            if all(isinstance(layer, tl.layers.BuiltLayer) for layer in prev_layer):
 
                 if any(not hasattr(layer, "outputs") or layer.outputs is None for layer in prev_layer):
-                    raise ValueError("A `CompiledLayer` in the layer's inputs contains no output or is None")
+                    raise ValueError("A `BuiltLayer` in the layer's inputs contains no output or is None")
 
-                run_compilation = True
+                build_layer = True
 
             # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             #         List of Layers
@@ -249,7 +249,7 @@ class Layer(BaseLayer):
                     additional_details = ""
 
                 raise ValueError(
-                    "Not all layers given in `prev_layer` are either `CompiledLayer or `Layer` instance.\n"
+                    "Not all layers given in `prev_layer` are either `BuiltLayer or `Layer` instance.\n"
                     "Received `prev_layer` - Type: %s%s" % (type(prev_layer), additional_details)
                 )
 
@@ -260,13 +260,13 @@ class Layer(BaseLayer):
         else:
             self.prev_layer = prev_layer
 
-        if run_compilation:
+        if build_layer:
 
             self.parse_inputs(prev_layer, is_train)
 
-            self.compile()
+            self.build()
 
-            return self._create_compiled_layer()
+            return self._create_built_layer()
 
         else:
             return self
@@ -277,7 +277,7 @@ class Layer(BaseLayer):
 
     @abstractmethod
     @private_method
-    def compile(self):
+    def build(self):
         raise NotImplementedError("This method should be overwritten by the derived class")
 
     @private_method
@@ -292,7 +292,7 @@ class Layer(BaseLayer):
             'is_train': is_train,
         }
 
-        if isinstance(prev_layer, CompiledLayer):
+        if isinstance(prev_layer, BuiltLayer):
             # 1. for normal layer have only 1 input i.e. DenseLayer
             # Hint : list(), dict() is pass by value (shallow), without them,
             # it is pass by reference.
@@ -378,8 +378,8 @@ class Layer(BaseLayer):
         if not isinstance(layer_list, (tuple, list)):
             raise ValueError('`layer_list` should be of type `list` or `tuple`')
 
-        elif not all(isinstance(layer, CompiledLayer) for layer in layer_list):
-            raise ValueError("`layer_list` should be a list of `CompiledLayer`")
+        elif not all(isinstance(layer, BuiltLayer) for layer in layer_list):
+            raise ValueError("`layer_list` should be a list of `BuiltLayer`")
         else:
             return layer_list
 
@@ -436,15 +436,15 @@ class Layer(BaseLayer):
             return logits
 
     @private_method
-    def _create_compiled_layer(self):
+    def _create_built_layer(self):
         kwargs = {
             key: val
             for key, val in self._temp_data.items()
             if key not in ['inputs', 'unprocessed_inputs', 'outputs', 'local_weights', 'local_drop', 'is_train']
         }
 
-        self._last_compiled_layer = type("Compiled_" + self.__class__.__name__, (CompiledLayer, ), {})(
-            layers_to_compile=self,
+        self._last_built_layer = type("Built_" + self.__class__.__name__, (BuiltLayer, ), {})(
+            layers_to_build=self,
             inputs=self._temp_data['inputs'],
             outputs=self._temp_data['outputs'],
             local_weights=self._temp_data['local_weights'],
@@ -453,7 +453,7 @@ class Layer(BaseLayer):
             **kwargs
         )
 
-        return self._last_compiled_layer
+        return self._last_built_layer
 
     @private_method
     def _argument_dict_checkup(self, args):
@@ -665,26 +665,26 @@ class Layer(BaseLayer):
     #     self.outputs = state['outputs']
 
 
-class CompiledLayer(object):
+class BuiltLayer(object):
 
-    def __init__(self, layers_to_compile, inputs, outputs, local_weights, local_drop, is_train, **kwargs):
+    def __init__(self, layers_to_build, inputs, outputs, local_weights, local_drop, is_train, **kwargs):
 
         self.hyperparameters = dict()
 
-        for key, value in layers_to_compile.__dict__.items():
+        for key, value in layers_to_build.__dict__.items():
 
             # Do not record these arguments
 
             # "prev_layer", "all_params", "all_layers", "all_drop", "all_graphs", "graph", "is_setup",
             # "inputs", "outputs", "_local_drop", "_local_weights",
 
-            if key in ["_last_compiled_layer", '_temp_data']:
+            if key in ["_last_built_layer", '_temp_data']:
                 continue
 
             # setattr(self, key, value)
             self.hyperparameters[key] = value
 
-        self._str_ = str(layers_to_compile)
+        self._str_ = str(layers_to_build)
 
         self.inputs = inputs
         self.outputs = outputs
@@ -710,7 +710,7 @@ class CompiledLayer(object):
         _, _, function_name, _, _ = inspect.getframeinfo(previous_frame)
 
         if function_name == "__init__":
-            super(CompiledLayer, self).__setattr__(key, value)
+            super(BuiltLayer, self).__setattr__(key, value)
         else:
             raise RuntimeError(
                 "A Tensorlayer `{}` is not supposed to be modified.\n"

@@ -107,7 +107,7 @@ class DeformableConv2d(Layer):
         """
         return super(DeformableConv2d, self).__call__(prev_layer=[prev_layer, offset_layer], is_train=is_train)
 
-    def compile(self):
+    def build(self):
 
         input_layer = self._temp_data['inputs'][0]
         offset_layer = self._temp_data['inputs'][1]

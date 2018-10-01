@@ -44,7 +44,7 @@ class InputLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         self._temp_data['outputs'] = self._temp_data['inputs']
 
@@ -108,7 +108,7 @@ class OneHotInputLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         self._temp_data['outputs'] = tf.one_hot(
             self._temp_data['inputs'],
@@ -265,7 +265,7 @@ class Word2vecEmbeddingInputlayer(Layer):
             prev_layer=[prev_layer, train_labels], is_train=is_train
         )
 
-    def compile(self):
+    def build(self):
 
         input_plh = self._temp_data['inputs'][0]
         train_labels_plh = self._temp_data['inputs'][1]
@@ -398,7 +398,7 @@ class EmbeddingInputlayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name):
 
@@ -497,7 +497,7 @@ class AverageEmbeddingInputlayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         if self._temp_data['inputs'].get_shape().ndims != 2:
             raise ValueError('inputs must be of size batch_size * batch_sentence_length')

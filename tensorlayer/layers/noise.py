@@ -78,7 +78,7 @@ class GaussianNoiseLayer(Layer):
         else:
             return self._skipped_layer_str()
 
-    def compile(self):
+    def build(self):
 
         if self._temp_data['is_train']:
             with tf.variable_scope(self.name):

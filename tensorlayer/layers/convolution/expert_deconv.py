@@ -142,7 +142,7 @@ class DeConv2dLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(
@@ -266,7 +266,7 @@ class DeConv3dLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name):
 

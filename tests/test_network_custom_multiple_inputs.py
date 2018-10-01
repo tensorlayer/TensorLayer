@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+apt#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -38,12 +38,12 @@ class CustomNetwork_Multiple_Outputs_Test(CustomTestCase):
             plh_1 = tf.placeholder(tf.float16, shape=(100, 50))
             plh_2 = tf.placeholder(tf.float16, shape=(100, 30))
 
-            cls.train_model = cls.model.compile((plh_1, plh_2), reuse=False, is_train=True)
-            cls.test_model = cls.model.compile((plh_1, plh_2), reuse=True, is_train=False)
+            cls.train_model = cls.model.build((plh_1, plh_2), reuse=False, is_train=True)
+            cls.test_model = cls.model.build((plh_1, plh_2), reuse=True, is_train=False)
 
     def test_objects_dtype(self):
-        self.assertIsInstance(self.train_model, tl.models.CompiledNetwork)
-        self.assertIsInstance(self.test_model, tl.models.CompiledNetwork)
+        self.assertIsInstance(self.train_model, tl.models.BuiltNetwork)
+        self.assertIsInstance(self.test_model, tl.models.BuiltNetwork)
         self.assertIsInstance(self.model, tl.networks.CustomModel)
 
     def test_get_all_drop_plh(self):

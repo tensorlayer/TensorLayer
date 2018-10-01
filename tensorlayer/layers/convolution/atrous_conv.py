@@ -171,7 +171,7 @@ class AtrousConv2dLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name):
             shape = [
@@ -285,7 +285,7 @@ class AtrousDeConv2dLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name):
             weight_matrix = self._get_tf_variable(

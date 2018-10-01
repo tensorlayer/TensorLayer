@@ -145,7 +145,7 @@ class ConvLSTMLayer(Layer):
         #     )
         # )
 
-    def compile(self):
+    def build(self):
 
         # You can get the dimension by .get_shape() or ._shape, and check the
         # dimension by .with_rank() as follow.

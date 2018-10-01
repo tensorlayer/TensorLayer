@@ -105,7 +105,7 @@ class BatchNormLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         x_shape = self._temp_data['inputs'].get_shape()
         params_shape = x_shape[-1:]
@@ -219,7 +219,7 @@ class InstanceNormLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         if len(self._temp_data['inputs'].shape) not in [3, 4]:
             raise RuntimeError("`%s` only accepts input Tensor of dimension 3 or 4." % self.__class__.__name__)
@@ -399,7 +399,7 @@ class LayerNormLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         is_name_reuse = tf.get_variable_scope().reuse
 
@@ -485,7 +485,7 @@ class LocalResponseNormLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name):
             self._temp_data['outputs'] = tf.nn.local_response_normalization(
@@ -551,7 +551,7 @@ class SwitchNormLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         if len(self._temp_data['inputs'].shape) not in [3, 4]:
             raise RuntimeError("`%s` only accepts input Tensor of dimension 3 or 4." % self.__class__.__name__)

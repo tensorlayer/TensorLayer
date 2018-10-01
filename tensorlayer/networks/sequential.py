@@ -35,7 +35,7 @@ class Sequential(BaseNetwork):
     model = Sequential()
     model.add(Dense(32))
     model.add(Dense(32))
-    model.compile(optimizer=optimizer, loss=loss)
+    model.build(optimizer=optimizer, loss=loss)
     # This builds the model for the first time:
     model.fit(x, y, batch_size=32, epochs=10)
     # Note that when using this delayed-build pattern (no input shape specified),

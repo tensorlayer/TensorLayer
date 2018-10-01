@@ -67,7 +67,7 @@ class MaxPool1d(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name) as vs:
 
@@ -141,7 +141,7 @@ class MaxPool2d(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name) as vs:
 
@@ -211,7 +211,7 @@ class MaxPool3d(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name):
 

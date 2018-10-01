@@ -40,12 +40,12 @@ class CustomNetwork_AverageEmbeddingInputlayer_Test(CustomTestCase):
 
             plh = tf.placeholder(tf.int32, shape=[100, None], name='inputs')
 
-            cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
-            cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
+            cls.train_model = cls.model.build(plh, reuse=False, is_train=True)
+            cls.test_model = cls.model.build(plh, reuse=True, is_train=False)
 
     def test_objects_dtype(self):
-        self.assertIsInstance(self.train_model, tl.models.CompiledNetwork)
-        self.assertIsInstance(self.test_model, tl.models.CompiledNetwork)
+        self.assertIsInstance(self.train_model, tl.models.BuiltNetwork)
+        self.assertIsInstance(self.test_model, tl.models.BuiltNetwork)
         self.assertIsInstance(self.model, tl.networks.CustomModel)
 
     def test_get_all_drop_plh(self):
@@ -135,12 +135,12 @@ class CustomNetwork_EmbeddingInputlayer_Test(CustomTestCase):
                 ], name='inputs'
             )
 
-            cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
-            cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
+            cls.train_model = cls.model.build(plh, reuse=False, is_train=True)
+            cls.test_model = cls.model.build(plh, reuse=True, is_train=False)
 
     def test_objects_dtype(self):
-        self.assertIsInstance(self.train_model, tl.models.CompiledNetwork)
-        self.assertIsInstance(self.test_model, tl.models.CompiledNetwork)
+        self.assertIsInstance(self.train_model, tl.models.BuiltNetwork)
+        self.assertIsInstance(self.test_model, tl.models.BuiltNetwork)
         self.assertIsInstance(self.model, tl.networks.CustomModel)
 
     def test_get_all_drop_plh(self):
@@ -224,12 +224,12 @@ class CustomNetwork_OneHotInputLayer_Test(CustomTestCase):
 
             data_plh = tf.placeholder(tf.int32, shape=[100])
 
-            cls.train_model = cls.model.compile(data_plh, reuse=False, is_train=True)
-            cls.test_model = cls.model.compile(data_plh, reuse=True, is_train=False)
+            cls.train_model = cls.model.build(data_plh, reuse=False, is_train=True)
+            cls.test_model = cls.model.build(data_plh, reuse=True, is_train=False)
 
     def test_objects_dtype(self):
-        self.assertIsInstance(self.train_model, tl.models.CompiledNetwork)
-        self.assertIsInstance(self.test_model, tl.models.CompiledNetwork)
+        self.assertIsInstance(self.train_model, tl.models.BuiltNetwork)
+        self.assertIsInstance(self.test_model, tl.models.BuiltNetwork)
         self.assertIsInstance(self.model, tl.networks.CustomModel)
 
     def test_get_all_drop_plh(self):
@@ -316,12 +316,12 @@ class CustomNetwork_Word2vecEmbeddingInputlayer_Test(CustomTestCase):
             train_inputs = tf.placeholder(tf.int32, shape=100)
             train_labels = tf.placeholder(tf.int32, shape=(100, 1))
 
-            cls.train_model = cls.model.compile([train_inputs, train_labels], reuse=False, is_train=True)
-            cls.test_model = cls.model.compile([train_inputs, train_labels], reuse=True, is_train=False)
+            cls.train_model = cls.model.build([train_inputs, train_labels], reuse=False, is_train=True)
+            cls.test_model = cls.model.build([train_inputs, train_labels], reuse=True, is_train=False)
 
     def test_objects_dtype(self):
-        self.assertIsInstance(self.train_model, tl.models.CompiledNetwork)
-        self.assertIsInstance(self.test_model, tl.models.CompiledNetwork)
+        self.assertIsInstance(self.train_model, tl.models.BuiltNetwork)
+        self.assertIsInstance(self.test_model, tl.models.BuiltNetwork)
         self.assertIsInstance(self.model, tl.networks.CustomModel)
 
     def test_get_all_drop_plh(self):

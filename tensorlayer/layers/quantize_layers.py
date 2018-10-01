@@ -34,7 +34,7 @@ class SignLayer(Layer):
 
         super(SignLayer, self).__init__()
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name):
             self._temp_data['outputs'] = quantize(self._temp_data['inputs'])

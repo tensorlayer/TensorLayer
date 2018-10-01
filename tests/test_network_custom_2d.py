@@ -66,12 +66,12 @@ class CustomNetwork_2D_Test(CustomTestCase):
 
             plh = tf.placeholder(tf.float16, (100, 16, 16, 3))
 
-            cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
-            cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
+            cls.train_model = cls.model.build(plh, reuse=False, is_train=True)
+            cls.test_model = cls.model.build(plh, reuse=True, is_train=False)
 
     def test_objects_dtype(self):
-        self.assertIsInstance(self.train_model, tl.models.CompiledNetwork)
-        self.assertIsInstance(self.test_model, tl.models.CompiledNetwork)
+        self.assertIsInstance(self.train_model, tl.models.BuiltNetwork)
+        self.assertIsInstance(self.test_model, tl.models.BuiltNetwork)
         self.assertIsInstance(self.model, tl.networks.CustomModel)
 
     def test_get_all_drop_plh(self):

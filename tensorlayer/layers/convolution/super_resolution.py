@@ -63,7 +63,7 @@ class SubpixelConv1d(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name):
 
@@ -156,7 +156,7 @@ class SubpixelConv2d(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         if self.n_out_channels is None:
 

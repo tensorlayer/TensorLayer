@@ -67,7 +67,7 @@ class MeanPool1d(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name) as vs:
 
@@ -141,7 +141,7 @@ class MeanPool2d(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name) as vs:
 
@@ -212,7 +212,7 @@ class MeanPool3d(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
         with tf.variable_scope(self.name):
 
             self._temp_data['outputs'] = tf.layers.average_pooling3d(

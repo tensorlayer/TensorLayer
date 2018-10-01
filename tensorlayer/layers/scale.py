@@ -46,7 +46,7 @@ class ScaleLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name):
             scale = self._get_tf_variable(

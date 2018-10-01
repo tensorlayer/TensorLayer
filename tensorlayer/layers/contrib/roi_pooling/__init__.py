@@ -72,7 +72,7 @@ class ROIPoolingLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name):
             self._temp_data['outputs'] = roi_pooling(

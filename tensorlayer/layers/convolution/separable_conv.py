@@ -124,7 +124,7 @@ class SeparableConv1d(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         is_name_reuse = tf.get_variable_scope().reuse
 
@@ -260,7 +260,7 @@ class SeparableConv2d(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         is_name_reuse = tf.get_variable_scope().reuse
 

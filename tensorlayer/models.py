@@ -8,10 +8,10 @@ import tensorlayer as tl
 
 from tensorlayer.decorators import deprecated
 
-__all__ = ["CompiledNetwork"]
+__all__ = ["BuiltNetwork"]
 
 
-class CompiledNetwork(object):
+class BuiltNetwork(object):
 
     def __init__(self, inputs, outputs, all_layers, is_train, model_scope, name):
 
@@ -41,7 +41,7 @@ class CompiledNetwork(object):
             return self.all_weights
 
         else:
-            return super(CompiledNetwork, self).__getattribute__(item)
+            return super(BuiltNetwork, self).__getattribute__(item)
 
     def __getitem__(self, layer_name):
         if layer_name in self.all_layers.keys():
@@ -55,7 +55,7 @@ class CompiledNetwork(object):
 
     def __setattr__(self, key, value):
         if not hasattr(self, key):
-            super(CompiledNetwork, self).__setattr__(key, value)
+            super(BuiltNetwork, self).__setattr__(key, value)
         else:
             raise RuntimeError(
                 "A Tensorlayer `{}` is not supposed to be modified. "

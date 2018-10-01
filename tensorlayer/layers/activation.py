@@ -65,7 +65,7 @@ class PReluLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         if self.channel_shared:
             w_shape = (1, )
@@ -155,7 +155,7 @@ class PRelu6Layer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         if self.channel_shared:
             w_shape = (1, )
@@ -247,7 +247,7 @@ class PTRelu6Layer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         if self.channel_shared:
             w_shape = (1, )

@@ -29,8 +29,8 @@ model.add(tl.layers.PTRelu6Layer(channel_shared=False, name="ptrelu6_layer_4"))
 
 plh = tf.placeholder(tf.float16, (100, 32))
 
-train_model = model.compile(plh, reuse=False, is_train=True)
-test_model = model.compile(plh, reuse=True, is_train=False)
+train_model = model.build(plh, reuse=False, is_train=True)
+test_model = model.build(plh, reuse=True, is_train=False)
 
 print("\n#################### TEST Train Model ######################\n")
 

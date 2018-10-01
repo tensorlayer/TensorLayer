@@ -77,13 +77,13 @@ class BaseNetwork(core.BaseLayer):
         self.all_layers_dict[layer.name] = layer
         self.all_layers.append(layer.name)
 
-    def compile(self, inputs, reuse=False, is_train=True):
+    def build(self, inputs, reuse=False, is_train=True):
 
         logging.info(
-            "** Compiling %s `%s` - reuse: %s, is_train: %s **" % (self.__class__.__name__, self.name, reuse, is_train)
+            "** Building %s `%s` - reuse: %s, is_train: %s **" % (self.__class__.__name__, self.name, reuse, is_train)
         )
 
-        _temp_all_compiled_layers = []
+        _temp_all_built_layers = []
 
         if len(self.all_layers_dict) == 0:
             raise RuntimeError("This network has no layer registered.")
@@ -103,7 +103,7 @@ class BaseNetwork(core.BaseLayer):
                             if isinstance(self.inputs, (tuple, list)):
                                 try:
                                     plh_idx = self.inputs.index(layer_factory)
-                                    compiled_inputs = inputs[plh_idx]
+                                    built_inputs = inputs[plh_idx]
 
                                 except ValueError:
                                     raise RuntimeError(
@@ -111,31 +111,31 @@ class BaseNetwork(core.BaseLayer):
                                         % layer_factory.name
                                     )
                             else:
-                                compiled_inputs = inputs
+                                built_inputs = inputs
 
                         elif isinstance(layer_factory.prev_layer, str):
-                            compiled_inputs = self.all_layers_dict[layer_factory.prev_layer]._last_compiled_layer
+                            built_inputs = self.all_layers_dict[layer_factory.prev_layer]._last_built_layer
 
                         elif all(isinstance(_layer, str) for _layer in layer_factory.prev_layer):
-                            compiled_inputs = [
-                                self.all_layers_dict[_layer]._last_compiled_layer for _layer in layer_factory.prev_layer
+                            built_inputs = [
+                                self.all_layers_dict[_layer]._last_built_layer for _layer in layer_factory.prev_layer
                             ]
 
                         else:
                             raise ValueError("`prev_layer` should be either a `str` or a list of `str`")
 
-                        if isinstance(compiled_inputs, (tuple, list)) \
+                        if isinstance(built_inputs, (tuple, list)) \
                             and not isinstance(layer_factory, (tl.layers.ConcatLayer, tl.layers.StackLayer, tl.layers.ElementwiseLayer)):
-                            network = layer_factory(*compiled_inputs, is_train=is_train)
+                            network = layer_factory(*built_inputs, is_train=is_train)
                         else:
-                            network = layer_factory(prev_layer=compiled_inputs, is_train=is_train)
+                            network = layer_factory(prev_layer=built_inputs, is_train=is_train)
 
-                        _temp_all_compiled_layers.append(network)
+                        _temp_all_built_layers.append(network)
 
-            return tl.models.CompiledNetwork(
+            return tl.models.BuiltNetwork(
                 inputs=inputs,
                 outputs=network.outputs,
-                all_layers=_temp_all_compiled_layers,
+                all_layers=_temp_all_built_layers,
                 is_train=is_train,
                 model_scope=self.model_scope,
                 name=self.name,
@@ -1222,8 +1222,8 @@ class BaseNetwork(core.BaseLayer):
         in a single file.
         Saved models can be reinstantiated via `keras.models.load_model`.
         The model returned by `load_model`
-        is a compiled model ready to be used (unless the saved model
-        was never compiled in the first place).
+        is a built model ready to be used (unless the saved model
+        was never built in the first place).
         Arguments:
                 filepath: String, path to the file to save the weights to.
                 overwrite: Whether to silently overwrite any existing file at the
@@ -1234,7 +1234,7 @@ class BaseNetwork(core.BaseLayer):
         from keras.models import load_model
         model.save('my_model.h5')    # creates a HDF5 file 'my_model.h5'
         del model    # deletes the existing model
-        # returns a compiled model
+        # returns a built model
         # identical to the previous one
         model = load_model('my_model.h5')
         ```

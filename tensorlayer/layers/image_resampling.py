@@ -87,7 +87,7 @@ class UpSampling2dLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         if len(self._temp_data['inputs'].shape) == 3:
             x_pos, y_pos = (0, 1)
@@ -196,7 +196,7 @@ class DownSampling2dLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         if len(self._temp_data['inputs'].shape) == 3:
             x_pos, y_pos = (0, 1)

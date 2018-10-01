@@ -75,7 +75,7 @@ class PadLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         self._temp_data['outputs'] = tf.pad(
             self._temp_data['inputs'], paddings=self.padding, mode=self.mode, name=self.name
@@ -123,7 +123,7 @@ class ZeroPad1d(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         # TODO: Stop using Keras
         self._temp_data['outputs'] = tf.keras.layers.ZeroPadding1D(
@@ -173,7 +173,7 @@ class ZeroPad2d(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         # TODO: Stop using Keras
         self._temp_data['outputs'] = tf.keras.layers.ZeroPadding2D(
@@ -223,7 +223,7 @@ class ZeroPad3d(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         # TODO: Stop using Keras
         self._temp_data['outputs'] = tf.keras.layers.ZeroPadding3D(

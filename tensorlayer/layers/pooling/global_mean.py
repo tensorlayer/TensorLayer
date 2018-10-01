@@ -50,7 +50,7 @@ class GlobalMeanPool1d(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         if self.data_format == 'channels_last':
             self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=1, name=self.name)
@@ -100,7 +100,7 @@ class GlobalMeanPool2d(Layer):
         additional_str = []
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         if self.data_format == 'channels_last':
             self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=[1, 2], name=self.name)
@@ -150,7 +150,7 @@ class GlobalMeanPool3d(Layer):
         additional_str = []
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         if self.data_format == 'channels_last':
             self._temp_data['outputs'] = tf.reduce_mean(self._temp_data['inputs'], axis=[1, 2, 3], name=self.name)

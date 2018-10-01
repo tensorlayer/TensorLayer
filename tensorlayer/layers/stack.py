@@ -62,7 +62,7 @@ class StackLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
         self._temp_data['outputs'] = tf.stack(self._temp_data['inputs'], axis=self.axis, name=self.name)
 
 
@@ -114,7 +114,7 @@ class UnStackLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         self._temp_data['outputs'] = tf.unstack(self._temp_data['inputs'], num=self.num, axis=self.axis, name=self.name)
         self.n_outputs = len(self._temp_data['outputs'])

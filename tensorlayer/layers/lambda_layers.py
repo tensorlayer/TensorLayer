@@ -80,7 +80,7 @@ class LambdaLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name) as vs:
             self._temp_data['outputs'] = self.fn(self._temp_data['inputs'], **self.fn_args)
@@ -151,7 +151,7 @@ class ElementwiseLambdaLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         with tf.variable_scope(self.name) as vs:
             self._temp_data['outputs'] = self.fn(*self._temp_data['inputs'], **self.fn_args)

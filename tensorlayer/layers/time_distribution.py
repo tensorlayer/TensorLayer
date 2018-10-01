@@ -82,7 +82,7 @@ class TimeDistributedLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         if not isinstance(self._temp_data['inputs'], tf.Tensor):
             self._temp_data['inputs'] = tf.transpose(tf.stack(self._temp_data['inputs']), [1, 0, 2])

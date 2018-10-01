@@ -214,7 +214,7 @@ class DynamicRNNLayer(Layer):
         #     )
         # )
 
-    def compile(self):
+    def build(self):
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
@@ -526,7 +526,7 @@ class BiDynamicRNNLayer(Layer):
         #     )
         # )
 
-    def compile(self):
+    def build(self):
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:

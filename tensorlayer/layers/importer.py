@@ -66,7 +66,7 @@ class SlimNetsLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         slim_layers = []
 
@@ -140,7 +140,7 @@ class KerasLayer(Layer):
 
         return self._str(additional_str)
 
-    def compile(self):
+    def build(self):
 
         current_varscope = tf.get_variable_scope()
 
