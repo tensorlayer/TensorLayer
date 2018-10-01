@@ -1,21 +1,41 @@
-respective_API - Data Preprocessing
-=========================
+respective_API - Data Pre-processing
+====================================
 
-Tutorials
--------------
+TensorLayer high-performance visual data augmentation API
+-----------------------------------------------------------
 
-Python can be fast!
-^^^^^^^^^^^^^^^^^^^^^^^
+Data pre-processing is a critical step in deep learning.
+Though TensorFlow has provided rich high-performance
+data processing modules (e.g., ``tf.data``),
+visual data augmentation often remains as a key bottleneck.
+To address this bottleneck, TensorFlow suggest
+to use optimized ``tf.image`` operators within user's
+augmentation functions written in Python. This approach, however, has two limitations:
 
-TensorFlow provides ``tf.data`` for XXX
+- Real-world visual tasks such as object detection, segmentation, and pose estimation
+need to cope with unstructured image meta-data (e.g., coordinates).
+These data are beyond the offering of ``tf.image``
+which processes images as tensors.
+Also, the use of ``tf.image`` operators
+breaks the pure Python programing experience (i.e., users have to
+use ``tf.py_func`` in order to keep using Python functions), incurring extra cross-language performance overheads.
 
-`tf.image`
+- ``tf.image`` API is inflexible. Image operations must be
+applied independently and are hard to jointly optimize. Mostly importantly,
+a pipeline of independent image operations can significantly
+reduces the quality of input images, thus affecting training accuracy.
 
-However, it is hard XXX
+TensorLayer address these two limitations by providing a flexible
+and high-performance image augmentation Python API, compatible with
+the ``tf.image``. This API is based on affine transformation.
+It allows you to combine multiple image operations into
+a single fast operation, offering up to 100x performance improvement (for example in
+`openpose-plus <https://github.com/tensorlayer/openpose-plus>`_).
+The following example illustrates the rationale
+behind this tremendous speed up.
 
- `tf.py_func`
 
-For example, it is hard to transform the image along with coordinates which is common in object detection and pose estimation.
+
 
 
 (XXX) We provide abundant data augmentation and processing functions by using Numpy, Scipy, Threading and Queue.
