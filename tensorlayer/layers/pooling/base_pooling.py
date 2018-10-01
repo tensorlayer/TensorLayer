@@ -59,7 +59,12 @@ class PoolLayer(Layer):
         additional_str = []
 
         try:
-            additional_str.append("ksize: %f" % str(self.ksize))
+            additional_str.append("ksize: %s" % str(self.ksize))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("strides: %s" % str(self.strides))
         except AttributeError:
             pass
 

@@ -408,6 +408,12 @@ class Network_Sequential_2D_Test(CustomTestCase):
                 tl.layers.MaxPool2d(filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool_2d_layer_37')
             )
 
+            cls.model.add(
+                tl.layers.PoolLayer(
+                    ksize=(1, 2, 2, 1), strides=(1, 2, 2, 1), padding='SAME', pool=tf.nn.max_pool, name='pool_layer_38'
+                )
+            )
+
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 
             cls.train_model = cls.model.build(plh, reuse=False, is_train=True)
@@ -440,9 +446,9 @@ class Network_Sequential_2D_Test(CustomTestCase):
             self.assertEqual(len(self.model.get_all_weights()), 60)
 
     def test_count_layers(self):
-        self.assertEqual(self.train_model.count_layers(), 52)
-        self.assertEqual(self.test_model.count_layers(), 52)
-        self.assertEqual(self.model.count_layers(), 52)
+        self.assertEqual(self.train_model.count_layers(), 53)
+        self.assertEqual(self.test_model.count_layers(), 53)
+        self.assertEqual(self.model.count_layers(), 53)
 
     def test_layer_outputs_dtype(self):
 
@@ -616,6 +622,9 @@ class Network_Sequential_2D_Test(CustomTestCase):
 
         self.assertEqual(self.train_model["maxpool_2d_layer_37"].outputs.shape, (100, 16, 16, 16))
         self.assertEqual(self.test_model["maxpool_2d_layer_37"].outputs.shape, (100, 16, 16, 16))
+
+        self.assertEqual(self.train_model["pool_layer_38"].outputs.shape, (100, 8, 8, 16))
+        self.assertEqual(self.test_model["pool_layer_38"].outputs.shape, (100, 8, 8, 16))
 
 
 if __name__ == '__main__':
