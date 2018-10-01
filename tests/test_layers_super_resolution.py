@@ -26,8 +26,8 @@ class Layer_Super_Resolution_Test(CustomTestCase):
 
         cls.net1_shape = net1.outputs.get_shape().as_list()
         cls.net1_layers = net1.all_layers
-        cls.net1_params = net1.all_params
-        cls.net1_n_params = net1.count_params()
+        cls.net1_params = net1.all_weights
+        cls.net1_n_params = net1.count_weights()
 
         ## 2D
         x = tf.placeholder('float32', [10, 100, 100, 3], name='x')
@@ -40,8 +40,8 @@ class Layer_Super_Resolution_Test(CustomTestCase):
 
         cls.net2_shape = net2.outputs.get_shape().as_list()
         cls.net2_layers = net2.all_layers
-        cls.net2_params = net2.all_params
-        cls.net2_n_params = net2.count_params()
+        cls.net2_params = net2.all_weights
+        cls.net2_n_params = net2.count_weights()
 
     @classmethod
     def tearDownClass(cls):

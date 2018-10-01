@@ -8,6 +8,7 @@ from tensorlayer.layers.core import Layer
 from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'GaussianNoiseLayer',
@@ -21,14 +22,10 @@ class GaussianNoiseLayer(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        Previous layer.
     mean : float
         The mean. Default is 0.
     stddev : float
         The standard deviation. Default is 1.
-    is_train : boolean
-        Is trainable layer. If False, skip this layer. default is True.
     seed : int or None
         The seed for random noise.
     name : str
@@ -46,27 +43,53 @@ class GaussianNoiseLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            mean=0.0,
-            stddev=1.0,
-            is_train=True,
-            seed=None,
-            name='gaussian_noise_layer',
+        self,
+        mean=0.0,
+        stddev=1.0,
+        seed=None,
+        name='gaussian_noise_layer',
     ):
-        super(GaussianNoiseLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        if is_train is False:
-            logging.info("  skip GaussianNoiseLayer")
-            self.outputs = prev_layer.outputs
+        self.mean = mean
+        self.stddev = stddev
+        self.seed = seed
+        self.name = name
+
+        super(GaussianNoiseLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        if self._temp_data['is_train']:
+
+            try:
+                additional_str.append("mean: %s" % self.mean)
+            except AttributeError:
+                pass
+
+            try:
+                additional_str.append("stddev: %s" % self.stddev)
+            except AttributeError:
+                pass
+
+            return self._str(additional_str)
 
         else:
-            logging.info("GaussianNoiseLayer %s: mean: %f stddev: %f" % (self.name, mean, stddev))
-            with tf.variable_scope(name):
-                # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
-                noise = tf.random_normal(shape=self.inputs.get_shape(), mean=mean, stddev=stddev, seed=seed)
-                self.outputs = self.inputs + noise
+            return self._skipped_layer_str()
 
-            self._add_layers(self.outputs)
+    def build(self):
+
+        if self._temp_data['is_train']:
+            with tf.variable_scope(self.name):
+                noise = tf.random_normal(
+                    shape=self._temp_data['inputs'].get_shape(),
+                    mean=self.mean,
+                    stddev=self.stddev,
+                    seed=self.seed,
+                    dtype=self._temp_data['inputs'].dtype
+                )
+                self._temp_data['outputs'] = tf.add(self._temp_data['inputs'], noise)
+
+        else:
+            self._temp_data['outputs'] = self._temp_data['inputs']

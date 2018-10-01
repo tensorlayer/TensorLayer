@@ -53,8 +53,8 @@ class Layer_Spatial_Transformer_Test(CustomTestCase):
 
         cls.s_shape = s.outputs.get_shape().as_list()
         cls.net_layers = net.all_layers
-        cls.net_params = net.all_params
-        cls.net_n_params = net.count_params()
+        cls.net_params = net.all_weights
+        cls.net_n_params = net.count_weights()
 
     @classmethod
     def tearDownClass(cls):

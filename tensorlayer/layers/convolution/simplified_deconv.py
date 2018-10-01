@@ -4,15 +4,13 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-
-from tensorlayer.layers.utils import get_collection_trainable
-
-from tensorlayer import logging
+from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    # 'DeConv1d'  # TODO: Shall be implemented
+    # 'DeConv1d'  # TODO: Needs to be implemented
     'DeConv2d',
     'DeConv3d',
 ]
@@ -23,14 +21,10 @@ class DeConv2d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_filter : int
         The number of filters.
     filter_size : tuple of int
         The filter size (height, width).
-    out_size : tuple of int
-        Require if TF version < 1.3, (height, width) of output.
     strides : tuple of int
         The stride step (height, width).
     padding : str
@@ -52,51 +46,93 @@ class DeConv2d(Layer):
 
     """
 
-    @deprecated_alias(
-        layer='prev_layer', n_out_channel='n_filter', end_support_version=1.9
-    )  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            n_filter=32,
-            filter_size=(3, 3),
-            # out_size=(30, 30),  # remove
-            strides=(2, 2),
-            padding='SAME',
-            # batch_size=None,  # remove
-            act=None,
-            data_format='channels_last',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            name='decnn2d'
+        self,
+        n_filter=32,
+        filter_size=(3, 3),
+        strides=(2, 2),
+        padding='valid',
+        data_format='channels_last',
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,  # TODO: Remove when TF <1.3 not supported
+        b_init_args=None,  # TODO: Remove when TF <1.3 not supported
+        act=None,
+        name='deconv2d'
     ):
-        super(DeConv2d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
-        logging.info(
-            "DeConv2d %s: n_filters: %s strides: %s pad: %s act: %s" % (
-                self.name, str(n_filter), str(strides), padding,
-                self.act.__name__ if self.act is not None else 'No Activation'
-            )
-        )
+        if data_format not in ["channels_last", "channels_first"]:
+            raise ValueError("`data_format` value is not valid, should be either: 'channels_last' or 'channels_first'")
+
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
 
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2, DeConv2d and DeConv2dLayer are different.")
 
-        conv2d_transpose = tf.layers.Conv2DTranspose(
-            filters=n_filter, kernel_size=filter_size, strides=strides, padding=padding, data_format=data_format,
-            activation=self.act, kernel_initializer=W_init, bias_initializer=b_init, name=name
-        )
+        self.n_filter = n_filter
+        self.filter_size = filter_size
+        self.strides = strides
+        self.padding = padding
+        self.data_format = data_format
+        self.W_init = W_init
+        self.b_init = b_init
+        self.act = act
+        self.name = name
 
-        self.outputs = conv2d_transpose(self.inputs)
-        # new_variables = conv2d_transpose.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-        new_variables = get_collection_trainable(self.name)
+        super(DeConv2d, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
 
-        self._add_layers(self.outputs)
-        self._add_params(new_variables)
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("n_filter: %d" % self.n_filter)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("filter_size: %s" % str(self.filter_size))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("stride: %s" % str(self.strides))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        is_name_reuse = tf.get_variable_scope().reuse
+
+        with tf.variable_scope(self.name) as vs:
+
+            self._temp_data['outputs'] = tf.layers.conv2d_transpose(
+                inputs=self._temp_data['inputs'],
+                filters=self.n_filter,
+                kernel_size=self.filter_size,
+                strides=self.strides,
+                padding=self.padding,
+                data_format=self.data_format,
+                activation=None,
+                kernel_initializer=self.W_init,
+                bias_initializer=self.b_init,
+                use_bias=(True if self.b_init else False),
+                reuse=is_name_reuse,
+                trainable=self._temp_data['is_train'],
+                name=None
+            )
+
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
+
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
 
 class DeConv3d(Layer):
@@ -104,8 +140,6 @@ class DeConv3d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_filter : int
         The number of filters.
     filter_size : tuple of int
@@ -117,7 +151,7 @@ class DeConv3d(Layer):
     act : activation function
         The activation function of this layer.
     data_format : str
-        "channels_last" (NDHWC, default) or "channels_first" (NCDHW). 
+        "channels_last" (NDHWC, default) or "channels_first" (NCDHW).
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -128,45 +162,89 @@ class DeConv3d(Layer):
         The arguments for the bias vector initializer (For TF < 1.3).
     name : str
         A unique layer name.
-
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            n_filter=32,
-            filter_size=(3, 3, 3),
-            strides=(2, 2, 2),
-            padding='SAME',
-            act=None,
-            data_format='channels_last',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            name='decnn3d'
+        self,
+        n_filter=32,
+        filter_size=(3, 3, 3),
+        strides=(2, 2, 2),
+        padding='valid',
+        data_format='channels_last',
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,  # TODO: Remove when TF <1.3 not supported
+        b_init_args=None,  # TODO: Remove when TF <1.3 not supported
+        act=None,
+        name='deconv3d'
     ):
-        super(DeConv3d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
-        logging.info(
-            "DeConv3d %s: n_filters: %s strides: %s pad: %s act: %s" % (
-                self.name, str(n_filter), str(strides), padding,
-                self.act.__name__ if self.act is not None else 'No Activation'
+        if data_format not in ["channels_last", "channels_first"]:
+            raise ValueError("`data_format` value is not valid, should be either: 'channels_last' or 'channels_first'")
+
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
+
+        self.n_filter = n_filter
+        self.filter_size = filter_size
+        self.strides = strides
+        self.padding = padding
+        self.data_format = data_format
+        self.W_init = W_init
+        self.b_init = b_init
+        self.act = act
+        self.name = name
+
+        super(DeConv3d, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("n_filter: %d" % self.n_filter)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("filter_size: %s" % str(self.filter_size))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("stride: %s" % str(self.strides))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        is_name_reuse = tf.get_variable_scope().reuse
+
+        with tf.variable_scope(self.name) as vs:
+
+            self._temp_data['outputs'] = tf.layers.conv3d_transpose(
+                inputs=self._temp_data['inputs'],
+                filters=self.n_filter,
+                kernel_size=self.filter_size,
+                strides=self.strides,
+                padding=self.padding,
+                data_format=self.data_format,
+                activation=None,
+                kernel_initializer=self.W_init,
+                bias_initializer=self.b_init,
+                use_bias=(True if self.b_init else False),
+                reuse=is_name_reuse,
+                trainable=self._temp_data['is_train'],
+                name=None
             )
-        )
 
-        # with tf.variable_scope(name) as vs:
-        nn = tf.layers.Conv3DTranspose(
-            filters=n_filter, kernel_size=filter_size, strides=strides, padding=padding, activation=self.act,
-            data_format=data_format, kernel_initializer=W_init, bias_initializer=b_init, name=name
-        )
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self.outputs = nn(self.inputs)
-        # new_variables = nn.weights  # tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-        new_variables = get_collection_trainable(self.name)
-
-        self._add_layers(self.outputs)
-        self._add_params(new_variables)
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)

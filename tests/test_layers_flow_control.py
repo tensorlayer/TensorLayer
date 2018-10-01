@@ -43,9 +43,9 @@ class Layer_Flow_Control_Test(CustomTestCase):
 
         cls.net_shape = network.outputs.get_shape().as_list()
         cls.net_layers = network.all_layers
-        cls.net_params = network.all_params
+        cls.net_params = network.all_weights
         cls.net_all_drop = network.all_drop
-        cls.net_n_params = network.count_params()
+        cls.net_n_params = network.count_weights()
 
     @classmethod
     def tearDownClass(cls):

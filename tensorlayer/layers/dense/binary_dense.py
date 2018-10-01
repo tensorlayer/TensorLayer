@@ -4,13 +4,13 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer.layers.utils import quantize
+from tensorlayer.layers.utils.quantization import quantize
 
 from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'BinaryDenseLayer',
@@ -24,14 +24,12 @@ class BinaryDenseLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_units : int
         The number of units of this layer.
     act : activation function
         The activation function of this layer, usually set to ``tf.act.sign`` or apply :class:`SignLayer` after :class:`BatchNormLayer`.
-    use_gemm : boolean
-        If True, use gemm instead of ``tf.matmul`` for inference. (TODO).
+    gemmlowp_at_inference : boolean
+        If True, use gemmlowp instead of ``tf.matmul`` (gemm) for inference. (TODO).
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -45,63 +43,84 @@ class BinaryDenseLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            n_units=100,
-            act=None,
-            use_gemm=False,
-            W_init=tf.truncated_normal_initializer(stddev=0.1),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            name='binary_dense',
+        self,
+        n_units=100,
+        act=None,
+        gemmlowp_at_inference=False,
+        W_init=tf.truncated_normal_initializer(stddev=0.1),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        name='binary_dense',
     ):
-        super(BinaryDenseLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
-        logging.info(
-            "BinaryDenseLayer  %s: %d %s" %
-            (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
-        )
+        if gemmlowp_at_inference:
+            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
-        if self.inputs.get_shape().ndims != 2:
+        self.n_units = n_units
+        self.act = act
+        self.gemmlowp_at_inference = gemmlowp_at_inference
+        self.W_init = W_init
+        self.b_init = b_init
+        self.name = name
+
+        super(BinaryDenseLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("n_units: %d" % self.n_units)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        if self._temp_data['inputs'].get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
-        if use_gemm:
-            raise Exception("TODO. The current version use tf.matmul for inferencing.")
+        n_in = int(self._temp_data['inputs'].get_shape()[-1])
 
-        n_in = int(self.inputs.get_shape()[-1])
-        self.n_units = n_units
+        with tf.variable_scope(self.name):
 
-        with tf.variable_scope(name):
-            W = tf.get_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            weight_matrix = self._get_tf_variable(
+                name='W',
+                shape=(n_in, self.n_units),
+                dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
+                **self.W_init_args
             )
-            # W = tl.act.sign(W)    # dont update ...
-            W = quantize(W)
-            # W = tf.Variable(W)
-            # print(W)
+            # weight_matrix = tl.act.sign(weight_matrix)    # dont update ...
+            weight_matrix = quantize(weight_matrix)
+            # weight_matrix = tf.Variable(weight_matrix)
+            # print(weight_matrix)
 
-            self.outputs = tf.matmul(self.inputs, W)
-            # self.outputs = xnor_gemm(self.inputs, W) # TODO
+            self._temp_data['outputs'] = tf.matmul(self._temp_data['inputs'], weight_matrix)
+            # self._temp_data['outputs'] = xnor_gemm(self._temp_data['inputs'], weight_matrix) # TODO
 
-            if b_init is not None:
+            if self.b_init:
                 try:
-                    b = tf.get_variable(
-                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    b = self._get_tf_variable(
+                        name='b',
+                        shape=(self.n_units, ),
+                        dtype=self._temp_data['inputs'].dtype,
+                        trainable=self._temp_data['is_train'],
+                        initializer=self.b_init,
+                        **self.b_init_args
                     )
 
                 except Exception:  # If initializer is a constant, do not specify shape.
-                    b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
+                    b = self._get_tf_variable(
+                        name='b',
+                        dtype=self._temp_data['inputs'].dtype,
+                        trainable=self._temp_data['is_train'],
+                        initializer=self.b_init,
+                        **self.b_init_args
+                    )
 
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
-            self.outputs = self._apply_activation(self.outputs)
-
-        self._add_layers(self.outputs)
-
-        if b_init is not None:
-            self._add_params([W, b])
-        else:
-            self._add_params(W)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])

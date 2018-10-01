@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """AMSGrad Implementation based on the paper: "On the Convergence of Adam and Beyond" (ICLR 2018)
 Article Link: https://openreview.net/pdf?id=ryQu7f-RZ
 Original Implementation by: https://github.com/taki0112/AMSGrad-Tensorflow

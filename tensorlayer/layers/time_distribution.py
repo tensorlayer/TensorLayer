@@ -8,9 +8,8 @@ from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer.layers.inputs import InputLayer
 
-from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'TimeDistributedLayer',
@@ -25,8 +24,6 @@ class TimeDistributedLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer with output size of (batch_size, length, dim).
     layer_class : a :class:`Layer` class
         The layer class name.
     args : dictionary
@@ -48,47 +45,66 @@ class TimeDistributedLayer(Layer):
     [TL] TimeDistributedLayer time_dense: layer_class:DenseLayer
     >>> print(net.outputs._shape)
     (32, 20, 50)
-    >>> net.print_params(False)
+    >>> net.print_weights(False)
     [TL] param   0: (100, 50)          time_dense/dense/W:0
     [TL] param   1: (50,)              time_dense/dense/b:0
     [TL]    num of params: 5050
 
     """
 
-    @deprecated_alias(
-        layer='prev_layer', args="layer_args", end_support_version=1.9
-    )  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            layer_class=None,
-            layer_args=None,
-            name='time_distributed',
+        self,
+        layer_class,
+        layer_args=None,
+        name='time_distributed',
     ):
 
-        super(TimeDistributedLayer, self).__init__(prev_layer=prev_layer, layer_args=layer_args, name=name)
+        if layer_class is None:
+            raise ValueError('`layer_class` can not be set to `None`')
 
-        if not isinstance(self.inputs, tf.Tensor):
-            self.inputs = tf.transpose(tf.stack(self.inputs), [1, 0, 2])
+        self.layer_class = layer_class
+        self.name = name
 
-        logging.info(
-            "TimeDistributedLayer %s: layer_class: %s layer_args: %s" %
-            (self.name, layer_class.__name__, self.layer_args)
-        )
+        super(TimeDistributedLayer, self).__init__(layer_args=layer_args)
 
-        input_shape = self.inputs.get_shape()
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("layer_class: %s" % self.layer_class.__name__)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("layer_args: %s" % self.layer_args)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        if not isinstance(self._temp_data['inputs'], tf.Tensor):
+            self._temp_data['inputs'] = tf.transpose(tf.stack(self._temp_data['inputs']), [1, 0, 2])
+
+        input_shape = self._temp_data['inputs'].get_shape()
 
         timestep = input_shape[1]
-        x = tf.unstack(self.inputs, axis=1)
+
+        x = tf.unstack(self._temp_data['inputs'], axis=1)
 
         is_name_reuse = tf.get_variable_scope().reuse
+
         for i in range(0, timestep):
-            with tf.variable_scope(name, reuse=(is_name_reuse if i == 0 else True)) as vs:
-                net = layer_class(InputLayer(x[i], name=self.layer_args['name'] + str(i)), **self.layer_args)
+
+            reuse = is_name_reuse if i == 0 else True
+            with tf.variable_scope(self.name, reuse=reuse) as vs:
+
+                in_layer = InputLayer(x[i], name=self.layer_args['name'] + str(i))
+
+                net = self.layer_class(in_layer, **self.layer_args)
                 x[i] = net.outputs
-                variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self.outputs = tf.stack(x, axis=1, name=name)
+                self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._add_layers(self.outputs)
-        self._add_params(variables)
+        self._temp_data['outputs'] = tf.stack(x, axis=1, name=self.name)

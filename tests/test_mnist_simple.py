@@ -44,7 +44,7 @@ class Simple_MNIST_Test(CustomTestCase):
         # y_op = tf.argmax(tf.nn.softmax(y), 1)
 
         # define the optimizer
-        train_params = cls.network.all_params
+        train_params = cls.network.all_weights
         cls.train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cls.cost, var_list=train_params)
 
     @classmethod
@@ -71,8 +71,21 @@ class Simple_MNIST_Test(CustomTestCase):
 
                 # train the network
                 tl.utils.fit(
-                    sess, self.network, self.train_op, self.cost, X_train, y_train, self.x, self.y_, acc=self.acc,
-                    batch_size=500, n_epoch=1, print_freq=1, X_val=X_val, y_val=y_val, eval_train=False
+                    sess,
+                    self.network,
+                    self.train_op,
+                    self.cost,
+                    X_train,
+                    y_train,
+                    self.x,
+                    self.y_,
+                    acc=self.acc,
+                    batch_size=500,
+                    n_epoch=1,
+                    print_freq=1,
+                    X_val=X_val,
+                    y_val=y_val,
+                    eval_train=False
                 )
 
                 # evaluation
@@ -81,7 +94,7 @@ class Simple_MNIST_Test(CustomTestCase):
                 )
 
                 # save the network to .npz file
-                tl.files.save_npz(self.network.all_params, name='model.npz')
+                tl.files.save_npz(self.network.all_weights, name='model.npz')
                 sess.close()
 
 

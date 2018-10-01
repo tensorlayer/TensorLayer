@@ -34,7 +34,7 @@ class Layer_Extend_Test(CustomTestCase):
         n.print_params(False)
 
         cls.layers = n.all_layers
-        cls.params = n.all_params
+        cls.params = n.all_weights
 
     @classmethod
     def tearDownClass(cls):

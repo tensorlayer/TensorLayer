@@ -40,8 +40,8 @@ class Layer_Core_Test(CustomTestCase):
 
         cls.net1_shape = net1.outputs.get_shape().as_list()
         cls.net1_layers = net1.all_layers
-        cls.net1_params = net1.all_params
-        cls.net1_n_params = net1.count_params()
+        cls.net1_params = net1.all_weights
+        cls.net1_n_params = net1.count_weights()
 
         # ============== OneHotInputLayer ==============
 
@@ -53,15 +53,19 @@ class Layer_Core_Test(CustomTestCase):
 
         cls.net2_shape = net2.outputs.get_shape().as_list()
         cls.net2_layers = net2.all_layers
-        cls.net2_params = net2.all_params
-        cls.net2_n_params = net2.count_params()
+        cls.net2_params = net2.all_weights
+        cls.net2_n_params = net2.count_weights()
 
         # ============== Word2vecEmbeddingInputlayer ==============
 
         train_inputs = tf.placeholder(tf.int32, shape=cls.batch_size)
         train_labels = tf.placeholder(tf.int32, shape=(cls.batch_size, 1))
         net3 = tl.layers.Word2vecEmbeddingInputlayer(
-            inputs=train_inputs, train_labels=train_labels, vocabulary_size=1000, embedding_size=200, num_sampled=64,
+            inputs=train_inputs,
+            train_labels=train_labels,
+            vocabulary_size=1000,
+            embedding_size=200,
+            num_sampled=64,
             name='word2vec'
         )
 
@@ -70,8 +74,8 @@ class Layer_Core_Test(CustomTestCase):
 
         cls.net3_shape = net3.outputs.get_shape().as_list()
         cls.net3_layers = net3.all_layers
-        cls.net3_params = net3.all_params
-        cls.net3_n_params = net3.count_params()
+        cls.net3_params = net3.all_weights
+        cls.net3_n_params = net3.count_weights()
 
         # ============== EmbeddingInputlayer ==============
 
@@ -83,8 +87,8 @@ class Layer_Core_Test(CustomTestCase):
 
         cls.net4_shape = net4.outputs.get_shape().as_list()
         cls.net4_layers = net4.all_layers
-        cls.net4_params = net4.all_params
-        cls.net4_n_params = net4.count_params()
+        cls.net4_params = net4.all_weights
+        cls.net4_n_params = net4.count_weights()
 
         # ============== AverageEmbeddingInputlayer ==============
 
@@ -97,8 +101,8 @@ class Layer_Core_Test(CustomTestCase):
 
         cls.net5_shape = net5.outputs.get_shape().as_list()
         cls.net5_layers = net5.all_layers
-        cls.net5_params = net5.all_params
-        cls.net5_n_params = net5.count_params()
+        cls.net5_params = net5.all_weights
+        cls.net5_n_params = net5.count_weights()
 
         # ============== ReconLayer ==============
 
@@ -117,8 +121,8 @@ class Layer_Core_Test(CustomTestCase):
 
         cls.net6_shape = net6.outputs.get_shape().as_list()
         cls.net6_layers = net6.all_layers
-        cls.net6_params = net6.all_params
-        cls.net6_n_params = net6.count_params()
+        cls.net6_params = net6.all_weights
+        cls.net6_n_params = net6.count_weights()
 
         # ============== GaussianNoiseLayer ==============
 
@@ -132,8 +136,8 @@ class Layer_Core_Test(CustomTestCase):
 
         cls.net7_shape = net7.outputs.get_shape().as_list()
         cls.net7_layers = net7.all_layers
-        cls.net7_params = net7.all_params
-        cls.net7_n_params = net7.count_params()
+        cls.net7_params = net7.all_weights
+        cls.net7_n_params = net7.count_weights()
 
         # ============== DropconnectDenseLayer ==============
 
@@ -147,22 +151,22 @@ class Layer_Core_Test(CustomTestCase):
 
         cls.net8_shape = net8.outputs.get_shape().as_list()
         cls.net8_layers = net8.all_layers
-        cls.net8_params = net8.all_params
-        cls.net8_n_params = net8.count_params()
+        cls.net8_params = net8.all_weights
+        cls.net8_n_params = net8.count_weights()
 
-        # ============== QuanDenseLayer ==============
+        # ============== QuantizedDense ==============
 
         x9 = tf.placeholder(tf.float32, shape=(None, 30))
         net9 = tl.layers.InputLayer(x9, name='input')
-        net9 = tl.layers.QuanDenseLayer(net9, n_units=10, act=tf.nn.relu, name='quandense')
+        net9 = tl.layers.QuantizedDense(net9, n_units=10, act=tf.nn.relu, name='quandense')
 
         net9.print_layers()
         net9.print_params(False)
 
         cls.net9_shape = net9.outputs.get_shape().as_list()
         cls.net9_layers = net9.all_layers
-        cls.net9_params = net9.all_params
-        cls.net9_n_params = net9.count_params()
+        cls.net9_params = net9.all_weights
+        cls.net9_n_params = net9.count_weights()
 
     @classmethod
     def tearDownClass(cls):

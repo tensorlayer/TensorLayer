@@ -871,8 +871,13 @@ def basic_tokenizer(sentence, _WORD_SPLIT=re.compile(b"([.,!?\"':;)(])")):
 
 
 def create_vocabulary(
-        vocabulary_path, data_path, max_vocabulary_size, tokenizer=None, normalize_digits=True,
-        _DIGIT_RE=re.compile(br"\d"), _START_VOCAB=None
+    vocabulary_path,
+    data_path,
+    max_vocabulary_size,
+    tokenizer=None,
+    normalize_digits=True,
+    _DIGIT_RE=re.compile(br"\d"),
+    _START_VOCAB=None
 ):
     r"""Create vocabulary file (if it does not exist yet) from data file.
 
@@ -979,7 +984,7 @@ def initialize_vocabulary(vocabulary_path):
 
 
 def sentence_to_token_ids(
-        sentence, vocabulary, tokenizer=None, normalize_digits=True, UNK_ID=3, _DIGIT_RE=re.compile(br"\d")
+    sentence, vocabulary, tokenizer=None, normalize_digits=True, UNK_ID=3, _DIGIT_RE=re.compile(br"\d")
 ):
     """Convert a string to list of integers representing token-ids.
 
@@ -1015,8 +1020,13 @@ def sentence_to_token_ids(
 
 
 def data_to_token_ids(
-        data_path, target_path, vocabulary_path, tokenizer=None, normalize_digits=True, UNK_ID=3,
-        _DIGIT_RE=re.compile(br"\d")
+    data_path,
+    target_path,
+    vocabulary_path,
+    tokenizer=None,
+    normalize_digits=True,
+    UNK_ID=3,
+    _DIGIT_RE=re.compile(br"\d")
 ):
     """Tokenize data file and turn into token-ids using given vocabulary file.
 

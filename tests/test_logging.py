@@ -32,7 +32,7 @@ class TL_Logger_Test(CustomTestCase):
 
     def test_warn(self):
         with self.assertNotRaises(Exception):
-            tl.logging.warn("This is a warning message")
+            tl.logging.warning("This is a warning message")
 
     def test_set_verbosity(self):
         with self.assertNotRaises(Exception):

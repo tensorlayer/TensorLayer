@@ -48,9 +48,8 @@ class TensorHub(object):
         See ``pymongo.MongoClient``.
     """
 
-    # @deprecated_alias(db_name='dbname', user_name='username', end_support_version=2.1)
     def __init__(
-            self, ip='localhost', port=27017, dbname='dbname', username='None', password='password', project_name=None
+        self, ip='localhost', port=27017, dbname='dbname', username='None', password='password', project_name=None
     ):
         self.ip = ip
         self.port = port
@@ -219,9 +218,8 @@ class TensorHub(object):
 
             pc = self.db.Model.find(kwargs)
             print(
-                "[Database] Find one model SUCCESS. kwargs:{} sort:{} save time:{} took: {}s".format(
-                    kwargs, sort, _datetime, round(time.time() - s, 2)
-                )
+                "[Database] Find one model SUCCESS. kwargs:{} sort:{} save time:{} took: {}s".
+                format(kwargs, sort, _datetime, round(time.time() - s, 2))
             )
 
             # put all informations of model into the TL layer
@@ -656,10 +654,9 @@ class TensorHub(object):
                 }}, return_document=pymongo.ReturnDocument.AFTER
             )
             logging.info(
-                "[Database] Finished Task: task_name - {} sort: {} push time: {} took: {}s".format(
-                    task_name, sort, _datetime,
-                    time.time() - s
-                )
+                "[Database] Finished Task: task_name - {} sort: {} push time: {} took: {}s".
+                format(task_name, sort, _datetime,
+                       time.time() - s)
             )
             return True
         except Exception as e:

@@ -142,7 +142,6 @@ Layer list
    AverageEmbeddingInputlayer
 
    DenseLayer
-   ReconLayer
    DropoutLayer
    GaussianNoiseLayer
    DropconnectDenseLayer
@@ -248,16 +247,14 @@ Layer list
    TernaryConv2d
    DorefaDenseLayer
    DorefaConv2d
-   QuanDenseLayer
-   QuanDenseLayerWithBN
-   QuanConv2d
-   QuanConv2dWithBN
+   QuantizedDense
+   QuantizedDenseWithBN
+   QuantizedConv2d
+   QuantizedConv2dWithBN
 
    PReluLayer
    PRelu6Layer
    PTRelu6Layer
-
-   MultiplexerLayer
 
    flatten_reshape
    clear_layers_name
@@ -298,7 +295,7 @@ The following is an example implementation of a layer that multiplies its input 
           self.outputs = self.inputs * 2
 
           # update layer (customized)
-          self._add_layers(self.outputs)
+
 
 Your Dense Layer
 ^^^^^^^^^^^^^^^^
@@ -337,8 +334,8 @@ At the end, for a layer with parameters, we also append the parameters into ``al
             self.outputs = self._apply_activation(tf.matmul(self.inputs, W) + b)
 
         # update layer (customized)
-        self._add_layers(self.outputs)
-        self._add_params([W, b])
+
+
 
 .. -----------------------------------------------------------
 ..                        Basic Layers
@@ -588,14 +585,6 @@ see `Slim-model <https://github.com/tensorflow/models/tree/master/research/slim>
 
 
 .. -----------------------------------------------------------
-..                    Flow Control Layer
-.. -----------------------------------------------------------
-
-Flow Control Layer
-----------------------
-.. autoclass:: MultiplexerLayer
-
-.. -----------------------------------------------------------
 ..                  Image Resampling Layers
 .. -----------------------------------------------------------
 
@@ -838,24 +827,24 @@ DorefaConv2d
 Quantization Dense Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-QuanDenseLayer
+QuantizedDense
 """""""""""""""""""""
-.. autoclass:: QuanDenseLayer
+.. autoclass:: QuantizedDense
 
-QuanDenseLayerWithBN
+QuantizedDenseWithBN
 """"""""""""""""""""""""""""""""""""
-.. autoclass:: QuanDenseLayerWithBN
+.. autoclass:: QuantizedDenseWithBN
 
 Quantization Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Quantization
 """""""""""""""""""""
-.. autoclass:: QuanConv2d
+.. autoclass:: QuantizedConv2d
 
-QuanConv2dWithBN
+QuantizedConv2dWithBN
 """""""""""""""""""""
-.. autoclass:: QuanConv2dWithBN
+.. autoclass:: QuantizedConv2dWithBN
 
 
 .. -----------------------------------------------------------

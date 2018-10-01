@@ -29,9 +29,9 @@ class Layer_Basic_Test(CustomTestCase):
         n2 = n[:, :30]
         n2.print_layers()
 
-        cls.n_params = n.count_params()
+        cls.n_params = n.count_weights()
         cls.all_layers = n.all_layers
-        cls.all_params = n.all_params
+        cls.all_weights = n.all_weights
         cls.shape_n = n.outputs.get_shape().as_list()
 
         cls.shape_n2 = n2.outputs.get_shape().as_list()
@@ -50,7 +50,7 @@ class Layer_Basic_Test(CustomTestCase):
         self.assertEqual(len(self.all_layers), 3)
 
     def test_all_params(self):
-        self.assertEqual(len(self.all_params), 4)
+        self.assertEqual(len(self.all_weights), 4)
 
     def test_shape_n2(self):
         self.assertEqual(self.shape_n2[-1], 30)

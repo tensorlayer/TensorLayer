@@ -29,7 +29,7 @@ class VGG_Model_Test(CustomTestCase):
             # probs = tf.nn.softmax(vgg1.outputs)
 
             cls.vgg1_layers = vgg1.all_layers
-            cls.vgg1_params = vgg1.all_params
+            cls.vgg1_params = vgg1.all_weights
 
         with tf.Graph().as_default():
             # - Extract features with VGG16 and Train a classifier with 100 classes
@@ -38,7 +38,7 @@ class VGG_Model_Test(CustomTestCase):
             vgg2 = tl.models.VGG16(x, end_with='fc2_relu')
 
             cls.vgg2_layers = vgg2.all_layers
-            cls.vgg2_params = vgg2.all_params
+            cls.vgg2_params = vgg2.all_weights
 
             print("TYPE:", type(vgg2))
 
@@ -64,7 +64,7 @@ class VGG_Model_Test(CustomTestCase):
             # vgg1.restore_params(sess)
 
             cls.vgg3_layers = vgg3.all_layers
-            cls.vgg3_params = vgg3.all_params
+            cls.vgg3_params = vgg3.all_weights
             cls.vgg3_graph = graph
 
     @classmethod

@@ -72,8 +72,29 @@ To release a new version, please update the changelog as followed:
 ### Added
 - Layer:
   - Release `GroupNormLayer` (PR #850)
+- Tests:
+  - `test_model_compilednetwork.py` has been introduced to test the class `tl.models.CompiledNetwork` (PR #755).
+  - `test_network_custom_input_layers.py` has been introduced to test the class `tl.networks.CustomModel` (PR #755).
+  - `test_network_custom_multiple_inputs.py` has been introduced to test the class `tl.networks.CustomModel` (PR #755).
+  - `test_network_custom_multiple_outputs.py` has been introduced to test the class `tl.networks.CustomModel` (PR #755).
+  - `test_network_custom_2d.py` has been introduced to test the class `tl.networks.CustomModel` (PR #755).
+  - `test_network_sequential_1d.py` has been introduced to test the class `tl.networks.Sequential` with 1D data Layers (PR #755).
+  - `test_network_sequential_2d.py` has been introduced to test the class `tl.networks.Sequential` with 2D data Layers (PR #755).
+  - `test_network_sequential_3d.py` has been introduced to test the class `tl.networks.Sequential` with 3D data Layers (PR #755).
+  - `test_network_sequential_rnn.py` has been introduced to test the class `tl.networks.Sequential` with 3D data Layers (PR #755).
 
 ### Changed
+- API:
+  - `tl.models` has been renamed to `tl.nets` to comply with TF Slim naming convention: https://github.com/tensorflow/models/tree/master/research/slim (PR #755)
+  - `layer.all_params` renamed `layer.all_weights` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
+  - `layer.count_params()` renamed `layer.count_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
+  - `layer.get_all_params()` renamed `layer.get_all_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
+  - `layer.print_params()` renamed `layer.print_weights()` to reduce confusion (params != hyperparameters, params = weights) (PR #755)
+  - `tl.layers.ROIPoolingLayer` has been moved to `tl.layers.contrib.ROIPoolingLayer` (PR #755)
+  - `tl.layers.QuanDenseLayer` renamed to `tl.layers.QuantizedDense` (PR #755)
+  - `tl.layers.QuanDenseLayerWithBN` renamed to `tl.layers.QuantizedDenseWithBN` (PR #755)
+  - `tl.layers.QuanConv2d` renamed to `tl.layers.QuantizedConv2d` (PR #755)
+  - `tl.layers.QuanConv2dWithBN` renamed to `tl.layers.QuantizedConv2dWithBN` (PR #755)
 
 ### Dependencies Update
 - yapf>=0.22,<0.24 => yapf>=0.22,<0.25 (PR #829)
@@ -88,12 +109,16 @@ To release a new version, please update the changelog as followed:
 - Correct offset calculation in `tl.prepro.transform_matrix_offset_center` (PR #855)
 
 ### Removed
+- `tl.layers.EstimatorLayer` has been removed in favor of `tl.layers.LambdaLayer` (PR #755)
+- `tl.layers.ReconLayer` has been removed in favor of `tl.layers.DenseLayer` (#755)
+- `tl.layers.MultiplexerLayer` has been removed in favor of eager execution mode (#755)
 
 ### Security
 
 ### Contributors
 - @2wins: #850 #855
-- @DEKHTIARJonathan: #853
+- @DEKHTIARJonathan: #755 #853
+- @zsdonghao: #755
 
 ## [1.10.1] - 2018-09-07
 
@@ -104,7 +129,7 @@ To release a new version, please update the changelog as followed:
  - remove 'tensorboard' param, replaced by 'tensorboard_dir' in `tensorlayer/utils.py` with customizable tensorboard directory (PR #819)
 
 ### Removed
-- TL Graph API removed. Memory Leaks Issues with this API, will be fixed and integrated in TL 2.0 (PR #818)
+- TL Graph API removed. Memory Leaks Issues with Graph API, will be fixed and integrated in TL 2.0 (PR #818)
 
 ### Fixed
 - Issue #817 fixed: TL 1.10.0 - Memory Leaks and very slow network creation.
@@ -117,7 +142,7 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 - @DEKHTIARJonathan: #815 #818 #820 #823
-- @ndiy: #819 
+- @ndiy: #819
 - @zsdonghao: #818
 
 ## [1.10.0] - 2018-09-02

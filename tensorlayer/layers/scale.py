@@ -5,9 +5,8 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'ScaleLayer',
@@ -19,8 +18,6 @@ class ScaleLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     init_scale : float
         The initial value for the scale factor.
     name : a str
@@ -28,21 +25,36 @@ class ScaleLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            init_scale=0.05,
-            name='scale',
+        self,
+        init_scale=0.05,
+        name='scale',
     ):
-        super(ScaleLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ScaleLayer  %s: init_scale: %f" % (self.name, init_scale))
+        self.init_scale = init_scale
+        self.name = name
 
-        with tf.variable_scope(name):
-            # scale = tf.get_variable(name='scale_factor', init, trainable=True, )
-            scale = tf.get_variable("scale", shape=[1], initializer=tf.constant_initializer(value=init_scale))
-            self.outputs = self.inputs * scale
+        super(ScaleLayer, self).__init__()
 
-        self._add_layers(self.outputs)
-        self._add_params(scale)
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("init_scale: %s" % self.init_scale)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        with tf.variable_scope(self.name):
+            scale = self._get_tf_variable(
+                name="scale",
+                shape=[1],
+                dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=tf.constant_initializer(value=self.init_scale),
+            )
+
+            self._temp_data['outputs'] = tf.multiply(self._temp_data['inputs'], scale)

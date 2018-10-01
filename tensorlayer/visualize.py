@@ -146,7 +146,7 @@ def save_images(images, size, image_path='_temp.png'):
 
 
 def draw_boxes_and_labels_to_image(
-        image, classes, coords, scores, classes_list, is_center=True, is_rescale=True, save_name=None
+    image, classes, coords, scores, classes_list, is_center=True, is_rescale=True, save_name=None
 ):
     """Draw bboxes and class labels on image. Return or save the image with bboxes, example in the docs of ``tl.prepro``.
 
@@ -418,7 +418,7 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
 
     Examples
     --------
-    >>> tl.visualize.CNN2d(network.all_params[0].eval(), second=10, saveable=True, name='cnn1_mnist', fig_idx=2012)
+    >>> tl.visualize.CNN2d(network.all_weights[0].eval(), second=10, saveable=True, name='cnn1_mnist', fig_idx=2012)
 
     """
     import matplotlib.pyplot as plt
@@ -444,10 +444,17 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
             #         np.reshape(CNN[count-1,:,:,:], (n_row, n_col)),
             #         cmap='gray', interpolation="nearest")     # theano
             if n_color == 1:
-                plt.imshow(np.reshape(CNN[:, :, :, count - 1], (n_row, n_col)), cmap='gray', interpolation="nearest")
+                plt.imshow(
+                    X=np.reshape(a=CNN[:, :, :, count - 1], newshape=(n_row, n_col)),
+                    cmap='gray',
+                    interpolation="nearest"
+                )
+
             elif n_color == 3:
                 plt.imshow(
-                    np.reshape(CNN[:, :, :, count - 1], (n_row, n_col, n_color)), cmap='gray', interpolation="nearest"
+                    X=np.reshape(a=CNN[:, :, :, count - 1], newshape=(n_row, n_col, n_color)),
+                    cmap='gray',
+                    interpolation="nearest"
                 )
             else:
                 raise Exception("Unknown n_color")
@@ -614,7 +621,7 @@ def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig
 
     Examples
     --------
-    >>> tl.visualize.draw_weights(network.all_params[0].eval(), second=10, saveable=True, name='weight_of_1st_layer', fig_idx=2012)
+    >>> tl.visualize.draw_weights(network.all_weights[0].eval(), second=10, saveable=True, name='weight_of_1st_layer', fig_idx=2012)
 
     """
     if shape is None:
@@ -645,8 +652,9 @@ def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig
             #     feature = np.zeros_like(feature)
             # if np.mean(feature) < -0.015:      # condition threshold
             #     feature = np.zeros_like(feature)
-            plt.imshow(np.reshape(feature, (shape[0], shape[1])), cmap='gray',
-                       interpolation="nearest")  # , vmin=np.min(feature), vmax=np.max(feature))
+            plt.imshow(
+                np.reshape(feature, (shape[0], shape[1])), cmap='gray', interpolation="nearest"
+            )  # , vmin=np.min(feature), vmax=np.max(feature))
             # plt.title(name)
             # ------------------------------------------------------------
             # plt.imshow(np.reshape(W[:,count-1] ,(np.sqrt(size),np.sqrt(size))), cmap='gray', interpolation="nearest")

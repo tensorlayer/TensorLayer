@@ -9,6 +9,7 @@ from tensorlayer.layers.core import LayersConfig
 from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'DropconnectDenseLayer',
@@ -23,8 +24,6 @@ class DropconnectDenseLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     keep : float
         The keeping probability.
         The lower the probability it is, the more activations are set to zero.
@@ -59,48 +58,87 @@ class DropconnectDenseLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            keep=0.5,
-            n_units=100,
-            act=None,
-            W_init=tf.truncated_normal_initializer(stddev=0.1),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            name='dropconnect_layer',
+        self,
+        keep=0.5,
+        n_units=100,
+        act=None,
+        W_init=tf.truncated_normal_initializer(stddev=0.1),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        name='dropconnect_layer',
     ):
-        super(DropconnectDenseLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
-        logging.info(
-            "DropconnectDenseLayer %s: %d %s" %
-            (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
-        )
+        self.keep = keep
+        self.n_units = n_units
+        self.act = act
+        self.W_init = W_init
+        self.b_init = b_init
+        self.name = name
 
-        if self.inputs.get_shape().ndims != 2:
+        super(DropconnectDenseLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("keep: %f" % self.keep)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("n_units: %d" % self.n_units)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("dropconnect active: %r" % self._temp_data['is_train'])
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        if self._temp_data['inputs'].get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2")
 
-        n_in = int(self.inputs.get_shape()[-1])
-        self.n_units = n_units
+        n_in = int(self._temp_data['inputs'].get_shape()[-1])
 
-        with tf.variable_scope(name):
-            W = tf.get_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+        with tf.variable_scope(self.name):
+            weight_matrix = self._get_tf_variable(
+                name='W',
+                shape=(n_in, self.n_units),
+                dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.W_init,
+                **self.W_init_args
             )
-            b = tf.get_variable(
-                name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
-            )
-            # self.outputs = tf.matmul(self.inputs, W) + b
 
-            LayersConfig.set_keep[name] = tf.placeholder(tf.float32)
+            if self._temp_data['is_train']:
+                keep_plh = tf.placeholder(self._temp_data['inputs'].dtype, shape=())
+                self._add_local_drop_plh(keep_plh, self.keep)
 
-            W_dropcon = tf.nn.dropout(W, LayersConfig.set_keep[name])
+                LayersConfig.set_keep[self.name] = keep_plh
 
-            self.outputs = self._apply_activation(tf.matmul(self.inputs, W_dropcon) + b)
+                weight_dropconnect = tf.nn.dropout(weight_matrix, keep_plh)
 
-        self.all_drop.update({LayersConfig.set_keep[name]: keep})
-        self._add_layers(self.outputs)
-        self._add_params([W, b])
+            else:
+                weight_dropconnect = weight_matrix
+
+            self._temp_data['outputs'] = tf.matmul(self._temp_data['inputs'], weight_dropconnect)
+
+            if self.b_init:
+                b = self._get_tf_variable(
+                    name='b',
+                    shape=(self.n_units, ),
+                    dtype=self._temp_data['inputs'].dtype,
+                    trainable=self._temp_data['is_train'],
+                    initializer=self.b_init,
+                    **self.b_init_args
+                )
+
+                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
+
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])

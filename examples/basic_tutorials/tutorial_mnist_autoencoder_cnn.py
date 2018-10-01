@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """Examples of Stacked Denoising Autoencoder, Dropout, Dropconnect and CNN.
 
 - Multi-layer perceptron (MNIST) - Classification task, see tutorial_mnist_simple.py
@@ -40,18 +41,18 @@ def main_test_layers(model='relu'):
     # to speed up computation, so we use identity in the last layer.
     # see tf.nn.sparse_softmax_cross_entropy_with_logits()
     if model == 'relu':
-        net = tl.layers.InputLayer(x, name='input')
-        net = tl.layers.DropoutLayer(net, keep=0.8, name='drop1')
-        net = tl.layers.DenseLayer(net, n_units=800, act=tf.nn.relu, name='relu1')
-        net = tl.layers.DropoutLayer(net, keep=0.5, name='drop2')
-        net = tl.layers.DenseLayer(net, n_units=800, act=tf.nn.relu, name='relu2')
-        net = tl.layers.DropoutLayer(net, keep=0.5, name='drop3')
-        net = tl.layers.DenseLayer(net, n_units=10, act=None, name='output')
+        net = tl.layers.InputLayer(name='input')(x)
+        net = tl.layers.DropoutLayer(keep=0.8, name='drop1')(net)
+        net = tl.layers.DenseLayer(n_units=800, act=tf.nn.relu, name='relu1')(net)
+        net = tl.layers.DropoutLayer(keep=0.5, name='drop2')(net)
+        net = tl.layers.DenseLayer(n_units=800, act=tf.nn.relu, name='relu2')(net)
+        net = tl.layers.DropoutLayer(keep=0.5, name='drop3')(net)
+        net = tl.layers.DenseLayer(n_units=10, act=None, name='output')(net)
     elif model == 'dropconnect':
-        net = tl.layers.InputLayer(x, name='input')
-        net = tl.layers.DropconnectDenseLayer(net, keep=0.8, n_units=800, act=tf.nn.relu, name='dropconnect1')
-        net = tl.layers.DropconnectDenseLayer(net, keep=0.5, n_units=800, act=tf.nn.relu, name='dropconnect2')
-        net = tl.layers.DropconnectDenseLayer(net, keep=0.5, n_units=10, act=None, name='output')
+        net = tl.layers.InputLayer(name='input')(x)
+        net = tl.layers.DropconnectDenseLayer(keep=0.8, n_units=800, act=tf.nn.relu, name='dropconnect1')(net)
+        net = tl.layers.DropconnectDenseLayer(keep=0.5, n_units=800, act=tf.nn.relu, name='dropconnect2')(net)
+        net = tl.layers.DropconnectDenseLayer(keep=0.5, n_units=10, act=None, name='output')(net)
 
     # To print all attributes of a Layer.
     # attrs = vars(net)
@@ -167,16 +168,16 @@ def main_test_denoise_AE(model='relu'):
 
     print("Build net")
     if model == 'relu':
-        net = tl.layers.InputLayer(x, name='input')
-        net = tl.layers.DropoutLayer(net, keep=0.5, name='denoising1')  # if drop some inputs, it is denoise AE
-        net = tl.layers.DenseLayer(net, n_units=196, act=tf.nn.relu, name='relu1')
-        recon_layer1 = tl.layers.ReconLayer(net, x_recon=x, n_units=784, act=tf.nn.softplus, name='recon_layer1')
+        net = tl.layers.InputLayer(name='input')(x)
+        net = tl.layers.DropoutLayer(keep=0.5, name='denoising1')(net)  # if drop some inputs, it is denoise AE
+        net = tl.layers.DenseLayer(n_units=196, act=tf.nn.relu, name='relu1')(net)
+        recon_layer1 = tl.layers.ReconLayer(x_recon=x, n_units=784, act=tf.nn.softplus, name='recon_layer1')(net)
     elif model == 'sigmoid':
         # sigmoid - set keep to 1.0, if you want a vanilla Autoencoder
-        net = tl.layers.InputLayer(x, name='input')
-        net = tl.layers.DropoutLayer(net, keep=0.5, name='denoising1')
-        net = tl.layers.DenseLayer(net, n_units=196, act=tf.nn.sigmoid, name='sigmoid1')
-        recon_layer1 = tl.layers.ReconLayer(net, x_recon=x, n_units=784, act=tf.nn.sigmoid, name='recon_layer1')
+        net = tl.layers.InputLayer(name='input')(x)
+        net = tl.layers.DropoutLayer(keep=0.5, name='denoising1')(net)
+        net = tl.layers.DenseLayer(n_units=196, act=tf.nn.sigmoid, name='sigmoid1')(net)
+        recon_layer1 = tl.layers.ReconLayer(x_recon=x, n_units=784, act=tf.nn.sigmoid, name='recon_layer1')(net)
 
     # ready to train
     tl.layers.initialize_global_variables(sess)
@@ -188,8 +189,16 @@ def main_test_denoise_AE(model='relu'):
     # pretrain
     print("Pre-train Layer 1")
     recon_layer1.pretrain(
-        sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=200, batch_size=128, print_freq=10,
-        save=True, save_name='w1pre_'
+        sess,
+        x=x,
+        X_train=X_train,
+        X_val=X_val,
+        denoise_name='denoising1',
+        n_epoch=200,
+        batch_size=128,
+        print_freq=10,
+        save=True,
+        save_name='w1pre_'
     )
     # You can also disable denoisong by setting denoise_name=None.
     # recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val,
@@ -222,21 +231,21 @@ def main_test_stacked_denoise_AE(model='relu'):
 
     # Define net
     print("\nBuild net")
-    net = tl.layers.InputLayer(x, name='input')
+    net = tl.layers.InputLayer(name='input')(x)
     # denoise layer for AE
-    net = tl.layers.DropoutLayer(net, keep=0.5, name='denoising1')
+    net = tl.layers.DropoutLayer(keep=0.5, name='denoising1')(net)
     # 1st layer
-    net = tl.layers.DropoutLayer(net, keep=0.8, name='drop1')
-    net = tl.layers.DenseLayer(net, n_units=800, act=act, name=model + '1')
+    net = tl.layers.DropoutLayer(keep=0.8, name='drop1')(net)
+    net = tl.layers.DenseLayer(n_units=800, act=act, name=model + '1')(net)
     x_recon1 = net.outputs
-    recon_layer1 = tl.layers.ReconLayer(net, x_recon=x, n_units=784, act=act_recon, name='recon_layer1')
+    recon_layer1 = tl.layers.ReconLayer(x_recon=x, n_units=784, act=act_recon, name='recon_layer1')(net)
     # 2nd layer
-    net = tl.layers.DropoutLayer(net, keep=0.5, name='drop2')
-    net = tl.layers.DenseLayer(net, n_units=800, act=act, name=model + '2')
-    recon_layer2 = tl.layers.ReconLayer(net, x_recon=x_recon1, n_units=800, act=act_recon, name='recon_layer2')
+    net = tl.layers.DropoutLayer(keep=0.5, name='drop2')(net)
+    net = tl.layers.DenseLayer(n_units=800, act=act, name=model + '2')(net)
+    recon_layer2 = tl.layers.ReconLayer(x_recon=x_recon1, n_units=800, act=act_recon, name='recon_layer2')(net)
     # 3rd layer
-    net = tl.layers.DropoutLayer(net, keep=0.5, name='drop3')
-    net = tl.layers.DenseLayer(net, 10, act=None, name='output')
+    net = tl.layers.DropoutLayer(keep=0.5, name='drop3')(net)
+    net = tl.layers.DenseLayer(10, act=None, name='output')(net)
 
     # Define fine-tune process
     y = net.outputs
@@ -260,12 +269,27 @@ def main_test_stacked_denoise_AE(model='relu'):
     net.print_params()
     print("\nPre-train Layer 1")
     recon_layer1.pretrain(
-        sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=100, batch_size=128, print_freq=10,
-        save=True, save_name='w1pre_'
+        sess,
+        x=x,
+        X_train=X_train,
+        X_val=X_val,
+        denoise_name='denoising1',
+        n_epoch=100,
+        batch_size=128,
+        print_freq=10,
+        save=True,
+        save_name='w1pre_'
     )
     print("\nPre-train Layer 2")
     recon_layer2.pretrain(
-        sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=100, batch_size=128, print_freq=10,
+        sess,
+        x=x,
+        X_train=X_train,
+        X_val=X_val,
+        denoise_name='denoising1',
+        n_epoch=100,
+        batch_size=128,
+        print_freq=10,
         save=False
     )
     print("\nAll net Params after pre-train")
@@ -364,43 +388,17 @@ def main_test_cnn_layer():
     x = tf.placeholder(tf.float32, shape=[batch_size, 28, 28, 1])  # [batch_size, height, width, channels]
     y_ = tf.placeholder(tf.int64, shape=[batch_size])
 
-    net = tl.layers.InputLayer(x, name='input')
-    # Professional conv API for tensorflow expert
-    # net = tl.layers.Conv2dLayer(net,
-    #                     act = tf.nn.relu,
-    #                     shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
-    #                     strides=[1, 1, 1, 1],
-    #                     padding='SAME',
-    #                     name ='cnn1')     # output: (?, 28, 28, 32)
-    # net = tl.layers.PoolLayer(net,
-    #                     ksize=[1, 2, 2, 1],
-    #                     strides=[1, 2, 2, 1],
-    #                     padding='SAME',
-    #                     pool = tf.nn.max_pool,
-    #                     name ='pool1',)   # output: (?, 14, 14, 32)
-    # net = tl.layers.Conv2dLayer(net,
-    #                     act = tf.nn.relu,
-    #                     shape = [5, 5, 32, 64], # 64 features for each 5x5 patch
-    #                     strides=[1, 1, 1, 1],
-    #                     padding='SAME',
-    #                     name ='cnn2')     # output: (?, 14, 14, 64)
-    # net = tl.layers.PoolLayer(net,
-    #                     ksize=[1, 2, 2, 1],
-    #                     strides=[1, 2, 2, 1],
-    #                     padding='SAME',
-    #                     pool = tf.nn.max_pool,
-    #                     name ='pool2',)   # output: (?, 7, 7, 64)
-    # Simplified conv API (the same with the above layers)
-    net = tl.layers.Conv2d(net, 32, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn1')
-    net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
-    net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn2')
-    net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
+    net = tl.layers.InputLayer(name='input')(x)
+    net = tl.layers.Conv2d(32, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn1')(net)
+    net = tl.layers.MaxPool2d((2, 2), (2, 2), padding='SAME', name='pool1')(net)
+    net = tl.layers.Conv2d(64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn2')(net)
+    net = tl.layers.MaxPool2d((2, 2), (2, 2), padding='SAME', name='pool2')(net)
     # end of conv
-    net = tl.layers.FlattenLayer(net, name='flatten')
-    net = tl.layers.DropoutLayer(net, keep=0.5, name='drop1')
-    net = tl.layers.DenseLayer(net, 256, act=tf.nn.relu, name='relu1')
-    net = tl.layers.DropoutLayer(net, keep=0.5, name='drop2')
-    net = tl.layers.DenseLayer(net, 10, act=None, name='output')
+    net = tl.layers.FlattenLayer(name='flatten')(net)
+    net = tl.layers.DropoutLayer(keep=0.5, name='drop1')(net)
+    net = tl.layers.DenseLayer(256, act=tf.nn.relu, name='relu1')(net)
+    net = tl.layers.DropoutLayer(keep=0.5, name='drop2')(net)
+    net = tl.layers.DenseLayer(10, act=None, name='output')(net)
 
     y = net.outputs
 

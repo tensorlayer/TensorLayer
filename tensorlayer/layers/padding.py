@@ -5,9 +5,8 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'PadLayer',
@@ -23,8 +22,6 @@ class PadLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     padding : list of lists of 2 ints, or a Tensor of type int32.
         The int32 values to pad.
     mode : str
@@ -42,25 +39,47 @@ class PadLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            padding=None,
-            mode='CONSTANT',
-            name='pad_layer',
+        self,
+        padding,
+        mode='CONSTANT',
+        name='pad_layer',
     ):
-        super(PadLayer, self).__init__(prev_layer=prev_layer, name=name)
-
-        logging.info("PadLayer   %s: padding: %s mode: %s" % (self.name, list(padding), mode))
 
         if padding is None:
             raise Exception(
                 "padding should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
             )
 
-        self.outputs = tf.pad(self.inputs, paddings=padding, mode=mode, name=name)
-        self._add_layers(self.outputs)
+        if not isinstance(padding, (int, tuple, list)):
+            raise AssertionError()
+
+        self.padding = padding
+        self.mode = mode
+        self.name = name
+
+        super(PadLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("padding: %s" % str(self.padding))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("mode: %s" % self.mode)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        self._temp_data['outputs'] = tf.pad(
+            self._temp_data['inputs'], paddings=self.padding, mode=self.mode, name=self.name
+        )
 
 
 class ZeroPad1d(Layer):
@@ -69,8 +88,6 @@ class ZeroPad1d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     padding : int, or tuple of 2 ints
             - If int, zeros to add at the beginning and end of the padding dimension (axis 1).
             - If tuple of 2 ints, zeros to add at the beginning and at the end of the padding dimension.
@@ -79,22 +96,39 @@ class ZeroPad1d(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            padding,
-            name='zeropad1d',
+        self,
+        padding,
+        name='zeropad1d',
     ):
-        super(ZeroPad1d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ZeroPad1d   %s: padding: %s" % (self.name, str(padding)))
-
-        if not isinstance(padding, (int, tuple, dict)):
+        if not isinstance(padding, (int, tuple, list)):
             raise AssertionError()
 
-        self.outputs = tf.keras.layers.ZeroPadding1D(padding=padding, name=name)(self.inputs)  # TODO: Stop using Keras
-        self._add_layers(self.outputs)
+        if isinstance(padding, (tuple, list)) and len(padding) != 2:
+            raise AssertionError()
+
+        self.padding = padding
+        self.name = name
+
+        super(ZeroPad1d, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("padding: %s" % str(self.padding))
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        # TODO: Stop using Keras
+        self._temp_data['outputs'] = tf.keras.layers.ZeroPadding1D(
+            padding=self.padding, name=self.name
+        )(self._temp_data['inputs'])
 
 
 class ZeroPad2d(Layer):
@@ -103,8 +137,6 @@ class ZeroPad2d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     padding : int, or tuple of 2 ints, or tuple of 2 tuples of 2 ints.
             - If int, the same symmetric padding is applied to width and height.
             - If tuple of 2 ints, interpreted as two different symmetric padding values for height and width as ``(symmetric_height_pad, symmetric_width_pad)``.
@@ -114,23 +146,39 @@ class ZeroPad2d(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            padding,
-            name='zeropad2d',
+        self,
+        padding,
+        name='zeropad2d',
     ):
-        super(ZeroPad2d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ZeroPad2d   %s: padding: %s" % (self.name, str(padding)))
+        if not isinstance(padding, (int, tuple, list)):
+            raise AssertionError()
 
-        if not isinstance(padding, (int, tuple)):
-            raise AssertionError("Padding should be of type `int` or `tuple`")
+        if isinstance(padding, (tuple, list)) and len(padding) != 2:
+            raise AssertionError()
 
-        self.outputs = tf.keras.layers.ZeroPadding2D(padding=padding, name=name)(self.inputs)  # TODO: Stop using Keras
+        self.padding = padding
+        self.name = name
 
-        self._add_layers(self.outputs)
+        super(ZeroPad2d, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("padding: %s" % str(self.padding))
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        # TODO: Stop using Keras
+        self._temp_data['outputs'] = tf.keras.layers.ZeroPadding2D(
+            padding=self.padding, name=self.name
+        )(self._temp_data['inputs'])
 
 
 class ZeroPad3d(Layer):
@@ -139,8 +187,6 @@ class ZeroPad3d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     padding : int, or tuple of 2 ints, or tuple of 2 tuples of 2 ints.
             - If int, the same symmetric padding is applied to width and height.
             - If tuple of 2 ints, interpreted as two different symmetric padding values for height and width as ``(symmetric_dim1_pad, symmetric_dim2_pad, symmetric_dim3_pad)``.
@@ -151,18 +197,35 @@ class ZeroPad3d(Layer):
     """
 
     def __init__(
-            self,
-            prev_layer,
-            padding,
-            name='zeropad3d',
+        self,
+        padding,
+        name='zeropad3d',
     ):
-        super(ZeroPad3d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ZeroPad3d   %s: padding: %s" % (self.name, str(padding)))
-
-        if not isinstance(padding, (int, tuple)):
+        if not isinstance(padding, (int, tuple, list)):
             raise AssertionError()
 
-        self.outputs = tf.keras.layers.ZeroPadding3D(padding=padding, name=name)(self.inputs)  # TODO: Stop using Keras
+        if isinstance(padding, (tuple, list)) and len(padding) != 3:
+            raise AssertionError()
 
-        self._add_layers(self.outputs)
+        self.padding = padding
+        self.name = name
+
+        super(ZeroPad3d, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("padding: %s" % str(self.padding))
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        # TODO: Stop using Keras
+        self._temp_data['outputs'] = tf.keras.layers.ZeroPadding3D(
+            padding=self.padding, name=self.name
+        )(self._temp_data['inputs'])

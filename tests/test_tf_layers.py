@@ -45,36 +45,36 @@ class Layer_Convolution_1D_Test(CustomTestCase):
         tf.reset_default_graph()
 
     def test_layer_net0(self):
-        self.assertEqual(len(self.network_1[0].all_params), 0)
-        self.assertEqual(len(self.network_2[0].all_params), 0)
+        self.assertEqual(len(self.network_1[0].all_weights), 0)
+        self.assertEqual(len(self.network_2[0].all_weights), 0)
 
     def test_layer_net1(self):
-        self.assertEqual(len(self.network_1[1].all_params), 2)
-        self.assertEqual(len(self.network_2[1].all_params), 2)
+        self.assertEqual(len(self.network_1[1].all_weights), 2)
+        self.assertEqual(len(self.network_2[1].all_weights), 2)
 
     def test_layer_net2(self):
-        self.assertEqual(len(self.network_1[2].all_params), 5)
-        self.assertEqual(len(self.network_2[2].all_params), 5)
+        self.assertEqual(len(self.network_1[2].all_weights), 5)
+        self.assertEqual(len(self.network_2[2].all_weights), 5)
 
     def test_layer_net3(self):
-        self.assertEqual(len(self.network_1[3].all_params), 5)
-        self.assertEqual(len(self.network_2[3].all_params), 5)
+        self.assertEqual(len(self.network_1[3].all_weights), 5)
+        self.assertEqual(len(self.network_2[3].all_weights), 5)
 
     def test_layer_net4(self):
-        self.assertEqual(len(self.network_1[4].all_params), 5)
-        self.assertEqual(len(self.network_2[4].all_params), 5)
+        self.assertEqual(len(self.network_1[4].all_weights), 5)
+        self.assertEqual(len(self.network_2[4].all_weights), 5)
 
     def test_layer_net5(self):
-        self.assertEqual(len(self.network_1[5].all_params), 7)
-        self.assertEqual(len(self.network_2[5].all_params), 7)
+        self.assertEqual(len(self.network_1[5].all_weights), 7)
+        self.assertEqual(len(self.network_2[5].all_weights), 7)
 
     def test_layer_net6(self):
-        self.assertEqual(len(self.network_1[6].all_params), 10)
-        self.assertEqual(len(self.network_2[6].all_params), 10)
+        self.assertEqual(len(self.network_1[6].all_weights), 10)
+        self.assertEqual(len(self.network_2[6].all_weights), 10)
 
     def test_layer_net7(self):
-        self.assertEqual(len(self.network_1[7].all_params), 13)
-        self.assertEqual(len(self.network_2[7].all_params), 13)
+        self.assertEqual(len(self.network_1[7].all_weights), 13)
+        self.assertEqual(len(self.network_2[7].all_weights), 13)
 
 
 class Layer_Convolution_2D_Test(CustomTestCase):
@@ -108,44 +108,44 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         cls.network_2 = get_network_2d(input_plh_test, reuse=True)
 
     def test_layer_net0(self):
-        self.assertEqual(len(self.network_1[0].all_params), 0)
-        self.assertEqual(len(self.network_2[0].all_params), 0)
+        self.assertEqual(len(self.network_1[0].all_weights), 0)
+        self.assertEqual(len(self.network_2[0].all_weights), 0)
 
     def test_layer_net1(self):
-        self.assertEqual(len(self.network_1[1].all_params), 2)
-        self.assertEqual(len(self.network_2[1].all_params), 2)
+        self.assertEqual(len(self.network_1[1].all_weights), 2)
+        self.assertEqual(len(self.network_2[1].all_weights), 2)
 
     def test_layer_net2(self):
-        self.assertEqual(len(self.network_1[2].all_params), 4)
-        self.assertEqual(len(self.network_2[2].all_params), 4)
+        self.assertEqual(len(self.network_1[2].all_weights), 4)
+        self.assertEqual(len(self.network_2[2].all_weights), 4)
 
     def test_layer_net3(self):
-        self.assertEqual(len(self.network_1[3].all_params), 7)
-        self.assertEqual(len(self.network_2[3].all_params), 7)
+        self.assertEqual(len(self.network_1[3].all_weights), 7)
+        self.assertEqual(len(self.network_2[3].all_weights), 7)
 
     def test_layer_net4(self):
-        self.assertEqual(len(self.network_1[4].all_params), 7)
-        self.assertEqual(len(self.network_2[4].all_params), 7)
+        self.assertEqual(len(self.network_1[4].all_weights), 7)
+        self.assertEqual(len(self.network_2[4].all_weights), 7)
 
     def test_layer_net5(self):
-        self.assertEqual(len(self.network_1[5].all_params), 7)
-        self.assertEqual(len(self.network_2[5].all_params), 7)
+        self.assertEqual(len(self.network_1[5].all_weights), 7)
+        self.assertEqual(len(self.network_2[5].all_weights), 7)
 
     def test_layer_net6(self):
-        self.assertEqual(len(self.network_1[6].all_params), 9)
-        self.assertEqual(len(self.network_2[6].all_params), 9)
+        self.assertEqual(len(self.network_1[6].all_weights), 9)
+        self.assertEqual(len(self.network_2[6].all_weights), 9)
 
     def test_layer_net7(self):
-        self.assertEqual(len(self.network_1[7].all_params), 11)
-        self.assertEqual(len(self.network_2[7].all_params), 11)
+        self.assertEqual(len(self.network_1[7].all_weights), 11)
+        self.assertEqual(len(self.network_2[7].all_weights), 11)
 
     def test_layer_net8(self):
-        self.assertEqual(len(self.network_1[8].all_params), 13)
-        self.assertEqual(len(self.network_2[8].all_params), 13)
+        self.assertEqual(len(self.network_1[8].all_weights), 13)
+        self.assertEqual(len(self.network_2[8].all_weights), 13)
 
     def test_layer_net9(self):
-        self.assertEqual(len(self.network_1[9].all_params), 16)
-        self.assertEqual(len(self.network_2[9].all_params), 16)
+        self.assertEqual(len(self.network_1[9].all_weights), 16)
+        self.assertEqual(len(self.network_2[9].all_weights), 16)
 
     @classmethod
     def tearDownClass(cls):
@@ -162,8 +162,9 @@ class Layer_Convolution_3D_Test(CustomTestCase):
             with tf.variable_scope("3D_network", reuse=reuse):
                 net = tl.layers.InputLayer(inputs)
 
-                net1 = tl.layers.Conv3dLayer(net, shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1),
-                                             name="Conv3dLayer")  # 2 params
+                net1 = tl.layers.Conv3dLayer(
+                    net, shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1), name="Conv3dLayer"
+                )  # 2 params
                 net2 = tl.layers.DeConv3d(net1, name="DeConv3d")  # 2 params
                 net3 = tl.layers.MaxPool3d(net2, (1, 1, 1), name="MaxPool3d")  # 0 params
                 net4 = tl.layers.MeanPool3d(net3, (1, 1, 1), name="MeanPool3d")  # 0 params
@@ -184,28 +185,28 @@ class Layer_Convolution_3D_Test(CustomTestCase):
         tf.reset_default_graph()
 
     def test_layer_net0(self):
-        self.assertEqual(len(self.network_1[0].all_params), 0)
-        self.assertEqual(len(self.network_2[0].all_params), 0)
+        self.assertEqual(len(self.network_1[0].all_weights), 0)
+        self.assertEqual(len(self.network_2[0].all_weights), 0)
 
     def test_layer_net1(self):
-        self.assertEqual(len(self.network_1[1].all_params), 2)
-        self.assertEqual(len(self.network_2[1].all_params), 2)
+        self.assertEqual(len(self.network_1[1].all_weights), 2)
+        self.assertEqual(len(self.network_2[1].all_weights), 2)
 
     def test_layer_net2(self):
-        self.assertEqual(len(self.network_1[2].all_params), 4)
-        self.assertEqual(len(self.network_2[2].all_params), 4)
+        self.assertEqual(len(self.network_1[2].all_weights), 4)
+        self.assertEqual(len(self.network_2[2].all_weights), 4)
 
     def test_layer_net3(self):
-        self.assertEqual(len(self.network_1[3].all_params), 4)
-        self.assertEqual(len(self.network_2[3].all_params), 4)
+        self.assertEqual(len(self.network_1[3].all_weights), 4)
+        self.assertEqual(len(self.network_2[3].all_weights), 4)
 
     def test_layer_net4(self):
-        self.assertEqual(len(self.network_1[4].all_params), 4)
-        self.assertEqual(len(self.network_2[4].all_params), 4)
+        self.assertEqual(len(self.network_1[4].all_weights), 4)
+        self.assertEqual(len(self.network_2[4].all_weights), 4)
 
     def test_layer_net5(self):
-        self.assertEqual(len(self.network_1[5].all_params), 6)
-        self.assertEqual(len(self.network_2[5].all_params), 6)
+        self.assertEqual(len(self.network_1[5].all_weights), 6)
+        self.assertEqual(len(self.network_2[5].all_weights), 6)
 
 
 if __name__ == '__main__':

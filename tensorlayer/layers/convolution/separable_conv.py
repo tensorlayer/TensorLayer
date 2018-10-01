@@ -4,11 +4,10 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.utils import get_collection_trainable
-
-from tensorlayer import logging
+from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'SeparableConv1d',
@@ -23,8 +22,6 @@ class SeparableConv1d(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_filter : int
         The dimensionality of the output space (i.e. the number of filters in the convolution).
     filter_size : int
@@ -50,76 +47,111 @@ class SeparableConv1d(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            n_filter=100,
-            filter_size=3,
-            strides=1,
-            act=None,
-            padding='valid',
-            data_format='channels_last',
-            dilation_rate=1,
-            depth_multiplier=1,
-            # activation=None,
-            # use_bias=True,
-            depthwise_init=None,
-            pointwise_init=None,
-            b_init=tf.zeros_initializer(),
-            # depthwise_regularizer=None,
-            # pointwise_regularizer=None,
-            # bias_regularizer=None,
-            # activity_regularizer=None,
-            # depthwise_constraint=None,
-            # pointwise_constraint=None,
-            # W_init=tf.truncated_normal_initializer(stddev=0.1),
-            # b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            name='seperable1d',
+        self,
+        n_filter=100,
+        filter_size=3,
+        strides=1,
+        padding='valid',
+        data_format='channels_last',
+        dilation_rate=1,
+        depth_multiplier=1,
+        depthwise_init=None,
+        pointwise_init=None,
+        b_init=tf.zeros_initializer(),
+        act=None,
+        name='separable_conv1d',
     ):
-        super(SeparableConv1d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
-        logging.info(
-            "SeparableConv1d  %s: n_filter: %d filter_size: %s filter_size: %s depth_multiplier: %d act: %s" % (
-                self.name, n_filter, str(filter_size), str(strides), depth_multiplier,
-                self.act.__name__ if self.act is not None else 'No Activation'
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
+
+        if data_format not in ["channels_last", "channels_first"]:
+            raise ValueError("`data_format` value is not valid, should be either: 'channels_last' or 'channels_first'")
+
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
+
+        self.n_filter = n_filter
+        self.filter_size = filter_size
+        self.strides = strides
+        self.padding = padding
+        self.data_format = data_format
+        self.dilation_rate = dilation_rate
+        self.depth_multiplier = depth_multiplier
+        self.depthwise_init = depthwise_init
+        self.pointwise_init = pointwise_init
+        self.b_init = b_init
+        self.act = act
+        self.name = name
+
+        super(SeparableConv1d, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("n_filter: %d" % self.n_filter)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("filter_size: %d" % self.filter_size)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("strides: %s" % self.strides)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("dilation_rate: %s" % self.dilation_rate)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("depth_multiplier: %s" % self.depth_multiplier)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        is_name_reuse = tf.get_variable_scope().reuse
+
+        with tf.variable_scope(self.name) as vs:
+
+            self._temp_data['outputs'] = tf.layers.separable_conv1d(
+                inputs=self._temp_data['inputs'],
+                filters=self.n_filter,
+                kernel_size=self.filter_size,
+                strides=self.strides,
+                padding=self.padding,
+                data_format=self.data_format,
+                dilation_rate=self.dilation_rate,
+                depth_multiplier=self.depth_multiplier,
+                activation=None,
+                use_bias=(True if self.b_init is not None else False),
+                depthwise_initializer=self.depthwise_init,
+                pointwise_initializer=self.pointwise_init,
+                bias_initializer=self.b_init,
+                trainable=self._temp_data['is_train'],
+                reuse=is_name_reuse,
+                name=None
             )
-        )
-        # with tf.variable_scope(name) as vs:
-        nn = tf.layers.SeparableConv1D(
-            filters=n_filter,
-            kernel_size=filter_size,
-            strides=strides,
-            padding=padding,
-            data_format=data_format,
-            dilation_rate=dilation_rate,
-            depth_multiplier=depth_multiplier,
-            activation=self.act,
-            use_bias=(True if b_init is not None else False),
-            depthwise_initializer=depthwise_init,
-            pointwise_initializer=pointwise_init,
-            bias_initializer=b_init,
-            # depthwise_regularizer=None,
-            # pointwise_regularizer=None,
-            # bias_regularizer=None,
-            # activity_regularizer=None,
-            # depthwise_constraint=None,
-            # pointwise_constraint=None,
-            # bias_constraint=None,
-            trainable=True,
-            name=name
-        )
 
-        self.outputs = nn(self.inputs)
-        # new_variables = nn.weights
-        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-        new_variables = get_collection_trainable(self.name)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self._add_layers(self.outputs)
-        self._add_params(new_variables)
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
 
 class SeparableConv2d(Layer):
@@ -130,8 +162,6 @@ class SeparableConv2d(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_filter : int
         The dimensionality of the output space (i.e. the number of filters in the convolution).
     filter_size : tuple/list of 2 int
@@ -157,79 +187,104 @@ class SeparableConv2d(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            n_filter=100,
-            filter_size=(3, 3),
-            strides=(1, 1),
-            act=None,
-            padding='valid',
-            data_format='channels_last',
-            dilation_rate=(1, 1),
-            depth_multiplier=1,
-            # activation=None,
-            # use_bias=True,
-            depthwise_init=None,
-            pointwise_init=None,
-            b_init=tf.zeros_initializer(),
-            # depthwise_regularizer=None,
-            # pointwise_regularizer=None,
-            # bias_regularizer=None,
-            # activity_regularizer=None,
-            # depthwise_constraint=None,
-            # pointwise_constraint=None,
-            # W_init=tf.truncated_normal_initializer(stddev=0.1),
-            # b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            name='seperable',
+        self,
+        n_filter=100,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        padding='valid',
+        data_format='channels_last',
+        dilation_rate=(1, 1),
+        depth_multiplier=1,
+        depthwise_init=None,
+        pointwise_init=None,
+        b_init=tf.zeros_initializer(),
+        act=None,
+        name='separable_conv2d',
     ):
-        # if W_init_args is None:
-        #     W_init_args = {}
-        # if b_init_args is None:
-        #     b_init_args = {}
 
-        super(SeparableConv2d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        if data_format not in ["channels_last", "channels_first"]:
+            raise ValueError("`data_format` value is not valid, should be either: 'channels_last' or 'channels_first'")
 
-        logging.info(
-            "SeparableConv2d  %s: n_filter: %d filter_size: %s filter_size: %s depth_multiplier: %d act: %s" % (
-                self.name, n_filter, str(filter_size), str(strides), depth_multiplier,
-                self.act.__name__ if self.act is not None else 'No Activation'
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
+
+        self.n_filter = n_filter
+        self.filter_size = filter_size
+        self.strides = strides
+        self.padding = padding
+        self.data_format = data_format
+        self.dilation_rate = dilation_rate
+        self.depth_multiplier = depth_multiplier
+        self.depthwise_init = depthwise_init
+        self.pointwise_init = pointwise_init
+        self.b_init = b_init
+        self.act = act
+        self.name = name
+
+        super(SeparableConv2d, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("n_filter: %d" % self.n_filter)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("filter_size: %s" % str(self.filter_size))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("stride: %s" % str(self.strides))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("dilation_rate: %s" % str(self.dilation_rate))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("depth_multiplier: %s" % self.depth_multiplier)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        is_name_reuse = tf.get_variable_scope().reuse
+
+        with tf.variable_scope(self.name) as vs:
+
+            self._temp_data['outputs'] = tf.layers.separable_conv2d(
+                inputs=self._temp_data['inputs'],
+                filters=self.n_filter,
+                kernel_size=self.filter_size,
+                strides=self.strides,
+                padding=self.padding,
+                data_format=self.data_format,
+                dilation_rate=self.dilation_rate,
+                depth_multiplier=self.depth_multiplier,
+                use_bias=(True if self.b_init is not None else False),
+                depthwise_initializer=self.depthwise_init,
+                pointwise_initializer=self.pointwise_init,
+                bias_initializer=self.b_init,
+                trainable=self._temp_data['is_train'],
+                reuse=is_name_reuse,
+                activation=None,
+                name=None
             )
-        )
 
-        # with tf.variable_scope(name) as vs:
-        nn = tf.layers.SeparableConv2D(
-            filters=n_filter,
-            kernel_size=filter_size,
-            strides=strides,
-            padding=padding,
-            data_format=data_format,
-            dilation_rate=dilation_rate,
-            depth_multiplier=depth_multiplier,
-            activation=self.act,
-            use_bias=(True if b_init is not None else False),
-            depthwise_initializer=depthwise_init,
-            pointwise_initializer=pointwise_init,
-            bias_initializer=b_init,
-            # depthwise_regularizer=None,
-            # pointwise_regularizer=None,
-            # bias_regularizer=None,
-            # activity_regularizer=None,
-            # depthwise_constraint=None,
-            # pointwise_constraint=None,
-            # bias_constraint=None,
-            trainable=True,
-            name=name
-        )
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        self.outputs = nn(self.inputs)
-        # new_variables = nn.weights
-        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-        new_variables = get_collection_trainable(self.name)
-
-        self._add_layers(self.outputs)
-        self._add_params(new_variables)
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)

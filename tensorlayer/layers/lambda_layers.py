@@ -6,9 +6,8 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
-from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'LambdaLayer',
@@ -21,8 +20,6 @@ class LambdaLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     fn : function
         The function that applies to the outputs of previous layer.
     fn_args : dictionary or None
@@ -57,28 +54,39 @@ class LambdaLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            fn,
-            fn_args=None,
-            name='lambda_layer',
+        self,
+        fn,
+        fn_args=None,
+        act=None,
+        name='lambda_layer',
     ):
-
-        super(LambdaLayer, self).__init__(prev_layer=prev_layer, fn_args=fn_args, name=name)
-
-        logging.info("LambdaLayer  %s" % self.name)
-
         if fn is None:
             raise AssertionError("The `fn` argument cannot be None")
 
-        with tf.variable_scope(name) as vs:
-            self.outputs = fn(self.inputs, **self.fn_args)
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        self.fn = fn
+        self.act = act
+        self.name = name
 
-        self._add_layers(self.outputs)
-        self._add_params(variables)
+        super(LambdaLayer, self).__init__(fn_args=fn_args)
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("fn: %s" % self.fn.__name__)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        with tf.variable_scope(self.name) as vs:
+            self._temp_data['outputs'] = self.fn(self._temp_data['inputs'], **self.fn_args)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
+
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
 
 class ElementwiseLambdaLayer(Layer):
@@ -118,21 +126,35 @@ class ElementwiseLambdaLayer(Layer):
     """
 
     def __init__(
-            self,
-            layers,
-            fn,
-            fn_args=None,
-            act=None,
-            name='elementwiselambda_layer',
+        self,
+        fn,
+        fn_args=None,
+        act=None,
+        name='elementwiselambda_layer',
     ):
+        if fn is None:
+            raise AssertionError("The `fn` argument cannot be None")
 
-        super(ElementwiseLambdaLayer, self).__init__(prev_layer=layers, act=act, fn_args=fn_args, name=name)
-        logging.info("ElementwiseLambdaLayer %s" % self.name)
+        self.fn = fn
+        self.act = act
+        self.name = name
 
-        with tf.variable_scope(name) as vs:
-            self.outputs = self._apply_activation(fn(*self.inputs, **self.fn_args))
+        super(ElementwiseLambdaLayer, self).__init__(fn_args=fn_args)
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("fn: %s" % self.fn.__name__)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        with tf.variable_scope(self.name) as vs:
+            self._temp_data['outputs'] = self.fn(*self._temp_data['inputs'], **self.fn_args)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-        self._add_layers(self.outputs)
-        self._add_params(variables)

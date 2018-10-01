@@ -1,17 +1,17 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import inspect
+
 import tensorflow as tf
 from tensorflow.python.training import moving_averages
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 from tensorlayer.layers.utils import get_collection_trainable
 
-from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'LocalResponseNormLayer',
@@ -23,52 +23,6 @@ __all__ = [
 ]
 
 
-class LocalResponseNormLayer(Layer):
-    """The :class:`LocalResponseNormLayer` layer is for Local Response Normalization.
-    See ``tf.nn.local_response_normalization`` or ``tf.nn.lrn`` for new TF version.
-    The 4-D input tensor is a 3-D array of 1-D vectors (along the last dimension), and each vector is normalized independently.
-    Within a given vector, each component is divided by the weighted square-sum of inputs within depth_radius.
-
-    Parameters
-    -----------
-    prev_layer : :class:`Layer`
-        The previous layer with a 4D output shape.
-    depth_radius : int
-        Depth radius. 0-D. Half-width of the 1-D normalization window.
-    bias : float
-        An offset which is usually positive and shall avoid dividing by 0.
-    alpha : float
-        A scale factor which is usually positive.
-    beta : float
-        An exponent.
-    name : str
-        A unique layer name.
-
-    """
-
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-            self,
-            prev_layer,
-            depth_radius=None,
-            bias=None,
-            alpha=None,
-            beta=None,
-            name='lrn_layer',
-    ):
-        super(LocalResponseNormLayer, self).__init__(prev_layer=prev_layer, name=name)
-
-        logging.info(
-            "LocalResponseNormLayer %s: depth_radius: %s, bias: %s, alpha: %s, beta: %s" %
-            (self.name, str(depth_radius), str(bias), str(alpha), str(beta))
-        )
-
-        with tf.variable_scope(name):
-            self.outputs = tf.nn.lrn(self.inputs, depth_radius=depth_radius, bias=bias, alpha=alpha, beta=beta)
-
-        self._add_layers(self.outputs)
-
-
 class BatchNormLayer(Layer):
     """
     The :class:`BatchNormLayer` is a batch normalization layer for both fully-connected and convolution outputs.
@@ -76,8 +30,6 @@ class BatchNormLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     decay : float
         A decay factor for `ExponentialMovingAverage`.
         Suggest to use a large value for large dataset.
@@ -85,8 +37,6 @@ class BatchNormLayer(Layer):
         Eplison.
     act : activation function
         The activation function of this layer.
-    is_train : boolean
-        Is being used for training or inference.
     beta_init : initializer or None
         The initializer for initializing beta, if None, skip beta.
         Usually you should not skip beta unless you know what happened.
@@ -104,105 +54,133 @@ class BatchNormLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            decay=0.9,
-            epsilon=0.00001,
-            act=None,
-            is_train=False,
-            beta_init=tf.zeros_initializer,
-            gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
-            moving_mean_init=tf.zeros_initializer(),
-            name='batchnorm_layer',
+        self,
+        decay=0.99,
+        epsilon=1e-5,
+        beta_init=tf.zeros_initializer,
+        gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
+        moving_mean_init=tf.zeros_initializer,
+        moving_var_init=tf.constant_initializer(1.),
+        act=None,
+        name='batchnorm_layer',
     ):
-        super(BatchNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
-        logging.info(
-            "BatchNormLayer %s: decay: %f epsilon: %f act: %s is_train: %s" %
-            (self.name, decay, epsilon, self.act.__name__ if self.act is not None else 'No Activation', is_train)
-        )
         if decay > 1:
-            raise Exception("decay should be between 0 to 1")
+            raise ValueError("`decay` should be between 0 to 1")
 
-        x_shape = self.inputs.get_shape()
+        self.decay = decay
+        self.epsilon = epsilon
+        self.beta_init = beta_init
+        self.gamma_init = gamma_init
+        self.moving_mean_init = moving_mean_init
+        self.moving_var_init = moving_var_init
+        self.act = act
+        self.name = name
+
+        for initializer in ['beta_init', 'gamma_init', 'moving_mean_init', 'moving_var_init']:
+            _init = getattr(self, initializer)
+            if inspect.isclass(_init):
+                setattr(self, initializer, _init())
+
+        super(BatchNormLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("decay: %s" % self.decay)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("epsilon: %s" % self.epsilon)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("is_train: %s" % self._temp_data['is_train'])
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        x_shape = self._temp_data['inputs'].get_shape()
         params_shape = x_shape[-1:]
 
-        with tf.variable_scope(name):
+        with tf.variable_scope(self.name):
             axis = list(range(len(x_shape) - 1))
+
             # 1. beta, gamma
-            variables = []
 
-            if beta_init:
+            if self.beta_init:
 
-                if beta_init == tf.zeros_initializer:
-                    beta_init = beta_init()
-
-                beta = tf.get_variable(
-                    'beta', shape=params_shape, initializer=beta_init, dtype=LayersConfig.tf_dtype, trainable=is_train
+                beta = self._get_tf_variable(
+                    name='beta',
+                    shape=params_shape,
+                    dtype=self._temp_data['inputs'].dtype,
+                    trainable=self._temp_data['is_train'],
+                    initializer=self.beta_init,
                 )
-
-                variables.append(beta)
 
             else:
                 beta = None
 
-            if gamma_init:
-                gamma = tf.get_variable(
-                    'gamma',
+            if self.gamma_init:
+                gamma = self._get_tf_variable(
+                    name='gamma',
                     shape=params_shape,
-                    initializer=gamma_init,
-                    dtype=LayersConfig.tf_dtype,
-                    trainable=is_train,
+                    dtype=self._temp_data['inputs'].dtype,
+                    trainable=self._temp_data['is_train'],
+                    initializer=self.gamma_init,
                 )
-                variables.append(gamma)
             else:
                 gamma = None
 
             # 2.
 
-            moving_mean = tf.get_variable(
-                'moving_mean', params_shape, initializer=moving_mean_init, dtype=LayersConfig.tf_dtype, trainable=False
+            moving_mean = self._get_tf_variable(
+                name='moving_mean',
+                shape=params_shape,
+                dtype=self._temp_data['inputs'].dtype,
+                trainable=False,
+                initializer=self.moving_mean_init,
             )
 
-            moving_variance = tf.get_variable(
-                'moving_variance',
-                params_shape,
-                initializer=tf.constant_initializer(1.),
-                dtype=LayersConfig.tf_dtype,
+            moving_variance = self._get_tf_variable(
+                name='moving_variance',
+                shape=params_shape,
+                dtype=self._temp_data['inputs'].dtype,
                 trainable=False,
+                initializer=self.moving_var_init,
             )
 
             # 3.
             # These ops will only be preformed when training.
-            mean, variance = tf.nn.moments(self.inputs, axis)
+            mean, variance = tf.nn.moments(self._temp_data['inputs'], axis)
 
             update_moving_mean = moving_averages.assign_moving_average(
-                moving_mean, mean, decay, zero_debias=False
+                moving_mean, mean, self.decay, zero_debias=False
             )  # if zero_debias=True, has bias
 
             update_moving_variance = moving_averages.assign_moving_average(
-                moving_variance, variance, decay, zero_debias=False
+                moving_variance, variance, self.decay, zero_debias=False
             )  # if zero_debias=True, has bias
 
             def mean_var_with_update():
                 with tf.control_dependencies([update_moving_mean, update_moving_variance]):
                     return tf.identity(mean), tf.identity(variance)
 
-            if is_train:
+            if self._temp_data['is_train']:
                 mean, var = mean_var_with_update()
             else:
                 mean, var = moving_mean, moving_variance
 
-            self.outputs = self._apply_activation(
-                tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon)
+            self._temp_data['outputs'] = self._apply_activation(
+                tf.nn.batch_normalization(self._temp_data['inputs'], mean, var, beta, gamma, self.epsilon)
             )
-
-            variables.extend([moving_mean, moving_variance])
-
-        self._add_layers(self.outputs)
-        self._add_params(variables)
 
 
 class InstanceNormLayer(Layer):
@@ -210,100 +188,72 @@ class InstanceNormLayer(Layer):
 
     Parameters
     -----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     act : activation function.
         The activation function of this layer.
     epsilon : float
         Eplison.
     name : str
         A unique layer name
-
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            act=None,
-            epsilon=1e-5,
-            name='instan_norm',
-    ):
-        super(InstanceNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
-
-        logging.info(
-            "InstanceNormLayer %s: epsilon: %f act: %s" %
-            (self.name, epsilon, self.act.__name__ if self.act is not None else 'No Activation')
-        )
-
-        with tf.variable_scope(name) as vs:
-            mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
-
-            scale = tf.get_variable(
-                'scale', [self.inputs.get_shape()[-1]],
-                initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype
-            )
-
-            offset = tf.get_variable(
-                'offset', [self.inputs.get_shape()[-1]], initializer=tf.constant_initializer(0.0),
-                dtype=LayersConfig.tf_dtype
-            )
-
-            self.outputs = scale * tf.div(self.inputs - mean, tf.sqrt(var + epsilon)) + offset
-            self.outputs = self._apply_activation(self.outputs)
-
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-        self._add_layers(self.outputs)
-        self._add_params(variables)
-
-
-class LayerNormLayer(Layer):
-    """
-    The :class:`LayerNormLayer` class is for layer normalization, see `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`__.
-
-    Parameters
-    ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
-    act : activation function
-        The activation function of this layer.
-    others : _
-        `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`__.
-
-    """
-
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-            self, prev_layer, center=True, scale=True, act=None, reuse=None, variables_collections=None,
-            outputs_collections=None, trainable=True, begin_norm_axis=1, begin_params_axis=-1, name='layernorm'
+        self,
+        epsilon=1e-5,
+        act=None,
+        name='instance_norm',
     ):
 
-        super(LayerNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        self.epsilon = epsilon
+        self.act = act
+        self.name = name
 
-        logging.info(
-            "LayerNormLayer %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
-        )
+        super(InstanceNormLayer, self).__init__()
 
-        with tf.variable_scope(name) as vs:
-            self.outputs = tf.contrib.layers.layer_norm(
-                self.inputs,
-                center=center,
-                scale=scale,
-                activation_fn=self.act,
-                reuse=reuse,
-                variables_collections=variables_collections,
-                outputs_collections=outputs_collections,
-                trainable=trainable,
-                begin_norm_axis=begin_norm_axis,
-                begin_params_axis=begin_params_axis,
-                scope='var',
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("epsilon: %s" % self.epsilon)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        if len(self._temp_data['inputs'].shape) not in [3, 4]:
+            raise RuntimeError("`%s` only accepts input Tensor of dimension 3 or 4." % self.__class__.__name__)
+
+        with tf.variable_scope(self.name):
+            mean, var = tf.nn.moments(self._temp_data['inputs'], [1, 2], keep_dims=True)
+
+            scale = self._get_tf_variable(
+                name='scale',
+                shape=[
+                    self._temp_data['inputs'].get_shape()[-1],
+                ],
+                dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02)
             )
 
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            offset = self._get_tf_variable(
+                name='offset',
+                shape=[
+                    self._temp_data['inputs'].get_shape()[-1],
+                ],
+                dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=tf.constant_initializer(0.0)
+            )
 
-        self._add_layers(self.outputs)
-        self._add_params(variables)
+            self._temp_data['outputs'] = tf.div(self._temp_data['inputs'] - mean, tf.sqrt(var + self.epsilon))
+            self._temp_data['outputs'] = tf.multiply(
+                scale, tf.div(self._temp_data['inputs'] - mean, tf.sqrt(var + self.epsilon))
+            )
+            self._temp_data['outputs'] = tf.add(self._temp_data['outputs'], offset)
+
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
 
 class GroupNormLayer(Layer):
@@ -348,7 +298,8 @@ class GroupNormLayer(Layer):
                     tf.shape(self.inputs)[0:1],
                     tf.convert_to_tensor([groups, channels // groups]),
                     tf.shape(self.inputs)[2:4]
-                ], axis=0
+                ],
+                axis=0
             )
         else:
             raise ValueError("data_format must be 'channels_last' or 'channels_first'.")
@@ -380,14 +331,178 @@ class GroupNormLayer(Layer):
         self._add_params(variables)
 
 
+class LayerNormLayer(Layer):
+    """
+    The :class:`LayerNormLayer` class is for layer normalization, see `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`__.
+
+    Parameters
+    ----------
+    act : activation function
+        The activation function of this layer.
+    """
+
+    def __init__(
+        self,
+        center=True,
+        scale=True,
+        variables_collections=None,
+        outputs_collections=None,
+        begin_norm_axis=1,
+        begin_params_axis=-1,
+        act=None,
+        name='layernorm'
+    ):
+
+        self.center = center
+        self.scale = scale
+        self.variables_collections = variables_collections
+        self.outputs_collections = outputs_collections
+        self.begin_norm_axis = begin_norm_axis
+        self.begin_params_axis = begin_params_axis
+        self.act = act
+        self.name = name
+
+        super(LayerNormLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("center: %s" % self.center)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("scale: %s" % self.scale)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("variables_collections: %s" % self.variables_collections)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("outputs_collections: %s" % self.outputs_collections)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("begin_norm_axis: %s" % self.begin_norm_axis)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("begin_params_axis: %s" % self.begin_params_axis)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        is_name_reuse = tf.get_variable_scope().reuse
+
+        with tf.variable_scope(self.name) as vs:
+            self._temp_data['outputs'] = tf.contrib.layers.layer_norm(
+                self._temp_data['inputs'],
+                center=self.center,
+                scale=self.scale,
+                activation_fn=None,
+                variables_collections=self.variables_collections,
+                outputs_collections=self.outputs_collections,
+                begin_norm_axis=self.begin_norm_axis,
+                begin_params_axis=self.begin_params_axis,
+                reuse=is_name_reuse,
+                trainable=self._temp_data['is_train'],
+                scope='var',
+            )
+
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
+
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+
+class LocalResponseNormLayer(Layer):
+    """The :class:`LocalResponseNormLayer` layer is for Local Response Normalization.
+    See ``tf.nn.local_response_normalization`` or ``tf.nn.lrn`` for new TF version.
+    The 4-D input tensor is a 3-D array of 1-D vectors (along the last dimension), and each vector is normalized independently.
+    Within a given vector, each component is divided by the weighted square-sum of inputs within depth_radius.
+
+    Parameters
+    -----------
+    depth_radius : int
+        Depth radius. 0-D. Half-width of the 1-D normalization window.
+    bias : float
+        An offset which is usually positive and shall avoid dividing by 0.
+    alpha : float
+        A scale factor which is usually positive.
+    beta : float
+        An exponent.
+    name : str
+        A unique layer name.
+    """
+
+    def __init__(
+        self,
+        depth_radius=None,
+        bias=None,
+        alpha=None,
+        beta=None,
+        name='lrn_layer',
+    ):
+
+        self.depth_radius = depth_radius
+        self.bias = bias
+        self.alpha = alpha
+        self.beta = beta
+        self.name = name
+
+        super(LocalResponseNormLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("depth_radius: %s" % self.depth_radius)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("bias: %s" % self.bias)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("alpha: %s" % self.alpha)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("beta: %s" % self.beta)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        with tf.variable_scope(self.name):
+            self._temp_data['outputs'] = tf.nn.local_response_normalization(
+                self._temp_data['inputs'],
+                depth_radius=self.depth_radius,
+                bias=self.bias,
+                alpha=self.alpha,
+                beta=self.beta
+            )
+
+
 class SwitchNormLayer(Layer):
     """
     The :class:`SwitchNormLayer` is a switchable normalization.
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     act : activation function
         The activation function of this layer.
     epsilon : float
@@ -409,38 +524,77 @@ class SwitchNormLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            act=None,
-            epsilon=1e-5,
-            beta_init=tf.constant_initializer(0.0),
-            gamma_init=tf.constant_initializer(1.0),
-            moving_mean_init=tf.zeros_initializer(),
-            name='switchnorm_layer',
+        self,
+        epsilon=1e-5,
+        beta_init=tf.constant_initializer(0.0),
+        gamma_init=tf.constant_initializer(1.0),
+        act=None,
+        name='switchnorm_layer',
     ):
-        super(SwitchNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
-        logging.info(
-            "SwitchNormLayer %s: epsilon: %f act: %s" %
-            (self.name, epsilon, self.act.__name__ if self.act is not None else 'No Activation')
-        )
+        self.epsilon = epsilon
+        self.beta_init = beta_init
+        self.gamma_init = gamma_init
+        self.act = act
+        self.name = name
 
-        with tf.variable_scope(name):
-            x = self.inputs
-            ch = x.shape[-1]
-            epsilon = 1e-5
+        super(SwitchNormLayer, self).__init__()
 
-            batch_mean, batch_var = tf.nn.moments(x, [0, 1, 2], keep_dims=True)
-            ins_mean, ins_var = tf.nn.moments(x, [1, 2], keep_dims=True)
-            layer_mean, layer_var = tf.nn.moments(x, [1, 2, 3], keep_dims=True)
+    def __str__(self):
+        additional_str = []
 
-            gamma = tf.get_variable("gamma", [ch], initializer=gamma_init)
-            beta = tf.get_variable("beta", [ch], initializer=beta_init)
+        try:
+            additional_str.append("epsilon: %s" % self.epsilon)
+        except AttributeError:
+            pass
 
-            mean_weight_var = tf.get_variable("mean_weight", [3], initializer=tf.constant_initializer(1.0))
-            var_weight_var = tf.get_variable("var_weight", [3], initializer=tf.constant_initializer(1.0))
+        return self._str(additional_str)
+
+    def build(self):
+
+        if len(self._temp_data['inputs'].shape) not in [3, 4]:
+            raise RuntimeError("`%s` only accepts input Tensor of dimension 3 or 4." % self.__class__.__name__)
+
+        with tf.variable_scope(self.name):
+
+            ch = self._temp_data['inputs'].shape[-1]
+
+            batch_mean, batch_var = tf.nn.moments(self._temp_data['inputs'], [0, 1, 2], keep_dims=True)
+            ins_mean, ins_var = tf.nn.moments(self._temp_data['inputs'], [1, 2], keep_dims=True)
+            layer_mean, layer_var = tf.nn.moments(self._temp_data['inputs'], [1, 2, 3], keep_dims=True)
+
+            gamma = self._get_tf_variable(
+                name="gamma",
+                shape=[
+                    ch,
+                ],
+                dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.gamma_init
+            )
+            beta = self._get_tf_variable(
+                name="beta",
+                shape=[ch],
+                dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=self.beta_init
+            )
+
+            mean_weight_var = self._get_tf_variable(
+                name="mean_weight",
+                shape=[3],
+                dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=tf.constant_initializer(1.0)
+            )
+            var_weight_var = self._get_tf_variable(
+                name="var_weight",
+                shape=[3],
+                dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=tf.constant_initializer(1.0)
+            )
 
             mean_weight = tf.nn.softmax(mean_weight_var)
             var_weight = tf.nn.softmax(var_weight_var)
@@ -448,9 +602,7 @@ class SwitchNormLayer(Layer):
             mean = mean_weight[0] * batch_mean + mean_weight[1] * ins_mean + mean_weight[2] * layer_mean
             var = var_weight[0] * batch_var + var_weight[1] * ins_var + var_weight[2] * layer_var
 
-            x = (x - mean) / (tf.sqrt(var + epsilon))
-            self.outputs = x * gamma + beta
-            self.outputs = self._apply_activation(self.outputs)
+            self._temp_data['outputs'] = (self._temp_data['inputs'] - mean) / (tf.sqrt(var + self.epsilon))
 
-        self._add_layers(self.outputs)
-        self._add_params([beta, gamma, mean_weight_var, var_weight_var])
+            self._temp_data['outputs'] = tf.add(tf.multiply(self._temp_data['inputs'], gamma), beta)
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])

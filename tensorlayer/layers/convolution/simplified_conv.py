@@ -4,11 +4,10 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.utils import get_collection_trainable
-
-from tensorlayer import logging
+from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'Conv1d',
@@ -21,8 +20,6 @@ class Conv1d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer
     n_filter : int
         The number of filters
     filter_size : int
@@ -64,39 +61,100 @@ class Conv1d(Layer):
     >>> n = DenseLayer(n, 500, tf.nn.relu, name='d1')
     >>> n = DenseLayer(n, 100, tf.nn.relu, name='d2')
     >>> n = DenseLayer(n, 2, None, name='o')
-
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, n_filter=32, filter_size=5, stride=1, dilation_rate=1, act=None, padding='SAME',
-            data_format="channels_last", W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0), W_init_args=None, b_init_args=None, name='conv1d'
+        self,
+        n_filter=32,
+        filter_size=5,
+        stride=1,
+        padding='valid',
+        dilation_rate=1,
+        data_format="channels_last",
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        act=None,
+        name='conv1d'
     ):
-        super(Conv1d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
-        logging.info(
-            "Conv1d %s: n_filter: %d filter_size: %s stride: %d pad: %s act: %s dilation_rate: %d" % (
-                self.name, n_filter, filter_size, stride, padding,
-                self.act.__name__ if self.act is not None else 'No Activation', dilation_rate
+        if data_format not in ["channels_last", "channels_first"]:
+            raise ValueError("`data_format` value is not valid, should be either: 'channels_last' or 'channels_first'")
+
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
+
+        self.n_filter = n_filter
+        self.filter_size = filter_size
+        self.stride = stride
+        self.padding = padding
+        self.dilation_rate = dilation_rate
+        self.data_format = data_format
+        self.W_init = W_init
+        self.b_init = b_init
+        self.act = act
+        self.name = name
+
+        super(Conv1d, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("n_filter: %d" % self.n_filter)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("filter_size: %d" % self.filter_size)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("stride: %s" % self.stride)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("dilation_rate: %s" % self.dilation_rate)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        is_name_reuse = tf.get_variable_scope().reuse
+
+        with tf.variable_scope(self.name) as vs:
+
+            self._temp_data['outputs'] = tf.layers.conv1d(
+                inputs=self._temp_data['inputs'],
+                filters=self.n_filter,
+                kernel_size=self.filter_size,
+                strides=self.stride,
+                padding=self.padding,
+                data_format=self.data_format,
+                dilation_rate=self.dilation_rate,
+                activation=None,
+                kernel_initializer=self.W_init,
+                bias_initializer=self.b_init,
+                use_bias=(True if self.b_init else False),
+                reuse=is_name_reuse,
+                trainable=self._temp_data['is_train'],
+                name=None
             )
-        )
 
-        _conv1d = tf.layers.Conv1D(
-            filters=n_filter, kernel_size=filter_size, strides=stride, padding=padding, data_format=data_format,
-            dilation_rate=dilation_rate, activation=self.act, use_bias=(True if b_init else False),
-            kernel_initializer=W_init, bias_initializer=b_init, name=name
-        )
+            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
-        # _conv1d.dtype = LayersConfig.tf_dtype   # unsupport, it will use the same dtype of inputs
-        self.outputs = _conv1d(self.inputs)
-        # new_variables = _conv1d.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-        new_variables = get_collection_trainable(self.name)
-
-        self._add_layers(self.outputs)
-        self._add_params(new_variables)
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
 
 class Conv2d(Layer):
@@ -104,8 +162,6 @@ class Conv2d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_filter : int
         The number of filters.
     filter_size : tuple of int
@@ -118,7 +174,7 @@ class Conv2d(Layer):
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     data_format : str
-        "channels_last" (NHWC, default) or "channels_first" (NCHW). 
+        "channels_last" (NHWC, default) or "channels_first" (NCHW).
     W_init : initializer
         The initializer for the the weight matrix.
     b_init : initializer or None
@@ -127,8 +183,8 @@ class Conv2d(Layer):
         The arguments for the weight matrix initializer (for TF < 1.5).
     b_init_args : dictionary
         The arguments for the bias vector initializer (for TF < 1.5).
-    use_cudnn_on_gpu : bool
-        Default is False (for TF < 1.5).
+    data_format : str
+        "channels_last" (NHWC, default) or "channels_first" (NCHW).
     name : str
         A unique layer name.
 
@@ -147,82 +203,97 @@ class Conv2d(Layer):
     >>> net = Conv2d(net, 128, (3, 3), act=tf.nn.relu, name='conv2_1')
     >>> net = Conv2d(net, 128, (3, 3), act=tf.nn.relu, name='conv2_2')
     >>> net = MaxPool2d(net, (2, 2), name='pool2')
-
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            n_filter=32,
-            filter_size=(3, 3),
-            strides=(1, 1),
-            act=None,
-            padding='SAME',
-            data_format='channels_last',
-            dilation_rate=(1, 1),
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            use_cudnn_on_gpu=None,
-            name='conv2d',
+        self,
+        n_filter=32,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        padding='valid',
+        dilation_rate=(1, 1),
+        data_format="channels_last",
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        act=None,
+        name='conv2d',
     ):
-        # if len(strides) != 2:
-        #     raise ValueError("len(strides) should be 2, Conv2d and Conv2dLayer are different.")
 
-        # try:
-        #     pre_channel = int(layer.outputs.get_shape()[-1])
+        if data_format not in ["channels_last", "channels_first"]:
+            raise ValueError("`data_format` value is not valid, should be either: 'channels_last' or 'channels_first'")
 
-        # except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
-        #     pre_channel = 1
-        #     logging.info("[warnings] unknow input channels, set to 1")
+        padding = padding.upper()
+        if padding not in ["SAME", "VALID"]:
+            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
 
-        super(Conv2d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        self.n_filter = n_filter
+        self.filter_size = filter_size
+        self.strides = strides
+        self.padding = padding
+        self.dilation_rate = dilation_rate
+        self.data_format = data_format
+        self.W_init = W_init
+        self.b_init = b_init
+        self.act = act
+        self.name = name
 
-        logging.info(
-            "Conv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
-                self.name, n_filter, str(filter_size), str(strides), padding,
-                self.act.__name__ if self.act is not None else 'No Activation'
+        super(Conv2d, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("n_filter: %d" % self.n_filter)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("filter_size: %s" % str(self.filter_size))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("stride: %s" % str(self.strides))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("dilation_rate: %s" % str(self.dilation_rate))
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        is_name_reuse = tf.get_variable_scope().reuse
+
+        with tf.variable_scope(self.name) as vs:
+
+            self._temp_data['outputs'] = tf.layers.conv2d(
+                inputs=self._temp_data['inputs'],
+                filters=self.n_filter,
+                kernel_size=self.filter_size,
+                strides=self.strides,
+                padding=self.padding,
+                data_format=self.data_format,
+                dilation_rate=self.dilation_rate,
+                activation=None,
+                kernel_initializer=self.W_init,
+                bias_initializer=self.b_init,
+                use_bias=(True if self.b_init else False),
+                reuse=is_name_reuse,
+                trainable=self._temp_data['is_train'],
+                name=None
             )
-        )
-        # with tf.variable_scope(name) as vs:
-        conv2d = tf.layers.Conv2D(
-            # inputs=self.inputs,
-            filters=n_filter,
-            kernel_size=filter_size,
-            strides=strides,
-            padding=padding,
-            data_format=data_format,
-            dilation_rate=dilation_rate,
-            activation=self.act,
-            use_bias=(False if b_init is None else True),
-            kernel_initializer=W_init,  # None,
-            bias_initializer=b_init,  # f.zeros_initializer(),
-            kernel_regularizer=None,
-            bias_regularizer=None,
-            activity_regularizer=None,
-            kernel_constraint=None,
-            bias_constraint=None,
-            trainable=True,
-            name=name,
-            # reuse=None,
-        )
-        self.outputs = conv2d(self.inputs)  # must put before ``new_variables``
-        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-        new_variables = get_collection_trainable(self.name)
-        # new_variables = []
-        # for p in tf.trainable_variables():
-        #     # print(p.name.rpartition('/')[0], self.name)
-        #     if p.name.rpartition('/')[0] == self.name:
-        #         new_variables.append(p)
-        # exit()
-        # TF_GRAPHKEYS_VARIABLES  TF_GRAPHKEYS_VARIABLES
-        # print(self.name, name)
-        # print(tf.trainable_variables())#tf.GraphKeys.TRAINABLE_VARIABLES)
-        # print(new_variables)
-        # print(conv2d.weights)
 
-        self._add_layers(self.outputs)
-        self._add_params(new_variables)  # conv2d.weights)
+        self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
+
+        self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)

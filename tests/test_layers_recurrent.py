@@ -38,62 +38,72 @@ class Layer_Recurrent_Test(CustomTestCase):
         input_data = tf.placeholder(tf.int32, [cls.net1_batch_size, cls.num_steps])
 
         net1 = tl.layers.EmbeddingInputlayer(
-            inputs=input_data, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='embedding'
-        )
-        net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop1')
+            vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='embedding'
+        )(input_data)
+        net1 = tl.layers.DropoutLayer(keep=cls.keep_prob, is_fix=True, name='drop1')(net1, is_train=cls.is_train)
         net1 = tl.layers.RNNLayer(
-            net1, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps,
-            return_last=False, name='lstm1'
-        )
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.hidden_size,
+            n_steps=cls.num_steps,
+            return_last=False,
+            name='lstm1'
+        )(net1)
 
         # lstm1 = net1
 
-        net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop2')
+        net1 = tl.layers.DropoutLayer(keep=cls.keep_prob, is_fix=True, name='drop2')(net1, is_train=cls.is_train)
         net1 = tl.layers.RNNLayer(
-            net1, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps,
-            return_last=True, name='lstm2'
-        )
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.hidden_size,
+            n_steps=cls.num_steps,
+            return_last=True,
+            name='lstm2'
+        )(net1)
 
         # lstm2 = net1
 
-        net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop3')
-        net1 = tl.layers.DenseLayer(net1, n_units=cls.vocab_size, name='output')
+        net1 = tl.layers.DropoutLayer(keep=cls.keep_prob, is_fix=True, name='drop3')(net1, is_train=cls.is_train)
+        net1 = tl.layers.DenseLayer(n_units=cls.vocab_size, name='output')(net1)
 
         net1.print_layers()
         net1.print_params(False)
 
         cls.net1_shape = net1.outputs.get_shape().as_list()
         cls.net1_layers = net1.all_layers
-        cls.net1_params = net1.all_params
-        cls.net1_n_params = net1.count_params()
+        cls.net1_params = net1.all_weights
+        cls.net1_n_params = net1.count_weights()
 
         # =============================== CNN+RNN encoder ===============================
 
         x2 = tf.placeholder(tf.float32, shape=[cls.net2_batch_size, cls.image_size, cls.image_size, 1])
-        net2 = tl.layers.InputLayer(x2, name='in')
+        net2 = tl.layers.InputLayer(name='in')(x2)
 
-        net2 = tl.layers.Conv2d(net2, n_filter=32, filter_size=(5, 5), strides=(2, 2), act=tf.nn.relu, name='cnn1')
-        net2 = tl.layers.MaxPool2d(net2, filter_size=(2, 2), strides=(2, 2), name='pool1')
-        net2 = tl.layers.Conv2d(net2, n_filter=10, filter_size=(5, 5), strides=(2, 2), act=tf.nn.relu, name='cnn2')
-        net2 = tl.layers.MaxPool2d(net2, filter_size=(2, 2), strides=(2, 2), name='pool2')
+        net2 = tl.layers.Conv2d(n_filter=32, filter_size=(5, 5), strides=(2, 2), act=tf.nn.relu, name='cnn1')(net2)
+        net2 = tl.layers.MaxPool2d(filter_size=(2, 2), strides=(2, 2), name='pool1')(net2)
+        net2 = tl.layers.Conv2d(n_filter=10, filter_size=(5, 5), strides=(2, 2), act=tf.nn.relu, name='cnn2')(net2)
+        net2 = tl.layers.MaxPool2d(filter_size=(2, 2), strides=(2, 2), name='pool2')(net2)
 
-        net2 = tl.layers.FlattenLayer(net2, name='flatten')
-        net2 = tl.layers.ReshapeLayer(net2, shape=(-1, cls.num_steps, int(net2.outputs._shape[-1])))
+        net2 = tl.layers.FlattenLayer(name='flatten')(net2)
+        net2 = tl.layers.ReshapeLayer(shape=(-1, cls.num_steps, int(net2.outputs._shape[-1])))(net2)
 
         net2 = tl.layers.RNNLayer(
-            net2, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=200, n_steps=cls.num_steps, return_last=False,
-            return_seq_2d=True, name='rnn'
-        )
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=200,
+            n_steps=cls.num_steps,
+            return_last=False,
+            return_seq_2d=True,
+            name='rnn'
+        )(net2)
 
-        net2 = tl.layers.DenseLayer(net2, n_units=3, name='out')
+        net2 = tl.layers.DenseLayer(n_units=3, name='out')(net2)
 
         net2.print_layers()
         net2.print_params(False)
 
         cls.net2_shape = net2.outputs.get_shape().as_list()
         cls.net2_layers = net2.all_layers
-        cls.net2_params = net2.all_params
-        cls.net2_n_params = net2.count_params()
+        cls.net2_params = net2.all_weights
+        cls.net2_n_params = net2.count_weights()
 
         tl.logging.debug("ALL LAYERS: ##################################################", cls.net2_layers)
 
@@ -102,37 +112,46 @@ class Layer_Recurrent_Test(CustomTestCase):
         x3 = tf.placeholder(tf.int32, [cls.net3_batch_size, cls.num_steps])
 
         net3 = tl.layers.EmbeddingInputlayer(
-            inputs=x3, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb'
-        )
+            vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, dtype=tf.float32, name='emb'
+        )(x3)
         net3 = tl.layers.BiRNNLayer(
-            net3, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps,
-            return_last=False, return_seq_2d=False, name='birnn'
-        )
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.hidden_size,
+            n_steps=cls.num_steps,
+            return_last=False,
+            return_seq_2d=False,
+            name='birnn'
+        )(net3)
 
         net3.print_layers()
         net3.print_params(False)
 
         cls.net3_shape = net3.outputs.get_shape().as_list()
         cls.net3_layers = net3.all_layers
-        cls.net3_params = net3.all_params
-        cls.net3_n_params = net3.count_params()
+        cls.net3_params = net3.all_weights
+        cls.net3_n_params = net3.count_weights()
 
         # n_layer=2
         net4 = tl.layers.EmbeddingInputlayer(
-            inputs=x3, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb2'
-        )
+            vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb2'
+        )(x3)
         net4 = tl.layers.BiRNNLayer(
-            net4, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps, n_layer=2,
-            return_last=False, return_seq_2d=False, name='birnn2'
-        )
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.hidden_size,
+            n_steps=cls.num_steps,
+            n_layer=2,
+            return_last=False,
+            return_seq_2d=False,
+            name='birnn2'
+        )(net4)
 
         net4.print_layers()
         net4.print_params(False)
 
         cls.net4_shape = net4.outputs.get_shape().as_list()
         cls.net4_layers = net4.all_layers
-        cls.net4_params = net4.all_params
-        cls.net4_n_params = net4.count_params()
+        cls.net4_params = net4.all_weights
+        cls.net4_n_params = net4.count_weights()
 
         ## TODO: ConvLSTMLayer
         # image_size = 100
@@ -155,17 +174,20 @@ class Layer_Recurrent_Test(CustomTestCase):
 
         input_seqs = tf.placeholder(dtype=tf.int64, shape=[cls.net5_batch_size, None], name="input")
         nin = tl.layers.EmbeddingInputlayer(
-            inputs=input_seqs, vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name='seq_embedding'
-        )
+            vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name='seq_embedding'
+        )(input_seqs)
 
         rnn = tl.layers.DynamicRNNLayer(
-            nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.embedding_size,
             dropout=(cls.keep_prob if cls.is_train else None),
-            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs), return_last=False, return_seq_2d=True,
+            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+            return_last=False,
+            return_seq_2d=True,
             name='dynamicrnn'
-        )
+        )(nin)
 
-        net5 = tl.layers.DenseLayer(rnn, n_units=cls.vocab_size, name="o")
+        net5 = tl.layers.DenseLayer(n_units=cls.vocab_size, name="o")(rnn)
 
         net5.print_layers()
         net5.print_params(False)
@@ -173,27 +195,36 @@ class Layer_Recurrent_Test(CustomTestCase):
         cls.net5_shape = net5.outputs.get_shape().as_list()
         cls.net5_rnn_shape = rnn.outputs.get_shape().as_list()
         cls.net5_layers = net5.all_layers
-        cls.net5_params = net5.all_params
-        cls.net5_n_params = net5.count_params()
+        cls.net5_params = net5.all_weights
+        cls.net5_n_params = net5.count_weights()
 
         # n_layer=3
         nin = tl.layers.EmbeddingInputlayer(
-            inputs=input_seqs, vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name='seq_embedding2'
-        )
+            vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name='seq_embedding2'
+        )(input_seqs)
         rnn = tl.layers.DynamicRNNLayer(
-            nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.embedding_size,
             dropout=(cls.keep_prob if cls.is_train else None),
-            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs), n_layer=3, return_last=False,
-            return_seq_2d=True, name='dynamicrnn2'
-        )
+            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+            n_layer=3,
+            return_last=False,
+            return_seq_2d=True,
+            name='dynamicrnn2'
+        )(nin)
 
         # net6 = tl.layers.DenseLayer(rnn, n_units=cls.vocab_size, name="o2")
 
         net6 = tl.layers.DynamicRNNLayer(
-            nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size, dropout=None,
-            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs), n_layer=3, return_last=False,
-            return_seq_2d=False, name='dynamicrnn3'
-        )
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.embedding_size,
+            dropout=None,
+            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+            n_layer=3,
+            return_last=False,
+            return_seq_2d=False,
+            name='dynamicrnn3'
+        )(nin)
 
         # net6 = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o3")
 
@@ -204,10 +235,15 @@ class Layer_Recurrent_Test(CustomTestCase):
         cls.net6_rnn_shape = rnn.outputs.get_shape().as_list()
 
         net7 = tl.layers.DynamicRNNLayer(
-            nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size, dropout=None,
-            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs), n_layer=1, return_last=True,
-            return_seq_2d=False, name='dynamicrnn4'
-        )
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.embedding_size,
+            dropout=None,
+            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+            n_layer=1,
+            return_last=True,
+            return_seq_2d=False,
+            name='dynamicrnn4'
+        )(nin)
 
         net7.print_layers()
         net7.print_params(False)
@@ -215,10 +251,15 @@ class Layer_Recurrent_Test(CustomTestCase):
         cls.net7_shape = net7.outputs.get_shape().as_list()
 
         net8 = tl.layers.DynamicRNNLayer(
-            nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size, dropout=None,
-            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs), n_layer=1, return_last=True,
-            return_seq_2d=True, name='dynamicrnn5'
-        )
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.embedding_size,
+            dropout=None,
+            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+            n_layer=1,
+            return_last=True,
+            return_seq_2d=True,
+            name='dynamicrnn5'
+        )(nin)
 
         net8.print_layers()
         net8.print_params(False)
@@ -228,11 +269,14 @@ class Layer_Recurrent_Test(CustomTestCase):
         # =============================== BiDynamic Synced input and output ===============================
 
         rnn = tl.layers.BiDynamicRNNLayer(
-            nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.embedding_size,
             dropout=(cls.keep_prob if cls.is_train else None),
-            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs), return_last=False, return_seq_2d=True,
+            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+            return_last=False,
+            return_seq_2d=True,
             name='bidynamicrnn'
-        )
+        )(nin)
 
         net9 = tl.layers.DenseLayer(rnn, n_units=cls.vocab_size, name="o4")
 
@@ -242,18 +286,22 @@ class Layer_Recurrent_Test(CustomTestCase):
         cls.net9_shape = net9.outputs.get_shape().as_list()
         cls.net9_rnn_shape = rnn.outputs.get_shape().as_list()
         cls.net9_layers = net9.all_layers
-        cls.net9_params = net9.all_params
-        cls.net9_n_params = net9.count_params()
+        cls.net9_params = net9.all_weights
+        cls.net9_n_params = net9.count_weights()
 
         # n_layer=2
         rnn = tl.layers.BiDynamicRNNLayer(
-            nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.embedding_size,
             dropout=(cls.keep_prob if cls.is_train else None),
-            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs), n_layer=2, return_last=False,
-            return_seq_2d=True, name='bidynamicrnn2'
-        )
+            sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+            n_layer=2,
+            return_last=False,
+            return_seq_2d=True,
+            name='bidynamicrnn2'
+        )(nin)
 
-        net10 = tl.layers.DenseLayer(rnn, n_units=cls.vocab_size, name="o5")
+        net10 = tl.layers.DenseLayer(n_units=cls.vocab_size, name="o5")(rnn)
 
         net10.print_layers()
         net10.print_params(False)
@@ -261,8 +309,8 @@ class Layer_Recurrent_Test(CustomTestCase):
         cls.net10_shape = net10.outputs.get_shape().as_list()
         cls.net10_rnn_shape = rnn.outputs.get_shape().as_list()
         cls.net10_layers = net10.all_layers
-        cls.net10_params = net10.all_params
-        cls.net10_n_params = net10.count_params()
+        cls.net10_params = net10.all_weights
+        cls.net10_n_params = net10.count_weights()
 
         # =============================== Seq2Seq ===============================
 
@@ -277,23 +325,30 @@ class Layer_Recurrent_Test(CustomTestCase):
 
             with tf.variable_scope("embedding") as vs:
                 net_encode = tl.layers.EmbeddingInputlayer(
-                    inputs=encode_seqs, vocabulary_size=10000, embedding_size=200, name='seq_embed'
-                )
+                    vocabulary_size=10000, embedding_size=200, name='seq_embed'
+                )(encode_seqs)
                 vs.reuse_variables()
                 # tl.layers.set_name_reuse(True)
                 net_decode = tl.layers.EmbeddingInputlayer(
-                    inputs=decode_seqs, vocabulary_size=10000, embedding_size=200, name='seq_embed'
-                )
+                    vocabulary_size=10000, embedding_size=200, name='seq_embed'
+                )(decode_seqs)
 
             net11 = tl.layers.Seq2Seq(
-                net_encode, net_decode, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=200,
+                net_encode,
+                net_decode,
+                cell_fn=tf.contrib.rnn.BasicLSTMCell,
+                n_hidden=200,
                 initializer=tf.random_uniform_initializer(-0.1, 0.1),
                 encode_sequence_length=tl.layers.retrieve_seq_length_op2(encode_seqs),
-                decode_sequence_length=tl.layers.retrieve_seq_length_op2(decode_seqs), initial_state_encode=None,
-                dropout=None, n_layer=2, return_seq_2d=True, name='Seq2seq'
+                decode_sequence_length=tl.layers.retrieve_seq_length_op2(decode_seqs),
+                initial_state_encode=None,
+                dropout=None,
+                n_layer=2,
+                return_seq_2d=True,
+                name='Seq2seq'
             )
 
-        net11 = tl.layers.DenseLayer(net11, n_units=10000, name='oo')
+        net11 = tl.layers.DenseLayer(n_units=10000, name='oo')(net11)
 
         # e_loss = tl.cost.cross_entropy_seq_with_mask(logits=net11.outputs, target_seqs=target_seqs, input_mask=target_mask, return_details=False, name='cost')
         # y = tf.nn.softmax(net11.outputs)
@@ -303,8 +358,8 @@ class Layer_Recurrent_Test(CustomTestCase):
 
         cls.net11_shape = net11.outputs.get_shape().as_list()
         cls.net11_layers = net11.all_layers
-        cls.net11_params = net11.all_params
-        cls.net11_n_params = net11.count_params()
+        cls.net11_params = net11.all_weights
+        cls.net11_n_params = net11.count_weights()
 
     @classmethod
     def tearDownClass(cls):

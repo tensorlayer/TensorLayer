@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 """Deep learning and Reinforcement learning library for Researchers and Engineers"""
 
 import os
@@ -30,8 +31,10 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
             " - `pip install --upgrade tensorflow-gpu`"
         )
 
-    if ("SPHINXBUILD" not in os.environ and "READTHEDOCS" not in os.environ and
-            LooseVersion(tensorflow.__version__) < LooseVersion("1.6.0")):
+    if (
+        "SPHINXBUILD" not in os.environ and "READTHEDOCS" not in os.environ and
+        LooseVersion(tensorflow.__version__) < LooseVersion("1.6.0")
+    ):
         raise RuntimeError(
             "TensorLayer does not support Tensorflow version older than 1.6.0.\n"
             "Please update Tensorflow with:\n"
@@ -44,12 +47,14 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     from tensorlayer import cost
     from tensorlayer import decorators
     from tensorlayer import files
+    from tensorlayer import hub
     from tensorlayer import initializers
     from tensorlayer import iterate
     from tensorlayer import layers
     from tensorlayer import lazy_imports
     from tensorlayer import logging
     from tensorlayer import models
+    from tensorlayer import networks
     from tensorlayer import optimizers
     from tensorlayer import rein
 

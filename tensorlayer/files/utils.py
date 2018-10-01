@@ -512,8 +512,15 @@ def load_matt_mahoney_text8_dataset(path='data'):
 
 
 def load_imdb_dataset(
-        path='data', nb_words=None, skip_top=0, maxlen=None, test_split=0.2, seed=113, start_char=1, oov_char=2,
-        index_from=3
+    path='data',
+    nb_words=None,
+    skip_top=0,
+    maxlen=None,
+    test_split=0.2,
+    seed=113,
+    start_char=1,
+    oov_char=2,
+    index_from=3
 ):
     """Load IMDB dataset.
 
@@ -951,8 +958,9 @@ def download_file_from_google_drive(ID, destination):
     def save_response_content(response, destination, chunk_size=32 * 1024):
         total_size = int(response.headers.get('content-length', 0))
         with open(destination, "wb") as f:
-            for chunk in tqdm(response.iter_content(chunk_size), total=total_size, unit='B', unit_scale=True,
-                              desc=destination):
+            for chunk in tqdm(
+                response.iter_content(chunk_size), total=total_size, unit='B', unit_scale=True, desc=destination
+            ):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
 
@@ -1432,8 +1440,9 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
                 head_x2s = anno['annorect']['x2'][0]
                 head_y2s = anno['annorect']['y2'][0]
 
-                for annopoint, head_x1, head_y1, head_x2, head_y2 in zip(annopoints, head_x1s, head_y1s, head_x2s,
-                                                                         head_y2s):
+                for annopoint, head_x1, head_y1, head_x2, head_y2 in zip(
+                    annopoints, head_x1s, head_y1s, head_x2s, head_y2s
+                ):
                     # if annopoint != []:
                     # if len(annopoint) != 0:
                     if annopoint.size:
@@ -1577,7 +1586,7 @@ def save_npz(save_list=None, name='model.npz', sess=None):
     --------
     Save model to npz
 
-    >>> tl.files.save_npz(network.all_params, name='model.npz', sess=sess)
+    >>> tl.files.save_npz(network.all_weights, name='model.npz', sess=sess)
 
     Load model from npz (Method 1)
 
@@ -1609,7 +1618,7 @@ def save_npz(save_list=None, name='model.npz', sess=None):
             save_list_var.extend([v.eval() for v in save_list])
         except Exception:
             logging.info(
-                " Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_params, name='model.npz', sess=sess)"
+                " Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_weights, name='model.npz', sess=sess)"
             )
     np.savez(name, params=save_list_var)
     save_list_var = None
@@ -1673,7 +1682,7 @@ def assign_params(sess, params, network):
     """
     ops = []
     for idx, param in enumerate(params):
-        ops.append(network.all_params[idx].assign(param))
+        ops.append(network.all_weights[idx].assign(param))
     if sess is not None:
         sess.run(ops)
     return ops
@@ -1788,7 +1797,7 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
 
 
 def save_ckpt(
-        sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=None, global_step=None, printable=False
+    sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=None, global_step=None, printable=False
 ):
     """Save parameters into `ckpt` file.
 
@@ -1857,15 +1866,15 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
 
     - Save specific parameters.
 
-    >>> tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_params, save_dir='model', printable=True)
+    >>> tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_weights, save_dir='model', printable=True)
 
     - Load latest ckpt.
 
-    >>> tl.files.load_ckpt(sess=sess, var_list=net.all_params, save_dir='model', printable=True)
+    >>> tl.files.load_ckpt(sess=sess, var_list=net.all_weights, save_dir='model', printable=True)
 
     - Load specific ckpt.
 
-    >>> tl.files.load_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_params, save_dir='model', is_latest=False, printable=True)
+    >>> tl.files.load_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_weights, save_dir='model', is_latest=False, printable=True)
 
     """
     if sess is None:
@@ -1955,8 +1964,9 @@ def _graph2net(graphs):
             if name not in input_list:  # if placeholder is not exist
                 dtype = layer_kwargs.pop('dtype')
                 shape = layer_kwargs.pop('shape')
-                _placeholder = tf.placeholder(eval('tf.' + dtype), shape,
-                                              name=name.split(':')[0])  # globals()['tf.'+dtype]
+                _placeholder = tf.placeholder(
+                    eval('tf.' + dtype), shape, name=name.split(':')[0]
+                )  # globals()['tf.'+dtype]
                 # _placeholder = tf.placeholder(ast.literal_eval('tf.' + dtype), shape, name=name.split(':')[0])
                 # input_dict.update({name: _placeholder})
                 input_list.append((name, _placeholder))
@@ -2044,7 +2054,7 @@ def save_graph_and_params(network=None, name='model', sess=None):
     """
     exists_or_mkdir(name, False)
     save_graph(network, os.path.join(name, 'graph.pkl'))
-    save_npz(save_list=network.all_params, name=os.path.join(name, 'params.npz'), sess=sess)
+    save_npz(save_list=network.all_weights, name=os.path.join(name, 'params.npz'), sess=sess)
 
 
 def load_graph_and_params(name='model', sess=None):

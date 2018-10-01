@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """This module provides lazy import functionality to improve the import
 performance of nitime. For example, some parts of nitime leverage and import
 matplotlib, which is quite a big package, yet most of the nitime code does not

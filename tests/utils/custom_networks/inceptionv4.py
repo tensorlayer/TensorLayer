@@ -45,12 +45,14 @@ class InceptionV4_Network(object):
                 need_float_rescale = tf.logical_and(tf.less_equal(max_val, 1.0), tf.greater_equal(min_val, 0.0))
 
                 preprocessed = tf.cond(
-                    pred=need_int_rescale, true_fn=lambda: tf.subtract(tf.divide(preprocessed, 127.5), 1.0),
+                    pred=need_int_rescale,
+                    true_fn=lambda: tf.subtract(tf.divide(preprocessed, 127.5), 1.0),
                     false_fn=lambda: preprocessed
                 )
 
                 preprocessed = tf.cond(
-                    pred=need_float_rescale, true_fn=lambda: tf.multiply(tf.subtract(preprocessed, 0.5), 2.0),
+                    pred=need_float_rescale,
+                    true_fn=lambda: tf.multiply(tf.subtract(preprocessed, 0.5), 2.0),
                     false_fn=lambda: preprocessed
                 )
 
@@ -59,20 +61,44 @@ class InceptionV4_Network(object):
 
             # 299 x 299 x 3
             net, _ = conv_module(
-                input_layer, n_out_channel=32, filter_size=(3, 3), strides=(2, 2), padding='VALID',
-                batch_norm_init=None, is_train=is_train, use_batchnorm=True, activation_fn='ReLU', name='Conv2d_1a_3x3'
+                input_layer,
+                n_out_channel=32,
+                filter_size=(3, 3),
+                strides=(2, 2),
+                padding='VALID',
+                batch_norm_init=None,
+                is_train=is_train,
+                use_batchnorm=True,
+                activation_fn='ReLU',
+                name='Conv2d_1a_3x3'
             )
 
             # 149 x 149 x 32
             net, _ = conv_module(
-                net, n_out_channel=32, filter_size=(3, 3), strides=(1, 1), padding='VALID', batch_norm_init=None,
-                is_train=is_train, use_batchnorm=True, activation_fn='ReLU', name='Conv2d_2a_3x3'
+                net,
+                n_out_channel=32,
+                filter_size=(3, 3),
+                strides=(1, 1),
+                padding='VALID',
+                batch_norm_init=None,
+                is_train=is_train,
+                use_batchnorm=True,
+                activation_fn='ReLU',
+                name='Conv2d_2a_3x3'
             )
 
             # 147 x 147 x 32
             net, _ = conv_module(
-                net, n_out_channel=64, filter_size=(3, 3), strides=(1, 1), padding='SAME', batch_norm_init=None,
-                is_train=is_train, use_batchnorm=True, activation_fn='ReLU', name='Conv2d_2b_3x3'
+                net,
+                n_out_channel=64,
+                filter_size=(3, 3),
+                strides=(1, 1),
+                padding='SAME',
+                batch_norm_init=None,
+                is_train=is_train,
+                use_batchnorm=True,
+                activation_fn='ReLU',
+                name='Conv2d_2b_3x3'
             )
 
             # 147 x 147 x 64
@@ -82,9 +108,16 @@ class InceptionV4_Network(object):
 
                 with tf.variable_scope('Branch_1'):
                     branch_1, _ = conv_module(
-                        net, n_out_channel=96, filter_size=(3, 3), strides=(2,
-                                                                            2), padding='VALID', batch_norm_init=None,
-                        is_train=is_train, use_batchnorm=True, activation_fn='ReLU', name='Conv2d_0a_3x3'
+                        net,
+                        n_out_channel=96,
+                        filter_size=(3, 3),
+                        strides=(2, 2),
+                        padding='VALID',
+                        batch_norm_init=None,
+                        is_train=is_train,
+                        use_batchnorm=True,
+                        activation_fn='ReLU',
+                        name='Conv2d_0a_3x3'
                     )
 
                 net = tl.layers.ConcatLayer([branch_0, branch_1], concat_dim=3)
@@ -93,37 +126,81 @@ class InceptionV4_Network(object):
             with tf.variable_scope('Mixed_4a'):
                 with tf.variable_scope('Branch_0'):
                     branch_0, _ = conv_module(
-                        net, n_out_channel=64, filter_size=(1, 1), strides=(1, 1), padding='SAME', batch_norm_init=None,
-                        is_train=is_train, use_batchnorm=True, activation_fn='ReLU', name='Conv2d_0a_1x1'
+                        net,
+                        n_out_channel=64,
+                        filter_size=(1, 1),
+                        strides=(1, 1),
+                        padding='SAME',
+                        batch_norm_init=None,
+                        is_train=is_train,
+                        use_batchnorm=True,
+                        activation_fn='ReLU',
+                        name='Conv2d_0a_1x1'
                     )
 
                     branch_0, _ = conv_module(
-                        branch_0, n_out_channel=96, filter_size=(3, 3), strides=(1, 1), padding='VALID',
-                        batch_norm_init=None, is_train=is_train, use_batchnorm=True, activation_fn='ReLU',
+                        branch_0,
+                        n_out_channel=96,
+                        filter_size=(3, 3),
+                        strides=(1, 1),
+                        padding='VALID',
+                        batch_norm_init=None,
+                        is_train=is_train,
+                        use_batchnorm=True,
+                        activation_fn='ReLU',
                         name='Conv2d_1a_3x3'
                     )
 
                 with tf.variable_scope('Branch_1'):
                     branch_1, _ = conv_module(
-                        net, n_out_channel=64, filter_size=(1, 1), strides=(1, 1), padding='SAME', batch_norm_init=None,
-                        is_train=is_train, use_batchnorm=True, activation_fn='ReLU', name='Conv2d_0a_1x1'
+                        net,
+                        n_out_channel=64,
+                        filter_size=(1, 1),
+                        strides=(1, 1),
+                        padding='SAME',
+                        batch_norm_init=None,
+                        is_train=is_train,
+                        use_batchnorm=True,
+                        activation_fn='ReLU',
+                        name='Conv2d_0a_1x1'
                     )
 
                     branch_1, _ = conv_module(
-                        branch_1, n_out_channel=64, filter_size=(1, 7), strides=(1, 1), padding='SAME',
-                        batch_norm_init=None, is_train=is_train, use_batchnorm=True, activation_fn='ReLU',
+                        branch_1,
+                        n_out_channel=64,
+                        filter_size=(1, 7),
+                        strides=(1, 1),
+                        padding='SAME',
+                        batch_norm_init=None,
+                        is_train=is_train,
+                        use_batchnorm=True,
+                        activation_fn='ReLU',
                         name='Conv2d_0b_1x7'
                     )
 
                     branch_1, _ = conv_module(
-                        branch_1, n_out_channel=64, filter_size=(7, 1), strides=(1, 1), padding='SAME',
-                        batch_norm_init=None, is_train=is_train, use_batchnorm=True, activation_fn='ReLU',
+                        branch_1,
+                        n_out_channel=64,
+                        filter_size=(7, 1),
+                        strides=(1, 1),
+                        padding='SAME',
+                        batch_norm_init=None,
+                        is_train=is_train,
+                        use_batchnorm=True,
+                        activation_fn='ReLU',
                         name='Conv2d_0c_7x1'
                     )
 
                     branch_1, _ = conv_module(
-                        branch_1, n_out_channel=96, filter_size=(3, 3), strides=(1, 1), padding='VALID',
-                        batch_norm_init=None, is_train=is_train, use_batchnorm=True, activation_fn='ReLU',
+                        branch_1,
+                        n_out_channel=96,
+                        filter_size=(3, 3),
+                        strides=(1, 1),
+                        padding='VALID',
+                        batch_norm_init=None,
+                        is_train=is_train,
+                        use_batchnorm=True,
+                        activation_fn='ReLU',
                         name='Conv2d_1a_3x3'
                     )
 
@@ -134,9 +211,16 @@ class InceptionV4_Network(object):
                 with tf.variable_scope('Branch_0'):
                     # 299 x 299 x 3
                     branch_0, _ = conv_module(
-                        net, n_out_channel=192, filter_size=(3, 3), strides=(2,
-                                                                             2), padding='VALID', batch_norm_init=None,
-                        is_train=is_train, use_batchnorm=True, activation_fn='ReLU', name='Conv2d_1a_3x3'
+                        net,
+                        n_out_channel=192,
+                        filter_size=(3, 3),
+                        strides=(2, 2),
+                        padding='VALID',
+                        batch_norm_init=None,
+                        is_train=is_train,
+                        use_batchnorm=True,
+                        activation_fn='ReLU',
+                        name='Conv2d_1a_3x3'
                     )
 
                 with tf.variable_scope('Branch_1'):
@@ -178,7 +262,10 @@ class InceptionV4_Network(object):
 
                     # 8 x 8 x 1536
                     net = tl.layers.MeanPool2d(
-                        net, filter_size=net.outputs.get_shape()[1:3], strides=(1, 1), padding='VALID',
+                        net,
+                        filter_size=net.outputs.get_shape()[1:3],
+                        strides=(1, 1),
+                        padding='VALID',
                         name='AvgPool_1a'
                     )
 
@@ -188,8 +275,13 @@ class InceptionV4_Network(object):
 
                     # 1536
                     net, _ = dense_module(
-                        net, n_units=1001, activation_fn="softmax", use_batchnorm=False, batch_norm_init=None,
-                        is_train=is_train, name="Logits"
+                        net,
+                        n_units=1001,
+                        activation_fn="softmax",
+                        use_batchnorm=False,
+                        batch_norm_init=None,
+                        is_train=is_train,
+                        name="Logits"
                     )
 
             return net

@@ -5,9 +5,8 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'ExpandDimsLayer',
@@ -22,8 +21,6 @@ class ExpandDimsLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     axis : int
         The dimension index at which to expand the shape of input.
     name : str
@@ -39,21 +36,31 @@ class ExpandDimsLayer(Layer):
     [None, 100, 1]
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            axis,
-            name='expand_dims',
+        self,
+        axis=0,
+        name='expand_dims',
     ):
-        super(ExpandDimsLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ExpandDimsLayer  %s: axis: %d" % (self.name, axis))
+        self.axis = axis
+        self.name = name
 
-        with tf.variable_scope(name):
-            self.outputs = tf.expand_dims(self.inputs, axis=axis)
+        super(ExpandDimsLayer, self).__init__()
 
-        self._add_layers(self.outputs)
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("axis: %d" % self.axis)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        with tf.variable_scope(self.name):
+            self._temp_data['outputs'] = tf.expand_dims(self._temp_data['inputs'], axis=self.axis)
 
 
 class TileLayer(Layer):
@@ -63,8 +70,6 @@ class TileLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     multiples: tensor
         Must be one of the following types: int32, int64.
         1-D Length must be the same as the number of dimensions in input.
@@ -83,14 +88,24 @@ class TileLayer(Layer):
     [None, 100, 3]
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, multiples=None, name='tile'):
+    def __init__(self, multiples=None, name='tile'):
 
-        super(TileLayer, self).__init__(prev_layer=prev_layer, name=name)
+        self.multiples = multiples
+        self.name = name
 
-        logging.info("TileLayer  %s: multiples: %s" % (self.name, multiples))
+        super(TileLayer, self).__init__()
 
-        with tf.variable_scope(name):
-            self.outputs = tf.tile(self.inputs, multiples=multiples)
+    def __str__(self):
+        additional_str = []
 
-        self._add_layers(self.outputs)
+        try:
+            additional_str.append("multiples: %s" % self.multiples)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        with tf.variable_scope(self.name):
+            self._temp_data['outputs'] = tf.tile(self._temp_data['inputs'], multiples=self.multiples)

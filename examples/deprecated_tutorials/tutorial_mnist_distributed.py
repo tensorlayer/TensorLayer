@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """Alpha Version for Distributed Training
 
 you can test this example in your local machine using 2 workers and 1 ps like below,
@@ -52,13 +53,13 @@ with tf.device(device_fn):
     y_op = tf.argmax(tf.nn.softmax(y), 1)
 
     # define the optimizer
-    train_params = network.all_params
+    train_params = network.all_weights
     train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_params)
 
     with tl.distributed.DistributedSession(task_spec=task_spec) as sess:
         # print network information
         if task_spec.is_master():
-            network.print_params(session=sess)
+            network.print_weights(session=sess)
             network.print_layers()
             print_freq = 5
             eval_train = False
@@ -79,4 +80,4 @@ with tf.device(device_fn):
             tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)
 
             # save the network to .npz file
-            tl.files.save_npz(network.all_params, name='model.npz')
+            tl.files.save_npz(network.all_weights, name='model.npz')

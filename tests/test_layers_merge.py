@@ -35,8 +35,8 @@ class Layer_Merge_Test(CustomTestCase):
 
         cls.data["net_vector1"] = dict()
         cls.data["net_vector1"]["layers"] = net_v1.all_layers
-        cls.data["net_vector1"]["params"] = net_v1.all_params
-        cls.data["net_vector1"]["n_params"] = net_v1.count_params()
+        cls.data["net_vector1"]["params"] = net_v1.all_weights
+        cls.data["net_vector1"]["n_params"] = net_v1.count_weights()
 
         net_v2_1 = tl.layers.DenseLayer(inputs, n_units=100, act=tf.nn.relu, name='net_0')
         net_v2_2 = tl.layers.DenseLayer(inputs, n_units=100, act=tf.nn.relu, name='net_1')
@@ -47,8 +47,8 @@ class Layer_Merge_Test(CustomTestCase):
 
         cls.data["net_vector2"] = dict()
         cls.data["net_vector2"]["layers"] = net_v2.all_layers
-        cls.data["net_vector2"]["params"] = net_v2.all_params
-        cls.data["net_vector2"]["n_params"] = net_v2.count_params()
+        cls.data["net_vector2"]["params"] = net_v2.all_weights
+        cls.data["net_vector2"]["n_params"] = net_v2.count_weights()
 
         net_v3_1 = tl.layers.DenseLayer(inputs, n_units=100, act=tf.nn.relu, name='net_a')
         net_v3_2 = tl.layers.DenseLayer(inputs, n_units=100, act=tf.nn.relu, name='net_b')
@@ -59,8 +59,8 @@ class Layer_Merge_Test(CustomTestCase):
 
         cls.data["net_vector3"] = dict()
         cls.data["net_vector3"]["layers"] = net_v3.all_layers
-        cls.data["net_vector3"]["params"] = net_v3.all_params
-        cls.data["net_vector3"]["n_params"] = net_v3.count_params()
+        cls.data["net_vector3"]["params"] = net_v3.all_weights
+        cls.data["net_vector3"]["n_params"] = net_v3.count_weights()
 
         #############
         #   Image   #
@@ -79,8 +79,8 @@ class Layer_Merge_Test(CustomTestCase):
         cls.data["net_image1"] = dict()
         cls.data["net_image1"]["shape"] = net_im1.outputs.get_shape().as_list()
         cls.data["net_image1"]["layers"] = net_im1.all_layers
-        cls.data["net_image1"]["params"] = net_im1.all_params
-        cls.data["net_image1"]["n_params"] = net_im1.count_params()
+        cls.data["net_image1"]["params"] = net_im1.all_weights
+        cls.data["net_image1"]["n_params"] = net_im1.count_weights()
 
         net_im2 = tl.layers.ElementwiseLayer([net_im1_1, net_im1_2], combine_fn=tf.minimum, name='minimum2')
 
@@ -90,8 +90,8 @@ class Layer_Merge_Test(CustomTestCase):
         cls.data["net_image2"] = dict()
         cls.data["net_image2"]["shape"] = net_im2.outputs.get_shape().as_list()
         cls.data["net_image2"]["layers"] = net_im2.all_layers
-        cls.data["net_image2"]["params"] = net_im2.all_params
-        cls.data["net_image2"]["n_params"] = net_im2.count_params()
+        cls.data["net_image2"]["params"] = net_im2.all_weights
+        cls.data["net_image2"]["n_params"] = net_im2.count_weights()
 
         net_im3 = tl.layers.ElementwiseLambdaLayer([net_im1_1, net_im1_2], fn=lambda a, b: a * b, name='multiply2')
 
@@ -101,8 +101,8 @@ class Layer_Merge_Test(CustomTestCase):
         cls.data["net_image3"] = dict()
         cls.data["net_image3"]["shape"] = net_im3.outputs.get_shape().as_list()
         cls.data["net_image3"]["layers"] = net_im3.all_layers
-        cls.data["net_image3"]["params"] = net_im3.all_params
-        cls.data["net_image3"]["n_params"] = net_im3.count_params()
+        cls.data["net_image3"]["params"] = net_im3.all_weights
+        cls.data["net_image3"]["n_params"] = net_im3.count_weights()
 
     @classmethod
     def tearDownClass(cls):

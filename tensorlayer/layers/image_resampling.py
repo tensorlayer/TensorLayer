@@ -1,13 +1,14 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import numpy as np
+
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'UpSampling2dLayer',
@@ -16,14 +17,11 @@ __all__ = [
 
 
 class UpSampling2dLayer(Layer):
-    """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer.
-
-    See `tf.image.resize_images <https://www.tensorflow.org/api_docs/python/tf/image/resize_images>`__.
+    """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer, see `tf.image.resize_images
+    <https://www.tensorflow.org/api_docs/python/tf/image/resize_images>`__.
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer with 4-D Tensor of the shape (batch, height, width, channels) or 3-D Tensor of the shape (height, width, channels).
     size : tuple of int/float
         (height, width) scale factor or new size of height and width.
     is_scale : boolean
@@ -38,65 +36,101 @@ class UpSampling2dLayer(Layer):
         If True, align the corners of the input and output. Default is False.
     name : str
         A unique layer name.
+
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            size,
-            is_scale=True,
-            method=0,
-            align_corners=False,
-            name='upsample2d_layer',
+        self,
+        size,
+        is_scale=True,
+        method=0,
+        align_corners=False,
+        name='upsample2d_layer',
     ):
-        super(UpSampling2dLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info(
-            "UpSampling2dLayer %s: is_scale: %s size: %s method: %d align_corners: %s" %
-            (self.name, is_scale, size, method, align_corners)
-        )
+        if not isinstance(size, (list, tuple)):
+            raise AssertionError("`size` argument should be a `list` or a `tuple`")
 
-        if not isinstance(size, (list, tuple)) and len(size) == 2:
-            raise AssertionError()
+        if len(size) != 2:
+            raise AssertionError("`size` argument should be of length 2")
 
-        if len(self.inputs.get_shape()) == 3:
-            if is_scale:
-                size_h = size[0] * tf.shape(self.inputs)[0]
-                size_w = size[1] * tf.shape(self.inputs)[1]
-                size = [size_h, size_w]
+        self.size = size
+        self.is_scale = is_scale
+        self.method = method
+        self.align_corners = align_corners
+        self.name = name
 
-        elif len(self.inputs.get_shape()) == 4:
-            if is_scale:
-                size_h = size[0] * tf.shape(self.inputs)[1]
-                size_w = size[1] * tf.shape(self.inputs)[2]
-                size = [size_h, size_w]
+        super(UpSampling2dLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("is_scale: %s" % self.is_scale)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("size: {}".format(self.size))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("method: %s" % self.method)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("align_corners: %s" % self.align_corners)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        if len(self._temp_data['inputs'].shape) == 3:
+            x_pos, y_pos = (0, 1)
+
+        elif len(self._temp_data['inputs'].shape) == 4:
+            x_pos, y_pos = (1, 2)
 
         else:
-            raise Exception("Donot support shape %s" % tf.shape(self.inputs))
+            raise RuntimeError("The input shape: %s is not supported" % tf.shape(self._temp_data['inputs']))
 
-        with tf.variable_scope(name):
-            try:
-                self.outputs = tf.image.resize_images(
-                    self.inputs, size=size, method=method, align_corners=align_corners
-                )
-            except Exception:  # for TF 0.10
-                self.outputs = tf.image.resize_images(
-                    self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners
-                )
+        with tf.variable_scope(self.name):
 
-        self._add_layers(self.outputs)
+            if self.is_scale:
+                if all(isinstance(x, int) for x in self.size):
+                    if None not in [
+                        self._temp_data['inputs'].get_shape()[x_pos]._value,
+                        self._temp_data['inputs'].get_shape()[y_pos]._value
+                    ]:
+                        size_h = self._temp_data['inputs'].get_shape()[x_pos] * self.size[0]
+                        size_w = self._temp_data['inputs'].get_shape()[y_pos] * self.size[1]
+                    else:
+                        size_h = tf.shape(self._temp_data['inputs'])[x_pos] * self.size[0]
+                        size_w = tf.shape(self._temp_data['inputs'])[y_pos] * self.size[1]
+
+                    _size = [size_h, size_w]
+
+                else:
+                    raise ValueError("all elements of tuple `size` hyperparameter should of type `int`")
+
+            else:
+                _size = self.size
+
+            self._temp_data['outputs'] = tf.image.resize_images(
+                self._temp_data['inputs'], size=_size, method=self.method, align_corners=self.align_corners
+            )
+            self._temp_data['outputs'] = tf.cast(self._temp_data['outputs'], self._temp_data['inputs'].dtype)
 
 
 class DownSampling2dLayer(Layer):
-    """The :class:`DownSampling2dLayer` class is down-sampling 2D layer.
-
-    See `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
+    """The :class:`DownSampling2dLayer` class is down-sampling 2D layer, see `tf.image.resize_images
+    <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
 
     Parameters
-    ----------
-    prev_layer : :class:`Layer`
-        Previous layer with 4-D Tensor in the shape of (batch, height, width, channels) or 3-D Tensor in the shape of (height, width, channels).
     size : tuple of int/float
         (height, width) scale factor or new size of height and width.
     is_scale : boolean
@@ -111,51 +145,110 @@ class DownSampling2dLayer(Layer):
         If True, exactly align all 4 corners of the input and output. Default is False.
     name : str
         A unique layer name.
+
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            size,
-            is_scale=True,
-            method=0,
-            align_corners=False,
-            name='downsample2d_layer',
+        self,
+        size,
+        is_scale=True,
+        method=0,
+        align_corners=False,
+        name='downsample2d_layer',
     ):
-        super(DownSampling2dLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info(
-            "DownSampling2dLayer %s: is_scale: %s size: %s method: %d, align_corners: %s" %
-            (self.name, is_scale, size, method, align_corners)
-        )
+        if not isinstance(size, (list, tuple)):
+            raise AssertionError("`size` argument should be a `list` or a `tuple`")
 
-        if not isinstance(size, (list, tuple)) and len(size) == 2:
-            raise AssertionError()
+        if len(size) != 2:
+            raise AssertionError("`size` argument should be of length 2")
 
-        if len(self.inputs.get_shape()) == 3:
-            if is_scale:
-                size_h = size[0] * tf.shape(self.inputs)[0]
-                size_w = size[1] * tf.shape(self.inputs)[1]
-                size = [size_h, size_w]
+        self.size = size
+        self.is_scale = is_scale
+        self.method = method
+        self.align_corners = align_corners
+        self.name = name
 
-        elif len(self.inputs.get_shape()) == 4:
-            if is_scale:
-                size_h = size[0] * tf.shape(self.inputs)[1]
-                size_w = size[1] * tf.shape(self.inputs)[2]
-                size = [size_h, size_w]
+        super(DownSampling2dLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("is_scale: %s" % self.is_scale)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("size: {}".format(self.size))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("method: %s" % self.method)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("align_corners: %s" % self.align_corners)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def build(self):
+
+        if len(self._temp_data['inputs'].shape) == 3:
+            x_pos, y_pos = (0, 1)
+
+        elif len(self._temp_data['inputs'].shape) == 4:
+            x_pos, y_pos = (1, 2)
 
         else:
-            raise Exception("Do not support shape %s" % tf.shape(self.inputs))
+            raise RuntimeError("The input shape: %s is not supported" % tf.shape(self._temp_data['inputs']))
 
-        with tf.variable_scope(name):
-            try:
-                self.outputs = tf.image.resize_images(
-                    self.inputs, size=size, method=method, align_corners=align_corners
-                )
-            except Exception:  # for TF 0.10
-                self.outputs = tf.image.resize_images(
-                    self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners
-                )
+        with tf.variable_scope(self.name):
 
-        self._add_layers(self.outputs)
+            if self.is_scale:
+                if all(isinstance(x, int) for x in self.size):
+                    if None not in [
+                        self._temp_data['inputs'].get_shape()[x_pos]._value,
+                        self._temp_data['inputs'].get_shape()[y_pos]._value
+                    ]:
+
+                        size_h = np.ceil(int(self._temp_data['inputs'].get_shape()[x_pos]) / float(self.size[0])
+                                        ).astype(np.int32)
+                        size_w = np.ceil(int(self._temp_data['inputs'].get_shape()[y_pos]) / float(self.size[1])
+                                        ).astype(np.int32)
+
+                    else:
+                        size_h = np.ceil(tf.shape(self._temp_data['inputs'])[x_pos] / np.float32(self.size[0])
+                                        ).astype(np.int32)
+                        size_w = np.ceil(tf.shape(self._temp_data['inputs'])[y_pos] / np.float32(self.size[1])
+                                        ).astype(np.int32)
+
+                elif all(isinstance(x, float) for x in self.size):
+                    if None not in [
+                        self._temp_data['inputs'].get_shape()[x_pos]._value,
+                        self._temp_data['inputs'].get_shape()[y_pos]._value
+                    ]:
+                        size_h = np.ceil(int(self._temp_data['inputs'].get_shape()[x_pos]) * self.size[0]
+                                        ).astype(np.int32)
+                        size_w = np.ceil(int(self._temp_data['inputs'].get_shape()[y_pos]) * self.size[1]
+                                        ).astype(np.int32)
+                    else:
+                        size_h = np.ceil(tf.shape(self._temp_data['inputs'])[x_pos] * self.size[0]).astype(np.int32)
+                        size_w = np.ceil(tf.shape(self._temp_data['inputs'])[y_pos] * self.size[1]).astype(np.int32)
+
+                else:
+                    raise ValueError("all elements of tuple `size` hyperparameter should be either `int` or `float`")
+
+                _size = [size_h, size_w]
+
+            else:
+                _size = self.size
+
+            self._temp_data['outputs'] = tf.image.resize_images(
+                self._temp_data['inputs'], size=_size, method=self.method, align_corners=self.align_corners
+            )
+            self._temp_data['outputs'] = tf.cast(self._temp_data['outputs'], self._temp_data['inputs'].dtype)

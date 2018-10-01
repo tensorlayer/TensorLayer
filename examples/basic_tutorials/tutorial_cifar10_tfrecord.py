@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """Reimplementation of the TensorFlow official CIFAR-10 CNN tutorials.
 
 - 1. This model has 1,068,298 paramters, after few hours of training with GPU,
@@ -98,7 +99,8 @@ def read_and_decode(filename, is_train=None):
     reader = tf.TFRecordReader()
     _, serialized_example = reader.read(filename_queue)
     features = tf.parse_single_example(
-        serialized_example, features={
+        serialized_example,
+        features={
             'label': tf.FixedLenFeature([], tf.int64),
             'img_raw': tf.FixedLenFeature([], tf.string),
         }
@@ -187,24 +189,23 @@ with tf.device('/cpu:0'):
     )
 
     def model(x_crop, y_, reuse):
-        """For more simplified CNN APIs, check tensorlayer.org."""
         W_init = tf.truncated_normal_initializer(stddev=5e-2)
         W_init2 = tf.truncated_normal_initializer(stddev=0.04)
         b_init2 = tf.constant_initializer(value=0.1)
         with tf.variable_scope("model", reuse=reuse):
-            net = InputLayer(x_crop, name='input')
-            net = Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn1')
-            net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
-            net = LocalResponseNormLayer(net, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm1')
+            net = InputLayer(name='input')(x_crop)
+            net = Conv2d(64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn1')(net)
+            net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(net)
+            net = LocalResponseNormLayer(depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm1')(net)
 
-            net = Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn2')
-            net = LocalResponseNormLayer(net, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm2')
-            net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
+            net = Conv2d(64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn2')(net)
+            net = LocalResponseNormLayer(depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm2')(net)
+            net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(net)
 
-            net = FlattenLayer(net, name='flatten')
-            net = DenseLayer(net, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')
-            net = DenseLayer(net, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')
-            net = DenseLayer(net, n_units=10, act=None, W_init=W_init2, name='output')
+            net = FlattenLayer(name='flatten')(net)
+            net = DenseLayer(384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')(net)
+            net = DenseLayer(192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')(net)
+            net = DenseLayer(n_units=10, act=None, W_init=W_init2, name='output')(net)
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -226,19 +227,19 @@ with tf.device('/cpu:0'):
         W_init2 = tf.truncated_normal_initializer(stddev=0.04)
         b_init2 = tf.constant_initializer(value=0.1)
         with tf.variable_scope("model", reuse=reuse):
-            net = InputLayer(x_crop, name='input')
-            net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn1')
-            net = BatchNormLayer(net, decay=0.99, is_train=is_train, act=tf.nn.relu, name='batch1')
-            net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
+            net = InputLayer(name='input')(x_crop)
+            net = Conv2d(64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn1')(net)
+            net = BatchNormLayer(decay=0.99, act=tf.nn.relu, name='batch1')(net, is_train=is_train)
+            net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(net)
 
-            net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn2')
-            net = BatchNormLayer(net, decay=0.99, is_train=is_train, act=tf.nn.relu, name='batch2')
-            net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
+            net = Conv2d(64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn2')(net)
+            net = BatchNormLayer(decay=0.99, act=tf.nn.relu, name='batch2')(net, is_train=is_train)
+            net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(net)
 
-            net = FlattenLayer(net, name='flatten')
-            net = DenseLayer(net, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')
-            net = DenseLayer(net, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')
-            net = DenseLayer(net, n_units=10, act=None, W_init=W_init2, name='output')
+            net = FlattenLayer(name='flatten')
+            net = DenseLayer(384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')(net)
+            net = DenseLayer(192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')(net)
+            net = DenseLayer(n_units=10, act=None, W_init=W_init2, name='output')(net)
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')

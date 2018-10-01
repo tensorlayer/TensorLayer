@@ -16,7 +16,7 @@ def model(x, is_train=True, reuse=False, name_scope="env1"):
     with tf.variable_scope(name_scope, reuse=reuse):
         net = tl.layers.InputLayer(x, name='input')
         net = tl.layers.TimeDistributedLayer(
-            net, layer_class=tl.layers.DenseLayer, args={
+            net, layer_class=tl.layers.DenseLayer, layer_args={
                 'n_units': 50,
                 'name': 'dense'
             }, name='time_dense'
@@ -37,7 +37,7 @@ class Layer_Time_Distributed_Test(CustomTestCase):
         net = model(cls.x, is_train=True, reuse=False)
 
         cls.net_shape = net.outputs.get_shape().as_list()
-        cls.n_params = net.count_params()
+        cls.n_params = net.count_weights()
         net.print_params(False)
 
     @classmethod

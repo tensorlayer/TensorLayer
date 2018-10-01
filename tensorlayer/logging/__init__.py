@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """
 TensorLayer provides rich layer implementations trailed for
 various benchmarks and domain-specific problems. In addition, we also
@@ -30,5 +31,6 @@ __all__ = [
     'warn',
     'warning',
     'set_verbosity',
-    'get_verbosity'
+    'get_verbosity',
+    'temp_verbosity',
 ]

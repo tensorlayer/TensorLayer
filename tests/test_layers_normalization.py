@@ -26,9 +26,9 @@ def model(x, is_train=True, reuse=False):
         n = tl.layers.GroupNormLayer(n, groups=40, data_format='channels_first', name='groupnorm')
         n.outputs = tf.reshape(n.outputs, [-1, 100, 100, 80])
         n = tl.layers.SwitchNormLayer(n, name='switchnorm')
-        n = tl.layers.QuanConv2dWithBN(n, n_filter=3, is_train=is_train, name='quan_cnn_with_bn')
+        n = tl.layers.QuantizedConv2dWithBN(n, n_filter=3, is_train=is_train, name='quan_cnn_with_bn')
         n = tl.layers.FlattenLayer(n, name='flatten')
-        n = tl.layers.QuanDenseLayerWithBN(n, n_units=10, name='quan_dense_with_bn')
+        n = tl.layers.QuantizedDenseWithBN(n, n_units=10, name='quan_dense_with_bn')
     return n
 
 
@@ -52,11 +52,11 @@ class Layer_Normalization_Test(CustomTestCase):
         cls.data["train_network"]["layers"] = net_train.all_layers
         cls.data["eval_network"]["layers"] = net_eval.all_layers
 
-        cls.data["train_network"]["params"] = net_train.all_params
+        cls.data["train_network"]["params"] = net_train.all_weights
 
-        cls.data["train_network"]["n_params"] = net_train.count_params()
+        cls.data["train_network"]["n_params"] = net_train.count_weights()
 
-        print(net_train.count_params())
+        print(net_train.count_weights())
 
     @classmethod
     def tearDownClass(cls):

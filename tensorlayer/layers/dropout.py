@@ -9,6 +9,7 @@ from tensorlayer.layers.core import LayersConfig
 from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'DropoutLayer',
@@ -22,16 +23,12 @@ class DropoutLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     keep : float
         The keeping probability.
         The lower the probability it is, the more activations are set to zero.
     is_fix : boolean
         Fixing probability or nor. Default is False.
         If True, the keeping probability is fixed and cannot be changed via `feed_dict`.
-    is_train : boolean
-        Trainable or not. If False, skip this layer. Default is True.
     seed : int or None
         The seed for random dropout.
     name : str
@@ -75,34 +72,62 @@ class DropoutLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            keep=0.5,
-            is_fix=False,
-            is_train=True,
-            seed=None,
-            name='dropout_layer',
+        self,
+        keep=0.5,
+        is_fix=False,
+        seed=None,
+        name='dropout_layer',
     ):
-        super(DropoutLayer, self).__init__(prev_layer=prev_layer, name=name)
+        self.keep = keep
+        self.is_fix = is_fix
+        self.seed = seed
+        self.name = name
 
-        logging.info("DropoutLayer %s: keep: %f is_fix: %s" % (self.name, keep, is_fix))
+        super(DropoutLayer, self).__init__()
 
-        if is_train is False:
-            logging.info("  skip DropoutLayer")
-            self.outputs = prev_layer.outputs
+    def __str__(self):
+
+        additional_str = []
+
+        if self._temp_data['is_train']:
+
+            try:
+                additional_str.append("keep: %f" % self.keep)
+            except AttributeError:
+                pass
+
+            try:
+                additional_str.append("is_fix: %s" % self.is_fix)
+            except AttributeError:
+                pass
+
+            return self._str(additional_str)
 
         else:
+            return self._skipped_layer_str()
 
-            # The name of placeholder for keep_prob is the same with the name of the Layer.
-            if is_fix:
-                self.outputs = tf.nn.dropout(self.inputs, keep, seed=seed, name=name)
-            else:
-                LayersConfig.set_keep[name] = tf.placeholder(LayersConfig.tf_dtype)
-                self.outputs = tf.nn.dropout(self.inputs, LayersConfig.set_keep[name], seed=seed, name=name)  # 1.2
+    def build(self):
 
-            if is_fix is False:
-                self.all_drop.update({LayersConfig.set_keep[name]: keep})
+        if self._temp_data['is_train']:
 
-            self._add_layers(self.outputs)
+            with tf.variable_scope(self.name):
+                # The name of placeholder for keep_prob is the same with the name of the Layer.
+                if self.is_fix:
+                    self._temp_data['outputs'] = tf.nn.dropout(
+                        self._temp_data['inputs'], self.keep, seed=self.seed, name="dropout_op"
+                    )
+
+                else:
+                    keep_plh = tf.placeholder(self._temp_data['inputs'].dtype, shape=())
+
+                    self._add_local_drop_plh(keep_plh, self.keep)
+
+                    LayersConfig.set_keep[self.name] = keep_plh
+
+                    self._temp_data['outputs'] = tf.nn.dropout(
+                        self._temp_data['inputs'], keep_plh, seed=self.seed, name="dropout_op"
+                    )
+
+        else:
+            self._temp_data['outputs'] = self._temp_data['inputs']
