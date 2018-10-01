@@ -61,8 +61,19 @@ class CustomNetwork_2D_Test(CustomTestCase):
                     net = fire_module(net, 32, 24, "fire_module_2")
 
                     with tf.variable_scope("deformable_conv"):
-                        offset1 = tl.layers.Conv2d(n_filter=18, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='offset_layer')(net)
-                        net = tl.layers.DeformableConv2d(n_filter=32, filter_size=(3, 3), act=tf.nn.relu, name='deformable_conv_layer')(net, offset1)
+
+                        offset1 = tl.layers.Conv2d(
+                            n_filter=18,
+                            filter_size=(3, 3),
+                            strides=(1, 1),
+                            act=tf.nn.relu,
+                            padding='SAME',
+                            name='offset_layer'
+                        )(net)
+
+                        net = tl.layers.DeformableConv2d(
+                            n_filter=32, filter_size=(3, 3), act=tf.nn.relu, name='deformable_conv_layer'
+                        )(net, offset1)
 
                     return input_layer, net
 

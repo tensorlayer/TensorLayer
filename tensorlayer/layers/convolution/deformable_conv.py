@@ -176,7 +176,7 @@ class DeformableConv2d(Layer):
             weight_matrix = self._get_tf_variable(
                 name='W_deformableconv2d',
                 shape=(1, 1, w_shape[0] * w_shape[1], w_shape[-2], w_shape[-1]),
-                dtype=input_layer.dtype,
+                dtype=input_dtype,
                 trainable=self._temp_data['is_train'],
                 initializer=self.W_init,
                 **self.W_init_args
@@ -188,7 +188,7 @@ class DeformableConv2d(Layer):
                 b = self._get_tf_variable(
                     name='b_deformableconv2d',
                     shape=(w_shape[-1]),
-                    dtype=input_layer.dtype,
+                    dtype=input_dtype,
                     trainable=self._temp_data['is_train'],
                     initializer=self.b_init,
                     **self.b_init_args
@@ -196,8 +196,10 @@ class DeformableConv2d(Layer):
 
                 _tensor = tf.nn.bias_add(_tensor, b, name='bias_add')
 
+            _tensor = self._apply_activation(_tensor)
+
             self._temp_data['outputs'] = tf.reshape(
-                tensor=self._apply_activation(_tensor), shape=[tf.shape(input_layer)[0], input_h, input_w, w_shape[-1]]
+                tensor=_tensor, shape=[tf.shape(input_layer)[0], input_h, input_w, w_shape[-1]]
             )
 
     @private_method
@@ -329,7 +331,8 @@ class DeformableConv2d(Layer):
         # offsets = tf.tile(offsets, [channel, 1, 1, 1, 1])
 
         coords = tf.expand_dims(grid_offset, 0)  # grid_offset --> (1, h, w, n, 2)
-        coords = tf.cast(tf.tile(coords, [batch_size, 1, 1, 1, 1]), input_dtype) + offsets # grid_offset --> (b, h, w, n, 2)
+        coords = tf.cast(tf.tile(coords, [batch_size, 1, 1, 1, 1]),
+                         input_dtype) + offsets  # grid_offset --> (b, h, w, n, 2)
 
         # clip out of bound
         coords = tf.stack(
