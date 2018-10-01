@@ -175,6 +175,8 @@ class Network_Sequential_1D_Test(CustomTestCase):
             cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand_layer_30'))
             cls.model.add(tl.layers.TileLayer(multiples=[1, 100, 1], name='tile_layer_30'))
 
+            cls.model.add(tl.layers.SignLayer(name='sign_layer_31'))
+
             plh = tf.placeholder(tf.float16, (100, 32))
 
             cls.train_model = cls.model.build(plh, reuse=False, is_train=True)
@@ -207,9 +209,9 @@ class Network_Sequential_1D_Test(CustomTestCase):
             self.assertEqual(len(self.model.get_all_weights()), 63)
 
     def test_count_layers(self):
-        self.assertEqual(self.train_model.count_layers(), 60)
-        self.assertEqual(self.test_model.count_layers(), 60)
-        self.assertEqual(self.model.count_layers(), 60)
+        self.assertEqual(self.train_model.count_layers(), 61)
+        self.assertEqual(self.test_model.count_layers(), 61)
+        self.assertEqual(self.model.count_layers(), 61)
 
     def test_layer_outputs_dtype(self):
 
@@ -410,6 +412,9 @@ class Network_Sequential_1D_Test(CustomTestCase):
 
         self.assertEqual(self.train_model["tile_layer_30"].outputs.shape, (100, 100, 2))
         self.assertEqual(self.test_model["tile_layer_30"].outputs.shape, (100, 100, 2))
+
+        self.assertEqual(self.train_model["sign_layer_31"].outputs.shape, (100, 100, 2))
+        self.assertEqual(self.test_model["sign_layer_31"].outputs.shape, (100, 100, 2))
 
 
 if __name__ == '__main__':

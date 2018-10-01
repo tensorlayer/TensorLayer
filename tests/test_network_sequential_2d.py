@@ -414,6 +414,8 @@ class Network_Sequential_2D_Test(CustomTestCase):
                 )
             )
 
+            cls.model.add(tl.layers.SignLayer(name='sign_layer_39'))
+
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 
             cls.train_model = cls.model.build(plh, reuse=False, is_train=True)
@@ -446,9 +448,9 @@ class Network_Sequential_2D_Test(CustomTestCase):
             self.assertEqual(len(self.model.get_all_weights()), 60)
 
     def test_count_layers(self):
-        self.assertEqual(self.train_model.count_layers(), 53)
-        self.assertEqual(self.test_model.count_layers(), 53)
-        self.assertEqual(self.model.count_layers(), 53)
+        self.assertEqual(self.train_model.count_layers(), 54)
+        self.assertEqual(self.test_model.count_layers(), 54)
+        self.assertEqual(self.model.count_layers(), 54)
 
     def test_layer_outputs_dtype(self):
 
@@ -625,6 +627,9 @@ class Network_Sequential_2D_Test(CustomTestCase):
 
         self.assertEqual(self.train_model["pool_layer_38"].outputs.shape, (100, 8, 8, 16))
         self.assertEqual(self.test_model["pool_layer_38"].outputs.shape, (100, 8, 8, 16))
+
+        self.assertEqual(self.train_model["sign_layer_39"].outputs.shape, (100, 8, 8, 16))
+        self.assertEqual(self.test_model["sign_layer_39"].outputs.shape, (100, 8, 8, 16))
 
 
 if __name__ == '__main__':
