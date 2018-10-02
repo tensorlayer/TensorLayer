@@ -174,11 +174,6 @@ class DynamicRNNLayer(Layer):
             pass
 
         try:
-            additional_str.append("dropout: %s" % str(self.dropout))
-        except AttributeError:
-            pass
-
-        try:
             additional_str.append("n_layer: %d" % self.n_layer)
         except AttributeError:
             pass
@@ -199,10 +194,8 @@ class DynamicRNNLayer(Layer):
             pass
 
         try:
-            if self.dropout and self._temp_data['is_train']:
-                additional_str.append('\n             enable dropout as `is_train` is True')
-            elif self.dropout and (self._temp_data['is_train'] is False):
-                additional_str.append('\n             disable dropout as `is_train` is False')
+            _dropout = str(self.dropout) if self._temp_data['is_train'] and self.dropout is not None else "disabled"
+            additional_str.append("dropout: %s" % _dropout)
         except AttributeError:
             pass
 
@@ -216,6 +209,8 @@ class DynamicRNNLayer(Layer):
 
     def build(self):
 
+        self._temp_data['dropout'] = self.dropout if self._temp_data['is_train'] else None
+
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
             self._temp_data['inputs'].get_shape().with_rank(3)
@@ -224,6 +219,7 @@ class DynamicRNNLayer(Layer):
 
         # Get the batch_size
         fixed_batch_size = self._temp_data['inputs'].get_shape().with_rank_at_least(1)[0]
+
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
             logging.info("       batch_size (concurrent processes): %d" % batch_size)
@@ -239,13 +235,13 @@ class DynamicRNNLayer(Layer):
         rnn_creator = lambda: self.cell_fn(num_units=self.n_hidden, **self.cell_init_args)
 
         # Apply dropout
-        if self.dropout and self._temp_data['is_train']:
-            if isinstance(self.dropout, (tuple, list)):
-                in_keep_prob = self.dropout[0]
-                out_keep_prob = self.dropout[1]
+        if self._temp_data['dropout'] is not None:
+            if isinstance(self._temp_data['dropout'], (tuple, list)):
+                in_keep_prob = self._temp_data['dropout'][0]
+                out_keep_prob = self._temp_data['dropout'][1]
 
-            elif isinstance(self.dropout, float):
-                in_keep_prob, out_keep_prob = self.dropout, self.dropout
+            elif isinstance(self._temp_data['dropout'], float):
+                in_keep_prob, out_keep_prob = self._temp_data['dropout'], self._temp_data['dropout']
 
             else:
                 raise Exception("Invalid dropout type (must be a 2-D tuple of " "float)")
@@ -271,7 +267,7 @@ class DynamicRNNLayer(Layer):
                 MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
 
             # cell_instance_fn2=cell_instance_fn # HanSheng
-            if self.dropout and self._temp_data['is_train']:
+            if self._temp_data['dropout'] is not None:
                 try:
                     # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)], state_is_tuple=True) # HanSheng
                     self.cell = MultiRNNCell_fn(
@@ -511,10 +507,8 @@ class BiDynamicRNNLayer(Layer):
             pass
 
         try:
-            if self.dropout and self._temp_data['is_train']:
-                additional_str.append('\n             enable dropout as `is_train` is True')
-            elif self.dropout and (self._temp_data['is_train'] is False):
-                additional_str.append('\n             disable dropout as `is_train` is False')
+            _dropout = str(self.dropout) if self._temp_data['is_train'] and self.dropout is not None else "disabled"
+            additional_str.append("dropout: %s" % _dropout)
         except AttributeError:
             pass
 
@@ -527,6 +521,8 @@ class BiDynamicRNNLayer(Layer):
         # )
 
     def build(self):
+
+        self._temp_data['dropout'] = self.dropout if self._temp_data['is_train'] else None
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
@@ -553,12 +549,12 @@ class BiDynamicRNNLayer(Layer):
             rnn_creator = lambda: self.cell_fn(num_units=self.n_hidden, **self.cell_init_args)
 
             # Apply dropout
-            if self.dropout and self._temp_data['is_train']:
-                if isinstance(self.dropout, (tuple, list)):
-                    in_keep_prob = self.dropout[0]
-                    out_keep_prob = self.dropout[1]
-                elif isinstance(self.dropout, float):
-                    in_keep_prob, out_keep_prob = self.dropout, self.dropout
+            if self._temp_data['dropout'] is not None:
+                if isinstance(self._temp_data['dropout'], (tuple, list)):
+                    in_keep_prob = self._temp_data['dropout'][0]
+                    out_keep_prob = self._temp_data['dropout'][1]
+                elif isinstance(self._temp_data['dropout'], float):
+                    in_keep_prob, out_keep_prob = self._temp_data['dropout'], self._temp_data['dropout']
                 else:
                     raise Exception("Invalid dropout type (must be a 2-D tuple of " "float)")
                 try:
@@ -596,7 +592,7 @@ class BiDynamicRNNLayer(Layer):
                 )
 
             if self.n_layer > 1:
-                if self.dropout and self._temp_data['is_train']:
+                if self._temp_data['dropout'] is not None:
                     self.fw_cell = [cell_creator(is_last=i == self.n_layer - 1) for i in range(self.n_layer)]
                     self.bw_cell = [cell_creator(is_last=i == self.n_layer - 1) for i in range(self.n_layer)]
 

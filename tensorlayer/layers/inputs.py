@@ -346,6 +346,8 @@ class EmbeddingInputlayer(Layer):
         The number of embedding dimensions.
     embeddings_dtype : TF Data Type (default: tf.float32)
         The dtype of the embeddings
+    reuse_variable_scope: Boolean
+        If True, the variable_scope will be set to reuse previously defined variables
     E_init : initializer
         The initializer for the embedding matrix.
     E_init_args : dictionary
@@ -368,6 +370,7 @@ class EmbeddingInputlayer(Layer):
         vocabulary_size=80000,
         embedding_size=200,
         embeddings_dtype=tf.float32,
+        reuse_variable_scope=False,
         E_init=tf.random_uniform_initializer(-0.1, 0.1),
         E_init_args=None,
         name='embedding',
@@ -377,9 +380,13 @@ class EmbeddingInputlayer(Layer):
         self.embedding_size = embedding_size
         self.embeddings_shape = [self.vocabulary_size, self.embedding_size]
 
+        self.reuse_variable_scope = reuse_variable_scope
+
         self.E_init = E_init
         self.embeddings_dtype = embeddings_dtype
-        self.name = name
+
+        self.name = name if not self.reuse_variable_scope else name + "_1"  # TODO: Test if "_1" already exists
+        self.vs_name = name
 
         super(EmbeddingInputlayer, self).__init__(E_init_args=E_init_args)
 
@@ -396,11 +403,16 @@ class EmbeddingInputlayer(Layer):
         except AttributeError:
             pass
 
+        try:
+            additional_str.append("reuse variable scope: %s" % self.reuse_variable_scope)
+        except AttributeError:
+            pass
+
         return self._str(additional_str)
 
     def build(self):
 
-        with tf.variable_scope(self.name):
+        with tf.variable_scope(self.vs_name, reuse=self.reuse_variable_scope):
 
             if self._temp_data['inputs'].dtype not in [tf.int32, tf.int64]:
                 raise ValueError("The inputs of this layer should be of type: `tf.int32` or `tf.int64`")

@@ -427,11 +427,6 @@ class BiRNNLayer(Layer):
             pass
 
         try:
-            additional_str.append("dropout: %s" % str(self.dropout))
-        except AttributeError:
-            pass
-
-        try:
             additional_str.append("n_layer: %d" % self.n_layer)
         except AttributeError:
             pass
@@ -457,16 +452,16 @@ class BiRNNLayer(Layer):
             pass
 
         try:
-            if self.dropout and self._temp_data['is_train']:
-                additional_str.append('\n             enable dropout as `is_train` is True')
-            elif self.dropout and (self._temp_data['is_train'] is False):
-                additional_str.append('\n             disable dropout as `is_train` is False')
+            _dropout = str(self.dropout) if self._temp_data['is_train'] and self.dropout is not None else "disabled"
+            additional_str.append("dropout: %s" % _dropout)
         except AttributeError:
             pass
 
         return self._str(additional_str)
 
     def build(self):
+
+        self._temp_data['dropout'] = self.dropout if self._temp_data['is_train'] else None
 
         fixed_batch_size = self._temp_data['inputs'].get_shape().with_rank_at_least(1)[0]
 
@@ -487,14 +482,14 @@ class BiRNNLayer(Layer):
         with tf.variable_scope(self.name, initializer=self.initializer) as vs:
             rnn_creator = lambda: self.cell_fn(num_units=self.n_hidden, **self.cell_init_args)
             # Apply dropout
-            if self.dropout and self._temp_data['is_train']:
-                # logging.info('enable dropout as is_train is True')
-                if isinstance(self.dropout, (tuple, list)):  # type(dropout) in [tuple, list]:
-                    in_keep_prob = self.dropout[0]
-                    out_keep_prob = self.dropout[1]
+            if self._temp_data['dropout'] is not None:
+                
+                if isinstance(self._temp_data['dropout'], (tuple, list)):  # type(dropout) in [tuple, list]:
+                    in_keep_prob = self._temp_data['dropout'][0]
+                    out_keep_prob = self._temp_data['dropout'][1]
 
-                elif isinstance(self.dropout, float):
-                    in_keep_prob, out_keep_prob = self.dropout, self.dropout
+                elif isinstance(self._temp_data['dropout'], float):
+                    in_keep_prob, out_keep_prob = self._temp_data['dropout'], self._temp_data['dropout']
 
                 else:
                     raise Exception("Invalid dropout type (must be a 2-D tuple of " "float)")
@@ -516,7 +511,7 @@ class BiRNNLayer(Layer):
             if self.n_layer > 1:
                 MultiRNNCell_fn = tf.contrib.rnn.MultiRNNCell
 
-                if self.dropout and self._temp_data['is_train']:
+                if self._temp_data['dropout'] is not None:
                     try:
                         self.fw_cell = MultiRNNCell_fn(
                             [cell_creator(is_last=i == self.n_layer - 1) for i in range(self.n_layer)],
@@ -575,6 +570,7 @@ class BiRNNLayer(Layer):
             if self.return_last:
                 raise Exception("Do not support return_last at the moment.")
                 # self._temp_data['outputs'] = outputs[-1]
+                
             else:
                 self._temp_data['outputs'] = outputs
                 if self.return_seq_2d:
@@ -589,8 +585,7 @@ class BiRNNLayer(Layer):
                         tf.concat(outputs, 1), [-1, self.n_steps, self.n_hidden * 2]
                     )
             # Retrieve just the RNN variables.
-            rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-            self._temp_data['local_weights'] = rnn_variables
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         # Initial states
         self._temp_data['fw_initial_state'] = self.fw_initial_state
@@ -598,4 +593,3 @@ class BiRNNLayer(Layer):
         # Final states
         self._temp_data['fw_final_state'] = fw_state
         self._temp_data['bw_final_state'] = bw_state
-        self.n_weights = len(rnn_variables)

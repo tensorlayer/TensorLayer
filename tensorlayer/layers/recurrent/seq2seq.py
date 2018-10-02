@@ -1,15 +1,16 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import contextlib
+
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.recurrent import DynamicRNNLayer
 
 from tensorlayer import logging
 
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.decorators import deprecated_args
+from tensorlayer.decorators.utils import get_network_obj
 
 
 class Seq2Seq(Layer):
@@ -41,9 +42,8 @@ class Seq2Seq(Layer):
         If None, `initial_state_encode` is zero state, it can be set by placeholder or other RNN.
     initial_state_decode : None or RNN state
         If None, `initial_state_decode` is the final state of the RNN encoder, it can be set by placeholder or other RNN.
-    dropout : tuple of float or int
+    dropout : float or None
         The input and output keep probability (input_keep_prob, output_keep_prob).
-            - If one int, input and output keep probability are the same.
     n_layer : int
         The number of RNN layers, default is 1.
     return_seq_2d : boolean
@@ -157,14 +157,43 @@ class Seq2Seq(Layer):
                 self.cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
-        # super(Seq2Seq, self).__init__(
-        #     prev_layer=[net_encode_in, net_decode_in], cell_init_args=cell_init_args, name=name
-        # )
 
-        # logging.info(
-        #     "[*] Seq2Seq %s: n_hidden: %d cell_fn: %s dropout: %s n_layer: %d" %
-        #     (self.name, n_hidden, cell_fn.__name__, dropout, n_layer)
-        # )
+        network_obj = get_network_obj()
+
+        if network_obj is not None:
+            context_manager = network_obj.stop_autoregistering_layers
+        else:
+            context_manager = contextlib.suppress()  # Context manager with no effect
+
+        with context_manager():
+
+            self.network_encode_layer = tl.layers.DynamicRNNLayer(
+                cell_fn=self.cell_fn,
+                cell_init_args=self.cell_init_args,
+                n_hidden=self.n_hidden,
+                initializer=self.initializer,
+                initial_state=self.initial_state_encode,
+                dropout=self.dropout,
+                n_layer=self.n_layer,
+                sequence_length=self.encode_sequence_length,
+                return_last=False,
+                return_seq_2d=True,
+                name='encode'
+            )
+
+            self.network_decode_layer = tl.layers.DynamicRNNLayer(
+                cell_fn=self.cell_fn,
+                cell_init_args=self.cell_init_args,
+                n_hidden=self.n_hidden,
+                initializer=self.initializer,
+                initial_state=self.initial_state_decode,
+                dropout=self.dropout,
+                n_layer=self.n_layer,
+                sequence_length=self.decode_sequence_length,
+                return_last=False,
+                return_seq_2d=self.return_seq_2d,
+                name='decode'
+            )
 
         super(Seq2Seq, self).__init__(cell_init_args=cell_init_args)
 
@@ -182,20 +211,13 @@ class Seq2Seq(Layer):
             pass
 
         try:
-            additional_str.append("dropout: %s" % self.dropout)
+            _dropout = str(self.dropout) if self._temp_data['is_train'] and self.dropout is not None else "disabled"
+            additional_str.append("dropout: %s" % _dropout)
         except AttributeError:
             pass
 
         try:
             additional_str.append("n_layer: %s" % self.n_layer)
-        except AttributeError:
-            pass
-
-        try:
-            if self.dropout and self._temp_data['is_train']:
-                additional_str.append('\n             enable dropout as `is_train` is True')
-            elif self.dropout and (self._temp_data['is_train'] is False):
-                additional_str.append('\n             disable dropout as `is_train` is True')
         except AttributeError:
             pass
 
@@ -220,53 +242,20 @@ class Seq2Seq(Layer):
             net_encode_in = self._temp_data['unprocessed_inputs'][0]
             net_decode_in = self._temp_data['unprocessed_inputs'][1]
 
-            # tl.layers.set_name_reuse(reuse)
-            # network = InputLayer(self._temp_data['inputs'], name=name+'/input')
-            network_encode_layer = DynamicRNNLayer(
-                cell_fn=self.cell_fn,
-                cell_init_args=self.cell_init_args,
-                n_hidden=self.n_hidden,
-                initializer=self.initializer,
-                initial_state=self.initial_state_encode,
-                dropout=self.dropout,
-                n_layer=self.n_layer,
-                sequence_length=self.encode_sequence_length,
-                return_last=False,
-                return_seq_2d=True,
-                name='encode'
-            )
+            self._temp_data['dropout'] = self.dropout if self._temp_data['is_train'] else None
 
-            network_encode_builtLayer = network_encode_layer(net_encode_in, is_train=self._temp_data['is_train'])
+            network_encode_builtLayer = self.network_encode_layer(net_encode_in, is_train=self._temp_data['is_train'])
 
-            network_decode_layer = DynamicRNNLayer(
-                cell_fn=self.cell_fn,
-                cell_init_args=self.cell_init_args,
-                n_hidden=self.n_hidden,
-                initializer=self.initializer,
-                initial_state=(
-                    network_encode_builtLayer.final_state
-                    if self.initial_state_decode is None else self.initial_state_decode
-                ),
-                dropout=self.dropout,
-                n_layer=self.n_layer,
-                sequence_length=self.decode_sequence_length,
-                return_last=False,
-                return_seq_2d=self.return_seq_2d,
-                name='decode'
-            )
-
-            network_decode_builtLayer = network_decode_layer(net_decode_in, is_train=self._temp_data['is_train'])
+            network_decode_builtLayer = self.network_decode_layer(net_decode_in, is_train=self._temp_data['is_train'])
 
             self._temp_data['outputs'] = network_decode_builtLayer.outputs
 
-            # rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            # Initial state
+            self._temp_data['initial_state_encode'] = network_encode_builtLayer.initial_state
+            self._temp_data['initial_state_decode'] = network_decode_builtLayer.initial_state
 
-        # Initial state
-        self._temp_data['initial_state_encode'] = network_encode_builtLayer.initial_state
-        self._temp_data['initial_state_decode'] = network_decode_builtLayer.initial_state
+            # Final state
+            self._temp_data['final_state_encode'] = network_encode_builtLayer.final_state
+            self._temp_data['final_state_decode'] = network_decode_builtLayer.final_state
 
-        # Final state
-        self._temp_data['final_state_encode'] = network_encode_builtLayer.final_state
-        self._temp_data['final_state_decode'] = network_decode_builtLayer.final_state
-
-        self._temp_data['local_weights'] = network_encode_builtLayer.local_weights + network_decode_builtLayer.local_weights
+            self._temp_data['local_weights'] = network_encode_builtLayer.local_weights + network_decode_builtLayer.local_weights

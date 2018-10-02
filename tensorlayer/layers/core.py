@@ -161,8 +161,6 @@ class Layer(BaseLayer):
 
         self.prev_layer = None
 
-        # self.layer_args = self._get_init_args(skip=4)
-
         for key in kwargs.keys():
             setattr(self, key, self._argument_dict_checkup(kwargs[key]))
 

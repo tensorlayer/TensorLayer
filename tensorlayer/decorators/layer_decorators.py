@@ -49,16 +49,19 @@ def overwrite_layername_in_network(wrapped, instance, args, kwargs):
     try:
 
         network_obj = get_network_obj()
-        result_scope = ""
 
         if network_obj is not None:
             current_var_scope = tf.get_default_graph().get_name_scope()
 
-            for i_varscope, i_modelscope in zip(current_var_scope.split("/"), network_obj.model_scope.split("/")):
-                if i_varscope != i_modelscope:
-                    result_scope += i_varscope + "/"
+            if len(current_var_scope) > 0:
 
-            instance.name = result_scope + instance.name
+                result_scope = ""
+
+                for i_varscope, i_modelscope in zip(current_var_scope.split("/"), network_obj.model_scope.split("/")):
+                    if i_varscope != i_modelscope:
+                        result_scope += i_varscope + "/"
+
+                instance.name = result_scope + instance.name
 
     except Exception as e:
         print("Except Type 3: %s - Error: %s" % (type(e), str(e)))

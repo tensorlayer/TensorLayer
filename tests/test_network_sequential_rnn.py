@@ -240,24 +240,6 @@ class Network_Sequential_Dynamic_RNN_Test(CustomTestCase):
         self.assertEqual(tensor_shape, [100, None, 30 * 2])
 
 
-class Network_Sequential_Seq2Seq(CustomTestCase):
-
-    @classmethod
-    def setUpClass(cls):
-
-        with tf.variable_scope("test_scope3"):
-            # https://github.com/tensorlayer/seq2seq-chatbot/blob/master/main.py
-            # Training Data Placeholders
-            batch_size = 10
-            encode_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="encode_seqs")
-            decode_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="decode_seqs")
-            target_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="target_seqs")
-            # target_mask = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="target_mask")
-
-            cls.model3 = tl.networks.Sequential(name="My_Sequential_Seq2Seq")
-            cls.model3.add(tl.layers.EmbeddingInputlayer(vocabulary_size=100, embedding_size=50, name='embedding'))
-
-
 if __name__ == '__main__':
 
     tf.logging.set_verbosity(tf.logging.DEBUG)

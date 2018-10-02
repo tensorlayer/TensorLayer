@@ -129,11 +129,7 @@ class CustomNetwork_EmbeddingInputlayer_Test(CustomTestCase):
 
             cls.model = MyCustomNetwork(name="my_custom_network_2")
 
-            plh = tf.placeholder(
-                tf.int32, shape=[
-                    100,
-                ], name='inputs'
-            )
+            plh = tf.placeholder(tf.int32, shape=(100, ), name='inputs')
 
             cls.train_model = cls.model.build(plh, reuse=False, is_train=True)
             cls.test_model = cls.model.build(plh, reuse=True, is_train=False)
