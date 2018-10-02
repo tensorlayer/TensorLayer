@@ -570,7 +570,7 @@ class BiRNNLayer(Layer):
             if self.return_last:
                 raise Exception("Do not support return_last at the moment.")
                 # self._temp_data['outputs'] = outputs[-1]
-                
+
             else:
                 self._temp_data['outputs'] = outputs
                 if self.return_seq_2d:
