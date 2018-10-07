@@ -23,7 +23,9 @@ def example1():
     print("apply transforms one-by-one took %fs for each image" % ((time.time() - st) / 100))
     tl.vis.save_image(xx, '_result_slow.png')
 
-def fast_affine_transfrom(image):
+import cv2
+
+def fast_affine_transform(image):
     # 1. get all affine transform matrices
     M_rotate = tl.prepro.affine_rotation_matrix(rg=20, is_random=False)
     M_flip = tl.prepro.affine_horizontal_flip_matrix(is_random=False)
@@ -36,15 +38,15 @@ def fast_affine_transfrom(image):
     # to Image coordinate (the origin on the top-left of image)
     transform_matrix = tl.prepro.transform_matrix_offset_center(M_combined, h, w)
     # 4. then we can transfrom the image once for all transformations
-    result = tl.prepro.affine_transfrom(image, transform_matrix)
+    # result = tl.prepro.affine_transform(image, transform_matrix)
+    result = tl.prepro.affine_transform_cv2(image, M_combined)  # 76 times faster
     return result
 
 def example2():
     """ B. apply all transforms once is very FAST ! """
     st = time.time()
     for _ in range(100):  # try 100 times and compute the averaged speed
-        result = fast_affine_transfrom(image)
-
+        result = fast_affine_transform(image)
     print("apply all transforms once took %fs for each image" % ((time.time() - st) / 100))  # usually 4x faster
     tl.vis.save_image(result, '_result_fast.png')
 
@@ -63,7 +65,7 @@ def example3():
         image = tf.read_file(image_path)
         image = tf.image.decode_jpeg(image, channels=3)  # get RGB with 0~1
         image = tf.image.convert_image_dtype(image, dtype=tf.float32)
-        image = tf.py_func(fast_affine_transfrom, [image], [tf.float32])
+        image = tf.py_func(fast_affine_transform, [image], [tf.float32])
         # image = tf.reshape(image, (h, w, 3))
         target = tf.reshape(target, ())
         return image, target
@@ -84,7 +86,7 @@ def example3():
     # feed `one_element` into a network, for demo, we simply get the data as follows
     n_step = round(n_epoch * n_data / batch_size)
     st = time.time()
-    for step in range(n_step):
+    for _ in range(n_step):
         images, targets = sess.run(one_element)
     print("dataset APIs took %fs for each image" % ((time.time() - st) / batch_size / n_step)) # CPU ~ 100%
 
