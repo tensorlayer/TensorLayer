@@ -464,19 +464,19 @@ def affine_respective_zoom_matrix(
 # affine transform
 def transform_matrix_offset_center(matrix, x, y):
     """Transfroms the matrix from Cartesian coordinate (the origin in the middle of image) to Image coordinate (the origin on the top-left of image).
-    
+
     Parameters
     ----------
     matrix : numpy.array
         Transform matrix.
     x and y : 2 int
         Size of image.
-        
+
     Returns
     -------
     numpy.array
         The transform matrix.
-        
+
     Examples
     --------
     - See ``tl.prepro.rotation``, ``tl.prepro.shear``, ``tl.prepro.zoom``.
