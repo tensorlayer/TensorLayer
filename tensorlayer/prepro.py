@@ -43,7 +43,6 @@ __all__ = [
     'affine_horizontal_flip_matrix',
     'affine_shift_matrix',
     'affine_shear_matrix',
-    'affine_shear_matrix2',
     'affine_zoom_matrix',
     'affine_respective_zoom_matrix',
     'transform_matrix_offset_center',
@@ -237,6 +236,7 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
 # compute affine transform matrix
 def affine_rotation_matrix(angle=(-20, 20)):
     """Get affine transform matrix for rotation.
+    OpenCV format, x is width.
 
     Parameters
     -----------
@@ -258,14 +258,15 @@ def affine_rotation_matrix(angle=(-20, 20)):
         theta = np.pi / 180 * np.random.uniform(angle[0], angle[1])
     else:
         theta = np.pi / 180 * angle
-    rotation_matrix = np.array([[np.cos(theta), -np.sin(theta), 0], \
-                                [np.sin(theta), np.cos(theta), 0], \
+    rotation_matrix = np.array([[np.cos(theta), np.sin(theta), 0], \
+                                [-np.sin(theta), np.cos(theta), 0], \
                                 [0, 0, 1]])
     return rotation_matrix
 
 
 def affine_horizontal_flip_matrix(prob=0.5):
     """Get affine transform matrix for horizontal flipping.
+    OpenCV format, x is width.
 
     Parameters
     ----------
@@ -280,8 +281,8 @@ def affine_horizontal_flip_matrix(prob=0.5):
     """
     factor = np.random.uniform(0, 1)
     if prob >= factor:
-        filp_matrix = np.array([[ 1. , 0., 0. ], \
-              [ 0., -1., 0. ], \
+        filp_matrix = np.array([[ -1. , 0., 0. ], \
+              [ 0., 1., 0. ], \
               [ 0., 0., 1. ]])
         return filp_matrix
     else:
@@ -291,22 +292,22 @@ def affine_horizontal_flip_matrix(prob=0.5):
         return filp_matrix
 
 
-
-def affine_shift_matrix(wrg=0.1, hrg=0.1, h=200, w=200, is_random=False):
+def affine_shift_matrix(wrg=(-0.1, 0.1), hrg=(-0.1, 0.1), w=200, h=200):
     """Get affine transform matrix for shifting.
+    OpenCV format, x is width.
 
     Parameters
     -----------
-    wrg : float
-        Percentage of shift in axis x, usually -0.25 ~ 0.25.
-    hrg : float
-        Percentage of shift in axis y, usually -0.25 ~ 0.25.
-    h : int
-        The height of image.
-    w : int
-        The width of image.
-    is_random : boolean
-        If True, randomly shift. Default is False.
+    wrg : float or tuple of floats
+        Range to shift on width axis, -1 ~ 1.
+            - float, a fixed distance.
+            - tuple of 2 floats, randomly sample a value as the distance between these 2 values.
+    hrg : float or tuple of floats
+        Range to shift on height axis, -1 ~ 1.
+            - float, a fixed distance.
+            - tuple of 2 floats, randomly sample a value as the distance between these 2 values.
+    w, h : int
+        The width and height of the image.
 
     Returns
     -------
@@ -314,53 +315,28 @@ def affine_shift_matrix(wrg=0.1, hrg=0.1, h=200, w=200, is_random=False):
         An affine transform matrix.
 
     """
-    if is_random:
-        tx = np.random.uniform(-hrg, hrg) * h
-        ty = np.random.uniform(-wrg, wrg) * w
+    if isinstance(wrg, tuple):
+        tx = np.random.uniform(wrg[0], wrg[1]) * w
     else:
-        tx, ty = hrg * h, wrg * w
+        tx = wrg * w
+    if isinstance(hrg, tuple):
+        ty = np.random.uniform(hrg[0], hrg[1]) * h
+    else:
+        ty = hrg * h
     shift_matrix = np.array([[1, 0, tx], \
                         [0, 1, ty], \
                         [0, 0, 1]])
     return shift_matrix
 
 
-def affine_shear_matrix(intensity=0.1, is_random=False):
+def affine_shear_matrix(x_shear=(-0.1, 0.1), y_shear=(-0.1, 0.1)):
     """Get affine transform matrix for shearing.
-
-    Parameters
-    -----------
-    intensity : float
-        Percentage of shear, usually -0.5 ~ 0.5 (is_random==True), 0 ~ 0.5 (is_random==False),
-        you can have a quick try by shear(X, 1).
-    is_random : boolean
-        If True, randomly shear. Default is False.
-
-    Returns
-    -------
-    numpy.array
-        An affine transform matrix.
-
-    """
-    if is_random:
-        shear = np.random.uniform(-intensity, intensity)
-    else:
-        shear = intensity
-    shear_matrix = np.array([[1, -np.sin(shear), 0], \
-                            [0, np.cos(shear), 0], \
-                            [0, 0, 1]])
-    return shear_matrix
-
-
-def affine_shear_matrix2(shear=(0.1, 0.1), is_random=False):
-    """Get affine transform matrix for shearing.
+    OpenCV format, x is width.
 
     Parameters
     -----------
     shear : tuple of two floats
         Percentage of shear for height and width direction.
-    is_random : boolean
-        If True, randomly shear. Default is False.
 
     Returns
     -------
@@ -368,18 +344,22 @@ def affine_shear_matrix2(shear=(0.1, 0.1), is_random=False):
         An affine transform matrix.
 
     """
-    if len(shear) != 2:
-        raise AssertionError(
-            "shear should be tuple of 2 floats, or you want to use tl.prepro.shear rather than tl.prepro.shear2 ?"
-        )
-    if isinstance(shear, tuple):
-        shear = list(shear)
-    if is_random:
-        shear[0] = np.random.uniform(-shear[0], shear[0])
-        shear[1] = np.random.uniform(-shear[1], shear[1])
+    # if len(shear) != 2:
+    #     raise AssertionError(
+    #         "shear should be tuple of 2 floats, or you want to use tl.prepro.shear rather than tl.prepro.shear2 ?"
+    #     )
+    # if isinstance(shear, tuple):
+    #     shear = list(shear)
+    # if is_random:
+    #     shear[0] = np.random.uniform(-shear[0], shear[0])
+    #     shear[1] = np.random.uniform(-shear[1], shear[1])
+    if isinstance(x_shear, tuple):
+        x_shear = np.random.uniform(x_shear[0], x_shear[1])
+    if isinstance(y_shear, tuple):
+        y_shear = np.random.uniform(y_shear[0], y_shear[1])
 
-    shear_matrix = np.array([[1, shear[0], 0], \
-                            [shear[1], 1, 0], \
+    shear_matrix = np.array([[1, x_shear, 0], \
+                            [y_shear, 1, 0], \
                             [0, 0, 1]])
     return shear_matrix
 
@@ -387,6 +367,7 @@ def affine_shear_matrix2(shear=(0.1, 0.1), is_random=False):
 def affine_zoom_matrix(
     zoom_range=(0.8, 1.1)):
     """Get affine transform matrix for zooming/scaling that height and width are changed together.
+    OpenCV format, x is width.
 
     Parameters
     -----------
@@ -411,26 +392,24 @@ def affine_zoom_matrix(
     else:
         raise Exception("zoom_range: float or tuple of 2 floats")
 
-    zoom_matrix = np.array([[1/scale, 0, 0], \
-                            [0, 1/scale, 0], \
+    zoom_matrix = np.array([[scale, 0, 0], \
+                            [0, scale, 0], \
                             [0, 0, 1]])
     return zoom_matrix
 
 
-def affine_respective_zoom_matrix(
-    h_range=1.1, w_range=0.8):
+def affine_respective_zoom_matrix(w_range=0.8, h_range=1.1):
     """Get affine transform matrix for zooming/scaling that height and width are changed independently.
+    OpenCV format, x is width.
 
     Parameters
     -----------
-    x : numpy.array
-        An image with dimension of [row, col, channel] (default).
-    h_range : float or tuple of 2 floats
-        The zooming/scaling ratio of height, greater than 1 means larger.
-            - float, a fixed ratio.
-            - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
     w_range : float or tuple of 2 floats
         The zooming/scaling ratio of width, greater than 1 means larger.
+            - float, a fixed ratio.
+            - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
+    h_range : float or tuple of 2 floats
+        The zooming/scaling ratio of height, greater than 1 means larger.
             - float, a fixed ratio.
             - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
 
@@ -442,21 +421,21 @@ def affine_respective_zoom_matrix(
     """
 
     if isinstance(h_range, (float, int)):
-        zx = h_range
+        zy = h_range
     elif isinstance(h_range, tuple):
-        zx = np.random.uniform(h_range[0], h_range[1])
+        zy = np.random.uniform(h_range[0], h_range[1])
     else:
         raise Exception("h_range: float or tuple of 2 floats")
 
     if isinstance(w_range, (float, int)):
-        zy = w_range
+        zx = w_range
     elif isinstance(w_range, tuple):
-        zy = np.random.uniform(w_range[0], w_range[1])
+        zx = np.random.uniform(w_range[0], w_range[1])
     else:
         raise Exception("w_range: float or tuple of 2 floats")
 
-    zoom_matrix = np.array([[1/zx, 0, 0], \
-                            [0, 1/zy, 0], \
+    zoom_matrix = np.array([[zx, 0, 0], \
+                            [0, zy, 0], \
                             [0, 0, 1]])
     return zoom_matrix
 
@@ -490,7 +469,7 @@ def transform_matrix_offset_center(matrix, x, y):
 
 
 def affine_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', cval=0., order=1):
-    """Return transformed images by given
+    """Return transformed images by given an affine matrix in Scipy format (x is height).
 
     Parameters
     ----------
@@ -548,7 +527,7 @@ def affine_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', 
 apply_transform = affine_transform
 
 def affine_transform_cv2(x, transform_matrix, flags=None, borderMode=None):
-    """Return transformed images by given an affine matrix. (Powered by OpenCV2, faster than ``tl.prepro.affine_transform``)
+    """Return transformed images by given an affine matrix in OpenCV format (x is width). (Powered by OpenCV2, faster than ``tl.prepro.affine_transform``)
 
     Parameters
     ----------
@@ -1110,7 +1089,9 @@ def shear2(
         shear[0] = np.random.uniform(-shear[0], shear[0])
         shear[1] = np.random.uniform(-shear[1], shear[1])
 
-    shear_matrix = np.array([[1, shear[0], 0], [shear[1], 1, 0], [0, 0, 1]])
+    shear_matrix = np.array([[1, shear[0], 0], \
+                            [shear[1], 1, 0], \
+                            [0, 0, 1]])
 
     h, w = x.shape[row_index], x.shape[col_index]
     transform_matrix = transform_matrix_offset_center(shear_matrix, h, w)
