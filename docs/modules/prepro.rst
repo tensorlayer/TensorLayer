@@ -1,100 +1,5 @@
-respective_API - Data Pre-processing
-====================================
-
-TensorLayer high-performance visual data augmentation API
------------------------------------------------------------
-
-Data pre-processing is a critical step in deep learning.
-Though TensorFlow has provided rich high-performance
-data processing modules (e.g., ``tf.data``),
-visual data augmentation often remains as a key bottleneck.
-To address this bottleneck, TensorFlow suggest
-to use optimized ``tf.image`` operators within user's
-augmentation functions written in Python. This approach, however, has two limitations:
-
-- Real-world visual tasks such as object detection, segmentation, and pose estimation
-need to cope with unstructured image meta-data (e.g., coordinates).
-These data are beyond the offering of ``tf.image``
-which processes images as tensors.
-Also, the use of ``tf.image`` operators
-breaks the pure Python programing experience (i.e., users have to
-use ``tf.py_func`` in order to keep using Python functions), incurring extra cross-language performance overheads.
-
-- ``tf.image`` API is inflexible. Image operations must be
-applied independently and are hard to jointly optimize. Mostly importantly,
-a pipeline of independent image operations can significantly
-reduces the quality of input images, thus affecting training accuracy.
-
-TensorLayer addresses these limitations by providing a flexible
-and high-performance visual data augmentation Python API.
-This API bases on affine transformation and fast matrix computation libraries (i.e., ``cv2.wrapAffine`` and ``np.apply_affine_transform``).
-It allows you to combine multiple image processing functions into
-a single fast operation, offering 78x performance improvement (for example in
-`openpose-plus <https://github.com/tensorlayer/openpose-plus>`_).
-The following example illustrates the rationale
-behind this tremendous speed up.
-
-
-
-
-
-(XXX) We provide abundant data augmentation and processing functions by using Numpy, Scipy, Threading and Queue.
-However, we recommend you to use TensorFlow operation function like ``tf.image.central_crop``,
-more TensorFlow data augmentation method can be found
-`here <https://www.tensorflow.org/api_guides/python/image.html>`_ and ``tutorial_cifar10_tfrecord.py``.
-
-
-Magic for Fast Transformation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The direct way to apply rotation, shifting, flippling, zooming and shearing to an image in pure Python is as follows,
-
-.. code-block:: python
-
-    image = tl.vis.read_image('tiger.jpeg')
-
-    xx = tl.prepro.rotation(image, rg=20, is_random=False)
-    xx = tl.prepro.shift(xx, wrg=0.2, hrg=0.2, is_random=False)
-    xx = tl.prepro.flip_axis(xx, axis=1, is_random=False)
-    xx = tl.prepro.zoom(xx, zoom_range=(0.8, 1.5), is_random=False)
-    xx = tl.prepro.shear(xx, intensity=0.2, is_random=False)
-
-    tl.vis.save_image(xx, '_result_slow.png')
-
-Let do some math
-
-<insert image here>
-
-
-
-
-Therefore, all transformations can be combined into one:
-
-.. code-block:: python
-
-    # 1. get all affine transform matrices
-    M_rotate = tl.prepro.affine_rotation_matrix(rg=20, is_random=False)
-    M_flip = tl.prepro.affine_horizontal_flip_matrix(is_random=False)
-    M_shift = tl.prepro.affine_shift_matrix(wrg=0.2, hrg=0.2, h=h, w=w, is_random=False)
-    M_shear = tl.prepro.affine_shear_matrix(intensity=0.2, is_random=False)
-    M_zoom = tl.prepro.affine_zoom_matrix(zoom_range=(0.8, 1.5), is_random=False)
-
-    # 2. combine all affine transform matrices to one matrix, the rotation is the first transformation
-    M_combined = M_rotate.dot(M_shift).dot(M_flip).dot(M_zoom).dot(M_shear)
-
-    # 2. transfrom the matrix from Cartesian coordinate (the origin in the middle of image)
-    # to Image coordinate (the origin on the top-left of image)
-    transform_matrix = tl.prepro.transform_matrix_offset_center(M_combined, h, w)
-
-    # 3. then we can transfrom the image once for all transformations
-    result = tl.prepro.affine_transform(image, transform_matrix)
-
-    tl.vis.save_image(result, '_result_fast.png')
-
-Our experiments show that using Python for data augmentation would not be the training bottleneck
-
-The code of this tutorial can be found `here <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process/tutorial_fast_affine_transform.py>`__.
-
-
+Data Pre-processing
+===================
 
 .. automodule:: tensorlayer.prepro
 
@@ -205,13 +110,98 @@ The code of this tutorial can be found `here <https://github.com/tensorlayer/ten
   .. autofunction:: threading_data
 
 Affine Transform
-------------------
+----------------
+
+Python can be FAST
+^^^^^^^^^^^^^^^^^^
+
+Image augmentation is a critical step in deep learning.
+Though TensorFlow has provided ``tf.image``,
+image augmentation often remains as a key bottleneck.
+``tf.image`` has three limitations:
+
+- Real-world visual tasks such as object detection, segmentation, and pose estimation
+must cope with image meta-data (e.g., coordinates).
+These data are beyond ``tf.image``
+which processes images as tensors.
+
+- ``tf.image`` operators
+breaks the pure Python programing experience (i.e., users have to
+use ``tf.py_func`` in order to call image functions written in Python); however,
+frequent uses of ``tf.py_func`` slow down TensorFlow,
+making users hard to balance flexibility and performance.
+
+- ``tf.image`` API is inflexible. Image operations are
+performed in an order. They are hard to jointly optimize. More importantly,
+sequential image operations can significantly
+reduces the quality of images, thus affecting training accuracy.
+
+TensorLayer addresses these limitations by providing a
+high-performance image augmentation API in Python.
+This API bases on affine transformation and ``cv2.wrapAffine``.
+It allows you to combine multiple image processing functions into
+a single matrix operation. This combined operation
+is executed by the fast ``cv2`` library, offering 78x performance improvement (observed in
+`openpose-plus <https://github.com/tensorlayer/openpose-plus>`_ for example).
+The following example illustrates the rationale
+behind this tremendous speed up.
+
+Example
+^^^^^^^
+The following is a straightforward Python example that applies rotation, shifting, flipping, zooming and shearing to an image,
+
+.. code-block:: python
+
+    image = tl.vis.read_image('tiger.jpeg')
+
+    xx = tl.prepro.rotation(image, rg=20, is_random=False)
+    xx = tl.prepro.shift(xx, wrg=0.2, hrg=0.2, is_random=False)
+    xx = tl.prepro.flip_axis(xx, axis=1, is_random=False)
+    xx = tl.prepro.zoom(xx, zoom_range=(0.8, 1.5), is_random=False)
+    xx = tl.prepro.shear(xx, intensity=0.2, is_random=False)
+
+    tl.vis.save_image(xx, '_result_slow.png')
+
+Let do some math
+
+<insert image here>
+
+
+
+
+Therefore, all transformations can be combined into one:
+
+.. code-block:: python
+
+    # 1. Create required affine transformation matrices
+    M_rotate = tl.prepro.affine_rotation_matrix(angle=20)
+    M_flip = tl.prepro.affine_horizontal_flip_matrix(prob=1)
+    M_shift = tl.prepro.affine_shift_matrix(wrg=0.1, hrg=0, h=h, w=w)
+    M_shear = tl.prepro.affine_shear_matrix(x_shear=0.2, y_shear=0)
+    M_zoom = tl.prepro.affine_zoom_matrix(zoom_range=0.8)
+
+    # 2. Combine matrices
+    # NOTE: operations are applied in a reversed order (i.e., rotation is performed first)
+    M_combined = M_shift.dot(M_zoom).dot(M_shear).dot(M_flip).dot(M_rotate)
+
+    # 3. Convert the matrix from Cartesian coordinates (the origin in the middle of image)
+    # to image coordinates (the origin on the top-left of image)
+    transform_matrix = tl.prepro.transform_matrix_offset_center(M_combined, x=w, y=h)
+
+    # 4. Transform the image using a single operation
+    result = tl.prepro.affine_transform_cv2(image, transform_matrix)  # 76 times faster
+
+    tl.vis.save_image(result, '_result_fast.png')
+
+Our experiments show that using Python for data augmentation would not be the training bottleneck
+
+The code of this tutorial can be found `here <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process/tutorial_fast_affine_transform.py>`__.
 
 Get rotation matrix
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: affine_rotation_matrix
 
-Get flippling matrix
+Get flipping matrix
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: affine_horizontal_flip_matrix
 
@@ -227,23 +217,24 @@ Get zooming matrix
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: affine_zoom_matrix
 
-Get seperated zooming matrix
-^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: affine_zoom_matrix
+Get respective zooming matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_respective_zoom_matrix
 
-Transform matrix offset
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Cartesian to image coordinates
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: transform_matrix_offset_center
 
-Apply image transform
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: affine_transform
+..
+    Apply image transform
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    .. autofunction:: affine_transform
 
-Apply image transform (recommend)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Apply image transform
+^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: affine_transform_cv2
 
-Apply keypoints transform
+Apply keypoint transform
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: affine_transform_keypoints
 
