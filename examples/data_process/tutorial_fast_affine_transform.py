@@ -6,6 +6,7 @@ Detailed description in https://tensorlayer.readthedocs.io/en/stable/modules/pre
 import tensorlayer as tl
 import numpy as np
 import time
+import cv2
 
 # tl.logging.set_verbosity(tl.logging.DEBUG)
 image = tl.vis.read_image('tiger.jpeg')
@@ -87,8 +88,38 @@ def example3():
         images, targets = sess.run(one_element)
     print("dataset APIs took %fs for each image" % ((time.time() - st) / batch_size / n_step)) # CPU ~ 100%
 
+def example4():
+    """ D. transform keypoint coordinates. """
+    M_rotate = tl.prepro.affine_rotation_matrix(angle=20)
+    M_flip = tl.prepro.affine_horizontal_flip_matrix(prob=1)
+    M_shift = tl.prepro.affine_shift_matrix(wrg=0.1, hrg=0, h=h, w=w)
+    M_shear = tl.prepro.affine_shear_matrix(x_shear=0.2, y_shear=0)
+    M_zoom = tl.prepro.affine_zoom_matrix(zoom_range=0.8)
+    # 2. combine all affine transform matrices to one matrix
+    M_combined = M_shift.dot(M_zoom).dot(M_shear).dot(M_flip).dot(M_rotate)
+    # 3. transfrom the matrix from Cartesian coordinate (the origin in the middle of image)
+    # to Image coordinate (the origin on the top-left of image)
+    transform_matrix = tl.prepro.transform_matrix_offset_center(M_combined, x=w, y=h)
+    # 4. then we can transfrom the image once for all transformations
+    result = tl.prepro.affine_transform_cv2(image, transform_matrix)  # 76 times faster
+    # 5. transform keypoint coordinates
+    coords = [[(50, 100), (100, 100), (100, 50), (200, 200)], [(250, 50), (200, 50), (200, 100)]]
+    coords_result = tl.prepro.affine_transform_keypoints(coords, transform_matrix)
+
+    def imwrite(image, coords_list, name):
+        coords_list_ = []
+        for coords in coords_list:
+            coords = np.array(coords, np.int32)
+            coords = coords.reshape((-1,1,2))
+            coords_list_.append(coords)
+        image = cv2.polylines(image, coords_list_, True, (0,255,255),3)
+        cv2.imwrite(name, image[...,::-1])
+
+    imwrite(image, coords, '_with_keypoints_origin.png')
+    imwrite(result, coords_result, '_with_keypoints_result.png')
 
 if __name__ == '__main__':
     example1()
     example2()
     example3()
+    example4()

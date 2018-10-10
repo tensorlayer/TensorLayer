@@ -78,6 +78,8 @@ To release a new version, please update the changelog as followed:
   - `affine_shift_matrix` (PR #857)
   - `affine_shear_matrix` (PR #857)
   - `affine_zoom_matrix` (PR #857)
+  - `affine_transform_cv2` (PR #857)
+  - `affine_transform_keypoints` (PR #857)
   - `examples/data_process/tutorial_fast_affine_transform.py` (PR #857)
 
 ### Changed

@@ -110,6 +110,7 @@ The code of this tutorial can be found `here <https://github.com/tensorlayer/ten
    transform_matrix_offset_center
    affine_transform
    affine_transform_cv2
+   affine_transform_keypoints
    projective_transform_by_points
 
    rotation
@@ -234,13 +235,17 @@ Transform matrix offset
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: transform_matrix_offset_center
 
-Apply affine transform by matrix
+Apply image transform
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: affine_transform
 
-Apply affine transform by matrix
+Apply image transform (recommend)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: affine_transform_cv2
+
+Apply keypoints transform
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_transform_keypoints
 
 Projective transform by points
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
