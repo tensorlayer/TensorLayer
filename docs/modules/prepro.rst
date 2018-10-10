@@ -7,6 +7,7 @@ Data Pre-processing
 
    affine_rotation_matrix
    affine_horizontal_flip_matrix
+   affine_vertical_flip_matrix
    affine_shift_matrix
    affine_shear_matrix
    affine_zoom_matrix
@@ -201,9 +202,13 @@ Get rotation matrix
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: affine_rotation_matrix
 
-Get flipping matrix
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Get horizontal flipping matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: affine_horizontal_flip_matrix
+
+Get vertical flipping matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_vertical_flip_matrix
 
 Get shifting matrix
 ^^^^^^^^^^^^^^^^^^^^^^^^^

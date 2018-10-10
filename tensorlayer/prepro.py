@@ -234,10 +234,9 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
         return np.concatenate(results)
 
 
-# compute affine transform matrix
 def affine_rotation_matrix(angle=(-20, 20)):
-    """Get affine transform matrix for rotation.
-    OpenCV format, x is width.
+    """Create an affine transform matrix for image rotation.
+    NOTE: In OpenCV, x is width and y is height.
 
     Parameters
     -----------
@@ -263,13 +262,13 @@ def affine_rotation_matrix(angle=(-20, 20)):
 
 
 def affine_horizontal_flip_matrix(prob=0.5):
-    """Get affine transform matrix for horizontal flipping.
-    OpenCV format, x is width.
+    """Create an affine transformation matrix for image horizontal flipping.
+    NOTE: In OpenCV, x is width and y is height.
 
     Parameters
     ----------
     prob : float
-        Probability to flip the images horizontally. 1.0 means always flip.
+        Probability to flip the image. 1.0 means always flip.
 
     Returns
     -------
@@ -290,9 +289,37 @@ def affine_horizontal_flip_matrix(prob=0.5):
         return filp_matrix
 
 
+def affine_vertical_flip_matrix(prob=0.5):
+    """Create an affine transformation for image vertical flipping.
+    NOTE: In OpenCV, x is width and y is height.
+
+    Parameters
+    ----------
+    prob : float
+        Probability to flip the image. 1.0 means always flip.
+
+    Returns
+    -------
+    numpy.array
+        An affine transform matrix.
+
+    """
+    factor = np.random.uniform(0, 1)
+    if prob >= factor:
+        filp_matrix = np.array([[ 1. , 0., 0. ], \
+              [ 0., -1., 0. ], \
+              [ 0., 0., 1. ]])
+        return filp_matrix
+    else:
+        filp_matrix = np.array([[ 1. , 0., 0. ], \
+              [ 0., 1., 0. ], \
+              [ 0., 0., 1. ]])
+        return filp_matrix
+
+
 def affine_shift_matrix(wrg=(-0.1, 0.1), hrg=(-0.1, 0.1), w=200, h=200):
-    """Get affine transform matrix for shifting.
-    OpenCV format, x is width.
+    """Create an affine transform matrix for image shifting.
+    NOTE: In OpenCV, x is width and y is height.
 
     Parameters
     -----------
@@ -328,13 +355,13 @@ def affine_shift_matrix(wrg=(-0.1, 0.1), hrg=(-0.1, 0.1), w=200, h=200):
 
 
 def affine_shear_matrix(x_shear=(-0.1, 0.1), y_shear=(-0.1, 0.1)):
-    """Get affine transform matrix for shearing.
-    OpenCV format, x is width.
+    """Create affine transform matrix for image shearing.
+    NOTE: In OpenCV, x is width and y is height.
 
     Parameters
     -----------
     shear : tuple of two floats
-        Percentage of shear for height and width direction.
+        Percentage of shears for width and height directions.
 
     Returns
     -------
@@ -362,9 +389,8 @@ def affine_shear_matrix(x_shear=(-0.1, 0.1), y_shear=(-0.1, 0.1)):
     return shear_matrix
 
 
-def affine_zoom_matrix(
-    zoom_range=(0.8, 1.1)):
-    """Get affine transform matrix for zooming/scaling that height and width are changed together.
+def affine_zoom_matrix(zoom_range=(0.8, 1.1)):
+    """Create an affine transform matrix for zooming/scaling an image's height and width.
     OpenCV format, x is width.
 
     Parameters
@@ -440,7 +466,7 @@ def affine_respective_zoom_matrix(w_range=0.8, h_range=1.1):
 
 # affine transform
 def transform_matrix_offset_center(matrix, x, y):
-    """Transfroms the matrix from Cartesian coordinate (the origin in the middle of image) to Image coordinate (the origin on the top-left of image).
+    """Convert the matrix from Cartesian coordinates (the origin in the middle of image) to Image coordinates (the origin on the top-left of image).
 
     Parameters
     ----------
@@ -524,6 +550,7 @@ def affine_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', 
 
 apply_transform = affine_transform
 
+
 def affine_transform_cv2(x, transform_matrix, flags=None, borderMode=None):
     """Return transformed images by given an affine matrix in OpenCV format (x is width). (Powered by OpenCV2, faster than ``tl.prepro.affine_transform``)
 
@@ -581,14 +608,15 @@ def affine_transform_keypoints(coords_list, transform_matrix):
     coords_result_list = []
     for coords in coords_list:
         coords = np.asarray(coords)
-        coords = coords.transpose([1,0])
+        coords = coords.transpose([1, 0])
         coords = np.insert(coords, 2, 1, axis=0)
         # print(coords)
         # print(transform_matrix)
         coords_result = np.matmul(transform_matrix, coords)
-        coords_result = coords_result[0:2,:].transpose([1,0])
+        coords_result = coords_result[0:2, :].transpose([1, 0])
         coords_result_list.append(coords_result)
     return coords_result_list
+
 
 def projective_transform_by_points(
         x, src, dst, map_args=None, output_shape=None, order=1, mode='constant', cval=0.0, clip=True,
@@ -1413,10 +1441,7 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
 
 
 # zoom
-def zoom(
-        x, zoom_range=(0.9, 1.1), row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
-        cval=0., order=1
-):
+def zoom(x, zoom_range=(0.9, 1.1), row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1):
     """Zooming/Scaling a single image that height and width are changed together.
 
     Parameters
@@ -1447,6 +1472,7 @@ def zoom(
     transform_matrix = transform_matrix_offset_center(zoom_matrix, h, w)
     x = affine_transform(x, transform_matrix, channel_index, fill_mode, cval, order)
     return x
+
 
 def respective_zoom(
         x, h_range=(0.9, 1.1), w_range=(0.9, 1.1), row_index=0, col_index=1, channel_index=2, fill_mode='nearest',

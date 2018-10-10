@@ -17,6 +17,7 @@ import cv2
 image = tl.vis.read_image('tiger.jpeg')
 h, w, _ = image.shape
 
+
 def create_transformation_matrix():
     # 1. Create required affine transformation matrices
     M_rotate = tl.prepro.affine_rotation_matrix(angle=20)
@@ -34,6 +35,7 @@ def create_transformation_matrix():
     transform_matrix = tl.prepro.transform_matrix_offset_center(M_combined, x=w, y=h)
     return transform_matrix
 
+
 def example1():
     """ Example 1: Applying transformation one-by-one is very SLOW ! """
     st = time.time()
@@ -41,19 +43,21 @@ def example1():
         xx = tl.prepro.rotation(image, rg=-20, is_random=False)
         xx = tl.prepro.flip_axis(xx, axis=1, is_random=False)
         xx = tl.prepro.shear2(xx, shear=(0., -0.2), is_random=False)
-        xx = tl.prepro.zoom(xx, zoom_range=1/0.8)
+        xx = tl.prepro.zoom(xx, zoom_range=1 / 0.8)
         xx = tl.prepro.shift(xx, wrg=-0.1, hrg=0, is_random=False)
     print("apply transforms one-by-one took %fs for each image" % ((time.time() - st) / 100))
     tl.vis.save_image(xx, '_result_slow.png')
+
 
 def example2():
     """ Example 2: Applying all transforms in one is very FAST ! """
     st = time.time()
     for _ in range(100):  # Repeat 100 times and compute the averaged speed
         transform_matrix = create_transformation_matrix()
-        result = tl.prepro.affine_transform_cv2(image, transform_matrix) # Transform the image using a single operation
+        result = tl.prepro.affine_transform_cv2(image, transform_matrix)  # Transform the image using a single operation
     print("apply all transforms once took %fs for each image" % ((time.time() - st) / 100))  # usually 50x faster
     tl.vis.save_image(result, '_result_fast.png')
+
 
 def example3():
     """ Example 3: Using TF dataset API to load and process image for training """
@@ -96,7 +100,8 @@ def example3():
     st = time.time()
     for _ in range(n_step):
         images, targets = sess.run(one_element)
-    print("dataset APIs took %fs for each image" % ((time.time() - st) / batch_size / n_step)) # CPU ~ 100%
+    print("dataset APIs took %fs for each image" % ((time.time() - st) / batch_size / n_step))  # CPU ~ 100%
+
 
 def example4():
     """ Example 4: Transforming coordinates using affine matrix. """
@@ -110,13 +115,14 @@ def example4():
         coords_list_ = []
         for coords in coords_list:
             coords = np.array(coords, np.int32)
-            coords = coords.reshape((-1,1,2))
+            coords = coords.reshape((-1, 1, 2))
             coords_list_.append(coords)
-        image = cv2.polylines(image, coords_list_, True, (0,255,255),3)
-        cv2.imwrite(name, image[...,::-1])
+        image = cv2.polylines(image, coords_list_, True, (0, 255, 255), 3)
+        cv2.imwrite(name, image[..., ::-1])
 
     imwrite(image, coords, '_with_keypoints_origin.png')
     imwrite(result, coords_result, '_with_keypoints_result.png')
+
 
 if __name__ == '__main__':
     example1()
