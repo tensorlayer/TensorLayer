@@ -137,6 +137,11 @@ performed in an order. They are hard to jointly optimize. More importantly,
 sequential image operations can significantly
 reduces the quality of images, thus affecting training accuracy.
 
+
+.. image:: ../images/affine_transform_why.pdf
+  :scale: 100 %
+  :align: center
+
 TensorLayer addresses these limitations by providing a
 high-performance image augmentation API in Python.
 This API bases on affine transformation and ``cv2.wrapAffine``.
@@ -147,6 +152,7 @@ is executed by the fast ``cv2`` library, offering 78x performance improvement (o
 The following example illustrates the rationale
 behind this tremendous speed up.
 
+
 Example
 ^^^^^^^
 The following is a straightforward Python example that applies rotation, shifting, flipping, zooming and shearing to an image,
@@ -155,20 +161,13 @@ The following is a straightforward Python example that applies rotation, shiftin
 
     image = tl.vis.read_image('tiger.jpeg')
 
-    xx = tl.prepro.rotation(image, rg=20, is_random=False)
-    xx = tl.prepro.shift(xx, wrg=0.2, hrg=0.2, is_random=False)
+    xx = tl.prepro.rotation(image, rg=-20, is_random=False)
     xx = tl.prepro.flip_axis(xx, axis=1, is_random=False)
-    xx = tl.prepro.zoom(xx, zoom_range=(0.8, 1.5), is_random=False)
-    xx = tl.prepro.shear(xx, intensity=0.2, is_random=False)
+    xx = tl.prepro.shear2(xx, shear=(0., -0.2), is_random=False)
+    xx = tl.prepro.zoom(xx, zoom_range=1/0.8)
+    xx = tl.prepro.shift(xx, wrg=-0.1, hrg=0, is_random=False)
 
     tl.vis.save_image(xx, '_result_slow.png')
-
-Let do some math
-
-<insert image here>
-
-
-
 
 Therefore, all transformations can be combined into one:
 
@@ -194,8 +193,14 @@ Therefore, all transformations can be combined into one:
 
     tl.vis.save_image(result, '_result_fast.png')
 
-Our experiments show that using Python for data augmentation would not be the training bottleneck
+.. image:: ../images/affine_transform_comparison.pdf
+  :scale: 100 %
+  :align: center
 
+Transform the image only once not only can help to speed up the computation, but also
+able to have a clear image. Because every transformation need image interpolation which will produce XXXX
+XXX
+Our experiments show that using Python for data augmentation would not be the training bottleneck.
 The code of this tutorial can be found `here <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process/tutorial_fast_affine_transform.py>`__.
 
 Get rotation matrix
