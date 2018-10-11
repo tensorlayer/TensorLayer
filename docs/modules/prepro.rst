@@ -192,7 +192,7 @@ However, by leveraging affine transformation, image operations can be combined i
 
 The following figure illustrates the rational behind combined affine transformation.
 
-.. image:: ../images/affine_transform_why.png
+.. image:: ../images/affine_transform_why.jpg
   :width: 100 %
   :align: center
 
@@ -203,7 +203,7 @@ and thus prevent data pre-processing from becoming a bottleneck in training.
         input images. In contrast, a combined transformation performs the interpolation only once, and thus
 preserve the content in an image. The following figure illustrates these two benefits:
 
-.. image:: ../images/affine_transform_comparison.png
+.. image:: ../images/affine_transform_comparison.jpg
   :width: 100 %
   :align: center
 
