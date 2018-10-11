@@ -137,10 +137,6 @@ performed in an order. They are hard to jointly optimize. More importantly,
 sequential image operations can significantly
 reduces the quality of images, thus affecting training accuracy.
 
-.. image:: ../images/affine_transform_why.pdf
-  :scale: 100 %
-  :align: center
-
 TensorLayer addresses these limitations by providing a
 high-performance image augmentation API in Python.
 This API bases on affine transformation and ``cv2.wrapAffine``.
@@ -193,7 +189,10 @@ However, by leveraging affine transformation, image operations can be combined i
 
     tl.vis.save_image(result, '_result_fast.png')
 
-.. image:: ../images/affine_transform_comparison.pdf
+
+The following figure illustrates the rational behind combined affine transformation.
+
+.. image:: ../images/affine_transform_why.pdf
   :scale: 100 %
   :align: center
 
@@ -202,7 +201,11 @@ Using combined affine transformation has two key benefits. First, it allows
 and thus prevent data pre-processing from becoming a bottleneck in training.
     Second, performing sequential image transformation requires multiple image interpolations. This produces low-quality
         input images. In contrast, a combined transformation performs the interpolation only once, and thus
-preserve the content in an image. 
+preserve the content in an image. The following figure illustrates these two benefits:
+
+.. image:: ../images/affine_transform_comparison.pdf
+  :scale: 100 %
+  :align: center
 
 Get rotation matrix
 ^^^^^^^^^^^^^^^^^^^^^^^^^
