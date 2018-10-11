@@ -137,11 +137,6 @@ performed in an order. They are hard to jointly optimize. More importantly,
 sequential image operations can significantly
 reduces the quality of images, thus affecting training accuracy.
 
-
-.. image:: ../images/affine_transform_why.pdf
-  :scale: 100 %
-  :align: center
-
 TensorLayer addresses these limitations by providing a
 high-performance image augmentation API in Python.
 This API bases on affine transformation and ``cv2.wrapAffine``.
@@ -155,8 +150,9 @@ behind this tremendous speed up.
 
 Example
 ^^^^^^^
-The following is a straightforward Python example that applies rotation, shifting, flipping, zooming and shearing to an image,
-The code of this tutorial can be found `here <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process/tutorial_fast_affine_transform.py>`__.
+
+The source code of complete examples can be found `here <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process/tutorial_fast_affine_transform.py>`__.
+The following is a typical Python program that applies rotation, shifting, flipping, zooming and shearing to an image,
 
 .. code-block:: python
 
@@ -170,7 +166,7 @@ The code of this tutorial can be found `here <https://github.com/tensorlayer/ten
 
     tl.vis.save_image(xx, '_result_slow.png')
 
-Therefore, all transformations can be combined into one:
+However, by leveraging affine transformation, image operations can be combined into one:
 
 .. code-block:: python
 
@@ -203,7 +199,11 @@ Using combined affine transformation has two key benefits. First, it allows
 and thus prevent data pre-processing from becoming a bottleneck in training.
     Second, performing sequential image transformation requires multiple image interpolations. This produces low-quality
         input images. In contrast, a combined transformation performs the interpolation only once, and thus
-preserve the content in an image.
+preserve the content in an image. The following example illustrates these benefits:
+
+.. image:: ../images/affine_transform_why.pdf
+  :scale: 100 %
+  :align: center
 
 Get rotation matrix
 ^^^^^^^^^^^^^^^^^^^^^^^^^
