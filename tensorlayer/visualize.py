@@ -19,7 +19,6 @@ __all__ = [
     'read_image',
     'read_images',
     'save_image',
-    'save_image_with_keypoints',
     'save_images',
     'draw_boxes_and_labels_to_image',
     'draw_mpii_people_to_image',
