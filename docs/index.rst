@@ -3,7 +3,7 @@ Welcome to TensorLayer
 
 
 .. image:: user/my_figs/tl_transparent_logo.png
-  :scale: 30 %
+  :width: 30 %
   :align: center
   :target: https://github.com/tensorlayer/tensorlayer
 

@@ -193,7 +193,7 @@ However, by leveraging affine transformation, image operations can be combined i
 The following figure illustrates the rational behind combined affine transformation.
 
 .. image:: ../images/affine_transform_why.pdf
-  :scale: 100 %
+  :width: 100 %
   :align: center
 
 Using combined affine transformation has two key benefits. First, it allows
@@ -204,7 +204,7 @@ and thus prevent data pre-processing from becoming a bottleneck in training.
 preserve the content in an image. The following figure illustrates these two benefits:
 
 .. image:: ../images/affine_transform_comparison.pdf
-  :scale: 100 %
+  :width: 100 %
   :align: center
 
 Get rotation matrix
