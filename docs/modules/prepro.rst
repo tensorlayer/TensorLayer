@@ -156,6 +156,7 @@ behind this tremendous speed up.
 Example
 ^^^^^^^
 The following is a straightforward Python example that applies rotation, shifting, flipping, zooming and shearing to an image,
+The code of this tutorial can be found `here <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process/tutorial_fast_affine_transform.py>`__.
 
 .. code-block:: python
 
@@ -197,11 +198,12 @@ Therefore, all transformations can be combined into one:
   :scale: 100 %
   :align: center
 
-Transform the image only once not only can help to speed up the computation, but also
-able to have a clear image. Because every transformation need image interpolation which will produce XXXX
-XXX
-Our experiments show that using Python for data augmentation would not be the training bottleneck.
-The code of this tutorial can be found `here <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process/tutorial_fast_affine_transform.py>`__.
+Using combined affine transformation has two key benefits. First, it allows
+    you to leverage a pure Python API to achieve orders of magnitudes of speed up in image augmentation,
+and thus prevent data pre-processing from becoming a bottleneck in training.
+    Second, performing sequential image transformation requires multiple image interpolations. This produces low-quality
+        input images. In contrast, a combined transformation performs the interpolation only once, and thus
+preserve the content in an image.
 
 Get rotation matrix
 ^^^^^^^^^^^^^^^^^^^^^^^^^
