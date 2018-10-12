@@ -39,6 +39,17 @@ import random
 
 __all__ = [
     'threading_data',
+    'affine_rotation_matrix',
+    'affine_horizontal_flip_matrix',
+    'affine_shift_matrix',
+    'affine_shear_matrix',
+    'affine_zoom_matrix',
+    'affine_respective_zoom_matrix',
+    'transform_matrix_offset_center',
+    'affine_transform',
+    'affine_transform_cv2',
+    'affine_transform_keypoints',
+    'projective_transform_by_points',
     'rotation',
     'rotation_multi',
     'crop',
@@ -56,6 +67,7 @@ __all__ = [
     'elastic_transform',
     'elastic_transform_multi',
     'zoom',
+    'respective_zoom',
     'zoom_multi',
     'brightness',
     'brightness_multi',
@@ -72,9 +84,6 @@ __all__ = [
     'channel_shift',
     'channel_shift_multi',
     'drop',
-    'transform_matrix_offset_center',
-    'apply_transform',
-    'projective_transform_by_points',
     'array_to_img',
     'find_contours',
     'pt2map',
@@ -225,6 +234,468 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
         return np.concatenate(results)
 
 
+def affine_rotation_matrix(angle=(-20, 20)):
+    """Create an affine transform matrix for image rotation.
+    NOTE: In OpenCV, x is width and y is height.
+
+    Parameters
+    -----------
+    angle : int/float or tuple of two int/float
+        Degree to rotate, usually -180 ~ 180.
+            - int/float, a fixed angle.
+            - tuple of 2 floats/ints, randomly sample a value as the angle between these 2 values.
+
+    Returns
+    -------
+    numpy.array
+        An affine transform matrix.
+
+    """
+    if isinstance(angle, tuple):
+        theta = np.pi / 180 * np.random.uniform(angle[0], angle[1])
+    else:
+        theta = np.pi / 180 * angle
+    rotation_matrix = np.array([[np.cos(theta), np.sin(theta), 0], \
+                                [-np.sin(theta), np.cos(theta), 0], \
+                                [0, 0, 1]])
+    return rotation_matrix
+
+
+def affine_horizontal_flip_matrix(prob=0.5):
+    """Create an affine transformation matrix for image horizontal flipping.
+    NOTE: In OpenCV, x is width and y is height.
+
+    Parameters
+    ----------
+    prob : float
+        Probability to flip the image. 1.0 means always flip.
+
+    Returns
+    -------
+    numpy.array
+        An affine transform matrix.
+
+    """
+    factor = np.random.uniform(0, 1)
+    if prob >= factor:
+        filp_matrix = np.array([[ -1. , 0., 0. ], \
+              [ 0., 1., 0. ], \
+              [ 0., 0., 1. ]])
+        return filp_matrix
+    else:
+        filp_matrix = np.array([[ 1. , 0., 0. ], \
+              [ 0., 1., 0. ], \
+              [ 0., 0., 1. ]])
+        return filp_matrix
+
+
+def affine_vertical_flip_matrix(prob=0.5):
+    """Create an affine transformation for image vertical flipping.
+    NOTE: In OpenCV, x is width and y is height.
+
+    Parameters
+    ----------
+    prob : float
+        Probability to flip the image. 1.0 means always flip.
+
+    Returns
+    -------
+    numpy.array
+        An affine transform matrix.
+
+    """
+    factor = np.random.uniform(0, 1)
+    if prob >= factor:
+        filp_matrix = np.array([[ 1. , 0., 0. ], \
+              [ 0., -1., 0. ], \
+              [ 0., 0., 1. ]])
+        return filp_matrix
+    else:
+        filp_matrix = np.array([[ 1. , 0., 0. ], \
+              [ 0., 1., 0. ], \
+              [ 0., 0., 1. ]])
+        return filp_matrix
+
+
+def affine_shift_matrix(wrg=(-0.1, 0.1), hrg=(-0.1, 0.1), w=200, h=200):
+    """Create an affine transform matrix for image shifting.
+    NOTE: In OpenCV, x is width and y is height.
+
+    Parameters
+    -----------
+    wrg : float or tuple of floats
+        Range to shift on width axis, -1 ~ 1.
+            - float, a fixed distance.
+            - tuple of 2 floats, randomly sample a value as the distance between these 2 values.
+    hrg : float or tuple of floats
+        Range to shift on height axis, -1 ~ 1.
+            - float, a fixed distance.
+            - tuple of 2 floats, randomly sample a value as the distance between these 2 values.
+    w, h : int
+        The width and height of the image.
+
+    Returns
+    -------
+    numpy.array
+        An affine transform matrix.
+
+    """
+    if isinstance(wrg, tuple):
+        tx = np.random.uniform(wrg[0], wrg[1]) * w
+    else:
+        tx = wrg * w
+    if isinstance(hrg, tuple):
+        ty = np.random.uniform(hrg[0], hrg[1]) * h
+    else:
+        ty = hrg * h
+    shift_matrix = np.array([[1, 0, tx], \
+                        [0, 1, ty], \
+                        [0, 0, 1]])
+    return shift_matrix
+
+
+def affine_shear_matrix(x_shear=(-0.1, 0.1), y_shear=(-0.1, 0.1)):
+    """Create affine transform matrix for image shearing.
+    NOTE: In OpenCV, x is width and y is height.
+
+    Parameters
+    -----------
+    shear : tuple of two floats
+        Percentage of shears for width and height directions.
+
+    Returns
+    -------
+    numpy.array
+        An affine transform matrix.
+
+    """
+    # if len(shear) != 2:
+    #     raise AssertionError(
+    #         "shear should be tuple of 2 floats, or you want to use tl.prepro.shear rather than tl.prepro.shear2 ?"
+    #     )
+    # if isinstance(shear, tuple):
+    #     shear = list(shear)
+    # if is_random:
+    #     shear[0] = np.random.uniform(-shear[0], shear[0])
+    #     shear[1] = np.random.uniform(-shear[1], shear[1])
+    if isinstance(x_shear, tuple):
+        x_shear = np.random.uniform(x_shear[0], x_shear[1])
+    if isinstance(y_shear, tuple):
+        y_shear = np.random.uniform(y_shear[0], y_shear[1])
+
+    shear_matrix = np.array([[1, x_shear, 0], \
+                            [y_shear, 1, 0], \
+                            [0, 0, 1]])
+    return shear_matrix
+
+
+def affine_zoom_matrix(zoom_range=(0.8, 1.1)):
+    """Create an affine transform matrix for zooming/scaling an image's height and width.
+    OpenCV format, x is width.
+
+    Parameters
+    -----------
+    x : numpy.array
+        An image with dimension of [row, col, channel] (default).
+    zoom_range : float or tuple of 2 floats
+        The zooming/scaling ratio, greater than 1 means larger.
+            - float, a fixed ratio.
+            - tuple of 2 floats, randomly sample a value as the ratio between these 2 values.
+
+    Returns
+    -------
+    numpy.array
+        An affine transform matrix.
+
+    """
+
+    if isinstance(zoom_range, (float, int)):
+        scale = zoom_range
+    elif isinstance(zoom_range, tuple):
+        scale = np.random.uniform(zoom_range[0], zoom_range[1])
+    else:
+        raise Exception("zoom_range: float or tuple of 2 floats")
+
+    zoom_matrix = np.array([[scale, 0, 0], \
+                            [0, scale, 0], \
+                            [0, 0, 1]])
+    return zoom_matrix
+
+
+def affine_respective_zoom_matrix(w_range=0.8, h_range=1.1):
+    """Get affine transform matrix for zooming/scaling that height and width are changed independently.
+    OpenCV format, x is width.
+
+    Parameters
+    -----------
+    w_range : float or tuple of 2 floats
+        The zooming/scaling ratio of width, greater than 1 means larger.
+            - float, a fixed ratio.
+            - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
+    h_range : float or tuple of 2 floats
+        The zooming/scaling ratio of height, greater than 1 means larger.
+            - float, a fixed ratio.
+            - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
+
+    Returns
+    -------
+    numpy.array
+        An affine transform matrix.
+
+    """
+
+    if isinstance(h_range, (float, int)):
+        zy = h_range
+    elif isinstance(h_range, tuple):
+        zy = np.random.uniform(h_range[0], h_range[1])
+    else:
+        raise Exception("h_range: float or tuple of 2 floats")
+
+    if isinstance(w_range, (float, int)):
+        zx = w_range
+    elif isinstance(w_range, tuple):
+        zx = np.random.uniform(w_range[0], w_range[1])
+    else:
+        raise Exception("w_range: float or tuple of 2 floats")
+
+    zoom_matrix = np.array([[zx, 0, 0], \
+                            [0, zy, 0], \
+                            [0, 0, 1]])
+    return zoom_matrix
+
+
+# affine transform
+def transform_matrix_offset_center(matrix, x, y):
+    """Convert the matrix from Cartesian coordinates (the origin in the middle of image) to Image coordinates (the origin on the top-left of image).
+
+    Parameters
+    ----------
+    matrix : numpy.array
+        Transform matrix.
+    x and y : 2 int
+        Size of image.
+
+    Returns
+    -------
+    numpy.array
+        The transform matrix.
+
+    Examples
+    --------
+    - See ``tl.prepro.rotation``, ``tl.prepro.shear``, ``tl.prepro.zoom``.
+    """
+    o_x = (x - 1) / 2.0
+    o_y = (y - 1) / 2.0
+    offset_matrix = np.array([[1, 0, o_x], [0, 1, o_y], [0, 0, 1]])
+    reset_matrix = np.array([[1, 0, -o_x], [0, 1, -o_y], [0, 0, 1]])
+    transform_matrix = np.dot(np.dot(offset_matrix, matrix), reset_matrix)
+    return transform_matrix
+
+
+def affine_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', cval=0., order=1):
+    """Return transformed images by given an affine matrix in Scipy format (x is height).
+
+    Parameters
+    ----------
+    x : numpy.array
+        An image with dimension of [row, col, channel] (default).
+    transform_matrix : numpy.array
+        Transform matrix (offset center), can be generated by ``transform_matrix_offset_center``
+    channel_index : int
+        Index of channel, default 2.
+    fill_mode : str
+        Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`, see `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+    cval : float
+        Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
+    order : int
+        The order of interpolation. The order has to be in the range 0-5:
+            - 0 Nearest-neighbor
+            - 1 Bi-linear (default)
+            - 2 Bi-quadratic
+            - 3 Bi-cubic
+            - 4 Bi-quartic
+            - 5 Bi-quintic
+            - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
+
+    Examples
+    --------
+    >>> M_shear = tl.prepro.affine_shear_matrix(intensity=0.2, is_random=False)
+    >>> M_zoom = tl.prepro.affine_zoom_matrix(zoom_range=0.8)
+    >>> M_combined = M_shear.dot(M_zoom)
+    >>> transform_matrix = tl.prepro.transform_matrix_offset_center(M_combined, h, w)
+    >>> result = tl.prepro.affine_transform(image, transform_matrix)
+
+    """
+    # transform_matrix = transform_matrix_offset_center()
+    # asdihasid
+    # asd
+
+    x = np.rollaxis(x, channel_index, 0)
+    final_affine_matrix = transform_matrix[:2, :2]
+    final_offset = transform_matrix[:2, 2]
+    channel_images = [
+        ndi.interpolation.
+        affine_transform(x_channel, final_affine_matrix, final_offset, order=order, mode=fill_mode, cval=cval)
+        for x_channel in x
+    ]
+    x = np.stack(channel_images, axis=0)
+    x = np.rollaxis(x, 0, channel_index + 1)
+    return x
+
+
+apply_transform = affine_transform
+
+
+def affine_transform_cv2(x, transform_matrix, flags=None, borderMode=None):
+    """Return transformed images by given an affine matrix in OpenCV format (x is width). (Powered by OpenCV2, faster than ``tl.prepro.affine_transform``)
+
+    Parameters
+    ----------
+    x : numpy.array
+        An image with dimension of [row, col, channel] (default).
+    transform_matrix : numpy.array
+        A transform matrix, OpenCV format.
+
+    Examples
+    --------
+    >>> M_shear = tl.prepro.affine_shear_matrix(intensity=0.2, is_random=False)
+    >>> M_zoom = tl.prepro.affine_zoom_matrix(zoom_range=0.8)
+    >>> M_combined = M_shear.dot(M_zoom)
+    >>> result = affine_transform_cv2(image, M_combined)
+    """
+    rows, cols = x.shape[0], x.shape[1]
+    if flags is None:
+        flags = cv2.INTER_AREA
+    if borderMode is None:
+        borderMode = cv2.BORDER_CONSTANT
+    return cv2.warpAffine(x, transform_matrix[0:2,:], \
+            (cols,rows), flags=flags, borderMode=borderMode)
+
+
+def affine_transform_keypoints(coords_list, transform_matrix):
+    """Transform keypoint coordinates according to a given affine transform matrix.
+    OpenCV format, x is width.
+
+    Parameters
+    -----------
+    coords_list : list of list of tuple/list
+        The coordinates
+        e.g., the keypoint coordinates of every person in an image.
+    transform_matrix : numpy.array
+        Transform matrix, OpenCV format.
+
+    Examples
+    ---------
+    >>> # 1. get all affine transform matrices
+    >>> M_rotate = tl.prepro.affine_rotation_matrix(angle=20)
+    >>> M_flip = tl.prepro.affine_horizontal_flip_matrix(prob=1)
+    >>> # 2. combine all affine transform matrices to one matrix
+    >>> M_combined = dot(M_flip).dot(M_rotate)
+    >>> # 3. transfrom the matrix from Cartesian coordinate (the origin in the middle of image)
+    >>> # to Image coordinate (the origin on the top-left of image)
+    >>> transform_matrix = tl.prepro.transform_matrix_offset_center(M_combined, x=w, y=h)
+    >>> # 4. then we can transfrom the image once for all transformations
+    >>> result = tl.prepro.affine_transform_cv2(image, transform_matrix)  # 76 times faster
+    >>> # 5. transform keypoint coordinates
+    >>> coords = [[(50, 100), (100, 100), (100, 50), (200, 200)], [(250, 50), (200, 50), (200, 100)]]
+    >>> coords_result = tl.prepro.affine_transform_keypoints(coords, transform_matrix)
+    """
+    coords_result_list = []
+    for coords in coords_list:
+        coords = np.asarray(coords)
+        coords = coords.transpose([1, 0])
+        coords = np.insert(coords, 2, 1, axis=0)
+        # print(coords)
+        # print(transform_matrix)
+        coords_result = np.matmul(transform_matrix, coords)
+        coords_result = coords_result[0:2, :].transpose([1, 0])
+        coords_result_list.append(coords_result)
+    return coords_result_list
+
+
+def projective_transform_by_points(
+        x, src, dst, map_args=None, output_shape=None, order=1, mode='constant', cval=0.0, clip=True,
+        preserve_range=False
+):
+    """Projective transform by given coordinates, usually 4 coordinates.
+
+    see `scikit-image <http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html>`__.
+
+    Parameters
+    -----------
+    x : numpy.array
+        An image with dimension of [row, col, channel] (default).
+    src : list or numpy
+        The original coordinates, usually 4 coordinates of (width, height).
+    dst : list or numpy
+        The coordinates after transformation, the number of coordinates is the same with src.
+    map_args : dictionary or None
+        Keyword arguments passed to inverse map.
+    output_shape : tuple of 2 int
+        Shape of the output image generated. By default the shape of the input image is preserved. Note that, even for multi-band images, only rows and columns need to be specified.
+    order : int
+        The order of interpolation. The order has to be in the range 0-5:
+            - 0 Nearest-neighbor
+            - 1 Bi-linear (default)
+            - 2 Bi-quadratic
+            - 3 Bi-cubic
+            - 4 Bi-quartic
+            - 5 Bi-quintic
+    mode : str
+        One of `constant` (default), `edge`, `symmetric`, `reflect` or `wrap`.
+        Points outside the boundaries of the input are filled according to the given mode. Modes match the behaviour of numpy.pad.
+    cval : float
+        Used in conjunction with mode `constant`, the value outside the image boundaries.
+    clip : boolean
+        Whether to clip the output to the range of values of the input image. This is enabled by default, since higher order interpolation may produce values outside the given input range.
+    preserve_range : boolean
+        Whether to keep the original range of values. Otherwise, the input image is converted according to the conventions of img_as_float.
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
+
+    Examples
+    --------
+    Assume X is an image from CIFAR-10, i.e. shape == (32, 32, 3)
+
+    >>> src = [[0,0],[0,32],[32,0],[32,32]]     # [w, h]
+    >>> dst = [[10,10],[0,32],[32,0],[32,32]]
+    >>> x = tl.prepro.projective_transform_by_points(X, src, dst)
+
+    References
+    -----------
+    - `scikit-image : geometric transformations <http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html>`__
+    - `scikit-image : examples <http://scikit-image.org/docs/dev/auto_examples/index.html>`__
+
+    """
+    if map_args is None:
+        map_args = {}
+    # if type(src) is list:
+    if isinstance(src, list):  # convert to numpy
+        src = np.array(src)
+    # if type(dst) is list:
+    if isinstance(dst, list):
+        dst = np.array(dst)
+    if np.max(x) > 1:  # convert to [0, 1]
+        x = x / 255
+
+    m = transform.ProjectiveTransform()
+    m.estimate(dst, src)
+    warped = transform.warp(
+        x, m, map_args=map_args, output_shape=output_shape, order=order, mode=mode, cval=cval, clip=clip,
+        preserve_range=preserve_range
+    )
+    return warped
+
+
+# rotate
 def rotation(
     x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1
 ):
@@ -245,7 +716,7 @@ def rotation(
     cval : float
         Value used for points outside the boundaries of the input if mode=`constant`. Default is 0.0
     order : int
-        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.apply_transform`` and `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.affine_transform`` and `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
 
     Returns
     -------
@@ -267,7 +738,7 @@ def rotation(
 
     h, w = x.shape[row_index], x.shape[col_index]
     transform_matrix = transform_matrix_offset_center(rotation_matrix, h, w)
-    x = apply_transform(x, transform_matrix, channel_index, fill_mode, cval, order)
+    x = affine_transform(x, transform_matrix, channel_index, fill_mode, cval, order)
     return x
 
 
@@ -305,7 +776,7 @@ def rotation_multi(
     transform_matrix = transform_matrix_offset_center(rotation_matrix, h, w)
     results = []
     for data in x:
-        results.append(apply_transform(data, transform_matrix, channel_index, fill_mode, cval, order))
+        results.append(affine_transform(data, transform_matrix, channel_index, fill_mode, cval, order))
     return np.asarray(results)
 
 
@@ -512,7 +983,7 @@ def shift(
     cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
     order : int
-        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.apply_transform`` and `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.affine_transform`` and `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
 
     Returns
     -------
@@ -529,7 +1000,7 @@ def shift(
     translation_matrix = np.array([[1, 0, tx], [0, 1, ty], [0, 0, 1]])
 
     transform_matrix = translation_matrix  # no need to do offset
-    x = apply_transform(x, transform_matrix, channel_index, fill_mode, cval, order)
+    x = affine_transform(x, transform_matrix, channel_index, fill_mode, cval, order)
     return x
 
 
@@ -572,7 +1043,7 @@ def shift_multi(
     transform_matrix = translation_matrix  # no need to do offset
     results = []
     for data in x:
-        results.append(apply_transform(data, transform_matrix, channel_index, fill_mode, cval, order))
+        results.append(affine_transform(data, transform_matrix, channel_index, fill_mode, cval, order))
     return np.asarray(results)
 
 
@@ -598,7 +1069,7 @@ def shear(
     cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
     order : int
-        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.apply_transform`` and `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.affine_transform`` and `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
 
     Returns
     -------
@@ -618,7 +1089,7 @@ def shear(
 
     h, w = x.shape[row_index], x.shape[col_index]
     transform_matrix = transform_matrix_offset_center(shear_matrix, h, w)
-    x = apply_transform(x, transform_matrix, channel_index, fill_mode, cval, order)
+    x = affine_transform(x, transform_matrix, channel_index, fill_mode, cval, order)
     return x
 
 
@@ -651,7 +1122,7 @@ def shear_multi(
     transform_matrix = transform_matrix_offset_center(shear_matrix, h, w)
     results = []
     for data in x:
-        results.append(apply_transform(data, transform_matrix, channel_index, fill_mode, cval, order))
+        results.append(affine_transform(data, transform_matrix, channel_index, fill_mode, cval, order))
     return np.asarray(results)
 
 
@@ -683,7 +1154,7 @@ def shear2(
     cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
     order : int
-        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.apply_transform`` and `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.affine_transform`` and `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
 
     Returns
     -------
@@ -699,16 +1170,19 @@ def shear2(
         raise AssertionError(
             "shear should be tuple of 2 floats, or you want to use tl.prepro.shear rather than tl.prepro.shear2 ?"
         )
-
+    if isinstance(shear, tuple):
+        shear = list(shear)
     if is_random:
         shear[0] = np.random.uniform(-shear[0], shear[0])
         shear[1] = np.random.uniform(-shear[1], shear[1])
 
-    shear_matrix = np.array([[1, shear[0], 0], [shear[1], 1, 0], [0, 0, 1]])
+    shear_matrix = np.array([[1, shear[0], 0], \
+                            [shear[1], 1, 0], \
+                            [0, 0, 1]])
 
     h, w = x.shape[row_index], x.shape[col_index]
     transform_matrix = transform_matrix_offset_center(shear_matrix, h, w)
-    x = apply_transform(x, transform_matrix, channel_index, fill_mode, cval, order)
+    x = affine_transform(x, transform_matrix, channel_index, fill_mode, cval, order)
     return x
 
 
@@ -743,7 +1217,8 @@ def shear_multi2(
         raise AssertionError(
             "shear should be tuple of 2 floats, or you want to use tl.prepro.shear_multi rather than tl.prepro.shear_multi2 ?"
         )
-
+    if isinstance(shear, tuple):
+        shear = list(shear)
     if is_random:
         shear[0] = np.random.uniform(-shear[0], shear[0])
         shear[1] = np.random.uniform(-shear[1], shear[1])
@@ -754,7 +1229,7 @@ def shear_multi2(
     transform_matrix = transform_matrix_offset_center(shear_matrix, h, w)
     results = []
     for data in x:
-        results.append(apply_transform(data, transform_matrix, channel_index, fill_mode, cval, order))
+        results.append(affine_transform(data, transform_matrix, channel_index, fill_mode, cval, order))
     return np.asarray(results)
 
 
@@ -1031,30 +1506,17 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
     return np.asarray(results)
 
 
-# zoom
-def zoom(
-    x,
-    zoom_range=(0.9, 1.1),
-    is_random=False,
-    row_index=0,
-    col_index=1,
-    channel_index=2,
-    fill_mode='nearest',
-    cval=0.,
-    order=1
-):
-    """Zoom in and out of a single image, randomly or non-randomly.
+def zoom(x, zoom_range=(0.9, 1.1), row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1):
+    """Zooming/Scaling a single image that height and width are changed together.
 
     Parameters
     -----------
     x : numpy.array
         An image with dimension of [row, col, channel] (default).
-    zoom_range : list or tuple
-        Zoom range for height and width.
-            - If is_random=False, (h, w) are the fixed zoom factor for row and column axies, factor small than one is zoom in.
-            - If is_random=True, (h, w) are (min zoom out, max zoom out) for x and y with different random zoom in/out factor, e.g (0.5, 1) zoom in 1~2 times.
-    is_random : boolean
-        If True, randomly zoom. Default is False.
+    zoom_range : float or tuple of 2 floats
+        The zooming/scaling ratio, greater than 1 means larger.
+            - float, a fixed ratio.
+            - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
     row_index col_index and channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : str
@@ -1062,7 +1524,7 @@ def zoom(
     cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
     order : int
-        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.apply_transform`` and `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.affine_transform`` and `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
 
     Returns
     -------
@@ -1070,22 +1532,50 @@ def zoom(
         A processed image.
 
     """
-    if len(zoom_range) != 2:
-        raise Exception('zoom_range should be a tuple or list of two floats. ' 'Received arg: ', zoom_range)
-    if is_random:
-        if zoom_range[0] == 1 and zoom_range[1] == 1:
-            zx, zy = 1, 1
-            tl.logging.info(" random_zoom : not zoom in/out")
-        else:
-            zx, zy = np.random.uniform(zoom_range[0], zoom_range[1], 2)
-    else:
-        zx, zy = zoom_range
-    # tl.logging.info(zx, zy)
-    zoom_matrix = np.array([[zx, 0, 0], [0, zy, 0], [0, 0, 1]])
-
+    zoom_matrix = affine_zoom_matrix(zoom_range=zoom_range)
     h, w = x.shape[row_index], x.shape[col_index]
     transform_matrix = transform_matrix_offset_center(zoom_matrix, h, w)
-    x = apply_transform(x, transform_matrix, channel_index, fill_mode, cval, order)
+    x = affine_transform(x, transform_matrix, channel_index, fill_mode, cval, order)
+    return x
+
+
+def respective_zoom(
+        x, h_range=(0.9, 1.1), w_range=(0.9, 1.1), row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
+        cval=0., order=1
+):
+    """Zooming/Scaling a single image that height and width are changed independently.
+
+    Parameters
+    -----------
+    x : numpy.array
+        An image with dimension of [row, col, channel] (default).
+    h_range : float or tuple of 2 floats
+        The zooming/scaling ratio of height, greater than 1 means larger.
+            - float, a fixed ratio.
+            - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
+    w_range : float or tuple of 2 floats
+        The zooming/scaling ratio of width, greater than 1 means larger.
+            - float, a fixed ratio.
+            - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
+    row_index col_index and channel_index : int
+        Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
+    fill_mode : str
+        Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`, see `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+    cval : float
+        Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
+    order : int
+        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.affine_transform`` and `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
+
+    """
+    zoom_matrix = affine_respective_zoom_matrix(h_range=h_range, w_range=w_range)
+    h, w = x.shape[row_index], x.shape[col_index]
+    transform_matrix = transform_matrix_offset_center(zoom_matrix, h, w)
+    x = affine_transform(x, transform_matrix, channel_index, fill_mode, cval, order)
     return x
 
 
@@ -1132,11 +1622,11 @@ def zoom_multi(
 
     h, w = x[0].shape[row_index], x[0].shape[col_index]
     transform_matrix = transform_matrix_offset_center(zoom_matrix, h, w)
-    # x = apply_transform(x, transform_matrix, channel_index, fill_mode, cval)
+    # x = affine_transform(x, transform_matrix, channel_index, fill_mode, cval)
     # return x
     results = []
     for data in x:
-        results.append(apply_transform(data, transform_matrix, channel_index, fill_mode, cval, order))
+        results.append(affine_transform(data, transform_matrix, channel_index, fill_mode, cval, order))
     return np.asarray(results)
 
 
@@ -1776,166 +2266,6 @@ def drop(x, keep=0.5):
 # # exit()
 # tl.logging.info(drop(x, keep=1.))
 # exit()
-
-
-# manual transform
-def transform_matrix_offset_center(matrix, x, y):
-    """Return transform matrix offset center.
-
-    Parameters
-    ----------
-    matrix : numpy.array
-        Transform matrix.
-    x and y : 2 int
-        Size of image.
-
-    Returns
-    -------
-    numpy.array
-        The transform matrix.
-
-    Examples
-    --------
-    - See ``tl.prepro.rotation``, ``tl.prepro.shear``, ``tl.prepro.zoom``.
-
-    """
-    o_x = (x - 1) / 2.0
-    o_y = (y - 1) / 2.0
-    offset_matrix = np.array([[1, 0, o_x], [0, 1, o_y], [0, 0, 1]])
-    reset_matrix = np.array([[1, 0, -o_x], [0, 1, -o_y], [0, 0, 1]])
-    transform_matrix = np.dot(np.dot(offset_matrix, matrix), reset_matrix)
-    return transform_matrix
-
-
-def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', cval=0., order=1):
-    """Return transformed images by given ``transform_matrix`` from ``transform_matrix_offset_center``.
-
-    Parameters
-    ----------
-    x : numpy.array
-        An image with dimension of [row, col, channel] (default).
-    transform_matrix : numpy.array
-        Transform matrix (offset center), can be generated by ``transform_matrix_offset_center``
-    channel_index : int
-        Index of channel, default 2.
-    fill_mode : str
-        Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`, see `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
-    cval : float
-        Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
-    order : int
-        The order of interpolation. The order has to be in the range 0-5:
-            - 0 Nearest-neighbor
-            - 1 Bi-linear (default)
-            - 2 Bi-quadratic
-            - 3 Bi-cubic
-            - 4 Bi-quartic
-            - 5 Bi-quintic
-            - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
-
-    Returns
-    -------
-    numpy.array
-        A processed image.
-
-    Examples
-    --------
-    - See ``tl.prepro.rotation``, ``tl.prepro.shift``, ``tl.prepro.shear``, ``tl.prepro.zoom``.
-
-    """
-    x = np.rollaxis(x, channel_index, 0)
-    final_affine_matrix = transform_matrix[:2, :2]
-    final_offset = transform_matrix[:2, 2]
-    channel_images = [
-        ndi.interpolation.
-        affine_transform(x_channel, final_affine_matrix, final_offset, order=order, mode=fill_mode, cval=cval)
-        for x_channel in x
-    ]
-    x = np.stack(channel_images, axis=0)
-    x = np.rollaxis(x, 0, channel_index + 1)
-    return x
-
-
-def projective_transform_by_points(
-    x, src, dst, map_args=None, output_shape=None, order=1, mode='constant', cval=0.0, clip=True, preserve_range=False
-):
-    """Projective transform by given coordinates, usually 4 coordinates.
-
-    see `scikit-image <http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html>`__.
-
-    Parameters
-    -----------
-    x : numpy.array
-        An image with dimension of [row, col, channel] (default).
-    src : list or numpy
-        The original coordinates, usually 4 coordinates of (width, height).
-    dst : list or numpy
-        The coordinates after transformation, the number of coordinates is the same with src.
-    map_args : dictionary or None
-        Keyword arguments passed to inverse map.
-    output_shape : tuple of 2 int
-        Shape of the output image generated. By default the shape of the input image is preserved. Note that, even for multi-band images, only rows and columns need to be specified.
-    order : int
-        The order of interpolation. The order has to be in the range 0-5:
-            - 0 Nearest-neighbor
-            - 1 Bi-linear (default)
-            - 2 Bi-quadratic
-            - 3 Bi-cubic
-            - 4 Bi-quartic
-            - 5 Bi-quintic
-    mode : str
-        One of `constant` (default), `edge`, `symmetric`, `reflect` or `wrap`.
-        Points outside the boundaries of the input are filled according to the given mode. Modes match the behaviour of numpy.pad.
-    cval : float
-        Used in conjunction with mode `constant`, the value outside the image boundaries.
-    clip : boolean
-        Whether to clip the output to the range of values of the input image. This is enabled by default, since higher order interpolation may produce values outside the given input range.
-    preserve_range : boolean
-        Whether to keep the original range of values. Otherwise, the input image is converted according to the conventions of img_as_float.
-
-    Returns
-    -------
-    numpy.array
-        A processed image.
-
-    Examples
-    --------
-    Assume X is an image from CIFAR-10, i.e. shape == (32, 32, 3)
-
-    >>> src = [[0,0],[0,32],[32,0],[32,32]]     # [w, h]
-    >>> dst = [[10,10],[0,32],[32,0],[32,32]]
-    >>> x = tl.prepro.projective_transform_by_points(X, src, dst)
-
-    References
-    -----------
-    - `scikit-image : geometric transformations <http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html>`__
-    - `scikit-image : examples <http://scikit-image.org/docs/dev/auto_examples/index.html>`__
-
-    """
-    if map_args is None:
-        map_args = {}
-    # if type(src) is list:
-    if isinstance(src, list):  # convert to numpy
-        src = np.array(src)
-    # if type(dst) is list:
-    if isinstance(dst, list):
-        dst = np.array(dst)
-    if np.max(x) > 1:  # convert to [0, 1]
-        x = x / 255
-
-    m = transform.ProjectiveTransform()
-    m.estimate(dst, src)
-    warped = transform.warp(
-        x,
-        m,
-        map_args=map_args,
-        output_shape=output_shape,
-        order=order,
-        mode=mode,
-        cval=cval,
-        clip=clip,
-        preserve_range=preserve_range
-    )
-    return warped
 
 
 # Numpy and PIL
@@ -2847,7 +3177,7 @@ def obj_box_shift(
     translation_matrix = np.array([[1, 0, tx], [0, 1, ty], [0, 0, 1]])
 
     transform_matrix = translation_matrix  # no need to do offset
-    im_new = apply_transform(im, transform_matrix, channel_index, fill_mode, cval, order)
+    im_new = affine_transform(im, transform_matrix, channel_index, fill_mode, cval, order)
 
     # modified from obj_box_crop
     def _get_coord(coord):
@@ -2996,7 +3326,7 @@ def obj_box_zoom(
 
     h, w = im.shape[row_index], im.shape[col_index]
     transform_matrix = transform_matrix_offset_center(zoom_matrix, h, w)
-    im_new = apply_transform(im, transform_matrix, channel_index, fill_mode, cval, order)
+    im_new = affine_transform(im, transform_matrix, channel_index, fill_mode, cval, order)
 
     # modified from obj_box_crop
     def _get_coord(coord):
