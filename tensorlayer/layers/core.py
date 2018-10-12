@@ -715,31 +715,32 @@ class BuiltLayer(object):
                 "An attempt to modify the attribute: `{}` has been detected.".format(self.__class__.__name__, key)
             )
 
-        def count_weights(self):
-            """Returns the number of parameters in the network."""
-            n_params = 0
-
-            for _i, p in enumerate(self.local_weights):
-
-                n = 1
-                # for s in p.eval().shape:
-                for s in p.get_shape():
-
-                    try:
-                        s = int(s)
-                    except TypeError:
-                        s = 1
-
-                    if s:
-                        n = n * s
-
-                n_params = n_params + n
-
-            return n_params
-
     # =============================================== #
     #                  PUBLIC METHODS                 #
     # =============================================== #
+
+    def count_local_weights(self):
+
+        """Returns the number of parameters in the network."""
+        n_params = 0
+
+        for _i, p in enumerate(self.local_weights):
+
+            n = 1
+            # for s in p.eval().shape:
+            for s in p.get_shape():
+
+                try:
+                    s = int(s)
+                except (TypeError, ValueError):
+                    s = 1
+
+                if s:
+                    n = n * s
+
+            n_params = n_params + n
+
+        return n_params
 
     def count_weights(self):
         """Returns the number of weights in the network."""

@@ -470,6 +470,11 @@ class Network_Sequential_2D_Test(CustomTestCase):
                         (layer_name, self.test_model[layer_name].outputs.dtype, tf.float16)
                     )
 
+    def test_layer_local_weights(self):
+
+            for layer_name in self.train_model.all_layers:
+                print("%s: %d" % (layer_name, self.train_model[layer_name].count_local_weights()))
+
     def test_network_shapes(self):
 
         self.assertEqual(self.train_model["input_layer"].outputs.shape, (100, 16, 16))
