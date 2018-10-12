@@ -110,8 +110,10 @@ API - Data Pre-processing
   ------------
   .. autofunction:: threading_data
 
+
 Affine Transform
 ----------------
+
 
 Python can be FAST
 ^^^^^^^^^^^^^^^^^^
@@ -137,6 +139,7 @@ performed in an order. They are hard to jointly optimize. More importantly,
 sequential image operations can significantly
 reduces the quality of images, thus affecting training accuracy.
 
+
 TensorLayer addresses these limitations by providing a
 high-performance image augmentation API in Python.
 This API bases on affine transformation and ``cv2.wrapAffine``.
@@ -147,10 +150,12 @@ is executed by the fast ``cv2`` library, offering 78x performance improvement (o
 The following example illustrates the rationale
 behind this tremendous speed up.
 
+
 Example
 ^^^^^^^
 
-The source code of complete examples can be found `here <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process/tutorial_fast_affine_transform.py>`__.
+The source code of complete examples can be found \
+`here <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process/tutorial_fast_affine_transform.py>`__.
 The following is a typical Python program that applies rotation, shifting, flipping, zooming and shearing to an image,
 
 .. code-block:: python
@@ -164,6 +169,7 @@ The following is a typical Python program that applies rotation, shifting, flipp
     xx = tl.prepro.shift(xx, wrg=-0.1, hrg=0, is_random=False)
 
     tl.vis.save_image(xx, '_result_slow.png')
+
 
 However, by leveraging affine transformation, image operations can be combined into one:
 
@@ -196,16 +202,19 @@ The following figure illustrates the rational behind combined affine transformat
   :width: 100 %
   :align: center
 
-Using combined affine transformation has two key benefits. First, it allows
-    you to leverage a pure Python API to achieve orders of magnitudes of speed up in image augmentation,
-and thus prevent data pre-processing from becoming a bottleneck in training.
-    Second, performing sequential image transformation requires multiple image interpolations. This produces low-quality
-        input images. In contrast, a combined transformation performs the interpolation only once, and thus
+
+Using combined affine transformation has two key benefits. First, it allows \
+you to leverage a pure Python API to achieve orders of magnitudes of speed up in image augmentation,
+and thus prevent data pre-processing from becoming a bottleneck in training. \
+Second, performing sequential image transformation requires multiple image interpolations. \
+This produces low-quality input images. In contrast, a combined transformation performs the \
+interpolation only once, and thus
 preserve the content in an image. The following figure illustrates these two benefits:
 
 .. image:: ../images/affine_transform_comparison.jpg
   :width: 100 %
   :align: center
+
 
 Get rotation matrix
 ^^^^^^^^^^^^^^^^^^^^^^^^^
