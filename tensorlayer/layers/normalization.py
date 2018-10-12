@@ -264,13 +264,12 @@ class GroupNormLayer(Layer):
     act : activation function
         The activation function of this layer.
     epsilon : float
-        Eplison.
+         Epsilon.
     name : str
         A unique layer name
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self, groups=32, epsilon=1e-06, act=None, data_format='channels_last', name='groupnorm'):
         self.groups = groups
         self.epsilon = epsilon
@@ -278,7 +277,7 @@ class GroupNormLayer(Layer):
         self.data_format = data_format
         self.name = name
 
-        super(GroupNormLayer, self).__init__(act=act, name=name)
+        super(GroupNormLayer, self).__init__()
 
     def build(self):
         inputs = self._temp_data['inputs']
@@ -296,9 +295,9 @@ class GroupNormLayer(Layer):
             channels = shape[1]
             int_shape = tf.concat(
                 [
-                    tf.shape(self.inputs)[0:1],
+                    tf.shape(inputs)[0:1],
                     tf.convert_to_tensor([self.groups, channels // self.groups]),
-                    tf.shape(self.inputs)[2:4]
+                    tf.shape(inputs)[2:4]
                 ],
                 axis=0
             )
@@ -314,19 +313,18 @@ class GroupNormLayer(Layer):
             x = tf.reshape(inputs, int_shape)
             if self.data_format == 'channels_last':
                 mean, var = tf.nn.moments(x, [1, 2, 4], keep_dims=True)
-                gamma = tf.get_variable('gamma', channels, initializer=tf.ones_initializer())
-                beta = tf.get_variable('beta', channels, initializer=tf.zeros_initializer())
+                gamma = self._get_tf_variable(name='gamma', shape=channels, initializer=tf.ones_initializer())
+                beta = self._get_tf_variable(name='beta', shape=channels, initializer=tf.zeros_initializer())
             else:
                 mean, var = tf.nn.moments(x, [2, 3, 4], keep_dims=True)
-                gamma = tf.get_variable('gamma', [1, channels, 1, 1], initializer=tf.ones_initializer())
-                beta = tf.get_variable('beta', [1, channels, 1, 1], initializer=tf.zeros_initializer())
+                gamma = self._get_tf_variable(name='gamma', shape=[1, channels, 1, 1], initializer=tf.ones_initializer())
+                beta = self._get_tf_variable(name='beta', shape=[1, channels, 1, 1], initializer=tf.zeros_initializer())
 
             x = (x - mean) / tf.sqrt(var + self.epsilon)
 
             outputs = tf.reshape(x, tf.shape(inputs)) * gamma + beta
             outputs = self._apply_activation(outputs)
 
-        self._temp_data['local_weights'] = get_collection_trainable(self.name)
         self._temp_data['outputs'] = outputs
 
 

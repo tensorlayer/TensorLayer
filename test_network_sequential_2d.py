@@ -39,6 +39,7 @@ class Network_Sequential_2D_Test(CustomTestCase):
                 tl.layers.LocalResponseNormLayer(depth_radius=5, bias=1., alpha=1., beta=.5, name='LRN_layer_2')
             )
             cls.model.add(tl.layers.BatchNormLayer(decay=0.9, epsilon=1e-5, act=None, name='batchnorm_layer_2'))
+            cls.model.add(tl.layers.GroupNormLayer(groups=1, data_format='channels_first', name='groupnorm_layer_2'))
             cls.model.add(tl.layers.InstanceNormLayer(epsilon=1e-5, act=None, name='instance_norm_layer_2'))
             cls.model.add(
                 tl.layers.LayerNormLayer(
@@ -51,7 +52,6 @@ class Network_Sequential_2D_Test(CustomTestCase):
                 )
             )
             cls.model.add(tl.layers.SwitchNormLayer(epsilon=1e-5, act=None, name='switchnorm_layer_2'))
-
             cls.model.add(tl.layers.PadLayer(padding=[[0, 0], [4, 4], [3, 3], [0, 0]], name='pad_layer_3'))
             cls.model.add(tl.layers.ZeroPad2d(padding=2, name='zeropad2d_layer_3-1'))
             cls.model.add(tl.layers.ZeroPad2d(padding=(2, 2), name='zeropad2d_layer_3-2'))
@@ -434,23 +434,23 @@ class Network_Sequential_2D_Test(CustomTestCase):
             self.assertEqual(len(self.model.all_drop), 0)
 
     def test_count_weights(self):
-        self.assertEqual(self.train_model.count_weights(), 132293)
-        self.assertEqual(self.test_model.count_weights(), 132293)
+        self.assertEqual(self.train_model.count_weights(), 132323)
+        self.assertEqual(self.test_model.count_weights(), 132323)
 
         with self.assertRaises((AttributeError, AssertionError)):
-            self.assertEqual(self.model.count_weights(), 132293)
+            self.assertEqual(self.model.count_weights(), 132323)
 
     def test_count_weights_tensors(self):
-        self.assertEqual(len(self.train_model.get_all_weights()), 60)
-        self.assertEqual(len(self.test_model.get_all_weights()), 60)
+        self.assertEqual(len(self.train_model.get_all_weights()), 62)
+        self.assertEqual(len(self.test_model.get_all_weights()), 62)
 
         with self.assertRaises((AttributeError, AssertionError)):
-            self.assertEqual(len(self.model.get_all_weights()), 60)
+            self.assertEqual(len(self.model.get_all_weights()), 62)
 
     def test_count_layers(self):
-        self.assertEqual(self.train_model.count_layers(), 54)
-        self.assertEqual(self.test_model.count_layers(), 54)
-        self.assertEqual(self.model.count_layers(), 54)
+        self.assertEqual(self.train_model.count_layers(), 55)
+        self.assertEqual(self.test_model.count_layers(), 55)
+        self.assertEqual(self.model.count_layers(), 55)
 
     def test_layer_outputs_dtype(self):
 
@@ -492,6 +492,9 @@ class Network_Sequential_2D_Test(CustomTestCase):
 
         self.assertEqual(self.train_model["batchnorm_layer_2"].outputs.shape, (100, 16, 16, 1))
         self.assertEqual(self.test_model["batchnorm_layer_2"].outputs.shape, (100, 16, 16, 1))
+
+        self.assertEqual(self.train_model["groupnorm_layer_2"].outputs.shape, (100, 16, 16, 1))
+        self.assertEqual(self.test_model["groupnorm_layer_2"].outputs.shape, (100, 16, 16, 1))
 
         self.assertEqual(self.train_model["instance_norm_layer_2"].outputs.shape, (100, 16, 16, 1))
         self.assertEqual(self.test_model["instance_norm_layer_2"].outputs.shape, (100, 16, 16, 1))
