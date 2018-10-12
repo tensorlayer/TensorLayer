@@ -7,16 +7,17 @@ import tensorflow as tf
 from tensorflow.python.training import moving_averages
 
 from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 from tensorlayer.layers.utils import get_collection_trainable
 
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'LocalResponseNormLayer',
     'BatchNormLayer',
     'InstanceNormLayer',
     'LayerNormLayer',
+    'LocalResponseNormLayer',
     'GroupNormLayer',
     'SwitchNormLayer',
 ]
@@ -280,53 +281,71 @@ class GroupNormLayer(Layer):
 
     def build(self):
         shape = self._temp_data['inputs'].get_shape().as_list()
+
         if len(shape) != 4:
             raise Exception("GroupNormLayer only supports 2D images.")
 
         if self.data_format == 'channels_last':
-            channels = shape[-1]
+            n_channels = shape[-1]
             int_shape = tf.concat(
                 [tf.shape(self._temp_data['inputs'])[0:3],
-                 tf.convert_to_tensor([self.groups, channels // self.groups])], axis=0
+                 tf.convert_to_tensor([self.groups, n_channels // self.groups])], axis=0
             )
+
         elif self.data_format == 'channels_first':
-            channels = shape[1]
+            n_channels = shape[1]
             int_shape = tf.concat(
                 [
                     tf.shape(self.self._temp_data['inputs'])[0:1],
-                    tf.convert_to_tensor([self.groups, channels // self.groups]),
+                    tf.convert_to_tensor([self.groups, n_channels // self.groups]),
                     tf.shape(self.self._temp_data['inputs'])[2:4]
                 ],
                 axis=0
             )
+
         else:
             raise ValueError("data_format must be 'channels_last' or 'channels_first'.")
 
-        if self.groups > channels:
-            raise ValueError('Invalid groups %d for %d channels.' % (self.groups, channels))
-        if channels % self.groups != 0:
-            raise ValueError('%d channels is not commensurate with %d groups.' % (channels, self.groups))
+        if self.groups > n_channels:
+            raise ValueError('Invalid groups %d for %d n_channels.' % (self.groups, n_channels))
+
+        if n_channels % self.groups != 0:
+            raise ValueError('%d n_channels is not commensurate with %d groups.' % (n_channels, self.groups))
 
         with tf.variable_scope(self.name):
 
             x = tf.reshape(self._temp_data['inputs'], int_shape)
 
             if self.data_format == 'channels_last':
-                mean, var = tf.nn.moments(x, [1, 2, 4], keep_dims=True)
-                gamma = tf.get_variable('gamma', channels, initializer=tf.ones_initializer())
-                beta = tf.get_variable('beta', channels, initializer=tf.zeros_initializer())
+                moments_shape = [1, 2, 4]
+                weight_shape = n_channels
 
             else:
-                mean, var = tf.nn.moments(x, [2, 3, 4], keep_dims=True)
-                gamma = tf.get_variable('gamma', [1, channels, 1, 1], initializer=tf.ones_initializer())
-                beta = tf.get_variable('beta', [1, channels, 1, 1], initializer=tf.zeros_initializer())
+                moments_shape = [2, 3, 4]
+                weight_shape = [1, n_channels, 1, 1]
+
+            mean, var = tf.nn.moments(x, moments_shape, keep_dims=True)
+
+            gamma = self._get_tf_variable(
+                name='gamma',
+                shape=weight_shape,
+                dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=tf.ones_initializer()
+            )
+
+            beta = self._get_tf_variable(
+                name='beta',
+                shape=weight_shape,
+                dtype=self._temp_data['inputs'].dtype,
+                trainable=self._temp_data['is_train'],
+                initializer=tf.zeros_initializer()
+            )
 
             x = (x - mean) / tf.sqrt(var + self.epsilon)
 
             self._temp_data['outputs'] = tf.reshape(x, tf.shape(self._temp_data['inputs'])) * gamma + beta
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-
-        self._temp_data['local_weights'] = get_collection_trainable(self.name)
 
 
 class LayerNormLayer(Layer):
@@ -399,7 +418,7 @@ class LayerNormLayer(Layer):
 
     def build(self):
 
-        with tf.variable_scope(self.name):
+        with tf.variable_scope(self.name) as vs:
 
             self._temp_data['outputs'] = tf.contrib.layers.layer_norm(
                 self._temp_data['inputs'],
@@ -416,7 +435,8 @@ class LayerNormLayer(Layer):
             )
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-            self._temp_data['local_weights'] = get_collection_trainable(self.name)
+
+            self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
 
 class LocalResponseNormLayer(Layer):
