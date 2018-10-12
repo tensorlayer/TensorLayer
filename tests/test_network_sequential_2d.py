@@ -434,11 +434,11 @@ class Network_Sequential_2D_Test(CustomTestCase):
             self.assertEqual(len(self.model.all_drop), 0)
 
     def test_count_weights(self):
-        self.assertEqual(self.train_model.count_weights(), 132323)
-        self.assertEqual(self.test_model.count_weights(), 132323)
+        self.assertEqual(self.train_model.count_weights(), 132325)
+        self.assertEqual(self.test_model.count_weights(), 132325)
 
         with self.assertRaises((AttributeError, AssertionError)):
-            self.assertEqual(self.model.count_weights(), 132323)
+            self.assertEqual(self.model.count_weights(), 132325)
 
     def test_count_weights_tensors(self):
         self.assertEqual(len(self.train_model.get_all_weights()), 62)
@@ -497,6 +497,9 @@ class Network_Sequential_2D_Test(CustomTestCase):
 
         self.assertEqual(self.train_model['batchnorm_layer_2'].count_local_weights(), 4)
         self.assertEqual(self.test_model['batchnorm_layer_2'].count_local_weights(), 4)
+
+        self.assertEqual(self.train_model['groupnorm_layer_2'].count_local_weights(), 32)
+        self.assertEqual(self.test_model['groupnorm_layer_2'].count_local_weights(), 32)
 
         self.assertEqual(self.train_model['instance_norm_layer_2'].count_local_weights(), 2)
         self.assertEqual(self.test_model['instance_norm_layer_2'].count_local_weights(), 2)

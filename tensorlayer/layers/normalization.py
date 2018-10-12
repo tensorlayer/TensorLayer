@@ -268,8 +268,6 @@ class GroupNormLayer(Layer):
         A unique layer name
 
     """
-
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self, groups=32, epsilon=1e-06, act=None, data_format='channels_last', name='groupnorm'):
         self.groups = groups
         self.epsilon = epsilon
@@ -277,7 +275,7 @@ class GroupNormLayer(Layer):
         self.data_format = data_format
         self.name = name
 
-        super(GroupNormLayer, self).__init__(act=act, name=name)
+        super(GroupNormLayer, self).__init__()
 
     def build(self):
         shape = self._temp_data['inputs'].get_shape().as_list()
@@ -296,9 +294,9 @@ class GroupNormLayer(Layer):
             n_channels = shape[1]
             int_shape = tf.concat(
                 [
-                    tf.shape(self.self._temp_data['inputs'])[0:1],
+                    tf.shape(self._temp_data['inputs'])[0:1],
                     tf.convert_to_tensor([self.groups, n_channels // self.groups]),
-                    tf.shape(self.self._temp_data['inputs'])[2:4]
+                    tf.shape(self._temp_data['inputs'])[2:4]
                 ],
                 axis=0
             )
