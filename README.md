@@ -4,10 +4,7 @@
     </div>
 </a>
 
-[![English Documentation](https://img.shields.io/badge/documentation-english-blue.svg)](https://tensorlayer.readthedocs.io/)
-[![Chinese Documentation](https://img.shields.io/badge/documentation-%E4%B8%AD%E6%96%87-blue.svg)](https://tensorlayercn.readthedocs.io/)
-[![Chinese Book](https://img.shields.io/badge/book-%E4%B8%AD%E6%96%87-blue.svg)](http://www.broadview.com.cn/book/5059/)
-[![Downloads](http://pepy.tech/badge/tensorlayer)](http://pepy.tech/project/tensorlayer)
+
 
 
 ![PyPI Stable Version](http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/release/tensorlayer/tensorlayer.svg?label=PyPI%20-%20Release)
@@ -15,6 +12,7 @@
 [![Github commits (since latest release)](http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/commits-since/tensorlayer/tensorlayer/latest.svg)](https://github.com/tensorlayer/tensorlayer/compare/1.10.1...master)
 [![PyPI - Python Version](http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/pypi/pyversions/tensorlayer.svg)](https://pypi.org/project/tensorlayer/)
 [![Supported TF Version](http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/badge/tensorflow-1.6.0+-blue.svg)](https://github.com/tensorflow/tensorflow/releases)
+[![Downloads](http://pepy.tech/badge/tensorlayer)](http://pepy.tech/project/tensorlayer)
 
 [![Build Status](http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/travis/tensorlayer/tensorlayer/master.svg?label=Travis)](https://travis-ci.org/tensorlayer/tensorlayer)
 [![CircleCI](http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/circleci/project/github/tensorlayer/tensorlayer/master.svg?label=Docker%20Build)](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master)
@@ -62,7 +60,9 @@ TensorLayer has a fast growing usage among top researchers and engineers, from u
 Imperial College London, UC Berkeley, Carnegie Mellon University, Stanford University, and
 University of Technology of Compiegne (UTC), and companies like Google, Microsoft, Alibaba, Tencent, Xiaomi, and Bloomberg.
 
-# Tutorials, Examples and Applications
+# Tutorials and Real-World Applications
+
+You can find a large collection of tutorials, examples and real-world applications using TensorLayer through the following space:
 
 <a href="https://github.com/tensorlayer/awesome-tensorlayer/blob/master/readme.md" target="\_blank">
 	<div align="center">
@@ -70,8 +70,16 @@ University of Technology of Compiegne (UTC), and companies like Google, Microsof
 	</div>
 </a>
 
+# Documentation
 
-# Installation Guide
+TensorLayer has extensive documentation for both beginners and professionals. The documentation is available in
+both English and Chinese. Please click the following icons to find the documents you need:
+
+[![English Documentation](https://img.shields.io/badge/documentation-english-blue.svg)](https://tensorlayer.readthedocs.io/)
+[![Chinese Documentation](https://img.shields.io/badge/documentation-%E4%B8%AD%E6%96%87-blue.svg)](https://tensorlayercn.readthedocs.io/)
+[![Chinese Book](https://img.shields.io/badge/book-%E4%B8%AD%E6%96%87-blue.svg)](http://www.broadview.com.cn/book/5059/)
+
+# Install
 
 TensorLayer has pre-requisites including TensorFlow, numpy, and others. For GPU support, CUDA and cuDNN are required.
 The simplest way to install TensorLayer is to use the **Py**thon **P**ackage **I**ndex (PyPI):
@@ -96,7 +104,7 @@ Alternatively, you can install the development version by directly pulling from 
 pip install git+https://github.com/tensorlayer/tensorlayer.git
 ```
 
-## Using Docker - a ready-to-use environment
+## Using Docker
 
 The [TensorLayer containers](https://hub.docker.com/r/tensorlayer/tensorlayer/) are built on top of the official [TensorFlow containers](https://hub.docker.com/r/tensorflow/tensorflow/):
 
