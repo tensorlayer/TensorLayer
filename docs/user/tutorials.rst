@@ -113,7 +113,7 @@ Run the MNIST example
 .. _fig_0601:
 
 .. image:: my_figs/mnist.jpeg
-  :scale: 100 %
+  :width: 100 %
   :align: center
 
 In the first part of the tutorial, we will just run the MNIST example that's
@@ -612,7 +612,7 @@ existing model and train the model basic on it.
 
 
 .. image:: my_figs/pong_game.jpeg
-    :scale: 30 %
+    :width: 30 %
     :align: center
 
 
@@ -792,7 +792,7 @@ plane, words that are similar end up clustering nearby each other.
 If everything is set up correctly, you will get an output in the end.
 
 .. image:: my_figs/tsne.png
-  :scale: 100 %
+  :width: 100 %
   :align: center
 
 
@@ -1739,7 +1739,7 @@ In Example page, we provide many examples include Seq2seq, different type of Adv
   .. _fig_0601:
 
   .. image:: my_figs/basic_seq2seq.png
-    :scale: 100 %
+    :width: 100 %
     :align: center
 
   As the above figure shows, the encoder inputs, decoder inputs and targets are:
