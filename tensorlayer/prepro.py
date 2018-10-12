@@ -3688,7 +3688,7 @@ def keypoint_random_crop(image, annos, mask=None, size=(368, 368)):
 
 def keypoint_resize_random_crop(image, annos, mask=None, size=(368, 368)):
     """Reszie the image to make either its width or height equals to the given sizes.
-    Then randomly crop image using padding without influence scales.
+    Then randomly crop image without influence scales.
     Resize the image match with the minimum size before cropping, this API will change the zoom scale of object.
 
     Parameters
