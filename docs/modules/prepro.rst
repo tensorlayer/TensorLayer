@@ -90,7 +90,7 @@ API - Data Pre-processing
    obj_box_zoom
 
    keypoint_random_crop
-   keypoint_random_crop2
+   keypoint_resize_random_crop
    keypoint_random_rotate
    keypoint_random_flip
    keypoint_random_resize
@@ -580,7 +580,9 @@ Image Aug - Crop
 ^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: keypoint_random_crop
 
-.. autofunction:: keypoint_random_crop2
+Image Aug - Resize then Crop
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: keypoint_resize_random_crop
 
 Image Aug - Rotate
 ^^^^^^^^^^^^^^^^^^^^
