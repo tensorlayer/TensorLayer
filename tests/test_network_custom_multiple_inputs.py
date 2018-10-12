@@ -1,4 +1,4 @@
-apt  #!/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -91,6 +91,28 @@ class CustomNetwork_Multiple_Outputs_Test(CustomTestCase):
                         "[Test Model] - Layer `%s` has an output of type %s, expected %s" %
                         (layer_name, self.test_model[layer_name].outputs.dtype, tf.float16)
                     )
+
+    def test_layer_local_weights(self):
+
+        # for layer_name in self.train_model.all_layers:
+        #    print("self.assertEqual(self.train_model['%s'].count_local_weights(), %d)" % (layer_name, self.train_model[layer_name].count_local_weights()))
+        #    print("self.assertEqual(self.test_model['%s'].count_local_weights(), %d)" % (layer_name, self.test_model[layer_name].count_local_weights()))
+        #    print()
+
+        self.assertEqual(self.train_model['data_plh_1'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['data_plh_1'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['data_plh_2'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['data_plh_2'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['dense_layer_1'].count_local_weights(), 1020)
+        self.assertEqual(self.test_model['dense_layer_1'].count_local_weights(), 1020)
+
+        self.assertEqual(self.train_model['dense_layer_2'].count_local_weights(), 310)
+        self.assertEqual(self.test_model['dense_layer_2'].count_local_weights(), 310)
+
+        self.assertEqual(self.train_model['concat_layer_3'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['concat_layer_3'].count_local_weights(), 0)
 
     def test_network_shapes(self):
 
