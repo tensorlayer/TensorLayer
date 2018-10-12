@@ -101,6 +101,31 @@ class Network_Sequential_RNN_Test(CustomTestCase):
                         (layer_name, self.test_model[layer_name].outputs.dtype, target_dtype)
                     )
 
+    def test_layer_local_weights(self):
+
+        # for layer_name in self.train_model.all_layers:
+        #    print("self.assertEqual(self.train_model['%s'].count_local_weights(), %d)" % (layer_name, self.train_model[layer_name].count_local_weights()))
+        #    print("self.assertEqual(self.test_model['%s'].count_local_weights(), %d)" % (layer_name, self.test_model[layer_name].count_local_weights()))
+        #    print()
+
+        self.assertEqual(self.train_model['input_layer'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['input_layer'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['embedding_layer_1'].count_local_weights(), 5000)
+        self.assertEqual(self.test_model['embedding_layer_1'].count_local_weights(), 5000)
+
+        self.assertEqual(self.train_model['rnn_layer_2'].count_local_weights(), 60400)
+        self.assertEqual(self.test_model['rnn_layer_2'].count_local_weights(), 60400)
+
+        self.assertEqual(self.train_model['birnn_layer_3'].count_local_weights(), 60400)
+        self.assertEqual(self.test_model['birnn_layer_3'].count_local_weights(), 60400)
+
+        self.assertEqual(self.train_model['reshape_layer_4'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['reshape_layer_4'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['conv_lstm_layer_5'].count_local_weights(), 1640)
+        self.assertEqual(self.test_model['conv_lstm_layer_5'].count_local_weights(), 1640)
+
     def test_network_shapes(self):
 
         self.assertEqual(self.train_model["embedding_layer_1"].outputs.shape, (100, 8, 50))

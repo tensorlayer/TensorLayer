@@ -100,6 +100,37 @@ class CustomNetwork_1D_Test(CustomTestCase):
                         (layer_name, self.test_model[layer_name].outputs.dtype, tf.float16)
                     )
 
+    def test_layer_local_weights(self):
+
+        # for layer_name in self.train_model.all_layers:
+        #    print("self.assertEqual(self.train_model['%s'].count_local_weights(), %d)" % (layer_name, self.train_model[layer_name].count_local_weights()))
+        #    print("self.assertEqual(self.test_model['%s'].count_local_weights(), %d)" % (layer_name, self.test_model[layer_name].count_local_weights()))
+        #    print()
+
+        self.assertEqual(self.train_model['input_layer'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['input_layer'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['input_noise'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['input_noise'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['dense_layer_1'].count_local_weights(), 744)
+        self.assertEqual(self.test_model['dense_layer_1'].count_local_weights(), 744)
+
+        self.assertEqual(self.train_model['dense_layer_2'].count_local_weights(), 744)
+        self.assertEqual(self.test_model['dense_layer_2'].count_local_weights(), 744)
+
+        self.assertEqual(self.train_model['elementwise_layer_3'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['elementwise_layer_3'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['dense_layer_4'].count_local_weights(), 800)
+        self.assertEqual(self.test_model['dense_layer_4'].count_local_weights(), 800)
+
+        self.assertEqual(self.train_model['dense_layer_5'].count_local_weights(), 800)
+        self.assertEqual(self.test_model['dense_layer_5'].count_local_weights(), 800)
+
+        self.assertEqual(self.train_model['elementwise_lambda_layer_6'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['elementwise_lambda_layer_6'].count_local_weights(), 0)
+
     def test_network_shapes(self):
 
         self.assertEqual(self.train_model["input_layer"].outputs.shape, (100, 30))

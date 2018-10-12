@@ -160,6 +160,91 @@ class Network_Sequential_3D_Test(CustomTestCase):
                         (layer_name, self.test_model[layer_name].outputs.dtype, tf.float16)
                     )
 
+    def test_layer_local_weights(self):
+
+        # for layer_name in self.train_model.all_layers:
+        #    print("self.assertEqual(self.train_model['%s'].count_local_weights(), %d)" % (layer_name, self.train_model[layer_name].count_local_weights()))
+        #    print("self.assertEqual(self.test_model['%s'].count_local_weights(), %d)" % (layer_name, self.test_model[layer_name].count_local_weights()))
+        #    print()
+
+        self.assertEqual(self.train_model['input_layer'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['input_layer'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['reshape_layer_1'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['reshape_layer_1'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['pad_layer_2'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['pad_layer_2'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['zeropad3d_layer_2-1'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['zeropad3d_layer_2-1'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['zeropad3d_layer_2-2'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['zeropad3d_layer_2-2'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['zeropad3d_layer_2-3'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['zeropad3d_layer_2-3'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['scale_layer_2'].count_local_weights(), 1)
+        self.assertEqual(self.test_model['scale_layer_2'].count_local_weights(), 1)
+
+        self.assertEqual(self.train_model['conv3d_layer_3'].count_local_weights(), 72)
+        self.assertEqual(self.test_model['conv3d_layer_3'].count_local_weights(), 72)
+
+        self.assertEqual(self.train_model['conv3d_layer_4'].count_local_weights(), 1024)
+        self.assertEqual(self.test_model['conv3d_layer_4'].count_local_weights(), 1024)
+
+        self.assertEqual(self.train_model['expert_deconv3d_layer_5'].count_local_weights(), 3464)
+        self.assertEqual(self.test_model['expert_deconv3d_layer_5'].count_local_weights(), 3464)
+
+        self.assertEqual(self.train_model['expert_deconv3d_layer_6'].count_local_weights(), 864)
+        self.assertEqual(self.test_model['expert_deconv3d_layer_6'].count_local_weights(), 864)
+
+        self.assertEqual(self.train_model['simple_deconv3d_layer_7'].count_local_weights(), 436)
+        self.assertEqual(self.test_model['simple_deconv3d_layer_7'].count_local_weights(), 436)
+
+        self.assertEqual(self.train_model['simple_deconv3d_layer_8'].count_local_weights(), 864)
+        self.assertEqual(self.test_model['simple_deconv3d_layer_8'].count_local_weights(), 864)
+
+        self.assertEqual(self.train_model['maxpool_3d_layer_9'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['maxpool_3d_layer_9'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['meanpool_3d_layer_10'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['meanpool_3d_layer_10'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['global_maxpool_3d_layer_11'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['global_maxpool_3d_layer_11'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['expand_1_layer_11'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['expand_1_layer_11'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['expand_2_layer_11'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['expand_2_layer_11'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['expand_3_layer_11'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['expand_3_layer_11'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['tile_layer_11'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['tile_layer_11'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['global_meanpool_3d_layer_12'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['global_meanpool_3d_layer_12'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['expand_1_layer_12'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['expand_1_layer_12'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['expand_2_layer_12'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['expand_2_layer_12'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['expand_3_layer_12'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['expand_3_layer_12'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['tile_layer_12'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['tile_layer_12'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['sign_layer_13'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['sign_layer_13'].count_local_weights(), 0)
+
     def test_network_shapes(self):
 
         self.assertEqual(self.train_model["input_layer"].outputs.shape, (100, 16, 16, 16))

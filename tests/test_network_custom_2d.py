@@ -133,6 +133,46 @@ class CustomNetwork_2D_Test(CustomTestCase):
                         (layer_name, self.test_model[layer_name].outputs.dtype, tf.float16)
                     )
 
+    def test_layer_local_weights(self):
+
+        # for layer_name in self.train_model.all_layers:
+        #    print("self.assertEqual(self.train_model['%s'].count_local_weights(), %d)" % (layer_name, self.train_model[layer_name].count_local_weights()))
+        #    print("self.assertEqual(self.test_model['%s'].count_local_weights(), %d)" % (layer_name, self.test_model[layer_name].count_local_weights()))
+        #    print()
+
+        self.assertEqual(self.train_model['input_layer'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['input_layer'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['fire_module_1/squeeze'].count_local_weights(), 128)
+        self.assertEqual(self.test_model['fire_module_1/squeeze'].count_local_weights(), 128)
+
+        self.assertEqual(self.train_model['fire_module_1/e1x1'].count_local_weights(), 792)
+        self.assertEqual(self.test_model['fire_module_1/e1x1'].count_local_weights(), 792)
+
+        self.assertEqual(self.train_model['fire_module_1/e3x3'].count_local_weights(), 6936)
+        self.assertEqual(self.test_model['fire_module_1/e3x3'].count_local_weights(), 6936)
+
+        self.assertEqual(self.train_model['fire_module_1/concat'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['fire_module_1/concat'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['fire_module_2/squeeze'].count_local_weights(), 1568)
+        self.assertEqual(self.test_model['fire_module_2/squeeze'].count_local_weights(), 1568)
+
+        self.assertEqual(self.train_model['fire_module_2/e1x1'].count_local_weights(), 792)
+        self.assertEqual(self.test_model['fire_module_2/e1x1'].count_local_weights(), 792)
+
+        self.assertEqual(self.train_model['fire_module_2/e3x3'].count_local_weights(), 6936)
+        self.assertEqual(self.test_model['fire_module_2/e3x3'].count_local_weights(), 6936)
+
+        self.assertEqual(self.train_model['fire_module_2/concat'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['fire_module_2/concat'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['deformable_conv/offset_layer'].count_local_weights(), 7794)
+        self.assertEqual(self.test_model['deformable_conv/offset_layer'].count_local_weights(), 7794)
+
+        self.assertEqual(self.train_model['deformable_conv/deformable_conv_layer'].count_local_weights(), 13856)
+        self.assertEqual(self.test_model['deformable_conv/deformable_conv_layer'].count_local_weights(), 13856)
+
     def test_network_shapes(self):
 
         self.assertEqual(self.train_model["input_layer"].outputs.shape, (100, 16, 16, 3))
