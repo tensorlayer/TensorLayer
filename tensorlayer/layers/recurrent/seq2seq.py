@@ -12,15 +12,16 @@ from tensorlayer import logging
 
 from tensorlayer.decorators.utils import get_network_obj
 
+__all__ = ['Seq2Seq']
 
 class Seq2Seq(Layer):
     """
-    The :class:`Seq2Seq` class is a simple :class:`DynamicRNNLayer` based Seq2seq layer without using `tl.contrib.seq2seq <https://www.tensorflow.org/api_guides/python/contrib.seq2seq>`__.
+    The :class:`Seq2Seq` class is a simple :class:`DynamicRNN` based Seq2seq layer without using `tl.contrib.seq2seq <https://www.tensorflow.org/api_guides/python/contrib.seq2seq>`__.
     See `Model <https://camo.githubusercontent.com/9e88497fcdec5a9c716e0de5bc4b6d1793c6e23f/687474703a2f2f73757269796164656570616e2e6769746875622e696f2f696d672f736571327365712f73657132736571322e706e67>`__
     and `Sequence to Sequence Learning with Neural Networks <https://arxiv.org/abs/1409.3215>`__.
 
     - Please check this example `Chatbot in 200 lines of code <https://github.com/tensorlayer/seq2seq-chatbot>`__.
-    - The Author recommends users to read the source code of :class:`DynamicRNNLayer` and :class:`Seq2Seq`.
+    - The Author recommends users to read the source code of :class:`DynamicRNN` and :class:`Seq2Seq`.
 
     Parameters
     ----------
@@ -35,9 +36,9 @@ class Seq2Seq(Layer):
     initializer : initializer
         The initializer for the parameters.
     encode_sequence_length : tensor
-        For encoder sequence length, see :class:`DynamicRNNLayer` .
+        For encoder sequence length, see :class:`DynamicRNN` .
     decode_sequence_length : tensor
-        For decoder sequence length, see :class:`DynamicRNNLayer` .
+        For decoder sequence length, see :class:`DynamicRNN` .
     initial_state_encode : None or RNN state
         If None, `initial_state_encode` is zero state, it can be set by placeholder or other RNN.
     initial_state_decode : None or RNN state
@@ -48,7 +49,7 @@ class Seq2Seq(Layer):
         The number of RNN layers, default is 1.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-            - If True, return 2D Tensor [n_example, 2 * n_hidden], for stacking DenseLayer after it.
+            - If True, return 2D Tensor [n_example, 2 * n_hidden], for stacking Dense after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, 2 * n_hidden], for stacking multiple RNN after it.
     name : str
         A unique layer name.
@@ -87,14 +88,14 @@ class Seq2Seq(Layer):
     >>>     # for chatbot, you can use the same embedding layer,
     >>>     # for translation, you may want to use 2 seperated embedding layers
     >>>     with tf.variable_scope("embedding") as vs:
-    >>>         net_encode = EmbeddingInputlayer(
+    >>>         net_encode = EmbeddingInput(
     ...                 inputs = encode_seqs,
     ...                 vocabulary_size = 10000,
     ...                 embedding_size = 200,
     ...                 name = 'seq_embedding')
     >>>         vs.reuse_variables()
     >>>         tl.layers.set_name_reuse(True)
-    >>>         net_decode = EmbeddingInputlayer(
+    >>>         net_decode = EmbeddingInput(
     ...                 inputs = decode_seqs,
     ...                 vocabulary_size = 10000,
     ...                 embedding_size = 200,
@@ -110,7 +111,7 @@ class Seq2Seq(Layer):
     ...             n_layer = 1,
     ...             return_seq_2d = True,
     ...             name = 'seq2seq')
-    >>> net_out = DenseLayer(net, n_units=10000, act=None, name='output')
+    >>> net_out = Dense(net, n_units=10000, act=None, name='output')
     >>> e_loss = tl.cost.cross_entropy_seq_with_mask(logits=net_out.outputs, target_seqs=target_seqs, input_mask=target_mask, return_details=False, name='cost')
     >>> y = tf.nn.softmax(net_out.outputs)
     >>> net_out.print_weights(False)
@@ -167,7 +168,7 @@ class Seq2Seq(Layer):
 
         with context_manager():
 
-            self.network_encode_layer = tl.layers.DynamicRNNLayer(
+            self.network_encode_layer = tl.layers.DynamicRNN(
                 cell_fn=self.cell_fn,
                 cell_init_args=self.cell_init_args,
                 n_hidden=self.n_hidden,
@@ -181,7 +182,7 @@ class Seq2Seq(Layer):
                 name='encode'
             )
 
-            self.network_decode_layer = tl.layers.DynamicRNNLayer(
+            self.network_decode_layer = tl.layers.DynamicRNN(
                 cell_fn=self.cell_fn,
                 cell_init_args=self.cell_init_args,
                 n_hidden=self.n_hidden,

@@ -14,9 +14,9 @@ from tests.utils import CustomTestCase
 
 def model(x, is_train=True, reuse=False, name_scope="env1"):
     with tf.variable_scope(name_scope, reuse=reuse):
-        net = tl.layers.InputLayer(name='input')(x)
-        net = tl.layers.TimeDistributedLayer(
-            layer_class=tl.layers.DenseLayer, layer_args={
+        net = tl.layers.Input(name='input')(x)
+        net = tl.layers.TimeDistributed(
+            layer_class=tl.layers.Dense, layer_args={
                 'n_units': 50,
                 'name': 'dense'
             }, name='time_dense'

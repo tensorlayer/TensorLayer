@@ -31,11 +31,11 @@ class CustomNetwork_Seq2Seq_Test(CustomTestCase):
 
                 with tf.variable_scope("input_embedding"):
 
-                    net_encode = tl.layers.EmbeddingInputlayer(
+                    net_encode = tl.layers.EmbeddingInput(
                         vocabulary_size=src_vocab_size, embedding_size=emb_dim, name='seq_embedding_layer_1'
                     )
 
-                    net_decode = tl.layers.EmbeddingInputlayer(
+                    net_decode = tl.layers.EmbeddingInput(
                         vocabulary_size=src_vocab_size,
                         embedding_size=emb_dim,
                         reuse_variable_scope=True,
@@ -54,7 +54,7 @@ class CustomNetwork_Seq2Seq_Test(CustomTestCase):
                     name='seq2seq_layer_2'
                 )(net_encode, net_decode)
 
-                net_out = tl.layers.DenseLayer(n_units=src_vocab_size, name='dense_layer_3')(net_rnn)
+                net_out = tl.layers.Dense(n_units=src_vocab_size, name='dense_layer_3')(net_rnn)
 
                 return (net_encode, net_decode), net_out
 

@@ -12,13 +12,13 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'DropconnectDenseLayer',
+    'DropconnectDense',
 ]
 
 
-class DropconnectDenseLayer(Layer):
+class DropconnectDense(Layer):
     """
-    The :class:`DropconnectDenseLayer` class is :class:`DenseLayer` with DropConnect
+    The :class:`DropconnectDense` class is :class:`Dense` with DropConnect
     behaviour which randomly removes connections between this layer and the previous
     layer according to a keeping probability.
 
@@ -44,13 +44,13 @@ class DropconnectDenseLayer(Layer):
 
     Examples
     --------
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
-    >>> net = tl.layers.DropconnectDenseLayer(net, keep=0.8,
-    ...         n_units=800, act=tf.nn.relu, name='relu1')
-    >>> net = tl.layers.DropconnectDenseLayer(net, keep=0.5,
-    ...         n_units=800, act=tf.nn.relu, name='relu2')
-    >>> net = tl.layers.DropconnectDenseLayer(net, keep=0.5,
-    ...         n_units=10, name='output')
+    >>> net = tl.layers.Input(name='input_layer')(x)
+    >>> net = tl.layers.DropconnectDense(keep=0.8,
+    ...         n_units=800, act=tf.nn.relu, name='relu1')(net)
+    >>> net = tl.layers.DropconnectDense(keep=0.5,
+    ...         n_units=800, act=tf.nn.relu, name='relu2')(net)
+    >>> net = tl.layers.DropconnectDense(keep=0.5,
+    ...         n_units=10, name='output')(net)
 
     References
     ----------
@@ -77,7 +77,7 @@ class DropconnectDenseLayer(Layer):
         self.b_init = b_init
         self.name = name
 
-        super(DropconnectDenseLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+        super(DropconnectDense, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
 
     def __str__(self):
         additional_str = []

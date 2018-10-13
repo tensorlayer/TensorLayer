@@ -14,10 +14,14 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
+__all__ = [
+    'RNN',
+    'BiRNN',
+]
 
-class RNNLayer(Layer):
+class RNN(Layer):
     """
-    The :class:`RNNLayer` class is a fixed length recurrent layer for implementing vanilla RNN,
+    The :class:`RNN` class is a fixed length recurrent layer for implementing vanilla RNN,
     LSTM, GRU and etc.
 
     Parameters
@@ -43,7 +47,7 @@ class RNNLayer(Layer):
             - In other word, if you want to stack more RNNs on this layer, set to False.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-            - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+            - If True, return 2D Tensor [n_example, n_hidden], for stacking Dense after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     name : str
         A unique layer name.
@@ -80,16 +84,16 @@ class RNNLayer(Layer):
     >>> hidden_size = 256
     >>> keep_prob = 0.8
     >>> input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
-    >>> net = tl.layers.EmbeddingInputlayer(inputs=input_data, vocabulary_size=vocab_size,
-    ...     embedding_size=hidden_size, name='embed')
-    >>> net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, name='drop1')
-    >>> net = tl.layers.RNNLayer(net, cell_fn=tf.contrib.rnn.BasicLSTMCell,
-    ...     n_hidden=hidden_size, n_steps=num_steps, return_last=False, name='lstm1')
-    >>> net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, name='drop2')
-    >>> net = tl.layers.RNNLayer(net, cell_fn=tf.contrib.rnn.BasicLSTMCell,
-    ...     n_hidden=hidden_size, n_steps=num_steps, return_last=True, name='lstm2')
-    >>> net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, name='drop3')
-    >>> net = tl.layers.DenseLayer(net, n_units=vocab_size, name='output')
+    >>> net = tl.layers.EmbeddingInput(vocabulary_size=vocab_size,
+    ...     embedding_size=hidden_size, name='embed')(input_data)
+    >>> net = tl.layers.Dropout(keep=keep_prob, is_fix=True, name='drop1')(net)
+    >>> net = tl.layers.RNN(cell_fn=tf.contrib.rnn.BasicLSTMCell,
+    ...     n_hidden=hidden_size, n_steps=num_steps, return_last=False, name='lstm1')(net)
+    >>> net = tl.layers.Dropout(keep=keep_prob, is_fix=True, name='drop2')(net)
+    >>> net = tl.layers.RNN(cell_fn=tf.contrib.rnn.BasicLSTMCell,
+    ...     n_hidden=hidden_size, n_steps=num_steps, return_last=True, name='lstm2')(net)
+    >>> net = tl.layers.Dropout(keep=keep_prob, is_fix=True, name='drop3')(net)
+    >>> net = tl.layers.Dense(n_units=vocab_size, name='output')(net)
 
     - For CNN+LSTM
 
@@ -97,19 +101,19 @@ class RNNLayer(Layer):
     >>> batch_size = 10
     >>> num_steps = 5
     >>> x = tf.placeholder(tf.float32, shape=[batch_size, image_size, image_size, 1])
-    >>> net = tl.layers.InputLayer(x, name='in')
-    >>> net = tl.layers.Conv2d(net, 32, (5, 5), (2, 2), tf.nn.relu, name='conv2d_1')
-    >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), name='pool1')
-    >>> net = tl.layers.Conv2d(net, 10, (5, 5), (2, 2), tf.nn.relu, name='conv2d_2')
-    >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), name='pool2')
-    >>> net = tl.layers.FlattenLayer(net, name='flatten')
-    >>> net = tl.layers.ReshapeLayer(net, shape=[-1, num_steps, int(net.outputs._shape[-1])])
-    >>> rnn = tl.layers.RNNLayer(net, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=200, n_steps=num_steps, return_last=False, return_seq_2d=True, name='rnn')
-    >>> net = tl.layers.DenseLayer(rnn, 3, name='out')
+    >>> net = tl.layers.Input(name='in')(x)
+    >>> net = tl.layers.Conv2d(32, (5, 5), (2, 2), tf.nn.relu, name='conv2d_1')(net)
+    >>> net = tl.layers.MaxPool2d((2, 2), (2, 2), name='pool1')(net)
+    >>> net = tl.layers.Conv2d(10, (5, 5), (2, 2), tf.nn.relu, name='conv2d_2')(net)
+    >>> net = tl.layers.MaxPool2d((2, 2), (2, 2), name='pool2')(net)
+    >>> net = tl.layers.Flatten(name='flatten')(net)
+    >>> net = tl.layers.Reshape(shape=[-1, num_steps, int(net.outputs._shape[-1])])(net)
+    >>> rnn = tl.layers.RNN(cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=200, n_steps=num_steps, return_last=False, return_seq_2d=True, name='rnn')(net)
+    >>> net = tl.layers.Dense(rnn, 3, name='out')(net)
 
     Notes
     -----
-    Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see :class:`ReshapeLayer`.
+    Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see :class:`Reshape`.
 
     References
     ----------
@@ -154,7 +158,7 @@ class RNNLayer(Layer):
         self.return_seq_2d = return_seq_2d
         self.name = name
 
-        super(RNNLayer, self).__init__(cell_init_args=cell_init_args)
+        super(RNN, self).__init__(cell_init_args=cell_init_args)
 
     def __str__(self):
         additional_str = []
@@ -197,7 +201,7 @@ class RNNLayer(Layer):
         return self._str(additional_str)
 
         # logging.info(
-        #     "RNNLayer %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s " % (
+        #     "RNN %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s " % (
         #         self.name, n_hidden, n_steps, self._temp_data['inputs'].get_shape().ndims,
         #         self._temp_data['inputs'].get_shape(), cell_fn.__name__
         #     )
@@ -301,9 +305,9 @@ class RNNLayer(Layer):
         self._temp_data['initial_state'] = self.initial_state
 
 
-class BiRNNLayer(Layer):
+class BiRNN(Layer):
     """
-    The :class:`BiRNNLayer` class is a fixed length Bidirectional recurrent layer.
+    The :class:`BiRNN` class is a fixed length Bidirectional recurrent layer.
 
     Parameters
     ----------
@@ -334,7 +338,7 @@ class BiRNNLayer(Layer):
             - In other word, if you want to stack more RNNs on this layer, set to False.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-            - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+            - If True, return 2D Tensor [n_example, n_hidden], for stacking Dense after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     name : str
         A unique layer name.
@@ -356,7 +360,7 @@ class BiRNNLayer(Layer):
 
     Notes
     -----
-    Input dimension should be rank 3 : [batch_size, n_steps, n_features]. If not, please see :class:`ReshapeLayer`.
+    Input dimension should be rank 3 : [batch_size, n_steps, n_features]. If not, please see :class:`Reshape`.
     For predicting, the sequence length has to be the same with the sequence length of training, while, for normal
     RNN, we can use sequence length of 1 for predicting.
 
@@ -406,7 +410,7 @@ class BiRNNLayer(Layer):
         self.return_seq_2d = return_seq_2d
         self.name = name
 
-        super(BiRNNLayer, self).__init__(cell_init_args=cell_init_args)
+        super(BiRNN, self).__init__(cell_init_args=cell_init_args)
 
     def __str__(self):
         additional_str = []
@@ -483,7 +487,7 @@ class BiRNNLayer(Layer):
             rnn_creator = lambda: self.cell_fn(num_units=self.n_hidden, **self.cell_init_args)
             # Apply dropout
             if self._temp_data['dropout'] is not None:
-                
+
                 if isinstance(self._temp_data['dropout'], (tuple, list)):  # type(dropout) in [tuple, list]:
                     in_keep_prob = self._temp_data['dropout'][0]
                     out_keep_prob = self._temp_data['dropout'][1]

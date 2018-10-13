@@ -17,7 +17,7 @@ class Layer_Super_Resolution_Test(CustomTestCase):
     @classmethod
     def setUpClass(cls):
         t_signal = tf.placeholder('float32', [10, 100, 4], name='x')
-        n = tl.layers.InputLayer(name='in')(t_signal)
+        n = tl.layers.Input(name='in')(t_signal)
         n = tl.layers.Conv1d(n_filter=32, filter_size=3, stride=1, padding='SAME', name='conv1d')(n)
         net1 = tl.layers.SubpixelConv1d(scale=2, name='subpixel')(n)
 
@@ -31,7 +31,7 @@ class Layer_Super_Resolution_Test(CustomTestCase):
 
         ## 2D
         x = tf.placeholder('float32', [10, 100, 100, 3], name='x')
-        n = tl.layers.InputLayer(name='in')(x)
+        n = tl.layers.Input(name='in')(x)
         n = tl.layers.Conv2d(n_filter=32, filter_size=(3, 2), strides=(1, 1), padding='SAME', name='conv2d')(n)
         net2 = tl.layers.SubpixelConv2d(scale=2, name='subpixel2d')(n)
 

@@ -20,7 +20,7 @@ class Layer_Convolution_1D_Test(CustomTestCase):
         def get_network_1d(inputs, reuse=False):
 
             with tf.variable_scope("1D_network", reuse=reuse):
-                net = tl.layers.InputLayer()(network)
+                net = tl.layers.Input()(network)
 
                 net1 = tl.layers.Conv1d(name="Conv1d")(net)  # 2 params
                 net2 = tl.layers.SeparableConv1d(name="SeparableConv1d")(net1)  # 3 params
@@ -85,7 +85,7 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         def get_network_2d(inputs, reuse=False):
 
             with tf.variable_scope("2D_network", reuse=reuse):
-                net = tl.layers.InputLayer()(inputs)
+                net = tl.layers.Input()(inputs)
 
                 net1 = tl.layers.Conv2d(name="Conv2d")(net)  # 2 params
                 net2 = tl.layers.DeConv2d(name="DeConv2d")(net1)  # 2 params
@@ -160,7 +160,7 @@ class Layer_Convolution_3D_Test(CustomTestCase):
         def get_network_3d(inputs, reuse=False):
 
             with tf.variable_scope("3D_network", reuse=reuse):
-                net = tl.layers.InputLayer()(inputs)
+                net = tl.layers.Input()(inputs)
 
                 net1 = tl.layers.Conv3dLayer(
                     shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1), name="Conv3dLayer"

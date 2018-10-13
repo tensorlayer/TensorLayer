@@ -37,7 +37,7 @@ import numpy as np
 import tensorflow as tf
 import gym
 import tensorlayer as tl
-from tensorlayer.layers import DenseLayer, InputLayer
+from tensorlayer.layers import Dense, Input
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -133,19 +133,19 @@ class ACNet(object):
     def _build_net(self):
         w_init = tf.contrib.layers.xavier_initializer()
         with tf.variable_scope('actor'):  # Policy network
-            nn = InputLayer(name='in')(self.s)
-            nn = DenseLayer(n_units=500, act=tf.nn.relu6, W_init=w_init, name='la')(nn)
-            nn = DenseLayer(n_units=300, act=tf.nn.relu6, W_init=w_init, name='la2')(nn)
-            mu = DenseLayer(n_units=N_A, act=tf.nn.tanh, W_init=w_init, name='mu')(nn)
-            sigma = DenseLayer(n_units=N_A, act=tf.nn.softplus, W_init=w_init, name='sigma')(nn)
+            nn = Input(name='in')(self.s)
+            nn = Dense(n_units=500, act=tf.nn.relu6, W_init=w_init, name='la')(nn)
+            nn = Dense(n_units=300, act=tf.nn.relu6, W_init=w_init, name='la2')(nn)
+            mu = Dense(n_units=N_A, act=tf.nn.tanh, W_init=w_init, name='mu')(nn)
+            sigma = Dense(n_units=N_A, act=tf.nn.softplus, W_init=w_init, name='sigma')(nn)
             self.mu = mu.outputs
             self.sigma = sigma.outputs
 
         with tf.variable_scope('critic'):  # we use Value-function here, but not Q-function.
-            nn = InputLayer(name='in')(self.s)
-            nn = DenseLayer(n_units=500, act=tf.nn.relu6, W_init=w_init, name='lc')(nn)
-            nn = DenseLayer(n_units=200, act=tf.nn.relu6, W_init=w_init, name='lc2')(nn)
-            v = DenseLayer(n_units=1, W_init=w_init, name='v')(nn)
+            nn = Input(name='in')(self.s)
+            nn = Dense(n_units=500, act=tf.nn.relu6, W_init=w_init, name='lc')(nn)
+            nn = Dense(n_units=200, act=tf.nn.relu6, W_init=w_init, name='lc2')(nn)
+            v = Dense(n_units=1, W_init=w_init, name='v')(nn)
             self.v = v.outputs
 
     def update_global(self, feed_dict):  # run by a local

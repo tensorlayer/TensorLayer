@@ -11,16 +11,16 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'FlattenLayer',
-    'ReshapeLayer',
-    'TransposeLayer',
+    'Flatten',
+    'Reshape',
+    'Transpose',
 ]
 
 
-class FlattenLayer(Layer):
+class Flatten(Layer):
     """A layer that reshapes high-dimension input into a vector.
 
-    Then we often apply DenseLayer, RNNLayer, ConcatLayer and etc on the top of a flatten layer.
+    Then we often apply Dense, RNN, Concat and etc on the top of a flatten layer.
     [batch_size, mask_row, mask_col, n_mask] ---> [batch_size, mask_row * mask_col * n_mask]
 
     Parameters
@@ -33,8 +33,8 @@ class FlattenLayer(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
-    >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.FlattenLayer(net, name='flatten')
+    >>> net = tl.layers.Input(name='input')(x)
+    >>> net = tl.layers.Flatten(name='flatten')(net)
     [?, 784]
     """
 
@@ -42,7 +42,7 @@ class FlattenLayer(Layer):
 
         self.name = name
 
-        super(FlattenLayer, self).__init__()
+        super(Flatten, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -53,7 +53,7 @@ class FlattenLayer(Layer):
         self._temp_data['outputs'] = flatten_reshape(self._temp_data['inputs'], name=self.name)
 
 
-class ReshapeLayer(Layer):
+class Reshape(Layer):
     """A layer that reshapes a given tensor.
 
     Parameters
@@ -68,8 +68,8 @@ class ReshapeLayer(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=(None, 784))
-    >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.ReshapeLayer(net, [-1, 28, 28, 1], name='reshape')
+    >>> net = tl.layers.Input(name='input')(x)
+    >>> net = tl.layers.Reshape([-1, 28, 28, 1], name='reshape')(net)
     >>> print(net.outputs)
     (?, 28, 28, 1)
 
@@ -83,7 +83,7 @@ class ReshapeLayer(Layer):
         self.shape = shape
         self.name = name
 
-        super(ReshapeLayer, self).__init__()
+        super(Reshape, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -94,7 +94,7 @@ class ReshapeLayer(Layer):
         self._temp_data['outputs'] = tf.reshape(self._temp_data['inputs'], shape=self.shape, name=self.name)
 
 
-class TransposeLayer(Layer):
+class Transpose(Layer):
     """A layer that transposes the dimension of a tensor.
 
     See `tf.transpose() <https://www.tensorflow.org/api_docs/python/tf/transpose>`__ .
@@ -111,8 +111,8 @@ class TransposeLayer(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
-    >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.TransposeLayer(net, perm=[0, 1, 3, 2], name='trans')
+    >>> net = tl.layers.Input(name='input')(x)
+    >>> net = tl.layers.Transpose(perm=[0, 1, 3, 2], name='trans')(net)
     [None, 28, 1, 28]
 
     """
@@ -125,7 +125,7 @@ class TransposeLayer(Layer):
         self.perm = perm
         self.name = name
 
-        super(TransposeLayer, self).__init__()
+        super(Transpose, self).__init__()
 
     def __str__(self):
         additional_str = []

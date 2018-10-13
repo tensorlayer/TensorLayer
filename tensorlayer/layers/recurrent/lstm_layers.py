@@ -13,8 +13,11 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
+__all__ = [
+    'ConvLSTM',
+]
 
-class ConvLSTMLayer(Layer):
+class ConvLSTM(Layer):
     """A fixed length Convolutional LSTM layer.
 
     See this `paper <https://arxiv.org/abs/1506.04214>`__ .
@@ -42,7 +45,7 @@ class ConvLSTMLayer(Layer):
             - In other word, if you want to stack more RNNs on this layer, set to False.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-            - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+            - If True, return 2D Tensor [n_example, n_hidden], for stacking Dense after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     name : str
         A unique layer name.
@@ -91,7 +94,7 @@ class ConvLSTMLayer(Layer):
         self.return_last = return_last
         self.return_seq_2d = return_seq_2d
         self.name = name
-        super(ConvLSTMLayer, self).__init__()
+        super(ConvLSTM, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -138,7 +141,7 @@ class ConvLSTMLayer(Layer):
 
         return self._str(additional_str)
         # logging.info(
-        #     "ConvLSTMLayer %s: feature_map: %d, n_steps: %d, "
+        #     "ConvLSTM %s: feature_map: %d, n_steps: %d, "
         #     "in_dim: %d %s, cell_fn: %s " % (
         #         self.name, feature_map, n_steps, self._temp_data['inputs'].get_shape().ndims,
         #         self._temp_data['inputs'].get_shape(), cell_fn.__name__

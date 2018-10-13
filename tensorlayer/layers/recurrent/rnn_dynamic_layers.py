@@ -17,10 +17,14 @@ from tensorlayer.layers.utils import retrieve_seq_length_op
 
 from tensorlayer import logging
 
+__all__ = [
+    'DynamicRNN',
+    'BiDynamicRNN',
+]
 
-class DynamicRNNLayer(Layer):
+class DynamicRNN(Layer):
     """
-    The :class:`DynamicRNNLayer` class is a dynamic recurrent layer, see ``tf.nn.dynamic_rnn``.
+    The :class:`DynamicRNN` class is a dynamic recurrent layer, see ``tf.nn.dynamic_rnn``.
 
     Parameters
     ----------
@@ -53,7 +57,7 @@ class DynamicRNNLayer(Layer):
             - In other word, if you want to stack more RNNs on this layer, set to False.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-            - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+            - If True, return 2D Tensor [n_example, n_hidden], for stacking Dense after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     dynamic_rnn_init_args : dictionary
         The arguments for ``tf.nn.dynamic_rnn``.
@@ -83,27 +87,26 @@ class DynamicRNNLayer(Layer):
 
     Notes
     -----
-    Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`ReshapeLayer`.
+    Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`Reshape`.
 
     Examples
     --------
     Synced sequence input and output, for loss function see ``tl.cost.cross_entropy_seq_with_mask``.
 
     >>> input_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="input")
-    >>> net = tl.layers.EmbeddingInputlayer(
-    ...             inputs=input_seqs,
+    >>> net = tl.layers.EmbeddingInput(
     ...             vocabulary_size=vocab_size,
     ...             embedding_size=embedding_size,
-    ...             name='embedding')
-    >>> net = tl.layers.DynamicRNNLayer(net,
+    ...             name='embedding')(input_seqs)
+    >>> net = tl.layers.DynamicRNN(
     ...             cell_fn=tf.contrib.rnn.BasicLSTMCell, # for TF0.2 use tf.nn.rnn_cell.BasicLSTMCell,
     ...             n_hidden=embedding_size,
     ...             dropout=(0.7 if is_train else None),
     ...             sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
     ...             return_last=False,                    # for encoder, set to True
-    ...             return_seq_2d=True,                   # stack denselayer or compute cost after it
-    ...             name='dynamicrnn')
-    >>> net = tl.layers.DenseLayer(net, n_units=vocab_size, name="output")
+    ...             return_seq_2d=True,                   # stack Dense or compute cost after it
+    ...             name='dynamicrnn')(net)
+    >>> net = tl.layers.Dense(n_units=vocab_size, name="output")(net)
 
     References
     ----------
@@ -155,7 +158,7 @@ class DynamicRNNLayer(Layer):
         self.dynamic_rnn_init_args = dynamic_rnn_init_args
         self.name = name
 
-        super(DynamicRNNLayer, self).__init__(
+        super(DynamicRNN, self).__init__(
             cell_init_args=cell_init_args,
             dynamic_rnn_init_args=dynamic_rnn_init_args,
         )
@@ -201,7 +204,7 @@ class DynamicRNNLayer(Layer):
 
         return self._str(additional_str)
         # logging.info(
-        #     "DynamicRNNLayer %s: n_hidden: %d, in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d" % (
+        #     "DynamicRNN %s: n_hidden: %d, in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d" % (
         #         self.name, n_hidden, self._temp_data['inputs'].get_shape().ndims, self._temp_data['inputs'].get_shape(),
         #         cell_fn.__name__, dropout, n_layer
         #     )
@@ -349,9 +352,9 @@ class DynamicRNNLayer(Layer):
         self._temp_data['sequence_length'] = self.sequence_length
 
 
-class BiDynamicRNNLayer(Layer):
+class BiDynamicRNN(Layer):
     """
-    The :class:`BiDynamicRNNLayer` class is a RNN layer, you can implement vanilla RNN,
+    The :class:`BiDynamicRNN` class is a RNN layer, you can implement vanilla RNN,
     LSTM and GRU with it.
 
     Parameters
@@ -387,7 +390,7 @@ class BiDynamicRNNLayer(Layer):
             - In other word, if you want to stack more RNNs on this layer, set to False.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-            - If True, return 2D Tensor [n_example, 2 * n_hidden], for stacking DenseLayer after it.
+            - If True, return 2D Tensor [n_example, 2 * n_hidden], for stacking Dense after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, 2 * n_hidden], for stacking multiple RNN after it.
     dynamic_rnn_init_args : dictionary
         The arguments for ``tf.nn.bidirectional_dynamic_rnn``.
@@ -417,7 +420,7 @@ class BiDynamicRNNLayer(Layer):
 
     Notes
     -----
-    Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`ReshapeLayer`.
+    Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`Reshape`.
 
     References
     ----------
@@ -468,7 +471,7 @@ class BiDynamicRNNLayer(Layer):
         self.dynamic_rnn_init_args = dynamic_rnn_init_args
         self.name = name
 
-        super(BiDynamicRNNLayer, self).__init__(
+        super(BiDynamicRNN, self).__init__(
             cell_init_args=cell_init_args,
             dynamic_rnn_init_args=dynamic_rnn_init_args,
         )
@@ -514,7 +517,7 @@ class BiDynamicRNNLayer(Layer):
 
         return self._str(additional_str)
         # logging.info(
-        #     "BiDynamicRNNLayer %s: n_hidden: %d in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d" % (
+        #     "BiDynamicRNN %s: n_hidden: %d in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d" % (
         #         self.name, n_hidden, self._temp_data['inputs'].get_shape().ndims, self._temp_data['inputs'].get_shape(),
         #         cell_fn.__name__, dropout, n_layer
         #     )

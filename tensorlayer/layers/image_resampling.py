@@ -11,13 +11,13 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'UpSampling2dLayer',
-    'DownSampling2dLayer',
+    'UpSampling2d',
+    'DownSampling2d',
 ]
 
 
-class UpSampling2dLayer(Layer):
-    """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer, see `tf.image.resize_images
+class UpSampling2d(Layer):
+    """The :class:`UpSampling2d` class is a up-sampling 2D layer, see `tf.image.resize_images
     <https://www.tensorflow.org/api_docs/python/tf/image/resize_images>`__.
 
     Parameters
@@ -60,7 +60,7 @@ class UpSampling2dLayer(Layer):
         self.align_corners = align_corners
         self.name = name
 
-        super(UpSampling2dLayer, self).__init__()
+        super(UpSampling2d, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -126,8 +126,8 @@ class UpSampling2dLayer(Layer):
             self._temp_data['outputs'] = tf.cast(self._temp_data['outputs'], self._temp_data['inputs'].dtype)
 
 
-class DownSampling2dLayer(Layer):
-    """The :class:`DownSampling2dLayer` class is down-sampling 2D layer, see `tf.image.resize_images
+class DownSampling2d(Layer):
+    """The :class:`DownSampling2d` class is down-sampling 2D layer, see `tf.image.resize_images
     <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
 
     Parameters
@@ -169,7 +169,7 @@ class DownSampling2dLayer(Layer):
         self.align_corners = align_corners
         self.name = name
 
-        super(DownSampling2dLayer, self).__init__()
+        super(DownSampling2d, self).__init__()
 
     def __str__(self):
         additional_str = []

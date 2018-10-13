@@ -23,15 +23,15 @@ class Network_Sequential_RNN_Test(CustomTestCase):
             cls.model = tl.networks.Sequential(name="My_Sequential_RNN")
 
             cls.model.add(
-                tl.layers.EmbeddingInputlayer(vocabulary_size=100, embedding_size=50, name='embedding_layer_1')
+                tl.layers.EmbeddingInput(vocabulary_size=100, embedding_size=50, name='embedding_layer_1')
             )
-            cls.model.add(tl.layers.RNNLayer(n_hidden=100, n_steps=n_step, return_last=False, name='rnn_layer_2'))
+            cls.model.add(tl.layers.RNN(n_hidden=100, n_steps=n_step, return_last=False, name='rnn_layer_2'))
             cls.model.add(
-                tl.layers.BiRNNLayer(n_hidden=50, dropout=0.5, n_steps=n_step, return_last=False, name='birnn_layer_3')
+                tl.layers.BiRNN(n_hidden=50, dropout=0.5, n_steps=n_step, return_last=False, name='birnn_layer_3')
             )
-            cls.model.add(tl.layers.ReshapeLayer(shape=(-1, n_step, 5, 5, 4), name='reshape_layer_4'))
+            cls.model.add(tl.layers.Reshape(shape=(-1, n_step, 5, 5, 4), name='reshape_layer_4'))
             cls.model.add(
-                tl.layers.ConvLSTMLayer(
+                tl.layers.ConvLSTM(
                     cell_shape=(5, 5),
                     feature_map=5,
                     filter_size=(3, 3),
@@ -156,10 +156,10 @@ class Network_Sequential_Dynamic_RNN_Test(CustomTestCase):
             cls.model = tl.networks.Sequential(name="My_Sequential_DynamicRNN")
 
             cls.model.add(
-                tl.layers.EmbeddingInputlayer(vocabulary_size=100, embedding_size=50, name='embedding_layer_1')
+                tl.layers.EmbeddingInput(vocabulary_size=100, embedding_size=50, name='embedding_layer_1')
             )
             cls.model.add(
-                tl.layers.DynamicRNNLayer(
+                tl.layers.DynamicRNN(
                     cell_fn=tf.contrib.rnn.BasicLSTMCell,
                     n_hidden=20,
                     dropout=0.7,
@@ -171,7 +171,7 @@ class Network_Sequential_Dynamic_RNN_Test(CustomTestCase):
                 )
             )
             cls.model.add(
-                tl.layers.BiDynamicRNNLayer(
+                tl.layers.BiDynamicRNN(
                     cell_fn=tf.contrib.rnn.BasicLSTMCell,
                     n_hidden=30,
                     dropout=0.9,

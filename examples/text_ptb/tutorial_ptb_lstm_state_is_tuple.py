@@ -122,9 +122,6 @@ if (tf.VERSION >= '1.5'):
 
 FLAGS = flags.FLAGS
 
-tf.logging.set_verbosity(tf.logging.DEBUG)
-
-
 def main(_):
     """
     The core of the model consists of an LSTM cell that processes one word at
@@ -200,14 +197,14 @@ def main(_):
         then different inferences share the same parameters.
 
         Note :
-        - For DynamicRNNLayer, you can set dropout and the number of RNN layer internally.
+        - For DynamicRNN, you can set dropout and the number of RNN layer internally.
         """
         print("\nnum_steps : %d, is_train : %s, reuse : %s" % (num_steps, is_train, reuse))
         init = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
-            net = tl.layers.EmbeddingInputlayer(vocab_size, hidden_size, init, name='embedding')(x)
-            net = tl.layers.DropoutLayer(keep=keep_prob, is_fix=True, name='drop1')(net, is_train=is_train)
-            net = tl.layers.RNNLayer(
+            net = tl.layers.EmbeddingInput(vocab_size, hidden_size, init, name='embedding')(x)
+            net = tl.layers.Dropout(keep=keep_prob, is_fix=True, name='drop1')(net, is_train=is_train)
+            net = tl.layers.RNN(
                 cell_fn=tf.contrib.rnn.BasicLSTMCell,  # tf.nn.rnn_cell.BasicLSTMCell,
                 cell_init_args={
                     'forget_bias': 0.0,
@@ -220,8 +217,8 @@ def main(_):
                 name='basic_lstm1'
             )(net)
             lstm1 = net
-            net = tl.layers.DropoutLayer(keep=keep_prob, is_fix=True, name='drop2')(net, is_train=is_train)
-            net = tl.layers.RNNLayer(
+            net = tl.layers.Dropout(keep=keep_prob, is_fix=True, name='drop2')(net, is_train=is_train)
+            net = tl.layers.RNN(
                 cell_fn=tf.contrib.rnn.BasicLSTMCell,  # tf.nn.rnn_cell.BasicLSTMCell,
                 cell_init_args={
                     'forget_bias': 0.0,
@@ -237,10 +234,10 @@ def main(_):
             lstm2 = net
             # Alternatively, if return_seq_2d=False, in the above RNN layer,
             # you can reshape the outputs as follow:
-            # net = tl.layers.ReshapeLayer(
+            # net = tl.layers.Reshape(
             #       shape=[-1, int(net.outputs._shape[-1])], name='reshape')(net)
-            net = tl.layers.DropoutLayer(keep=keep_prob, is_fix=True, name='drop3')(net, is_train=is_train)
-            net = tl.layers.DenseLayer(vocab_size, W_init=init, b_init=init, act=None, name='output')(net)
+            net = tl.layers.Dropout(keep=keep_prob, is_fix=True, name='drop3')(net, is_train=is_train)
+            net = tl.layers.Dense(vocab_size, W_init=init, b_init=init, act=None, name='output')(net)
         return net, lstm1, lstm2
 
     # Inference for Training

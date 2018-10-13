@@ -11,10 +11,10 @@ from tensorlayer import logging
 
 from tensorlayer.layers import Layer
 from tensorlayer.layers import Conv2d
-from tensorlayer.layers import InputLayer
+from tensorlayer.layers import Input
 from tensorlayer.layers import MaxPool2d
-from tensorlayer.layers import ConcatLayer
-from tensorlayer.layers import DropoutLayer
+from tensorlayer.layers import Concat
+from tensorlayer.layers import Dropout
 from tensorlayer.layers import GlobalMeanPool2d
 
 from tensorlayer.files import maybe_download_and_extract
@@ -99,7 +99,7 @@ class SqueezeNetV1(Layer):
     def squeezenetv1(cls, x, end_with='output', is_train=False, reuse=None):
         with tf.variable_scope("squeezenetv1", reuse=reuse):
             with tf.variable_scope("input"):
-                n = InputLayer(x)
+                n = Input(x)
                 # n = Conv2d(n, 96, (7,7),(2,2),tf.nn.relu,'SAME',name='conv1')
                 n = Conv2d(n, 64, (3, 3), (2, 2), tf.nn.relu, 'SAME', name='conv1')
                 n = MaxPool2d(n, (3, 3), (2, 2), 'VALID', name='max')
@@ -110,7 +110,7 @@ class SqueezeNetV1(Layer):
                 n = Conv2d(n, 16, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 64, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-                n = ConcatLayer([n1, n2], -1, name='concat')
+                n = Concat([n1, n2], -1, name='concat')
             if end_with in n.outputs.name:
                 return n
 
@@ -118,7 +118,7 @@ class SqueezeNetV1(Layer):
                 n = Conv2d(n, 16, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 64, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-                n = ConcatLayer([n1, n2], -1, name='concat')
+                n = Concat([n1, n2], -1, name='concat')
                 n = MaxPool2d(n, (3, 3), (2, 2), 'VALID', name='max')
             if end_with in n.outputs.name:
                 return n
@@ -127,7 +127,7 @@ class SqueezeNetV1(Layer):
                 n = Conv2d(n, 32, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 128, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-                n = ConcatLayer([n1, n2], -1, name='concat')
+                n = Concat([n1, n2], -1, name='concat')
             if end_with in n.outputs.name:
                 return n
 
@@ -135,7 +135,7 @@ class SqueezeNetV1(Layer):
                 n = Conv2d(n, 32, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 128, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-                n = ConcatLayer([n1, n2], -1, name='concat')
+                n = Concat([n1, n2], -1, name='concat')
                 n = MaxPool2d(n, (3, 3), (2, 2), 'VALID', name='max')
             if end_with in n.outputs.name:
                 return n
@@ -144,7 +144,7 @@ class SqueezeNetV1(Layer):
                 n = Conv2d(n, 48, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 192, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 192, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-                n = ConcatLayer([n1, n2], -1, name='concat')
+                n = Concat([n1, n2], -1, name='concat')
             if end_with in n.outputs.name:
                 return n
 
@@ -152,7 +152,7 @@ class SqueezeNetV1(Layer):
                 n = Conv2d(n, 48, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 192, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 192, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-                n = ConcatLayer([n1, n2], -1, name='concat')
+                n = Concat([n1, n2], -1, name='concat')
             if end_with in n.outputs.name:
                 return n
 
@@ -160,7 +160,7 @@ class SqueezeNetV1(Layer):
                 n = Conv2d(n, 64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 256, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 256, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-                n = ConcatLayer([n1, n2], -1, name='concat')
+                n = Concat([n1, n2], -1, name='concat')
             if end_with in n.outputs.name:
                 return n
 
@@ -168,12 +168,12 @@ class SqueezeNetV1(Layer):
                 n = Conv2d(n, 64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 256, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 256, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-                n = ConcatLayer([n1, n2], -1, name='concat')
+                n = Concat([n1, n2], -1, name='concat')
             if end_with in n.outputs.name:
                 return n
 
             with tf.variable_scope("output"):
-                n = DropoutLayer(n, keep=0.5, is_fix=True, is_train=is_train, name='drop1')
+                n = Dropout(n, keep=0.5, is_fix=True, is_train=is_train, name='drop1')
                 n = Conv2d(n, 1000, (1, 1), (1, 1), padding='VALID', name='conv10')  # 13, 13, 1000
                 n = GlobalMeanPool2d(n)
             if end_with in n.outputs.name:

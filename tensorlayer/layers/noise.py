@@ -11,13 +11,13 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'GaussianNoiseLayer',
+    'GaussianNoise',
 ]
 
 
-class GaussianNoiseLayer(Layer):
+class GaussianNoise(Layer):
     """
-    The :class:`GaussianNoiseLayer` class is noise layer that adding noise with
+    The :class:`GaussianNoise` class is noise layer that adding noise with
     gaussian distribution to the activation.
 
     Parameters
@@ -36,9 +36,9 @@ class GaussianNoiseLayer(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=(100, 784))
-    >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.DenseLayer(net, n_units=100, act=tf.nn.relu, name='dense3')
-    >>> net = tl.layers.GaussianNoiseLayer(net, name='gaussian')
+    >>> net = tl.layers.Input(name='input')(x)
+    >>> net = tl.layers.Dense(n_units=100, act=tf.nn.relu, name='dense3')(net)
+    >>> net = tl.layers.GaussianNoise(name='gaussian')(net)
     (64, 100)
 
     """
@@ -48,7 +48,7 @@ class GaussianNoiseLayer(Layer):
         mean=0.0,
         stddev=1.0,
         seed=None,
-        name='gaussian_noise_layer',
+        name='gaussian_noise',
     ):
 
         self.mean = mean
@@ -56,7 +56,7 @@ class GaussianNoiseLayer(Layer):
         self.seed = seed
         self.name = name
 
-        super(GaussianNoiseLayer, self).__init__()
+        super(GaussianNoise, self).__init__()
 
     def __str__(self):
         additional_str = []

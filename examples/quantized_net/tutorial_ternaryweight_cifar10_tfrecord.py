@@ -162,17 +162,17 @@ with tf.device('/cpu:0'):
     def model(x_crop, y_, reuse):
         """For more simplified CNN APIs, check tensorlayer.org."""
         with tf.variable_scope("model", reuse=reuse):
-            net = tl.layers.InputLayer(name='input')(x_crop)
+            net = tl.layers.Input(name='input')(x_crop)
             net = tl.layers.Conv2d(64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn1')(net)
             net = tl.layers.MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(net)
-            net = tl.layers.LocalResponseNormLayer(4, 1.0, 0.001 / 9.0, 0.75, name='norm1')(net)
+            net = tl.layers.LocalResponseNorm(4, 1.0, 0.001 / 9.0, 0.75, name='norm1')(net)
             net = tl.layers.TernaryConv2d(64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn2')(net)
-            net = tl.layers.LocalResponseNormLayer(4, 1.0, 0.001 / 9.0, 0.75, name='norm2')(net)
+            net = tl.layers.LocalResponseNorm(4, 1.0, 0.001 / 9.0, 0.75, name='norm2')(net)
             net = tl.layers.MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(net)
-            net = tl.layers.FlattenLayer(name='flatten')(net)
-            net = tl.layers.TernaryDenseLayer(384, act=tf.nn.relu, name='d1relu')(net)
-            net = tl.layers.TernaryDenseLayer(192, act=tf.nn.relu, name='d2relu')(net)
-            net = tl.layers.DenseLayer(10, act=None, name='output')(net)
+            net = tl.layers.Flatten(name='flatten')(net)
+            net = tl.layers.TernaryDense(384, act=tf.nn.relu, name='d1relu')(net)
+            net = tl.layers.TernaryDense(192, act=tf.nn.relu, name='d2relu')(net)
+            net = tl.layers.Dense(10, act=None, name='output')(net)
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')

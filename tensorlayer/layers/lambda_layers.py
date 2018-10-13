@@ -10,13 +10,13 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'LambdaLayer',
-    'ElementwiseLambdaLayer',
+    'Lambda',
+    'ElementwiseLambda',
 ]
 
 
-class LambdaLayer(Layer):
-    """A layer that takes a user-defined function using TensorFlow Lambda, for multiple inputs see :class:`ElementwiseLambdaLayer`.
+class Lambda(Layer):
+    """A layer that takes a user-defined function using TensorFlow Lambda, for multiple inputs see :class:`ElementwiseLambda`.
 
     Parameters
     ----------
@@ -34,8 +34,8 @@ class LambdaLayer(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=[None, 1], name='x')
-    >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.LambdaLayer(net, lambda x: 2*x, name='lambda')
+    >>> net = tl.layers.Input(x, name='input')
+    >>> net = tl.layers.Lambda(net, lambda x: 2*x, name='lambda')
 
     Parametric case, merge other wrappers into TensorLayer
 
@@ -49,8 +49,8 @@ class LambdaLayer(Layer):
     >>>     x = Dropout(0.5)(x)
     >>>     logits = Dense(10, activation='linear')(x)
     >>>     return logits
-    >>> net = InputLayer(x, name='input')
-    >>> net = LambdaLayer(net, fn=keras_block, name='keras')
+    >>> net = Input(name='input')(x)
+    >>> net = Lambda(fn=keras_block, name='keras')(net)
 
     """
 
@@ -59,7 +59,7 @@ class LambdaLayer(Layer):
         fn,
         fn_args=None,
         act=None,
-        name='lambda_layer',
+        name='lambda',
     ):
         if fn is None:
             raise AssertionError("The `fn` argument cannot be None")
@@ -68,7 +68,7 @@ class LambdaLayer(Layer):
         self.act = act
         self.name = name
 
-        super(LambdaLayer, self).__init__(fn_args=fn_args)
+        super(Lambda, self).__init__(fn_args=fn_args)
 
     def __str__(self):
         additional_str = []
@@ -89,7 +89,7 @@ class LambdaLayer(Layer):
             self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
 
-class ElementwiseLambdaLayer(Layer):
+class ElementwiseLambda(Layer):
     """A layer that use a custom function to combine multiple :class:`Layer` inputs.
 
     Parameters
@@ -117,12 +117,12 @@ class ElementwiseLambdaLayer(Layer):
 
     >>> x = tf.placeholder(tf.float32, [None, 200])
     >>> noise_tensor = tf.random_normal(tf.stack([tf.shape(x)[0], 200]))
-    >>> noise = tl.layers.InputLayer(noise_tensor)
-    >>> net = tl.layers.InputLayer(x)
-    >>> net = tl.layers.DenseLayer(net, n_units=200, act=tf.nn.relu, name='dense1')
-    >>> mean = tl.layers.DenseLayer(net, n_units=200, name='mean')
-    >>> std = tl.layers.DenseLayer(net, n_units=200, name='std')
-    >>> z = tl.layers.ElementwiseLambdaLayer([noise, mean, std], fn=func, name='z')
+    >>> noise = tl.layers.Input()(noise_tensor)
+    >>> net = tl.layers.Input()(x)
+    >>> net = tl.layers.Dense(n_units=200, act=tf.nn.relu, name='dense1')(net)
+    >>> mean = tl.layers.Dense(n_units=200, name='mean')(net)
+    >>> std = tl.layers.Dense(n_units=200, name='std')(net)
+    >>> z = tl.layers.ElementwiseLambda(fn=func, name='z')([noise, mean, std])
     """
 
     def __init__(
@@ -130,7 +130,7 @@ class ElementwiseLambdaLayer(Layer):
         fn,
         fn_args=None,
         act=None,
-        name='elementwiselambda_layer',
+        name='elementwiselambda',
     ):
         if fn is None:
             raise AssertionError("The `fn` argument cannot be None")
@@ -139,7 +139,7 @@ class ElementwiseLambdaLayer(Layer):
         self.act = act
         self.name = name
 
-        super(ElementwiseLambdaLayer, self).__init__(fn_args=fn_args)
+        super(ElementwiseLambda, self).__init__(fn_args=fn_args)
 
     def __str__(self):
         additional_str = []

@@ -12,13 +12,13 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'DropoutLayer',
+    'Dropout',
 ]
 
 
-class DropoutLayer(Layer):
+class Dropout(Layer):
     """
-    The :class:`DropoutLayer` class is a noise layer which randomly set some
+    The :class:`Dropout` class is a noise layer which randomly set some
     activations to zero according to a keeping probability.
 
     Parameters
@@ -40,9 +40,9 @@ class DropoutLayer(Layer):
 
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
-    >>> net = tl.layers.DropoutLayer(net, keep=0.8, name='drop1')
-    >>> net = tl.layers.DenseLayer(net, n_units=800, act=tf.nn.relu, name='relu1')
+    >>> net = tl.layers.Input(name='input_layer')(x)
+    >>> net = tl.layers.Dropout(keep=0.8, name='drop1')(net)
+    >>> net = tl.layers.Dense(n_units=800, act=tf.nn.relu, name='relu1')(net)
     >>> ...
     >>> # For training, enable dropout as follow.
     >>> feed_dict = {x: X_train_a, y_: y_train_a}
@@ -60,10 +60,8 @@ class DropoutLayer(Layer):
 
     >>> def mlp(x, is_train=True, reuse=False):
     >>>     with tf.variable_scope("MLP", reuse=reuse):
-    >>>     tl.layers.set_name_reuse(reuse)
-    >>>     net = tl.layers.InputLayer(x, name='input')
-    >>>     net = tl.layers.DropoutLayer(net, keep=0.8, is_fix=True,
-    >>>                         is_train=is_train, name='drop1')
+    >>>     net = tl.layers.Input(name='input')(x)
+    >>>     net = tl.layers.Dropout(keep=0.8, is_fix=True, name='drop1')(net, is_train=is_train)
     >>>     ...
     >>>     return net
 
@@ -84,7 +82,7 @@ class DropoutLayer(Layer):
         self.seed = seed
         self.name = name
 
-        super(DropoutLayer, self).__init__()
+        super(Dropout, self).__init__()
 
     def __str__(self):
 

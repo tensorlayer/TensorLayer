@@ -28,7 +28,7 @@ class GlobalMeanPool1d(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder("float32", [None, 100, 30])
-    >>> n = tl.layers.InputLayer(x, name='in')
+    >>> n = tl.layers.Input(x, name='in')
     >>> n = tl.layers.GlobalMeanPool1d(n)
     [None, 30]
     """
@@ -79,7 +79,7 @@ class GlobalMeanPool2d(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder("float32", [None, 100, 100, 30])
-    >>> n = tl.layers.InputLayer(x, name='in2')
+    >>> n = tl.layers.Input(x, name='in2')
     >>> n = tl.layers.GlobalMeanPool2d(n)
     [None, 30]
     """
@@ -129,7 +129,7 @@ class GlobalMeanPool3d(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder("float32", [None, 100, 100, 100, 30])
-    >>> n = tl.layers.InputLayer(x, name='in')
+    >>> n = tl.layers.Input(x, name='in')
     >>> n = tl.layers.GlobalMeanPool2d(n)
     [None, 30]
     """

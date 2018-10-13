@@ -9,14 +9,14 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'ExpandDimsLayer',
-    'TileLayer',
+    'ExpandDims',
+    'Tile',
 ]
 
 
-class ExpandDimsLayer(Layer):
+class ExpandDims(Layer):
     """
-    The :class:`ExpandDimsLayer` class inserts a dimension of 1 into a tensor's shape,
+    The :class:`ExpandDims` class inserts a dimension of 1 into a tensor's shape,
     see `tf.expand_dims() <https://www.tensorflow.org/api_docs/python/tf/expand_dims>`__ .
 
     Parameters
@@ -31,8 +31,8 @@ class ExpandDimsLayer(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, (None, 100))
-    >>> n = tl.layers.InputLayer(x, name='in')
-    >>> n = tl.layers.ExpandDimsLayer(n, 2)
+    >>> n = tl.layers.Input()(x)
+    >>> n = tl.layers.ExpandDims(2)(n)
     [None, 100, 1]
     """
 
@@ -45,7 +45,7 @@ class ExpandDimsLayer(Layer):
         self.axis = axis
         self.name = name
 
-        super(ExpandDimsLayer, self).__init__()
+        super(ExpandDims, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -63,9 +63,9 @@ class ExpandDimsLayer(Layer):
             self._temp_data['outputs'] = tf.expand_dims(self._temp_data['inputs'], axis=self.axis)
 
 
-class TileLayer(Layer):
+class Tile(Layer):
     """
-    The :class:`TileLayer` class constructs a tensor by tiling a given tensor,
+    The :class:`Tile` class constructs a tensor by tiling a given tensor,
     see `tf.tile() <https://www.tensorflow.org/api_docs/python/tf/tile>`__ .
 
     Parameters
@@ -82,9 +82,9 @@ class TileLayer(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, (None, 100))
-    >>> n = tl.layers.InputLayer(x, name='in')
-    >>> n = tl.layers.ExpandDimsLayer(n, 2)
-    >>> n = tl.layers.TileLayer(n, [-1, 1, 3])
+    >>> n = tl.layers.Input(name='in')(x)
+    >>> n = tl.layers.ExpandDims(2)(n)
+    >>> n = tl.layers.Tile([-1, 1, 3])(n)
     [None, 100, 3]
     """
 
@@ -93,7 +93,7 @@ class TileLayer(Layer):
         self.multiples = multiples
         self.name = name
 
-        super(TileLayer, self).__init__()
+        super(Tile, self).__init__()
 
     def __str__(self):
         additional_str = []

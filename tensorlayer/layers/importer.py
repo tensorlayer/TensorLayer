@@ -13,12 +13,12 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'SlimNetsLayer',
-    'KerasLayer',
+    'SlimNets',
+    'Keras',
 ]
 
 
-class SlimNetsLayer(Layer):
+class SlimNets(Layer):
     """A layer that merges TF-Slim models into TensorLayer.
 
     Models can be found in `slim-model <https://github.com/tensorflow/models/tree/master/research/slim#pre-trained-models>`__,
@@ -44,7 +44,7 @@ class SlimNetsLayer(Layer):
         slim_layer,
         slim_args=None,
         act=None,
-        name='tfslim_layer',
+        name='tfslim',
     ):
 
         if slim_layer is None:
@@ -54,7 +54,7 @@ class SlimNetsLayer(Layer):
         self.act = act
         self.name = name
 
-        super(SlimNetsLayer, self).__init__(slim_args=slim_args)
+        super(SlimNets, self).__init__(slim_args=slim_args)
 
     def __str__(self):
         additional_str = []
@@ -90,9 +90,9 @@ class SlimNetsLayer(Layer):
 
 
 # @deprecated(
-#     end_support_version="2.0.0", instructions="This layer will be removed in TL 2.0.0 in favor of :class:`LambdaLayer`"
+#     end_support_version="2.0.0", instructions="This layer will be removed in TL 2.0.0 in favor of :class:`Lambda`"
 # )  # TODO: remove this line before releasing TL 2.0.0
-class KerasLayer(Layer):
+class Keras(Layer):
     """A layer to import Keras layers into TensorLayer.
 
     Example can be found here `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`__.
@@ -113,7 +113,7 @@ class KerasLayer(Layer):
         keras_layer,
         keras_args=None,
         act=None,
-        name='keras_layer',
+        name='keras',
     ):
 
         if keras_layer is None:
@@ -126,9 +126,9 @@ class KerasLayer(Layer):
         if not isinstance(self.keras_layer, tf.keras.layers.Layer):
             raise ValueError("keras_layer is not a Keras Layer but `%s`" % type(self.keras_layer))
 
-        super(KerasLayer, self).__init__(keras_args=keras_args)
+        super(Keras, self).__init__(keras_args=keras_args)
 
-        logging.warning("This API will be removed, please use `LambdaLayer` instead.")
+        logging.warning("This API will be removed, please use `Lambda` instead.")
 
     def __str__(self):
         additional_str = []

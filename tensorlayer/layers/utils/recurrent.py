@@ -116,7 +116,7 @@ def target_mask_op(data, pad_val=0):  # HangSheng: return tensor for mask,if inp
 # Advanced Ops for Dynamic RNN
 def advanced_indexing_op(inputs, index):
     """Advanced Indexing for Sequences, returns the outputs by given sequence lengths.
-    When return the last output :class:`DynamicRNNLayer` uses it to get the last outputs with the sequence lengths.
+    When return the last output :class:`DynamicRNN` uses it to get the last outputs with the sequence lengths.
 
     Parameters
     -----------

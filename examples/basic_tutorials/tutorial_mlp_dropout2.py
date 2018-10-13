@@ -17,13 +17,13 @@ y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 # define the network
 def mlp(x, is_train=True, reuse=False):
     with tf.variable_scope("MLP", reuse=reuse):
-        network = tl.layers.InputLayer(name='input')(x)
-        network = tl.layers.DropoutLayer(keep=0.8, is_fix=True, name='drop1')(network, is_train=is_train)
-        network = tl.layers.DenseLayer(n_units=800, act=tf.nn.relu, name='relu1')(network)
-        network = tl.layers.DropoutLayer(keep=0.5, is_fix=True, name='drop2')(network, is_train=is_train)
-        network = tl.layers.DenseLayer(n_units=800, act=tf.nn.relu, name='relu2')(network)
-        network = tl.layers.DropoutLayer(keep=0.5, is_fix=True, name='drop3')(network, is_train=is_train)
-        network = tl.layers.DenseLayer(n_units=10, act=None, name='output')(network)
+        network = tl.layers.Input(name='input')(x)
+        network = tl.layers.Dropout(keep=0.8, is_fix=True, name='drop1')(network, is_train=is_train)
+        network = tl.layers.Dense(n_units=800, act=tf.nn.relu, name='relu1')(network)
+        network = tl.layers.Dropout(keep=0.5, is_fix=True, name='drop2')(network, is_train=is_train)
+        network = tl.layers.Dense(n_units=800, act=tf.nn.relu, name='relu2')(network)
+        network = tl.layers.Dropout(keep=0.5, is_fix=True, name='drop3')(network, is_train=is_train)
+        network = tl.layers.Dense(n_units=10, act=None, name='output')(network)
     return network
 
 

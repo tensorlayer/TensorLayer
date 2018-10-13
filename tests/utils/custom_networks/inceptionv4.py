@@ -57,7 +57,7 @@ class InceptionV4_Network(object):
                 )
 
             # Input Layers
-            input_layer = tl.layers.InputLayer(preprocessed, name='input')
+            input_layer = tl.layers.Input(name='input')(preprocessed)
 
             # 299 x 299 x 3
             net, _ = conv_module(
@@ -120,7 +120,7 @@ class InceptionV4_Network(object):
                         name='Conv2d_0a_3x3'
                     )
 
-                net = tl.layers.ConcatLayer([branch_0, branch_1], concat_dim=3)
+                net = tl.layers.Concat(concat_dim=3)([branch_0, branch_1])
 
             # 73 x 73 x 160
             with tf.variable_scope('Mixed_4a'):
@@ -204,7 +204,7 @@ class InceptionV4_Network(object):
                         name='Conv2d_1a_3x3'
                     )
 
-                net = tl.layers.ConcatLayer([branch_0, branch_1], concat_dim=3)
+                net = tl.layers.Concat(concat_dim=3)([branch_0, branch_1])
 
             # 71 x 71 x 192
             with tf.variable_scope('Mixed_5a'):
@@ -226,7 +226,7 @@ class InceptionV4_Network(object):
                 with tf.variable_scope('Branch_1'):
                     branch_1 = tl.layers.MaxPool2d(net, (3, 3), strides=(2, 2), padding='VALID', name='MaxPool_1a_3x3')
 
-                net = tl.layers.ConcatLayer([branch_0, branch_1], concat_dim=3)
+                net = tl.layers.Concat(concat_dim=3)([branch_0, branch_1])
 
             # 35 x 35 x 384
             # 4 x Inception-A blocks
@@ -255,23 +255,22 @@ class InceptionV4_Network(object):
                 net = block_inception_c(net, scope=block_scope, is_train=is_train)
 
             if self.flatten_output and not self.include_FC_head:
-                net = tl.layers.FlattenLayer(net, name='flatten')
+                net = tl.layers.Flatten(name='flatten')(net)
 
             if self.include_FC_head:
                 with tf.variable_scope("Logits", reuse=reuse):
 
                     # 8 x 8 x 1536
                     net = tl.layers.MeanPool2d(
-                        net,
                         filter_size=net.outputs.get_shape()[1:3],
                         strides=(1, 1),
                         padding='VALID',
                         name='AvgPool_1a'
-                    )
+                    )(net)
 
                     # 1 x 1 x 1536
-                    net = tl.layers.DropoutLayer(net, keep=0.8, is_fix=True, is_train=is_train, name='Dropout_1b')
-                    net = tl.layers.FlattenLayer(net, name='PreLogitsFlatten')
+                    net = tl.layers.Dropout(keep=0.8, is_fix=True, is_train=is_train, name='Dropout_1b')(net)
+                    net = tl.layers.Flatten(name='PreLogitsFlatten')(net)
 
                     # 1536
                     net, _ = dense_module(

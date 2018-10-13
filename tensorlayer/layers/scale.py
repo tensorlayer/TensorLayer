@@ -9,12 +9,12 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'ScaleLayer',
+    'Scale',
 ]
 
 
-class ScaleLayer(Layer):
-    """The :class:`AddScaleLayer` class is for multipling a trainble scale value to the layer outputs. Usually be used on the output of binary net.
+class Scale(Layer):
+    """The :class:`Scale` class is for multipling a trainble scale value to the layer outputs. Usually be used on the output of binary net.
 
     Parameters
     ----------
@@ -34,7 +34,7 @@ class ScaleLayer(Layer):
         self.init_scale = init_scale
         self.name = name
 
-        super(ScaleLayer, self).__init__()
+        super(Scale, self).__init__()
 
     def __str__(self):
         additional_str = []

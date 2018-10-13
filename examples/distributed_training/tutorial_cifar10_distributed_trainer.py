@@ -17,7 +17,7 @@ import numpy as np
 import multiprocessing
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import InputLayer, Conv2d, BatchNormLayer, DenseLayer, FlattenLayer, MaxPool2d
+from tensorlayer.layers import Input, Conv2d, BatchNormLayer, Dense, FlattenLayer, MaxPool2d
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -55,19 +55,19 @@ def data_aug_valid(img, ann):
 
 def model(x, is_train):
     with tf.variable_scope("model", reuse=tf.AUTO_REUSE):
-        net = InputLayer(name='input')(x)
+        net = Input(name='input')(x)
         net = Conv2d(64, (5, 5), (1, 1), padding='SAME', b_init=None, name='cnn1')(net)
-        net = BatchNormLayer(decay=0.99, act=tf.nn.relu, name='batch1')(net, is_train=is_train)
+        net = BatchNorm(decay=0.99, act=tf.nn.relu, name='batch1')(net, is_train=is_train)
         net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(net)
 
         net = Conv2d(64, (5, 5), (1, 1), padding='SAME', b_init=None, name='cnn2')(net)
-        net = BatchNormLayer(decay=0.99, act=tf.nn.relu, name='batch2')(net, is_train=is_train)
+        net = BatchNorm(decay=0.99, act=tf.nn.relu, name='batch2')(net, is_train=is_train)
         net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(net)
 
-        net = FlattenLayer(name='flatten')(net)
-        net = DenseLayer(384, act=tf.nn.relu, name='d1relu')(net)
-        net = DenseLayer(192, act=tf.nn.relu, name='d2relu')(net)
-        net = DenseLayer(10, act=None, name='output')(net)
+        net = Flatten(name='flatten')(net)
+        net = Dense(384, act=tf.nn.relu, name='d1relu')(net)
+        net = Dense(192, act=tf.nn.relu, name='d2relu')(net)
+        net = Dense(10, act=None, name='output')(net)
     return net
 
 

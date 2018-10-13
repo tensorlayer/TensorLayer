@@ -13,18 +13,19 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'AtrousDeConv2dLayer',
+    'AtrousDeConv2d',
 ]
 
 
-class AtrousDeConv2dLayer(Layer):
-    """The :class:`AtrousDeConv2dLayer` class is 2D atrous convolution transpose,
-    see `tf.nn.atrous_conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d_transpose>`__.
+class AtrousDeConv2d(Layer):
+    """The :class:`AtrousDeConv2d` class is 2D atrous convolution transpose, see `tf.nn.atrous_conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d_transpose>`__.
 
     Parameters
     ----------
     shape : tuple of int
         The shape of the filters: (filter_height, filter_width, out_channels, in_channels).
+    output_shape : tuple of int
+        Output shape of the deconvolution.
     rate : int
         The stride that we sample input values in the height and width dimensions.
         This equals the rate that we up-sample the filters by inserting zeros across the height and width dimensions.
@@ -72,7 +73,7 @@ class AtrousDeConv2dLayer(Layer):
         self.act = act
         self.name = name
 
-        super(AtrousDeConv2dLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+        super(AtrousDeConv2d, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
 
     def __str__(self):
         additional_str = []

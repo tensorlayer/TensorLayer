@@ -420,7 +420,7 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
     -----------
     logits : Tensor
         2D tensor with shape of [batch_size * ?, n_classes], `?` means dynamic IDs for each example.
-        - Can be get from `DynamicRNNLayer` by setting ``return_seq_2d`` to `True`.
+        - Can be get from `DynamicRNN` by setting ``return_seq_2d`` to `True`.
     target_seqs : Tensor
         int of tensor, like word ID. [batch_size, ?], `?` means dynamic IDs for each example.
     input_mask : Tensor
@@ -438,12 +438,12 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
     >>> input_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="input")
     >>> target_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="target")
     >>> input_mask = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="mask")
-    >>> net = tl.layers.EmbeddingInputlayer(
+    >>> net = tl.layers.EmbeddingInput(
     ...         inputs = input_seqs,
     ...         vocabulary_size = vocab_size,
     ...         embedding_size = embedding_size,
     ...         name = 'seq_embedding')
-    >>> net = tl.layers.DynamicRNNLayer(net,
+    >>> net = tl.layers.DynamicRNN(net,
     ...         cell_fn = tf.contrib.rnn.BasicLSTMCell,
     ...         n_hidden = embedding_size,
     ...         dropout = (0.7 if is_train else None),
@@ -452,7 +452,7 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
     ...         name = 'dynamicrnn')
     >>> print(net.outputs)
     (?, 256)
-    >>> net = tl.layers.DenseLayer(net, n_units=vocab_size, name="output")
+    >>> net = tl.layers.Dense(net, n_units=vocab_size, name="output")
     >>> print(net.outputs)
     (?, 10000)
     >>> loss = tl.cost.cross_entropy_seq_with_mask(net.outputs, target_seqs, input_mask)

@@ -26,7 +26,7 @@ class GlobalMaxPool1d(Layer):
     Examples
     ---------
     >>> x = tf.placeholder("float32", [None, 100, 30])
-    >>> n = InputLayer(x, name='in')
+    >>> n = Input(x, name='in')
     >>> n = GlobalMaxPool1d(n)
     [None, 30]
     """
@@ -76,7 +76,7 @@ class GlobalMaxPool2d(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder("float32", [None, 100, 100, 30])
-    >>> n = tl.layers.InputLayer(x, name='in2')
+    >>> n = tl.layers.Input(x, name='in2')
     >>> n = tl.layers.GlobalMaxPool2d(n)
     [None, 30]
     """
@@ -127,7 +127,7 @@ class GlobalMaxPool3d(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder("float32", [None, 100, 100, 100, 30])
-    >>> n = tl.layers.InputLayer(x, name='in')
+    >>> n = tl.layers.Input(x, name='in')
     >>> n = tl.layers.GlobalMaxPool3d(n)
     [None, 30]
     """

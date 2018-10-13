@@ -20,14 +20,14 @@ class Layer_Pooling_Test(CustomTestCase):
         cls.y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 
         # define the network
-        cls.network = tl.layers.InputLayer(name='input')(cls.x)
-        cls.network = tl.layers.DropoutLayer(keep=0.8, name='drop1')(cls.network)
-        cls.network = tl.layers.DenseLayer(800, tf.nn.relu, name='relu1')(cls.network)
-        cls.network = tl.layers.DropoutLayer(keep=0.5, name='drop2')(cls.network)
-        cls.network = tl.layers.DenseLayer(800, tf.nn.relu, name='relu2')(cls.network)
-        cls.network = tl.layers.DropoutLayer(keep=0.5, name='drop3')(cls.network)
+        cls.network = tl.layers.Input(name='input')(cls.x)
+        cls.network = tl.layers.Dropout(keep=0.8, name='drop1')(cls.network)
+        cls.network = tl.layers.Dense(800, tf.nn.relu, name='relu1')(cls.network)
+        cls.network = tl.layers.Dropout(keep=0.5, name='drop2')(cls.network)
+        cls.network = tl.layers.Dense(800, tf.nn.relu, name='relu2')(cls.network)
+        cls.network = tl.layers.Dropout(keep=0.5, name='drop3')(cls.network)
 
-        cls.network = tl.layers.DenseLayer(n_units=10, name='output')(cls.network)
+        cls.network = tl.layers.Dense(n_units=10, name='output')(cls.network)
 
         # define cost function and metric.
         cls.y = cls.network.outputs

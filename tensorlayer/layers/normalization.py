@@ -14,18 +14,18 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'BatchNormLayer',
-    'InstanceNormLayer',
-    'LayerNormLayer',
-    'LocalResponseNormLayer',
-    'GroupNormLayer',
-    'SwitchNormLayer',
+    'BatchNorm',
+    'InstanceNorm',
+    'LayerNorm',
+    'LocalResponseNorm',
+    'GroupNorm',
+    'SwitchNorm',
 ]
 
 
-class BatchNormLayer(Layer):
+class BatchNorm(Layer):
     """
-    The :class:`BatchNormLayer` is a batch normalization layer for both fully-connected and convolution outputs.
+    The :class:`BatchNorm` is a batch normalization layer for both fully-connected and convolution outputs.
     See ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
 
     Parameters
@@ -83,7 +83,7 @@ class BatchNormLayer(Layer):
             if inspect.isclass(_init):
                 setattr(self, initializer, _init())
 
-        super(BatchNormLayer, self).__init__()
+        super(BatchNorm, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -182,8 +182,8 @@ class BatchNormLayer(Layer):
             )
 
 
-class InstanceNormLayer(Layer):
-    """The :class:`InstanceNormLayer` class is a for instance normalization.
+class InstanceNorm(Layer):
+    """The :class:`InstanceNorm` class is a for instance normalization.
 
     Parameters
     -----------
@@ -206,7 +206,7 @@ class InstanceNormLayer(Layer):
         self.act = act
         self.name = name
 
-        super(InstanceNormLayer, self).__init__()
+        super(InstanceNorm, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -252,8 +252,8 @@ class InstanceNormLayer(Layer):
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
 
-class GroupNormLayer(Layer):
-    """The :class:`GroupNormLayer` layer is for Group Normalization.
+class GroupNorm(Layer):
+    """The :class:`GroupNorm` layer is for Group Normalization.
     See `tf.contrib.layers.group_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/group_norm>`__.
 
     Parameters
@@ -275,7 +275,7 @@ class GroupNormLayer(Layer):
         self.data_format = data_format
         self.name = name
 
-        super(GroupNormLayer, self).__init__()
+        super(GroupNorm, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -301,7 +301,7 @@ class GroupNormLayer(Layer):
         shape = self._temp_data['inputs'].get_shape().as_list()
 
         if len(shape) != 4:
-            raise Exception("GroupNormLayer only supports 2D images.")
+            raise Exception("GroupNorm only supports 2D images.")
 
         if self.data_format == 'channels_last':
             n_channels = shape[-1]
@@ -366,9 +366,9 @@ class GroupNormLayer(Layer):
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
 
 
-class LayerNormLayer(Layer):
+class LayerNorm(Layer):
     """
-    The :class:`LayerNormLayer` class is for layer normalization, see `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`__.
+    The :class:`LayerNorm` class is for layer normalization, see `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`__.
 
     Parameters
     ----------
@@ -397,7 +397,7 @@ class LayerNormLayer(Layer):
         self.act = act
         self.name = name
 
-        super(LayerNormLayer, self).__init__()
+        super(LayerNorm, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -457,8 +457,8 @@ class LayerNormLayer(Layer):
             self._temp_data['local_weights'] = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
 
-class LocalResponseNormLayer(Layer):
-    """The :class:`LocalResponseNormLayer` layer is for Local Response Normalization.
+class LocalResponseNorm(Layer):
+    """The :class:`LocalResponseNorm` layer is for Local Response Normalization.
     See ``tf.nn.local_response_normalization`` or ``tf.nn.lrn`` for new TF version.
     The 4-D input tensor is a 3-D array of 1-D vectors (along the last dimension), and each vector is normalized independently.
     Within a given vector, each component is divided by the weighted square-sum of inputs within depth_radius.
@@ -492,7 +492,7 @@ class LocalResponseNormLayer(Layer):
         self.beta = beta
         self.name = name
 
-        super(LocalResponseNormLayer, self).__init__()
+        super(LocalResponseNorm, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -532,9 +532,9 @@ class LocalResponseNormLayer(Layer):
             )
 
 
-class SwitchNormLayer(Layer):
+class SwitchNorm(Layer):
     """
-    The :class:`SwitchNormLayer` is a switchable normalization.
+    The :class:`SwitchNorm` is a switchable normalization.
 
     Parameters
     ----------
@@ -574,7 +574,7 @@ class SwitchNormLayer(Layer):
         self.act = act
         self.name = name
 
-        super(SwitchNormLayer, self).__init__()
+        super(SwitchNorm, self).__init__()
 
     def __str__(self):
         additional_str = []

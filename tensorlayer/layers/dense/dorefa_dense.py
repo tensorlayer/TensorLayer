@@ -15,12 +15,12 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'DorefaDenseLayer',
+    'DorefaDense',
 ]
 
 
-class DorefaDenseLayer(Layer):
-    """The :class:`DorefaDenseLayer` class is a binary fully connected layer, which weights are 'bitW' bits and the output of the previous layer
+class DorefaDense(Layer):
+    """The :class:`DorefaDense` class is a binary fully connected layer, which weights are 'bitW' bits and the output of the previous layer
     are 'bitA' bits while inferencing.
 
     Note that, the bias vector would not be binarized.
@@ -76,7 +76,7 @@ class DorefaDenseLayer(Layer):
         self.b_init = b_init
         self.name = name
 
-        super(DorefaDenseLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+        super(DorefaDense, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
 
     def __str__(self):
         additional_str = []

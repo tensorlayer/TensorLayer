@@ -33,9 +33,9 @@ import tensorflow as tf
 from tensorlayer import logging
 
 from tensorlayer.layers import Conv2d
-from tensorlayer.layers import DenseLayer
+from tensorlayer.layers import Dense
 from tensorlayer.layers import FlattenLayer
-from tensorlayer.layers import InputLayer
+from tensorlayer.layers import Input
 from tensorlayer.layers import MaxPool2d
 
 from tensorlayer.files import maybe_download_and_extract
@@ -116,10 +116,10 @@ class VGG16Base(object):
                 net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_3'
             ),
             lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5'),
-            lambda net: FlattenLayer(net, name='flatten'),
-            lambda net: DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu'),
-            lambda net: DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc2_relu'),
-            lambda net: DenseLayer(net, n_units=1000, name='fc3_relu'),
+            lambda net: Flatten(net, name='flatten'),
+            lambda net: Dense(net, n_units=4096, act=tf.nn.relu, name='fc1_relu'),
+            lambda net: Dense(net, n_units=4096, act=tf.nn.relu, name='fc2_relu'),
+            lambda net: Dense(net, n_units=1000, name='fc3_relu'),
         ]
         net = net_in
         for l in layers:
@@ -173,13 +173,17 @@ class VGG16(VGG16Base):
     >>> # use for inferencing
     >>> probs = tf.nn.softmax(vgg.outputs)
 
+    iudfhd9w[ehdoi2 n
+
+    pio2j3er01 1w0ejo1wpd 012jeno1 CHECK THIS PART
+
     Extract features with VGG16 and Train a classifier with 100 classes
 
     >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get VGG without the last layer
     >>> vgg = tl.models.VGG16(x, end_with='fc2_relu')
     >>> # add one more layer
-    >>> net = tl.layers.DenseLayer(vgg, 100, name='out')
+    >>> net = tl.layers.Dense(vgg, 100, name='out')
     >>> # initialize all parameters
     >>> sess = tf.InteractiveSession()
     >>> tl.layers.initialize_global_variables(sess)
@@ -207,7 +211,7 @@ class VGG16(VGG16Base):
             scope_name = tf.get_variable_scope().name
             self.name = scope_name + '/vgg16' if scope_name else '/vgg16'
 
-            net = InputLayer(x, name='input')
+            net = Input(x, name='input')
             self.net = VGG16Base.vgg16_simple_api(net, end_with)
 
             self.outputs = self.net.outputs

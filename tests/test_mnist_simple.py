@@ -22,17 +22,17 @@ class Simple_MNIST_Test(CustomTestCase):
         cls.y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 
         # define the network
-        network = tl.layers.InputLayer(name='input')(cls.x)
-        network = tl.layers.DropoutLayer(keep=0.8, name='drop1')(network)
-        network = tl.layers.DenseLayer(n_units=100, act=tf.nn.relu, name='relu1')(network)
-        network = tl.layers.DropoutLayer(keep=0.8, name='drop2')(network)
-        network = tl.layers.DenseLayer(n_units=100, act=tf.nn.relu, name='relu2')(network)
-        network = tl.layers.DropoutLayer(keep=0.8, name='drop3')(network)
+        network = tl.layers.Input(name='input')(cls.x)
+        network = tl.layers.Dropout(keep=0.8, name='drop1')(network)
+        network = tl.layers.Dense(n_units=100, act=tf.nn.relu, name='relu1')(network)
+        network = tl.layers.Dropout(keep=0.8, name='drop2')(network)
+        network = tl.layers.Dense(n_units=100, act=tf.nn.relu, name='relu2')(network)
+        network = tl.layers.Dropout(keep=0.8, name='drop3')(network)
 
         # the softmax is implemented internally in tl.cost.cross_entropy(y, y_) to
         # speed up computation, so we use identity here.
         # see tf.nn.sparse_softmax_cross_entropy_with_logits()
-        cls.network = tl.layers.DenseLayer(n_units=10, name='output')(network)
+        cls.network = tl.layers.Dense(n_units=10, name='output')(network)
 
         # define cost function and metric.
         y = cls.network.outputs

@@ -80,7 +80,7 @@ class QuantizedConv2dWithBN(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, [None, 256, 256, 3])
-    >>> net = tl.layers.InputLayer(x, name='input')
+    >>> net = tl.layers.Input(x, name='input')
     >>> net = tl.layers.QuantizedConv2dWithBN(net, 64, (5, 5), (1, 1),  act=tf.nn.relu, padding='SAME', bitW=bitW, bitA=bitA, name='qconv2dbn1')
     >>> net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
     ...

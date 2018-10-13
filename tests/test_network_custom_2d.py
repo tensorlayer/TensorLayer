@@ -50,12 +50,12 @@ class CustomNetwork_2D_Test(CustomTestCase):
                         name='e3x3'
                     )(squeezed)
 
-                    return tl.layers.ConcatLayer(concat_dim=3, name='concat')([e1x1, e3x3])
+                    return tl.layers.Concat(concat_dim=3, name='concat')([e1x1, e3x3])
 
             class MyCustomNetwork(tl.networks.CustomModel):
 
                 def model(self):
-                    input_layer = tl.layers.InputLayer(name='input_layer')
+                    input_layer = tl.layers.Input(name='input_layer')
 
                     net = fire_module(input_layer, 32, 24, "fire_module_1")
                     net = fire_module(net, 32, 24, "fire_module_2")

@@ -25,36 +25,36 @@ class CustomNetwork_1D_Test(CustomTestCase):
             class MyCustomNetwork(tl.networks.CustomModel):
 
                 def model(self):
-                    input_layer = tl.layers.InputLayer(name='input_layer')
-                    noise_layer = tl.layers.InputLayer(name="input_noise")
+                    input_layer = tl.layers.Input(name='input_layer')
+                    noise_layer = tl.layers.Input(name="input_noise")
 
-                    net_0 = tl.layers.DenseLayer(n_units=24, act=tf.nn.relu, name='dense_layer_1')(input_layer)
-                    net_1 = tl.layers.DenseLayer(n_units=24, act=tf.nn.relu, name='dense_layer_2')(input_layer)
+                    net_0 = tl.layers.Dense(n_units=24, act=tf.nn.relu, name='dense_layer_1')(input_layer)
+                    net_1 = tl.layers.Dense(n_units=24, act=tf.nn.relu, name='dense_layer_2')(input_layer)
 
-                    net = tl.layers.ElementwiseLayer(combine_fn=tf.minimum, name='elementwise_layer_3')([net_0, net_1])
+                    net = tl.layers.Elementwise(combine_fn=tf.minimum, name='elementwise_layer_3')([net_0, net_1])
 
-                    mean = tl.layers.DenseLayer(n_units=32, act=tf.nn.relu, name='dense_layer_4')(net)
-                    std = tl.layers.DenseLayer(n_units=32, act=tf.nn.relu, name='dense_layer_5')(net)
+                    mean = tl.layers.Dense(n_units=32, act=tf.nn.relu, name='dense_layer_4')(net)
+                    std = tl.layers.Dense(n_units=32, act=tf.nn.relu, name='dense_layer_5')(net)
 
-                    net = tl.layers.ElementwiseLambdaLayer(
+                    net = tl.layers.ElementwiseLambda(
                         fn=my_custom_lambda_func, name='elementwise_lambda_layer_6'
                     )([noise_layer, mean, std])
 
-                    net_d1 = tl.layers.DenseLayer(n_units=10, name='dense_layer_7_1')(net)
-                    net_d2 = tl.layers.DenseLayer(n_units=10, name='dense_layer_7_2')(net)
-                    net_d3 = tl.layers.DenseLayer(n_units=10, name='dense_layer_7_3')(net)
+                    net_d1 = tl.layers.Dense(n_units=10, name='dense_layer_7_1')(net)
+                    net_d2 = tl.layers.Dense(n_units=10, name='dense_layer_7_2')(net)
+                    net_d3 = tl.layers.Dense(n_units=10, name='dense_layer_7_3')(net)
 
-                    net_stack = tl.layers.StackLayer(axis=1, name='stack_layer_8')([net_d1, net_d2, net_d3])
+                    net_stack = tl.layers.Stack(axis=1, name='stack_layer_8')([net_d1, net_d2, net_d3])
 
-                    net_unstack = tl.layers.UnStackLayer(axis=1, name='unstack_layer_9')(net_stack)
+                    net_unstack = tl.layers.UnStack(axis=1, name='unstack_layer_9')(net_stack)
 
-                    net_unstacked_d1 = tl.layers.LambdaLayer(fn=lambda x: x[0].outputs, name="unstacked_layer_9_1")(net_unstack)
+                    net_unstacked_d1 = tl.layers.Lambda(fn=lambda x: x[0].outputs, name="unstacked_layer_9_1")(net_unstack)
 
-                    net_unstacked_d2 = tl.layers.LambdaLayer(fn=lambda x: x[1].outputs, name="unstacked_layer_9_2")(net_unstack)
+                    net_unstacked_d2 = tl.layers.Lambda(fn=lambda x: x[1].outputs, name="unstacked_layer_9_2")(net_unstack)
 
-                    net_unstacked_d3 = tl.layers.LambdaLayer(fn=lambda x: x[2].outputs, name="unstacked_layer_9_3")(net_unstack)
+                    net_unstacked_d3 = tl.layers.Lambda(fn=lambda x: x[2].outputs, name="unstacked_layer_9_3")(net_unstack)
 
-                    net = tl.layers.ConcatLayer(name='concat_layer_10')(
+                    net = tl.layers.Concat(name='concat_layer_10')(
                         [net_unstacked_d1, net_unstacked_d2, net_unstacked_d3]
                     )
 

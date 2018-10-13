@@ -16,13 +16,13 @@ from tests.utils import CustomTestCase
 def mlp(x, is_train=True, reuse=False):
     with tf.variable_scope("MLP", reuse=reuse):
         tl.layers.set_name_reuse(reuse)  # print warning
-        network = tl.layers.InputLayer(name='input')(x)
-        network = tl.layers.DropoutLayer(keep=0.8, is_fix=True, is_train=is_train, name='drop1')(network)
-        network = tl.layers.DenseLayer(n_units=800, act=tf.nn.relu, name='relu1')(network)
-        network = tl.layers.DropoutLayer(keep=0.5, is_fix=True, is_train=is_train, name='drop2')(network)
-        network = tl.layers.DenseLayer(n_units=800, act=tf.nn.relu, name='relu2')(network)
-        network = tl.layers.DropoutLayer(keep=0.5, is_fix=True, is_train=is_train, name='drop3')(network)
-        network = tl.layers.DenseLayer(n_units=10, name='output')(network)
+        network = tl.layers.Input(name='input')(x)
+        network = tl.layers.Dropout(keep=0.8, is_fix=True, is_train=is_train, name='drop1')(network)
+        network = tl.layers.Dense(n_units=800, act=tf.nn.relu, name='relu1')(network)
+        network = tl.layers.Dropout(keep=0.5, is_fix=True, is_train=is_train, name='drop2')(network)
+        network = tl.layers.Dense(n_units=800, act=tf.nn.relu, name='relu2')(network)
+        network = tl.layers.Dropout(keep=0.5, is_fix=True, is_train=is_train, name='drop3')(network)
+        network = tl.layers.Dense(n_units=10, name='output')(network)
     return network
 
 

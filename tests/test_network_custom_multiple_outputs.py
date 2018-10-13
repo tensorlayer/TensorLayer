@@ -23,10 +23,10 @@ class CustomNetwork_Multiple_Outputs_Test(CustomTestCase):
 
                 def model(self):
 
-                    data_plh = tl.layers.InputLayer(name="data_plh")
+                    data_plh = tl.layers.Input(name="data_plh")
 
-                    network_1 = tl.layers.DenseLayer(n_units=20, name="dense_layer_1")(data_plh)
-                    network_2 = tl.layers.DenseLayer(n_units=10, name="dense_layer_2")(data_plh)
+                    network_1 = tl.layers.Dense(n_units=20, name="dense_layer_1")(data_plh)
+                    network_2 = tl.layers.Dense(n_units=10, name="dense_layer_2")(data_plh)
 
                     return data_plh, (network_1, network_2)
 

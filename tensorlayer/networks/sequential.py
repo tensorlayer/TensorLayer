@@ -68,7 +68,7 @@ class Sequential(BaseNetwork):
         self.outputs = None
 
         with tf.variable_scope(self.name):
-            self.inputs = layers.InputLayer(name='input_layer')
+            self.inputs = layers.Input(name='input_layer')
             self.add(self.inputs)
             '''
             # Add to the model any layers passed to the constructor.
@@ -88,7 +88,7 @@ class Sequential(BaseNetwork):
         if not self._layers:
             set_inputs = False
             # First layer in model: check that it is an input layer.
-            if not isinstance(layer, InputLayer):
+            if not isinstance(layer, Input):
                 # Create an input tensor and call `layer` on the input tensor.
                 # First, we need to infer the expected input shape and dtype.
                 first_layer = layer
@@ -125,7 +125,7 @@ class Sequential(BaseNetwork):
                     # build the model lazily on `fit`/etc.
                     batch_shape = None
             else:
-                # Corner case where the user passes an InputLayer layer via `add`.
+                # Corner case where the user passes an Input layer via `add`.
                 assert len(layer._inbound_nodes[-1].output_tensors) == 1
                 set_inputs = True
 
@@ -155,9 +155,9 @@ class Sequential(BaseNetwork):
     @property
     def layers(self):
         # Historically, `sequential.layers` only returns layers that were added
-        # via `add`, and omits the auto-generated `InputLayer` that comes at the
+        # via `add`, and omits the auto-generated `Input` that comes at the
         # bottom of the stack.
-        if self._layers and isinstance(self._layers[0], InputLayer):
+        if self._layers and isinstance(self._layers[0], Input):
             return self._layers[1:]
         return self._layers
 

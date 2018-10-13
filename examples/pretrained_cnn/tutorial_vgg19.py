@@ -103,7 +103,7 @@ def Vgg19(rgb):
         raise Exception("image size unmatch")
 
     # input layer
-    net_in = InputLayer(name='input')(bgr)
+    net_in = Input(name='input')(bgr)
     # conv1
     net = Conv2d(64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1')(net_in)
     net = Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2')(net)
@@ -131,10 +131,10 @@ def Vgg19(rgb):
     net = Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_4')(net)
     net = MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5')(net)
     # fc 6~8
-    net = FlattenLayer(name='flatten')(net)
-    net = DenseLayer(n_units=4096, act=tf.nn.relu, name='fc6')(net)
-    net = DenseLayer(n_units=4096, act=tf.nn.relu, name='fc7')(net)
-    net = DenseLayer(n_units=1000, act=None, name='fc8')(net)
+    net = Flatten(name='flatten')(net)
+    net = Dense(n_units=4096, act=tf.nn.relu, name='fc6')(net)
+    net = Dense(n_units=4096, act=tf.nn.relu, name='fc7')(net)
+    net = Dense(n_units=1000, act=None, name='fc8')(net)
     print("build model finished: %fs" % (time.time() - start_time))
     return net
 

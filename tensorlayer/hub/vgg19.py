@@ -33,9 +33,9 @@ import tensorflow as tf
 from tensorlayer import logging
 
 from tensorlayer.layers import Conv2d
-from tensorlayer.layers import DenseLayer
+from tensorlayer.layers import Dense
 from tensorlayer.layers import FlattenLayer
-from tensorlayer.layers import InputLayer
+from tensorlayer.layers import Input
 from tensorlayer.layers import MaxPool2d
 
 from tensorlayer.files import maybe_download_and_extract
@@ -145,10 +145,10 @@ class VGG19Base(object):
                 net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_4'
             ),
             lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5'),
-            lambda net: FlattenLayer(net, name='flatten'),
-            lambda net: DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu'),
-            lambda net: DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc2_relu'),
-            lambda net: DenseLayer(net, n_units=1000, act=tf.identity, name='fc3_relu'),
+            lambda net: Flatten(net, name='flatten'),
+            lambda net: Dense(net, n_units=4096, act=tf.nn.relu, name='fc1_relu'),
+            lambda net: Dense(net, n_units=4096, act=tf.nn.relu, name='fc2_relu'),
+            lambda net: Dense(net, n_units=1000, act=tf.identity, name='fc3_relu'),
         ]
         net = net_in
         for l in layers:
@@ -225,7 +225,7 @@ class VGG19(VGG19Base):
     >>> # get VGG without the last layer
     >>> vgg = tl.models.VGG19(x, end_with='fc2_relu')
     >>> # add one more layer
-    >>> net = tl.layers.DenseLayer(vgg, 100, name='out')
+    >>> net = tl.layers.Dense(vgg, 100, name='out')
     >>> # initialize all parameters
     >>> sess = tf.InteractiveSession()
     >>> tl.layers.initialize_global_variables(sess)
@@ -253,7 +253,7 @@ class VGG19(VGG19Base):
             scope_name = tf.get_variable_scope().name
             self.name = scope_name + '/vgg19' if scope_name else '/vgg19'
 
-            net = InputLayer(x, name='input')
+            net = Input(x, name='input')
             self.net = VGG19Base.vgg19_simple_api(net, end_with)
             self.outputs = self.net.outputs
             self.all_weights = self.net.all_weights

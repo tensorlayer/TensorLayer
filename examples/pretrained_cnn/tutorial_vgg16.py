@@ -99,10 +99,10 @@ def conv_layers_simple_api(net_in):
 
 
 def fc_layers(net):
-    net = FlattenLayer(name='flatten')(net)
-    net = DenseLayer(n_units=4096, act=tf.nn.relu, name='fc1_relu')(net)
-    net = DenseLayer(n_units=4096, act=tf.nn.relu, name='fc2_relu')(net)
-    net = DenseLayer(n_units=1000, act=None, name='fc3_relu')(net)
+    net = Flatten(name='flatten')(net)
+    net = Dense(n_units=4096, act=tf.nn.relu, name='fc1_relu')(net)
+    net = Dense(n_units=4096, act=tf.nn.relu, name='fc2_relu')(net)
+    net = Dense(n_units=1000, act=None, name='fc3_relu')(net)
     return net
 
 
@@ -111,7 +111,7 @@ sess = tf.InteractiveSession()
 x = tf.placeholder(tf.float32, [None, 224, 224, 3])
 # y_ = tf.placeholder(tf.int32, shape=[None, ], name='y_')
 
-net_in = InputLayer(name='input')(x)
+net_in = Input(name='input')(x)
 # net_cnn = conv_layers(net_in)               # professional CNN APIs
 net_cnn = conv_layers_simple_api(net_in)  # simplified CNN APIs
 net = fc_layers(net_cnn)

@@ -43,7 +43,7 @@ class VGG_Model_Test(CustomTestCase):
             print("TYPE:", type(vgg2))
 
             # add one more layer
-            _ = tl.layers.DenseLayer(n_units=100, name='out')(vgg2)
+            _ = tl.layers.Dense(n_units=100, name='out')(vgg2)
             # initialize all parameters
             # sess = tf.InteractiveSession()
             # tl.layers.initialize_global_variables(sess)

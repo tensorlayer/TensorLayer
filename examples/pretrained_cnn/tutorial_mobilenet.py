@@ -13,7 +13,7 @@ import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import (
-    BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, InputLayer, ReshapeLayer
+    BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, Input, Reshape
 )
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -25,16 +25,16 @@ def conv_block(n, n_filter, filter_size=(3, 3), strides=(1, 1), is_train=False, 
     # ref: https://github.com/keras-team/keras/blob/master/keras/applications/mobilenet.py
     with tf.variable_scope(name):
         n = Conv2d(n_filter, filter_size, strides, b_init=None, name='conv')(n)
-        n = BatchNormLayer(decay=0.999, act=tf.nn.relu6, name='batchnorm')(n, is_train=is_train)
+        n = BatchNorm(decay=0.999, act=tf.nn.relu6, name='batchnorm')(n, is_train=is_train)
     return n
 
 
 def depthwise_conv_block(n, n_filter, strides=(1, 1), is_train=False, name="depth_block"):
     with tf.variable_scope(name):
         n = DepthwiseConv2d((3, 3), strides, b_init=None, name='depthwise')(n)
-        n = BatchNormLayer(decay=0.999, act=tf.nn.relu6, name='batchnorm1')(n, is_train=is_train)
+        n = BatchNorm(decay=0.999, act=tf.nn.relu6, name='batchnorm1')(n, is_train=is_train)
         n = Conv2d(n_filter, (1, 1), (1, 1), b_init=None, name='conv')(n)
-        n = BatchNormLayer(decay=0.999, act=tf.nn.relu6, name='batchnorm2')(n, is_train=is_train)
+        n = BatchNorm(decay=0.999, act=tf.nn.relu6, name='batchnorm2')(n, is_train=is_train)
     return n
 
 
@@ -66,7 +66,7 @@ def decode_predictions(preds, top=5):  # keras.applications.resnet50
 
 def mobilenet(x, is_train=True, reuse=False):
     with tf.variable_scope("mobilenet", reuse=reuse):
-        n = InputLayer(x)
+        n = Input(x)
         n = conv_block(n, 32, strides=(2, 2), is_train=is_train, name="conv")
         n = depthwise_conv_block(n, 64, is_train=is_train, name="depth1")
 
@@ -87,11 +87,11 @@ def mobilenet(x, is_train=True, reuse=False):
         n = depthwise_conv_block(n, 1024, is_train=is_train, name="depth13")
 
         n = GlobalMeanPool2d(n)
-        # n = DropoutLayer(n, 1-1e-3, True, is_train, name='drop')
-        # n = DenseLayer(n, 1000, act=None, name='output')   # equal
-        n = ReshapeLayer([-1, 1, 1, 1024])(n)
+        # n = Dropout(n, 1-1e-3, True, is_train, name='drop')
+        # n = Dense(n, 1000, act=None, name='output')   # equal
+        n = Reshape([-1, 1, 1, 1024])(n)
         n = Conv2d(1000, (1, 1), (1, 1), name='out')(n)
-        n = FlattenLayer()(n)
+        n = Flatten()(n)
     return n
 
 

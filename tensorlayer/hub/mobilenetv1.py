@@ -15,8 +15,8 @@ from tensorlayer.layers import Conv2d
 from tensorlayer.layers import DepthwiseConv2d
 from tensorlayer.layers import FlattenLayer
 from tensorlayer.layers import GlobalMeanPool2d
-from tensorlayer.layers import InputLayer
-from tensorlayer.layers import ReshapeLayer
+from tensorlayer.layers import Input
+from tensorlayer.layers import Reshape
 
 from tensorlayer.files import maybe_download_and_extract, assign_params, load_npz
 
@@ -59,7 +59,7 @@ class MobileNetV1(Layer):
     >>> cnn = tl.models.MobileNetV1(x, end_with='reshape')
     >>> # add one more layer
     >>> net = Conv2d(cnn, 100, (1, 1), (1, 1), name='out')
-    >>> net = FlattenLayer(net, name='flatten')
+    >>> net = Flatten(net, name='flatten')
     >>> # initialize all parameters
     >>> sess = tf.InteractiveSession()
     >>> tl.layers.initialize_global_variables(sess)
@@ -97,7 +97,7 @@ class MobileNetV1(Layer):
     # @classmethod
     def mobilenetv1(self, x, end_with='out', is_train=False, reuse=None):
         with tf.variable_scope("mobilenetv1", reuse=reuse):
-            n = InputLayer(x)
+            n = Input(x)
             n = self.conv_block(n, 32, strides=(2, 2), is_train=is_train, name="conv")
             if end_with in n.outputs.name:
                 return n
@@ -148,13 +148,13 @@ class MobileNetV1(Layer):
             n = GlobalMeanPool2d(n, name='globalmeanpool')
             if end_with in n.outputs.name:
                 return n
-            # n = DropoutLayer(n, 1-1e-3, True, is_train, name='drop')
-            # n = DenseLayer(n, 1000, name='output')   # equal
-            n = ReshapeLayer(n, [-1, 1, 1, 1024], name='reshape')
+            # n = Dropout(n, 1-1e-3, True, is_train, name='drop')
+            # n = Dense(n, 1000, name='output')   # equal
+            n = Reshape(n, [-1, 1, 1, 1024], name='reshape')
             if end_with in n.outputs.name:
                 return n
             n = Conv2d(n, 1000, (1, 1), (1, 1), name='out')
-            n = FlattenLayer(n, name='flatten')
+            n = Flatten(n, name='flatten')
             if end_with == 'out':
                 return n
 
@@ -165,16 +165,16 @@ class MobileNetV1(Layer):
         # ref: https://github.com/keras-team/keras/blob/master/keras/applications/mobilenet.py
         with tf.variable_scope(name):
             n = Conv2d(n, n_filter, filter_size, strides, b_init=None, name='conv')
-            n = BatchNormLayer(n, decay=0.99, act=tf.nn.relu6, is_train=is_train, name='batchnorm')
+            n = BatchNorm(n, decay=0.99, act=tf.nn.relu6, is_train=is_train, name='batchnorm')
         return n
 
     @classmethod
     def depthwise_conv_block(cls, n, n_filter, strides=(1, 1), is_train=False, name="depth_block"):
         with tf.variable_scope(name):
             n = DepthwiseConv2d(n, (3, 3), strides, b_init=None, name='depthwise')
-            n = BatchNormLayer(n, decay=0.99, act=tf.nn.relu6, is_train=is_train, name='batchnorm1')
+            n = BatchNorm(n, decay=0.99, act=tf.nn.relu6, is_train=is_train, name='batchnorm1')
             n = Conv2d(n, n_filter, (1, 1), (1, 1), b_init=None, name='conv')
-            n = BatchNormLayer(n, decay=0.99, act=tf.nn.relu6, is_train=is_train, name='batchnorm2')
+            n = BatchNorm(n, decay=0.99, act=tf.nn.relu6, is_train=is_train, name='batchnorm2')
         return n
 
     def restore_params(self, sess, path='models'):

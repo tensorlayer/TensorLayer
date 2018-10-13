@@ -18,10 +18,10 @@ class Layer_Shape_Test(CustomTestCase):
     def setUpClass(cls):
 
         x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
-        net = tl.layers.InputLayer(name='input')(x)
+        net = tl.layers.Input(name='input')(x)
 
         ## Flatten
-        net1 = tl.layers.FlattenLayer(name='flatten')(net)
+        net1 = tl.layers.Flatten(name='flatten')(net)
 
         net1.print_layers()
         net1.print_weights(False)
@@ -32,7 +32,7 @@ class Layer_Shape_Test(CustomTestCase):
         cls.net1_n_weights = net1.count_weights()
 
         ## Reshape
-        net2 = tl.layers.ReshapeLayer(shape=(-1, 28, 28, 1), name='reshape')(net1)
+        net2 = tl.layers.Reshape(shape=(-1, 28, 28, 1), name='reshape')(net1)
 
         net2.print_layers()
         net2.print_weights(False)
@@ -43,7 +43,7 @@ class Layer_Shape_Test(CustomTestCase):
         cls.net2_n_weights = net2.count_weights()
 
         ## TransposeLayer
-        net3 = tl.layers.TransposeLayer(perm=[0, 1, 3, 2], name='trans')(net2)
+        net3 = tl.layers.Transpose(perm=[0, 1, 3, 2], name='trans')(net2)
 
         net3.print_layers()
         net3.print_weights(False)

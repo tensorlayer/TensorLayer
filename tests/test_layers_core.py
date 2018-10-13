@@ -29,11 +29,11 @@ class Layer_Core_Test(CustomTestCase):
 
         cls.batch_size = 8
 
-        # ============== DenseLayer ==============
+        # ============== Dense ==============
 
         x1 = tf.placeholder(tf.float32, shape=[None, 30])
-        net1 = tl.layers.InputLayer(name='input')(x1)
-        net1 = tl.layers.DenseLayer(n_units=10, name='dense')(net1)
+        net1 = tl.layers.Input(name='input')(x1)
+        net1 = tl.layers.Dense(n_units=10, name='dense')(net1)
 
         net1.print_layers()
         net1.print_weights(False)
@@ -43,10 +43,10 @@ class Layer_Core_Test(CustomTestCase):
         cls.net1_weights = net1.all_weights
         cls.net1_n_weights = net1.count_weights()
 
-        # ============== OneHotInputLayer ==============
+        # ============== OneHotInput ==============
 
         x2 = tf.placeholder(tf.int32, shape=[None])
-        net2 = tl.layers.OneHotInputLayer(x2, depth=8, name='onehot')
+        net2 = tl.layers.OneHotInput(x2, depth=8, name='onehot')
 
         net2.print_layers()
         net2.print_weights(False)
@@ -56,11 +56,11 @@ class Layer_Core_Test(CustomTestCase):
         cls.net2_weights = net2.all_weights
         cls.net2_n_weights = net2.count_weights()
 
-        # ============== Word2vecEmbeddingInputlayer ==============
+        # ============== Word2vecEmbeddingInput ==============
 
         train_inputs = tf.placeholder(tf.int32, shape=cls.batch_size)
         train_labels = tf.placeholder(tf.int32, shape=(cls.batch_size, 1))
-        net3 = tl.layers.Word2vecEmbeddingInputlayer(
+        net3 = tl.layers.Word2vecEmbeddingInput(
             train_labels=train_labels, vocabulary_size=1000, embedding_size=200, num_sampled=64, name='word2vec'
         )(train_inputs)
 
@@ -72,10 +72,10 @@ class Layer_Core_Test(CustomTestCase):
         cls.net3_weights = net3.all_weights
         cls.net3_n_weights = net3.count_weights()
 
-        # ============== EmbeddingInputlayer ==============
+        # ============== EmbeddingInput ==============
 
         x4 = tf.placeholder(tf.int32, shape=(cls.batch_size, ))
-        net4 = tl.layers.EmbeddingInputlayer(vocabulary_size=1000, embedding_size=50, name='embed')(x4)
+        net4 = tl.layers.EmbeddingInput(vocabulary_size=1000, embedding_size=50, name='embed')(x4)
 
         net4.print_layers()
         net4.print_weights(False)
@@ -85,11 +85,11 @@ class Layer_Core_Test(CustomTestCase):
         cls.net4_weights = net4.all_weights
         cls.net4_n_weights = net4.count_weights()
 
-        # ============== AverageEmbeddingInputlayer ==============
+        # ============== AverageEmbeddingInput ==============
 
         length = 5
         x5 = tf.placeholder(tf.int32, shape=(cls.batch_size, length))
-        net5 = tl.layers.AverageEmbeddingInputlayer(vocabulary_size=1000, embedding_size=50, name='avg')(x5)
+        net5 = tl.layers.AverageEmbeddingInput(vocabulary_size=1000, embedding_size=50, name='avg')(x5)
 
         net5.print_layers()
         net5.print_weights(False)
@@ -102,8 +102,8 @@ class Layer_Core_Test(CustomTestCase):
         # ============== ReconLayer ==============
 
         x6 = tf.placeholder(tf.float32, shape=(None, 784))
-        net6 = tl.layers.InputLayer(name='input')(x6)
-        net6 = tl.layers.DenseLayer(n_units=196, act=tf.nn.sigmoid, name='dense2')(net6)
+        net6 = tl.layers.Input(name='input')(x6)
+        net6 = tl.layers.Dense(n_units=196, act=tf.nn.sigmoid, name='dense2')(net6)
         net6 = tl.layers.ReconLayer(x_recon=x6, n_units=784, act=tf.nn.sigmoid, name='recon')(net6)
 
         # sess = tf.InteractiveSession()
@@ -122,9 +122,9 @@ class Layer_Core_Test(CustomTestCase):
         # ============== GaussianNoiseLayer ==============
 
         x7 = tf.placeholder(tf.float32, shape=(64, 784))
-        net7 = tl.layers.InputLayer(name='input')(x7)
-        net7 = tl.layers.DenseLayer(n_units=100, act=tf.nn.relu, name='dense3')(net7)
-        net7 = tl.layers.GaussianNoiseLayer(name='gaussian')(net7)
+        net7 = tl.layers.Input(name='input')(x7)
+        net7 = tl.layers.Dense(n_units=100, act=tf.nn.relu, name='dense3')(net7)
+        net7 = tl.layers.GaussianNoise(name='gaussian')(net7)
 
         net7.print_layers()
         net7.print_weights(False)
@@ -134,12 +134,12 @@ class Layer_Core_Test(CustomTestCase):
         cls.net7_weights = net7.all_weights
         cls.net7_n_weights = net7.count_weights()
 
-        # ============== DropconnectDenseLayer ==============
+        # ============== DropconnectDense ==============
 
         x8 = tf.placeholder(tf.float32, shape=(64, 784))
-        net8 = tl.layers.InputLayer(name='input')(x8)
-        net8 = tl.layers.DenseLayer(n_units=100, act=tf.nn.relu, name='dense4')(net8)
-        net8 = tl.layers.DropconnectDenseLayer(keep=0.8, name='dropconnect')(net8)
+        net8 = tl.layers.Input(name='input')(x8)
+        net8 = tl.layers.Dense(n_units=100, act=tf.nn.relu, name='dense4')(net8)
+        net8 = tl.layers.DropconnectDense(keep=0.8, name='dropconnect')(net8)
 
         net8.print_layers()
         net8.print_weights(False)
@@ -152,7 +152,7 @@ class Layer_Core_Test(CustomTestCase):
         # ============== QuantizedDense ==============
 
         x9 = tf.placeholder(tf.float32, shape=(None, 30))
-        net9 = tl.layers.InputLayer(name='input')(x9)
+        net9 = tl.layers.Input(name='input')(x9)
         net9 = tl.layers.QuantizedDense(n_units=10, act=tf.nn.relu, name='quandense')(net9)
 
         net9.print_layers()

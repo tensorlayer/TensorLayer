@@ -7,7 +7,7 @@ import time
 import multiprocessing
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import InputLayer, Conv2d, BatchNormLayer, MaxPool2d, FlattenLayer, DenseLayer
+from tensorlayer.layers import Input, Conv2d, BatchNormLayer, MaxPool2d, FlattenLayer, Dense
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -27,19 +27,19 @@ def model_batch_norm(x_crop, y_, is_train, reuse):
     W_init2 = tf.truncated_normal_initializer(stddev=0.04)
     b_init2 = tf.constant_initializer(value=0.1)
     with tf.variable_scope("model", reuse=reuse):
-        net = InputLayer(name='input')(x_crop)
+        net = Input(name='input')(x_crop)
         net = Conv2d(64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn1')(net)
-        net = BatchNormLayer(decay=0.99, act=tf.nn.relu, name='batch1')(net, is_train=is_train)
+        net = BatchNorm(decay=0.99, act=tf.nn.relu, name='batch1')(net, is_train=is_train)
         net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(net)
 
         net = Conv2d(64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn2')(net)
-        net = BatchNormLayer(decay=0.99, act=tf.nn.relu, name='batch2')(net, is_train=is_train)
+        net = BatchNorm(decay=0.99, act=tf.nn.relu, name='batch2')(net, is_train=is_train)
         net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(net)
 
-        net = FlattenLayer(name='flatten')
-        net = DenseLayer(384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')(net)
-        net = DenseLayer(192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')(net)
-        net = DenseLayer(n_units=10, act=None, W_init=W_init2, name='output')(net)
+        net = Flatten(name='flatten')
+        net = Dense(384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')(net)
+        net = Dense(192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')(net)
+        net = Dense(n_units=10, act=None, W_init=W_init2, name='output')(net)
         y = net.outputs
 
         ce = tl.cost.cross_entropy(y, y_, name='cost')

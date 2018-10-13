@@ -19,17 +19,17 @@ class Layer_Stack_Test(CustomTestCase):
 
         x = tf.placeholder(tf.float16, shape=[100, 30])
 
-        cls.net_in = tl.layers.InputLayer(name='input')(x)
+        cls.net_in = tl.layers.Input(name='input')(x)
 
-        cls.net_drop = tl.layers.DropoutLayer(keep=0.5, name='dropout')(cls.net_in, is_train=True)
+        cls.net_drop = tl.layers.Dropout(keep=0.5, name='dropout')(cls.net_in, is_train=True)
 
-        cls.net_d1 = tl.layers.DenseLayer(n_units=10, name='dense1')(cls.net_drop)
-        cls.net_d2 = tl.layers.DenseLayer(n_units=10, name='dense2')(cls.net_drop)
-        cls.net_d3 = tl.layers.DenseLayer(n_units=10, name='dense3')(cls.net_drop)
+        cls.net_d1 = tl.layers.Dense(n_units=10, name='dense1')(cls.net_drop)
+        cls.net_d2 = tl.layers.Dense(n_units=10, name='dense2')(cls.net_drop)
+        cls.net_d3 = tl.layers.Dense(n_units=10, name='dense3')(cls.net_drop)
 
-        cls.net_stack = tl.layers.StackLayer(axis=1, name='stack')([cls.net_d1, cls.net_d2, cls.net_d3])
+        cls.net_stack = tl.layers.Stack(axis=1, name='stack')([cls.net_d1, cls.net_d2, cls.net_d3])
 
-        cls.net_unstack = tl.layers.UnStackLayer(axis=1, name='unstack')(cls.net_stack)
+        cls.net_unstack = tl.layers.UnStack(axis=1, name='unstack')(cls.net_stack)
 
         cls.net_unstacked_d1 = cls.net_unstack.outputs[0]
 
