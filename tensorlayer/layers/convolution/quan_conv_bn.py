@@ -278,10 +278,10 @@ class QuantizedConv2dWithBN(Layer):
             else:
                 mean, var = moving_mean, moving_variance
 
-            _w_fold = w_fold(weight_matrix, scale_para, var, self.epsilon)
-            _bias_fold = bias_fold(offset_para, scale_para, mean, var, self.epsilon)
+            w_fold_ = w_fold(weight_matrix, scale_para, var, self.epsilon)
+            bias_fold_ = bias_fold(offset_para, scale_para, mean, var, self.epsilon)
 
-            weight_matrix = quantize_weight_overflow(_w_fold, self.bitW)
+            weight_matrix = quantize_weight_overflow(w_fold_, self.bitW)
 
             conv_fold_out = tf.nn.conv2d(
                 quantized_inputs,
@@ -292,6 +292,6 @@ class QuantizedConv2dWithBN(Layer):
                 data_format=self.data_format
             )
 
-            self._temp_data['outputs'] = tf.nn.bias_add(conv_fold_out, _bias_fold, name='bn_bias_add')
+            self._temp_data['outputs'] = tf.nn.bias_add(conv_fold_out, bias_fold_, name='bn_bias_add')
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
