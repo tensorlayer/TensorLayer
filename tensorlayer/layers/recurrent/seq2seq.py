@@ -12,6 +12,7 @@ from tensorlayer import logging
 
 from tensorlayer.decorators.utils import get_network_obj
 
+__all__ = ['Seq2Seq']
 
 class Seq2Seq(Layer):
     """

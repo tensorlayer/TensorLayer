@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
-from tensorlayer.layers.inputs import InputLayer
+from tensorlayer.layers.inputs import Input
 
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
@@ -40,7 +40,7 @@ class TimeDistributed(Layer):
     >>> input_dim = 100
     >>> x = tf.placeholder(dtype=tf.float32, shape=[batch_size, timestep, input_dim], name="encode_seqs")
     >>> net = tl.layers.Input(name='input')(x)
-    [TL] InputLayer  input: (32, 20, 100)
+    [TL] Input  input: (32, 20, 100)
     >>> net = tl.layers.TimeDistributed(layer_class=tl.layers.DenseLayer, args={'n_units':50, 'name':'dense'}, name='time_dense')(net)
     [TL] TimeDistributed time_dense: layer_class:DenseLayer
     >>> print(net.outputs._shape)
@@ -100,7 +100,7 @@ class TimeDistributed(Layer):
             reuse = is_name_reuse if i == 0 else True
             with tf.variable_scope(self.name, reuse=reuse) as vs:
 
-                in_layer = InputLayer(x[i], name=self.layer_args['name'] + str(i))
+                in_layer = Input(x[i], name=self.layer_args['name'] + str(i))
 
                 net = self.layer_class(in_layer, **self.layer_args)
                 x[i] = net.outputs

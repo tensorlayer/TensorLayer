@@ -116,6 +116,8 @@ def OneHotInputLayer(*args, **kwargs):
     raise Exception("OneHotInputLayer(x, name='a') --> OneHotInput(name='a')(x)")
 def Word2vecEmbeddingInputlayer(*args, **kwargs):
     raise Exception("Word2vecEmbeddingInputlayer(x, name='a') --> Word2vecEmbeddingInput(name='a')(x)")
+def EmbeddingInputlayer(*args, **kwargs):
+    raise Exception("EmbeddingInputlayer(x, name='a') --> EmbeddingInput(name='a')(x)")
 def AverageEmbeddingInputlayer(*args, **kwargs):
     raise Exception("AverageEmbeddingInputlayer(x, name='a') --> AverageEmbeddingInput(name='a')(x)")
 
@@ -200,7 +202,7 @@ __all__ += [
 def RNNLayer(*args, **kwargs):
     raise Exception("RNNLayer(x, name='a') --> RNN(name='a')(x)")
 def BiRNNLayer(*args, **kwargs):
-    raise Exception("BiRNNLayer(x, is_train=True, name='a') --> BiRNNLayer(name='a')(x, is_train=True)")
+    raise Exception("BiRNNLayer(x, is_train=True, name='a') --> BiRNN(name='a')(x, is_train=True)")
 
 ## reshape.py
 __all__ += [
