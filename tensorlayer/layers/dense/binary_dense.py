@@ -13,12 +13,12 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'BinaryDenseLayer',
+    'BinaryDense',
 ]
 
 
-class BinaryDenseLayer(Layer):
-    """The :class:`BinaryDenseLayer` class is a binary fully connected layer, which weights are either -1 or 1 while inferencing.
+class BinaryDense(Layer):
+    """The :class:`BinaryDense` class is a binary fully connected layer, which weights are either -1 or 1 while inferencing.
 
     Note that, the bias vector would not be binarized.
 
@@ -64,7 +64,7 @@ class BinaryDenseLayer(Layer):
         self.b_init = b_init
         self.name = name
 
-        super(BinaryDenseLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+        super(BinaryDense, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
 
     def __str__(self):
         additional_str = []

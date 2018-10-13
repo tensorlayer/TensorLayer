@@ -14,12 +14,12 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'TernaryDenseLayer',
+    'TernaryDense',
 ]
 
 
-class TernaryDenseLayer(Layer):
-    """The :class:`TernaryDenseLayer` class is a ternary fully connected layer, which weights are either -1 or 1 or 0 while inference.
+class TernaryDense(Layer):
+    """The :class:`TernaryDense` class is a ternary fully connected layer, which weights are either -1 or 1 or 0 while inference.
 
     Note that, the bias vector would not be tenaried.
 
@@ -66,7 +66,7 @@ class TernaryDenseLayer(Layer):
         self.b_init = b_init
         self.name = name
 
-        super(TernaryDenseLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+        super(TernaryDense, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
 
     def __str__(self):
         additional_str = []

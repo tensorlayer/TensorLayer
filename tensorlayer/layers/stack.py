@@ -9,14 +9,14 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'StackLayer',
-    'UnStackLayer',
+    'Stack',
+    'UnStack',
 ]
 
 
-class StackLayer(Layer):
+class Stack(Layer):
     """
-    The :class:`StackLayer` class is a layer for stacking a list of rank-R tensors into one rank-(R+1) tensor, see `tf.stack() <https://www.tensorflow.org/api_docs/python/tf/stack>`__.
+    The :class:`Stack` class is a layer for stacking a list of rank-R tensors into one rank-(R+1) tensor, see `tf.stack() <https://www.tensorflow.org/api_docs/python/tf/stack>`__.
 
     Parameters
     ----------
@@ -32,11 +32,11 @@ class StackLayer(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=[None, 30])
-    >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net1 = tl.layers.DenseLayer(net, 10, name='dense1')
-    >>> net2 = tl.layers.DenseLayer(net, 10, name='dense2')
-    >>> net3 = tl.layers.DenseLayer(net, 10, name='dense3')
-    >>> net = tl.layers.StackLayer([net1, net2, net3], axis=1, name='stack')
+    >>> net = tl.layers.Input(name='input')(x)
+    >>> net1 = tl.layers.Dense(10, name='dense1')(net)
+    >>> net2 = tl.layers.Dense(10, name='dense2')(net)
+    >>> net3 = tl.layers.Dense(10, name='dense3')(net)
+    >>> net = tl.layers.Stack(axis=1, name='stack')([net1, net2, net3])
     (?, 3, 10)
 
     """
@@ -50,7 +50,7 @@ class StackLayer(Layer):
         self.axis = axis
         self.name = name
 
-        super(StackLayer, self).__init__()
+        super(Stack, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -66,9 +66,9 @@ class StackLayer(Layer):
         self._temp_data['outputs'] = tf.stack(self._temp_data['inputs'], axis=self.axis, name=self.name)
 
 
-class UnStackLayer(Layer):
+class UnStack(Layer):
     """
-    The :class:`UnStackLayer` class is a layer for unstacking the given dimension of a rank-R tensor into rank-(R-1) tensors., see `tf.unstack() <https://www.tensorflow.org/api_docs/python/tf/unstack>`__.
+    The :class:`UnStack` class is a layer for unstacking the given dimension of a rank-R tensor into rank-(R-1) tensors., see `tf.unstack() <https://www.tensorflow.org/api_docs/python/tf/unstack>`__.
 
     Parameters
     ----------
@@ -92,7 +92,7 @@ class UnStackLayer(Layer):
         self.axis = axis
         self.name = name
 
-        super(UnStackLayer, self).__init__()
+        super(UnStack, self).__init__()
 
     def __str__(self):
         additional_str = []

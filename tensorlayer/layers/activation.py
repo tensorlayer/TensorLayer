@@ -12,15 +12,15 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'PReluLayer',
-    'PRelu6Layer',
-    'PTRelu6Layer',
+    'PRelu',
+    'PRelu6',
+    'PTRelu6',
 ]
 
 
-class PReluLayer(Layer):
+class PRelu(Layer):
     """
-    The :class:`PReluLayer` class is Parametric Rectified Linear layer.
+    The :class:`PRelu` class is Parametric Rectified Linear layer.
 
     Parameters
     ----------
@@ -45,7 +45,7 @@ class PReluLayer(Layer):
         channel_shared=False,
         a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
         a_init_args=None,
-        name="PReluLayer"
+        name="prelu"
     ):
 
         self.channel_shared = channel_shared
@@ -53,7 +53,7 @@ class PReluLayer(Layer):
         self.act = tf.nn.leaky_relu
         self.name = name
 
-        super(PReluLayer, self).__init__(a_init_args=a_init_args)
+        super(PRelu, self).__init__(a_init_args=a_init_args)
 
     def __str__(self):
         additional_str = []
@@ -92,11 +92,11 @@ class PReluLayer(Layer):
         )
 
 
-class PRelu6Layer(Layer):
+class PRelu6(Layer):
     """
-    The :class:`PRelu6Layer` class is Parametric Rectified Linear layer integrating ReLU6 behaviour.
+    The :class:`PRelu6` class is Parametric Rectified Linear layer integrating ReLU6 behaviour.
 
-    This Layer is a modified version of the :class:`PReluLayer`.
+    This Layer is a modified version of the :class:`PRelu`.
 
     This activation layer use a modified version :func:`tl.act.leaky_relu` introduced by the following paper:
     `Rectifier Nonlinearities Improve Neural Network Acoustic Models [A. L. Maas et al., 2013] <https://ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf>`__
@@ -135,7 +135,7 @@ class PRelu6Layer(Layer):
         channel_shared=False,
         a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
         a_init_args=None,
-        name="PReLU6_layer"
+        name="prelu6"
     ):
 
         self.channel_shared = channel_shared
@@ -143,7 +143,7 @@ class PRelu6Layer(Layer):
         self.act = leaky_relu6
         self.name = name
 
-        super(PRelu6Layer, self).__init__(a_init_args=a_init_args)
+        super(PRelu6, self).__init__(a_init_args=a_init_args)
 
     def __str__(self):
         additional_str = []
@@ -182,11 +182,11 @@ class PRelu6Layer(Layer):
         )
 
 
-class PTRelu6Layer(Layer):
+class PTRelu6(Layer):
     """
-    The :class:`PTRelu6Layer` class is Parametric Rectified Linear layer integrating ReLU6 behaviour.
+    The :class:`PTRelu6` class is Parametric Rectified Linear layer integrating ReLU6 behaviour.
 
-    This Layer is a modified version of the :class:`PReluLayer`.
+    This layer is a modified version of the :class:`PRelu`.
 
     This activation layer use a modified version :func:`tl.act.leaky_relu` introduced by the following paper:
     `Rectifier Nonlinearities Improve Neural Network Acoustic Models [A. L. Maas et al., 2013] <https://ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf>`__
@@ -201,7 +201,7 @@ class PTRelu6Layer(Layer):
       - When x in [0, 6]: ``f(x) = x``.
       - When x > 6: ``f(x) = 6 + (alpha_high * (x-6))``.
 
-    This version goes one step beyond :class:`PRelu6Layer` by introducing leaky behaviour on the positive side when x > 6.
+    This version goes one step beyond :class:`PRelu6` by introducing leaky behaviour on the positive side when x > 6.
 
     Parameters
     ----------
@@ -227,7 +227,7 @@ class PTRelu6Layer(Layer):
         channel_shared=False,
         a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
         a_init_args=None,
-        name="PTReLU6_layer"
+        name="ptrelu6"
     ):
 
         self.channel_shared = channel_shared
@@ -235,7 +235,7 @@ class PTRelu6Layer(Layer):
         self.act = leaky_twice_relu6
         self.name = name
 
-        super(PTRelu6Layer, self).__init__(a_init_args=a_init_args)
+        super(PTRelu6, self).__init__(a_init_args=a_init_args)
 
     def __str__(self):
         additional_str = []

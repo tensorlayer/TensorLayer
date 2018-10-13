@@ -11,12 +11,12 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'SignLayer',
+    'Sign',
 ]
 
 
-class SignLayer(Layer):
-    """The :class:`SignLayer` class is for quantizing the layer outputs to -1 or 1 while inferencing.
+class Sign(Layer):
+    """The :class:`Sign` class is for quantizing the layer outputs to -1 or 1 while inferencing.
 
     Parameters
     ----------
@@ -32,7 +32,7 @@ class SignLayer(Layer):
 
         self.name = name
 
-        super(SignLayer, self).__init__()
+        super(Sign, self).__init__()
 
     def build(self):
 

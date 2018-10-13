@@ -8,17 +8,17 @@ from tensorlayer.layers.core import Layer
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'InputLayer',
-    'OneHotInputLayer',
-    'Word2vecEmbeddingInputlayer',
-    'EmbeddingInputlayer',
-    'AverageEmbeddingInputlayer',
+    'Input',
+    'OneHotInput',
+    'Word2vecEmbeddingInput',
+    'EmbeddingInput',
+    'AverageEmbeddingInput',
 ]
 
 
-class InputLayer(Layer):
+class Input(Layer):
     """
-    The :class:`InputLayer` class is the starting layer of a neural network.
+    The :class:`Input` class is the starting layer of a neural network.
 
     Parameters
     ----------
@@ -31,7 +31,7 @@ class InputLayer(Layer):
 
         self.name = name
 
-        super(InputLayer, self).__init__()
+        super(Input, self).__init__()
 
     def __str__(self):
 
@@ -49,9 +49,9 @@ class InputLayer(Layer):
         self._temp_data['outputs'] = self._temp_data['inputs']
 
 
-class OneHotInputLayer(Layer):
+class OneHotInput(Layer):
     """
-    The :class:`OneHotInputLayer` class is the starting layer of a neural network, see ``tf.one_hot``.
+    The :class:`OneHotInput` class is the starting layer of a neural network, see ``tf.one_hot``.
 
     Parameters
     ----------
@@ -73,7 +73,7 @@ class OneHotInputLayer(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.int32, shape=[None])
-    >>> net = tl.layers.OneHotInputLayer(x, depth=8, name='one_hot_encoding')
+    >>> net = tl.layers.OneHotInput(depth=8, name='one_hot')(x)
     (?, 8)
 
     """
@@ -91,7 +91,7 @@ class OneHotInputLayer(Layer):
         self.output_dtype = output_dtype
         self.name = name
 
-        super(OneHotInputLayer, self).__init__()
+        super(OneHotInput, self).__init__()
 
     def __str__(self):
         additional_str = []
@@ -120,9 +120,9 @@ class OneHotInputLayer(Layer):
         )
 
 
-class Word2vecEmbeddingInputlayer(Layer):
+class Word2vecEmbeddingInput(Layer):
     """
-    The :class:`Word2vecEmbeddingInputlayer` class is a fully connected layer.
+    The :class:`Word2vecEmbeddingInput` class is a fully connected layer.
     For Word Embedding, words are input as integer index.
     The output is the embedded word vector.
 
@@ -169,9 +169,9 @@ class Word2vecEmbeddingInputlayer(Layer):
     >>> batch_size = 8
     >>> train_inputs = tf.placeholder(tf.int32, shape=(batch_size))
     >>> train_labels = tf.placeholder(tf.int32, shape=(batch_size, 1))
-    >>> net = tl.layers.Word2vecEmbeddingInputlayer(inputs=train_inputs,
+    >>> net = tl.layers.Word2vecEmbeddingInput(
     ...     train_labels=train_labels, vocabulary_size=1000, embedding_size=200,
-    ...     num_sampled=64, name='word2vec')
+    ...     num_sampled=64, name='word2vec')(train_inputs)
     (8, 200)
     >>> cost = net.nce_cost
     >>> train_params = net.all_weights
@@ -230,7 +230,7 @@ class Word2vecEmbeddingInputlayer(Layer):
         self.embeddings_dtype = embeddings_dtype
         self.name = name
 
-        super(Word2vecEmbeddingInputlayer, self).__init__(
+        super(Word2vecEmbeddingInput, self).__init__(
             nce_W_init_args=nce_W_init_args,
             nce_b_init_args=nce_b_init_args,
             nce_loss_args=nce_loss_args,
@@ -261,7 +261,7 @@ class Word2vecEmbeddingInputlayer(Layer):
         is_train: boolean (default: True)
             Set the TF Variable in training mode and may impact the behaviour of the layer.
         """
-        return super(Word2vecEmbeddingInputlayer, self).__call__(
+        return super(Word2vecEmbeddingInput, self).__call__(
             prev_layer=[prev_layer, train_labels], is_train=is_train
         )
 
@@ -329,12 +329,12 @@ class Word2vecEmbeddingInputlayer(Layer):
             self._temp_data['normalized_embeddings'] = tf.nn.l2_normalize(embeddings, 1)
 
 
-class EmbeddingInputlayer(Layer):
+class EmbeddingInput(Layer):
     """
-    The :class:`EmbeddingInputlayer` class is a look-up table for word embedding.
+    The :class:`EmbeddingInput` class is a look-up table for word embedding.
 
     Word content are accessed using integer indexes, then the output is the embedded word vector.
-    To train a word embedding matrix, you can used :class:`Word2vecEmbeddingInputlayer`.
+    To train a word embedding matrix, you can used :class:`Word2vecEmbeddingInput`.
     If you have a pre-trained matrix, you can assign the parameters into it.
 
     Parameters
@@ -361,7 +361,7 @@ class EmbeddingInputlayer(Layer):
     >>> import tensorlayer as tl
     >>> batch_size = 8
     >>> x = tf.placeholder(tf.int32, shape=(batch_size, ))
-    >>> net = tl.layers.EmbeddingInputlayer(inputs=x, vocabulary_size=1000, embedding_size=50, dtype=tf.float32, name='embed')
+    >>> net = tl.layers.EmbeddingInput(vocabulary_size=1000, embedding_size=50, dtype=tf.float32, name='embed')(x)
     (8, 50)
     """
 
@@ -388,7 +388,7 @@ class EmbeddingInputlayer(Layer):
         self.name = name if not self.reuse_variable_scope else name + "_1"  # TODO: Test if "_1" already exists
         self.vs_name = name
 
-        super(EmbeddingInputlayer, self).__init__(E_init_args=E_init_args)
+        super(EmbeddingInput, self).__init__(E_init_args=E_init_args)
 
     def __str__(self):
         additional_str = []
@@ -436,8 +436,8 @@ class EmbeddingInputlayer(Layer):
             )
 
 
-class AverageEmbeddingInputlayer(Layer):
-    """The :class:`AverageEmbeddingInputlayer` averages over embeddings of inputs.
+class AverageEmbeddingInput(Layer):
+    """The :class:`AverageEmbeddingInput` averages over embeddings of inputs.
     This is often used as the input layer for models like DAN[1] and FastText[2].
 
     Parameters
@@ -467,7 +467,7 @@ class AverageEmbeddingInputlayer(Layer):
     >>> batch_size = 8
     >>> length = 5
     >>> x = tf.placeholder(tf.int32, shape=(batch_size, length))
-    >>> net = tl.layers.AverageEmbeddingInputlayer(x, vocabulary_size=1000, embedding_size=50, name='avg')
+    >>> net = tl.layers.AverageEmbeddingInput(vocabulary_size=1000, embedding_size=50, name='avg')(x)
     (8, 50)
 
     """
@@ -492,7 +492,7 @@ class AverageEmbeddingInputlayer(Layer):
         self.embeddings_dtype = embeddings_dtype
         self.name = name
 
-        super(AverageEmbeddingInputlayer, self).__init__(embeddings_kwargs=embeddings_kwargs)
+        super(AverageEmbeddingInput, self).__init__(embeddings_kwargs=embeddings_kwargs)
 
     def __str__(self):
         additional_str = []

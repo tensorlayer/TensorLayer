@@ -9,12 +9,12 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import deprecated_args
 
 __all__ = [
-    'DenseLayer',
+    'Dense',
 ]
 
 
-class DenseLayer(Layer):
-    """The :class:`DenseLayer` class is a fully connected layer.
+class Dense(Layer):
+    """The :class:`Dense` class is a fully connected layer.
 
     Parameters
     ----------
@@ -37,8 +37,8 @@ class DenseLayer(Layer):
     --------
     With TensorLayer
 
-    >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.DenseLayer(net, 800, act=tf.nn.relu, name='relu')
+    >>> net = tl.layers.Input(name='input')(x)
+    >>> net = tl.layers.Dense(800, act=tf.nn.relu, name='relu')(net)
 
     Without native TensorLayer APIs, you can do as follow.
 
@@ -70,7 +70,7 @@ class DenseLayer(Layer):
         self.b_init = b_init
         self.name = name
 
-        super(DenseLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+        super(Dense, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
 
     def __str__(self):
         additional_str = []
