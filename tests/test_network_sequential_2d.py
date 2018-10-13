@@ -58,11 +58,6 @@ class Network_Sequential_2D_Test(CustomTestCase):
             cls.model.add(tl.layers.ZeroPad2d(padding=((3, 3), (4, 4)), name='zeropad2d_layer_3-3'))
             cls.model.add(tl.layers.ScaleLayer(init_scale=2., name='scale_layer_3'))
 
-            # cls.model.add(
-            #     tl.layers.AtrousConv2dLayer(
-            #         n_filter=32, filter_size=(3, 3), rate=2, padding='SAME', act=tf.nn.relu, name='atrous_2d_layer_4'
-            #     )
-            # )
             cls.model.add(
                 tl.layers.Conv2d(
                     n_filter=32,
@@ -74,17 +69,6 @@ class Network_Sequential_2D_Test(CustomTestCase):
                 )
             )
 
-            # cls.model.add(
-            #     tl.layers.AtrousConv2dLayer(
-            #         n_filter=32,
-            #         filter_size=(3, 3),
-            #         rate=2,
-            #         padding='SAME',
-            #         b_init=None,
-            #         act=tf.nn.relu,
-            #         name='atrous_2d_layer_5'
-            #     )
-            # )
             cls.model.add(
                 tl.layers.Conv2d(
                     n_filter=32,
