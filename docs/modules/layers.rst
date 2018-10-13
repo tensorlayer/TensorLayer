@@ -386,12 +386,8 @@ PTReLU6 Layer
 Convolutional Layers
 ---------------------
 
-Simplified Convolutions
+Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-For users don't familiar with TensorFlow, the following simplified functions may easier for you.
-We will provide more simplified functions later, but if you are good at TensorFlow, the professional
-APIs may better for you.
 
 Conv1d
 """""""""""""""""""""
@@ -402,12 +398,8 @@ Conv2d
 .. autoclass:: Conv2d
 
 
-Simplified Deconvolutions
+Deconvolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-For users don't familiar with TensorFlow, the following simplified functions may easier for you.
-We will provide more simplified functions later, but if you are good at TensorFlow, the professional
-APIs may better for you.
 
 DeConv2d
 """""""""""""""""""""
