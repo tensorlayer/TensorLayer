@@ -18,40 +18,40 @@ class Layer_Shape_Test(CustomTestCase):
     def setUpClass(cls):
 
         x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
-        net = tl.layers.InputLayer(x, name='input')
+        net = tl.layers.InputLayer(name='input')(x)
 
         ## Flatten
-        net1 = tl.layers.FlattenLayer(net, name='flatten')
+        net1 = tl.layers.FlattenLayer(name='flatten')(net)
 
         net1.print_layers()
-        net1.print_params(False)
+        net1.print_weights(False)
 
         cls.net1_shape = net1.outputs.get_shape().as_list()
         cls.net1_layers = net1.all_layers
-        cls.net1_params = net1.all_weights
-        cls.net1_n_params = net1.count_weights()
+        cls.net1_weights = net1.all_weights
+        cls.net1_n_weights = net1.count_weights()
 
         ## Reshape
-        net2 = tl.layers.ReshapeLayer(net1, shape=(-1, 28, 28, 1), name='reshape')
+        net2 = tl.layers.ReshapeLayer(shape=(-1, 28, 28, 1), name='reshape')(net1)
 
         net2.print_layers()
-        net2.print_params(False)
+        net2.print_weights(False)
 
         cls.net2_shape = net2.outputs.get_shape().as_list()
         cls.net2_layers = net2.all_layers
-        cls.net2_params = net2.all_weights
-        cls.net2_n_params = net2.count_weights()
+        cls.net2_weights = net2.all_weights
+        cls.net2_n_weights = net2.count_weights()
 
         ## TransposeLayer
-        net3 = tl.layers.TransposeLayer(net2, perm=[0, 1, 3, 2], name='trans')
+        net3 = tl.layers.TransposeLayer(perm=[0, 1, 3, 2], name='trans')(net2)
 
         net3.print_layers()
-        net3.print_params(False)
+        net3.print_weights(False)
 
         cls.net3_shape = net3.outputs.get_shape().as_list()
         cls.net3_layers = net3.all_layers
-        cls.net3_params = net3.all_weights
-        cls.net3_n_params = net3.count_weights()
+        cls.net3_weights = net3.all_weights
+        cls.net3_n_weights = net3.count_weights()
 
     @classmethod
     def tearDownClass(cls):
@@ -60,20 +60,20 @@ class Layer_Shape_Test(CustomTestCase):
     def test_net1(self):
         self.assertEqual(len(self.net1_layers), 2)
         self.assertEqual(self.net1_shape[-1], 784)
-        self.assertEqual(len(self.net1_params), 0)
-        self.assertEqual(self.net1_n_params, 0)
+        self.assertEqual(len(self.net1_weights), 0)
+        self.assertEqual(self.net1_n_weights, 0)
 
     def test_net2(self):
         self.assertEqual(len(self.net2_layers), 3)
         self.assertEqual(self.net2_shape[1:], [28, 28, 1])
-        self.assertEqual(len(self.net2_params), 0)
-        self.assertEqual(self.net2_n_params, 0)
+        self.assertEqual(len(self.net2_weights), 0)
+        self.assertEqual(self.net2_n_weights, 0)
 
     def test_net3(self):
         self.assertEqual(len(self.net3_layers), 4)
         self.assertEqual(self.net3_shape[1:], [28, 1, 28])
-        self.assertEqual(len(self.net3_params), 0)
-        self.assertEqual(self.net3_n_params, 0)
+        self.assertEqual(len(self.net3_weights), 0)
+        self.assertEqual(self.net3_n_weights, 0)
 
 
 if __name__ == '__main__':
