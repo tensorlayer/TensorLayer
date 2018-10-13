@@ -19,9 +19,9 @@ class Layer_Convolution_1D_Test(CustomTestCase):
 
         x = tf.placeholder(tf.float32, (None, 100, 1))
 
-        cls.input_layer = tl.layers.InputLayer(name='input_layer')(x)
+        cls.input_layer = tl.layers.Input(name='input_layer')(x)
 
-        cls.n1 = tl.layers.Conv1dLayer(shape=(5, 1, 32), stride=2)(cls.input_layer)
+        cls.n1 = tl.layers.Conv1d(shape=(5, 1, 32), stride=2)(cls.input_layer)
 
         cls.n2 = tl.layers.Conv1d(n_filter=32, filter_size=5, stride=2, padding="same")(cls.n1)
 

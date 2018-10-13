@@ -19,9 +19,9 @@ class Layer_Convolution_2D_Test(CustomTestCase):
 
         x = tf.placeholder(tf.float32, (None, 100, 100, 3))
 
-        cls.input_layer = tl.layers.InputLayer(name='input_layer')(x)
+        cls.input_layer = tl.layers.Input(name='input_layer')(x)
 
-        cls.n1 = tl.layers.Conv2dLayer(
+        cls.n1 = tl.layers.Conv2d(
             act=tf.nn.relu,
             shape=(5, 5, 3, 32),
             strides=(1, 2, 2, 1),
@@ -45,7 +45,7 @@ class Layer_Convolution_2D_Test(CustomTestCase):
             name='conv2d_no_bias'
         )(cls.n2)
 
-        cls.n4 = tl.layers.DeConv2dLayer(
+        cls.n4 = tl.layers.DeConv2d(
             shape=(5, 5, 32, 32), strides=(1, 2, 2, 1), padding='valid', name='deconv2dlayer'
         )(cls.n3)
 
@@ -65,11 +65,11 @@ class Layer_Convolution_2D_Test(CustomTestCase):
 
         cls.n9 = tl.layers.QuantizedConv2d(64, (5, 5), (1, 1), act=tf.nn.relu, padding='valid', name='quancnn')(cls.n8)
 
-        cls.n10 = tl.layers.UpSampling2dLayer(
+        cls.n10 = tl.layers.UpSampling2d(
             size=(2, 2), is_scale=True, method=0, align_corners=True, name="upsample2d_layer"
         )(cls.n9)
 
-        cls.n11 = tl.layers.UpSampling2dLayer(
+        cls.n11 = tl.layers.UpSampling2d(
             size=(2, 2), is_scale=True, method=0, align_corners=True, name="upsample2d_layer"
         )(cls.n10)
 
@@ -79,7 +79,7 @@ class Layer_Convolution_2D_Test(CustomTestCase):
 
         cls.n13 = tl.layers.TernaryConv2d(64, (3, 3), (1, 1), act=tf.nn.relu, padding='valid', name='cnn2')(cls.n12)
 
-        cls.n14 = tl.layers.AtrousDeConv2dLayer(
+        cls.n14 = tl.layers.AtrousDeConv2d(
             shape=(3, 3, 32, 64), rate=2, act=tf.nn.relu, name='atroustrans1', padding='valid'
         )(cls.n13)
 

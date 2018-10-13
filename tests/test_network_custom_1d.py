@@ -25,18 +25,18 @@ class CustomNetwork_1D_Test(CustomTestCase):
             class MyCustomNetwork(tl.networks.CustomModel):
 
                 def model(self):
-                    input_layer = tl.layers.InputLayer(name='input_layer')
-                    noise_layer = tl.layers.InputLayer(name="input_noise")
+                    input_layer = tl.layers.Input(name='input_layer')
+                    noise_layer = tl.layers.Input(name="input_noise")
 
-                    net_0 = tl.layers.DenseLayer(n_units=24, act=tf.nn.relu, name='dense_layer_1')(input_layer)
-                    net_1 = tl.layers.DenseLayer(n_units=24, act=tf.nn.relu, name='dense_layer_2')(input_layer)
+                    net_0 = tl.layers.Dense(n_units=24, act=tf.nn.relu, name='dense_layer_1')(input_layer)
+                    net_1 = tl.layers.Dense(n_units=24, act=tf.nn.relu, name='dense_layer_2')(input_layer)
 
-                    net = tl.layers.ElementwiseLayer(combine_fn=tf.minimum, name='elementwise_layer_3')([net_0, net_1])
+                    net = tl.layers.Elementwise(combine_fn=tf.minimum, name='elementwise_layer_3')([net_0, net_1])
 
-                    mean = tl.layers.DenseLayer(n_units=32, act=tf.nn.relu, name='dense_layer_4')(net)
-                    std = tl.layers.DenseLayer(n_units=32, act=tf.nn.relu, name='dense_layer_5')(net)
+                    mean = tl.layers.Dense(n_units=32, act=tf.nn.relu, name='dense_layer_4')(net)
+                    std = tl.layers.Dense(n_units=32, act=tf.nn.relu, name='dense_layer_5')(net)
 
-                    net = tl.layers.ElementwiseLambdaLayer(
+                    net = tl.layers.ElementwiseLambda(
                         fn=my_custom_lambda_func, name='elementwise_lambda_layer_6'
                     )([noise_layer, mean, std])
 

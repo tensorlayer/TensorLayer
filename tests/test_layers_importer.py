@@ -30,13 +30,13 @@ class Layer_Importer_Test(CustomTestCase):
         #          LambdaLayer
         # ============================= #
         x = tf.placeholder(tf.float32, shape=[None, 784])
-        cls.net_in["lambda"] = tl.layers.InputLayer(name='input')(x)
+        cls.net_in["lambda"] = tl.layers.Input(name='input')(x)
 
         # ============================= #
         #          SlimNetsLayer
         # ============================= #
         x = tf.placeholder(tf.float32, shape=[None, 299, 299, 3])
-        cls.net_in["slim"] = tl.layers.InputLayer(name='input_layer')(x)
+        cls.net_in["slim"] = tl.layers.Input(name='input_layer')(x)
 
     @classmethod
     def tearDownClass(cls):
@@ -55,7 +55,7 @@ class Layer_Importer_Test(CustomTestCase):
             return logits
 
         with self.assertNotRaises(Exception):
-            tl.layers.LambdaLayer(fn=keras_block, name='keras')(self.net_in["lambda"])
+            tl.layers.Lambda(fn=keras_block, name='keras')(self.net_in["lambda"])
 
     def test_slim_layer(self):
 
@@ -64,7 +64,7 @@ class Layer_Importer_Test(CustomTestCase):
                 # Alternatively, you should implement inception_v3 without TensorLayer as follow.
                 # logits, end_points = inception_v3(X, num_classes=1001,
                 #                                   is_training=False)
-                tl.layers.SlimNetsLayer(
+                tl.layers.SlimNets(
                     slim_layer=inception_v3,
                     slim_args={
                         'num_classes': 1001,

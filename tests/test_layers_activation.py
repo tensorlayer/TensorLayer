@@ -12,16 +12,16 @@ class PReLU_Layer_Test(CustomTestCase):
     def setUpClass(cls):
         x = tf.placeholder(tf.float32, shape=[None, 30])
 
-        in_layer = tl.layers.InputLayer()(x)
+        in_layer = tl.layers.Input()(x)
 
-        net = tl.layers.DenseLayer(n_units=10, name='dense_1')(in_layer)
-        cls.net1 = tl.layers.PReluLayer(name='prelu_1')(net)
+        net = tl.layers.Dense(n_units=10, name='dense_1')(in_layer)
+        cls.net1 = tl.layers.PRelu(name='prelu_1')(net)
 
         # cls.net1.print_layers()
         # cls.net1.print_params(False)
 
-        net2 = tl.layers.DenseLayer(n_units=30, name='dense_2')(cls.net1)
-        cls.net2 = tl.layers.PReluLayer(channel_shared=True, name='prelu_2')(net2)
+        net2 = tl.layers.Dense(n_units=30, name='dense_2')(cls.net1)
+        cls.net2 = tl.layers.PRelu(channel_shared=True, name='prelu_2')(net2)
 
         # cls.net2.print_layers()
         # cls.net2.print_params(False)
@@ -57,16 +57,16 @@ class PRelu6_Layer_Test(CustomTestCase):
     def setUpClass(cls):
         x = tf.placeholder(tf.float32, shape=[None, 30])
 
-        in_layer = tl.layers.InputLayer()(x)
+        in_layer = tl.layers.Input()(x)
 
-        net = tl.layers.DenseLayer(n_units=10, name='dense_1')(in_layer)
-        cls.net1 = tl.layers.PRelu6Layer(name='prelu6_1')(net)
+        net = tl.layers.Dense(n_units=10, name='dense_1')(in_layer)
+        cls.net1 = tl.layers.PRelu6(name='prelu6_1')(net)
 
         # cls.net1.print_layers()
         # cls.net1.print_params(False)
 
-        net2 = tl.layers.DenseLayer(n_units=30, name='dense_2')(cls.net1)
-        cls.net2 = tl.layers.PRelu6Layer(channel_shared=True, name='prelu6_2')(net2)
+        net2 = tl.layers.Dense(n_units=30, name='dense_2')(cls.net1)
+        cls.net2 = tl.layers.PRelu6(channel_shared=True, name='prelu6_2')(net2)
 
         # cls.net2.print_layers()
         # cls.net2.print_params(False)
@@ -102,16 +102,16 @@ class PTRelu6_Layer_Test(CustomTestCase):
     def setUpClass(cls):
         x = tf.placeholder(tf.float32, shape=[None, 30])
 
-        in_layer = tl.layers.InputLayer()(x)
+        in_layer = tl.layers.Input()(x)
 
-        net = tl.layers.DenseLayer(n_units=10, name='dense_1')(in_layer)
-        cls.net1 = tl.layers.PTRelu6Layer(name='ptrelu6_1')(net)
+        net = tl.layers.Dense(n_units=10, name='dense_1')(in_layer)
+        cls.net1 = tl.layers.PTRelu6(name='ptrelu6_1')(net)
 
         # cls.net1.print_layers()
         # cls.net1.print_params(False)
 
-        net2 = tl.layers.DenseLayer(n_units=30, name='dense_2')(cls.net1)
-        cls.net2 = tl.layers.PTRelu6Layer(channel_shared=True, name='ptrelu6_2')(net2)
+        net2 = tl.layers.Dense(n_units=30, name='dense_2')(cls.net1)
+        cls.net2 = tl.layers.PTRelu6(channel_shared=True, name='ptrelu6_2')(net2)
 
         # cls.net2.print_layers()
         # cls.net2.print_params(False)

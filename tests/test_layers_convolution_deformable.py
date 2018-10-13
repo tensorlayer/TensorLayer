@@ -16,7 +16,7 @@ class Layer_DeformableConvolution_Test(unittest.TestCase):
     def setUpClass(cls):
 
         x = tf.placeholder(tf.float32, [None, 299, 299, 3])
-        net = tl.layers.InputLayer(name='input_layer')(x)
+        net = tl.layers.Input(name='input_layer')(x)
 
         offset1 = tl.layers.Conv2d(18, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='offset1')(net)
         cls.net1 = tl.layers.DeformableConv2d(32, (3, 3), act=tf.nn.relu, name='deformable1')(net, offset1)

@@ -14,17 +14,17 @@ from tests.utils import CustomTestCase
 
 def model(x, is_train, reuse):
     with tf.variable_scope("STN", reuse=reuse):
-        nin = tl.layers.InputLayer(name='in')(x)
+        nin = tl.layers.Input(name='in')(x)
         ## 1. Localisation network
         # use MLP as the localisation net
-        nt = tl.layers.FlattenLayer(name='flatten')(nin)
-        nt = tl.layers.DenseLayer(n_units=20, act=tf.nn.tanh, name='dense1')(nt)
-        nt = tl.layers.DropoutLayer(keep=0.8, is_fix=True, name='drop1')(nt, is_train=is_train)
+        nt = tl.layers.Flatten(name='flatten')(nin)
+        nt = tl.layers.Dense(n_units=20, act=tf.nn.tanh, name='dense1')(nt)
+        nt = tl.layers.Dropout(keep=0.8, is_fix=True, name='drop1')(nt, is_train=is_train)
         # you can also use CNN instead for MLP as the localisation net
         # nt = Conv2d(nin, 16, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME', name='tc1')
         # nt = Conv2d(nt, 8, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME', name='tc2')
         ## 2. Spatial transformer module (sampler)
-        n = tl.layers.SpatialTransformer2dAffineLayer(out_size=(40, 40), name='spatial')(nin, theta_layer=nt)
+        n = tl.layers.SpatialTransformer2dAffine(out_size=(40, 40), name='spatial')(nin, theta_layer=nt)
         s = n
         ## 3. Classifier
         n = tl.layers.Conv2d(
@@ -34,9 +34,9 @@ def model(x, is_train, reuse):
         n = tl.layers.Conv2d(
             n_filter=16, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, padding='SAME', name='conv2'
         )(n)
-        n = tl.layers.FlattenLayer(name='flatten2')(n)
-        n = tl.layers.DenseLayer(n_units=1024, act=tf.nn.relu, name='out1')(n)
-        n = tl.layers.DenseLayer(n_units=10, name='out2')(n)
+        n = tl.layers.Flatten(name='flatten2')(n)
+        n = tl.layers.Dense(n_units=1024, act=tf.nn.relu, name='out1')(n)
+        n = tl.layers.Dense(n_units=10, name='out2')(n)
     return n, s
 
 

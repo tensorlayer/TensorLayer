@@ -19,9 +19,9 @@ class Layer_Basic_Test(CustomTestCase):
 
         x = tf.placeholder(tf.float32, [None, 100])
 
-        n = tl.layers.InputLayer(name='in')(x)
-        n = tl.layers.DenseLayer(n_units=80, name='d1')(n)
-        n = tl.layers.DenseLayer(n_units=80, name='d2')(n)
+        n = tl.layers.Input(name='in')(x)
+        n = tl.layers.Dense(n_units=80, name='d1')(n)
+        n = tl.layers.Dense(n_units=80, name='d2')(n)
 
         n.print_layers()
         n.print_weights(False)

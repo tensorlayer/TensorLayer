@@ -8,24 +8,24 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 
 model = tl.networks.Sequential(name="My_Sequential_1D_Network")
 
-model.add(tl.layers.ExpandDimsLayer(axis=1, name="expand_layer_1"))
-model.add(tl.layers.FlattenLayer(name="flatten_layer_1"))
+model.add(tl.layers.ExpandDims(axis=1, name="expand_layer_1"))
+model.add(tl.layers.Flatten(name="flatten_layer_1"))
 
-model.add(tl.layers.ExpandDimsLayer(axis=2, name="expand_layer_2"))
-model.add(tl.layers.TileLayer(multiples=[1, 1, 3], name="tile_layer_2"))
-model.add(tl.layers.TransposeLayer(perm=[0, 2, 1], name='transpose_layer_2'))
-model.add(tl.layers.FlattenLayer(name="flatten_layer_2"))
+model.add(tl.layers.ExpandDims(axis=2, name="expand_layer_2"))
+model.add(tl.layers.Tile(multiples=[1, 1, 3], name="tile_layer_2"))
+model.add(tl.layers.Transpose(perm=[0, 2, 1], name='transpose_layer_2'))
+model.add(tl.layers.Flatten(name="flatten_layer_2"))
 
-model.add(tl.layers.DenseLayer(n_units=10, act=tf.nn.relu, name="seq_layer_1"))
+model.add(tl.layers.Dense(n_units=10, act=tf.nn.relu, name="seq_layer_1"))
 
-model.add(tl.layers.DenseLayer(n_units=40, act=tf.nn.relu, name="seq_layer_2"))
-model.add(tl.layers.DropoutLayer(keep=0.5, is_fix=True, name="dropout_layer_2"))
+model.add(tl.layers.Dense(n_units=40, act=tf.nn.relu, name="seq_layer_2"))
+model.add(tl.layers.Dropout(keep=0.5, is_fix=True, name="dropout_layer_2"))
 
-model.add(tl.layers.DenseLayer(n_units=50, act=tf.nn.relu, name="seq_layer_3"))
-model.add(tl.layers.DropoutLayer(keep=0.5, is_fix=False, name="dropout_layer_3"))
+model.add(tl.layers.Dense(n_units=50, act=tf.nn.relu, name="seq_layer_3"))
+model.add(tl.layers.Dropout(keep=0.5, is_fix=False, name="dropout_layer_3"))
 
-model.add(tl.layers.DenseLayer(n_units=50, act=None, name="seq_layer_4"))
-model.add(tl.layers.PTRelu6Layer(channel_shared=False, name="ptrelu6_layer_4"))
+model.add(tl.layers.Dense(n_units=50, act=None, name="seq_layer_4"))
+model.add(tl.layers.PTRelu6(channel_shared=False, name="ptrelu6_layer_4"))
 
 plh = tf.placeholder(tf.float16, (100, 32))
 

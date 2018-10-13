@@ -14,20 +14,20 @@ from tests.utils import CustomTestCase
 
 def model(x, is_train=True, reuse=False):
     with tf.variable_scope("model", reuse=reuse):
-        n = tl.layers.InputLayer(x, name='in')
+        n = tl.layers.Input(x, name='in')
         n = tl.layers.Conv2d(n, n_filter=80, name='conv2d_1')
-        n = tl.layers.BatchNormLayer(n, is_train=is_train, name='norm_batch')
+        n = tl.layers.BatchNorm(n, is_train=is_train, name='norm_batch')
         n = tl.layers.Conv2d(n, n_filter=80, name='conv2d_2')
-        n = tl.layers.LocalResponseNormLayer(n, name='norm_local')
-        n = tl.layers.LayerNormLayer(n, reuse=reuse, name='norm_layer')
-        n = tl.layers.InstanceNormLayer(n, name='norm_instance')
-        # n = tl.layers.GroupNormLayer(n, groups=40, name='groupnorm')
+        n = tl.layers.LocalResponseNorm(n, name='norm_local')
+        n = tl.layers.LayerNorm(n, reuse=reuse, name='norm_layer')
+        n = tl.layers.InstanceNorm(n, name='norm_instance')
+        # n = tl.layers.GroupNorm(n, groups=40, name='groupnorm')
         n.outputs = tf.reshape(n.outputs, [-1, 80, 100, 100])
-        n = tl.layers.GroupNormLayer(n, groups=40, data_format='channels_first', name='groupnorm')
+        n = tl.layers.GroupNorm(n, groups=40, data_format='channels_first', name='groupnorm')
         n.outputs = tf.reshape(n.outputs, [-1, 100, 100, 80])
-        n = tl.layers.SwitchNormLayer(n, name='switchnorm')
+        n = tl.layers.SwitchNorm(n, name='switchnorm')
         n = tl.layers.QuantizedConv2dWithBN(n, n_filter=3, is_train=is_train, name='quan_cnn_with_bn')
-        n = tl.layers.FlattenLayer(n, name='flatten')
+        n = tl.layers.Flatten(n, name='flatten')
         n = tl.layers.QuantizedDenseWithBN(n, n_units=10, name='quan_dense_with_bn')
     return n
 

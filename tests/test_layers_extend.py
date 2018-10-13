@@ -18,16 +18,16 @@ class Layer_Extend_Test(CustomTestCase):
     def setUpClass(cls):
 
         x = tf.placeholder(tf.float32, (None, 100))
-        n = tl.layers.InputLayer(name='in')(x)
-        n = tl.layers.DenseLayer(n_units=100, name='d1')(n)
-        n = tl.layers.DenseLayer(n_units=100, name='d2')(n)
+        n = tl.layers.Input(name='in')(x)
+        n = tl.layers.Dense(n_units=100, name='d1')(n)
+        n = tl.layers.Dense(n_units=100, name='d2')(n)
 
         ## 1D
 
-        n = tl.layers.ExpandDimsLayer(axis=2)(n)
+        n = tl.layers.ExpandDims(axis=2)(n)
         cls.shape_1 = n.outputs.get_shape().as_list()
 
-        n = tl.layers.TileLayer(multiples=[-1, 1, 3])(n)
+        n = tl.layers.Tile(multiples=[-1, 1, 3])(n)
         cls.shape_2 = n.outputs.get_shape().as_list()
 
         n.print_layers()

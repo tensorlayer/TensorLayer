@@ -19,7 +19,7 @@ class Layer_Convolution_3D_Test(CustomTestCase):
 
         x = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
 
-        cls.input_layer = tl.layers.InputLayer(name='input_layer')(x)
+        cls.input_layer = tl.layers.Input(name='input_layer')(x)
 
         cls.n1 = tl.layers.Conv3dLayer(shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1))(cls.input_layer)
 
