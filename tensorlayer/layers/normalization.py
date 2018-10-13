@@ -281,12 +281,12 @@ class GroupNormLayer(Layer):
         additional_str = []
 
         try:
-            additional_str.append("groups: %s" % self.groups)
+            additional_str.append("groups: %s" % str(self.groups))
         except AttributeError:
             pass
 
         try:
-            additional_str.append("epsilon: %s" % self.epsilon)
+            additional_str.append("epsilon: %s" % str(self.epsilon))
         except AttributeError:
             pass
 
