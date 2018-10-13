@@ -19,10 +19,10 @@ class Layer_Padding_Test(CustomTestCase):
 
         ## 1D
         x = tf.placeholder(tf.float32, (None, 100, 1))
-        n = tl.layers.InputLayer(x)
+        n = tl.layers.InputLayer()(x)
 
-        n1 = tl.layers.ZeroPad1d(n, padding=1)
-        n2 = tl.layers.ZeroPad1d(n, padding=(2, 3))
+        n1 = tl.layers.ZeroPad1d(padding=1)(n)
+        n2 = tl.layers.ZeroPad1d(padding=(2, 3))(n)
 
         n1.print_layers()
         n2.print_layers()
@@ -32,11 +32,11 @@ class Layer_Padding_Test(CustomTestCase):
 
         ## 2D
         x = tf.placeholder(tf.float32, (None, 100, 100, 3))
-        n = tl.layers.InputLayer(x)
+        n = tl.layers.InputLayer()(x)
 
-        n3 = tl.layers.ZeroPad2d(n, padding=2)
-        n4 = tl.layers.ZeroPad2d(n, padding=(2, 3))
-        n5 = tl.layers.ZeroPad2d(n, padding=((3, 3), (4, 4)))
+        n3 = tl.layers.ZeroPad2d(padding=2)(n)
+        n4 = tl.layers.ZeroPad2d(padding=(2, 3))(n)
+        n5 = tl.layers.ZeroPad2d(padding=((3, 3), (4, 4)))(n)
 
         n3.print_layers()
         n4.print_layers()
@@ -48,11 +48,11 @@ class Layer_Padding_Test(CustomTestCase):
 
         ## 3D
         x = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
-        n = tl.layers.InputLayer(x)
+        n = tl.layers.InputLayer()(x)
 
-        n6 = tl.layers.ZeroPad3d(n, padding=2)
-        n7 = tl.layers.ZeroPad3d(n, padding=(2, 3, 4))
-        n8 = tl.layers.ZeroPad3d(n, padding=((3, 3), (4, 4), (5, 5)))
+        n6 = tl.layers.ZeroPad3d(padding=2)(n)
+        n7 = tl.layers.ZeroPad3d(padding=(2, 3, 4))(n)
+        n8 = tl.layers.ZeroPad3d(padding=((3, 3), (4, 4), (5, 5)))(n)
 
         n6.print_layers()
         n7.print_layers()
