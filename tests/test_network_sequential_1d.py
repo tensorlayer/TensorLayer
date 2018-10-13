@@ -23,46 +23,46 @@ class Network_Sequential_1D_Test(CustomTestCase):
         with tf.variable_scope("test_scope"):
             cls.model = tl.networks.Sequential(name="My_Sequential_1D_Network")
 
-            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name="expand_layer_1"))
-            cls.model.add(tl.layers.FlattenLayer(name="flatten_layer_1"))
+            cls.model.add(tl.layers.ExpandDims(axis=1, name="expand_layer_1"))
+            cls.model.add(tl.layers.Flatten(name="flatten_layer_1"))
 
-            cls.model.add(tl.layers.ExpandDimsLayer(axis=2, name="expand_layer_2"))
-            cls.model.add(tl.layers.TileLayer(multiples=[1, 1, 3], name="tile_layer_2"))
-            cls.model.add(tl.layers.TransposeLayer(perm=[0, 2, 1], name='transpose_layer_2'))
-            cls.model.add(tl.layers.FlattenLayer(name="flatten_layer_2"))
+            cls.model.add(tl.layers.ExpandDims(axis=2, name="expand_layer_2"))
+            cls.model.add(tl.layers.Tile(multiples=[1, 1, 3], name="tile_layer_2"))
+            cls.model.add(tl.layers.Transpose(perm=[0, 2, 1], name='transpose_layer_2'))
+            cls.model.add(tl.layers.Flatten(name="flatten_layer_2"))
 
-            cls.model.add(tl.layers.DenseLayer(n_units=10, act=tf.nn.relu, name="seq_layer_1"))
+            cls.model.add(tl.layers.Dense(n_units=10, act=tf.nn.relu, name="seq_layer_1"))
 
-            cls.model.add(tl.layers.DenseLayer(n_units=20, act=None, name="seq_layer_2"))
-            cls.model.add(tl.layers.PReluLayer(channel_shared=True, name="prelu_layer_2"))
+            cls.model.add(tl.layers.Dense(n_units=20, act=None, name="seq_layer_2"))
+            cls.model.add(tl.layers.PRelu(channel_shared=True, name="prelu_layer_2"))
 
-            cls.model.add(tl.layers.DenseLayer(n_units=30, act=None, name="seq_layer_3"))
-            cls.model.add(tl.layers.PReluLayer(channel_shared=False, name="prelu_layer_3"))
+            cls.model.add(tl.layers.Dense(n_units=30, act=None, name="seq_layer_3"))
+            cls.model.add(tl.layers.PRelu(channel_shared=False, name="prelu_layer_3"))
 
-            cls.model.add(tl.layers.DenseLayer(n_units=40, act=None, name="seq_layer_4"))
-            cls.model.add(tl.layers.PRelu6Layer(channel_shared=True, name="prelu6_layer_4"))
+            cls.model.add(tl.layers.Dense(n_units=40, act=None, name="seq_layer_4"))
+            cls.model.add(tl.layers.PRelu6(channel_shared=True, name="prelu6_layer_4"))
 
-            cls.model.add(tl.layers.DenseLayer(n_units=50, act=None, name="seq_layer_5"))
-            cls.model.add(tl.layers.PRelu6Layer(channel_shared=False, name="prelu6_layer_5"))
+            cls.model.add(tl.layers.Dense(n_units=50, act=None, name="seq_layer_5"))
+            cls.model.add(tl.layers.PRelu6(channel_shared=False, name="prelu6_layer_5"))
 
-            cls.model.add(tl.layers.DenseLayer(n_units=40, act=None, name="seq_layer_6"))
-            cls.model.add(tl.layers.PTRelu6Layer(channel_shared=True, name="ptrelu6_layer_6"))
+            cls.model.add(tl.layers.Dense(n_units=40, act=None, name="seq_layer_6"))
+            cls.model.add(tl.layers.PTRelu6(channel_shared=True, name="ptrelu6_layer_6"))
 
-            cls.model.add(tl.layers.DenseLayer(n_units=50, act=None, name="seq_layer_7"))
-            cls.model.add(tl.layers.PTRelu6Layer(channel_shared=False, name="ptrelu6_layer_7"))
+            cls.model.add(tl.layers.Dense(n_units=50, act=None, name="seq_layer_7"))
+            cls.model.add(tl.layers.PTRelu6(channel_shared=False, name="ptrelu6_layer_7"))
 
-            cls.model.add(tl.layers.DenseLayer(n_units=40, act=tf.nn.relu, name="seq_layer_8"))
-            cls.model.add(tl.layers.DropoutLayer(keep=0.5, is_fix=True, name="dropout_layer_8"))
+            cls.model.add(tl.layers.Dense(n_units=40, act=tf.nn.relu, name="seq_layer_8"))
+            cls.model.add(tl.layers.Dropout(keep=0.5, is_fix=True, name="dropout_layer_8"))
 
             # with tf.variable_scope('test', reuse=True): # # TODO:
-            #     cls.model.add(tl.layers.DenseLayer(n_units=5, act=tf.nn.relu, name="seq_layer_9"))
-            #     cls.model.add(tl.layers.DropoutLayer(keep=0.5, is_fix=False, name="dropout_layer_9"))
+            #     cls.model.add(tl.layers.Dense(n_units=5, act=tf.nn.relu, name="seq_layer_9"))
+            #     cls.model.add(tl.layers.Dropout(keep=0.5, is_fix=False, name="dropout_layer_9"))
 
-            cls.model.add(tl.layers.DenseLayer(n_units=50, act=tf.nn.relu, name="seq_layer_9"))
-            cls.model.add(tl.layers.DropoutLayer(keep=0.5, is_fix=False, name="dropout_layer_9"))
+            cls.model.add(tl.layers.Dense(n_units=50, act=tf.nn.relu, name="seq_layer_9"))
+            cls.model.add(tl.layers.Dropout(keep=0.5, is_fix=False, name="dropout_layer_9"))
 
             cls.model.add(
-                tl.layers.SlimNetsLayer(
+                tl.layers.SlimNets(
                     slim_layer=slim.fully_connected,
                     slim_args={
                         'num_outputs': 50,
@@ -74,16 +74,16 @@ class Network_Sequential_1D_Test(CustomTestCase):
             )
 
             cls.model.add(
-                tl.layers.KerasLayer(
+                tl.layers.Keras(
                     keras_layer=keras.layers.Dense, keras_args={'units': 256}, act=tf.nn.relu, name="seq_layer_11"
                 )
             )
 
-            cls.model.add(tl.layers.LambdaLayer(fn=lambda x: 2 * x, name='lambda_layer_11'))
-            cls.model.add(tl.layers.GaussianNoiseLayer(mean=0.0, stddev=1.0, name='noise_layer_11'))
-            cls.model.add(tl.layers.BatchNormLayer(decay=0.9, epsilon=1e-5, act=None, name='batchnorm_layer_11'))
+            cls.model.add(tl.layers.Lambda(fn=lambda x: 2 * x, name='lambda_layer_11'))
+            cls.model.add(tl.layers.GaussianNoise(mean=0.0, stddev=1.0, name='noise_layer_11'))
+            cls.model.add(tl.layers.BatchNorm(decay=0.9, epsilon=1e-5, act=None, name='batchnorm_layer_11'))
             cls.model.add(
-                tl.layers.LayerNormLayer(
+                tl.layers.LayerNorm(
                     center=True,
                     scale=True,
                     begin_norm_axis=1,
@@ -93,14 +93,14 @@ class Network_Sequential_1D_Test(CustomTestCase):
                 )
             )
 
-            cls.model.add(tl.layers.ExpandDimsLayer(axis=2, name="expand_layer_12"))
+            cls.model.add(tl.layers.ExpandDims(axis=2, name="expand_layer_12"))
             cls.model.add(tl.layers.PadLayer(padding=[[0, 0], [4, 4], [0, 0]], name='pad_layer_12'))
             cls.model.add(tl.layers.ZeroPad1d(padding=1, name='zeropad1d_layer_12-1'))
             cls.model.add(tl.layers.ZeroPad1d(padding=(2, 3), name='zeropad1d_layer_12-2'))
-            cls.model.add(tl.layers.ReshapeLayer(shape=(-1, 271), name='reshape_layer_12'))
-            cls.model.add(tl.layers.ScaleLayer(init_scale=2., name='scale_layer_12'))
+            cls.model.add(tl.layers.Reshape(shape=(-1, 271), name='reshape_layer_12'))
+            cls.model.add(tl.layers.Scale(init_scale=2., name='scale_layer_12'))
 
-            cls.model.add(tl.layers.ReshapeLayer(shape=(-1, 271, 1), name='reshape_layer_13'))
+            cls.model.add(tl.layers.Reshape(shape=(-1, 271, 1), name='reshape_layer_13'))
             cls.model.add(
                 tl.layers.
                 Conv1dLayer(shape=(5, 1, 12), stride=1, padding='SAME', act=tf.nn.relu, name='conv1d_layer_13')
@@ -148,34 +148,34 @@ class Network_Sequential_1D_Test(CustomTestCase):
                 )
             )
 
-            cls.model.add(tl.layers.FlattenLayer(name="flatten_layer_20"))
+            cls.model.add(tl.layers.Flatten(name="flatten_layer_20"))
 
-            cls.model.add(tl.layers.BinaryDenseLayer(n_units=10, act=tf.nn.sigmoid, name='binary_dense_layer_21'))
+            cls.model.add(tl.layers.BinaryDense(n_units=10, act=tf.nn.sigmoid, name='binary_dense_layer_21'))
 
-            cls.model.add(tl.layers.DorefaDenseLayer(n_units=20, name='dorefa_dense_layer_22'))
+            cls.model.add(tl.layers.DorefaDense(n_units=20, name='dorefa_dense_layer_22'))
 
-            cls.model.add(tl.layers.DropconnectDenseLayer(keep=0.5, n_units=30, name='dropconnect_layer_23'))
+            cls.model.add(tl.layers.DropconnectDense(keep=0.5, n_units=30, name='dropconnect_layer_23'))
 
             cls.model.add(tl.layers.QuantizedDenseWithBN(n_units=40, name='quant_dense_bn_layer_24'))
 
             cls.model.add(tl.layers.QuantizedDense(n_units=30, name='quant_dense_layer_25'))
 
-            cls.model.add(tl.layers.TernaryDenseLayer(n_units=20, name='ternary_dense_layer_26'))
-            cls.model.add(tl.layers.ReshapeLayer(shape=(-1, 10, 2), name='reshape_layer_26'))
+            cls.model.add(tl.layers.TernaryDense(n_units=20, name='ternary_dense_layer_26'))
+            cls.model.add(tl.layers.Reshape(shape=(-1, 10, 2), name='reshape_layer_26'))
 
             cls.model.add(tl.layers.MaxPool1d(filter_size=3, strides=2, padding='valid', name='maxpool_1d_layer_27'))
 
             cls.model.add(tl.layers.MeanPool1d(filter_size=3, strides=2, padding='same', name='meanpool_1d_layer_28'))
 
             cls.model.add(tl.layers.GlobalMaxPool1d(name='global_maxpool_1d_layer_29'))
-            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand_layer_29'))
-            cls.model.add(tl.layers.TileLayer(multiples=[1, 100, 1], name='tile_layer_29'))
+            cls.model.add(tl.layers.ExpandDims(axis=1, name='expand_layer_29'))
+            cls.model.add(tl.layers.Tile(multiples=[1, 100, 1], name='tile_layer_29'))
 
             cls.model.add(tl.layers.GlobalMeanPool1d(name='global_meanpool_1d_layer_30'))
-            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand_layer_30'))
-            cls.model.add(tl.layers.TileLayer(multiples=[1, 100, 1], name='tile_layer_30'))
+            cls.model.add(tl.layers.ExpandDims(axis=1, name='expand_layer_30'))
+            cls.model.add(tl.layers.Tile(multiples=[1, 100, 1], name='tile_layer_30'))
 
-            cls.model.add(tl.layers.SignLayer(name='sign_layer_31'))
+            cls.model.add(tl.layers.Sign(name='sign_layer_31'))
 
             plh = tf.placeholder(tf.float16, (100, 32))
 

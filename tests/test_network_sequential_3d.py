@@ -20,13 +20,13 @@ class Network_Sequential_3D_Test(CustomTestCase):
         with tf.variable_scope("test_scope"):
             cls.model = tl.networks.Sequential(name="My_Sequential_3D_Network")
 
-            cls.model.add(tl.layers.ReshapeLayer(shape=(-1, 16, 16, 16, 1), name="reshape_layer_1"))
+            cls.model.add(tl.layers.Reshape(shape=(-1, 16, 16, 16, 1), name="reshape_layer_1"))
 
             cls.model.add(tl.layers.PadLayer(padding=[[0, 0], [4, 4], [3, 3], [2, 2], [0, 0]], name='pad_layer_2'))
             cls.model.add(tl.layers.ZeroPad3d(padding=2, name='zeropad3d_layer_2-1'))
             cls.model.add(tl.layers.ZeroPad3d(padding=(2, 2, 2), name='zeropad3d_layer_2-2'))
             cls.model.add(tl.layers.ZeroPad3d(padding=((2, 2), (3, 3), (4, 4)), name='zeropad3d_layer_2-3'))
-            cls.model.add(tl.layers.ScaleLayer(init_scale=2., name='scale_layer_2'))
+            cls.model.add(tl.layers.Scale(init_scale=2., name='scale_layer_2'))
 
             cls.model.add(
                 tl.layers.
@@ -93,18 +93,18 @@ class Network_Sequential_3D_Test(CustomTestCase):
             )
 
             cls.model.add(tl.layers.GlobalMaxPool3d(name='global_maxpool_3d_layer_11'))
-            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand_1_layer_11'))
-            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand_2_layer_11'))
-            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand_3_layer_11'))
-            cls.model.add(tl.layers.TileLayer(multiples=[1, 50, 50, 50, 1], name='tile_layer_11'))
+            cls.model.add(tl.layers.ExpandDims(axis=1, name='expand_1_layer_11'))
+            cls.model.add(tl.layers.ExpandDims(axis=1, name='expand_2_layer_11'))
+            cls.model.add(tl.layers.ExpandDims(axis=1, name='expand_3_layer_11'))
+            cls.model.add(tl.layers.Tile(multiples=[1, 50, 50, 50, 1], name='tile_layer_11'))
 
             cls.model.add(tl.layers.GlobalMeanPool3d(name='global_meanpool_3d_layer_12'))
-            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand_1_layer_12'))
-            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand_2_layer_12'))
-            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name='expand_3_layer_12'))
-            cls.model.add(tl.layers.TileLayer(multiples=[1, 50, 50, 50, 1], name='tile_layer_12'))
+            cls.model.add(tl.layers.ExpandDims(axis=1, name='expand_1_layer_12'))
+            cls.model.add(tl.layers.ExpandDims(axis=1, name='expand_2_layer_12'))
+            cls.model.add(tl.layers.ExpandDims(axis=1, name='expand_3_layer_12'))
+            cls.model.add(tl.layers.Tile(multiples=[1, 50, 50, 50, 1], name='tile_layer_12'))
 
-            cls.model.add(tl.layers.SignLayer(name='sign_layer_13'))
+            cls.model.add(tl.layers.Sign(name='sign_layer_13'))
 
             plh = tf.placeholder(tf.float16, (100, 16, 16, 16))
 

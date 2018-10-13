@@ -23,26 +23,26 @@ class Network_Sequential_2D_Test(CustomTestCase):
         with tf.variable_scope("test_scope"):
             cls.model = tl.networks.Sequential(name="My_Sequential_2D_Network")
 
-            cls.model.add(tl.layers.ReshapeLayer(shape=(-1, 16, 16, 1), name="reshape_layer_1"))
+            cls.model.add(tl.layers.Reshape(shape=(-1, 16, 16, 1), name="reshape_layer_1"))
 
             cls.model.add(
                 tl.layers.
-                UpSampling2dLayer(size=(2, 2), is_scale=True, method=0, align_corners=True, name="upsample2d_layer_2")
+                UpSampling2d(size=(2, 2), is_scale=True, method=0, align_corners=True, name="upsample2d_layer_2")
             )
             cls.model.add(
-                tl.layers.DownSampling2dLayer(
+                tl.layers.DownSampling2d(
                     size=(2, 2), is_scale=True, method=0, align_corners=True, name="downsample2d_layer_2"
                 )
             )
-            cls.model.add(tl.layers.GaussianNoiseLayer(mean=0.0, stddev=1.0, name='noise_layer_2'))
+            cls.model.add(tl.layers.GaussianNoise(mean=0.0, stddev=1.0, name='noise_layer_2'))
             cls.model.add(
-                tl.layers.LocalResponseNormLayer(depth_radius=5, bias=1., alpha=1., beta=.5, name='LRN_layer_2')
+                tl.layers.LocalResponseNorm(depth_radius=5, bias=1., alpha=1., beta=.5, name='LRN_layer_2')
             )
-            cls.model.add(tl.layers.BatchNormLayer(decay=0.9, epsilon=1e-5, act=None, name='batchnorm_layer_2'))
-            cls.model.add(tl.layers.GroupNormLayer(groups=1, data_format='channels_first', name='groupnorm_layer_2'))
-            cls.model.add(tl.layers.InstanceNormLayer(epsilon=1e-5, act=None, name='instance_norm_layer_2'))
+            cls.model.add(tl.layers.BatchNorm(decay=0.9, epsilon=1e-5, act=None, name='batchnorm_layer_2'))
+            cls.model.add(tl.layers.GroupNorm(groups=1, data_format='channels_first', name='groupnorm_layer_2'))
+            cls.model.add(tl.layers.InstanceNorm(epsilon=1e-5, act=None, name='instance_norm_layer_2'))
             cls.model.add(
-                tl.layers.LayerNormLayer(
+                tl.layers.LayerNorm(
                     center=True,
                     scale=True,
                     begin_norm_axis=1,
@@ -51,12 +51,12 @@ class Network_Sequential_2D_Test(CustomTestCase):
                     name='layernorm_layer_2'
                 )
             )
-            cls.model.add(tl.layers.SwitchNormLayer(epsilon=1e-5, act=None, name='switchnorm_layer_2'))
+            cls.model.add(tl.layers.SwitchNorm(epsilon=1e-5, act=None, name='switchnorm_layer_2'))
             cls.model.add(tl.layers.PadLayer(padding=[[0, 0], [4, 4], [3, 3], [0, 0]], name='pad_layer_3'))
             cls.model.add(tl.layers.ZeroPad2d(padding=2, name='zeropad2d_layer_3-1'))
             cls.model.add(tl.layers.ZeroPad2d(padding=(2, 2), name='zeropad2d_layer_3-2'))
             cls.model.add(tl.layers.ZeroPad2d(padding=((3, 3), (4, 4)), name='zeropad2d_layer_3-3'))
-            cls.model.add(tl.layers.ScaleLayer(init_scale=2., name='scale_layer_3'))
+            cls.model.add(tl.layers.Scale(init_scale=2., name='scale_layer_3'))
 
             # cls.model.add(
             #     tl.layers.AtrousConv2dLayer(
@@ -98,13 +98,13 @@ class Network_Sequential_2D_Test(CustomTestCase):
             )
 
             cls.model.add(
-                tl.layers.AtrousDeConv2dLayer(
+                tl.layers.AtrousDeConv2d(
                     shape=(3, 3, 32, 32), rate=2, padding='SAME', act=tf.nn.relu, name='atrous_2d_transpose_6'
                 )
             )
 
             cls.model.add(
-                tl.layers.AtrousDeConv2dLayer(
+                tl.layers.AtrousDeConv2d(
                     shape=(3, 3, 32, 32),
                     rate=2,
                     padding='SAME',
@@ -415,15 +415,15 @@ class Network_Sequential_2D_Test(CustomTestCase):
             )
 
             cls.model.add(tl.layers.GlobalMaxPool2d(name='globalmaxpool_2d_layer_34'))
-            cls.model.add(tl.layers.ReshapeLayer(shape=[-1, 2, 2, 8], name="reshape_layer_34"))
+            cls.model.add(tl.layers.Reshape(shape=[-1, 2, 2, 8], name="reshape_layer_34"))
 
             cls.model.add(tl.layers.GlobalMeanPool2d(name='globalmeanpool_2d_layer_35'))
-            cls.model.add(tl.layers.ReshapeLayer(shape=[-1, 2, 2, 2], name="reshape_layer_35"))
+            cls.model.add(tl.layers.Reshape(shape=[-1, 2, 2, 2], name="reshape_layer_35"))
 
             cls.model.add(
                 tl.layers.MeanPool2d(filter_size=(3, 3), strides=(2, 2), padding='SAME', name='meanpool_2d_layer_36')
             )
-            cls.model.add(tl.layers.TileLayer(multiples=[1, 32, 32, 8], name="tile_layer_36"))
+            cls.model.add(tl.layers.Tile(multiples=[1, 32, 32, 8], name="tile_layer_36"))
 
             cls.model.add(
                 tl.layers.MaxPool2d(filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool_2d_layer_37')
@@ -435,7 +435,7 @@ class Network_Sequential_2D_Test(CustomTestCase):
                 )
             )
 
-            cls.model.add(tl.layers.SignLayer(name='sign_layer_39'))
+            cls.model.add(tl.layers.Sign(name='sign_layer_39'))
 
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 
