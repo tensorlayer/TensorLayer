@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+
 """Vector Representations of Words.
 
 This is the minimalistic reimplementation of
@@ -187,7 +188,6 @@ def main_word2vec_basic():
 
     # Look up embeddings for inputs.
     emb_net = tl.layers.Word2vecEmbeddingInputlayer(
-        inputs=train_inputs,
         train_labels=train_labels,
         vocabulary_size=vocabulary_size,
         embedding_size=embedding_size,
@@ -200,14 +200,17 @@ def main_word2vec_basic():
         nce_b_init=tf.constant_initializer(value=0.0),
         nce_b_init_args={},
         name='word2vec_layer',
-    )
+    )(train_inputs)
 
     # Construct the optimizer. Note: AdamOptimizer is very slow in this case
     cost = emb_net.nce_cost
-    train_params = emb_net.all_params
-    # train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_params)
-    train_op = tf.train.AdagradOptimizer(learning_rate, initial_accumulator_value=0.1,
-                                         use_locking=False).minimize(cost, var_list=train_params)
+    train_weights = emb_net.all_weights
+    # train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_weights)
+    train_op = tf.train.AdagradOptimizer(
+        learning_rate, initial_accumulator_value=0.1, use_locking=False
+    ).minimize(
+        cost, var_list=train_weights
+    )
 
     # Compute the cosine similarity between minibatch examples and all embeddings.
     # For simple visualization of validation set.
@@ -228,7 +231,7 @@ def main_word2vec_basic():
         # saver.restore(sess, model_file_name+'.ckpt')
         tl.files.load_and_assign_npz_dict(name=model_file_name + '.npz', sess=sess)
 
-    emb_net.print_params(False)
+    emb_net.print_weights(False)
     emb_net.print_layers()
 
     # save vocabulary to txt
@@ -272,14 +275,15 @@ def main_word2vec_basic():
             # Save to ckpt or npz file
             # saver = tf.train.Saver()
             # save_path = saver.save(sess, model_file_name+'.ckpt')
-            tl.files.save_npz_dict(emb_net.all_params, name=model_file_name + '.npz', sess=sess)
+            tl.files.save_npz_dict(emb_net.all_weights, name=model_file_name + '.npz', sess=sess)
             tl.files.save_any_to_npy(
                 save_dict={
                     'data': data,
                     'count': count,
                     'dictionary': dictionary,
                     'reverse_dictionary': reverse_dictionary
-                }, name=model_file_name + '.npy'
+                },
+                name=model_file_name + '.npy'
             )
 
         # if step == num_steps-1:

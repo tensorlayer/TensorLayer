@@ -61,11 +61,7 @@ class Layer_Core_Test(CustomTestCase):
         train_inputs = tf.placeholder(tf.int32, shape=cls.batch_size)
         train_labels = tf.placeholder(tf.int32, shape=(cls.batch_size, 1))
         net3 = tl.layers.Word2vecEmbeddingInputlayer(
-            train_labels=train_labels,
-            vocabulary_size=1000,
-            embedding_size=200,
-            num_sampled=64,
-            name='word2vec'
+            train_labels=train_labels, vocabulary_size=1000, embedding_size=200, num_sampled=64, name='word2vec'
         )(train_inputs)
 
         net3.print_layers()

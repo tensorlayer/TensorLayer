@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """
 Example of Synced sequence input and output.
 
@@ -150,18 +151,18 @@ def main_restore_embedding_layer():
 
     del all_var, data, count
 
-    load_params = tl.files.load_npz(name=model_file_name + '.npz')
+    load_weights = tl.files.load_npz(name=model_file_name + '.npz')
 
     x = tf.placeholder(tf.int32, shape=[batch_size])
 
-    emb_net = tl.layers.EmbeddingInputlayer(x, vocabulary_size, embedding_size, name='emb')
+    emb_net = tl.layers.EmbeddingInputlayer(vocabulary_size, embedding_size, name='emb')(x)
 
     # sess.run(tf.global_variables_initializer())
     tl.layers.initialize_global_variables(sess)
 
-    tl.files.assign_params(sess, [load_params[0]], emb_net)
+    tl.files.assign_weights(sess, [load_weights[0]], emb_net)
 
-    emb_net.print_params()
+    emb_net.print_weights()
     emb_net.print_layers()
 
     # Step 2: Input word(s), output the word vector(s).
@@ -229,16 +230,22 @@ def main_lstm_generate_text():
         print("\nsequence_length: %d, is_train: %s, reuse: %s" % (sequence_length, is_train, reuse))
         rnn_init = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
-            network = EmbeddingInputlayer(x, vocab_size, hidden_size, rnn_init, name='embedding')
+            network = EmbeddingInputlayer(vocab_size, hidden_size, rnn_init, name='embedding')(x)
             network = RNNLayer(
-                network, cell_fn=tf.contrib.rnn.BasicLSTMCell, cell_init_args={
+                cell_fn=tf.contrib.rnn.BasicLSTMCell,
+                cell_init_args={
                     'forget_bias': 0.0,
                     'state_is_tuple': True
-                }, n_hidden=hidden_size, initializer=rnn_init, n_steps=sequence_length, return_last=False,
-                return_seq_2d=True, name='lstm1'
-            )
+                },
+                n_hidden=hidden_size,
+                initializer=rnn_init,
+                n_steps=sequence_length,
+                return_last=False,
+                return_seq_2d=True,
+                name='lstm1'
+            )(network)
             lstm1 = network
-            network = DenseLayer(network, vocab_size, W_init=rnn_init, b_init=rnn_init, act=None, name='output')
+            network = DenseLayer(vocab_size, W_init=rnn_init, b_init=rnn_init, act=None, name='output')(network)
         return network, lstm1
 
     # Inference for Training
@@ -274,10 +281,10 @@ def main_lstm_generate_text():
     # You can get all trainable parameters as follow.
     # tvars = tf.trainable_variables()
     # Alternatively, you can specify the parameters for training as follw.
-    #  tvars = network.all_params      $ all parameters
-    #  tvars = network.all_params[1:]  $ parameters except embedding matrix
+    #  tvars = network.all_weights      $ all parameters
+    #  tvars = network.all_weights[1:]  $ parameters except embedding matrix
     # Train the whole network.
-    tvars = network.all_params
+    tvars = network.all_weights
     grads, _ = tf.clip_by_global_norm(tf.gradients(cost, tvars), max_grad_norm)
     optimizer = tf.train.GradientDescentOptimizer(lr)
     train_op = optimizer.apply_gradients(zip(grads, tvars))
@@ -340,7 +347,8 @@ def main_lstm_generate_text():
             for _ in range(print_length):
                 a_id = np.asarray(a_id).reshape(1, 1)
                 out, state1 = sess.run(
-                    [y_soft, lstm1_test.final_state], feed_dict={
+                    [y_soft, lstm1_test.final_state],
+                    feed_dict={
                         input_data_test: a_id,
                         lstm1_test.initial_state: state1
                     }
@@ -359,7 +367,7 @@ def main_lstm_generate_text():
             print(top_k, ':', sentence)
 
     print("Save model")
-    tl.files.save_npz(network_test.all_params, name=model_file_name)
+    tl.files.save_npz(network_test.all_weights, name=model_file_name)
 
 
 if __name__ == '__main__':

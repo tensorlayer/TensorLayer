@@ -134,7 +134,9 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
 
     def _map_fn(example_serialized):
         image_bytes, one_hot_labels = tf.py_func(
-            _parse_example_fn, [example_serialized], [tf.string, tf.float32], stateful=False
+            _parse_example_fn,
+            [example_serialized],
+            [tf.string, tf.float32], stateful=False
         )
 
         image = tf.image.decode_jpeg(image_bytes, channels=3)

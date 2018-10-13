@@ -26,12 +26,16 @@ def model(x, is_train=True, reuse=False):
             name='qcbnb1')(net, is_train=is_train)
         net = tl.layers.MaxPool2d((2, 2), (2, 2), padding='SAME', name='pool1')(net)
 
-        net = tl.layers.QuanConv2dWithBN(64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, name='qcbn2')(net, is_train=is_train)
+        net = tl.layers.QuanConv2dWithBN(
+            64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, name='qcbn2'
+        )(net, is_train=is_train)
         net = tl.layers.MaxPool2d((2, 2), (2, 2), padding='SAME', name='pool2')(net)
 
         net = tl.layers.FlattenLayer()(net)
         # net = tl.layers.DropoutLayer(0.8, True, name='drop1')(net, is_train=is_train)
-        net = tl.layers.QuanDenseLayerWithBN(256, is_train=is_train, act=tf.nn.relu, name='qdbn')(net, is_train=is_train)
+        net = tl.layers.QuanDenseLayerWithBN(
+            256, is_train=is_train, act=tf.nn.relu, name='qdbn'
+        )(net, is_train=is_train)
 
         # net = tl.layers.DropoutLayer(0.8, True, name='drop2')(net, is_train=is_train)
         net = tl.layers.QuanDenseLayer(10, name='qdbn_out')(net)

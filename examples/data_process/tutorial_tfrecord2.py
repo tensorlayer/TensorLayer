@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """You will learn.
 
 1. How to convert CIFAR-10 dataset into TFRecord format file.
@@ -63,7 +64,8 @@ def read_and_decode(filename):
     reader = tf.TFRecordReader()
     _, serialized_example = reader.read(filename_queue)
     features = tf.parse_single_example(
-        serialized_example, features={
+        serialized_example,
+        features={
             'label': tf.FixedLenFeature([], tf.int64),
             'img_raw': tf.FixedLenFeature([], tf.string),
         }

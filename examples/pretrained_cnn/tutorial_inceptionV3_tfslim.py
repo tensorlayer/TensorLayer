@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """You will learn.
 
 1. What is TF-Slim ?
