@@ -115,6 +115,8 @@ To release a new version, please update the changelog as followed:
 - `tl.layers.EstimatorLayer` has been removed in favor of `tl.layers.LambdaLayer` (PR #755)
 - `tl.layers.ReconLayer` has been removed in favor of `tl.layers.DenseLayer` (#755)
 - `tl.layers.MultiplexerLayer` has been removed in favor of eager execution mode (#755)
+- `tl.layers.AtrousConv1dLayer` has been removed in favor of `Conv1d` with dilation.
+- `tl.layers.AtrousConv2dLayer` has been removed in favor of `Conv2d` with dilation.
 
 ### Security
 
