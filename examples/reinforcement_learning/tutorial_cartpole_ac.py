@@ -37,7 +37,7 @@ import numpy as np
 import tensorflow as tf
 import gym
 import tensorlayer as tl
-from tensorlayer.layers import DenseLayer, InputLayer
+from tensorlayer.layers import Dense, Input
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -78,10 +78,10 @@ class Actor(object):
         self.td_error = tf.placeholder(tf.float32, [None], "td_error")  # TD_error
 
         with tf.variable_scope('Actor'):  # Policy network
-            n = InputLayer(name='in')(self.s)
-            n = DenseLayer(n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')(n)
-            # n = DenseLayer(n_units=10, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')(n)
-            n = DenseLayer(n_units=n_actions, name='Pi')(n)
+            n = Input(name='in')(self.s)
+            n = Dense(n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')(n)
+            # n = Dense(n_units=10, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')(n)
+            n = Dense(n_units=n_actions, name='Pi')(n)
             self.acts_logits = n.outputs
             self.acts_prob = tf.nn.softmax(self.acts_logits)
 
@@ -125,10 +125,10 @@ class Critic(object):
         self.r = tf.placeholder(tf.float32, None, 'r')
 
         with tf.variable_scope('Critic'):  # we use Value-function here, not Action-Value-function
-            n = InputLayer(name='in')(self.s)
-            n = DenseLayer(n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')(n)
-            # n = DenseLayer(n_units=5, act=tf.nn.relu, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')(n)
-            n = DenseLayer(n_units=1, act=None, name='V')(n)
+            n = Input(name='in')(self.s)
+            n = Dense(n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')(n)
+            # n = Dense(n_units=5, act=tf.nn.relu, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')(n)
+            n = Dense(n_units=1, act=None, name='V')(n)
             self.v = n.outputs
 
         with tf.variable_scope('squared_TD_error'):

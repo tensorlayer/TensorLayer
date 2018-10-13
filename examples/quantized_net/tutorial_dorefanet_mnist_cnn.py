@@ -23,26 +23,26 @@ def model(x, is_train=True, reuse=False):
     # In BNN, all the layers inputs are binary, with the exception of the first layer.
     # ref: https://github.com/itayhubara/BinaryNet.tf/blob/master/models/BNN_cifar10.py
     with tf.variable_scope("binarynet", reuse=reuse):
-        net = tl.layers.InputLayer(name='input')(x)
+        net = tl.layers.Input(name='input')(x)
         net = tl.layers.DorefaConv2d(1, 3, 32, (5, 5), (1, 1), padding='SAME', b_init=None, name='bcnn1')(net)  #pylint: disable=bare-except
         net = tl.layers.MaxPool2d((2, 2), (2, 2), padding='SAME', name='pool1')(net)
-        net = tl.layers.BatchNormLayer(decay=0.95, act=tl.act.htanh, name='bn1')(net, is_train=is_train)
+        net = tl.layers.BatchNorm(decay=0.95, act=tl.act.htanh, name='bn1')(net, is_train=is_train)
 
-        # net = tl.layers.SignLayer()(net)
+        # net = tl.layers.Sign()(net)
         net = tl.layers.DorefaConv2d(1, 3, 64, (5, 5), (1, 1), padding='SAME', b_init=None, name='bcnn2')(net)  #pylint: disable=bare-except
         net = tl.layers.MaxPool2d((2, 2), (2, 2), padding='SAME', name='pool2')(net)
-        net = tl.layers.BatchNormLayer(decay=0.95, act=tl.act.htanh, name='bn2')(net, is_train=is_train)
+        net = tl.layers.BatchNorm(decay=0.95, act=tl.act.htanh, name='bn2')(net, is_train=is_train)
 
-        net = tl.layers.FlattenLayer()(net)
-        # net = tl.layers.DropoutLayer(0.8, True, name='drop1')(net, is_train=is_train)
-        # net = tl.layers.SignLayer()(net)
-        net = tl.layers.DorefaDenseLayer(1, 3, 256, b_init=None, name='dense')(net)
-        net = tl.layers.BatchNormLayer(decay=0.95, act=tl.act.htanh, name='bn3')(net, is_train=is_train)
+        net = tl.layers.Flatten()(net)
+        # net = tl.layers.Dropout(0.8, True, name='drop1')(net, is_train=is_train)
+        # net = tl.layers.Sign()(net)
+        net = tl.layers.DorefaDense(1, 3, 256, b_init=None, name='dense')(net)
+        net = tl.layers.BatchNorm(decay=0.95, act=tl.act.htanh, name='bn3')(net, is_train=is_train)
 
-        # net = tl.layers.DropoutLayer(0.8, True, name='drop2')(net, is_train=is_train)
-        # net = tl.layers.SignLayer()(net)
-        net = tl.layers.DenseLayer(10, b_init=None, name='bout')(net)
-        net = tl.layers.BatchNormLayer(decay=0.95, name='bno')(net, is_train=is_train)
+        # net = tl.layers.Dropout(0.8, True, name='drop2')(net, is_train=is_train)
+        # net = tl.layers.Sign()(net)
+        net = tl.layers.Dense(10, b_init=None, name='bout')(net)
+        net = tl.layers.BatchNorm(decay=0.95, name='bno')(net, is_train=is_train)
     return net
 
 

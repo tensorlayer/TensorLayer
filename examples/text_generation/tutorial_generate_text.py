@@ -155,7 +155,7 @@ def main_restore_embedding_layer():
 
     x = tf.placeholder(tf.int32, shape=[batch_size])
 
-    emb_net = tl.layers.EmbeddingInputlayer(vocabulary_size, embedding_size, name='emb')(x)
+    emb_net = tl.layers.EmbeddingInput(vocabulary_size, embedding_size, name='emb')(x)
 
     # sess.run(tf.global_variables_initializer())
     tl.layers.initialize_global_variables(sess)
@@ -230,8 +230,8 @@ def main_lstm_generate_text():
         print("\nsequence_length: %d, is_train: %s, reuse: %s" % (sequence_length, is_train, reuse))
         rnn_init = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
-            network = EmbeddingInputlayer(vocab_size, hidden_size, rnn_init, name='embedding')(x)
-            network = RNNLayer(
+            network = EmbeddingInput(vocab_size, hidden_size, rnn_init, name='embedding')(x)
+            network = RNN(
                 cell_fn=tf.contrib.rnn.BasicLSTMCell,
                 cell_init_args={
                     'forget_bias': 0.0,
@@ -245,7 +245,7 @@ def main_lstm_generate_text():
                 name='lstm1'
             )(network)
             lstm1 = network
-            network = DenseLayer(vocab_size, W_init=rnn_init, b_init=rnn_init, act=None, name='output')(network)
+            network = Dense(vocab_size, W_init=rnn_init, b_init=rnn_init, act=None, name='output')(network)
         return network, lstm1
 
     # Inference for Training

@@ -82,8 +82,8 @@ def print_prob(prob):
 
 ## Alexnet_v2 / All TF-Slim nets can be merged into TensorLayer
 # x = tf.placeholder(tf.float32, shape=[None, 299, 299, 3])
-# net_in = tl.layers.InputLayer(name='input_layer')(x)
-# network = tl.layers.SlimNetsLayer(slim_layer=alexnet_v2,
+# net_in = tl.layers.Input(name='input_layer')(x)
+# network = tl.layers.SlimNets(slim_layer=alexnet_v2,
 #                                 slim_args= {
 #                                        'num_classes' : 1000,
 #                                        'is_training' : True,
@@ -100,12 +100,12 @@ def print_prob(prob):
 
 ## InceptionV3 / All TF-Slim nets can be merged into TensorLayer
 x = tf.placeholder(tf.float32, shape=[None, 299, 299, 3])
-net_in = tl.layers.InputLayer(name='input_layer')(x)
+net_in = tl.layers.Input(name='input_layer')(x)
 with slim.arg_scope(inception_v3_arg_scope()):
     ## Alternatively, you should implement inception_v3 without TensorLayer as follow.
     # logits, end_points = inception_v3(X, num_classes=1001,
     #                                   is_training=False)
-    network = tl.layers.SlimNetsLayer(
+    network = tl.layers.SlimNets(
         slim_layer=inception_v3,
         slim_args={
             'num_classes': 1001,

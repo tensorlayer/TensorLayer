@@ -31,8 +31,8 @@ def slim_block(x):
     return logits, {}
 
 
-network = InputLayer(name='input')(x)
-network = SlimNetsLayer(slim_layer=slim_block, name='tf_slim')(network)
+network = Input(name='input')(x)
+network = SlimNets(slim_layer=slim_block, name='tf_slim')(network)
 
 y = network.outputs
 network.print_weights(False)

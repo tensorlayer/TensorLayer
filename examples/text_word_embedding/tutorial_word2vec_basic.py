@@ -187,7 +187,7 @@ def main_word2vec_basic():
     valid_dataset = tf.constant(valid_examples, dtype=tf.int32)
 
     # Look up embeddings for inputs.
-    emb_net = tl.layers.Word2vecEmbeddingInputlayer(
+    emb_net = tl.layers.Word2vecEmbeddingInput(
         train_labels=train_labels,
         vocabulary_size=vocabulary_size,
         embedding_size=embedding_size,
@@ -221,8 +221,6 @@ def main_word2vec_basic():
     # transpose_b=True, normalized_embeddings is transposed before multiplication.
 
     # Step 5: Start training.
-    print()
-
     tl.layers.initialize_global_variables(sess)
     if resume:
         print("Load existing model" + "!" * 10)

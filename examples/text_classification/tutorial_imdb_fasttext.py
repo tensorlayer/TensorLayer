@@ -72,8 +72,8 @@ class FastTextClassifier(object):
         self.labels = tf.placeholder(tf.int32, shape=[None], name='labels')
 
         # Network structure
-        network = AverageEmbeddingInputlayer(self.vocab_size, self.embedding_size)(self.inputs)
-        self.network = DenseLayer(self.n_labels)(network)
+        network = AverageEmbeddingInput(self.vocab_size, self.embedding_size)(self.inputs)
+        self.network = Dense(self.n_labels)(network)
 
         # Training operation
         cost = tl.cost.cross_entropy(self.network.outputs, self.labels, name='cost')

@@ -23,20 +23,20 @@ y_ = tf.placeholder(tf.int64, shape=[batch_size])
 
 def model(x, is_train=True, reuse=False):
     with tf.variable_scope("model", reuse=reuse):
-        n = InputLayer(name='input')(x)
+        n = Input(name='input')(x)
         # cnn
         n = Conv2d(32, (5, 5), (1, 1), padding='SAME', name='cnn1')(n)
-        n = BatchNormLayer(act=tf.nn.relu, decay=0.95, name='bn1')(n, is_train=is_train)
+        n = BatchNorm(act=tf.nn.relu, decay=0.95, name='bn1')(n, is_train=is_train)
         n = MaxPool2d((2, 2), (2, 2), padding='SAME', name='pool1')(n)
         n = Conv2d(64, (5, 5), (1, 1), padding='SAME', name='cnn2')(n)
-        n = BatchNormLayer(act=tf.nn.relu, decay=0.95, name='bn2')(n, is_train=is_train)
+        n = BatchNorm(act=tf.nn.relu, decay=0.95, name='bn2')(n, is_train=is_train)
         n = MaxPool2d((2, 2), (2, 2), padding='SAME', name='pool2')(n)
         # mlp
-        n = FlattenLayer(name='flatten')(n)
-        n = DropoutLayer(0.5, True, is_train, name='drop1')(n)
-        n = DenseLayer(256, act=tf.nn.relu, name='relu1')(n)
-        n = DropoutLayer(0.5, True, is_train, name='drop2')(n)
-        n = DenseLayer(10, act=None, name='output')(n)
+        n = Flatten(name='flatten')(n)
+        n = Dropout(0.5, True, is_train, name='drop1')(n)
+        n = Dense(256, act=tf.nn.relu, name='relu1')(n)
+        n = Dropout(0.5, True, is_train, name='drop2')(n)
+        n = Dense(10, act=None, name='output')(n)
     return n
 
 

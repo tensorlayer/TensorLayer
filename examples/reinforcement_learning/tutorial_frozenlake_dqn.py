@@ -52,8 +52,8 @@ tf.reset_default_graph()
 ## Define Q-network q(a,s) that ouput the rewards of 4 actions by given state, i.e. Action-Value Function.
 # 4x4 grid can be represented by one-hot vector with 16 integers.
 inputs = tf.placeholder(shape=[1, 16], dtype=tf.float32)
-net = InputLayer(name='observation')(inputs)
-net = DenseLayer(4, act=None, W_init=tf.random_uniform_initializer(0, 0.01), b_init=None, name='q_a_s')(net)
+net = Input(name='observation')(inputs)
+net = Dense(4, act=None, W_init=tf.random_uniform_initializer(0, 0.01), b_init=None, name='q_a_s')(net)
 y = net.outputs  # action-value / rewards of 4 actions
 # chose action greedily with reward. in Q-Learning, policy is greedy, so we use "max" to select the next action.
 predict = tf.argmax(y, 1)

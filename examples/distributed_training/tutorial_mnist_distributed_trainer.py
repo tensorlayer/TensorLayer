@@ -19,13 +19,13 @@ def make_dataset(images, labels, num_epochs=1, shuffle_data_seed=0):
 
 def model(x, is_train):
     with tf.variable_scope('mlp', reuse=tf.AUTO_REUSE):
-        net = tl.layers.InputLayer(name='input')(x)
-        net = tl.layers.DropoutLayer(keep=0.8, name='drop1', is_fix=True)(net, is_train=is_train)
-        net = tl.layers.DenseLayer(800, tf.nn.relu, name='relu1')(net)
-        net = tl.layers.DropoutLayer(keep=0.5, name='drop2', is_fix=True)(net, is_train=is_train)
-        net = tl.layers.DenseLayer(800, tf.nn.relu, name='relu2')(net)
-        net = tl.layers.DropoutLayer(keep=0.5, name='drop3', is_fix=True)(net, is_train=is_train)
-        net = tl.layers.DenseLayer(10, act=tf.identity, name='output')(net)
+        net = tl.layers.Input(name='input')(x)
+        net = tl.layers.Dropout(keep=0.8, name='drop1', is_fix=True)(net, is_train=is_train)
+        net = tl.layers.Dense(800, tf.nn.relu, name='relu1')(net)
+        net = tl.layers.Dropout(keep=0.5, name='drop2', is_fix=True)(net, is_train=is_train)
+        net = tl.layers.Dense(800, tf.nn.relu, name='relu2')(net)
+        net = tl.layers.Dropout(keep=0.5, name='drop3', is_fix=True)(net, is_train=is_train)
+        net = tl.layers.Dense(10, act=tf.identity, name='output')(net)
     return net
 
 

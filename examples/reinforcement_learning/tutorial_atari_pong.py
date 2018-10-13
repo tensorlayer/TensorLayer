@@ -26,7 +26,7 @@ import gym
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import DenseLayer, InputLayer
+from tensorlayer.layers import Dense, Input
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -66,9 +66,9 @@ xs, ys, rs = [], [], []
 # observation for training and inference
 t_states = tf.placeholder(tf.float32, shape=[None, D])
 # policy network
-network = InputLayer(name='input')(t_states)
-network = DenseLayer(n_units=H, act=tf.nn.relu, name='hidden')(network)
-network = DenseLayer(n_units=3, name='output')(network)
+network = Input(name='input')(t_states)
+network = Dense(n_units=H, act=tf.nn.relu, name='hidden')(network)
+network = Dense(n_units=3, name='output')(network)
 probs = network.outputs
 sampling_prob = tf.nn.softmax(probs)
 
