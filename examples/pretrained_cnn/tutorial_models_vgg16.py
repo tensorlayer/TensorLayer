@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """VGG-16 for ImageNet using TL models."""
 
 import time

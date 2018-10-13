@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """
 
 - 1. This model has 1,068,298 paramters and quantization compression strategy(weight:8 bits, active: 8 bits here, you can change the setting),
@@ -105,8 +106,9 @@ learning_rate = 0.0001
 print_freq = 1
 batch_size = 128
 
-train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08,
-                                  use_locking=False).minimize(cost)
+train_op = tf.train.AdamOptimizer(
+    learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False
+).minimize(cost)
 
 sess.run(tf.global_variables_initializer())
 

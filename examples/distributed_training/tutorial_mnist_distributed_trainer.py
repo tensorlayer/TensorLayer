@@ -54,8 +54,12 @@ if __name__ == '__main__':
     training_dataset = make_dataset(X_train, y_train)
     # validation_dataset = make_dataset(X_val, y_val)
     trainer = tl.distributed.Trainer(
-        build_training_func=build_train, training_dataset=training_dataset, optimizer=tf.train.AdamOptimizer,
-        optimizer_args={'learning_rate': 0.001}, batch_size=500, prefetch_size=500
+        build_training_func=build_train,
+        training_dataset=training_dataset,
+        optimizer=tf.train.AdamOptimizer,
+        optimizer_args={'learning_rate': 0.001},
+        batch_size=500,
+        prefetch_size=500
         # validation_dataset=validation_dataset, build_validation_func=build_validation
     )
 

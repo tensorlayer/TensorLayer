@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """SqueezeNet for ImageNet using TL models."""
 
 import time

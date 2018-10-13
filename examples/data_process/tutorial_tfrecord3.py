@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """
 You will learn.
 
@@ -103,9 +104,11 @@ reader = tf.TFRecordReader()
 _, serialized_example = reader.read(filename_queue)  # return the file and the name of file
 # features, sequence_features = tf.parse_single_example(serialized_example,  # see parse_single_sequence_example for sequence example
 features, sequence_features = tf.parse_single_sequence_example(
-    serialized_example, context_features={
+    serialized_example,
+    context_features={
         'image/img_raw': tf.FixedLenFeature([], tf.string),
-    }, sequence_features={
+    },
+    sequence_features={
         "image/caption": tf.FixedLenSequenceFeature([], dtype=tf.string),
         "image/caption_ids": tf.FixedLenSequenceFeature([], dtype=tf.int64),
     }
@@ -229,8 +232,15 @@ def distort_image(image, thread_id):
 
 
 def prefetch_input_data(
-        reader, file_pattern, is_training, batch_size, values_per_shard, input_queue_capacity_factor=16,
-        num_reader_threads=1, shard_queue_name="filename_queue", value_queue_name="input_queue"
+    reader,
+    file_pattern,
+    is_training,
+    batch_size,
+    values_per_shard,
+    input_queue_capacity_factor=16,
+    num_reader_threads=1,
+    shard_queue_name="filename_queue",
+    value_queue_name="input_queue"
 ):
     """Prefetches string values from disk into an input queue.
 
@@ -270,7 +280,9 @@ def prefetch_input_data(
         min_queue_examples = values_per_shard * input_queue_capacity_factor
         capacity = min_queue_examples + 100 * batch_size
         values_queue = tf.RandomShuffleQueue(
-            capacity=capacity, min_after_dequeue=min_queue_examples, dtypes=[tf.string],
+            capacity=capacity,
+            min_after_dequeue=min_queue_examples,
+            dtypes=[tf.string],
             name="random_" + value_queue_name
         )
     else:
@@ -310,7 +322,8 @@ input_queue = prefetch_input_data(
 serialized_sequence_example = input_queue.dequeue()
 # serialized_sequence_example = tf.train.string_input_producer(["train.cat_caption"])   # don't work
 context, sequence = tf.parse_single_sequence_example(
-    serialized=serialized_sequence_example, context_features={"image/img_raw": tf.FixedLenFeature([], dtype=tf.string)},
+    serialized=serialized_sequence_example,
+    context_features={"image/img_raw": tf.FixedLenFeature([], dtype=tf.string)},
     sequence_features={
         "image/caption": tf.FixedLenSequenceFeature([], dtype=tf.string),
         "image/caption_ids": tf.FixedLenSequenceFeature([], dtype=tf.int64),

@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """
 
 - 1. This model has 1,068,298 paramters and Dorefa compression strategy(weight:1 bit, active: 3 bits),
@@ -97,7 +98,8 @@ def read_and_decode(filename, is_train=None):
     reader = tf.TFRecordReader()
     _, serialized_example = reader.read(filename_queue)
     features = tf.parse_single_example(
-        serialized_example, features={
+        serialized_example,
+        features={
             'label': tf.FixedLenFeature([], tf.int64),
             'img_raw': tf.FixedLenFeature([], tf.string),
         }

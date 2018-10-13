@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """
 VGG-19 for ImageNet.
 
@@ -67,6 +68,7 @@ def print_prob(prob):
     top5 = [(synset[pred[i]], prob[pred[i]]) for i in range(5)]
     print("Top5: ", top5)
     return top1
+
 
 def Vgg19(rgb):
     """

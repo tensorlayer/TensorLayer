@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """Monte-Carlo Policy Network π(a|s)  (REINFORCE).
 
 To understand Reinforcement Learning, we let computer to learn how to play
@@ -65,9 +66,9 @@ xs, ys, rs = [], [], []
 # observation for training and inference
 t_states = tf.placeholder(tf.float32, shape=[None, D])
 # policy network
-network = InputLayer(t_states, name='input')
-network = DenseLayer(network, n_units=H, act=tf.nn.relu, name='hidden')
-network = DenseLayer(network, n_units=3, name='output')
+network = InputLayer(name='input')(t_states)
+network = DenseLayer(n_units=H, act=tf.nn.relu, name='hidden')(network)
+network = DenseLayer(n_units=3, name='output')(network)
 probs = network.outputs
 sampling_prob = tf.nn.softmax(probs)
 
@@ -79,10 +80,10 @@ train_op = tf.train.RMSPropOptimizer(learning_rate, decay_rate).minimize(loss)
 with tf.Session() as sess:
     tl.layers.initialize_global_variables(sess)
     # if resume:
-    #     load_params = tl.files.load_npz(name=model_file_name+'.npz')
-    #     tl.files.assign_params(sess, load_params, network)
+    #     load_weights = tl.files.load_npz(name=model_file_name+'.npz')
+    #     tl.files.assign_weights(sess, load_weights, network)
     tl.files.load_and_assign_npz(sess, model_file_name + '.npz', network)
-    network.print_params()
+    network.print_weights()
     network.print_layers()
 
     start_time = time.time()
@@ -126,7 +127,7 @@ with tf.Session() as sess:
                 sess.run(train_op, feed_dict={t_states: epx, t_actions: epy, t_discount_rewards: disR})
 
             if episode_number % (batch_size * 100) == 0:
-                tl.files.save_npz(network.all_params, name=model_file_name + '.npz')
+                tl.files.save_npz(network.all_weights, name=model_file_name + '.npz')
 
             running_reward = reward_sum if running_reward is None else running_reward * 0.99 + reward_sum * 0.01
             print('resetting env. episode reward total was %f. running mean: %f' % (reward_sum, running_reward))

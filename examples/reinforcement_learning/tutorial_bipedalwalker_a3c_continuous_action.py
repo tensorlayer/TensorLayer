@@ -79,8 +79,8 @@ class ACNet(object):
             with tf.variable_scope(scope):
                 self.s = tf.placeholder(tf.float32, [None, N_S], 'S')
                 self._build_net()
-                self.a_params = tl.layers.get_variables_with_name(scope + '/actor', True, False)
-                self.c_params = tl.layers.get_variables_with_name(scope + '/critic', True, False)
+                self.a_weights = tl.layers.get_variables_with_name(scope + '/actor', True, False)
+                self.c_weights = tl.layers.get_variables_with_name(scope + '/critic', True, False)
 
                 normal_dist = tf.contrib.distributions.Normal(self.mu, self.sigma)  # for continuous action space
 
@@ -117,35 +117,35 @@ class ACNet(object):
                     self.A = tf.clip_by_value(tf.squeeze(normal_dist.sample(1), axis=0), *A_BOUND)
 
                 with tf.name_scope('local_grad'):
-                    self.a_params = tl.layers.get_variables_with_name(scope + '/actor', True, False)
-                    self.c_params = tl.layers.get_variables_with_name(scope + '/critic', True, False)
-                    self.a_grads = tf.gradients(self.a_loss, self.a_params)
-                    self.c_grads = tf.gradients(self.c_loss, self.c_params)
+                    self.a_weights = tl.layers.get_variables_with_name(scope + '/actor', True, False)
+                    self.c_weights = tl.layers.get_variables_with_name(scope + '/critic', True, False)
+                    self.a_grads = tf.gradients(self.a_loss, self.a_weights)
+                    self.c_grads = tf.gradients(self.c_loss, self.c_weights)
 
             with tf.name_scope('sync'):
                 with tf.name_scope('pull'):
-                    self.pull_a_params_op = [l_p.assign(g_p) for l_p, g_p in zip(self.a_params, globalAC.a_params)]
-                    self.pull_c_params_op = [l_p.assign(g_p) for l_p, g_p in zip(self.c_params, globalAC.c_params)]
+                    self.pull_a_weights_op = [l_p.assign(g_p) for l_p, g_p in zip(self.a_weights, globalAC.a_weights)]
+                    self.pull_c_weights_op = [l_p.assign(g_p) for l_p, g_p in zip(self.c_weights, globalAC.c_weights)]
                 with tf.name_scope('push'):
-                    self.update_a_op = OPT_A.apply_gradients(zip(self.a_grads, globalAC.a_params))
-                    self.update_c_op = OPT_C.apply_gradients(zip(self.c_grads, globalAC.c_params))
+                    self.update_a_op = OPT_A.apply_gradients(zip(self.a_grads, globalAC.a_weights))
+                    self.update_c_op = OPT_C.apply_gradients(zip(self.c_grads, globalAC.c_weights))
 
     def _build_net(self):
         w_init = tf.contrib.layers.xavier_initializer()
         with tf.variable_scope('actor'):  # Policy network
-            nn = InputLayer(self.s, name='in')
-            nn = DenseLayer(nn, n_units=500, act=tf.nn.relu6, W_init=w_init, name='la')
-            nn = DenseLayer(nn, n_units=300, act=tf.nn.relu6, W_init=w_init, name='la2')
-            mu = DenseLayer(nn, n_units=N_A, act=tf.nn.tanh, W_init=w_init, name='mu')
-            sigma = DenseLayer(nn, n_units=N_A, act=tf.nn.softplus, W_init=w_init, name='sigma')
+            nn = InputLayer(name='in')(self.s)
+            nn = DenseLayer(n_units=500, act=tf.nn.relu6, W_init=w_init, name='la')(nn)
+            nn = DenseLayer(n_units=300, act=tf.nn.relu6, W_init=w_init, name='la2')(nn)
+            mu = DenseLayer(n_units=N_A, act=tf.nn.tanh, W_init=w_init, name='mu')(nn)
+            sigma = DenseLayer(n_units=N_A, act=tf.nn.softplus, W_init=w_init, name='sigma')(nn)
             self.mu = mu.outputs
             self.sigma = sigma.outputs
 
         with tf.variable_scope('critic'):  # we use Value-function here, but not Q-function.
-            nn = InputLayer(self.s, name='in')
-            nn = DenseLayer(nn, n_units=500, act=tf.nn.relu6, W_init=w_init, name='lc')
-            nn = DenseLayer(nn, n_units=200, act=tf.nn.relu6, W_init=w_init, name='lc2')
-            v = DenseLayer(nn, n_units=1, W_init=w_init, name='v')
+            nn = InputLayer(name='in')(self.s)
+            nn = DenseLayer(n_units=500, act=tf.nn.relu6, W_init=w_init, name='lc')(nn)
+            nn = DenseLayer(n_units=200, act=tf.nn.relu6, W_init=w_init, name='lc2')(nn)
+            v = DenseLayer(n_units=1, W_init=w_init, name='v')(nn)
             self.v = v.outputs
 
     def update_global(self, feed_dict):  # run by a local
@@ -154,7 +154,7 @@ class ACNet(object):
         return t
 
     def pull_global(self):  # run by a local
-        sess.run([self.pull_a_params_op, self.pull_c_params_op])
+        sess.run([self.pull_a_weights_op, self.pull_c_weights_op])
 
     def choose_action(self, s):  # run by a local
         s = s[np.newaxis, :]
@@ -163,13 +163,16 @@ class ACNet(object):
     def save_ckpt(self):
         tl.files.exists_or_mkdir(self.scope)
         tl.files.save_ckpt(
-            sess=sess, mode_name='model.ckpt', var_list=self.a_params + self.c_params, save_dir=self.scope,
+            sess=sess,
+            mode_name='model.ckpt',
+            var_list=self.a_weights + self.c_weights,
+            save_dir=self.scope,
             printable=True
         )
 
     def load_ckpt(self):
-        tl.files.load_ckpt(sess=sess, var_list=self.a_params + self.c_params, save_dir=self.scope, printable=True)
-        # tl.files.load_ckpt(sess=sess, mode_name='model.ckpt', var_list=self.a_params+self.c_params, save_dir=self.scope, is_latest=False, printable=True)
+        tl.files.load_ckpt(sess=sess, var_list=self.a_weights + self.c_weights, save_dir=self.scope, printable=True)
+        # tl.files.load_ckpt(sess=sess, mode_name='model.ckpt', var_list=self.a_weights+self.c_weights, save_dir=self.scope, is_latest=False, printable=True)
 
 
 class Worker(object):
