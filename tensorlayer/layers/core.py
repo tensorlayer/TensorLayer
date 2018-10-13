@@ -395,7 +395,7 @@ class Layer(BaseLayer):
                 pass
 
         try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
+            additional_str.append("output shape: %s" % str(self._temp_data['outputs'].shape))
         except AttributeError:
             pass
 
@@ -667,20 +667,22 @@ class BuiltLayer(object):
 
     def __init__(self, layers_to_build, inputs, outputs, local_weights, local_drop, is_train, **kwargs):
 
-        self.hyperparameters = dict()
+        if layers_to_build is not None:
 
-        for key, value in layers_to_build.__dict__.items():
+            self.hyperparameters = dict()
 
-            # Do not record these arguments
+            for key, value in layers_to_build.__dict__.items():
 
-            # "prev_layer", "all_params", "all_layers", "all_drop", "all_graphs", "graph", "is_setup",
-            # "inputs", "outputs", "_local_drop", "_local_weights",
+                # Do not record these arguments
 
-            if key in ["_last_built_layer", '_temp_data']:
-                continue
+                # "prev_layer", "all_params", "all_layers", "all_drop", "all_graphs", "graph", "is_setup",
+                # "inputs", "outputs", "_local_drop", "_local_weights",
 
-            # setattr(self, key, value)
-            self.hyperparameters[key] = value
+                if key in ["_last_built_layer", '_temp_data']:
+                    continue
+
+                # setattr(self, key, value)
+                self.hyperparameters[key] = value
 
         self._str_ = str(layers_to_build)
 
@@ -695,7 +697,8 @@ class BuiltLayer(object):
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
-        self.name = self.hyperparameters["name"]
+        if "name" not in kwargs.keys():
+            self.name = self.hyperparameters["name"]
 
         logging.info(str(self))
 

@@ -17,52 +17,140 @@ class Layer_Stack_Test(CustomTestCase):
     @classmethod
     def setUpClass(cls):
 
-        x = tf.placeholder(tf.float32, shape=[None, 30])
-        net_in = tl.layers.InputLayer(name='input')(x)
+        x = tf.placeholder(tf.float16, shape=[100, 30])
 
-        net = tl.layers.DropoutLayer(keep=0.5, name='dropout')(net_in, is_train=True)
+        cls.net_in = tl.layers.InputLayer(name='input')(x)
 
-        net_d1 = tl.layers.DenseLayer(n_units=10, name='dense1')(net)
-        net_d2 = tl.layers.DenseLayer(n_units=10, name='dense2')(net)
-        net_d3 = tl.layers.DenseLayer(n_units=10, name='dense3')(net)
+        cls.net_drop = tl.layers.DropoutLayer(keep=0.5, name='dropout')(cls.net_in, is_train=True)
 
-        # print(net_d3.outputs)
-        # print(net_d3.all_layers)
-        # print(net_d3.all_weights)
-        # exit()
+        cls.net_d1 = tl.layers.DenseLayer(n_units=10, name='dense1')(cls.net_drop)
+        cls.net_d2 = tl.layers.DenseLayer(n_units=10, name='dense2')(cls.net_drop)
+        cls.net_d3 = tl.layers.DenseLayer(n_units=10, name='dense3')(cls.net_drop)
 
-        cls.net_stack = tl.layers.StackLayer(axis=1, name='stack')([net_d1, net_d2, net_d3])
-
-        # cls.net_stack.print_layers()
-        # cls.net_stack.print_weights(False)
+        cls.net_stack = tl.layers.StackLayer(axis=1, name='stack')([cls.net_d1, cls.net_d2, cls.net_d3])
 
         cls.net_unstack = tl.layers.UnStackLayer(axis=1, name='unstack')(cls.net_stack)
 
-        # cls.net_unstack.print_layers()
-        # cls.net_unstack.print_weights(False)
-        exit()
+        cls.net_unstacked_d1 = cls.net_unstack.outputs[0]
+
+        cls.net_unstacked_d2 = cls.net_unstack.outputs[1]
+
+        cls.net_unstacked_d3 = cls.net_unstack.outputs[2]
+
+        cls.all_layers = [
+            cls.net_in,
+            cls.net_drop,
+            cls.net_d1,
+            cls.net_d2,
+            cls.net_d3,
+            cls.net_stack,
+            cls.net_unstack,
+            cls.net_unstacked_d1,
+            cls.net_unstacked_d2,
+            cls.net_unstacked_d3,
+        ]
 
     @classmethod
     def tearDownClass(cls):
         tf.reset_default_graph()
 
-    def test_StackLayer(self):
-        self.assertEqual(self.net_stack.outputs.get_shape().as_list()[-1], 10)
-        self.assertEqual(len(self.net_stack.all_layers), 6)
-        self.assertEqual(len(self.net_stack.all_weights), 6)
-        self.assertEqual(len(self.net_stack.all_drop), 1)
-        self.assertEqual(self.net_stack.count_weights(), 930)
+    def test_objects_dtype(self):
+        self.assertIsInstance(self.net_in, tl.layers.BuiltLayer)
 
-    def test_UnStackLayer(self):
+        self.assertIsInstance(self.net_drop, tl.layers.BuiltLayer)
 
-        for n in self.net_unstack.outputs:
-            shape = n.outputs.get_shape().as_list()
+        self.assertIsInstance(self.net_d1, tl.layers.BuiltLayer)
+        self.assertIsInstance(self.net_d2, tl.layers.BuiltLayer)
+        self.assertIsInstance(self.net_d3, tl.layers.BuiltLayer)
 
-            self.assertEqual(shape[-1], 10)
-            self.assertEqual(len(n.all_layers), 7)
-            self.assertEqual(len(n.all_weights), 6)
-            self.assertEqual(len(n.all_drop), 1)
-            self.assertEqual(n.count_weights(), 930)
+        self.assertIsInstance(self.net_stack, tl.layers.BuiltLayer)
+
+        self.assertIsInstance(self.net_unstack, tl.layers.BuiltLayer)
+
+        self.assertIsInstance(self.net_unstacked_d1, tl.layers.BuiltLayer)
+        self.assertIsInstance(self.net_unstacked_d2, tl.layers.BuiltLayer)
+        self.assertIsInstance(self.net_unstacked_d3, tl.layers.BuiltLayer)
+
+    def test_get_all_drop_plh(self):
+        self.assertEqual(len(self.net_in.local_drop), 0)
+
+        self.assertEqual(len(self.net_drop.local_drop), 1)
+
+        self.assertEqual(len(self.net_d1.local_drop), 0)
+        self.assertEqual(len(self.net_d2.local_drop), 0)
+        self.assertEqual(len(self.net_d3.local_drop), 0)
+
+        self.assertEqual(len(self.net_stack.local_drop), 0)
+
+        self.assertEqual(len(self.net_unstack.local_drop), 0)
+
+        self.assertEqual(len(self.net_unstacked_d1.local_drop), 0)
+        self.assertEqual(len(self.net_unstacked_d2.local_drop), 0)
+        self.assertEqual(len(self.net_unstacked_d3.local_drop), 0)
+
+    def test_count_weights(self):
+        self.assertEqual(self.net_in.count_local_weights(), 0)
+
+        self.assertEqual(self.net_drop.count_local_weights(), 0)
+
+        self.assertEqual(self.net_d1.count_local_weights(), 310)
+        self.assertEqual(self.net_d2.count_local_weights(), 310)
+        self.assertEqual(self.net_d3.count_local_weights(), 310)
+
+        self.assertEqual(self.net_stack.count_local_weights(), 0)
+
+        self.assertEqual(self.net_unstack.count_local_weights(), 0)
+
+        self.assertEqual(self.net_unstacked_d1.count_local_weights(), 0)
+        self.assertEqual(self.net_unstacked_d2.count_local_weights(), 0)
+        self.assertEqual(self.net_unstacked_d3.count_local_weights(), 0)
+
+    def test_count_weight_tensors(self):
+        self.assertEqual(len(self.net_in.local_weights), 0)
+
+        self.assertEqual(len(self.net_drop.local_weights), 0)
+
+        self.assertEqual(len(self.net_d1.local_weights), 2)
+        self.assertEqual(len(self.net_d2.local_weights), 2)
+        self.assertEqual(len(self.net_d3.local_weights), 2)
+
+        self.assertEqual(len(self.net_stack.local_weights), 0)
+
+        self.assertEqual(len(self.net_unstack.local_weights), 0)
+
+        self.assertEqual(len(self.net_unstacked_d1.local_weights), 0)
+        self.assertEqual(len(self.net_unstacked_d2.local_weights), 0)
+        self.assertEqual(len(self.net_unstacked_d3.local_weights), 0)
+
+    def test_layer_outputs_dtype(self):
+
+        with self.assertNotRaises(RuntimeError):
+
+            for layer in self.all_layers:
+
+                if layer.outputs.dtype != tf.float16:
+                    raise RuntimeError(
+                        "[Train Model] - Layer `%s` has an output of type %s, expected %s" %
+                        (layer.name, layer.outputs.dtype, tf.float16)
+                    )
+
+    def test_network_shapes(self):
+
+        self.assertEqual(self.net_in.outputs.shape, (100, 30))
+
+        self.assertEqual(self.net_drop.outputs.shape, (100, 30))
+
+        self.assertEqual(self.net_d1.outputs.shape, (100, 10))
+        self.assertEqual(self.net_d2.outputs.shape, (100, 10))
+        self.assertEqual(self.net_d3.outputs.shape, (100, 10))
+
+        self.assertEqual(self.net_stack.outputs.shape, (100, 3, 10))
+
+        self.assertEqual(self.net_unstack.outputs.shape, (3, 100, 10))
+
+        self.assertEqual(self.net_unstacked_d1.outputs.shape, (100, 10))
+        self.assertEqual(self.net_unstacked_d2.outputs.shape, (100, 10))
+        self.assertEqual(self.net_unstacked_d3.outputs.shape, (100, 10))
 
 
 if __name__ == '__main__':

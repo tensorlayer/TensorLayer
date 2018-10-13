@@ -1,12 +1,14 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import numpy as np
+
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import BuiltLayer
 
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.decorators import deprecated_args
+from tensorlayer.decorators import private_method
 
 __all__ = [
     'StackLayer',
@@ -108,7 +110,7 @@ class UnStackLayer(Layer):
             pass
 
         try:
-            additional_str.append("n_outputs: %s" % self.n_outputs)
+            additional_str.append("n_outputs: %d" % len(self._temp_data['outputs']))
         except AttributeError:
             pass
 
@@ -116,25 +118,67 @@ class UnStackLayer(Layer):
 
     def build(self):
         # https://github.com/tensorlayer/tensorlayer/blob/master/tensorlayer/layers/stack.py#L103
-        self._temp_data['outputs'] = tf.unstack(self._temp_data['inputs'], num=self.num, axis=self.axis, name=self.name)
-        self.n_outputs = len(self._temp_data['outputs'])
 
-        net_new = []
+        unstacked_layers = tf.unstack(self._temp_data['inputs'], num=self.num, axis=self.axis, name=self.name)
 
-        for i, unstacked_dim in enumerate(self._temp_data['outputs']):
-            layer = Layer()
+        self._temp_data['outputs'] = []
 
-            layer.name = self.name + "_%d" % i
-            layer.outputs = unstacked_dim
+        for i, unstacked_dim in enumerate(unstacked_layers):
 
-            # TODO: CHECK THIS IMPLEMENTATION, CANNOT BE WORKING
-            # need to change core layer to make this layer has all_xxx using auto-compile mode.
+            self._temp_data['outputs'].append(
+                self._create_unstacked_layer(
+                    name=self.name + "_%d" % (i + 1),
+                    outputs=unstacked_dim
+                )
+            )
 
-            layer.all_drop = self.all_drop
-            layer._add_params(self.all_weights)
-            layer._add_layers(self.all_layers)
-            layer._add_layers(layer.outputs)
+        self.parse_outputs(self._temp_data['outputs'])
 
-            net_new.append(layer)
+    @private_method
+    def _create_unstacked_layer(self, name, outputs):
 
-        self._temp_data['outputs'] = net_new
+        _str_ = "UnStackedLayer: %s - output shape: %s" % (name, outputs.shape)
+
+        return type("Built_UnStackedLayer", (BuiltLayer,), {})(
+            layers_to_build=None,
+            inputs=self,
+            outputs=outputs,
+            local_weights=list(),
+            local_drop=list(),
+            is_train=self._temp_data['is_train'],
+            name=name,
+            _str_=_str_
+        )
+
+    @private_method
+    def parse_outputs(self, outputs):
+
+        class UnStackArray(object):
+
+            def __init__(self, ndarr):
+                self.ndarr = ndarr
+
+            def __getattribute__(self, item):
+
+                if item == "dtype":
+                    return self.ndarr[0].outputs.dtype
+
+                elif item == "shape":
+                    def parse_dim(dim):
+                        try:
+                            return int(dim)
+                        except TypeError:
+                            return None
+
+                    return tuple([parse_dim(i) for i in [len(self.ndarr)] + list(self.ndarr[0].outputs.shape)])
+
+                else:
+                    return super(UnStackArray, self).__getattribute__(item)
+
+            def __getitem__(self, i):
+                return self.ndarr[i]
+
+            def __len__(self):
+                return len(self.ndarr)
+
+        self._temp_data['outputs'] = UnStackArray(np.array(outputs))
