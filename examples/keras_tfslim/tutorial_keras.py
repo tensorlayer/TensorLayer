@@ -30,11 +30,11 @@ def keras_block(x):
     return logits
 
 
-network = InputLayer(x, name='input')
-network = LambdaLayer(network, fn=keras_block, name='keras')
+network = InputLayer(name='input')(x)
+network = LambdaLayer(fn=keras_block, name='keras')(network)
 
 y = network.outputs
-network.print_params(False)
+network.print_weights(False)
 network.print_layers()
 
 cost = tl.cost.cross_entropy(y, y_, 'cost')
@@ -44,8 +44,8 @@ acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 n_epoch = 200
 learning_rate = 0.0001
 
-train_params = network.all_params
-train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost, var_list=train_params)
+train_weights = network.all_weights
+train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost, var_list=train_weights)
 
 tl.layers.initialize_global_variables(sess)
 

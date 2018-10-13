@@ -19,11 +19,11 @@ squeezenet = tl.models.SqueezeNetV1(x)
 # restore pre-trained parameters
 sess = tf.InteractiveSession()
 
-squeezenet.restore_params(sess)
+squeezenet.restore_weights(sess)
 
 probs = tf.nn.softmax(squeezenet.outputs)
 
-squeezenet.print_params(False)
+squeezenet.print_weights(False)
 
 squeezenet.print_layers()
 

@@ -42,8 +42,8 @@ correct_prediction = tf.equal(tf.argmax(y2, 1), y_)
 acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # define the optimizer
-train_params = tl.layers.get_variables_with_name('MLP', True, False)
-train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_params)
+train_weights = tl.layers.get_variables_with_name('MLP', True, False)
+train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_weights)
 
 # initialize all variables in the session
 tl.layers.initialize_global_variables(sess)

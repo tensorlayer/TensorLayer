@@ -161,17 +161,17 @@ with tf.device('/cpu:0'):
     def model(x_crop, y_, reuse):
         """For more simplified CNN APIs, check tensorlayer.org."""
         with tf.variable_scope("model", reuse=reuse):
-            net = tl.layers.InputLayer(x_crop, name='input')
-            net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn1')
-            net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
-            net = tl.layers.LocalResponseNormLayer(net, 4, 1.0, 0.001 / 9.0, 0.75, name='norm1')
-            net = tl.layers.DorefaConv2d(net, 1, 3, 64, (5, 5), (1, 1), tf.nn.relu, padding='SAME', name='cnn2')
-            net = tl.layers.LocalResponseNormLayer(net, 4, 1.0, 0.001 / 9.0, 0.75, name='norm2')
-            net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
-            net = tl.layers.FlattenLayer(net, name='flatten')
-            net = tl.layers.DorefaDenseLayer(net, 1, 3, 384, act=tf.nn.relu, name='d1relu')
-            net = tl.layers.DorefaDenseLayer(net, 1, 3, 192, act=tf.nn.relu, name='d2relu')
-            net = tl.layers.DenseLayer(net, 10, act=None, name='output')
+            net = tl.layers.InputLayer(name='input')(x_crop)
+            net = tl.layers.Conv2d(64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn1')(net)
+            net = tl.layers.MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(net)
+            net = tl.layers.LocalResponseNormLayer(4, 1.0, 0.001 / 9.0, 0.75, name='norm1')(net)
+            net = tl.layers.DorefaConv2d(1, 3, 64, (5, 5), (1, 1), tf.nn.relu, padding='SAME', name='cnn2')(net)
+            net = tl.layers.LocalResponseNormLayer(4, 1.0, 0.001 / 9.0, 0.75, name='norm2')(net)
+            net = tl.layers.MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(net)
+            net = tl.layers.FlattenLayer(name='flatten')(net)
+            net = tl.layers.DorefaDenseLayer(1, 3, 384, act=tf.nn.relu, name='d1relu')(net)
+            net = tl.layers.DorefaDenseLayer(1, 3, 192, act=tf.nn.relu, name='d2relu')(net)
+            net = tl.layers.DenseLayer(10, act=None, name='output')(net)
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -213,7 +213,7 @@ with tf.device('/cpu:0'):
         saver = tf.train.Saver()
         saver.restore(sess, model_file_name)
 
-    network.print_params(False)
+    network.print_weights(False)
     network.print_layers()
 
     print('   learning_rate: %f' % learning_rate)
@@ -259,7 +259,7 @@ with tf.device('/cpu:0'):
             saver = tf.train.Saver()
             save_path = saver.save(sess, model_file_name)
             # you can also save model into npz
-            tl.files.save_npz(network.all_params, name='model.npz', sess=sess)
+            tl.files.save_npz(network.all_weights, name='model.npz', sess=sess)
             # and restore it as follow:
             # tl.files.load_and_assign_npz(sess=sess, name='model.npz', network=network)
 

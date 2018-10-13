@@ -284,7 +284,7 @@ with tf.device('/cpu:0'):
         saver = tf.train.Saver()
         saver.restore(sess, model_file_name)
 
-    network.print_params(False)
+    network.print_weights(False)
     network.print_layers()
 
     print('   learning_rate: %f' % learning_rate)
@@ -330,7 +330,7 @@ with tf.device('/cpu:0'):
             saver = tf.train.Saver()
             save_path = saver.save(sess, model_file_name)
             # you can also save model into npz
-            tl.files.save_npz(network.all_params, name='model.npz', sess=sess)
+            tl.files.save_npz(network.all_weights, name='model.npz', sess=sess)
             # and restore it as follow:
             # tl.files.load_and_assign_npz(sess=sess, name='model.npz', network=network)
 

@@ -19,11 +19,11 @@ vgg = tl.models.VGG16(x)
 # restore pre-trained VGG parameters
 sess = tf.InteractiveSession()
 
-vgg.restore_params(sess)
+vgg.restore_weights(sess)
 
 probs = tf.nn.softmax(vgg.outputs)
 
-vgg.print_params(False)
+vgg.print_weights(False)
 
 vgg.print_layers()
 

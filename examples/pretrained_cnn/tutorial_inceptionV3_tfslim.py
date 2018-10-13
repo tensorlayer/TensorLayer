@@ -81,8 +81,8 @@ def print_prob(prob):
 
 ## Alexnet_v2 / All TF-Slim nets can be merged into TensorLayer
 # x = tf.placeholder(tf.float32, shape=[None, 299, 299, 3])
-# net_in = tl.layers.InputLayer(x, name='input_layer')
-# network = tl.layers.SlimNetsLayer(layer=net_in, slim_layer=alexnet_v2,
+# net_in = tl.layers.InputLayer(name='input_layer')(x)
+# network = tl.layers.SlimNetsLayer(slim_layer=alexnet_v2,
 #                                 slim_args= {
 #                                        'num_classes' : 1000,
 #                                        'is_training' : True,
@@ -91,21 +91,20 @@ def print_prob(prob):
 #                                        'scope' : 'alexnet_v2'
 #                                         },
 #                                     name='alexnet_v2'  # <-- the name should be the same with the ckpt model
-#                                     )
+#                                     )(net_in)
 # sess = tf.InteractiveSession()
 # # sess.run(tf.global_variables_initializer())
 # tl.layers.initialize_global_variables(sess)
-# network.print_params()
+# network.print_weights()
 
 ## InceptionV3 / All TF-Slim nets can be merged into TensorLayer
 x = tf.placeholder(tf.float32, shape=[None, 299, 299, 3])
-net_in = tl.layers.InputLayer(x, name='input_layer')
+net_in = tl.layers.InputLayer(name='input_layer')(x)
 with slim.arg_scope(inception_v3_arg_scope()):
     ## Alternatively, you should implement inception_v3 without TensorLayer as follow.
     # logits, end_points = inception_v3(X, num_classes=1001,
     #                                   is_training=False)
     network = tl.layers.SlimNetsLayer(
-        prev_layer=net_in,
         slim_layer=inception_v3,
         slim_args={
             'num_classes': 1001,
@@ -119,11 +118,11 @@ with slim.arg_scope(inception_v3_arg_scope()):
             #  'scope' : 'InceptionV3'
         },
         name='InceptionV3'  # <-- the name should be the same with the ckpt model
-    )
+    )(net_in)
 
 sess = tf.InteractiveSession()
 
-network.print_params(False)
+network.print_weights(False)
 
 saver = tf.train.Saver()
 if not os.path.isfile(MODEL_PATH):
@@ -147,4 +146,4 @@ print("End time : %.5ss" % (time.time() - start_time))
 print_prob(prob[0][1:])  # Note : as it have 1001 outputs, the 1st output is nothing
 
 ## You can save the model into npz file
-# tl.files.save_npz(network.all_params, name='model_inceptionV3.npz')
+# tl.files.save_npz(network.all_weights, name='model_inceptionV3.npz')

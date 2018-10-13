@@ -47,64 +47,64 @@ def squeezenet(x, is_train=True, reuse=False):
     with tf.variable_scope("squeezenet", reuse=reuse):
         with tf.variable_scope("input"):
             n = InputLayer(x)
-            # n = Conv2d(n, 96, (7,7),(2,2),tf.nn.relu,'SAME',name='conv1')
-            n = Conv2d(n, 64, (3, 3), (2, 2), tf.nn.relu, 'SAME', name='conv1')
-            n = MaxPool2d(n, (3, 3), (2, 2), 'VALID', name='max')
+            # n = Conv2d(96, (7,7),(2,2),tf.nn.relu,'SAME',name='conv1')(n)
+            n = Conv2d(64, (3, 3), (2, 2), tf.nn.relu, 'SAME', name='conv1')(n)
+            n = MaxPool2d((3, 3), (2, 2), 'VALID', name='max')(n)
 
         with tf.variable_scope("fire2"):
-            n = Conv2d(n, 16, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
-            n1 = Conv2d(n, 64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
-            n2 = Conv2d(n, 64, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-            n = ConcatLayer([n1, n2], -1, name='concat')
+            n = Conv2d(16, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')(n)
+            n1 = Conv2d(64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')(n)
+            n2 = Conv2d(64, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')(n)
+            n = ConcatLayer(-1, name='concat')([n1, n2])
 
         with tf.variable_scope("fire3"):
-            n = Conv2d(n, 16, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
-            n1 = Conv2d(n, 64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
-            n2 = Conv2d(n, 64, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-            n = ConcatLayer([n1, n2], -1, name='concat')
-            n = MaxPool2d(n, (3, 3), (2, 2), 'VALID', name='max')
+            n = Conv2d(16, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')(n)
+            n1 = Conv2d(64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')(n)
+            n2 = Conv2d(64, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')(n)
+            n = ConcatLayer(-1, name='concat')([n1, n2])
+            n = MaxPool2d((3, 3), (2, 2), 'VALID', name='max')(n)
 
         with tf.variable_scope("fire4"):
-            n = Conv2d(n, 32, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
-            n1 = Conv2d(n, 128, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
-            n2 = Conv2d(n, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-            n = ConcatLayer([n1, n2], -1, name='concat')
+            n = Conv2d(32, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')(n)
+            n1 = Conv2d(128, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')(n)
+            n2 = Conv2d(128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')(n)
+            n = ConcatLayer(-1, name='concat')([n1, n2])
 
         with tf.variable_scope("fire5"):
-            n = Conv2d(n, 32, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
-            n1 = Conv2d(n, 128, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
-            n2 = Conv2d(n, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-            n = ConcatLayer([n1, n2], -1, name='concat')
-            n = MaxPool2d(n, (3, 3), (2, 2), 'VALID', name='max')
+            n = Conv2d(32, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')(n)
+            n1 = Conv2d(128, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')(n)
+            n2 = Conv2d(128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')(n)
+            n = ConcatLayer(-1, name='concat')([n1, n2])
+            n = MaxPool2d((3, 3), (2, 2), 'VALID', name='max')(n)
 
         with tf.variable_scope("fire6"):
-            n = Conv2d(n, 48, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
-            n1 = Conv2d(n, 192, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
-            n2 = Conv2d(n, 192, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-            n = ConcatLayer([n1, n2], -1, name='concat')
+            n = Conv2d(48, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')(n)
+            n1 = Conv2d(192, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')(n)
+            n2 = Conv2d(192, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')(n)
+            n = ConcatLayer(-1, name='concat')([n1, n2])
 
         with tf.variable_scope("fire7"):
-            n = Conv2d(n, 48, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
-            n1 = Conv2d(n, 192, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
-            n2 = Conv2d(n, 192, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-            n = ConcatLayer([n1, n2], -1, name='concat')
+            n = Conv2d(48, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')(n)
+            n1 = Conv2d(192, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')(n)
+            n2 = Conv2d(192, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')(n)
+            n = ConcatLayer(-1, name='concat')([n1, n2])
 
         with tf.variable_scope("fire8"):
-            n = Conv2d(n, 64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
-            n1 = Conv2d(n, 256, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
-            n2 = Conv2d(n, 256, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-            n = ConcatLayer([n1, n2], -1, name='concat')
+            n = Conv2d(64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')(n)
+            n1 = Conv2d(256, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')(n)
+            n2 = Conv2d(256, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')(n)
+            n = ConcatLayer(-1, name='concat')([n1, n2])
 
         with tf.variable_scope("fire9"):
-            n = Conv2d(n, 64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
-            n1 = Conv2d(n, 256, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
-            n2 = Conv2d(n, 256, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
-            n = ConcatLayer([n1, n2], -1, name='concat')
+            n = Conv2d(64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')(n)
+            n1 = Conv2d(256, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')(n)
+            n2 = Conv2d(256, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')(n)
+            n = ConcatLayer(-1, name='concat')([n1, n2])
 
         with tf.variable_scope("output"):
-            n = DropoutLayer(n, keep=0.5, is_fix=True, is_train=is_train, name='drop1')
-            n = Conv2d(n, 1000, (1, 1), (1, 1), padding='VALID', name='conv10')  # 13, 13, 1000
-            n = GlobalMeanPool2d(n)
+            n = DropoutLayer(keep=0.5, is_fix=True, is_train=is_train, name='drop1')(n)
+            n = Conv2d(1000, (1, 1), (1, 1), padding='VALID', name='conv10')(n)  # 13, 13, 1000
+            n = GlobalMeanPool2d()(n)
         return n
 
 
@@ -112,7 +112,7 @@ x = tf.placeholder(tf.float32, (None, 224, 224, 3))
 n = squeezenet(x, False, False)
 softmax = tf.nn.softmax(n.outputs)
 n.print_layers()
-n.print_params(False)
+n.print_weights(False)
 
 sess = tf.InteractiveSession()
 tl.layers.initialize_global_variables(sess)
@@ -132,4 +132,4 @@ prob = sess.run(softmax, feed_dict={x: [img]})[0]
 print("  End time : %.5ss" % (time.time() - start_time))
 
 print('Predicted:', decode_predictions([prob], top=3)[0])
-tl.files.save_npz(n.all_params, name=MODEL_PATH, sess=sess)
+tl.files.save_npz(n.all_weights, name=MODEL_PATH, sess=sess)

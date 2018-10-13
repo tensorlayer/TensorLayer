@@ -21,23 +21,20 @@ y_ = tf.placeholder(tf.int64, shape=[batch_size])
 
 def model(x, is_train=True, reuse=False):
     with tf.variable_scope("quan_cnn", reuse=reuse):
-        net = tl.layers.InputLayer(x, name='input')
-        net = tl.layers.QuanConv2dWithBN(
-            net, 32, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train=is_train, name='qcbnb1'
-        )
-        net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
+        net = tl.layers.InputLayer(name='input')(x)
+        net = tl.layers.QuanConv2dWithBN(32, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, \
+            name='qcbnb1')(net, is_train=is_train)
+        net = tl.layers.MaxPool2d((2, 2), (2, 2), padding='SAME', name='pool1')(net)
 
-        net = tl.layers.QuanConv2dWithBN(
-            net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train=is_train, name='qcbn2'
-        )
-        net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
+        net = tl.layers.QuanConv2dWithBN(64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, name='qcbn2')(net, is_train=is_train)
+        net = tl.layers.MaxPool2d((2, 2), (2, 2), padding='SAME', name='pool2')(net)
 
-        net = tl.layers.FlattenLayer(net)
-        # net = tl.layers.DropoutLayer(net, 0.8, True, is_train, name='drop1')
-        net = tl.layers.QuanDenseLayerWithBN(net, 256, is_train=is_train, act=tf.nn.relu, name='qdbn')
+        net = tl.layers.FlattenLayer()(net)
+        # net = tl.layers.DropoutLayer(0.8, True, name='drop1')(net, is_train=is_train)
+        net = tl.layers.QuanDenseLayerWithBN(256, is_train=is_train, act=tf.nn.relu, name='qdbn')(net, is_train=is_train)
 
-        # net = tl.layers.DropoutLayer(net, 0.8, True, is_train, name='drop2')
-        net = tl.layers.QuanDenseLayer(net, 10, name='qdbn_out')
+        # net = tl.layers.DropoutLayer(0.8, True, name='drop2')(net, is_train=is_train)
+        net = tl.layers.QuanDenseLayer(10, name='qdbn_out')(net)
     return net
 
 
@@ -56,19 +53,19 @@ correct_prediction = tf.equal(tf.argmax(y2, 1), y_)
 acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # define the optimizer
-train_params = tl.layers.get_variables_with_name('quan_cnn', True, True)
-train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_params)
+train_weights = tl.layers.get_variables_with_name('quan_cnn', True, True)
+train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_weights)
 
 # initialize all variables in the session
 sess.run(tf.global_variables_initializer())
 
-net_train.print_params(False)
+net_train.print_weights(False)
 net_train.print_layers()
 
 n_epoch = 200
 print_freq = 5
 
-# print(sess.run(net_test.all_params)) # print real values of parameters
+# print(sess.run(net_test.all_weights)) # print real values of parameters
 
 for epoch in range(n_epoch):
     start_time = time.time()

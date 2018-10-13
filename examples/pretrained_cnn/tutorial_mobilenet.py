@@ -23,17 +23,17 @@ MODEL_PATH = os.path.join("models", "mobilenet.npz")
 def conv_block(n, n_filter, filter_size=(3, 3), strides=(1, 1), is_train=False, name='conv_block'):
     # ref: https://github.com/keras-team/keras/blob/master/keras/applications/mobilenet.py
     with tf.variable_scope(name):
-        n = Conv2d(n, n_filter, filter_size, strides, b_init=None, name='conv')
-        n = BatchNormLayer(n, act=tf.nn.relu6, is_train=is_train, name='batchnorm')
+        n = Conv2d(n_filter, filter_size, strides, b_init=None, name='conv')(n)
+        n = BatchNormLayer(decay=0.999, act=tf.nn.relu6, name='batchnorm')(n, is_train=is_train)
     return n
 
 
 def depthwise_conv_block(n, n_filter, strides=(1, 1), is_train=False, name="depth_block"):
     with tf.variable_scope(name):
-        n = DepthwiseConv2d(n, (3, 3), strides, b_init=None, name='depthwise')
-        n = BatchNormLayer(n, act=tf.nn.relu6, is_train=is_train, name='batchnorm1')
-        n = Conv2d(n, n_filter, (1, 1), (1, 1), b_init=None, name='conv')
-        n = BatchNormLayer(n, act=tf.nn.relu6, is_train=is_train, name='batchnorm2')
+        n = DepthwiseConv2d((3, 3), strides, b_init=None, name='depthwise')(n)
+        n = BatchNormLayer(decay=0.999, act=tf.nn.relu6, name='batchnorm1')(n, is_train=is_train)
+        n = Conv2d(n_filter, (1, 1), (1, 1), b_init=None, name='conv')(n)
+        n = BatchNormLayer(decay=0.999, act=tf.nn.relu6, name='batchnorm2')(n, is_train=is_train)
     return n
 
 
@@ -88,9 +88,9 @@ def mobilenet(x, is_train=True, reuse=False):
         n = GlobalMeanPool2d(n)
         # n = DropoutLayer(n, 1-1e-3, True, is_train, name='drop')
         # n = DenseLayer(n, 1000, act=None, name='output')   # equal
-        n = ReshapeLayer(n, [-1, 1, 1, 1024])
-        n = Conv2d(n, 1000, (1, 1), (1, 1), name='out')
-        n = FlattenLayer(n)
+        n = ReshapeLayer([-1, 1, 1, 1024])(n)
+        n = Conv2d(1000, (1, 1), (1, 1), name='out')(n)
+        n = FlattenLayer()(n)
     return n
 
 
@@ -98,7 +98,7 @@ x = tf.placeholder(tf.float32, (None, 224, 224, 3))
 n = mobilenet(x, False, False)
 softmax = tf.nn.softmax(n.outputs)
 n.print_layers()
-n.print_params(False)
+n.print_weights(False)
 
 sess = tf.InteractiveSession()
 # tl.layers.initialize_global_variables(sess)
@@ -116,4 +116,4 @@ prob = sess.run(softmax, feed_dict={x: [img]})[0]
 
 print("  End time : %.5ss" % (time.time() - start_time))
 print('Predicted :', decode_predictions([prob], top=3)[0])
-# tl.files.save_npz(n.all_params, name=MODEL_PATH, sess=sess)
+# tl.files.save_npz(n.all_weights, name=MODEL_PATH, sess=sess)

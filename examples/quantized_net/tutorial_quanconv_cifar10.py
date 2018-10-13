@@ -56,23 +56,19 @@ X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 
 
 def model(x, y_, reuse, is_train, bitW, bitA):
     with tf.variable_scope("model", reuse=reuse):
-        net = tl.layers.InputLayer(x, name='input')
-        net = tl.layers.QuanConv2dWithBN(
-            net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', is_train=is_train, bitW=bitW, bitA=bitA,
-            name='qcnnbn1'
-        )
-        net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
-        # net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn1')
-        net = tl.layers.QuanConv2dWithBN(
-            net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train=is_train, bitW=bitW, bitA=bitA,
-            name='qcnnbn2'
-        )
-        # net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn2')
-        net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
-        net = tl.layers.FlattenLayer(net, name='flatten')
-        net = tl.layers.QuanDenseLayer(net, 384, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd1relu')
-        net = tl.layers.QuanDenseLayer(net, 192, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd2relu')
-        net = tl.layers.DenseLayer(net, 10, act=None, name='output')
+        net = tl.layers.InputLayer(name='input')(net)
+        net = tl.layers.QuanConv2dWithBN(64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', \
+            bitW=bitW, bitA=bitA, name='qcnnbn1')(net, is_train=is_train)
+        net = tl.layers.MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(net)
+        # net = tl.layers.BatchNormLayer(decay=0.95, act=tl.act.htanh, name='bn1')(net, is_train=is_train)
+        net = tl.layers.QuanConv2dWithBN(64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', \
+            bitW=bitW, bitA=bitA, name='qcnnbn2' )(net, is_train=is_train)
+        # net = tl.layers.BatchNormLayer(decay=0.95, act=tl.act.htanh, name='bn2')(net, is_train=is_train)
+        net = tl.layers.MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(net)
+        net = tl.layers.FlattenLayer(name='flatten')(net)
+        net = tl.layers.QuanDenseLayer(384, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd1relu')(net)
+        net = tl.layers.QuanDenseLayer(192, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd2relu')(net)
+        net = tl.layers.DenseLayer(10, act=None, name='output')(net)
         y = net.outputs
 
         ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -114,7 +110,7 @@ train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon
 
 sess.run(tf.global_variables_initializer())
 
-network.print_params(False)
+network.print_weights(False)
 network.print_layers()
 
 print('   learning_rate: %f' % learning_rate)
