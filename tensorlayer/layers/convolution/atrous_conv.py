@@ -19,277 +19,286 @@ __all__ = [
 ]
 
 
-# def atrous_conv1d(
-class AtrousConv1dLayer(Layer)
-    """The :class:`AtrousConv2dLayer` class is 1D atrous convolution.
-
-    Parameters
-    ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
-    n_filter : int
-        The number of filters.
-    filter_size : int
-        The filter size.
-    rate : int
-        The stride that we sample input values in the height and width dimensions.
-        This equals the rate that we up-sample the filters by inserting zeros across the height and width dimensions.
-        In the literature, this parameter is sometimes mentioned as input stride or dilation.
-    act : activation function
-        The activation function of this layer.
-    padding : str
-        The padding algorithm type: "SAME" or "VALID".
-    data_format : str
-        Default is 'NWC' as it is a 1D CNN.
-    W_init : initializer
-        The initializer for the weight matrix.
-    b_init : initializer or None
-        The initializer for the bias vector. If None, skip biases.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer.
-    b_init_args : dictionary
-        The arguments for the bias vector initializer.
-    name : str
-        A unique layer name.
-
-    Returns
-    -------
-    :class:`Layer`
-        A :class:`AtrousConv1dLayer` object
-
-    """
-    # return Conv1dLayer(
-    #     act=act,
-    #     shape=(filter_size, int(prev_layer.outputs.get_shape()[-1]), n_filter),
-    #     stride=stride,
-    #     padding=padding,
-    #     dilation_rate=dilation,
-    #     data_format=data_format,
-    #     W_init=W_init,
-    #     b_init=b_init,
-    #     W_init_args=W_init_args,
-    #     b_init_args=b_init_args,
-    #     name=name,
-    # )(prev_layer)
-    def __init__(
-        self,
-        prev_layer=None,
-        n_filter=32,
-        filter_size=2,
-        rate=1,
-        # dilation=1,
-        act=None,
-        padding='SAME',
-        data_format='NWC',
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='atrous_1d',
-        ):
-        padding = padding.upper()
-        if padding not in ["SAME", "VALID"]:
-            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
-
-        self.n_filter = n_filter
-        self.filter_size = filter_size
-        self.rate = rate
-        # self.dilation = dilation
-        self.padding = padding
-        self.data_format = data_format
-        self.W_init = W_init
-        self.b_init = b_init
-        self.act = act
-        self.name = name
-
-        if self.data_format != 'NWC':
-            raise Exception("only support to NWC")
-
-        super(AtrousConv1dLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
-
-    def __str__(self):
-        additional_str = []
-
-        try:
-            additional_str.append("n_filter: %d" % self.n_filter)
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("filter_size: %s" % str(self.filter_size))
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("rate: %d" % self.rate)
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("padding: %s" % self.padding)
-        except AttributeError:
-            pass
-
-        return self._str(additional_str)
-
-    def build(self):
-
-        with tf.variable_scope(self.name):
-            # shape = [
-            #     self.filter_size[0], self.filter_size[1],
-            #     int(self._temp_data['inputs'].get_shape()[-1]), self.n_filter
-            # ]
-            shape=(self.filter_size, int(self._temp_data['inputs'].get_shape()[-1]), self.n_filter),
-
-            weight_matrix = self._get_tf_variable(
-                name='W_atrous_conv1d',
-                shape=shape,
-                dtype=self._temp_data['inputs'].dtype,
-                trainable=self._temp_data['is_train'],
-                initializer=self.W_init,
-                **self.W_init_args
-            )
-
-            self._temp_data['outputs'] = tf.nn.atrous_conv1d(
-                self._temp_data['inputs'], filters=weight_matrix, rate=self.rate, padding=self.padding
-            )
-
-            if self.b_init:
-                b = self._get_tf_variable(
-                    name='b_atrous_conv1d',
-                    shape=(self.n_filter, ),
-                    dtype=self._temp_data['inputs'].dtype,
-                    trainable=self._temp_data['is_train'],
-                    initializer=self.b_init,
-                    **self.b_init_args
-                )
-
-                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
-
-            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
+def AtrousConv1dLayer(**kwargs):
+    raise Exception("use Conv1d with dilation instead")
 
 
-class AtrousConv2dLayer(Layer):
-    """The :class:`AtrousConv2dLayer` class is 2D atrous convolution (a.k.a. convolution with holes or dilated
-    convolution) 2D layer, see `tf.nn.atrous_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d>`__.
-
-    Parameters
-    ----------
-    n_filter : int
-        The number of filters.
-    filter_size : tuple of int
-        The filter size: (height, width).
-    rate : int
-        The stride that we sample input values in the height and width dimensions.
-        This equals the rate that we up-sample the filters by inserting zeros across the height and width dimensions.
-        In the literature, this parameter is sometimes mentioned as input stride or dilation.
-    act : activation function
-        The activation function of this layer.
-    padding : str
-        The padding algorithm type: "SAME" or "VALID".
-    W_init : initializer
-        The initializer for the weight matrix.
-    b_init : initializer or None
-        The initializer for the bias vector. If None, skip biases.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer.
-    b_init_args : dictionary
-        The arguments for the bias vector initializer.
-    name : str
-        A unique layer name.
-
-    """
-
-    def __init__(
-        self,
-        n_filter=32,
-        filter_size=(3, 3),
-        rate=2,
-        act=None,
-        padding='SAME',
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='atrous_2d'
-    ):
-
-        padding = padding.upper()
-        if padding not in ["SAME", "VALID"]:
-            raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
-
-        self.n_filter = n_filter
-        self.filter_size = filter_size
-        self.rate = rate
-        self.padding = padding
-        self.W_init = W_init
-        self.b_init = b_init
-        self.act = act
-        self.name = name
-
-        super(AtrousConv2dLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
-
-    def __str__(self):
-        additional_str = []
-
-        try:
-            additional_str.append("n_filter: %d" % self.n_filter)
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("filter_size: %s" % str(self.filter_size))
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("rate: %d" % self.rate)
-        except AttributeError:
-            pass
-
-        try:
-            additional_str.append("padding: %s" % self.padding)
-        except AttributeError:
-            pass
-
-        return self._str(additional_str)
-
-    def build(self):
-
-        with tf.variable_scope(self.name):
-            shape = [
-                self.filter_size[0], self.filter_size[1],
-                int(self._temp_data['inputs'].get_shape()[-1]), self.n_filter
-            ]
-
-            weight_matrix = self._get_tf_variable(
-                name='W_atrous_conv2d',
-                shape=shape,
-                dtype=self._temp_data['inputs'].dtype,
-                trainable=self._temp_data['is_train'],
-                initializer=self.W_init,
-                **self.W_init_args
-            )
-
-            self._temp_data['outputs'] = tf.nn.atrous_conv2d(
-                self._temp_data['inputs'], filters=weight_matrix, rate=self.rate, padding=self.padding
-            )
-
-            if self.b_init:
-                b = self._get_tf_variable(
-                    name='b_atrous_conv2d',
-                    shape=(self.n_filter, ),
-                    dtype=self._temp_data['inputs'].dtype,
-                    trainable=self._temp_data['is_train'],
-                    initializer=self.b_init,
-                    **self.b_init_args
-                )
-
-                self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
-
-            self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
+def AtrousConv2dLayer(**kwargs):
+    raise Exception("use Conv2d with dilation instead")
 
 
+# # def atrous_conv1d(
+# class AtrousConv1dLayer(Layer):
+#     """The :class:`AtrousConv2dLayer` class is 1D atrous convolution.
+#
+#     Parameters
+#     ----------
+#     prev_layer : :class:`Layer`
+#         Previous layer.
+#     n_filter : int
+#         The number of filters.
+#     filter_size : int
+#         The filter size.
+#     rate : int
+#         The stride that we sample input values in the height and width dimensions.
+#         This equals the rate that we up-sample the filters by inserting zeros across the height and width dimensions.
+#         In the literature, this parameter is sometimes mentioned as input stride or dilation.
+#     act : activation function
+#         The activation function of this layer.
+#     padding : str
+#         The padding algorithm type: "SAME" or "VALID".
+#     data_format : str
+#         Default is 'NWC' as it is a 1D CNN.
+#     W_init : initializer
+#         The initializer for the weight matrix.
+#     b_init : initializer or None
+#         The initializer for the bias vector. If None, skip biases.
+#     W_init_args : dictionary
+#         The arguments for the weight matrix initializer.
+#     b_init_args : dictionary
+#         The arguments for the bias vector initializer.
+#     name : str
+#         A unique layer name.
+#
+#     Returns
+#     -------
+#     :class:`Layer`
+#         A :class:`AtrousConv1dLayer` object
+#
+#     """
+#     # return Conv1dLayer(
+#     #     act=act,
+#     #     shape=(filter_size, int(prev_layer.outputs.get_shape()[-1]), n_filter),
+#     #     stride=stride,
+#     #     padding=padding,
+#     #     dilation_rate=dilation,
+#     #     data_format=data_format,
+#     #     W_init=W_init,
+#     #     b_init=b_init,
+#     #     W_init_args=W_init_args,
+#     #     b_init_args=b_init_args,
+#     #     name=name,
+#     # )(prev_layer)
+#     def __init__(
+#         self,
+#         prev_layer=None,
+#         n_filter=32,
+#         filter_size=2,
+#         rate=1,
+#         # dilation=1,
+#         act=None,
+#         padding='SAME',
+#         data_format='NWC',
+#         W_init=tf.truncated_normal_initializer(stddev=0.02),
+#         b_init=tf.constant_initializer(value=0.0),
+#         W_init_args=None,
+#         b_init_args=None,
+#         name='atrous_1d',
+#         ):
+#         padding = padding.upper()
+#         if padding not in ["SAME", "VALID"]:
+#             raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
+#
+#         self.n_filter = n_filter
+#         self.filter_size = filter_size
+#         self.rate = rate
+#         # self.dilation = dilation
+#         self.padding = padding
+#         self.data_format = data_format
+#         self.W_init = W_init
+#         self.b_init = b_init
+#         self.act = act
+#         self.name = name
+#
+#         if self.data_format != 'NWC':
+#             raise Exception("only support to NWC")
+#
+#         super(AtrousConv1dLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+#
+#     def __str__(self):
+#         additional_str = []
+#
+#         try:
+#             additional_str.append("n_filter: %d" % self.n_filter)
+#         except AttributeError:
+#             pass
+#
+#         try:
+#             additional_str.append("filter_size: %s" % str(self.filter_size))
+#         except AttributeError:
+#             pass
+#
+#         try:
+#             additional_str.append("rate: %d" % self.rate)
+#         except AttributeError:
+#             pass
+#
+#         try:
+#             additional_str.append("padding: %s" % self.padding)
+#         except AttributeError:
+#             pass
+#
+#         return self._str(additional_str)
+#
+#     def build(self):
+#
+#         with tf.variable_scope(self.name):
+#             # shape = [
+#             #     self.filter_size[0], self.filter_size[1],
+#             #     int(self._temp_data['inputs'].get_shape()[-1]), self.n_filter
+#             # ]
+#             shape=[self.filter_size, int(self._temp_data['inputs'].get_shape()[-1]), self.n_filter]
+#             # print(self.W_init_args)
+#             # exit()
+#             weight_matrix = self._get_tf_variable(
+#                 name='W_atrous_conv1d',
+#                 shape=shape,
+#                 dtype=self._temp_data['inputs'].dtype,
+#                 trainable=self._temp_data['is_train'],
+#                 initializer=self.W_init,
+#                 **self.W_init_args
+#             )
+#
+#             self._temp_data['outputs'] = tf.nn.atrous_conv1d(
+#                 self._temp_data['inputs'], filters=weight_matrix, rate=self.rate, padding=self.padding
+#             )
+#
+#             if self.b_init:
+#                 b = self._get_tf_variable(
+#                     name='b_atrous_conv1d',
+#                     shape=(self.n_filter, ),
+#                     dtype=self._temp_data['inputs'].dtype,
+#                     trainable=self._temp_data['is_train'],
+#                     initializer=self.b_init,
+#                     **self.b_init_args
+#                 )
+#
+#                 self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
+#
+#             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
+#
+#
+# class AtrousConv2dLayer(Layer):
+#     """The :class:`AtrousConv2dLayer` class is 2D atrous convolution (a.k.a. convolution with holes or dilated
+#     convolution) 2D layer, see `tf.nn.atrous_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d>`__.
+#
+#     Parameters
+#     ----------
+#     n_filter : int
+#         The number of filters.
+#     filter_size : tuple of int
+#         The filter size: (height, width).
+#     rate : int
+#         The stride that we sample input values in the height and width dimensions.
+#         This equals the rate that we up-sample the filters by inserting zeros across the height and width dimensions.
+#         In the literature, this parameter is sometimes mentioned as input stride or dilation.
+#     act : activation function
+#         The activation function of this layer.
+#     padding : str
+#         The padding algorithm type: "SAME" or "VALID".
+#     W_init : initializer
+#         The initializer for the weight matrix.
+#     b_init : initializer or None
+#         The initializer for the bias vector. If None, skip biases.
+#     W_init_args : dictionary
+#         The arguments for the weight matrix initializer.
+#     b_init_args : dictionary
+#         The arguments for the bias vector initializer.
+#     name : str
+#         A unique layer name.
+#
+#     """
+#
+#     def __init__(
+#         self,
+#         n_filter=32,
+#         filter_size=(3, 3),
+#         rate=2,
+#         act=None,
+#         padding='SAME',
+#         W_init=tf.truncated_normal_initializer(stddev=0.02),
+#         b_init=tf.constant_initializer(value=0.0),
+#         W_init_args=None,
+#         b_init_args=None,
+#         name='atrous_2d'
+#     ):
+#
+#         padding = padding.upper()
+#         if padding not in ["SAME", "VALID"]:
+#             raise ValueError("`padding` value is not valid, should be either: 'SAME' or 'VALID'")
+#
+#         self.n_filter = n_filter
+#         self.filter_size = filter_size
+#         self.rate = rate
+#         self.padding = padding
+#         self.W_init = W_init
+#         self.b_init = b_init
+#         self.act = act
+#         self.name = name
+#
+#         super(AtrousConv2dLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+#
+#     def __str__(self):
+#         additional_str = []
+#
+#         try:
+#             additional_str.append("n_filter: %d" % self.n_filter)
+#         except AttributeError:
+#             pass
+#
+#         try:
+#             additional_str.append("filter_size: %s" % str(self.filter_size))
+#         except AttributeError:
+#             pass
+#
+#         try:
+#             additional_str.append("rate: %d" % self.rate)
+#         except AttributeError:
+#             pass
+#
+#         try:
+#             additional_str.append("padding: %s" % self.padding)
+#         except AttributeError:
+#             pass
+#
+#         return self._str(additional_str)
+#
+#     def build(self):
+#
+#         with tf.variable_scope(self.name):
+#             shape = [
+#                 self.filter_size[0], self.filter_size[1],
+#                 int(self._temp_data['inputs'].get_shape()[-1]), self.n_filter
+#             ]
+#
+#             weight_matrix = self._get_tf_variable(
+#                 name='W_atrous_conv2d',
+#                 shape=shape,
+#                 dtype=self._temp_data['inputs'].dtype,
+#                 trainable=self._temp_data['is_train'],
+#                 initializer=self.W_init,
+#                 **self.W_init_args
+#             )
+#
+#             self._temp_data['outputs'] = tf.nn.atrous_conv2d(
+#                 self._temp_data['inputs'], filters=weight_matrix, rate=self.rate, padding=self.padding
+#             )
+#
+#             if self.b_init:
+#                 b = self._get_tf_variable(
+#                     name='b_atrous_conv2d',
+#                     shape=(self.n_filter, ),
+#                     dtype=self._temp_data['inputs'].dtype,
+#                     trainable=self._temp_data['is_train'],
+#                     initializer=self.b_init,
+#                     **self.b_init_args
+#                 )
+#
+#                 self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
+#
+#             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
+#
+#
 class AtrousDeConv2dLayer(Layer):
     """The :class:`AtrousDeConv2dLayer` class is 2D atrous convolution transpose, see `tf.nn.atrous_conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d_transpose>`__.
 
@@ -412,7 +421,3 @@ class AtrousDeConv2dLayer(Layer):
                 self._temp_data['outputs'] = tf.nn.bias_add(self._temp_data['outputs'], b, name='bias_add')
 
             self._temp_data['outputs'] = self._apply_activation(self._temp_data['outputs'])
-
-
-# Alias
-AtrousConv1dLayer = atrous_conv1d
