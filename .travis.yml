@@ -1,6 +1,9 @@
 # https://docs.travis-ci.com/user/languages/python/
 language: python
 
+# https://docs.travis-ci.com/user/caching/#pip-cache
+cache: pip
+
 addons:
   apt:
     update: false
