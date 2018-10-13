@@ -33,14 +33,14 @@ acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 y_op = tf.argmax(tf.nn.softmax(y), 1)
 
 # define the optimizer
-train_params = network.all_params
-train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_params)
+train_weights = network.all_weights
+train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_weights)
 
 # initialize all variables in the session
 tl.layers.initialize_global_variables(sess)
 
 # print network information
-network.print_params()
+network.print_weights()
 network.print_layers()
 
 n_epoch = 500

@@ -35,14 +35,14 @@ acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 y_op = tf.argmax(tf.nn.softmax(y), 1)
 
 # define the optimizer
-train_params = network.all_params
-train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_params)
+train_weights = network.all_weights
+train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_weights)
 
 # initialize all variables in the session
 tl.layers.initialize_global_variables(sess)
 
 # print network information
-network.print_params()
+network.print_weights()
 network.print_layers()
 
 # train the network
@@ -53,5 +53,5 @@ tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=acc, ba
 tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)
 
 # save the network to .npz file
-tl.files.save_npz(network.all_params, name='model.npz')
+tl.files.save_npz(network.all_weights, name='model.npz')
 sess.close()

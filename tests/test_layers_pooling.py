@@ -20,13 +20,13 @@ class Layer_Pooling_Test(CustomTestCase):
         ## 1D ========================================================================
 
         x_1 = tf.placeholder(tf.float32, (None, 100, 1))
-        nin_1 = tl.layers.InputLayer(x_1, name='in1')
+        nin_1 = tl.layers.InputLayer(name='in1')(x_1)
 
-        n1 = tl.layers.Conv1d(nin_1, n_filter=32, filter_size=5, stride=2, name='conv1d')
-        n2 = tl.layers.MaxPool1d(n1, filter_size=3, strides=2, padding='same', name='maxpool1d')
-        n3 = tl.layers.MeanPool1d(n1, filter_size=3, strides=2, padding='same', name='meanpool1d')
-        n4 = tl.layers.GlobalMaxPool1d(n1, name='maxpool1d')
-        n5 = tl.layers.GlobalMeanPool1d(n1, name='meanpool1d')
+        n1 = tl.layers.Conv1d(n_filter=32, filter_size=5, stride=2, name='conv1d')(nin_1)
+        n2 = tl.layers.MaxPool1d(filter_size=3, strides=2, padding='same', name='maxpool1d')(n1)
+        n3 = tl.layers.MeanPool1d(filter_size=3, strides=2, padding='same', name='meanpool1d')(n2)
+        n4 = tl.layers.GlobalMaxPool1d(name='maxpool1d')(n3)
+        n5 = tl.layers.GlobalMeanPool1d(name='meanpool1d')(n4)
 
         cls.n1_shape = n1.outputs.get_shape().as_list()
         cls.n2_shape = n2.outputs.get_shape().as_list()
@@ -37,13 +37,13 @@ class Layer_Pooling_Test(CustomTestCase):
         ## 2D ========================================================================
 
         x_2 = tf.placeholder(tf.float32, (None, 100, 100, 3))
-        nin_2 = tl.layers.InputLayer(x_2, name='in2')
+        nin_2 = tl.layers.InputLayer(name='in2')(x_2)
 
-        n6 = tl.layers.Conv2d(nin_2, n_filter=32, filter_size=(3, 3), strides=(2, 2), name='conv2d')
-        n7 = tl.layers.MaxPool2d(n6, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool2d')
-        n8 = tl.layers.MeanPool2d(n6, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='meanpool2d')
-        n9 = tl.layers.GlobalMaxPool2d(n6, name='maxpool2d')
-        n10 = tl.layers.GlobalMeanPool2d(n6, name='meanpool2d')
+        n6 = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), name='conv2d')(nin_2)
+        n7 = tl.layers.MaxPool2d(filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool2d')(n6)
+        n8 = tl.layers.MeanPool2d(filter_size=(3, 3), strides=(2, 2), padding='SAME', name='meanpool2d')(n7)
+        n9 = tl.layers.GlobalMaxPool2d(name='maxpool2d')(n8)
+        n10 = tl.layers.GlobalMeanPool2d(name='meanpool2d')(n9)
 
         cls.n6_shape = n6.outputs.get_shape().as_list()
         cls.n7_shape = n7.outputs.get_shape().as_list()
@@ -54,11 +54,11 @@ class Layer_Pooling_Test(CustomTestCase):
         ## 3D ========================================================================
 
         x_3 = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
-        nin_3 = tl.layers.InputLayer(x_3, name='in')
+        nin_3 = tl.layers.InputLayer(name='in')(x_3)
 
-        n11 = tl.layers.MeanPool3d(nin_3, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME', name='meanpool3d')
-        n12 = tl.layers.GlobalMaxPool3d(nin_3)
-        n13 = tl.layers.GlobalMeanPool3d(nin_3)
+        n11 = tl.layers.MeanPool3d(filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME', name='meanpool3d')(nin_3)
+        n12 = tl.layers.GlobalMaxPool3d()(n11)
+        n13 = tl.layers.GlobalMeanPool3d()(n12)
 
         cls.n11_shape = n11.outputs.get_shape().as_list()
         cls.n12_shape = n12.outputs.get_shape().as_list()

@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """
 MobileNetV1 for ImageNet using TL models
 
@@ -24,11 +25,11 @@ mobilenetv1 = tl.models.MobileNetV1(x)
 # restore pre-trained parameters
 sess = tf.InteractiveSession()
 
-mobilenetv1.restore_params(sess)
+mobilenetv1.restore_weights(sess)
 
 probs = tf.nn.softmax(mobilenetv1.outputs)
 
-mobilenetv1.print_params(False)
+mobilenetv1.print_weights(False)
 
 mobilenetv1.print_layers()
 

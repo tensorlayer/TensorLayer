@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """
 VGG-16 for ImageNet.
 
@@ -68,40 +69,40 @@ def conv_layers_simple_api(net_in):
         net_in.outputs = net_in.outputs - mean
 
     # conv1
-    net = Conv2d(net_in, 64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1')
-    net = Conv2d(net, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2')
-    net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1')
+    net = Conv2d(64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1')(net_in)
+    net = Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2')(net)
+    net = MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1')(net)
 
     # conv2
-    net = Conv2d(net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_1')
-    net = Conv2d(net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_2')
-    net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2')
+    net = Conv2d(n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_1')(net)
+    net = Conv2d(n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_2')(net)
+    net = MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2')(net)
 
     # conv3
-    net = Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_1')
-    net = Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_2')
-    net = Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_3')
-    net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool3')
+    net = Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_1')(net)
+    net = Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_2')(net)
+    net = Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_3')(net)
+    net = MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool3')(net)
 
     # conv4
-    net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1')
-    net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2')
-    net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_3')
-    net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool4')
+    net = Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1')(net)
+    net = Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2')(net)
+    net = Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_3')(net)
+    net = MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool4')(net)
 
     # conv5
-    net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_1')
-    net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_2')
-    net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_3')
-    net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5')
+    net = Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_1')(net)
+    net = Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_2')(net)
+    net = Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_3')(net)
+    net = MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5')(net)
     return net
 
 
 def fc_layers(net):
-    net = FlattenLayer(net, name='flatten')
-    net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu')
-    net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc2_relu')
-    net = DenseLayer(net, n_units=1000, act=None, name='fc3_relu')
+    net = FlattenLayer(name='flatten')(net)
+    net = DenseLayer(n_units=4096, act=tf.nn.relu, name='fc1_relu')(net)
+    net = DenseLayer(n_units=4096, act=tf.nn.relu, name='fc2_relu')(net)
+    net = DenseLayer(n_units=1000, act=None, name='fc3_relu')(net)
     return net
 
 
@@ -110,7 +111,7 @@ sess = tf.InteractiveSession()
 x = tf.placeholder(tf.float32, [None, 224, 224, 3])
 # y_ = tf.placeholder(tf.int32, shape=[None, ], name='y_')
 
-net_in = InputLayer(x, name='input')
+net_in = InputLayer(name='input')(x)
 # net_cnn = conv_layers(net_in)               # professional CNN APIs
 net_cnn = conv_layers_simple_api(net_in)  # simplified CNN APIs
 net = fc_layers(net_cnn)
@@ -123,7 +124,7 @@ probs = tf.nn.softmax(y)
 # acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 tl.layers.initialize_global_variables(sess)
-net.print_params()
+net.print_weights()
 net.print_layers()
 
 tl.files.maybe_download_and_extract(
@@ -136,7 +137,7 @@ for val in sorted(npz.items()):
     print("  Loading params %s" % str(val[1].shape))
     params.append(val[1])
 
-tl.files.assign_params(sess, params, net)
+tl.files.assign_weights(sess, params, net)
 
 img1 = imread('data/laska.png', mode='RGB')  # test data in github
 img1 = imresize(img1, (224, 224))

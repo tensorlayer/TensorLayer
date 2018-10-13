@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 r"""
 1. Before you start, run this script: https://github.com/tensorlayer/tensorlayer/blob/distributed/scripts/download_and_install_openmpi3_linux.sh
 2. Update the PATH with OpenMPI bin by running: PATH=$PATH:$HOME/local/openmpi/bin
@@ -54,19 +55,19 @@ def data_aug_valid(img, ann):
 
 def model(x, is_train):
     with tf.variable_scope("model", reuse=tf.AUTO_REUSE):
-        net = InputLayer(x, name='input')
-        net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', b_init=None, name='cnn1')
-        net = BatchNormLayer(net, decay=0.99, is_train=is_train, act=tf.nn.relu, name='batch1')
-        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
+        net = InputLayer(name='input')(x)
+        net = Conv2d(64, (5, 5), (1, 1), padding='SAME', b_init=None, name='cnn1')(net)
+        net = BatchNormLayer(decay=0.99, act=tf.nn.relu, name='batch1')(net, is_train=is_train)
+        net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(net)
 
-        net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', b_init=None, name='cnn2')
-        net = BatchNormLayer(net, decay=0.99, is_train=is_train, act=tf.nn.relu, name='batch2')
-        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
+        net = Conv2d(64, (5, 5), (1, 1), padding='SAME', b_init=None, name='cnn2')(net)
+        net = BatchNormLayer(decay=0.99, act=tf.nn.relu, name='batch2')(net, is_train=is_train)
+        net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(net)
 
-        net = FlattenLayer(net, name='flatten')
-        net = DenseLayer(net, 384, act=tf.nn.relu, name='d1relu')
-        net = DenseLayer(net, 192, act=tf.nn.relu, name='d2relu')
-        net = DenseLayer(net, 10, act=None, name='output')
+        net = FlattenLayer(name='flatten')(net)
+        net = DenseLayer(384, act=tf.nn.relu, name='d1relu')(net)
+        net = DenseLayer(192, act=tf.nn.relu, name='d2relu')(net)
+        net = DenseLayer(10, act=None, name='output')(net)
     return net
 
 
@@ -101,8 +102,12 @@ if __name__ == '__main__':
     # validation_dataset = make_dataset(X_test, y_test)
     # validation_dataset = training_dataset.map(data_aug_valid, num_parallel_calls=multiprocessing.cpu_count())
     trainer = tl.distributed.Trainer(
-        build_training_func=build_train, training_dataset=training_dataset, optimizer=tf.train.AdamOptimizer,
-        optimizer_args={'learning_rate': 0.0001}, batch_size=128, prefetch_size=128
+        build_training_func=build_train,
+        training_dataset=training_dataset,
+        optimizer=tf.train.AdamOptimizer,
+        optimizer_args={'learning_rate': 0.0001},
+        batch_size=128,
+        prefetch_size=128
         # validation_dataset=validation_dataset, build_validation_func=build_validation
     )
 

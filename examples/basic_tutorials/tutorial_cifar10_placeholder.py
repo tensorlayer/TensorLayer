@@ -128,16 +128,16 @@ learning_rate = 0.0001
 print_freq = 1
 batch_size = 128
 
-train_params = network.all_params
+train_weights = network.all_weights
 train_op = tf.train.AdamOptimizer(
     learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False
 ).minimize(
-    cost, var_list=train_params
+    cost, var_list=train_weights
 )
 
 tl.layers.initialize_global_variables(sess)
 
-network.print_params(False)
+network.print_weights(False)
 network.print_layers()
 
 print('   learning_rate: %f' % learning_rate)

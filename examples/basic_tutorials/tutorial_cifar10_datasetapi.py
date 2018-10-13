@@ -168,4 +168,4 @@ with tf.device('/cpu:0'):
             start_time = time.time()
             # save model
             if (step % (n_step_epoch * 50)) == 0:
-                tl.files.save_npz(net.all_params, name='model.npz', sess=sess)
+                tl.files.save_npz(net.all_weights, name='model.npz', sess=sess)

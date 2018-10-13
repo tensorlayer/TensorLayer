@@ -115,7 +115,7 @@ class UnStackLayer(Layer):
         return self._str(additional_str)
 
     def build(self):
-
+        # https://github.com/tensorlayer/tensorlayer/blob/master/tensorlayer/layers/stack.py#L103
         self._temp_data['outputs'] = tf.unstack(self._temp_data['inputs'], num=self.num, axis=self.axis, name=self.name)
         self.n_outputs = len(self._temp_data['outputs'])
 
@@ -128,6 +128,7 @@ class UnStackLayer(Layer):
             layer.outputs = unstacked_dim
 
             # TODO: CHECK THIS IMPLEMENTATION, CANNOT BE WORKING
+            # need to change core layer to make this layer has all_xxx using auto-compile mode.
 
             layer.all_drop = self.all_drop
             layer._add_params(self.all_weights)

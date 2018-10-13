@@ -18,23 +18,29 @@ class Layer_Stack_Test(CustomTestCase):
     def setUpClass(cls):
 
         x = tf.placeholder(tf.float32, shape=[None, 30])
-        net_in = tl.layers.InputLayer(x, name='input')
+        net_in = tl.layers.InputLayer(name='input')(x)
 
-        net = tl.layers.DropoutLayer(net_in, keep=0.5, is_train=True, name='dropout')
+        net = tl.layers.DropoutLayer(keep=0.5, name='dropout')(net_in, is_train=True)
 
-        net_d1 = tl.layers.DenseLayer(net, n_units=10, name='dense1')
-        net_d2 = tl.layers.DenseLayer(net, n_units=10, name='dense2')
-        net_d3 = tl.layers.DenseLayer(net, n_units=10, name='dense3')
+        net_d1 = tl.layers.DenseLayer(n_units=10, name='dense1')(net)
+        net_d2 = tl.layers.DenseLayer(n_units=10, name='dense2')(net)
+        net_d3 = tl.layers.DenseLayer(n_units=10, name='dense3')(net)
 
-        cls.net_stack = tl.layers.StackLayer([net_d1, net_d2, net_d3], axis=1, name='stack')
+        # print(net_d3.outputs)
+        # print(net_d3.all_layers)
+        # print(net_d3.all_weights)
+        # exit()
 
-        cls.net_stack.print_layers()
-        cls.net_stack.print_params(False)
+        cls.net_stack = tl.layers.StackLayer(axis=1, name='stack')([net_d1, net_d2, net_d3])
 
-        cls.net_unstack = tl.layers.UnStackLayer(cls.net_stack, axis=1, name='unstack')
+        # cls.net_stack.print_layers()
+        # cls.net_stack.print_weights(False)
 
-        cls.net_unstack.print_layers()
-        cls.net_unstack.print_params(False)
+        cls.net_unstack = tl.layers.UnStackLayer(axis=1, name='unstack')(cls.net_stack)
+
+        # cls.net_unstack.print_layers()
+        # cls.net_unstack.print_weights(False)
+        exit()
 
     @classmethod
     def tearDownClass(cls):

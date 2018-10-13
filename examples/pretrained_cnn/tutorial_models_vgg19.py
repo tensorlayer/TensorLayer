@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """VGG-19 for ImageNet using TL models."""
 
 import time
@@ -19,11 +20,11 @@ vgg = tl.models.VGG19(x)
 # restore pre-trained VGG parameters
 sess = tf.InteractiveSession()
 
-vgg.restore_params(sess)
+vgg.restore_weights(sess)
 
 probs = tf.nn.softmax(vgg.outputs)
 
-vgg.print_params(False)
+vgg.print_weights(False)
 
 vgg.print_layers()
 

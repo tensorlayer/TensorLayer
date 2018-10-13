@@ -44,7 +44,7 @@ def model(x, is_train=True, reuse=False):
 net_train = model(x, is_train=True, reuse=False)
 net_test = model(x, is_train=False, reuse=True)
 
-net_train.print_params(False)
+net_train.print_weights(False)
 
 # cost for training
 y = net_train.outputs
@@ -57,13 +57,13 @@ correct_prediction = tf.equal(tf.argmax(y2, 1), y_)
 acc = tf.reduce_mean(tf.cast(correct_prediction, LayersConfig.tf_dtype))
 
 # define the optimizer
-train_params = tl.layers.get_variables_with_name('model', train_only=True, printable=False)
+train_weights = tl.layers.get_variables_with_name('model', train_only=True, printable=False)
 # for float16 epsilon=1e-4 see https://stackoverflow.com/questions/42064941/tensorflow-float16-support-is-broken
 # for float32 epsilon=1e-08
 train_op = tf.train.AdamOptimizer(
     learning_rate=0.0001, beta1=0.9, beta2=0.999, epsilon=1e-4, use_locking=False
 ).minimize(
-    cost, var_list=train_params
+    cost, var_list=train_weights
 )
 
 # initialize all variables in the session

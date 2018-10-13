@@ -22,17 +22,17 @@ class Simple_MNIST_Test(CustomTestCase):
         cls.y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 
         # define the network
-        network = tl.layers.InputLayer(cls.x, name='input')
-        network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
-        network = tl.layers.DenseLayer(network, n_units=100, act=tf.nn.relu, name='relu1')
-        network = tl.layers.DropoutLayer(network, keep=0.8, name='drop2')
-        network = tl.layers.DenseLayer(network, n_units=100, act=tf.nn.relu, name='relu2')
-        network = tl.layers.DropoutLayer(network, keep=0.8, name='drop3')
+        network = tl.layers.InputLayer(name='input')(cls.x)
+        network = tl.layers.DropoutLayer(keep=0.8, name='drop1')(network)
+        network = tl.layers.DenseLayer(n_units=100, act=tf.nn.relu, name='relu1')(network)
+        network = tl.layers.DropoutLayer(keep=0.8, name='drop2')(network)
+        network = tl.layers.DenseLayer(n_units=100, act=tf.nn.relu, name='relu2')(network)
+        network = tl.layers.DropoutLayer(keep=0.8, name='drop3')(network)
 
         # the softmax is implemented internally in tl.cost.cross_entropy(y, y_) to
         # speed up computation, so we use identity here.
         # see tf.nn.sparse_softmax_cross_entropy_with_logits()
-        cls.network = tl.layers.DenseLayer(network, n_units=10, name='output')
+        cls.network = tl.layers.DenseLayer(n_units=10, name='output')(network)
 
         # define cost function and metric.
         y = cls.network.outputs
@@ -44,8 +44,8 @@ class Simple_MNIST_Test(CustomTestCase):
         # y_op = tf.argmax(tf.nn.softmax(y), 1)
 
         # define the optimizer
-        train_params = cls.network.all_weights
-        cls.train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cls.cost, var_list=train_params)
+        train_weights = cls.network.all_weights
+        cls.train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cls.cost, var_list=train_weights)
 
     @classmethod
     def tearDownClass(cls):
@@ -66,7 +66,7 @@ class Simple_MNIST_Test(CustomTestCase):
                 tl.layers.initialize_global_variables(sess)
 
                 # print network information
-                self.network.print_params()
+                self.network.print_weights()
                 self.network.print_layers()
 
                 # train the network

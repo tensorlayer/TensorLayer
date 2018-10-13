@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """
 This demo implements FastText[1] for sentence classification.
 
@@ -71,8 +72,8 @@ class FastTextClassifier(object):
         self.labels = tf.placeholder(tf.int32, shape=[None], name='labels')
 
         # Network structure
-        network = AverageEmbeddingInputlayer(self.inputs, self.vocab_size, self.embedding_size)
-        self.network = DenseLayer(network, self.n_labels)
+        network = AverageEmbeddingInputlayer(self.vocab_size, self.embedding_size)(self.inputs)
+        self.network = DenseLayer(self.n_labels)(network)
 
         # Training operation
         cost = tl.cost.cross_entropy(self.network.outputs, self.labels, name='cost')
@@ -89,7 +90,7 @@ class FastTextClassifier(object):
         self.accuracy = tf.reduce_mean(tf.cast(are_predictions_correct, tf.float32))
 
     def save(self, sess, filename):
-        tl.files.save_npz(self.network.all_params, name=filename, sess=sess)
+        tl.files.save_npz(self.network.all_weights, name=filename, sess=sess)
 
     def load(self, sess, filename):
         tl.files.load_and_assign_npz(sess, name=filename, network=self.network)
@@ -136,7 +137,8 @@ def train_test_and_save_model():
             print('Epoch %d/%d' % (epoch + 1, N_EPOCH))
             for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size=BATCH_SIZE, shuffle=True):
                 sess.run(
-                    classifier.train_op, feed_dict={
+                    classifier.train_op,
+                    feed_dict={
                         classifier.inputs: tl.prepro.pad_sequences(X_batch),
                         classifier.labels: y_batch,
                     }
@@ -145,7 +147,8 @@ def train_test_and_save_model():
             print("     took %.5fs" % (time.time() - start_time))
 
         test_accuracy = sess.run(
-            classifier.accuracy, feed_dict={
+            classifier.accuracy,
+            feed_dict={
                 classifier.inputs: tl.prepro.pad_sequences(X_test),
                 classifier.labels: y_test,
             }

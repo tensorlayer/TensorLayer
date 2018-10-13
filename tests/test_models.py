@@ -24,12 +24,12 @@ class VGG_Model_Test(CustomTestCase):
             vgg1 = tl.models.VGG16(x)
             # restore pre-trained VGG parameters
             # sess = tf.InteractiveSession()
-            # vgg.restore_params(sess)
+            # vgg.restore_weights(sess)
             # use for inferencing
             # probs = tf.nn.softmax(vgg1.outputs)
 
             cls.vgg1_layers = vgg1.all_layers
-            cls.vgg1_params = vgg1.all_weights
+            cls.vgg1_weights = vgg1.all_weights
 
         with tf.Graph().as_default():
             # - Extract features with VGG16 and Train a classifier with 100 classes
@@ -38,20 +38,20 @@ class VGG_Model_Test(CustomTestCase):
             vgg2 = tl.models.VGG16(x, end_with='fc2_relu')
 
             cls.vgg2_layers = vgg2.all_layers
-            cls.vgg2_params = vgg2.all_weights
+            cls.vgg2_weights = vgg2.all_weights
 
             print("TYPE:", type(vgg2))
 
             # add one more layer
-            _ = tl.layers.DenseLayer(vgg2, n_units=100, name='out')
+            _ = tl.layers.DenseLayer(n_units=100, name='out')(vgg2)
             # initialize all parameters
             # sess = tf.InteractiveSession()
             # tl.layers.initialize_global_variables(sess)
             # restore pre-trained VGG parameters
-            # vgg.restore_params(sess)
+            # vgg.restore_weights(sess)
             # train your own classifier (only update the last layer)
 
-            cls.vgg2_train_params = tl.layers.get_variables_with_name('out')
+            cls.vgg2_train_weights = tl.layers.get_variables_with_name('out')
 
         with tf.Graph().as_default() as graph:
             # - Reuse model
@@ -61,10 +61,10 @@ class VGG_Model_Test(CustomTestCase):
             # reuse the parameters of vgg1 with different input
             # restore pre-trained VGG parameters (as they share parameters, we don’t need to restore vgg2)
             # sess = tf.InteractiveSession()
-            # vgg1.restore_params(sess)
+            # vgg1.restore_weights(sess)
 
             cls.vgg3_layers = vgg3.all_layers
-            cls.vgg3_params = vgg3.all_weights
+            cls.vgg3_weights = vgg3.all_weights
             cls.vgg3_graph = graph
 
     @classmethod
@@ -80,17 +80,17 @@ class VGG_Model_Test(CustomTestCase):
     def test_vgg3_layers(self):
         self.assertEqual(len(self.vgg3_layers), 22)
 
-    def test_vgg1_params(self):
-        self.assertEqual(len(self.vgg1_params), 32)
+    def test_vgg1_weights(self):
+        self.assertEqual(len(self.vgg1_weights), 32)
 
-    def test_vgg2_params(self):
-        self.assertEqual(len(self.vgg2_params), 30)
+    def test_vgg2_weights(self):
+        self.assertEqual(len(self.vgg2_weights), 30)
 
-    def test_vgg3_params(self):
-        self.assertEqual(len(self.vgg3_params), 30)
+    def test_vgg3_weights(self):
+        self.assertEqual(len(self.vgg3_weights), 30)
 
-    def test_vgg2_train_params(self):
-        self.assertEqual(len(self.vgg2_train_params), 2)
+    def test_vgg2_train_weights(self):
+        self.assertEqual(len(self.vgg2_train_weights), 2)
 
     def test_reuse_vgg(self):
 

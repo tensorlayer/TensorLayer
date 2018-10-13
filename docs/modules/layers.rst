@@ -154,8 +154,6 @@ Layer list
 
    UpSampling2dLayer
    DownSampling2dLayer
-   AtrousConv1dLayer
-   AtrousConv2dLayer
    AtrousDeConv2dLayer
 
    Conv1d
@@ -463,16 +461,8 @@ DeConv3dLayer
 .. autoclass:: DeConv3dLayer
 
 
-Atrous (De)Convolutions
+Atrous De-Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-AtrousConv1dLayer
-"""""""""""""""""""""
-.. autofunction:: AtrousConv1dLayer
-
-AtrousConv2dLayer
-"""""""""""""""""""""
-.. autoclass:: AtrousConv2dLayer
 
 AtrousDeConv2dLayer
 """""""""""""""""""""

@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """
 
 - 1. This model has 1,068,298 paramters and Dorefa compression strategy(weight:1 bit, active: 1 bit),
@@ -97,7 +98,8 @@ def read_and_decode(filename, is_train=None):
     reader = tf.TFRecordReader()
     _, serialized_example = reader.read(filename_queue)
     features = tf.parse_single_example(
-        serialized_example, features={
+        serialized_example,
+        features={
             'label': tf.FixedLenFeature([], tf.int64),
             'img_raw': tf.FixedLenFeature([], tf.string),
         }
@@ -161,20 +163,20 @@ with tf.device('/cpu:0'):
     def model(x_crop, y_, reuse):
         """For more simplified CNN APIs, check tensorlayer.org."""
         with tf.variable_scope("model", reuse=reuse):
-            net = tl.layers.InputLayer(x_crop, name='input')
-            net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn1')
-            net = tl.layers.SignLayer(net)
-            net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
-            net = tl.layers.LocalResponseNormLayer(net, 4, 1.0, 0.001 / 9.0, 0.75, name='norm1')
-            net = tl.layers.BinaryConv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn2')
-            net = tl.layers.LocalResponseNormLayer(net, 4, 1.0, 0.001 / 9.0, 0.75, name='norm2')
-            net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
-            net = tl.layers.FlattenLayer(net, name='flatten')
-            net = tl.layers.SignLayer(net)
-            net = tl.layers.BinaryDenseLayer(net, 384, act=tf.nn.relu, name='d1relu')
-            net = tl.layers.SignLayer(net)
-            net = tl.layers.BinaryDenseLayer(net, 192, act=tf.nn.relu, name='d2relu')
-            net = tl.layers.DenseLayer(net, 10, act=None, name='output')
+            net = tl.layers.InputLayer(name='input')(x_crop)
+            net = tl.layers.Conv2d(64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn1')(net)
+            net = tl.layers.SignLayer()(net)
+            net = tl.layers.MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(net)
+            net = tl.layers.LocalResponseNormLayer(4, 1.0, 0.001 / 9.0, 0.75, name='norm1')(net)
+            net = tl.layers.BinaryConv2d(64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn2')(net)
+            net = tl.layers.LocalResponseNormLayer(4, 1.0, 0.001 / 9.0, 0.75, name='norm2')(net)
+            net = tl.layers.MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(net)
+            net = tl.layers.FlattenLayer(name='flatten')(net)
+            net = tl.layers.SignLayer()(net)
+            net = tl.layers.BinaryDenseLayer(384, act=tf.nn.relu, name='d1relu')(net)
+            net = tl.layers.SignLayer()(net)
+            net = tl.layers.BinaryDenseLayer(192, act=tf.nn.relu, name='d2relu')(net)
+            net = tl.layers.DenseLayer(10, act=None, name='output')(net)
 
             y = net.outputs
 
@@ -217,7 +219,7 @@ with tf.device('/cpu:0'):
         saver = tf.train.Saver()
         saver.restore(sess, model_file_name)
 
-    network.print_params(False)
+    network.print_weights(False)
     network.print_layers()
 
     print('   learning_rate: %f' % learning_rate)
@@ -263,7 +265,7 @@ with tf.device('/cpu:0'):
             saver = tf.train.Saver()
             save_path = saver.save(sess, model_file_name)
             # you can also save model into npz
-            tl.files.save_npz(network.all_params, name='model.npz', sess=sess)
+            tl.files.save_npz(network.all_weights, name='model.npz', sess=sess)
             # and restore it as follow:
             # tl.files.load_and_assign_npz(sess=sess, name='model.npz', network=network)
 

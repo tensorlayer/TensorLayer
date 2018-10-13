@@ -19,14 +19,14 @@ def make_dataset(images, labels, num_epochs=1, shuffle_data_seed=0):
 
 def model(x, is_train):
     with tf.variable_scope('mlp', reuse=tf.AUTO_REUSE):
-        network = tl.layers.InputLayer(x, name='input')
-        network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1', is_fix=True, is_train=is_train)
-        network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu1')
-        network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2', is_fix=True, is_train=is_train)
-        network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu2')
-        network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3', is_fix=True, is_train=is_train)
-        network = tl.layers.DenseLayer(network, n_units=10, act=tf.identity, name='output')
-    return network
+        net = tl.layers.InputLayer(name='input')(x)
+        net = tl.layers.DropoutLayer(keep=0.8, name='drop1', is_fix=True)(net, is_train=is_train)
+        net = tl.layers.DenseLayer(800, tf.nn.relu, name='relu1')(net)
+        net = tl.layers.DropoutLayer(keep=0.5, name='drop2', is_fix=True)(net, is_train=is_train)
+        net = tl.layers.DenseLayer(800, tf.nn.relu, name='relu2')(net)
+        net = tl.layers.DropoutLayer(keep=0.5, name='drop3', is_fix=True)(net, is_train=is_train)
+        net = tl.layers.DenseLayer(10, act=tf.identity, name='output')(net)
+    return net
 
 
 def build_train(x, y_):
@@ -54,8 +54,12 @@ if __name__ == '__main__':
     training_dataset = make_dataset(X_train, y_train)
     # validation_dataset = make_dataset(X_val, y_val)
     trainer = tl.distributed.Trainer(
-        build_training_func=build_train, training_dataset=training_dataset, optimizer=tf.train.AdamOptimizer,
-        optimizer_args={'learning_rate': 0.001}, batch_size=500, prefetch_size=500
+        build_training_func=build_train,
+        training_dataset=training_dataset,
+        optimizer=tf.train.AdamOptimizer,
+        optimizer_args={'learning_rate': 0.001},
+        batch_size=500,
+        prefetch_size=500
         # validation_dataset=validation_dataset, build_validation_func=build_validation
     )
 

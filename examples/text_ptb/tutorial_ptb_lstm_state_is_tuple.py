@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 """Example of Synced sequence input and output.
 
 This is a reimpmentation of the TensorFlow official PTB example in :
@@ -194,20 +195,19 @@ def main(_):
     input_data_test = tf.placeholder(tf.int32, [1, 1])
     targets_test = tf.placeholder(tf.int32, [1, 1])
 
-    def inference(x, is_training, num_steps, reuse=None):
+    def inference(x, is_train, num_steps, reuse=None):
         """If reuse is True, the inferences use the existing parameters,
         then different inferences share the same parameters.
 
         Note :
         - For DynamicRNNLayer, you can set dropout and the number of RNN layer internally.
         """
-        print("\nnum_steps : %d, is_training : %s, reuse : %s" % (num_steps, is_training, reuse))
+        print("\nnum_steps : %d, is_train : %s, reuse : %s" % (num_steps, is_train, reuse))
         init = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
-            net = tl.layers.EmbeddingInputlayer(x, vocab_size, hidden_size, init, name='embedding')
-            net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
+            net = tl.layers.EmbeddingInputlayer(vocab_size, hidden_size, init, name='embedding')(x)
+            net = tl.layers.DropoutLayer(keep=keep_prob, is_fix=True, name='drop1')(net, is_train=is_train)
             net = tl.layers.RNNLayer(
-                net,
                 cell_fn=tf.contrib.rnn.BasicLSTMCell,  # tf.nn.rnn_cell.BasicLSTMCell,
                 cell_init_args={
                     'forget_bias': 0.0,
@@ -218,11 +218,10 @@ def main(_):
                 n_steps=num_steps,
                 return_last=False,
                 name='basic_lstm1'
-            )
+            )(net)
             lstm1 = net
-            net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop2')
+            net = tl.layers.DropoutLayer(keep=keep_prob, is_fix=True, name='drop2')(net, is_train=is_train)
             net = tl.layers.RNNLayer(
-                net,
                 cell_fn=tf.contrib.rnn.BasicLSTMCell,  # tf.nn.rnn_cell.BasicLSTMCell,
                 cell_init_args={
                     'forget_bias': 0.0,
@@ -234,22 +233,22 @@ def main(_):
                 return_last=False,
                 return_seq_2d=True,
                 name='basic_lstm2'
-            )
+            )(net)
             lstm2 = net
             # Alternatively, if return_seq_2d=False, in the above RNN layer,
             # you can reshape the outputs as follow:
-            # net = tl.layers.ReshapeLayer(net,
-            #       shape=[-1, int(net.outputs._shape[-1])], name='reshape')
-            net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop3')
-            net = tl.layers.DenseLayer(net, vocab_size, W_init=init, b_init=init, act=None, name='output')
+            # net = tl.layers.ReshapeLayer(
+            #       shape=[-1, int(net.outputs._shape[-1])], name='reshape')(net)
+            net = tl.layers.DropoutLayer(keep=keep_prob, is_fix=True, name='drop3')(net, is_train=is_train)
+            net = tl.layers.DenseLayer(vocab_size, W_init=init, b_init=init, act=None, name='output')(net)
         return net, lstm1, lstm2
 
     # Inference for Training
-    net, lstm1, lstm2 = inference(input_data, is_training=True, num_steps=num_steps, reuse=None)
+    net, lstm1, lstm2 = inference(input_data, is_train=True, num_steps=num_steps, reuse=None)
     # Inference for Validating
-    net_val, lstm1_val, lstm2_val = inference(input_data, is_training=False, num_steps=num_steps, reuse=True)
+    net_val, lstm1_val, lstm2_val = inference(input_data, is_train=False, num_steps=num_steps, reuse=True)
     # Inference for Testing (Evaluation)
-    net_test, lstm1_test, lstm2_test = inference(input_data_test, is_training=False, num_steps=1, reuse=True)
+    net_test, lstm1_test, lstm2_test = inference(input_data_test, is_train=False, num_steps=1, reuse=True)
 
     # sess.run(tf.global_variables_initializer())
     tl.layers.initialize_global_variables(sess)
@@ -289,7 +288,7 @@ def main(_):
     # sess.run(tf.global_variables_initializer())
     tl.layers.initialize_global_variables(sess)
 
-    net.print_params()
+    net.print_weights()
     net.print_layers()
     tl.layers.print_all_variables()
 
@@ -359,7 +358,8 @@ def main(_):
                     cost_val, lstm1_val.final_state.c, lstm1_val.final_state.h, lstm2_val.final_state.c,
                     lstm2_val.final_state.h,
                     tf.no_op()
-                ], feed_dict=feed_dict
+                ],
+                feed_dict=feed_dict
             )
             state1 = (state1_c, state1_h)
             state2 = (state2_c, state2_h)
@@ -393,7 +393,8 @@ def main(_):
                 lstm1_test.final_state.h,
                 lstm2_test.final_state.c,
                 lstm2_test.final_state.h,
-            ], feed_dict=feed_dict
+            ],
+            feed_dict=feed_dict
         )
         state1 = (state1_c, state1_h)
         state2 = (state2_c, state2_h)

@@ -20,14 +20,14 @@ class Layer_Pooling_Test(CustomTestCase):
         cls.y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 
         # define the network
-        cls.network = tl.layers.InputLayer(cls.x, name='input')
-        cls.network = tl.layers.DropoutLayer(cls.network, keep=0.8, name='drop1')
-        cls.network = tl.layers.DenseLayer(cls.network, 800, tf.nn.relu, name='relu1')
-        cls.network = tl.layers.DropoutLayer(cls.network, keep=0.5, name='drop2')
-        cls.network = tl.layers.DenseLayer(cls.network, 800, tf.nn.relu, name='relu2')
-        cls.network = tl.layers.DropoutLayer(cls.network, keep=0.5, name='drop3')
+        cls.network = tl.layers.InputLayer(name='input')(cls.x)
+        cls.network = tl.layers.DropoutLayer(keep=0.8, name='drop1')(cls.network)
+        cls.network = tl.layers.DenseLayer(800, tf.nn.relu, name='relu1')(cls.network)
+        cls.network = tl.layers.DropoutLayer(keep=0.5, name='drop2')(cls.network)
+        cls.network = tl.layers.DenseLayer(800, tf.nn.relu, name='relu2')(cls.network)
+        cls.network = tl.layers.DropoutLayer(keep=0.5, name='drop3')(cls.network)
 
-        cls.network = tl.layers.DenseLayer(cls.network, n_units=10, name='output')
+        cls.network = tl.layers.DenseLayer(n_units=10, name='output')(cls.network)
 
         # define cost function and metric.
         cls.y = cls.network.outputs
@@ -38,9 +38,9 @@ class Layer_Pooling_Test(CustomTestCase):
         cls.acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
         # define the optimizer
-        train_params = cls.network.all_params
+        train_weights = cls.network.all_weights
         optimizer = tl.optimizers.AMSGrad(learning_rate=1e-4, beta1=0.9, beta2=0.999, epsilon=1e-8)
-        cls.train_op = optimizer.minimize(cls.cost, var_list=train_params)
+        cls.train_op = optimizer.minimize(cls.cost, var_list=train_weights)
 
     @classmethod
     def tearDownClass(cls):
@@ -57,7 +57,7 @@ class Layer_Pooling_Test(CustomTestCase):
                 tl.layers.initialize_global_variables(sess)
 
                 # print network information
-                self.network.print_params()
+                self.network.print_weights()
                 self.network.print_layers()
 
                 # train the network

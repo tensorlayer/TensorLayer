@@ -22,13 +22,13 @@ y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 # define the network
 def mlp(x, is_train=True, reuse=False):
     with tf.variable_scope("MLP", reuse=reuse):
-        net = tl.layers.InputLayer(x, name='input')
-        net = tl.layers.DropoutLayer(net, keep=0.8, is_fix=True, is_train=is_train, name='drop1')
-        net = tl.layers.DenseLayer(net, n_units=n_units1, act=tf.nn.relu, name='relu1')
-        net = tl.layers.DropoutLayer(net, keep=0.5, is_fix=True, is_train=is_train, name='drop2')
-        net = tl.layers.DenseLayer(net, n_units=n_units2, act=tf.nn.relu, name='relu2')
-        net = tl.layers.DropoutLayer(net, keep=0.5, is_fix=True, is_train=is_train, name='drop3')
-        net = tl.layers.DenseLayer(net, n_units=10, act=None, name='output')
+        net = tl.layers.InputLayer(name='input')(x)
+        net = tl.layers.DropoutLayer(keep=0.8, is_fix=True, is_train=is_train, name='drop1')(net)
+        net = tl.layers.DenseLayer(n_units=n_units1, act=tf.nn.relu, name='relu1')(net)
+        net = tl.layers.DropoutLayer(keep=0.5, is_fix=True, is_train=is_train, name='drop2')(net)
+        net = tl.layers.DenseLayer(n_units=n_units2, act=tf.nn.relu, name='relu2')(net)
+        net = tl.layers.DropoutLayer(keep=0.5, is_fix=True, is_train=is_train, name='drop3')(net)
+        net = tl.layers.DenseLayer(n_units=10, act=None, name='output')(net)
     return net
 
 
@@ -49,30 +49,15 @@ correct_prediction = tf.equal(tf.argmax(y2, 1), y_)
 acc_test = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # define the optimizer
-train_params = tl.layers.get_variables_with_name('MLP', True, False)
-train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_params)
+train_weights = tl.layers.get_variables_with_name('MLP', True, False)
+train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_weights)
 
 # initialize all variables in the session
 tl.layers.initialize_global_variables(sess)
 
 # train the network
-tl.utils.fit(
-    sess,
-    net_train,
-    train_op,
-    cost,
-    X_train,
-    y_train,
-    x,
-    y_,
-    acc=acc,
-    batch_size=500,
-    n_epoch=1,
-    print_freq=5,
-    X_val=X_val,
-    y_val=y_val,
-    eval_train=False
-)
+tl.utils.fit(sess, net_train, train_op, cost, X_train, y_train, x, y_, acc=acc, \
+    batch_size=500, n_epoch=1, print_freq=5, X_val=X_val, y_val=y_val, eval_train=False)
 
 # evaluation and save result that match the result_key
 test_accuracy = tl.utils.test(sess, net_test, acc_test, X_test, y_test, x, y_, batch_size=None, cost=cost_test)

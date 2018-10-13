@@ -19,13 +19,13 @@ class Layer_Convolution_3D_Test(CustomTestCase):
 
         x = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
 
-        cls.input_layer = tl.layers.InputLayer(x, name='input_layer')
+        cls.input_layer = tl.layers.InputLayer(name='input_layer')(x)
 
-        cls.n1 = tl.layers.Conv3dLayer(cls.input_layer, shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1))
+        cls.n1 = tl.layers.Conv3dLayer(shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1))(cls.input_layer)
 
-        cls.n2 = tl.layers.DeConv3dLayer(cls.n1, shape=(2, 2, 2, 128, 32), strides=(1, 2, 2, 2, 1))
+        cls.n2 = tl.layers.DeConv3dLayer(shape=(2, 2, 2, 128, 32), strides=(1, 2, 2, 2, 1))(cls.n1)
 
-        cls.n3 = tl.layers.DeConv3d(cls.n2, n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2))
+        cls.n3 = tl.layers.DeConv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2))(cls.n2)
 
     @classmethod
     def tearDownClass(cls):

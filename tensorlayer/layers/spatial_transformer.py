@@ -62,7 +62,7 @@ class SpatialTransformer2dAffineLayer(Layer):
             pass
 
         try:
-            additional_str.append("out_size: %s" % self.out_size)
+            additional_str.append("out_size: %s" % str(self.out_size))
         except AttributeError:
             pass
 
@@ -90,12 +90,12 @@ class SpatialTransformer2dAffineLayer(Layer):
         with tf.variable_scope(self.name) as vs:
 
             # 1. make the localisation network to [batch, 6] via Flatten and Dense.
-            if theta_layer.outputs.get_shape().ndims > 2:
-                theta_layer.outputs = flatten_reshape(theta_layer.outputs, 'flatten')
+            if theta_layer.get_shape().ndims > 2:
+                theta_layer = flatten_reshape(theta_layer, 'flatten')
 
             # 2. To initialize the network to the identity transform init.
             # 2.1 W
-            w_shape = (int(theta_layer.outputs.get_shape()[-1]), 6)
+            w_shape = (int(theta_layer.get_shape()[-1]), 6)
 
             weight_matrix = self._get_tf_variable(
                 name='W',
@@ -115,7 +115,7 @@ class SpatialTransformer2dAffineLayer(Layer):
             )
 
             # 2.3 transformation matrix
-            self.theta = tf.nn.tanh(tf.matmul(theta_layer.outputs, weight_matrix) + b)
+            self.theta = tf.nn.tanh(tf.matmul(theta_layer, weight_matrix) + b)
 
             # 3. Spatial Transformer Sampling
             # 3.1 transformation

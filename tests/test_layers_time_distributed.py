@@ -14,13 +14,13 @@ from tests.utils import CustomTestCase
 
 def model(x, is_train=True, reuse=False, name_scope="env1"):
     with tf.variable_scope(name_scope, reuse=reuse):
-        net = tl.layers.InputLayer(x, name='input')
+        net = tl.layers.InputLayer(name='input')(x)
         net = tl.layers.TimeDistributedLayer(
-            net, layer_class=tl.layers.DenseLayer, layer_args={
+            layer_class=tl.layers.DenseLayer, layer_args={
                 'n_units': 50,
                 'name': 'dense'
             }, name='time_dense'
-        )
+        )(net)
     return net
 
 
@@ -37,8 +37,8 @@ class Layer_Time_Distributed_Test(CustomTestCase):
         net = model(cls.x, is_train=True, reuse=False)
 
         cls.net_shape = net.outputs.get_shape().as_list()
-        cls.n_params = net.count_weights()
-        net.print_params(False)
+        cls.n_weights = net.count_weights()
+        net.print_weights(False)
 
     @classmethod
     def tearDownClass(cls):
@@ -47,8 +47,8 @@ class Layer_Time_Distributed_Test(CustomTestCase):
     def test_net_shape(self):
         self.assertEqual(self.net_shape, [32, 20, 50])
 
-    def test_net_n_params(self):
-        self.assertEqual(self.n_params, 5050)
+    def test_net_n_weights(self):
+        self.assertEqual(self.n_weights, 5050)
 
     def test_reuse(self):
 
