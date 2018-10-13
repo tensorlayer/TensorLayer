@@ -19,10 +19,9 @@ class Layer_Convolution_2D_Test(CustomTestCase):
 
         x = tf.placeholder(tf.float32, (None, 100, 100, 3))
 
-        cls.input_layer = tl.layers.InputLayer(x, name='input_layer')
+        cls.input_layer = tl.layers.InputLayer(name='input_layer')(x)
 
         cls.n1 = tl.layers.Conv2dLayer(
-            cls.input_layer,
             act=tf.nn.relu,
             shape=(5, 5, 3, 32),
             strides=(1, 2, 2, 1),
@@ -30,14 +29,13 @@ class Layer_Convolution_2D_Test(CustomTestCase):
             W_init=tf.truncated_normal_initializer(stddev=5e-2),
             b_init=tf.constant_initializer(value=0.0),
             name='conv2dlayer'
-        )
+        )(cls.input_layer)
 
         cls.n2 = tl.layers.Conv2d(
-            cls.n1, n_filter=32, filter_size=(3, 3), strides=(2, 2), padding='valid', act=None, name='conv2d'
-        )
+            n_filter=32, filter_size=(3, 3), strides=(2, 2), padding='valid', act=None, name='conv2d'
+        )(cls.n1)
 
         cls.n3 = tl.layers.Conv2d(
-            cls.n2,
             n_filter=32,
             filter_size=(3, 3),
             strides=(2, 2),
@@ -45,45 +43,45 @@ class Layer_Convolution_2D_Test(CustomTestCase):
             act=tf.nn.relu,
             b_init=None,
             name='conv2d_no_bias'
-        )
+        )(cls.n2)
 
         cls.n4 = tl.layers.DeConv2dLayer(
-            cls.n3, shape=(5, 5, 32, 32), strides=(1, 2, 2, 1), padding='valid', name='deconv2dlayer'
-        )
+            shape=(5, 5, 32, 32), strides=(1, 2, 2, 1), padding='valid', name='deconv2dlayer'
+        )(cls.n3)
 
         cls.n5 = tl.layers.DeConv2d(
-            cls.n4, n_filter=32, filter_size=(3, 3), strides=(2, 2), padding='valid', name='DeConv2d'
-        )
+            n_filter=32, filter_size=(3, 3), strides=(2, 2), padding='valid', name='DeConv2d'
+        )(cls.n4)
 
         cls.n6 = tl.layers.DepthwiseConv2d(
-            cls.n5, shape=(3, 3), strides=(2, 2), act=tf.nn.relu, depth_multiplier=2, name='depthwise'
-        )
+            shape=(3, 3), strides=(2, 2), act=tf.nn.relu, depth_multiplier=2, name='depthwise'
+        )(cls.n5)
 
         cls.n7 = tl.layers.Conv2d(
-            cls.n6, n_filter=32, filter_size=(3, 3), strides=(2, 2), padding='valid', act=tf.nn.relu, name='conv2d2'
-        )
+            n_filter=32, filter_size=(3, 3), strides=(2, 2), padding='valid', act=tf.nn.relu, name='conv2d2'
+        )(cls.n6)
 
-        cls.n8 = tl.layers.GroupConv2d(cls.n7, n_filter=32, filter_size=(3, 3), strides=(2, 2), name='group')
+        cls.n8 = tl.layers.GroupConv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), name='group')(cls.n7)
 
-        cls.n9 = tl.layers.QuantizedConv2d(cls.n8, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='valid', name='quancnn')
+        cls.n9 = tl.layers.QuantizedConv2d(64, (5, 5), (1, 1), act=tf.nn.relu, padding='valid', name='quancnn')(cls.n8)
 
         cls.n10 = tl.layers.UpSampling2dLayer(
-            cls.n9, size=(2, 2), is_scale=True, method=0, align_corners=True, name="upsample2d_layer"
-        )
+            size=(2, 2), is_scale=True, method=0, align_corners=True, name="upsample2d_layer"
+        )(cls.n9)
 
         cls.n11 = tl.layers.UpSampling2dLayer(
-            cls.n10, size=(2, 2), is_scale=True, method=0, align_corners=True, name="upsample2d_layer"
-        )
+            size=(2, 2), is_scale=True, method=0, align_corners=True, name="upsample2d_layer"
+        )(cls.n10)
 
         cls.n12 = tl.layers.SeparableConv2d(
-            cls.n11, n_filter=32, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, name='seperable2d1'
-        )
+            n_filter=32, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, name='seperable2d1'
+        )(cls.n11)
 
-        cls.n13 = tl.layers.TernaryConv2d(cls.n12, 64, (3, 3), (1, 1), act=tf.nn.relu, padding='valid', name='cnn2')
+        cls.n13 = tl.layers.TernaryConv2d(64, (3, 3), (1, 1), act=tf.nn.relu, padding='valid', name='cnn2')(cls.n12)
 
         cls.n14 = tl.layers.AtrousDeConv2dLayer(
-            cls.n13, shape=(3, 3, 32, 64), rate=2, act=tf.nn.relu, name='atroustrans1', padding='valid'
-        )
+            shape=(3, 3, 32, 64), rate=2, act=tf.nn.relu, name='atroustrans1', padding='valid'
+        )(cls.n13)
 
     @classmethod
     def tearDownClass(cls):

@@ -16,13 +16,13 @@ class Layer_DeformableConvolution_Test(unittest.TestCase):
     def setUpClass(cls):
 
         x = tf.placeholder(tf.float32, [None, 299, 299, 3])
-        net = tl.layers.InputLayer(x, name='input_layer')
+        net = tl.layers.InputLayer(name='input_layer')(x)
 
-        offset1 = tl.layers.Conv2d(net, 18, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='offset1')
-        cls.net1 = tl.layers.DeformableConv2d(net, offset1, 32, (3, 3), act=tf.nn.relu, name='deformable1')
+        offset1 = tl.layers.Conv2d(18, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='offset1')(net)
+        cls.net1 = tl.layers.DeformableConv2d(32, (3, 3), act=tf.nn.relu, name='deformable1')(net, offset1)
 
-        offset2 = tl.layers.Conv2d(cls.net1, 18, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='offset2')
-        cls.net2 = tl.layers.DeformableConv2d(cls.net1, offset2, 64, (3, 3), act=tf.nn.relu, name='deformable2')
+        offset2 = tl.layers.Conv2d(18, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='offset2')(cls.net1)
+        cls.net2 = tl.layers.DeformableConv2d(64, (3, 3), act=tf.nn.relu, name='deformable2')(cls.net1, offset2)
 
     @classmethod
     def tearDownClass(cls):
