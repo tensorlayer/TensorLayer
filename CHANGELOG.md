@@ -67,23 +67,7 @@ To release a new version, please update the changelog as followed:
 
 <!-- YOU CAN EDIT FROM HERE -->
 
-### Added
-
-### Changed
-
-### Dependencies Update
-
-### Deprecated
-
-### Fixed
-
-### Removed
-
-### Security
-
-### Contributors
-
-## [1.11.0] - 2018-10-12
+## [Unreleased]
 
 ### Added
 - Layer:
