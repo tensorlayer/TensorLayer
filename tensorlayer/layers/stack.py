@@ -126,10 +126,7 @@ class UnStack(Layer):
         for i, unstacked_dim in enumerate(unstacked_layers):
 
             self._temp_data['outputs'].append(
-                self._create_unstacked_layer(
-                    name=self.name + "_%d" % (i + 1),
-                    outputs=unstacked_dim
-                )
+                self._create_unstacked_layer(name=self.name + "_%d" % (i + 1), outputs=unstacked_dim)
             )
 
         self.parse_outputs(self._temp_data['outputs'])
@@ -139,7 +136,7 @@ class UnStack(Layer):
 
         _str_ = "UnStackedLayer: %s - output shape: %s" % (name, outputs.shape)
 
-        return type("Built_UnStackedLayer", (BuiltLayer,), {})(
+        return type("Built_UnStackedLayer", (BuiltLayer, ), {})(
             layers_to_build=None,
             inputs=self,
             outputs=outputs,
@@ -164,6 +161,7 @@ class UnStack(Layer):
                     return self.ndarr[0].outputs.dtype
 
                 elif item == "shape":
+
                     def parse_dim(dim):
                         try:
                             return int(dim)

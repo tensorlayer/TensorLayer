@@ -619,8 +619,7 @@ def affine_transform_keypoints(coords_list, transform_matrix):
 
 
 def projective_transform_by_points(
-        x, src, dst, map_args=None, output_shape=None, order=1, mode='constant', cval=0.0, clip=True,
-        preserve_range=False
+    x, src, dst, map_args=None, output_shape=None, order=1, mode='constant', cval=0.0, clip=True, preserve_range=False
 ):
     """Projective transform by given coordinates, usually 4 coordinates.
 
@@ -689,7 +688,14 @@ def projective_transform_by_points(
     m = transform.ProjectiveTransform()
     m.estimate(dst, src)
     warped = transform.warp(
-        x, m, map_args=map_args, output_shape=output_shape, order=order, mode=mode, cval=cval, clip=clip,
+        x,
+        m,
+        map_args=map_args,
+        output_shape=output_shape,
+        order=order,
+        mode=mode,
+        cval=cval,
+        clip=clip,
         preserve_range=preserve_range
     )
     return warped
@@ -1540,8 +1546,15 @@ def zoom(x, zoom_range=(0.9, 1.1), row_index=0, col_index=1, channel_index=2, fi
 
 
 def respective_zoom(
-        x, h_range=(0.9, 1.1), w_range=(0.9, 1.1), row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
-        cval=0., order=1
+    x,
+    h_range=(0.9, 1.1),
+    w_range=(0.9, 1.1),
+    row_index=0,
+    col_index=1,
+    channel_index=2,
+    fill_mode='nearest',
+    cval=0.,
+    order=1
 ):
     """Zooming/Scaling a single image that height and width are changed independently.
 

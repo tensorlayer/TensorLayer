@@ -22,9 +22,7 @@ class Network_Sequential_RNN_Test(CustomTestCase):
 
             cls.model = tl.networks.Sequential(name="My_Sequential_RNN")
 
-            cls.model.add(
-                tl.layers.EmbeddingInput(vocabulary_size=100, embedding_size=50, name='embedding_layer_1')
-            )
+            cls.model.add(tl.layers.EmbeddingInput(vocabulary_size=100, embedding_size=50, name='embedding_layer_1'))
             cls.model.add(tl.layers.RNN(n_hidden=100, n_steps=n_step, return_last=False, name='rnn_layer_2'))
             cls.model.add(
                 tl.layers.BiRNN(n_hidden=50, dropout=0.5, n_steps=n_step, return_last=False, name='birnn_layer_3')
@@ -155,9 +153,7 @@ class Network_Sequential_Dynamic_RNN_Test(CustomTestCase):
 
             cls.model = tl.networks.Sequential(name="My_Sequential_DynamicRNN")
 
-            cls.model.add(
-                tl.layers.EmbeddingInput(vocabulary_size=100, embedding_size=50, name='embedding_layer_1')
-            )
+            cls.model.add(tl.layers.EmbeddingInput(vocabulary_size=100, embedding_size=50, name='embedding_layer_1'))
             cls.model.add(
                 tl.layers.DynamicRNN(
                     cell_fn=tf.contrib.rnn.BasicLSTMCell,

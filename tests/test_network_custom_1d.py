@@ -48,15 +48,20 @@ class CustomNetwork_1D_Test(CustomTestCase):
 
                     net_unstack = tl.layers.UnStack(axis=1, name='unstack_layer_9')(net_stack)
 
-                    net_unstacked_d1 = tl.layers.Lambda(fn=lambda x: x[0].outputs, name="unstacked_layer_9_1")(net_unstack)
+                    net_unstacked_d1 = tl.layers.Lambda(
+                        fn=lambda x: x[0].outputs, name="unstacked_layer_9_1"
+                    )(net_unstack)
 
-                    net_unstacked_d2 = tl.layers.Lambda(fn=lambda x: x[1].outputs, name="unstacked_layer_9_2")(net_unstack)
+                    net_unstacked_d2 = tl.layers.Lambda(
+                        fn=lambda x: x[1].outputs, name="unstacked_layer_9_2"
+                    )(net_unstack)
 
-                    net_unstacked_d3 = tl.layers.Lambda(fn=lambda x: x[2].outputs, name="unstacked_layer_9_3")(net_unstack)
+                    net_unstacked_d3 = tl.layers.Lambda(
+                        fn=lambda x: x[2].outputs, name="unstacked_layer_9_3"
+                    )(net_unstack)
 
-                    net = tl.layers.Concat(name='concat_layer_10')(
-                        [net_unstacked_d1, net_unstacked_d2, net_unstacked_d3]
-                    )
+                    net = tl.layers.Concat(name='concat_layer_10'
+                                          )([net_unstacked_d1, net_unstacked_d2, net_unstacked_d3])
 
                     return (input_layer, noise_layer), net
 

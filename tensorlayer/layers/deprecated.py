@@ -20,10 +20,8 @@ def PReluLayer(*args, **kwargs):
     raise NonExistingLayerError("PReluLayer(net, name='a') --> PRelu(name='a')(net))")
 
 
-
 def PRelu6Layer(*args, **kwargs):
     raise NonExistingLayerError("PRelu6Layer(net, name='a') --> PRelu6(name='a')(net))")
-
 
 
 def PTRelu6Layer(*args, **kwargs):
@@ -36,6 +34,7 @@ __all__ += [
     'AtrousConv2dLayer',
     'AtrousDeConv2dLayer',
 ]
+
 
 def AtrousConv1dLayer(*args, **kwargs):
     raise NonExistingLayerError("use `tl.layers.Conv1d` with dilation instead")
@@ -185,7 +184,7 @@ def AverageEmbeddingInputlayer(*args, **kwargs):
 
 
 # lambda.py
-__all__+= [
+__all__ += [
     'LambdaLayer',
     'ElementwiseLambdaLayer',
 ]
@@ -212,6 +211,7 @@ def ConcatLayer(*args, **kwargs):
 
 def ElementwiseLayer(*args, **kwargs):
     raise NonExistingLayerError("ElementwiseLayer(x, ..., name='a') --> Elementwise(..., name='a')(x)")
+
 
 # noise.py
 __all__ += [
@@ -258,13 +258,8 @@ def SwitchNormLayer(*args, **kwargs):
     raise NonExistingLayerError("SwitchNormLayer(x, name='a') --> SwitchNorm(name='a')(x)")
 
 
-<<<<<<< HEAD
-## quantize_layer.py
-__all__ += [
-=======
 # quantize_layer.py
-__all__+= [
->>>>>>> 2b322487f4715c7d6756d4394fb26302ca56f832
+__all__ += [
     'SignLayer',
 ]
 
@@ -291,11 +286,15 @@ __all__ += [
 
 
 def DynamicRNNLayer(*args, **kwargs):
-    raise NonExistingLayerError("DynamicRNNLayer(x, is_train=True, name='a') --> DynamicRNN(name='a')(x, is_train=True)")
+    raise NonExistingLayerError(
+        "DynamicRNNLayer(x, is_train=True, name='a') --> DynamicRNN(name='a')(x, is_train=True)"
+    )
 
 
 def BiDynamicRNNLayer(*args, **kwargs):
-    raise NonExistingLayerError("BiDynamicRNNLayer(x, is_train=True, name='a') --> BiDynamicRNN(name='a')(x, is_train=True)")
+    raise NonExistingLayerError(
+        "BiDynamicRNNLayer(x, is_train=True, name='a') --> BiDynamicRNN(name='a')(x, is_train=True)"
+    )
 
 
 # recurrent/rnn_layers.py
@@ -344,13 +343,13 @@ def ScaleLayer(*args, **kwargs):
 
 
 # spatial_transformer.py
-__all__ += [
-    'SpatialTransformer2dAffineLayer'
-]
+__all__ += ['SpatialTransformer2dAffineLayer']
 
 
 def SpatialTransformer2dAffineLayer(*args, **kwargs):
-    raise NonExistingLayerError("SpatialTransformer2dAffineLayer(x1, x2, name='a') --> SpatialTransformer2dAffine(name='a')(x1, x2)")
+    raise NonExistingLayerError(
+        "SpatialTransformer2dAffineLayer(x1, x2, name='a') --> SpatialTransformer2dAffine(name='a')(x1, x2)"
+    )
 
 
 # stack.py
