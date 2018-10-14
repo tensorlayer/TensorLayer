@@ -269,17 +269,13 @@ Apply keypoint transform
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: affine_transform_keypoints
 
-Projective transform by points
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: projective_transform_by_points
-
 
 Images
 -----------
 
-- These functions only apply on a single image, use ``threading_data`` to apply multiple threading see ``tutorial_image_preprocess.py``.
-- All functions have argument ``is_random``.
-- All functions end with ``*_multi`` process all images together, usually be used for image segmentation i.e. the input and output image should be matched.
+Projective transform by points
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: projective_transform_by_points
 
 Rotation
 ^^^^^^^^^
