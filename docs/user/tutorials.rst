@@ -16,7 +16,7 @@ Learning tutorial, so you could read TensorFlow Deep Learning tutorial at the sa
 `[en] <https://www.tensorflow.org/versions/master/tutorials/index.html>`_ `[cn] <http://wiki.jikexueyuan.com/project/tensorflow-zh/>`_ .
 
 .. note::
-    For experts: Read the source code of ``InputLayer`` and ``DenseLayer``, you
+    For experts: Read the source code of ``InputLayer`` and ``Dense``, you
     will understand how `TensorLayer`_ work. After that, we recommend you to read
     the codes on Github directly.
 
@@ -63,16 +63,16 @@ the TensorFlow's native API like ``sess.run()``, see `tutorial_mnist.py <https:/
   # define the network
   network = tl.layers.InputLayer(x, name='input_layer')
   network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
-  network = tl.layers.DenseLayer(network, n_units=800,
+  network = tl.layers.Dense(network, n_units=800,
                                   act = tf.nn.relu, name='relu1')
   network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
-  network = tl.layers.DenseLayer(network, n_units=800,
+  network = tl.layers.Dense(network, n_units=800,
                                   act = tf.nn.relu, name='relu2')
   network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
   # the softmax is implemented internally in tl.cost.cross_entropy(y, y_, 'cost') to
   # speed up computation, so we use identity here.
   # see tf.nn.sparse_softmax_cross_entropy_with_logits()
-  network = tl.layers.DenseLayer(network, n_units=10,
+  network = tl.layers.Dense(network, n_units=10,
                                   act = tf.identity,
                                   name='output_layer')
   # define cost function and metric.
@@ -150,11 +150,11 @@ If everything is set up correctly, you will get an output like the following:
 
   [TL] InputLayer   input_layer (?, 784)
   [TL] DropoutLayer drop1: keep: 0.800000
-  [TL] DenseLayer   relu1: 800, relu
+  [TL] Dense   relu1: 800, relu
   [TL] DropoutLayer drop2: keep: 0.500000
-  [TL] DenseLayer   relu2: 800, relu
+  [TL] Dense   relu2: 800, relu
   [TL] DropoutLayer drop3: keep: 0.500000
-  [TL] DenseLayer   output_layer: 10, identity
+  [TL] Dense   output_layer: 10, identity
 
   param 0: (784, 800) (mean: -0.000053, median: -0.000043 std: 0.035558)
   param 1: (800,)     (mean:  0.000000, median:  0.000000 std: 0.000000)
@@ -326,11 +326,11 @@ data. This is realized via a :class:`DropoutLayer
 Note that the first constructor argument is the incoming layer, the second
 argument is the keeping probability for the activation value. Now we'll proceed
 with the first fully-connected hidden layer of 800 units. Note
-that when stacking a :class:`DenseLayer <tensorlayer.layers.DenseLayer>`.
+that when stacking a :class:`Dense <tensorlayer.layers.Dense>`.
 
 .. code-block:: python
 
-    network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+    network = tl.layers.Dense(network, n_units=800, act = tf.nn.relu, name='relu1')
 
 Again, the first constructor argument means that we're stacking ``network`` on
 top of ``network``.
@@ -343,7 +343,7 @@ again:
 .. code-block:: python
 
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
-    network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
+    network = tl.layers.Dense(network, n_units=800, act = tf.nn.relu, name='relu2')
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
 
 Finally, we'll add the fully-connected output layer which the ``n_units`` equals to
@@ -354,7 +354,7 @@ details in ``tl.cost.cross_entropy()``.
 
 .. code-block:: python
 
-    network = tl.layers.DenseLayer(network,
+    network = tl.layers.Dense(network,
                                   n_units=10,
                                   act = tf.identity,
                                   name='output')
@@ -379,20 +379,20 @@ it has become more widely used for learning generative models of data and Greedy
 For vanilla Autoencoder, see `Deeplearning Tutorial`_.
 
 The script ``main_test_denoise_AE()`` implements a Denoising Autoencoder with corrosion rate of 50%.
-The Autoencoder can be defined as follow, where an Autoencoder is represented by a ``DenseLayer``:
+The Autoencoder can be defined as follow, where an Autoencoder is represented by a ``Dense``:
 
 .. code-block:: python
 
     network = tl.layers.InputLayer(x, name='input_layer')
     network = tl.layers.DropoutLayer(network, keep=0.5, name='denoising1')
-    network = tl.layers.DenseLayer(network, n_units=200, act=tf.nn.sigmoid, name='sigmoid1')
+    network = tl.layers.Dense(network, n_units=200, act=tf.nn.sigmoid, name='sigmoid1')
     recon_layer1 = tl.layers.ReconLayer(network,
                                         x_recon=x,
                                         n_units=784,
                                         act=tf.nn.sigmoid,
                                         name='recon_layer1')
 
-To train the ``DenseLayer``, simply run ``ReconLayer.pretrain()``, if using denoising Autoencoder, the name of
+To train the ``Dense``, simply run ``ReconLayer.pretrain()``, if using denoising Autoencoder, the name of
 corrosion layer (a ``DropoutLayer``) need to be specified as follow. To save the feature images, set ``save`` to ``True``.
 There are many kinds of pre-train metrices according to different architectures and applications. For sigmoid activation,
 the Autoencoder can be implemented by using KL divergence, while for rectifier, L1 regularization of activation outputs
@@ -437,9 +437,9 @@ layer. More CNN examples can be found in other examples, like ``tutorial_cifar10
 
     network = tl.layers.FlattenLayer(network, name='flatten')
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop1')
-    network = tl.layers.DenseLayer(network, 256, act=tf.nn.relu, name='relu1')
+    network = tl.layers.Dense(network, 256, act=tf.nn.relu, name='relu1')
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
-    network = tl.layers.DenseLayer(network, 10, act=tf.identity, name='output')
+    network = tl.layers.Dense(network, 10, act=tf.identity, name='output')
 
 
 Training the model
@@ -554,8 +554,8 @@ If everything is set up correctly, you will get an output like the following:
 
   [2016-07-12 09:31:59,760] Making new env: Pong-v0
     [TL] InputLayer input_layer (?, 6400)
-    [TL] DenseLayer relu1: 200, relu
-    [TL] DenseLayer output_layer: 3, identity
+    [TL] Dense relu1: 200, relu
+    [TL] Dense output_layer: 3, identity
     param 0: (6400, 200) (mean: -0.000009  median: -0.000018 std: 0.017393)
     param 1: (200,)      (mean: 0.000000   median: 0.000000  std: 0.000000)
     param 2: (200, 3)    (mean: 0.002239   median: 0.003122  std: 0.096611)
@@ -651,9 +651,9 @@ DOWN and STOP (do nothing) by using 3 softmax outputs.
     states_batch_pl = tf.placeholder(tf.float32, shape=[None, D])
 
     network = tl.layers.InputLayer(states_batch_pl, name='input_layer')
-    network = tl.layers.DenseLayer(network, n_units=H,
+    network = tl.layers.Dense(network, n_units=H,
                                     act = tf.nn.relu, name='relu1')
-    network = tl.layers.DenseLayer(network, n_units=3,
+    network = tl.layers.Dense(network, n_units=3,
                             act = tf.identity, name='output_layer')
     probs = network.outputs
     sampling_prob = tf.nn.softmax(probs)
@@ -830,7 +830,7 @@ The model can be created as follow.
   valid_dataset = tf.constant(valid_examples, dtype=tf.int32)
 
   # Look up embeddings for inputs.
-  emb_net = tl.layers.Word2vecEmbeddingInputlayer(
+  emb_net = tl.layers.Word2vecEmbeddingInput(
           inputs = train_inputs,
           train_labels = train_labels,
           vocabulary_size = vocabulary_size,
@@ -858,7 +858,7 @@ generate training data as follow, see ``tutorial_generate_text.py`` .
 
 .. code-block:: python
 
-  # NCE cost expression is provided by Word2vecEmbeddingInputlayer
+  # NCE cost expression is provided by Word2vecEmbeddingInput
   cost = emb_net.nce_cost
   train_params = emb_net.all_params
 
@@ -904,7 +904,7 @@ directories as follow.
   x = tf.placeholder(tf.int32, shape=[batch_size])
   y_ = tf.placeholder(tf.int32, shape=[batch_size, 1])
 
-  emb_net = tl.layers.EmbeddingInputlayer(
+  emb_net = tl.layers.EmbeddingInput(
                   inputs = x,
                   vocabulary_size = vocabulary_size,
                   embedding_size = embedding_size,
@@ -1024,7 +1024,7 @@ the model provides a sequence of softmax outputs.
 
 The first LSTM layer outputs ``[batch_size, num_steps, hidden_size]`` for stacking
 another LSTM after it. The second LSTM layer outputs ``[batch_size*num_steps, hidden_size]``
-for stacking a DenseLayer after it. Then the DenseLayer computes the softmax outputs of each example
+for stacking a Dense after it. Then the Dense computes the softmax outputs of each example
 （``n_examples = batch_size*num_steps``).
 
 To understand the PTB tutorial, you can also read `TensorFlow PTB tutorial
@@ -1035,7 +1035,7 @@ To understand the PTB tutorial, you can also read `TensorFlow PTB tutorial
 
 .. code-block:: python
 
-  network = tl.layers.EmbeddingInputlayer(
+  network = tl.layers.EmbeddingInput(
               inputs = x,
               vocabulary_size = vocab_size,
               embedding_size = hidden_size,
@@ -1066,7 +1066,7 @@ To understand the PTB tutorial, you can also read `TensorFlow PTB tutorial
   lstm2 = network
   if is_training:
       network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop3')
-  network = tl.layers.DenseLayer(network,
+  network = tl.layers.Dense(network,
               n_units=vocab_size,
               W_init=tf.random_uniform_initializer(-init_scale, init_scale),
               b_init=tf.random_uniform_initializer(-init_scale, init_scale),

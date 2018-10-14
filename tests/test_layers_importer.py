@@ -27,7 +27,7 @@ class Layer_Importer_Test(CustomTestCase):
         cls.net_in = dict()
 
         # ============================= #
-        #          LambdaLayer
+        #          Lambda
         # ============================= #
         x = tf.placeholder(tf.float32, shape=[None, 784])
         cls.net_in["lambda"] = tl.layers.Input(name='input')(x)

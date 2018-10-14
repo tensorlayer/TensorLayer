@@ -275,7 +275,7 @@ To release a new version, please update the changelog as followed:
   - Optimizers page added (PR #636)
   - `AMSGrad` added on Optimizers page added (PR #636)
 - Layer:
-  - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (PR #579)
+  - ElementwiseLambda added to use custom function to connect multiple layer inputs (PR #579)
   - AtrousDeConv2dLayer added (PR #662)
   - Fix bugs of using `tf.layers` in CNN (PR #686)
 - Optimizer:
@@ -301,7 +301,7 @@ To release a new version, please update the changelog as followed:
 ### Changed
 
 - Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (PR #573)
-- The document of LambdaLayer for linking it with ElementwiseLambdaLayer (PR #587)
+- The document of LambdaLayer for linking it with ElementwiseLambda (PR #587)
 - RTD links point to stable documentation instead of latest used for development (PR #633)
 - TF Version older than 1.6.0 are officially unsupported and raises an exception (PR #644)
 - README.md Badges Updated with Support Python and Tensorflow Versions (PR #644)
@@ -340,8 +340,8 @@ To release a new version, please update the changelog as followed:
 - Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (PR #575)
 - Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `axis=1` (PR #566)
 - Issue #572 with `tl.layers.DeformableConv2d` fixed (PR #573)
-- Issue #664 with `tl.layers.ConvLSTMLayer` fixed (PR #676)
-- Typo of the document of ElementwiseLambdaLayer (PR #588)
+- Issue #664 with `tl.layers.ConvLSTM` fixed (PR #676)
+- Typo of the document of ElementwiseLambda (PR #588)
 - Error in `tl.layers.TernaryConv2d` fixed - self.inputs not defined (PR #658)
 - Deprecation warning fixed in `tl.layers.binary._compute_threshold()` (PR #658)
 - All references to `tf.logging` replaced by `tl.logging` (PR #661)

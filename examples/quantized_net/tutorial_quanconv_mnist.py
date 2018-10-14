@@ -33,7 +33,7 @@ def model(x, is_train=True, reuse=False):
 
         net = tl.layers.Flatten()(net)
         # net = tl.layers.Dropout(0.8, True, name='drop1')(net, is_train=is_train)
-        net = tl.layers.QuanDenseLayerWithBN(
+        net = tl.layers.QuanDenseWithBN(
             256, is_train=is_train, act=tf.nn.relu, name='qdbn'
         )(net, is_train=is_train)
 

@@ -18,7 +18,7 @@ __all__ = [
 
 class DropconnectDense(Layer):
     """
-    The :class:`DropconnectDense` class is :class:`DenseLayer` with DropConnect
+    The :class:`DropconnectDense` class is :class:`Dense` with DropConnect
     behaviour which randomly removes connections between this layer and the previous
     layer according to a keeping probability.
 

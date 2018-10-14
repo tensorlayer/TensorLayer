@@ -200,7 +200,7 @@ def main(_):
         then different inferences share the same parameters.
 
         Note :
-        - For DynamicRNNLayer, you can set dropout and the number of RNN layer internally.
+        - For DynamicRNN, you can set dropout and the number of RNN layer internally.
         """
         print("\nnum_steps : %d, is_train : %s, reuse : %s" % (num_steps, is_train, reuse))
         init = tf.random_uniform_initializer(-init_scale, init_scale)

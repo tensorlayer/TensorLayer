@@ -69,7 +69,7 @@ def leaky_relu(x, alpha=0.2, name="leaky_relu"):
     Examples
     --------
     >>> import tensorlayer as tl
-    >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')
+    >>> net = tl.layers.Dense(net, 100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')
 
     Returns
     -------
@@ -115,7 +115,7 @@ def leaky_relu6(x, alpha=0.2, name="leaky_relu6"):
     Examples
     --------
     >>> import tensorlayer as tl
-    >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.leaky_relu6(x, 0.2), name='dense')
+    >>> net = tl.layers.Dense(net, 100, act=lambda x : tl.act.leaky_relu6(x, 0.2), name='dense')
 
     Returns
     -------
@@ -165,7 +165,7 @@ def leaky_twice_relu6(x, alpha_low=0.2, alpha_high=0.2, name="leaky_relu6"):
     Examples
     --------
     >>> import tensorlayer as tl
-    >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.leaky_twice_relu6(x, 0.2, 0.2), name='dense')
+    >>> net = tl.layers.Dense(net, 100, act=lambda x : tl.act.leaky_twice_relu6(x, 0.2, 0.2), name='dense')
 
     Returns
     -------
@@ -234,7 +234,7 @@ def sign(x):
 
     Examples
     --------
-    >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')
+    >>> net = tl.layers.Dense(net, 100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')
 
     Returns
     -------

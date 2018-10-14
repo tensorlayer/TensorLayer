@@ -19,7 +19,7 @@ __all__ = [
 class TimeDistributed(Layer):
     """
     The :class:`TimeDistributed` class that applies a function to every timestep of the input tensor.
-    For example, if use :class:`DenseLayer` as the `layer_class`, we input (batch_size, length, dim) and
+    For example, if use :class:`Dense` as the `layer_class`, we input (batch_size, length, dim) and
     output (batch_size , length, new_dim).
 
     Parameters
@@ -41,8 +41,8 @@ class TimeDistributed(Layer):
     >>> x = tf.placeholder(dtype=tf.float32, shape=[batch_size, timestep, input_dim], name="encode_seqs")
     >>> net = tl.layers.Input(name='input')(x)
     [TL] Input  input: (32, 20, 100)
-    >>> net = tl.layers.TimeDistributed(layer_class=tl.layers.DenseLayer, args={'n_units':50, 'name':'dense'}, name='time_dense')(net)
-    [TL] TimeDistributed time_dense: layer_class:DenseLayer
+    >>> net = tl.layers.TimeDistributed(layer_class=tl.layers.Dense, args={'n_units':50, 'name':'dense'}, name='time_dense')(net)
+    [TL] TimeDistributed time_dense: layer_class:Dense
     >>> print(net.outputs._shape)
     (32, 20, 50)
     >>> net.print_weights(False)

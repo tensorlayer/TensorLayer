@@ -34,7 +34,7 @@ class Lambda(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=[None, 1], name='x')
-    >>> net = tl.layers.InputLayer(x, name='input')
+    >>> net = tl.layers.Input(x, name='input')
     >>> net = tl.layers.Lambda(net, lambda x: 2*x, name='lambda')
 
     Parametric case, merge other wrappers into TensorLayer

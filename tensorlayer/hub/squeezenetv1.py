@@ -11,10 +11,10 @@ from tensorlayer import logging
 
 from tensorlayer.layers import Layer
 from tensorlayer.layers import Conv2d
-from tensorlayer.layers import InputLayer
+from tensorlayer.layers import Input
 from tensorlayer.layers import MaxPool2d
-from tensorlayer.layers import ConcatLayer
-from tensorlayer.layers import DropoutLayer
+from tensorlayer.layers import Concat
+from tensorlayer.layers import Dropout
 from tensorlayer.layers import GlobalMeanPool2d
 
 from tensorlayer.files import maybe_download_and_extract

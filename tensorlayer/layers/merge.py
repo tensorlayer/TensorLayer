@@ -31,11 +31,11 @@ class Concat(Layer):
     >>> sess = tf.InteractiveSession()
     >>> x = tf.placeholder(tf.float32, shape=[None, 784])
     >>> inputs = tl.layers.Input()(x)
-    [TL]   InputLayer input (?, 784)
+    [TL]   Input input (?, 784)
     >>> net1 = tl.layers.Dense(inputs, 800, act=tf.nn.relu, name='relu1_1')
-    [TL]   DenseLayer relu1_1: 800, relu
+    [TL]   Dense relu1_1: 800, relu
     >>> net2 = tl.layers.Dense(inputs, 300, act=tf.nn.relu, name='relu2_1')
-    [TL]   DenseLayer relu2_1: 300, relu
+    [TL]   Dense relu2_1: 300, relu
     >>> net = tl.layers.Concat(1, name ='concat_layer')()[net1, net2])
     [TL]   Concat concat_layer, 1100
     >>> tl.layers.initialize_global_variables(sess)

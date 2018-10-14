@@ -68,14 +68,14 @@ class BaseLayer(object):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder("float32", [None, 100])
-    >>> n = tl.layers.InputLayer(x, name='in')
-    >>> n = tl.layers.DenseLayer(n, 80, name='d1')
-    >>> n = tl.layers.DenseLayer(n, 80, name='d2')
+    >>> n = tl.layers.Input(x, name='in')
+    >>> n = tl.layers.Dense(n, 80, name='d1')
+    >>> n = tl.layers.Dense(n, 80, name='d2')
 
     - Get information
 
     >>> print(n)
-    Last layer is: DenseLayer (d2) [None, 80]
+    Last layer is: Dense (d2) [None, 80]
     >>> n.print_layers()
     [TL]   layer   0: d1/Identity:0        (?, 80)            float32
     [TL]   layer   1: d2/Identity:0        (?, 80)            float32
@@ -291,7 +291,7 @@ class Layer(BaseLayer):
         }
 
         if isinstance(prev_layer, BuiltLayer):
-            # 1. for normal layer have only 1 input i.e. DenseLayer
+            # 1. for normal layer have only 1 input i.e. Dense
             # Hint : list(), dict() is pass by value (shallow), without them,
             # it is pass by reference.
 
@@ -303,7 +303,7 @@ class Layer(BaseLayer):
             # self._add_graphs(prev_layer.all_graphs)
 
         elif isinstance(prev_layer, (list, tuple)):
-            # 2. for layer have multiply inputs i.e. ConcatLayer
+            # 2. for layer have multiply inputs i.e. Concat
 
             if self.__class__.__name__ in tl.layers.inputs.__all__:
                 self._temp_data['inputs'] = prev_layer
@@ -315,7 +315,7 @@ class Layer(BaseLayer):
 
         elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
             if self.__class__.__name__ not in tl.layers.inputs.__all__:
-                raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
+                raise RuntimeError("Please use `tl.layers.Input` to convert Tensor/Placeholder to a TL layer")
 
             self._temp_data['inputs'] = prev_layer
             '''
@@ -344,7 +344,7 @@ class Layer(BaseLayer):
                 self._temp_data['inputs'] = prev_layer.outputs
         '''
         # TL Graph
-        if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
+        if isinstance(prev_layer, list):  # e.g. Concat, ElementwiseLayer have multiply previous layers
             _list = []
 
             for layer in prev_layer:
@@ -395,7 +395,7 @@ class Layer(BaseLayer):
                 pass
 
         try:
-            additional_str.append("output shape: %s" % self._temp_data['outputs'].shape)
+            additional_str.append("output shape: %s" % str(self._temp_data['outputs'].shape))
         except AttributeError:
             pass
 
@@ -667,20 +667,22 @@ class BuiltLayer(object):
 
     def __init__(self, layers_to_build, inputs, outputs, local_weights, local_drop, is_train, **kwargs):
 
-        self.hyperparameters = dict()
+        if layers_to_build is not None:
 
-        for key, value in layers_to_build.__dict__.items():
+            self.hyperparameters = dict()
 
-            # Do not record these arguments
+            for key, value in layers_to_build.__dict__.items():
 
-            # "prev_layer", "all_params", "all_layers", "all_drop", "all_graphs", "graph", "is_setup",
-            # "inputs", "outputs", "_local_drop", "_local_weights",
+                # Do not record these arguments
 
-            if key in ["_last_built_layer", '_temp_data']:
-                continue
+                # "prev_layer", "all_params", "all_layers", "all_drop", "all_graphs", "graph", "is_setup",
+                # "inputs", "outputs", "_local_drop", "_local_weights",
 
-            # setattr(self, key, value)
-            self.hyperparameters[key] = value
+                if key in ["_last_built_layer", '_temp_data']:
+                    continue
+
+                # setattr(self, key, value)
+                self.hyperparameters[key] = value
 
         self._str_ = str(layers_to_build)
 
@@ -695,7 +697,8 @@ class BuiltLayer(object):
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
-        self.name = self.hyperparameters["name"]
+        if "name" not in kwargs.keys():
+            self.name = self.hyperparameters["name"]
 
         logging.info(str(self))
 

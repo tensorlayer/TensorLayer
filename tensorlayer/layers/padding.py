@@ -34,7 +34,7 @@ class PadLayer(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> images = tf.placeholder(tf.float32, [None, 224, 224, 3])
-    >>> net = tl.layers.InputLayer(images, name='in')
+    >>> net = tl.layers.Input(images, name='in')
     >>> net = tl.layers.PadLayer(net, [[0, 0], [3, 3], [3, 3], [0, 0]], "REFLECT", name='inpad')
 
     """

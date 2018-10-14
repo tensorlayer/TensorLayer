@@ -10,7 +10,7 @@ layers that allow user to apply ``tf.nn.lrn`` on ``network.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`__.
 """
 
-from .atrous_conv import *
+from .atrous_deconv import *
 from .binary_conv import *
 from .deformable_conv import *
 from .depthwise_conv import *
@@ -27,7 +27,7 @@ from .quan_conv import *
 from .quan_conv_bn import *
 
 __all__ = []
-__all__ += atrous_conv.__all__
+__all__ += atrous_deconv.__all__
 __all__ += binary_conv.__all__
 __all__ += deformable_conv.__all__
 __all__ += depthwise_conv.__all__

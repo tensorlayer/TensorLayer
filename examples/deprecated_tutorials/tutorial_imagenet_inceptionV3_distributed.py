@@ -161,7 +161,7 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
 
 
 def build_network(image_input, num_classes=1001, is_training=False):
-    net_in = tl.layers.InputLayer(image_input, name='input_layer')
+    net_in = tl.layers.Input(image_input, name='input_layer')
     with slim.arg_scope(inception_v3_arg_scope()):
         network = tl.layers.SlimNetsLayer(
             prev_layer=net_in,

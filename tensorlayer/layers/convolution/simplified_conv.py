@@ -49,8 +49,8 @@ class Conv1d(Layer):
     ---------
     >>> x = tf.placeholder(tf.float32, (batch_size, width))
     >>> y_ = tf.placeholder(tf.int64, shape=(batch_size,))
-    >>> n = InputLayer(x, name='in')
-    >>> n = ReshapeLayer(n, (-1, width, 1), name='rs')
+    >>> n = Input(x, name='in')
+    >>> n = Reshape(n, (-1, width, 1), name='rs')
     >>> n = Conv1d(n, 64, 3, 1, act=tf.nn.relu, name='c1')
     >>> n = MaxPool1d(n, 2, 2, padding='valid', name='m1')
     >>> n = Conv1d(n, 128, 3, 1, act=tf.nn.relu, name='c2')
@@ -58,9 +58,9 @@ class Conv1d(Layer):
     >>> n = Conv1d(n, 128, 3, 1, act=tf.nn.relu, name='c3')
     >>> n = MaxPool1d(n, 2, 2, padding='valid', name='m3')
     >>> n = FlattenLayer(n, name='f')
-    >>> n = DenseLayer(n, 500, tf.nn.relu, name='d1')
-    >>> n = DenseLayer(n, 100, tf.nn.relu, name='d2')
-    >>> n = DenseLayer(n, 2, None, name='o')
+    >>> n = Dense(n, 500, tf.nn.relu, name='d1')
+    >>> n = Dense(n, 100, tf.nn.relu, name='d2')
+    >>> n = Dense(n, 2, None, name='o')
     """
 
     def __init__(
@@ -196,7 +196,7 @@ class Conv2d(Layer):
     Examples
     --------
     >>> x = tf.placeholder(tf.float32, shape=(None, 28, 28, 1))
-    >>> net = InputLayer(x, name='inputs')
+    >>> net = Input(x, name='inputs')
     >>> net = Conv2d(net, 64, (3, 3), act=tf.nn.relu, name='conv1_1')
     >>> net = Conv2d(net, 64, (3, 3), act=tf.nn.relu, name='conv1_2')
     >>> net = MaxPool2d(net, (2, 2), name='pool1')

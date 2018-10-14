@@ -29,7 +29,7 @@ class Layer_Core_Test(CustomTestCase):
 
         cls.batch_size = 8
 
-        # ============== DenseLayer ==============
+        # ============== Dense ==============
 
         x1 = tf.placeholder(tf.float32, shape=[None, 30])
         net1 = tl.layers.Input(name='input')(x1)
@@ -43,7 +43,7 @@ class Layer_Core_Test(CustomTestCase):
         cls.net1_weights = net1.all_weights
         cls.net1_n_weights = net1.count_weights()
 
-        # ============== OneHotInputLayer ==============
+        # ============== OneHotInput ==============
 
         x2 = tf.placeholder(tf.int32, shape=[None])
         net2 = tl.layers.OneHotInput(x2, depth=8, name='onehot')
@@ -56,7 +56,7 @@ class Layer_Core_Test(CustomTestCase):
         cls.net2_weights = net2.all_weights
         cls.net2_n_weights = net2.count_weights()
 
-        # ============== Word2vecEmbeddingInputlayer ==============
+        # ============== Word2vecEmbeddingInput ==============
 
         train_inputs = tf.placeholder(tf.int32, shape=cls.batch_size)
         train_labels = tf.placeholder(tf.int32, shape=(cls.batch_size, 1))
@@ -72,7 +72,7 @@ class Layer_Core_Test(CustomTestCase):
         cls.net3_weights = net3.all_weights
         cls.net3_n_weights = net3.count_weights()
 
-        # ============== EmbeddingInputlayer ==============
+        # ============== EmbeddingInput ==============
 
         x4 = tf.placeholder(tf.int32, shape=(cls.batch_size, ))
         net4 = tl.layers.EmbeddingInput(vocabulary_size=1000, embedding_size=50, name='embed')(x4)
@@ -85,7 +85,7 @@ class Layer_Core_Test(CustomTestCase):
         cls.net4_weights = net4.all_weights
         cls.net4_n_weights = net4.count_weights()
 
-        # ============== AverageEmbeddingInputlayer ==============
+        # ============== AverageEmbeddingInput ==============
 
         length = 5
         x5 = tf.placeholder(tf.int32, shape=(cls.batch_size, length))
@@ -134,7 +134,7 @@ class Layer_Core_Test(CustomTestCase):
         cls.net7_weights = net7.all_weights
         cls.net7_n_weights = net7.count_weights()
 
-        # ============== DropconnectDenseLayer ==============
+        # ============== DropconnectDense ==============
 
         x8 = tf.placeholder(tf.float32, shape=(64, 784))
         net8 = tl.layers.Input(name='input')(x8)

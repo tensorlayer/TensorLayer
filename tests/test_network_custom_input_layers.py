@@ -12,7 +12,7 @@ import tensorlayer as tl
 from tests.utils import CustomTestCase
 
 
-class CustomNetwork_AverageEmbeddingInputlayer_Test(CustomTestCase):
+class CustomNetwork_AverageEmbeddingInput_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -28,11 +28,11 @@ class CustomNetwork_AverageEmbeddingInputlayer_Test(CustomTestCase):
                 def model(self):
 
                     # Network structure
-                    input_layer = tl.layers.AverageEmbeddingInputlayer(
+                    input_layer = tl.layers.AverageEmbeddingInput(
                         vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name="input_avg_emb_layer_1"
                     )
 
-                    network = tl.layers.DenseLayer(n_units=cls.n_labels, name="dense_layer_2")(input_layer)
+                    network = tl.layers.Dense(n_units=cls.n_labels, name="dense_layer_2")(input_layer)
 
                     return input_layer, network
 
@@ -116,7 +116,7 @@ class CustomNetwork_AverageEmbeddingInputlayer_Test(CustomTestCase):
         self.assertEqual(self.test_model["dense_layer_2"].outputs.shape, (100, 2))
 
 
-class CustomNetwork_EmbeddingInputlayer_Test(CustomTestCase):
+class CustomNetwork_EmbeddingInput_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -132,11 +132,11 @@ class CustomNetwork_EmbeddingInputlayer_Test(CustomTestCase):
                 def model(self):
 
                     # Network structure
-                    input_layer = tl.layers.EmbeddingInputlayer(
+                    input_layer = tl.layers.EmbeddingInput(
                         vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name="input_emb_layer_1"
                     )
 
-                    network = tl.layers.DenseLayer(n_units=cls.n_labels, name="dense_layer_2")(input_layer)
+                    network = tl.layers.Dense(n_units=cls.n_labels, name="dense_layer_2")(input_layer)
 
                     return input_layer, network
 
@@ -220,7 +220,7 @@ class CustomNetwork_EmbeddingInputlayer_Test(CustomTestCase):
         self.assertEqual(self.test_model["dense_layer_2"].outputs.shape, (100, 2))
 
 
-class CustomNetwork_OneHotInputLayer_Test(CustomTestCase):
+class CustomNetwork_OneHotInput_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -236,9 +236,9 @@ class CustomNetwork_OneHotInputLayer_Test(CustomTestCase):
                 def model(self):
 
                     # Network structure
-                    input_layer = tl.layers.OneHotInputLayer(depth=8, name='one_hot_encoding_layer_1')
+                    input_layer = tl.layers.OneHotInput(depth=8, name='one_hot_encoding_layer_1')
 
-                    network = tl.layers.DenseLayer(n_units=cls.n_labels, name="dense_layer_2")(input_layer)
+                    network = tl.layers.Dense(n_units=cls.n_labels, name="dense_layer_2")(input_layer)
 
                     return input_layer, network
 
@@ -322,7 +322,7 @@ class CustomNetwork_OneHotInputLayer_Test(CustomTestCase):
         self.assertEqual(self.test_model["dense_layer_2"].outputs.shape, (100, 2))
 
 
-class CustomNetwork_Word2vecEmbeddingInputlayer_Test(CustomTestCase):
+class CustomNetwork_Word2vecEmbeddingInput_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -338,11 +338,11 @@ class CustomNetwork_Word2vecEmbeddingInputlayer_Test(CustomTestCase):
                 def model(self):
 
                     # Network structure
-                    input_layer = tl.layers.Word2vecEmbeddingInputlayer(
+                    input_layer = tl.layers.Word2vecEmbeddingInput(
                         vocabulary_size=1000, embedding_size=200, num_sampled=64, name='word2vec_layer_1'
                     )
 
-                    network = tl.layers.DenseLayer(n_units=cls.n_labels, name="dense_layer_2")(input_layer)
+                    network = tl.layers.Dense(n_units=cls.n_labels, name="dense_layer_2")(input_layer)
 
                     return input_layer, network
 

@@ -58,7 +58,7 @@ class DynamicRNN(Layer):
             - In other word, if you want to stack more RNNs on this layer, set to False.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-            - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+            - If True, return 2D Tensor [n_example, n_hidden], for stacking Dense after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     dynamic_rnn_init_args : dictionary
         The arguments for ``tf.nn.dynamic_rnn``.
@@ -88,7 +88,7 @@ class DynamicRNN(Layer):
 
     Notes
     -----
-    Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`ReshapeLayer`.
+    Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`Reshape`.
 
     Examples
     --------
@@ -105,7 +105,7 @@ class DynamicRNN(Layer):
     ...             dropout=(0.7 if is_train else None),
     ...             sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
     ...             return_last=False,                    # for encoder, set to True
-    ...             return_seq_2d=True,                   # stack denselayer or compute cost after it
+    ...             return_seq_2d=True,                   # stack Dense or compute cost after it
     ...             name='dynamicrnn')(net)
     >>> net = tl.layers.Dense(n_units=vocab_size, name="output")(net)
 
@@ -391,7 +391,7 @@ class BiDynamicRNN(Layer):
             - In other word, if you want to stack more RNNs on this layer, set to False.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-            - If True, return 2D Tensor [n_example, 2 * n_hidden], for stacking DenseLayer after it.
+            - If True, return 2D Tensor [n_example, 2 * n_hidden], for stacking Dense after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, 2 * n_hidden], for stacking multiple RNN after it.
     dynamic_rnn_init_args : dictionary
         The arguments for ``tf.nn.bidirectional_dynamic_rnn``.
@@ -421,7 +421,7 @@ class BiDynamicRNN(Layer):
 
     Notes
     -----
-    Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`ReshapeLayer`.
+    Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`Reshape`.
 
     References
     ----------

@@ -20,13 +20,13 @@ from .lstm_layers import *
 from .seq2seq import *
 
 # __all__ = [
-#     'RNNLayer',
-#     'BiRNNLayer',
+#     'RNN',
+#     'BiRNN',
 #     'ConvRNNCell',
 #     'BasicConvLSTMCell',
-#     'ConvLSTMLayer',
-#     'DynamicRNNLayer',
-#     'BiDynamicRNNLayer',
+#     'ConvLSTM',
+#     'DynamicRNN',
+#     'BiDynamicRNN',
 #     'Seq2Seq',
 # ]
 __all__ = []

@@ -41,7 +41,7 @@ class DeformableConv2d(Layer):
 
     Examples
     --------
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
+    >>> net = tl.layers.Input(x, name='input_layer')
     >>> offset1 = tl.layers.Conv2d(net, 18, (3, 3), (1, 1), act=act, padding='SAME', name='offset1')
     >>> net = tl.layers.DeformableConv2d(net, offset1, 32, (3, 3), act=act, name='deformable1')
     >>> offset2 = tl.layers.Conv2d(net, 18, (3, 3), (1, 1), act=act, padding='SAME', name='offset2')

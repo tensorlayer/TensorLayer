@@ -48,7 +48,7 @@ class RNN(Layer):
             - In other word, if you want to stack more RNNs on this layer, set to False.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-            - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+            - If True, return 2D Tensor [n_example, n_hidden], for stacking Dense after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     name : str
         A unique layer name.
@@ -94,7 +94,7 @@ class RNN(Layer):
     >>> net = tl.layers.RNN(cell_fn=tf.contrib.rnn.BasicLSTMCell,
     ...     n_hidden=hidden_size, n_steps=num_steps, return_last=True, name='lstm2')(net)
     >>> net = tl.layers.Dropout(keep=keep_prob, is_fix=True, name='drop3')(net)
-    >>> net = tl.layers.DenseLayer(n_units=vocab_size, name='output')(net)
+    >>> net = tl.layers.Dense(n_units=vocab_size, name='output')(net)
 
     - For CNN+LSTM
 
@@ -114,7 +114,7 @@ class RNN(Layer):
 
     Notes
     -----
-    Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see :class:`ReshapeLayer`.
+    Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see :class:`Reshape`.
 
     References
     ----------
@@ -339,7 +339,7 @@ class BiRNN(Layer):
             - In other word, if you want to stack more RNNs on this layer, set to False.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-            - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+            - If True, return 2D Tensor [n_example, n_hidden], for stacking Dense after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     name : str
         A unique layer name.
@@ -361,7 +361,7 @@ class BiRNN(Layer):
 
     Notes
     -----
-    Input dimension should be rank 3 : [batch_size, n_steps, n_features]. If not, please see :class:`ReshapeLayer`.
+    Input dimension should be rank 3 : [batch_size, n_steps, n_features]. If not, please see :class:`Reshape`.
     For predicting, the sequence length has to be the same with the sequence length of training, while, for normal
     RNN, we can use sequence length of 1 for predicting.
 

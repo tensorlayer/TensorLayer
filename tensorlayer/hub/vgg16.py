@@ -33,9 +33,9 @@ import tensorflow as tf
 from tensorlayer import logging
 
 from tensorlayer.layers import Conv2d
-from tensorlayer.layers import DenseLayer
+from tensorlayer.layers import Dense
 from tensorlayer.layers import FlattenLayer
-from tensorlayer.layers import InputLayer
+from tensorlayer.layers import Input
 from tensorlayer.layers import MaxPool2d
 
 from tensorlayer.files import maybe_download_and_extract

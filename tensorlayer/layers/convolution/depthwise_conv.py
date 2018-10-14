@@ -46,7 +46,7 @@ class DepthwiseConv2d(Layer):
 
     Examples
     ---------
-    >>> net = InputLayer(x, name='input')
+    >>> net = Input(x, name='input')
     >>> net = Conv2d(net, 32, (3, 3), (2, 2), b_init=None, name='cin')
     >>> net = BatchNormLayer(net, act=tf.nn.relu, name='bnin')
     ...

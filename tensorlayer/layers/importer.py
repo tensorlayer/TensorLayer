@@ -90,7 +90,7 @@ class SlimNets(Layer):
 
 
 # @deprecated(
-#     end_support_version="2.0.0", instructions="This layer will be removed in TL 2.0.0 in favor of :class:`LambdaLayer`"
+#     end_support_version="2.0.0", instructions="This layer will be removed in TL 2.0.0 in favor of :class:`Lambda`"
 # )  # TODO: remove this line before releasing TL 2.0.0
 class Keras(Layer):
     """A layer to import Keras layers into TensorLayer.
@@ -128,7 +128,7 @@ class Keras(Layer):
 
         super(Keras, self).__init__(keras_args=keras_args)
 
-        logging.warning("This API will be removed, please use `LambdaLayer` instead.")
+        logging.warning("This API will be removed, please use `Lambda` instead.")
 
     def __str__(self):
         additional_str = []

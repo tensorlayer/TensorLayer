@@ -40,7 +40,7 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     >>> num_out_channels = 3
     >>> deconv_filter_shape = (filter_size, filter_size, num_out_channels, num_in_channels)
     >>> x = tf.placeholder(tf.float32, (1, imsize, imsize, num_channels))
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
+    >>> net = tl.layers.Input(x, name='input_layer')
     >>> bilinear_init = deconv2d_bilinear_upsampling_initializer(shape=filter_shape)
     >>> net = tl.layers.DeConv2dLayer(net,
     ...                    shape=filter_shape,

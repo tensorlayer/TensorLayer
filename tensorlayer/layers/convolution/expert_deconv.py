@@ -57,13 +57,13 @@ class DeConv2dLayer(Layer):
 
     >>> batch_size = 64
     >>> inputs = tf.placeholder(tf.float32, [batch_size, 100], name='z_noise')
-    >>> net_in = tl.layers.InputLayer(inputs, name='g/in')
-    >>> net_h0 = tl.layers.DenseLayer(net_in, n_units = 8192,
+    >>> net_in = tl.layers.Input(inputs, name='g/in')
+    >>> net_h0 = tl.layers.Dense(net_in, n_units = 8192,
     ...                            W_init = tf.random_normal_initializer(stddev=0.02),
     ...                            act = None, name='g/h0/lin')
     >>> print(net_h0.outputs._shape)
     (64, 8192)
-    >>> net_h0 = tl.layers.ReshapeLayer(net_h0, shape=(-1, 4, 4, 512), name='g/h0/reshape')
+    >>> net_h0 = tl.layers.Reshape(net_h0, shape=(-1, 4, 4, 512), name='g/h0/reshape')
     >>> net_h0 = tl.layers.BatchNormLayer(net_h0, act=tf.nn.relu, name='g/h0/batch_norm')
     >>> print(net_h0.outputs._shape)
     (64, 4, 4, 512)

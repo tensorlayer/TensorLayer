@@ -151,7 +151,7 @@ class Layer_Recurrent_Test(CustomTestCase):
         cls.net4_weights = net4.all_weights
         cls.net4_n_weights = net4.count_weights()
 
-        ## TODO: ConvLSTMLayer
+        ## TODO: ConvLSTM
         # image_size = 100
         # batch_size = 10
         # num_steps = 5

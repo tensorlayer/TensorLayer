@@ -278,6 +278,26 @@ class GroupNorm(Layer):
 
         super(GroupNorm, self).__init__()
 
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("groups: %s" % str(self.groups))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("epsilon: %s" % str(self.epsilon))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("data_format: %s" % self.data_format)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
     def build(self):
         shape = self._temp_data['inputs'].get_shape().as_list()
 
@@ -525,7 +545,7 @@ class SwitchNorm(Layer):
     act : activation function
         The activation function of this layer.
     epsilon : float
-        Eplison.
+        Epsilon.
     beta_init : initializer or None
         The initializer for initializing beta, if None, skip beta.
         Usually you should not skip beta unless you know what happened.

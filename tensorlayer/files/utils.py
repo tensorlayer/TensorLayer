@@ -1941,7 +1941,7 @@ def _graph2net(graphs):
         name, layer_kwargs = graph
         layer_kwargs = dict(
             layer_kwargs
-        )  # when InputLayer is used for twice, if we "pop" elements, the second time to use it will have error.
+        )  # when Input is used for twice, if we "pop" elements, the second time to use it will have error.
 
         layer_class = layer_kwargs.pop('class')  # class of current layer
         prev_layer = layer_kwargs.pop(
@@ -1971,7 +1971,7 @@ def _graph2net(graphs):
                 # input_dict.update({name: _placeholder})
                 input_list.append((name, _placeholder))
         else:  # create network
-            if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
+            if isinstance(prev_layer, list):  # e.g. Concat, ElementwiseLayer have multiply previous layers
                 raise NotImplementedError("TL graph does not support this layer at the moment: %s" % (layer_class))
             else:  # normal layers e.g. Conv2d
                 try:  # if previous layer is layer

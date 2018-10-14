@@ -20,7 +20,7 @@ __all__ = [
 class Flatten(Layer):
     """A layer that reshapes high-dimension input into a vector.
 
-    Then we often apply DenseLayer, RNNLayer, ConcatLayer and etc on the top of a flatten layer.
+    Then we often apply Dense, RNN, Concat and etc on the top of a flatten layer.
     [batch_size, mask_row, mask_col, n_mask] ---> [batch_size, mask_row * mask_col * n_mask]
 
     Parameters

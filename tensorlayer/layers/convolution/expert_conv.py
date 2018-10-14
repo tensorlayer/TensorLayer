@@ -181,7 +181,7 @@ class Conv2dLayer(Layer):
 
     >>> x = tf.placeholder(tf.float32, shape=(None, 28, 28, 1))
 
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
+    >>> net = tl.layers.Input(x, name='input_layer')
 
     >>> net = tl.layers.Conv2dLayer(net,
     ...                   act = tf.nn.relu,
@@ -328,7 +328,7 @@ class Conv3dLayer(Layer):
     Examples
     ---------
     >>> x = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
-    >>> n = tl.layers.InputLayer(x, name='in3')
+    >>> n = tl.layers.Input(x, name='in3')
     >>> n = tl.layers.Conv3dLayer(n, shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1))
     [None, 50, 50, 50, 32]
     """

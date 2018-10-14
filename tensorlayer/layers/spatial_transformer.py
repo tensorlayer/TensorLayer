@@ -74,7 +74,7 @@ class SpatialTransformer2dAffine(Layer):
             Previous layer.
         theta_layer : :class:`Layer`
             The localisation network.
-            - We will use a :class:`DenseLayer` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
+            - We will use a :class:`Dense` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
         is_train: boolean (default: True)
             Set the TF Variable in training mode and may impact the behaviour of the layer.
         """

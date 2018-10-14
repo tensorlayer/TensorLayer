@@ -25,7 +25,7 @@ input = tf.placeholder(tf.float32)
 rois = tf.placeholder(tf.int32)
 
 # y = roi_pooling(input, rois, pool_height=2, pool_width=2)
-n = InputLayer(input, name='in')
+n = Input(input, name='in')
 n = ROIPoolingLayer(n, rois=rois, pool_height=2, pool_width=2, name='roi')
 y = n.outputs
 mean = tf.reduce_mean(y)

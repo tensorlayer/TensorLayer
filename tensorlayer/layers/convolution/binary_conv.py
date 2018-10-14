@@ -56,7 +56,7 @@ class BinaryConv2d(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, [None, 256, 256, 3])
-    >>> net = tl.layers.InputLayer(x, name='input')
+    >>> net = tl.layers.Input(x, name='input')
     >>> net = tl.layers.BinaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='binary_conv2d_1')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, name='bn1')

@@ -40,6 +40,24 @@ class CustomNetwork_1D_Test(CustomTestCase):
                         fn=my_custom_lambda_func, name='elementwise_lambda_layer_6'
                     )([noise_layer, mean, std])
 
+                    net_d1 = tl.layers.Dense(n_units=10, name='dense_layer_7_1')(net)
+                    net_d2 = tl.layers.Dense(n_units=10, name='dense_layer_7_2')(net)
+                    net_d3 = tl.layers.Dense(n_units=10, name='dense_layer_7_3')(net)
+
+                    net_stack = tl.layers.Stack(axis=1, name='stack_layer_8')([net_d1, net_d2, net_d3])
+
+                    net_unstack = tl.layers.UnStack(axis=1, name='unstack_layer_9')(net_stack)
+
+                    net_unstacked_d1 = tl.layers.Lambda(fn=lambda x: x[0].outputs, name="unstacked_layer_9_1")(net_unstack)
+
+                    net_unstacked_d2 = tl.layers.Lambda(fn=lambda x: x[1].outputs, name="unstacked_layer_9_2")(net_unstack)
+
+                    net_unstacked_d3 = tl.layers.Lambda(fn=lambda x: x[2].outputs, name="unstacked_layer_9_3")(net_unstack)
+
+                    net = tl.layers.Concat(name='concat_layer_10')(
+                        [net_unstacked_d1, net_unstacked_d2, net_unstacked_d3]
+                    )
+
                     return (input_layer, noise_layer), net
 
             cls.model = MyCustomNetwork(name="my_custom_network")
@@ -64,23 +82,23 @@ class CustomNetwork_1D_Test(CustomTestCase):
             self.assertEqual(len(self.model.all_drop), 0)
 
     def test_count_weights(self):
-        self.assertEqual(self.train_model.count_weights(), 3088)
-        self.assertEqual(self.test_model.count_weights(), 3088)
+        self.assertEqual(self.train_model.count_weights(), 4078)
+        self.assertEqual(self.test_model.count_weights(), 4078)
 
         with self.assertRaises((AttributeError, AssertionError)):
             self.assertEqual(self.model.count_weights(), 3088)
 
     def test_count_weight_tensors(self):
-        self.assertEqual(len(self.train_model.get_all_weights()), 8)
-        self.assertEqual(len(self.test_model.get_all_weights()), 8)
+        self.assertEqual(len(self.train_model.get_all_weights()), 14)
+        self.assertEqual(len(self.test_model.get_all_weights()), 14)
 
         with self.assertRaises((AttributeError, AssertionError)):
-            self.assertEqual(len(self.model.get_all_weights()), 8)
+            self.assertEqual(len(self.model.get_all_weights()), 14)
 
     def test_count_layers(self):
-        self.assertEqual(self.train_model.count_layers(), 8)
-        self.assertEqual(self.test_model.count_layers(), 8)
-        self.assertEqual(self.model.count_layers(), 8)
+        self.assertEqual(self.train_model.count_layers(), 17)
+        self.assertEqual(self.test_model.count_layers(), 17)
+        self.assertEqual(self.model.count_layers(), 17)
 
     def test_layer_outputs_dtype(self):
 
@@ -103,9 +121,9 @@ class CustomNetwork_1D_Test(CustomTestCase):
     def test_layer_local_weights(self):
 
         # for layer_name in self.train_model.all_layers:
-        #    print("self.assertEqual(self.train_model['%s'].count_local_weights(), %d)" % (layer_name, self.train_model[layer_name].count_local_weights()))
-        #    print("self.assertEqual(self.test_model['%s'].count_local_weights(), %d)" % (layer_name, self.test_model[layer_name].count_local_weights()))
-        #    print()
+        #     print("self.assertEqual(self.train_model['%s'].count_local_weights(), %d)" % (layer_name, self.train_model[layer_name].count_local_weights()))
+        #     print("self.assertEqual(self.test_model['%s'].count_local_weights(), %d)" % (layer_name, self.test_model[layer_name].count_local_weights()))
+        #     print()
 
         self.assertEqual(self.train_model['input_layer'].count_local_weights(), 0)
         self.assertEqual(self.test_model['input_layer'].count_local_weights(), 0)
@@ -130,6 +148,33 @@ class CustomNetwork_1D_Test(CustomTestCase):
 
         self.assertEqual(self.train_model['elementwise_lambda_layer_6'].count_local_weights(), 0)
         self.assertEqual(self.test_model['elementwise_lambda_layer_6'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['dense_layer_7_1'].count_local_weights(), 330)
+        self.assertEqual(self.test_model['dense_layer_7_1'].count_local_weights(), 330)
+
+        self.assertEqual(self.train_model['dense_layer_7_2'].count_local_weights(), 330)
+        self.assertEqual(self.test_model['dense_layer_7_2'].count_local_weights(), 330)
+
+        self.assertEqual(self.train_model['dense_layer_7_3'].count_local_weights(), 330)
+        self.assertEqual(self.test_model['dense_layer_7_3'].count_local_weights(), 330)
+
+        self.assertEqual(self.train_model['stack_layer_8'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['stack_layer_8'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['unstack_layer_9'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['unstack_layer_9'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['unstacked_layer_9_1'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['unstacked_layer_9_1'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['unstacked_layer_9_2'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['unstacked_layer_9_2'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['unstacked_layer_9_3'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['unstacked_layer_9_3'].count_local_weights(), 0)
+
+        self.assertEqual(self.train_model['concat_layer_10'].count_local_weights(), 0)
+        self.assertEqual(self.test_model['concat_layer_10'].count_local_weights(), 0)
 
     def test_network_shapes(self):
 
@@ -156,6 +201,33 @@ class CustomNetwork_1D_Test(CustomTestCase):
 
         self.assertEqual(self.train_model["elementwise_lambda_layer_6"].outputs.shape, (100, 32))
         self.assertEqual(self.test_model["elementwise_lambda_layer_6"].outputs.shape, (100, 32))
+
+        self.assertEqual(self.train_model["dense_layer_7_1"].outputs.shape, (100, 10))
+        self.assertEqual(self.test_model["dense_layer_7_1"].outputs.shape, (100, 10))
+
+        self.assertEqual(self.train_model["dense_layer_7_2"].outputs.shape, (100, 10))
+        self.assertEqual(self.test_model["dense_layer_7_2"].outputs.shape, (100, 10))
+
+        self.assertEqual(self.train_model["dense_layer_7_3"].outputs.shape, (100, 10))
+        self.assertEqual(self.test_model["dense_layer_7_3"].outputs.shape, (100, 10))
+
+        self.assertEqual(self.train_model["stack_layer_8"].outputs.shape, (100, 3, 10))
+        self.assertEqual(self.test_model["stack_layer_8"].outputs.shape, (100, 3, 10))
+
+        self.assertEqual(self.train_model["unstack_layer_9"].outputs.shape, (3, 100, 10))
+        self.assertEqual(self.test_model["unstack_layer_9"].outputs.shape, (3, 100, 10))
+
+        self.assertEqual(self.train_model["unstacked_layer_9_1"].outputs.shape, (100, 10))
+        self.assertEqual(self.test_model["unstacked_layer_9_1"].outputs.shape, (100, 10))
+
+        self.assertEqual(self.train_model["unstacked_layer_9_2"].outputs.shape, (100, 10))
+        self.assertEqual(self.test_model["unstacked_layer_9_2"].outputs.shape, (100, 10))
+
+        self.assertEqual(self.train_model["unstacked_layer_9_3"].outputs.shape, (100, 10))
+        self.assertEqual(self.test_model["unstacked_layer_9_3"].outputs.shape, (100, 10))
+
+        self.assertEqual(self.train_model["concat_layer_10"].outputs.shape, (100, 30))
+        self.assertEqual(self.test_model["concat_layer_10"].outputs.shape, (100, 30))
 
 
 if __name__ == '__main__':

@@ -15,8 +15,8 @@ from tensorlayer.layers import Conv2d
 from tensorlayer.layers import DepthwiseConv2d
 from tensorlayer.layers import FlattenLayer
 from tensorlayer.layers import GlobalMeanPool2d
-from tensorlayer.layers import InputLayer
-from tensorlayer.layers import ReshapeLayer
+from tensorlayer.layers import Input
+from tensorlayer.layers import Reshape
 
 from tensorlayer.files import maybe_download_and_extract, assign_params, load_npz
 

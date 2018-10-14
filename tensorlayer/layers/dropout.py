@@ -60,7 +60,7 @@ class Dropout(Layer):
 
     >>> def mlp(x, is_train=True, reuse=False):
     >>>     with tf.variable_scope("MLP", reuse=reuse):
-    >>>     net = tl.layers.InputLayer(name='input')(x)
+    >>>     net = tl.layers.Input(name='input')(x)
     >>>     net = tl.layers.Dropout(keep=0.8, is_fix=True, name='drop1')(net, is_train=is_train)
     >>>     ...
     >>>     return net

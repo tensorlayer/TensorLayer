@@ -34,7 +34,7 @@ class SubpixelConv1d(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> t_signal = tf.placeholder('float32', [10, 100, 4], name='x')
-    >>> n = tl.layers.InputLayer(t_signal, name='in')
+    >>> n = tl.layers.Input(t_signal, name='in')
     >>> n = tl.layers.SubpixelConv1d(n, scale=2, name='s')
     >>> print(n.outputs.shape)
     (10, 200, 2)
@@ -102,7 +102,7 @@ class SubpixelConv2d(Layer):
     >>> import tensorlayer as tl
     >>> x = np.random.rand(2, 16, 16, 4)
     >>> X = tf.placeholder("float32", shape=(2, 16, 16, 4), name="X")
-    >>> net = tl.layers.InputLayer(X, name='input')
+    >>> net = tl.layers.Input(X, name='input')
     >>> net = tl.layers.SubpixelConv2d(net, scale=2, n_out_channels=1, name='subpixel_conv2d')
     >>> sess = tf.Session()
     >>> y = sess.run(net.outputs, feed_dict={X: x})
@@ -111,7 +111,7 @@ class SubpixelConv2d(Layer):
 
     >>> x = np.random.rand(2, 16, 16, 4*10)
     >>> X = tf.placeholder("float32", shape=(2, 16, 16, 4*10), name="X")
-    >>> net = tl.layers.InputLayer(X, name='input2')
+    >>> net = tl.layers.Input(X, name='input2')
     >>> net = tl.layers.SubpixelConv2d(net, scale=2, n_out_channels=10, name='subpixel_conv2d2')
     >>> y = sess.run(net.outputs, feed_dict={X: x})
     >>> print(x.shape, y.shape)
@@ -119,7 +119,7 @@ class SubpixelConv2d(Layer):
 
     >>> x = np.random.rand(2, 16, 16, 25*10)
     >>> X = tf.placeholder("float32", shape=(2, 16, 16, 25*10), name="X")
-    >>> net = tl.layers.InputLayer(X, name='input3')
+    >>> net = tl.layers.Input(X, name='input3')
     >>> net = tl.layers.SubpixelConv2d(net, scale=5, n_out_channels=None, name='subpixel_conv2d3')
     >>> y = sess.run(net.outputs, feed_dict={X: x})
     >>> print(x.shape, y.shape)
