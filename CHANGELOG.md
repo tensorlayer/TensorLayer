@@ -72,6 +72,17 @@ To release a new version, please update the changelog as followed:
 ### Added
 - Layer:
   - Release `GroupNormLayer` (PR #850)
+- Image affine transformation APIs
+  - `affine_rotation_matrix` (PR #857)
+  - `affine_horizontal_flip_matrix` (PR #857)
+  - `affine_vertical_flip_matrix` (PR #857)
+  - `affine_shift_matrix` (PR #857)
+  - `affine_shear_matrix` (PR #857)
+  - `affine_zoom_matrix` (PR #857)
+  - `affine_transform_cv2` (PR #857)
+  - `affine_transform_keypoints` (PR #857)
+- Affine transformation tutorial
+  - `examples/data_process/tutorial_fast_affine_transform.py` (PR #857)
 
 ### Changed
 
@@ -95,6 +106,8 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 - @2wins: #850 #855
 - @DEKHTIARJonathan: #853
+- @zsdonghao: #857
+- @luomai: #857
 
 ## [1.10.1] - 2018-09-07
 
@@ -120,6 +133,7 @@ To release a new version, please update the changelog as followed:
 - @DEKHTIARJonathan: #815 #818 #820 #823
 - @ndiy: #819 
 - @zsdonghao: #818
+
 
 ## [1.10.0] - 2018-09-02
 
