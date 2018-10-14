@@ -20,8 +20,10 @@ def PReluLayer(*args, **kwargs):
     raise NonExistingLayerError("PReluLayer(net, name='a') --> PRelu(name='a')(net))")
 
 
+
 def PRelu6Layer(*args, **kwargs):
     raise NonExistingLayerError("PRelu6Layer(net, name='a') --> PRelu6(name='a')(net))")
+
 
 
 def PTRelu6Layer(*args, **kwargs):
@@ -256,8 +258,13 @@ def SwitchNormLayer(*args, **kwargs):
     raise NonExistingLayerError("SwitchNormLayer(x, name='a') --> SwitchNorm(name='a')(x)")
 
 
+<<<<<<< HEAD
+## quantize_layer.py
+__all__ += [
+=======
 # quantize_layer.py
 __all__+= [
+>>>>>>> 2b322487f4715c7d6756d4394fb26302ca56f832
     'SignLayer',
 ]
 

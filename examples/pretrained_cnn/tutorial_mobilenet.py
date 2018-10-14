@@ -12,9 +12,7 @@ import time
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import (
-    BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, Input, Reshape
-)
+from tensorlayer.layers import (BatchNorm, Conv2d, DepthwiseConv2d, Flatten, GlobalMeanPool2d, Input, Reshape)
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 

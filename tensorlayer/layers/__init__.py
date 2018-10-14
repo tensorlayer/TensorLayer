@@ -15,7 +15,7 @@ from .convolution import *
 from .contrib import *
 from .core import *
 from .dense import *
-from .deprecated import *   # hao dong
+from .deprecated import *  # hao dong
 from .dropout import *
 from .extend import *
 from .image_resampling import *

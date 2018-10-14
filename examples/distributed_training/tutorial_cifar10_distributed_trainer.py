@@ -17,7 +17,7 @@ import numpy as np
 import multiprocessing
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import Input, Conv2d, BatchNormLayer, Dense, FlattenLayer, MaxPool2d
+from tensorlayer.layers import Input, Conv2d, BatchNorm, Dense, Flatten, MaxPool2d
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)

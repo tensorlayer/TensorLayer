@@ -78,9 +78,7 @@ class SpatialTransformer2dAffine(Layer):
         is_train: boolean (default: True)
             Set the TF Variable in training mode and may impact the behaviour of the layer.
         """
-        return super(SpatialTransformer2dAffine, self).__call__(
-            prev_layer=[prev_layer, theta_layer], is_train=is_train
-        )
+        return super(SpatialTransformer2dAffine, self).__call__(prev_layer=[prev_layer, theta_layer], is_train=is_train)
 
     def build(self):
 

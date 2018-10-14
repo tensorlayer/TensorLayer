@@ -30,14 +30,11 @@ class Network_Sequential_2D_Test(CustomTestCase):
                 UpSampling2d(size=(2, 2), is_scale=True, method=0, align_corners=True, name="upsample2d_layer_2")
             )
             cls.model.add(
-                tl.layers.DownSampling2d(
-                    size=(2, 2), is_scale=True, method=0, align_corners=True, name="downsample2d_layer_2"
-                )
+                tl.layers.
+                DownSampling2d(size=(2, 2), is_scale=True, method=0, align_corners=True, name="downsample2d_layer_2")
             )
             cls.model.add(tl.layers.GaussianNoise(mean=0.0, stddev=1.0, name='noise_layer_2'))
-            cls.model.add(
-                tl.layers.LocalResponseNorm(depth_radius=5, bias=1., alpha=1., beta=.5, name='LRN_layer_2')
-            )
+            cls.model.add(tl.layers.LocalResponseNorm(depth_radius=5, bias=1., alpha=1., beta=.5, name='LRN_layer_2'))
             cls.model.add(tl.layers.BatchNorm(decay=0.9, epsilon=1e-5, act=None, name='batchnorm_layer_2'))
             cls.model.add(tl.layers.GroupNorm(groups=1, data_format='channels_first', name='groupnorm_layer_2'))
             cls.model.add(tl.layers.InstanceNorm(epsilon=1e-5, act=None, name='instance_norm_layer_2'))

@@ -122,6 +122,7 @@ if (tf.VERSION >= '1.5'):
 
 FLAGS = flags.FLAGS
 
+
 def main(_):
     """
     The core of the model consists of an LSTM cell that processes one word at

@@ -28,7 +28,8 @@ def activation_module(layer, activation_fn, leaky_relu_alpha=0.2, name=None):
         layer = tl.layers.Lambda(fn=tf.nn.relu6, name=act_name)(prev_layer=layer)
 
     elif activation_fn == "Leaky_ReLU":
-        layer = tl.layers.Lambda(fn=tf.nn.leaky_relu, fn_args={'alpha': leaky_relu_alpha}, name=act_name
+        layer = tl.layers.Lambda(
+            fn=tf.nn.leaky_relu, fn_args={'alpha': leaky_relu_alpha}, name=act_name
         )(prev_layer=layer)
 
     elif activation_fn == "PReLU":
@@ -142,9 +143,7 @@ def dense_module(
     )
 
     if use_batchnorm:
-        layer = tl.layers.BatchNorm(
-            act=None, is_train=is_train, gamma_init=batch_norm_init, name='batch_norm'
-        )(layer)
+        layer = tl.layers.BatchNorm(act=None, is_train=is_train, gamma_init=batch_norm_init, name='batch_norm')(layer)
 
     logits = layer.outputs
 

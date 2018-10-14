@@ -9,8 +9,8 @@ from tensorlayer import logging
 
 from tensorlayer.layers.recurrent.rnn_cells import ConvRNNCell
 
-
 __all__ = ['BasicConvLSTMCell']
+
 
 def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=None):
     """convolution:

@@ -14,6 +14,7 @@ from tensorlayer.decorators.utils import get_network_obj
 
 __all__ = ['Seq2Seq']
 
+
 class Seq2Seq(Layer):
     """
     The :class:`Seq2Seq` class is a simple :class:`DynamicRNN` based Seq2seq layer without using `tl.contrib.seq2seq <https://www.tensorflow.org/api_guides/python/contrib.seq2seq>`__.

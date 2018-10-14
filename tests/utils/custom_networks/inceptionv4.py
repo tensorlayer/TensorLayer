@@ -262,10 +262,7 @@ class InceptionV4_Network(object):
 
                     # 8 x 8 x 1536
                     net = tl.layers.MeanPool2d(
-                        filter_size=net.outputs.get_shape()[1:3],
-                        strides=(1, 1),
-                        padding='VALID',
-                        name='AvgPool_1a'
+                        filter_size=net.outputs.get_shape()[1:3], strides=(1, 1), padding='VALID', name='AvgPool_1a'
                     )(net)
 
                     # 1 x 1 x 1536

@@ -268,6 +268,7 @@ class GroupNorm(Layer):
         A unique layer name
 
     """
+
     def __init__(self, groups=32, epsilon=1e-06, act=None, data_format='channels_last', name='groupnorm'):
         self.groups = groups
         self.epsilon = epsilon
@@ -306,8 +307,11 @@ class GroupNorm(Layer):
         if self.data_format == 'channels_last':
             n_channels = shape[-1]
             int_shape = tf.concat(
-                [tf.shape(self._temp_data['inputs'])[0:3],
-                 tf.convert_to_tensor([self.groups, n_channels // self.groups])], axis=0
+                [
+                    tf.shape(self._temp_data['inputs'])[0:3],
+                    tf.convert_to_tensor([self.groups, n_channels // self.groups])
+                ],
+                axis=0
             )
 
         elif self.data_format == 'channels_first':
