@@ -7,5 +7,5 @@ requests>=2.19,<2.20
 scikit-learn>=0.19,<0.21
 scikit-image>=0.14,<0.15
 scipy>=1.1,<1.2
-tqdm>=4.23,<4.26
+tqdm>=4.23,<4.27
 wrapt>=1.10,<1.11
