@@ -22,6 +22,7 @@ __all__ = [
     'BiDynamicRNN',
 ]
 
+
 class DynamicRNN(Layer):
     """
     The :class:`DynamicRNN` class is a dynamic recurrent layer, see ``tf.nn.dynamic_rnn``.

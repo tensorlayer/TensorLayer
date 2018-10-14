@@ -720,7 +720,6 @@ class BuiltLayer(object):
     # =============================================== #
 
     def count_local_weights(self):
-
         """Returns the number of parameters in the network."""
         n_params = 0
 

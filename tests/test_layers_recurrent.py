@@ -132,9 +132,7 @@ class Layer_Recurrent_Test(CustomTestCase):
         cls.net3_n_weights = net3.count_weights()
 
         # n_layer=2
-        net4 = tl.layers.EmbeddingInput(
-            vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb2'
-        )(x3)
+        net4 = tl.layers.EmbeddingInput(vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb2')(x3)
         net4 = tl.layers.BiRNN(
             cell_fn=tf.contrib.rnn.BasicLSTMCell,
             n_hidden=cls.hidden_size,

@@ -16,6 +16,7 @@ __all__ = [
     'AtrousDeConv2d',
 ]
 
+
 class AtrousDeConv2d(Layer):
     """The :class:`AtrousDeConv2d` class is 2D atrous convolution transpose, see `tf.nn.atrous_conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d_transpose>`__.
 

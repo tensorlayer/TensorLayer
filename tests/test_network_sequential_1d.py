@@ -74,9 +74,8 @@ class Network_Sequential_1D_Test(CustomTestCase):
             )
 
             cls.model.add(
-                tl.layers.Keras(
-                    keras_layer=keras.layers.Dense, keras_args={'units': 256}, act=tf.nn.relu, name="seq_layer_11"
-                )
+                tl.layers.
+                Keras(keras_layer=keras.layers.Dense, keras_args={'units': 256}, act=tf.nn.relu, name="seq_layer_11")
             )
 
             cls.model.add(tl.layers.Lambda(fn=lambda x: 2 * x, name='lambda_layer_11'))

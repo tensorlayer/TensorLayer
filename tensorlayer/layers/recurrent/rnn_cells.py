@@ -7,6 +7,7 @@ from tensorlayer.layers.core import LayersConfig
 
 __all__ = ['ConvRNNCell']
 
+
 class ConvRNNCell(object):
     """Abstract object representing an Convolutional RNN Cell."""
 

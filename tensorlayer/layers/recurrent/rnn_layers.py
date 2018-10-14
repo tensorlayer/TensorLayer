@@ -19,6 +19,7 @@ __all__ = [
     'BiRNN',
 ]
 
+
 class RNN(Layer):
     """
     The :class:`RNN` class is a fixed length recurrent layer for implementing vanilla RNN,
