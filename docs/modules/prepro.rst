@@ -215,6 +215,14 @@ preserve the content in an image. The following figure illustrates these two ben
   :width: 100 %
   :align: center
 
+The major reason for combined affine transformation being fast is because it has lower computational complexity.
+Assume we have ``k`` affine transformations ``T1, ..., Tk``, where ``Ti`` can be represented by 3x3 matrixes.
+The sequential transformation can be represented as ``y = Tk (... T1(x))``,
+and the time complexity is ``O(k N)`` where ``N`` is the cost of applying one transformation to image ``x``.
+``N`` is linear to the size of ``x``.
+For the combined transformation ``y = (Tk ... T1) (x)``
+the time complexity is ``O(27(k - 1) + N) = max{O(27k), O(N)} = O(N)`` (assuming 27k << N) where 27 = 3^3 is the cost for combine two transformations.
+
 
 Get rotation matrix
 ^^^^^^^^^^^^^^^^^^^^^^^^^
