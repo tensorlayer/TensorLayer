@@ -90,7 +90,7 @@ API - Data Pre-processing
    obj_box_zoom
 
    keypoint_random_crop
-   keypoint_random_crop2
+   keypoint_resize_random_crop
    keypoint_random_rotate
    keypoint_random_flip
    keypoint_random_resize
@@ -124,20 +124,20 @@ image augmentation often remains as a key bottleneck.
 ``tf.image`` has three limitations:
 
 - Real-world visual tasks such as object detection, segmentation, and pose estimation
-must cope with image meta-data (e.g., coordinates).
-These data are beyond ``tf.image``
-which processes images as tensors.
+  must cope with image meta-data (e.g., coordinates).
+  These data are beyond ``tf.image``
+  which processes images as tensors.
 
 - ``tf.image`` operators
-breaks the pure Python programing experience (i.e., users have to
-use ``tf.py_func`` in order to call image functions written in Python); however,
-frequent uses of ``tf.py_func`` slow down TensorFlow,
-making users hard to balance flexibility and performance.
+  breaks the pure Python programing experience (i.e., users have to
+  use ``tf.py_func`` in order to call image functions written in Python); however,
+  frequent uses of ``tf.py_func`` slow down TensorFlow,
+  making users hard to balance flexibility and performance.
 
 - ``tf.image`` API is inflexible. Image operations are
-performed in an order. They are hard to jointly optimize. More importantly,
-sequential image operations can significantly
-reduces the quality of images, thus affecting training accuracy.
+  performed in an order. They are hard to jointly optimize. More importantly,
+  sequential image operations can significantly
+  reduces the quality of images, thus affecting training accuracy.
 
 
 TensorLayer addresses these limitations by providing a
@@ -580,7 +580,9 @@ Image Aug - Crop
 ^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: keypoint_random_crop
 
-.. autofunction:: keypoint_random_crop2
+Image Aug - Resize then Crop
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: keypoint_resize_random_crop
 
 Image Aug - Rotate
 ^^^^^^^^^^^^^^^^^^^^

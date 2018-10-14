@@ -113,7 +113,7 @@ __all__ = [
     'sequences_add_end_id_after_pad',
     'sequences_get_mask',
     'keypoint_random_crop',
-    'keypoint_random_crop2',
+    'keypoint_resize_random_crop',
     'keypoint_random_rotate',
     'keypoint_random_flip',
     'keypoint_random_resize',
@@ -3727,9 +3727,8 @@ def sequences_get_mask(sequences, pad_val=0):
     return mask
 
 
-def keypoint_random_crop2(image, annos, mask=None, size=(368, 368)):
-    """Randomly reszie and crop image using padding without influence scales.
-    Resize the image match with the minimum size before cropping, this API will change the zoom scale of object.
+def keypoint_random_crop(image, annos, mask=None, size=(368, 368)):
+    """Randomly crop an image and corresponding keypoints without influence scales, given by ``keypoint_random_resize_shortestedge``.
 
     Parameters
     -----------
@@ -3744,24 +3743,95 @@ def keypoint_random_crop2(image, annos, mask=None, size=(368, 368)):
 
     Returns
     ----------
+    preprocessed image, annotation, mask
+
+    """
+
+    _target_height = size[0]
+    _target_width = size[1]
+    target_size = (_target_width, _target_height)
+
+    if len(np.shape(image)) == 2:
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    height, width, _ = np.shape(image)
+
+    for _ in range(50):
+        x = random.randrange(0, width - target_size[0]) if width > target_size[0] else 0
+        y = random.randrange(0, height - target_size[1]) if height > target_size[1] else 0
+
+        # check whether any face is inside the box to generate a reasonably-balanced datasets
+        for joint in annos:
+            if x <= joint[0][0] < x + target_size[0] and y <= joint[0][1] < y + target_size[1]:
+                break
+
+    def pose_crop(image, annos, mask, x, y, w, h):  # TODO : speed up with affine transform
+        # adjust image
+        target_size = (w, h)
+
+        img = image
+        resized = img[y:y + target_size[1], x:x + target_size[0], :]
+        resized_mask = mask[y:y + target_size[1], x:x + target_size[0]]
+        # adjust meta data
+        adjust_joint_list = []
+        for joint in annos:
+            adjust_joint = []
+            for point in joint:
+                if point[0] < -10 or point[1] < -10:
+                    adjust_joint.append((-1000, -1000))
+                    continue
+                new_x, new_y = point[0] - x, point[1] - y
+                # should not crop outside the image
+                if new_x > w - 1 or new_y > h - 1:
+                    adjust_joint.append((-1000, -1000))
+                    continue
+                adjust_joint.append((new_x, new_y))
+            adjust_joint_list.append(adjust_joint)
+
+        return resized, adjust_joint_list, resized_mask
+
+    return pose_crop(image, annos, mask, x, y, target_size[0], target_size[1])
+
+
+def keypoint_resize_random_crop(image, annos, mask=None, size=(368, 368)):
+    """Reszie the image to make either its width or height equals to the given sizes.
+    Then randomly crop image without influence scales.
+    Resize the image match with the minimum size before cropping, this API will change the zoom scale of object.
+
+    Parameters
+    -----------
+    image : 3 channel image
+        The given image for augmentation.
+    annos : list of list of floats
+        The keypoints annotation of people.
+    mask : single channel image or None
+        The mask if available.
+    size : tuple of int
+        The size (height, width) of returned image.
+
+    Returns
+    ----------
     preprocessed image, annos, mask
 
     """
 
-    def resize_image(image, annos, mask, _target_width, _target_height):
+    if len(np.shape(image)) == 2:
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+
+    def resize_image(image, annos, mask, target_width, target_height):
         """Reszie image
 
         Parameters
         -----------
         image : 3 channel image
-            the given image for augmentation
+            The given image.
         annos : list of list of floats
-            keypoints of people
+            Keypoints of people
         mask : single channel image or None
-        _target_width : int
-            expected width
-        _target_height : int
-            expected height
+            The mask if available.
+        target_width : int
+            Expected width of returned image.
+        target_height : int
+            Expected height of returned image.
 
         Returns
         ----------
@@ -3770,8 +3840,8 @@ def keypoint_random_crop2(image, annos, mask=None, size=(368, 368)):
         """
         y, x, _ = np.shape(image)
 
-        ratio_y = _target_height / y
-        ratio_x = _target_width / x
+        ratio_y = target_height / y
+        ratio_x = target_width / x
 
         new_joints = []
         # update meta
@@ -3782,7 +3852,7 @@ def keypoint_random_crop2(image, annos, mask=None, size=(368, 368)):
                     new_keypoints.append((-1000, -1000))
                     continue
                 pts = (int(keypoints[0] * ratio_x + 0.5), int(keypoints[1] * ratio_y + 0.5))
-                if pts[0] > _target_width - 1 or pts[1] > _target_height - 1:
+                if pts[0] > target_width - 1 or pts[1] > target_height - 1:
                     new_keypoints.append((-1000, -1000))
                     continue
 
@@ -3790,9 +3860,9 @@ def keypoint_random_crop2(image, annos, mask=None, size=(368, 368)):
             new_joints.append(new_keypoints)
         annos = new_joints
 
-        new_image = cv2.resize(image, (_target_width, _target_height), interpolation=cv2.INTER_AREA)
+        new_image = cv2.resize(image, (target_width, target_height), interpolation=cv2.INTER_AREA)
         if mask is not None:
-            new_mask = cv2.resize(mask, (_target_width, _target_height), interpolation=cv2.INTER_AREA)
+            new_mask = cv2.resize(mask, (target_width, target_height), interpolation=cv2.INTER_AREA)
             return new_image, annos, new_mask
         else:
             return new_image, annos, None
@@ -3885,8 +3955,8 @@ def keypoint_random_crop2(image, annos, mask=None, size=(368, 368)):
                 new_keypoints.append(pts)
 
             new_joints.append(new_keypoints)
-            if len(new_keypoints) != 19:
-                print('2:The Length of joints list should be 0 or 19 but actually:', len(new_keypoints))
+            # if len(new_keypoints) != 19:
+            #     print('2:The Length of joints list should be 0 or 19 but actually:', len(new_keypoints))
 
         annos = new_joints
 
@@ -3895,71 +3965,6 @@ def keypoint_random_crop2(image, annos, mask=None, size=(368, 368)):
         return image, annos, mask
     else:
         return image, annos, None
-
-
-def keypoint_random_crop(image, annos, mask=None, size=(368, 368)):
-    """Randomly crop an image and corresponding keypoints without influence scales, given by ``keypoint_random_resize_shortestedge``.
-
-    Parameters
-    -----------
-    image : 3 channel image
-        The given image for augmentation.
-    annos : list of list of floats
-        The keypoints annotation of people.
-    mask : single channel image or None
-        The mask if available.
-    size : tuple of int
-        The size of returned image.
-
-    Returns
-    ----------
-    preprocessed image, annotation, mask
-
-    """
-
-    _target_height = size[0]
-    _target_width = size[1]
-    target_size = (_target_width, _target_height)
-
-    if len(np.shape(image)) == 2:
-        image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-    height, width, _ = np.shape(image)
-
-    for _ in range(50):
-        x = random.randrange(0, width - target_size[0]) if width > target_size[0] else 0
-        y = random.randrange(0, height - target_size[1]) if height > target_size[1] else 0
-
-        # check whether any face is inside the box to generate a reasonably-balanced datasets
-        for joint in annos:
-            if x <= joint[0][0] < x + target_size[0] and y <= joint[0][1] < y + target_size[1]:
-                break
-
-    def pose_crop(image, annos, mask, x, y, w, h):  # TODO : speed up with affine transform
-        # adjust image
-        target_size = (w, h)
-
-        img = image
-        resized = img[y:y + target_size[1], x:x + target_size[0], :]
-        resized_mask = mask[y:y + target_size[1], x:x + target_size[0]]
-        # adjust meta data
-        adjust_joint_list = []
-        for joint in annos:
-            adjust_joint = []
-            for point in joint:
-                if point[0] < -10 or point[1] < -10:
-                    adjust_joint.append((-1000, -1000))
-                    continue
-                new_x, new_y = point[0] - x, point[1] - y
-                # should not crop outside the image
-                if new_x > w - 1 or new_y > h - 1:
-                    adjust_joint.append((-1000, -1000))
-                    continue
-                adjust_joint.append((new_x, new_y))
-            adjust_joint_list.append(adjust_joint)
-
-        return resized, adjust_joint_list, resized_mask
-
-    return pose_crop(image, annos, mask, x, y, target_size[0], target_size[1])
 
 
 def keypoint_random_rotate(image, annos, mask=None, rg=15.):
