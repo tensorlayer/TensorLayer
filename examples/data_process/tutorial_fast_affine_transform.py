@@ -66,7 +66,9 @@ def example3():
     train_targets = [np.ones(1)] * n_data
 
     def generator():
-        assert len(imgs_file_list) == len(train_targets)
+        if len(imgs_file_list) != len(train_targets):
+            raise RuntimeError('len(imgs_file_list) != len(train_targets)')
+            
         for _input, _target in zip(imgs_file_list, train_targets):
             yield _input, _target
 
@@ -98,8 +100,10 @@ def example3():
     # feed `one_element` into a network, for demo, we simply get the data as follows
     n_step = round(n_epoch * n_data / batch_size)
     st = time.time()
+    
     for _ in range(n_step):
-        images, targets = sess.run(one_element)
+        _images, _targets = sess.run(one_element)
+
     print("dataset APIs took %fs for each image" % ((time.time() - st) / batch_size / n_step))  # CPU ~ 100%
 
 
