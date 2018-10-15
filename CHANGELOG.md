@@ -86,6 +86,8 @@ To release a new version, please update the changelog as followed:
 
 ### Changed
 
+- BatchNormLayer: support `data_format`
+
 ### Dependencies Update
 - yapf>=0.22,<0.24 => yapf>=0.22,<0.25 (PR #829)
 - sphinx>=1.7,<1.8 => sphinx>=1.7,<1.9 (PR #842)
@@ -132,7 +134,7 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 - @DEKHTIARJonathan: #815 #818 #820 #823
-- @ndiy: #819 
+- @ndiy: #819
 - @zsdonghao: #818
 
 
