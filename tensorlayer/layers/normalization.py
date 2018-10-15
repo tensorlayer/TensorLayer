@@ -3,10 +3,13 @@
 
 import tensorflow as tf
 from tensorflow.python.training import moving_averages
+from tensorflow.python.framework import ops
+from tensorflow.python.ops import math_ops
 
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+from tensorlayer.layers.utils import get_collection_trainable
 
 from tensorlayer import logging
 
@@ -17,6 +20,7 @@ __all__ = [
     'BatchNormLayer',
     'InstanceNormLayer',
     'LayerNormLayer',
+    'GroupNormLayer',
     'SwitchNormLayer',
 ]
 
@@ -67,6 +71,52 @@ class LocalResponseNormLayer(Layer):
         self._add_layers(self.outputs)
 
 
+def _to_channel_first_bias(b):
+    """Reshape [c] to [c, 1, 1]."""
+    channel_size = int(b.shape[0])
+    new_shape = (channel_size, 1, 1)
+    # new_shape = [-1, 1, 1]  # doesn't work with tensorRT
+    return tf.reshape(b, new_shape)
+
+
+def _bias_scale(x, b, data_format):
+    """The multiplication counter part of tf.nn.bias_add."""
+    if data_format == 'NHWC':
+        return x * b
+    elif data_format == 'NCHW':
+        return x * _to_channel_first_bias(b)
+    else:
+        raise ValueError('invalid data_format: %s' % data_format)
+
+
+def _bias_add(x, b, data_format):
+    """Alternative implementation of tf.nn.bias_add which is compatiable with tensorRT."""
+    if data_format == 'NHWC':
+        return tf.add(x, b)
+    elif data_format == 'NCHW':
+        return tf.add(x, _to_channel_first_bias(b))
+    else:
+        raise ValueError('invalid data_format: %s' % data_format)
+
+
+def batch_normalization(x, mean, variance, offset, scale, variance_epsilon, data_format, name=None):
+    """Data Format aware version of tf.nn.batch_normalization."""
+    with ops.name_scope(name, 'batchnorm', [x, mean, variance, scale, offset]):
+        inv = math_ops.rsqrt(variance + variance_epsilon)
+        if scale is not None:
+            inv *= scale
+
+        a = math_ops.cast(inv, x.dtype)
+        b = math_ops.cast(offset - mean * inv if offset is not None else -mean * inv, x.dtype)
+
+        # Return a * x + b with customized data_format.
+        # Currently TF doesn't have bias_scale, and tensorRT has bug in converting tf.nn.bias_add
+        # So we reimplemted them to allow make the model work with tensorRT.
+        # See https://github.com/tensorlayer/openpose-plus/issues/75 for more details.
+        df = {'channels_first': 'NCHW', 'channels_last': 'NHWC'}
+        return _bias_add(_bias_scale(x, a, df[data_format]), b, df[data_format])
+
+
 class BatchNormLayer(Layer):
     """
     The :class:`BatchNormLayer` is a batch normalization layer for both fully-connected and convolution outputs.
@@ -113,6 +163,7 @@ class BatchNormLayer(Layer):
             beta_init=tf.zeros_initializer,
             gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
             moving_mean_init=tf.zeros_initializer(),
+            data_format='channels_last',
             name='batchnorm_layer',
     ):
         super(BatchNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
@@ -121,14 +172,21 @@ class BatchNormLayer(Layer):
             "BatchNormLayer %s: decay: %f epsilon: %f act: %s is_train: %s" %
             (self.name, decay, epsilon, self.act.__name__ if self.act is not None else 'No Activation', is_train)
         )
-        if decay > 1:
+        if decay < 0 or 1 < decay:
             raise Exception("decay should be between 0 to 1")
 
         x_shape = self.inputs.get_shape()
-        params_shape = x_shape[-1:]
+        if data_format == 'channels_last':
+            axis = len(x_shape) - 1
+        elif data_format == 'channels_first':
+            axis = 1
+        else:
+            raise ValueError('data_format should be either %s or %s' % ('channels_last', 'channels_first'))
+        params_shape = x_shape[axis]
 
         with tf.variable_scope(name):
-            axis = list(range(len(x_shape) - 1))
+            axes = [i for i in range(len(x_shape)) if i != axis]
+
             # 1. beta, gamma
             variables = []
 
@@ -174,7 +232,7 @@ class BatchNormLayer(Layer):
 
             # 3.
             # These ops will only be preformed when training.
-            mean, variance = tf.nn.moments(self.inputs, axis)
+            mean, variance = tf.nn.moments(self.inputs, axes)
 
             update_moving_mean = moving_averages.assign_moving_average(
                 moving_mean, mean, decay, zero_debias=False
@@ -194,7 +252,7 @@ class BatchNormLayer(Layer):
                 mean, var = moving_mean, moving_variance
 
             self.outputs = self._apply_activation(
-                tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon)
+                batch_normalization(self.inputs, mean, var, beta, gamma, epsilon, data_format)
             )
 
             variables.extend([moving_mean, moving_variance])
@@ -299,6 +357,80 @@ class LayerNormLayer(Layer):
             )
 
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+        self._add_layers(self.outputs)
+        self._add_params(variables)
+
+
+class GroupNormLayer(Layer):
+    """The :class:`GroupNormLayer` layer is for Group Normalization.
+    See `tf.contrib.layers.group_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/group_norm>`__.
+
+    Parameters
+    -----------
+    prev_layer : :class:`Layer`
+        The previous layer.
+    act : activation function
+        The activation function of this layer.
+    epsilon : float
+        Eplison.
+    name : str
+        A unique layer name
+
+    """
+
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(self, prev_layer, groups=32, epsilon=1e-06, act=None, data_format='channels_last', name='groupnorm'):
+        super(GroupNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+
+        logging.info(
+            "GroupNormLayer %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
+        )
+
+        shape = self.inputs.get_shape().as_list()
+        if len(shape) != 4:
+            raise Exception("GroupNormLayer only supports 2D images.")
+
+        if data_format == 'channels_last':
+            channels = shape[-1]
+            int_shape = tf.concat(
+                [tf.shape(self.inputs)[0:3],
+                 tf.convert_to_tensor([groups, channels // groups])], axis=0
+            )
+        elif data_format == 'channels_first':
+            channels = shape[1]
+            int_shape = tf.concat(
+                [
+                    tf.shape(self.inputs)[0:1],
+                    tf.convert_to_tensor([groups, channels // groups]),
+                    tf.shape(self.inputs)[2:4]
+                ], axis=0
+            )
+        else:
+            raise ValueError("data_format must be 'channels_last' or 'channels_first'.")
+
+        if groups > channels:
+            raise ValueError('Invalid groups %d for %d channels.' % (groups, channels))
+        if channels % groups != 0:
+            raise ValueError('%d channels is not commensurate with %d groups.' % (channels, groups))
+
+        with tf.variable_scope(name):
+            x = tf.reshape(self.inputs, int_shape)
+            if data_format == 'channels_last':
+                mean, var = tf.nn.moments(x, [1, 2, 4], keep_dims=True)
+                gamma = tf.get_variable('gamma', channels, initializer=tf.ones_initializer())
+                beta = tf.get_variable('beta', channels, initializer=tf.zeros_initializer())
+            else:
+                mean, var = tf.nn.moments(x, [2, 3, 4], keep_dims=True)
+                gamma = tf.get_variable('gamma', [1, channels, 1, 1], initializer=tf.ones_initializer())
+                beta = tf.get_variable('beta', [1, channels, 1, 1], initializer=tf.zeros_initializer())
+
+            x = (x - mean) / tf.sqrt(var + epsilon)
+
+            self.outputs = tf.reshape(x, tf.shape(self.inputs)) * gamma + beta
+            self.outputs = self._apply_activation(self.outputs)
+
+        variables = get_collection_trainable(self.name)
 
         self._add_layers(self.outputs)
         self._add_params(variables)

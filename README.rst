@@ -83,12 +83,13 @@ The simplest way to install TensorLayer is to use the Python Package Index (PyPI
     pip install --upgrade tensorlayer[extra]            # only the `extra` dependencies
     pip install --upgrade tensorlayer[contrib_loggers]  # only the `contrib_loggers` dependencies
 
-Alternatively, you can install the development version by directly
-pulling from github:
+Alternatively, you can install the latest or development version by directly pulling from github:
 
 .. code:: bash
 
-    pip install git+https://github.com/tensorlayer/tensorlayer.git
+    pip install https://github.com/tensorlayer/tensorlayer/archive/master.zip
+    # or
+    # pip install https://github.com/tensorlayer/tensorlayer/archive/<branch-name>.zip
 
 Using Docker - a ready-to-use environment
 -----------------------------------------

@@ -1,18 +1,23 @@
-API - Preprocessing
+API - Data Pre-processing
 =========================
-
-
-We provide abundant data augmentation and processing functions by using Numpy, Scipy, Threading and Queue.
-However, we recommend you to use TensorFlow operation function like ``tf.image.central_crop``,
-more TensorFlow data augmentation method can be found
-`here <https://www.tensorflow.org/api_guides/python/image.html>`_ and ``tutorial_cifar10_tfrecord.py``.
-Some of the code in this package are borrowed from Keras.
 
 .. automodule:: tensorlayer.prepro
 
 .. autosummary::
 
-   threading_data
+   affine_rotation_matrix
+   affine_horizontal_flip_matrix
+   affine_vertical_flip_matrix
+   affine_shift_matrix
+   affine_shear_matrix
+   affine_zoom_matrix
+   affine_respective_zoom_matrix
+
+   transform_matrix_offset_center
+   affine_transform
+   affine_transform_cv2
+   affine_transform_keypoints
+   projective_transform_by_points
 
    rotation
    rotation_multi
@@ -33,6 +38,7 @@ Some of the code in this package are borrowed from Keras.
    elastic_transform_multi
 
    zoom
+   respective_zoom
    zoom_multi
 
    brightness
@@ -55,10 +61,6 @@ Some of the code in this package are borrowed from Keras.
    channel_shift_multi
 
    drop
-
-   transform_matrix_offset_center
-   apply_transform
-   projective_transform_by_points
 
    array_to_img
 
@@ -88,7 +90,7 @@ Some of the code in this package are borrowed from Keras.
    obj_box_zoom
 
    keypoint_random_crop
-   keypoint_random_crop2
+   keypoint_resize_random_crop
    keypoint_random_rotate
    keypoint_random_flip
    keypoint_random_resize
@@ -103,17 +105,177 @@ Some of the code in this package are borrowed from Keras.
    sequences_get_mask
 
 
+..
+  Threading
+  ------------
+  .. autofunction:: threading_data
 
-Threading
-------------
-.. autofunction:: threading_data
+
+Affine Transform
+----------------
+
+
+Python can be FAST
+^^^^^^^^^^^^^^^^^^
+
+Image augmentation is a critical step in deep learning.
+Though TensorFlow has provided ``tf.image``,
+image augmentation often remains as a key bottleneck.
+``tf.image`` has three limitations:
+
+- Real-world visual tasks such as object detection, segmentation, and pose estimation
+  must cope with image meta-data (e.g., coordinates).
+  These data are beyond ``tf.image``
+  which processes images as tensors.
+
+- ``tf.image`` operators
+  breaks the pure Python programing experience (i.e., users have to
+  use ``tf.py_func`` in order to call image functions written in Python); however,
+  frequent uses of ``tf.py_func`` slow down TensorFlow,
+  making users hard to balance flexibility and performance.
+
+- ``tf.image`` API is inflexible. Image operations are
+  performed in an order. They are hard to jointly optimize. More importantly,
+  sequential image operations can significantly
+  reduces the quality of images, thus affecting training accuracy.
+
+
+TensorLayer addresses these limitations by providing a
+high-performance image augmentation API in Python.
+This API bases on affine transformation and ``cv2.wrapAffine``.
+It allows you to combine multiple image processing functions into
+a single matrix operation. This combined operation
+is executed by the fast ``cv2`` library, offering 78x performance improvement (observed in
+`openpose-plus <https://github.com/tensorlayer/openpose-plus>`_ for example).
+The following example illustrates the rationale
+behind this tremendous speed up.
+
+
+Example
+^^^^^^^
+
+The source code of complete examples can be found \
+`here <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process/tutorial_fast_affine_transform.py>`__.
+The following is a typical Python program that applies rotation, shifting, flipping, zooming and shearing to an image,
+
+.. code-block:: python
+
+    image = tl.vis.read_image('tiger.jpeg')
+
+    xx = tl.prepro.rotation(image, rg=-20, is_random=False)
+    xx = tl.prepro.flip_axis(xx, axis=1, is_random=False)
+    xx = tl.prepro.shear2(xx, shear=(0., -0.2), is_random=False)
+    xx = tl.prepro.zoom(xx, zoom_range=1/0.8)
+    xx = tl.prepro.shift(xx, wrg=-0.1, hrg=0, is_random=False)
+
+    tl.vis.save_image(xx, '_result_slow.png')
+
+
+However, by leveraging affine transformation, image operations can be combined into one:
+
+.. code-block:: python
+
+    # 1. Create required affine transformation matrices
+    M_rotate = tl.prepro.affine_rotation_matrix(angle=20)
+    M_flip = tl.prepro.affine_horizontal_flip_matrix(prob=1)
+    M_shift = tl.prepro.affine_shift_matrix(wrg=0.1, hrg=0, h=h, w=w)
+    M_shear = tl.prepro.affine_shear_matrix(x_shear=0.2, y_shear=0)
+    M_zoom = tl.prepro.affine_zoom_matrix(zoom_range=0.8)
+
+    # 2. Combine matrices
+    # NOTE: operations are applied in a reversed order (i.e., rotation is performed first)
+    M_combined = M_shift.dot(M_zoom).dot(M_shear).dot(M_flip).dot(M_rotate)
+
+    # 3. Convert the matrix from Cartesian coordinates (the origin in the middle of image)
+    # to image coordinates (the origin on the top-left of image)
+    transform_matrix = tl.prepro.transform_matrix_offset_center(M_combined, x=w, y=h)
+
+    # 4. Transform the image using a single operation
+    result = tl.prepro.affine_transform_cv2(image, transform_matrix)  # 76 times faster
+
+    tl.vis.save_image(result, '_result_fast.png')
+
+
+The following figure illustrates the rational behind combined affine transformation.
+
+.. image:: ../images/affine_transform_why.jpg
+  :width: 100 %
+  :align: center
+
+
+Using combined affine transformation has two key benefits. First, it allows \
+you to leverage a pure Python API to achieve orders of magnitudes of speed up in image augmentation,
+and thus prevent data pre-processing from becoming a bottleneck in training. \
+Second, performing sequential image transformation requires multiple image interpolations. \
+This produces low-quality input images. In contrast, a combined transformation performs the \
+interpolation only once, and thus
+preserve the content in an image. The following figure illustrates these two benefits:
+
+.. image:: ../images/affine_transform_comparison.jpg
+  :width: 100 %
+  :align: center
+
+The major reason for combined affine transformation being fast is because it has lower computational complexity.
+Assume we have ``k`` affine transformations ``T1, ..., Tk``, where ``Ti`` can be represented by 3x3 matrixes.
+The sequential transformation can be represented as ``y = Tk (... T1(x))``,
+and the time complexity is ``O(k N)`` where ``N`` is the cost of applying one transformation to image ``x``.
+``N`` is linear to the size of ``x``.
+For the combined transformation ``y = (Tk ... T1) (x)``
+the time complexity is ``O(27(k - 1) + N) = max{O(27k), O(N)} = O(N)`` (assuming 27k << N) where 27 = 3^3 is the cost for combine two transformations.
+
+
+Get rotation matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_rotation_matrix
+
+Get horizontal flipping matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_horizontal_flip_matrix
+
+Get vertical flipping matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_vertical_flip_matrix
+
+Get shifting matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_shift_matrix
+
+Get shearing matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_shear_matrix
+
+Get zooming matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_zoom_matrix
+
+Get respective zooming matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_respective_zoom_matrix
+
+Cartesian to image coordinates
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: transform_matrix_offset_center
+
+..
+    Apply image transform
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    .. autofunction:: affine_transform
+
+Apply image transform
+^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_transform_cv2
+
+Apply keypoint transform
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: affine_transform_keypoints
+
 
 Images
 -----------
 
-- These functions only apply on a single image, use ``threading_data`` to apply multiple threading see ``tutorial_image_preprocess.py``.
-- All functions have argument ``is_random``.
-- All functions end with ``*_multi`` process all images together, usually be used for image segmentation i.e. the input and output image should be matched.
+Projective transform by points
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: projective_transform_by_points
 
 Rotation
 ^^^^^^^^^
@@ -160,6 +322,10 @@ Zoom
 .. autofunction:: zoom
 .. autofunction:: zoom_multi
 
+Respective Zoom
+^^^^^^^^^^^^^^^^^
+.. autofunction:: respective_zoom
+
 Brightness
 ^^^^^^^^^^^^
 .. autofunction:: brightness
@@ -202,18 +368,6 @@ Channel shift
 Noise
 ^^^^^^^^^^^^^^
 .. autofunction:: drop
-
-Transform matrix offset
-^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: transform_matrix_offset_center
-
-Apply affine transform by matrix
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: apply_transform
-
-Projective transform by points
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: projective_transform_by_points
 
 Numpy and PIL
 ^^^^^^^^^^^^^^
@@ -430,7 +584,9 @@ Image Aug - Crop
 ^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: keypoint_random_crop
 
-.. autofunction:: keypoint_random_crop2
+Image Aug - Resize then Crop
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: keypoint_resize_random_crop
 
 Image Aug - Rotate
 ^^^^^^^^^^^^^^^^^^^^
