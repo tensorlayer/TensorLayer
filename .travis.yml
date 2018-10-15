@@ -2,7 +2,9 @@
 language: python
 
 # https://docs.travis-ci.com/user/caching/#pip-cache
-cache: pip
+cache:
+  directories:
+    - $HOME/.cache/pip/wheels
 
 addons:
   apt:
@@ -59,7 +61,7 @@ matrix:
 install:
   - |
     if [[ -v _DOC_AND_YAPF_TEST ]]; then
-        pip install tensorflow 
+        pip install tensorflow
         pip install yapf
         pip install -e .[doc]
     else
