@@ -94,7 +94,7 @@ To release a new version, please update the changelog as followed:
 - matplotlib>=2.2,<2.3 => matplotlib>=2.2,<3.1 (PR #845)
 - scikit-learn>=0.19,<0.20 => scikit-learn>=0.19,<0.21 (PR #851)
 - tensorflow>=1.6,<1.11 => tensorflow>=1.6,<1.12 (PR #853)
-- tqdm>=4.23,<4.27 => tqdm>=4.23,<4.28 (PR #862 & #868)
+- tqdm>=4.23,<4.26 => tqdm>=4.23,<4.28 (PR #862 & #868)
 - pydocstyle>=2.1,<2.2 => pydocstyle>=2.1,<3.1 (PR #866)
 
 ### Deprecated
