@@ -67,7 +67,7 @@ To release a new version, please update the changelog as followed:
 
 <!-- YOU CAN EDIT FROM HERE -->
 
-## [Unreleased]
+## [1.11.0] - 2018-10-18
 
 ### Added
 - Layer:
