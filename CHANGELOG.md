@@ -67,6 +67,26 @@ To release a new version, please update the changelog as followed:
 
 <!-- YOU CAN EDIT FROM HERE -->
 
+## [Unreleased]
+
+### Added
+
+### Changed
+
+### Dependencies Update
+- pytest>=3.6,<3.9 => pytest>=3.6,<3.10 (PR #874)
+- requests>=2.19,<2.20 => requests>=2.19,<2.21 (PR #874)
+
+### Deprecated
+
+### Fixed
+
+### Removed
+
+### Security
+
+### Contributors
+
 ## [1.11.0] - 2018-10-18
 
 ### Added
@@ -85,7 +105,6 @@ To release a new version, please update the changelog as followed:
   - `examples/data_process/tutorial_fast_affine_transform.py` (PR #857)
 
 ### Changed
-
 - BatchNormLayer: support `data_format`
 
 ### Dependencies Update
@@ -97,14 +116,8 @@ To release a new version, please update the changelog as followed:
 - tqdm>=4.23,<4.26 => tqdm>=4.23,<4.28 (PR #862 & #868)
 - pydocstyle>=2.1,<2.2 => pydocstyle>=2.1,<3.1 (PR #866)
 
-### Deprecated
-
 ### Fixed
 - Correct offset calculation in `tl.prepro.transform_matrix_offset_center` (PR #855)
-
-### Removed
-
-### Security
 
 ### Contributors
 - @2wins: #850 #855
@@ -402,7 +415,8 @@ To release a new version, please update the changelog as followed:
 
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.10.1...master
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.11.0...master
+[1.11.0]: https://github.com/tensorlayer/tensorlayer/compare/1.10.1...1.11.0
 [1.10.1]: https://github.com/tensorlayer/tensorlayer/compare/1.10.0...1.10.1
 [1.10.0]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...1.10.0
 [1.9.1]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...1.9.1
