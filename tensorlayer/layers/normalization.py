@@ -99,7 +99,7 @@ def _bias_add(x, b, data_format):
         raise ValueError('invalid data_format: %s' % data_format)
 
 
-def batch_normalization(x, mean, variance, offset, scale, variance_epsilon, data_format, name=None):
+def _batch_normalization(x, mean, variance, offset, scale, variance_epsilon, data_format, name=None):
     """Data Format aware version of tf.nn.batch_normalization."""
     with ops.name_scope(name, 'batchnorm', [x, mean, variance, scale, offset]):
         inv = math_ops.rsqrt(variance + variance_epsilon)
@@ -251,9 +251,13 @@ class BatchNormLayer(Layer):
             else:
                 mean, var = moving_mean, moving_variance
 
-            self.outputs = self._apply_activation(
-                batch_normalization(self.inputs, mean, var, beta, gamma, epsilon, data_format)
-            )
+            if data_format == 'channels_last':
+                # Use the original implementation whith equivalent but faster.
+                normalized = tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon)
+            else:
+                normalized = _batch_normalization(self.inputs, mean, var, beta, gamma, epsilon, data_format)
+
+            self.outputs = self._apply_activation(normalized)
 
             variables.extend([moving_mean, moving_variance])
 
