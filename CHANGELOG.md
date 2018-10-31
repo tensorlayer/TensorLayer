@@ -76,7 +76,8 @@ To release a new version, please update the changelog as followed:
 ### Dependencies Update
 - pytest>=3.6,<3.9 => pytest>=3.6,<3.10 (PR #874)
 - requests>=2.19,<2.20 => requests>=2.19,<2.21 (PR #874)
-- tqdm>=4.23,<4.28 => tqdm>=4.23,<4.29 (PR #878)
+- tqdm>=4.23,<4.28 => tqdm>=4.23,<4.29 (PR #878)pytest-xdist>=1.22,<1.25
+pytest-xdist>=1.22,<1.24 => pytest-xdist>=1.22,<1.25 (PR #883)
 
 ### Deprecated
 
