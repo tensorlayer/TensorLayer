@@ -4,6 +4,6 @@ pydocstyle>=2.1,<3.1
 pytest>=3.6,<3.10
 pytest-cache>=1.0,<1.1
 pytest-cov>=2.5,<2.7
-pytest-xdist>=1.22,<1.24
+pytest-xdist>=1.22,<1.25
 sphinx>=1.7,<1.9
 yapf>=0.22,<0.25
