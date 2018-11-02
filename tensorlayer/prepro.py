@@ -581,6 +581,9 @@ def affine_transform_keypoints(coords_list, transform_matrix):
     """Transform keypoint coordinates according to a given affine transform matrix.
     OpenCV format, x is width.
 
+    Note that, for pose estimation task, flipping requires maintaining the left and right body information.
+    We should not flip the left and right body, so please use ``tl.prepro.keypoint_random_flip``.
+
     Parameters
     -----------
     coords_list : list of list of tuple/list
@@ -3995,7 +3998,10 @@ def keypoint_random_flip(
     prob : float, 0 to 1
         The probability to flip the image, if 1, always flip the image.
     flip_list : tuple of int
-        Denotes how the keypoints number be changed after flipping. Default COCO format.
+        Denotes how the keypoints number be changed after flipping which is required for pose estimation task.
+        The left and right body should be maintained rather than switch.
+        (Default COCO format).
+        Set to an empty tuple if you don't need to maintain left and right information.
 
     Returns
     ----------
