@@ -569,7 +569,7 @@ def affine_transform_cv2(x, transform_matrix, flags=None, border_mode='constant'
     >>> M_shear = tl.prepro.affine_shear_matrix(intensity=0.2, is_random=False)
     >>> M_zoom = tl.prepro.affine_zoom_matrix(zoom_range=0.8)
     >>> M_combined = M_shear.dot(M_zoom)
-    >>> result = affine_transform_cv2(image, M_combined)
+    >>> result = tl.prepro.affine_transform_cv2(image, M_combined)
     """
     rows, cols = x.shape[0], x.shape[1]
     if flags is None:
