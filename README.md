@@ -79,6 +79,9 @@ both English and Chinese. Please click the following icons to find the documents
 [![Chinese Documentation](https://img.shields.io/badge/documentation-%E4%B8%AD%E6%96%87-blue.svg)](https://tensorlayercn.readthedocs.io/)
 [![Chinese Book](https://img.shields.io/badge/book-%E4%B8%AD%E6%96%87-blue.svg)](http://www.broadview.com.cn/book/5059/)
 
+If you want to try the experimental features on the the master branch, you can find the latest document
+[here](https://tensorlayer.readthedocs.io/en/latest/).
+
 # Install
 
 TensorLayer has pre-requisites including TensorFlow, numpy, and others. For GPU support, CUDA and cuDNN are required.

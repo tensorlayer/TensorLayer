@@ -3,6 +3,8 @@
 
 import tensorflow as tf
 from tensorflow.python.training import moving_averages
+from tensorflow.python.framework import ops
+from tensorflow.python.ops import math_ops
 
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
@@ -69,6 +71,52 @@ class LocalResponseNormLayer(Layer):
         self._add_layers(self.outputs)
 
 
+def _to_channel_first_bias(b):
+    """Reshape [c] to [c, 1, 1]."""
+    channel_size = int(b.shape[0])
+    new_shape = (channel_size, 1, 1)
+    # new_shape = [-1, 1, 1]  # doesn't work with tensorRT
+    return tf.reshape(b, new_shape)
+
+
+def _bias_scale(x, b, data_format):
+    """The multiplication counter part of tf.nn.bias_add."""
+    if data_format == 'NHWC':
+        return x * b
+    elif data_format == 'NCHW':
+        return x * _to_channel_first_bias(b)
+    else:
+        raise ValueError('invalid data_format: %s' % data_format)
+
+
+def _bias_add(x, b, data_format):
+    """Alternative implementation of tf.nn.bias_add which is compatiable with tensorRT."""
+    if data_format == 'NHWC':
+        return tf.add(x, b)
+    elif data_format == 'NCHW':
+        return tf.add(x, _to_channel_first_bias(b))
+    else:
+        raise ValueError('invalid data_format: %s' % data_format)
+
+
+def batch_normalization(x, mean, variance, offset, scale, variance_epsilon, data_format, name=None):
+    """Data Format aware version of tf.nn.batch_normalization."""
+    with ops.name_scope(name, 'batchnorm', [x, mean, variance, scale, offset]):
+        inv = math_ops.rsqrt(variance + variance_epsilon)
+        if scale is not None:
+            inv *= scale
+
+        a = math_ops.cast(inv, x.dtype)
+        b = math_ops.cast(offset - mean * inv if offset is not None else -mean * inv, x.dtype)
+
+        # Return a * x + b with customized data_format.
+        # Currently TF doesn't have bias_scale, and tensorRT has bug in converting tf.nn.bias_add
+        # So we reimplemted them to allow make the model work with tensorRT.
+        # See https://github.com/tensorlayer/openpose-plus/issues/75 for more details.
+        df = {'channels_first': 'NCHW', 'channels_last': 'NHWC'}
+        return _bias_add(_bias_scale(x, a, df[data_format]), b, df[data_format])
+
+
 class BatchNormLayer(Layer):
     """
     The :class:`BatchNormLayer` is a batch normalization layer for both fully-connected and convolution outputs.
@@ -115,6 +163,7 @@ class BatchNormLayer(Layer):
             beta_init=tf.zeros_initializer,
             gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
             moving_mean_init=tf.zeros_initializer(),
+            data_format='channels_last',
             name='batchnorm_layer',
     ):
         super(BatchNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
@@ -123,14 +172,21 @@ class BatchNormLayer(Layer):
             "BatchNormLayer %s: decay: %f epsilon: %f act: %s is_train: %s" %
             (self.name, decay, epsilon, self.act.__name__ if self.act is not None else 'No Activation', is_train)
         )
-        if decay > 1:
+        if decay < 0 or 1 < decay:
             raise Exception("decay should be between 0 to 1")
 
         x_shape = self.inputs.get_shape()
-        params_shape = x_shape[-1:]
+        if data_format == 'channels_last':
+            axis = len(x_shape) - 1
+        elif data_format == 'channels_first':
+            axis = 1
+        else:
+            raise ValueError('data_format should be either %s or %s' % ('channels_last', 'channels_first'))
+        params_shape = x_shape[axis]
 
         with tf.variable_scope(name):
-            axis = list(range(len(x_shape) - 1))
+            axes = [i for i in range(len(x_shape)) if i != axis]
+
             # 1. beta, gamma
             variables = []
 
@@ -176,7 +232,7 @@ class BatchNormLayer(Layer):
 
             # 3.
             # These ops will only be preformed when training.
-            mean, variance = tf.nn.moments(self.inputs, axis)
+            mean, variance = tf.nn.moments(self.inputs, axes)
 
             update_moving_mean = moving_averages.assign_moving_average(
                 moving_mean, mean, decay, zero_debias=False
@@ -196,7 +252,7 @@ class BatchNormLayer(Layer):
                 mean, var = moving_mean, moving_variance
 
             self.outputs = self._apply_activation(
-                tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon)
+                batch_normalization(self.inputs, mean, var, beta, gamma, epsilon, data_format)
             )
 
             variables.extend([moving_mean, moving_variance])
