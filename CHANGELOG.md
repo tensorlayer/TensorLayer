@@ -76,6 +76,10 @@ To release a new version, please update the changelog as followed:
 ### Dependencies Update
 - pytest>=3.6,<3.9 => pytest>=3.6,<3.10 (PR #874)
 - requests>=2.19,<2.20 => requests>=2.19,<2.21 (PR #874)
+- tqdm>=4.23,<4.28 => tqdm>=4.23,<4.29 (PR #878)
+- pytest>=3.6,<3.10 => pytest>=3.6,<3.11 (PR #886)
+- pytest-xdist>=1.22,<1.24 => pytest-xdist>=1.22,<1.25 (PR #883)
+- tensorflow>=1.6,<1.12 => tensorflow>=1.6,<1.13 (PR #886)
 
 ### Deprecated
 
@@ -108,13 +112,13 @@ To release a new version, please update the changelog as followed:
 - BatchNormLayer: support `data_format`
 
 ### Dependencies Update
-- yapf>=0.22,<0.24 => yapf>=0.22,<0.25 (PR #829)
-- sphinx>=1.7,<1.8 => sphinx>=1.7,<1.9 (PR #842)
 - matplotlib>=2.2,<2.3 => matplotlib>=2.2,<3.1 (PR #845)
+- pydocstyle>=2.1,<2.2 => pydocstyle>=2.1,<3.1 (PR #866)
 - scikit-learn>=0.19,<0.20 => scikit-learn>=0.19,<0.21 (PR #851)
+- sphinx>=1.7,<1.8 => sphinx>=1.7,<1.9 (PR #842)
 - tensorflow>=1.6,<1.11 => tensorflow>=1.6,<1.12 (PR #853)
 - tqdm>=4.23,<4.26 => tqdm>=4.23,<4.28 (PR #862 & #868)
-- pydocstyle>=2.1,<2.2 => pydocstyle>=2.1,<3.1 (PR #866)
+- yapf>=0.22,<0.24 => yapf>=0.22,<0.25 (PR #829)
 
 ### Fixed
 - Correct offset calculation in `tl.prepro.transform_matrix_offset_center` (PR #855)
@@ -141,9 +145,9 @@ To release a new version, please update the changelog as followed:
 
 ### Dependencies Update
 - autopep8>=1.3,<1.4 => autopep8>=1.3,<1.5 (PR #815)
-- pytest-cov>=2.5,<2.6 => pytest-cov>=2.5,<2.7 (PR #820)
-- pytest>=3.6,<3.8 => pytest>=3.6,<3.9 (PR #823)
 - imageio>=2.3,<2.4 => imageio>=2.3,<2.5 (PR #823)
+- pytest>=3.6,<3.8 => pytest>=3.6,<3.9 (PR #823)
+- pytest-cov>=2.5,<2.6 => pytest-cov>=2.5,<2.7 (PR #820)
 
 ### Contributors
 - @DEKHTIARJonathan: #815 #818 #820 #823
@@ -218,12 +222,11 @@ To release a new version, please update the changelog as followed:
 
 ### Dependencies Update
 
-- tensorflow>=1.8,<1.9 => tensorflow>=1.6,<1.11 (PR #739 and PR #798)
-- tensorflow-gpu>=1.8,<1.9 => tensorflow-gpu>=1.6,<1.11 (PR #739 and PR #798)
 - numpy>=1.14,<1.15 => numpy>=1.14,<1.16 (PR #754)
 - pymongo>=3.6,<3.7 => pymongo>=3.6,<3.8 (PR #750)
 - pytest>=3.6,<3.7 => tqdm>=3.6,<3.8 (PR #798)
 - pytest-xdist>=1.22,<1.23 => pytest-xdist>=1.22,<1.24 (PR #805 and #806)
+- tensorflow>=1.8,<1.9 => tensorflow>=1.6,<1.11 (PR #739 and PR #798)
 - tqdm>=4.23,<4.25 => tqdm>=4.23,<4.26 (PR #798)
 - yapf>=0.21,<0.22 => yapf>=0.22,<0.24 (PR #798 #808)
 
