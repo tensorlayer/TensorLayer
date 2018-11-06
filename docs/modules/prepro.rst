@@ -1,4 +1,4 @@
-API - Data Pre-processing
+API - Data Pre-Processing
 =========================
 
 .. automodule:: tensorlayer.prepro
@@ -221,7 +221,7 @@ The sequential transformation can be represented as ``y = Tk (... T1(x))``,
 and the time complexity is ``O(k N)`` where ``N`` is the cost of applying one transformation to image ``x``.
 ``N`` is linear to the size of ``x``.
 For the combined transformation ``y = (Tk ... T1) (x)``
-the time complexity is ``O(27(k - 1) + N) = max{O(27k), O(N)} = O(N)`` (assuming 27k << N) where 27 = 3^3 is the cost for combine two transformations.
+the time complexity is ``O(27(k - 1) + N) = max{O(27k), O(N)} = O(N)`` (assuming 27k << N) where 27 = 3^3 is the cost for combining two transformations.
 
 
 Get rotation matrix
