@@ -1,9 +1,12 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Deep learning and Reinforcement learning library for Researchers and Engineers."""
 
+MAJOR = 1
+MINOR = 11
+PATCH = 1
+PRE_RELEASE = ''
 # Use the following formatting: (major, minor, patch, prerelease)
-VERSION = (1, 11, 0, '')
+VERSION = (MAJOR, MINOR, PATCH, PRE_RELEASE)
+
 __shortversion__ = '.'.join(map(str, VERSION[:3]))
 __version__ = '.'.join(map(str, VERSION[:3])) + ''.join(VERSION[3:])
 

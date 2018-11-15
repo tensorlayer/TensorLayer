@@ -74,6 +74,27 @@ To release a new version, please update the changelog as followed:
 ### Changed
 
 ### Dependencies Update
+
+### Deprecated
+
+### Fixed
+
+### Removed
+
+### Security
+
+### Contributors
+
+## [1.11.1] - 2018-11-15
+
+### Added
+
+### Changed
+
+* guide for pose estimation - flipping (PR #884)
+* cv2 transform support 2 modes (PR #885)
+
+### Dependencies Update
 - pytest>=3.6,<3.9 => pytest>=3.6,<3.10 (PR #874)
 - requests>=2.19,<2.20 => requests>=2.19,<2.21 (PR #874)
 - tqdm>=4.23,<4.28 => tqdm>=4.23,<4.29 (PR #878)
