@@ -1,3 +1,6 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
+
 """Deep learning and Reinforcement learning library for Researchers and Engineers."""
 
 MAJOR = 1
@@ -16,7 +19,7 @@ __contact_emails__ = 'tensorlayer@gmail.com'
 __homepage__ = 'http://tensorlayer.readthedocs.io/en/latest/'
 __repository_url__ = 'https://github.com/tensorlayer/tensorlayer'
 __download_url__ = 'https://github.com/tensorlayer/tensorlayer'
-__description__ = 'Reinforcement Learning and Deep Learning Library for Researcher and Engineer.'
+__description__ = 'High Level Tensorflow Deep Learning Library for Researcher and Engineer.'
 __license__ = 'apache'
 __keywords__ = 'deep learning, machine learning, computer vision, nlp, '
 __keywords__ += 'supervised learning, unsupervised learning, reinforcement learning, tensorflow'
