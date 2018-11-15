@@ -1,8 +1,8 @@
 """Deep learning and Reinforcement learning library for Researchers and Engineers."""
 
 MAJOR = 1
-MINOR = 12
-PATCH = 0
+MINOR = 11
+PATCH = 1
 PRE_RELEASE = ''
 # Use the following formatting: (major, minor, patch, prerelease)
 VERSION = (MAJOR, MINOR, PATCH, PRE_RELEASE)

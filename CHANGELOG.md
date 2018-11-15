@@ -85,7 +85,7 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 
-## [1.12.0] - 2018-11-15
+## [1.11.1] - 2018-11-15
 
 ### Added
 
