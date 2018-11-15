@@ -1,6 +1,5 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-
 """Deep learning and Reinforcement learning library for Researchers and Engineers."""
 
 MAJOR = 1
