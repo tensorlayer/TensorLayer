@@ -74,6 +74,7 @@ To release a new version, please update the changelog as followed:
 ### Changed
 
 ### Dependencies Update
+- pytest>=3.6,<3.11 => pytest>=3.6,<4.1 (PR #889)
 
 ### Deprecated
 
