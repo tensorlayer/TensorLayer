@@ -74,6 +74,7 @@ To release a new version, please update the changelog as followed:
 ### Changed
 
 ### Dependencies Update
+- nltk>=3.3,<3.4 => nltk>=3.3,<3.5 (PR #892)
 - pytest>=3.6,<3.11 => pytest>=3.6,<4.1 (PR #889)
 
 ### Deprecated
