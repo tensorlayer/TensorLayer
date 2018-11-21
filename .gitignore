@@ -128,4 +128,4 @@ update_tl.py
 
 # Data Files and ByteCode files
 *.gz
-*.npz
+*.npzapplications/
