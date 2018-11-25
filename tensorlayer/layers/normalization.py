@@ -8,10 +8,6 @@ from tensorflow.python.training import moving_averages
 
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
-from tensorlayer.layers.utils import get_collection_trainable
-
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.decorators import deprecated_args
 
 __all__ = [
     'BatchNorm',

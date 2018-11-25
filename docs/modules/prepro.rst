@@ -1,4 +1,4 @@
-API - Data Pre-processing
+API - Data Pre-Processing
 =========================
 
 .. automodule:: tensorlayer.prepro
@@ -215,6 +215,14 @@ preserve the content in an image. The following figure illustrates these two ben
   :width: 100 %
   :align: center
 
+The major reason for combined affine transformation being fast is because it has lower computational complexity.
+Assume we have ``k`` affine transformations ``T1, ..., Tk``, where ``Ti`` can be represented by 3x3 matrixes.
+The sequential transformation can be represented as ``y = Tk (... T1(x))``,
+and the time complexity is ``O(k N)`` where ``N`` is the cost of applying one transformation to image ``x``.
+``N`` is linear to the size of ``x``.
+For the combined transformation ``y = (Tk ... T1) (x)``
+the time complexity is ``O(27(k - 1) + N) = max{O(27k), O(N)} = O(N)`` (assuming 27k << N) where 27 = 3^3 is the cost for combining two transformations.
+
 
 Get rotation matrix
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -261,17 +269,13 @@ Apply keypoint transform
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: affine_transform_keypoints
 
-Projective transform by points
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: projective_transform_by_points
-
 
 Images
 -----------
 
-- These functions only apply on a single image, use ``threading_data`` to apply multiple threading see ``tutorial_image_preprocess.py``.
-- All functions have argument ``is_random``.
-- All functions end with ``*_multi`` process all images together, usually be used for image segmentation i.e. the input and output image should be matched.
+Projective transform by points
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: projective_transform_by_points
 
 Rotation
 ^^^^^^^^^
