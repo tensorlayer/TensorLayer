@@ -573,8 +573,9 @@ def exit_tensorflow(sess=None, port=6006):
 
     elif _platform == "darwin":
         tl.logging.info('OS X: %s' % text)
-        subprocess.Popen("lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill",
-                         shell=True)  # kill tensorboard
+        subprocess.Popen(
+            "lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill", shell=True
+        )  # kill tensorboard
     elif _platform == "win32":
         raise NotImplementedError("this function is not supported on the Windows platform")
 
