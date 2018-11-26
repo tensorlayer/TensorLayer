@@ -107,8 +107,9 @@ class DeformableConv2d(Layer):
             input_h = int(self.inputs.get_shape()[1])
             input_w = int(self.inputs.get_shape()[2])
             kernel_n = shape[0] * shape[1]
-            initial_offsets = tf.stack(tf.meshgrid(tf.range(shape[0]), tf.range(shape[1]),
-                                                   indexing='ij'))  # initial_offsets --> (kh, kw, 2)
+            initial_offsets = tf.stack(
+                tf.meshgrid(tf.range(shape[0]), tf.range(shape[1]), indexing='ij')
+            )  # initial_offsets --> (kh, kw, 2)
             initial_offsets = tf.reshape(initial_offsets, (-1, 2))  # initial_offsets --> (n, 2)
             initial_offsets = tf.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, n, 2)
             initial_offsets = tf.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, 1, n, 2)
