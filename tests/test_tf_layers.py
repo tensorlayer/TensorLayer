@@ -162,8 +162,9 @@ class Layer_Convolution_3D_Test(CustomTestCase):
             with tf.variable_scope("3D_network", reuse=reuse):
                 net = tl.layers.InputLayer(inputs)
 
-                net1 = tl.layers.Conv3dLayer(net, shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1),
-                                             name="Conv3dLayer")  # 2 params
+                net1 = tl.layers.Conv3dLayer(
+                    net, shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1), name="Conv3dLayer"
+                )  # 2 params
                 net2 = tl.layers.DeConv3d(net1, name="DeConv3d")  # 2 params
                 net3 = tl.layers.MaxPool3d(net2, (1, 1, 1), name="MaxPool3d")  # 0 params
                 net4 = tl.layers.MeanPool3d(net3, (1, 1, 1), name="MeanPool3d")  # 0 params

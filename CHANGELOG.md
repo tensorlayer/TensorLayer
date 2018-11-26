@@ -74,12 +74,9 @@ To release a new version, please update the changelog as followed:
 ### Changed
 
 ### Dependencies Update
-- pytest>=3.6,<3.9 => pytest>=3.6,<3.10 (PR #874)
-- requests>=2.19,<2.20 => requests>=2.19,<2.21 (PR #874)
-- tqdm>=4.23,<4.28 => tqdm>=4.23,<4.29 (PR #878)
-- pytest>=3.6,<3.10 => pytest>=3.6,<3.11 (PR #886)
-- pytest-xdist>=1.22,<1.24 => pytest-xdist>=1.22,<1.25 (PR #883)
-- tensorflow>=1.6,<1.12 => tensorflow>=1.6,<1.13 (PR #886)
+- nltk>=3.3,<3.4 => nltk>=3.3,<3.5 (PR #892)
+- pytest>=3.6,<3.11 => pytest>=3.6,<4.1 (PR #889)
+- yapf>=0.22,<0.25 => yapf==0.25.0 (PR #896)
 
 ### Deprecated
 
@@ -90,6 +87,23 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Contributors
+
+## [1.11.1] - 2018-11-15
+
+### Changed
+* guide for pose estimation - flipping (PR #884)
+* cv2 transform support 2 modes (PR #885)
+
+### Dependencies Update
+- pytest>=3.6,<3.9 => pytest>=3.6,<3.10 (PR #874)
+- requests>=2.19,<2.20 => requests>=2.19,<2.21 (PR #874)
+- tqdm>=4.23,<4.28 => tqdm>=4.23,<4.29 (PR #878)
+- pytest>=3.6,<3.10 => pytest>=3.6,<3.11 (PR #886)
+- pytest-xdist>=1.22,<1.24 => pytest-xdist>=1.22,<1.25 (PR #883)
+- tensorflow>=1.6,<1.12 => tensorflow>=1.6,<1.13 (PR #886)
+
+### Contributors
+- @zsdonghao: #884 #885
 
 ## [1.11.0] - 2018-10-18
 
@@ -158,7 +172,6 @@ To release a new version, please update the changelog as followed:
 ## [1.10.0] - 2018-09-02
 
 ### Added
-
 - API:
   - Add `tl.model.vgg19` (PR #698)
   - Add `tl.logging.contrib.hyperdash` (PR #739)
@@ -193,7 +206,6 @@ To release a new version, please update the changelog as followed:
   - [Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization](https://arxiv.org/abs/1703.06868) (PR #799)
 
 ### Changed
-
   - function minibatches changed to avoid wasting samples.(PR #762)
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
   - Dockerfiles merged and refactored into one file (PR #747)
@@ -203,16 +215,13 @@ To release a new version, please update the changelog as followed:
   - fixed and enforced pydocstyle D210, D200, D301, D207, D403, D204, D412, D402, D300, D208 (PR #784)
 
 ### Deprecated
-
   - `tl.logging.warn` has been deprecated in favor of `tl.logging.warning` (PR #739)
 
 ### Removed
-
   - `conv_layers()`  has been removed in both vgg16 and vgg19(PR #710)
   - graph API (PR #818)
 
 ### Fixed
-
 - import error caused by matplotlib on OSX (PR #705)
 - missing import in tl.prepro (PR #712)
 - Dockerfiles import error fixed - issue #733 (PR #747)
@@ -221,7 +230,6 @@ To release a new version, please update the changelog as followed:
 - log error instead of info when npz file not found. (PR #812)
 
 ### Dependencies Update
-
 - numpy>=1.14,<1.15 => numpy>=1.14,<1.16 (PR #754)
 - pymongo>=3.6,<3.7 => pymongo>=3.6,<3.8 (PR #750)
 - pytest>=3.6,<3.7 => tqdm>=3.6,<3.8 (PR #798)
@@ -231,7 +239,6 @@ To release a new version, please update the changelog as followed:
 - yapf>=0.21,<0.22 => yapf>=0.22,<0.24 (PR #798 #808)
 
 ### Contributors
-
 - @DEKHTIARJonathan: #739 #747 #750 #754
 - @lgarithm: #705 #700
 - @OwenLiuzZ: #698 #710 #775 #776
@@ -251,7 +258,6 @@ To release a new version, please update the changelog as followed:
 ## [1.9.0] - 2018-06-16
 
 ### Added
-
 - API:
   - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like (PR #580)
   - `tl.lazy_imports.LazyImport` to import heavy libraries only when necessary (PR #667)
@@ -303,7 +309,6 @@ To release a new version, please update the changelog as followed:
     ```
 
 ### Changed
-
 - Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (PR #573)
 - The document of LambdaLayer for linking it with ElementwiseLambdaLayer (PR #587)
 - RTD links point to stable documentation instead of latest used for development (PR #633)
@@ -328,18 +333,15 @@ To release a new version, please update the changelog as followed:
 - Complete Documentation Refactoring and Reorganization (namely Layer APIs) (PR #691)
 
 ### Deprecated
-
 - `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (PR #667)
 - `tl.act.leaky_relu` have been deprecated in favor of `tf.nn.leaky_relu` (PR #686)
 
 ### Removed
-
 - `assert()` calls remove and replaced by `raise AssertionError()` (PR #667)
 - `tl.identity` is removed, not used anymore and deprecated for a long time (PR #667)
 - All Code specific to `TF.__version__ < "1.6"` have been removed (PR #675)
 
 ### Fixed
-
 - Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (PR #574)
 - Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (PR #575)
 - Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `axis=1` (PR #566)
@@ -357,7 +359,6 @@ To release a new version, please update the changelog as followed:
   - All tutorials tested and errors have been fixed (PR #635)
 
 ### Dependencies Update
-
 - Update pytest from 3.5.1 to 3.6.0 (PR #647)
 - Update progressbar2 from 3.37.1 to 3.38.0 (PR #651)
 - Update scikit-image from 0.13.1 to 0.14.0 (PR #656)
@@ -365,7 +366,6 @@ To release a new version, please update the changelog as followed:
 - Update requests from 2.18.4 to 2.19.0 (PR #695)
 
 ### Contributors
-
 - @lgarithm: #563
 - @DEKHTIARJonathan: #573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #648 #657 #667 #658 #659 #660 #661 #666 #667 #672 #675 #683 #686 #687 #690 #691 #692 #703
 - @2wins: #560 #566 #662
@@ -377,7 +377,6 @@ To release a new version, please update the changelog as followed:
 ## [1.8.5] - 2018-05-09
 
 ### Added
-
 - Github Templates added (by @DEKHTIARJonathan)
   - New issues Template
   - New PR Template
@@ -390,7 +389,6 @@ To release a new version, please update the changelog as followed:
 - `test_layers_core` has been added to ensure that `LayersConfig` is abstract.
 
 ### Changed
-
 - All Tests Refactored - Now using unittests and runned with PyTest (by @DEKHTIARJonathan)
 - Documentation updated (by @zsdonghao)
 - Package Setup Refactored (by @DEKHTIARJonathan)
@@ -401,7 +399,6 @@ To release a new version, please update the changelog as followed:
 - YAPF coding style improved and enforced (by @DEKHTIARJonathan)
 
 ### Fixed
-
 - Backward Compatibility Restored with deprecation warnings (by @DEKHTIARJonathan)
 - Tensorflow Deprecation Fix (Issue #498):
   - AverageEmbeddingInputlayer (by @zsdonghao)
@@ -411,14 +408,13 @@ To release a new version, please update the changelog as followed:
 - Pooling Layer Issue #557 fixed (by @zsdonghao)
 
 ### Dependencies Update
-
 - scipy>=1.0,<1.1 => scipy>=1.1,<1.2
 
 ### Contributors
-
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.11.0...master
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.11....master
+[1.11.1]: https://github.com/tensorlayer/tensorlayer/compare/1.11.0...1.11.0
 [1.11.0]: https://github.com/tensorlayer/tensorlayer/compare/1.10.1...1.11.0
 [1.10.1]: https://github.com/tensorlayer/tensorlayer/compare/1.10.0...1.10.1
 [1.10.0]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...1.10.0
