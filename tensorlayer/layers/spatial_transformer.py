@@ -21,13 +21,13 @@ from tensorlayer.decorators import deprecated_alias
 __all__ = [
     'transformer',
     'batch_transformer',
-    'SpatialTransformer2dAffineLayer',
+    'SpatialTransformer2dAffine',
 ]
 
 
 def transformer(U, theta, out_size, name='SpatialTransformer2dAffine'):
     """Spatial Transformer Layer for `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`__
-    , see :class:`SpatialTransformer2dAffineLayer` class.
+    , see :class:`SpatialTransformer2dAffine` class.
 
     Parameters
     ----------
@@ -215,8 +215,8 @@ def batch_transformer(U, thetas, out_size, name='BatchSpatialTransformer2dAffine
         return transformer(input_repeated, thetas, out_size)
 
 
-class SpatialTransformer2dAffineLayer(Layer):
-    """The :class:`SpatialTransformer2dAffineLayer` class is a 2D `Spatial Transformer Layer <https://arxiv.org/abs/1506.02025>`__ for
+class SpatialTransformer2dAffine(Layer):
+    """The :class:`SpatialTransformer2dAffine` class is a 2D `Spatial Transformer Layer <https://arxiv.org/abs/1506.02025>`__ for
     `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`__.
 
     Parameters
@@ -225,7 +225,7 @@ class SpatialTransformer2dAffineLayer(Layer):
         Previous layer.
     theta_layer : :class:`Layer`
         The localisation network.
-        - We will use a :class:`DenseLayer` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
+        - We will use a :class:`Dense` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
     out_size : tuple of int or None
         The size of the output of the network (height, width), the feature maps will be resized by this.
     name : str
@@ -247,7 +247,7 @@ class SpatialTransformer2dAffineLayer(Layer):
             name='spatial_trans_2d_affine',
     ):
 
-        super(SpatialTransformer2dAffineLayer, self).__init__(prev_layer=[prev_layer, theta_layer], name=name)
+        super(SpatialTransformer2dAffine, self).__init__(prev_layer=[prev_layer, theta_layer], name=name)
 
         self.inputs = prev_layer.outputs  # Do not remove
         self.theta_layer = theta_layer
@@ -256,7 +256,7 @@ class SpatialTransformer2dAffineLayer(Layer):
             out_size = [40, 40]
 
         logging.info(
-            "SpatialTransformer2dAffineLayer %s: in_size: %s out_size: %s" %
+            "SpatialTransformer2dAffine %s: in_size: %s out_size: %s" %
             (self.name, self.inputs.get_shape().as_list(), out_size)
         )
 

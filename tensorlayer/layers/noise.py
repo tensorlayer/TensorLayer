@@ -10,13 +10,13 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
-    'GaussianNoiseLayer',
+    'GaussianNoise',
 ]
 
 
-class GaussianNoiseLayer(Layer):
+class GaussianNoise(Layer):
     """
-    The :class:`GaussianNoiseLayer` class is noise layer that adding noise with
+    The :class:`GaussianNoise` class is noise layer that adding noise with
     gaussian distribution to the activation.
 
     Parameters
@@ -39,9 +39,9 @@ class GaussianNoiseLayer(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=(100, 784))
-    >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.DenseLayer(net, n_units=100, act=tf.nn.relu, name='dense3')
-    >>> net = tl.layers.GaussianNoiseLayer(net, name='gaussian')
+    >>> net = tl.layers.Input(x, name='input')
+    >>> net = tl.layers.Dense(net, n_units=100, act=tf.nn.relu, name='dense3')
+    >>> net = tl.layers.GaussianNoise(net, name='gaussian')
     (64, 100)
 
     """
@@ -54,16 +54,16 @@ class GaussianNoiseLayer(Layer):
             stddev=1.0,
             is_train=True,
             seed=None,
-            name='gaussian_noise_layer',
+            name='gaussian_noise',
     ):
         super(GaussianNoiseLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         if is_train is False:
-            logging.info("  skip GaussianNoiseLayer")
+            logging.info("  skip GaussianNoise")
             self.outputs = prev_layer.outputs
 
         else:
-            logging.info("GaussianNoiseLayer %s: mean: %f stddev: %f" % (self.name, mean, stddev))
+            logging.info("GaussianNoise %s: mean: %f stddev: %f" % (self.name, mean, stddev))
             with tf.variable_scope(name):
                 # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
                 noise = tf.random_normal(shape=self.inputs.get_shape(), mean=mean, stddev=stddev, seed=seed)

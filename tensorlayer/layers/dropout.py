@@ -11,13 +11,13 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
-    'DropoutLayer',
+    'Dropout',
 ]
 
 
-class DropoutLayer(Layer):
+class Dropout(Layer):
     """
-    The :class:`DropoutLayer` class is a noise layer which randomly set some
+    The :class:`Dropout` class is a noise layer which randomly set some
     activations to zero according to a keeping probability.
 
     Parameters
@@ -43,9 +43,9 @@ class DropoutLayer(Layer):
 
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
-    >>> net = tl.layers.DropoutLayer(net, keep=0.8, name='drop1')
-    >>> net = tl.layers.DenseLayer(net, n_units=800, act=tf.nn.relu, name='relu1')
+    >>> net = tl.layers.Input(x, name='input_layer')    # TODO
+    >>> net = tl.layers.Dropout(net, keep=0.8, name='drop1')
+    >>> net = tl.layers.Dense(net, n_units=800, act=tf.nn.relu, name='relu1')
     >>> ...
     >>> # For training, enable dropout as follow.
     >>> feed_dict = {x: X_train_a, y_: y_train_a}
@@ -63,9 +63,8 @@ class DropoutLayer(Layer):
 
     >>> def mlp(x, is_train=True, reuse=False):
     >>>     with tf.variable_scope("MLP", reuse=reuse):
-    >>>     tl.layers.set_name_reuse(reuse)
-    >>>     net = tl.layers.InputLayer(x, name='input')
-    >>>     net = tl.layers.DropoutLayer(net, keep=0.8, is_fix=True,
+    >>>     net = tl.layers.Input(x, name='input')
+    >>>     net = tl.layers.Dropout(net, keep=0.8, is_fix=True,
     >>>                         is_train=is_train, name='drop1')
     >>>     ...
     >>>     return net
@@ -83,14 +82,14 @@ class DropoutLayer(Layer):
             is_fix=False,
             is_train=True,
             seed=None,
-            name='dropout_layer',
+            name='dropout',
     ):
-        super(DropoutLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(Dropout, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("DropoutLayer %s: keep: %f is_fix: %s" % (self.name, keep, is_fix))
+        logging.info("Dropout %s: keep: %f is_fix: %s" % (self.name, keep, is_fix))
 
         if is_train is False:
-            logging.info("  skip DropoutLayer")
+            logging.info("  skip Dropout")
             self.outputs = prev_layer.outputs
 
         else:

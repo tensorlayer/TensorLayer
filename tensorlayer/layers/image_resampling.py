@@ -10,13 +10,13 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
-    'UpSampling2dLayer',
-    'DownSampling2dLayer',
+    'UpSampling2d',
+    'DownSampling2d',
 ]
 
 
-class UpSampling2dLayer(Layer):
-    """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer.
+class UpSampling2d(Layer):
+    """The :class:`UpSampling2d` class is a up-sampling 2D layer.
 
     See `tf.image.resize_images <https://www.tensorflow.org/api_docs/python/tf/image/resize_images>`__.
 
@@ -48,12 +48,12 @@ class UpSampling2dLayer(Layer):
             is_scale=True,
             method=0,
             align_corners=False,
-            name='upsample2d_layer',
+            name='upsample2d',
     ):
-        super(UpSampling2dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(UpSampling2d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info(
-            "UpSampling2dLayer %s: is_scale: %s size: %s method: %d align_corners: %s" %
+            "UpSampling2d %s: is_scale: %s size: %s method: %d align_corners: %s" %
             (self.name, is_scale, size, method, align_corners)
         )
 
@@ -88,8 +88,8 @@ class UpSampling2dLayer(Layer):
         self._add_layers(self.outputs)
 
 
-class DownSampling2dLayer(Layer):
-    """The :class:`DownSampling2dLayer` class is down-sampling 2D layer.
+class DownSampling2d(Layer):
+    """The :class:`DownSampling2d` class is down-sampling 2D layer.
 
     See `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
 
@@ -121,12 +121,12 @@ class DownSampling2dLayer(Layer):
             is_scale=True,
             method=0,
             align_corners=False,
-            name='downsample2d_layer',
+            name='downsample2d',
     ):
-        super(DownSampling2dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(DownSampling2d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info(
-            "DownSampling2dLayer %s: is_scale: %s size: %s method: %d, align_corners: %s" %
+            "DownSampling2d %s: is_scale: %s size: %s method: %d, align_corners: %s" %
             (self.name, is_scale, size, method, align_corners)
         )
 

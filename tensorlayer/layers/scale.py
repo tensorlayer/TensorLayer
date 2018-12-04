@@ -10,12 +10,12 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
-    'ScaleLayer',
+    'Scale',
 ]
 
 
-class ScaleLayer(Layer):
-    """The :class:`AddScaleLayer` class is for multipling a trainble scale value to the layer outputs. Usually be used on the output of binary net.
+class Scale(Layer):
+    """The :class:`Scale` class is for multipling a trainble scale value to the layer outputs. Usually be used on the output of binary net.
 
     Parameters
     ----------
@@ -35,9 +35,9 @@ class ScaleLayer(Layer):
             init_scale=0.05,
             name='scale',
     ):
-        super(ScaleLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(Scale, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ScaleLayer  %s: init_scale: %f" % (self.name, init_scale))
+        logging.info("Scale  %s: init_scale: %f" % (self.name, init_scale))
 
         with tf.variable_scope(name):
             # scale = tf.get_variable(name='scale_factor', init, trainable=True, )

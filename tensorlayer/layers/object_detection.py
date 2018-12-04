@@ -16,11 +16,11 @@ except Exception as e:
     logging.error("HINT: 1. https://github.com/deepsense-ai/roi-pooling  2. tensorlayer/third_party/roi_pooling")
 
 __all__ = [
-    'ROIPoolingLayer',
+    'ROIPooling',
 ]
 
 
-class ROIPoolingLayer(Layer):
+class ROIPooling(Layer):
     """
     The region of interest pooling layer.
 
@@ -51,11 +51,11 @@ class ROIPoolingLayer(Layer):
             rois,
             pool_height=2,
             pool_width=2,
-            name='roipooling_layer',
+            name='roipooling',
     ):
-        super(ROIPoolingLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(ROIPooling, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ROIPoolingLayer %s: (%d, %d)" % (self.name, pool_height, pool_width))
+        logging.info("ROIPooling %s: (%d, %d)" % (self.name, pool_height, pool_width))
 
         self.outputs = roi_pooling(self.inputs, rois, pool_height, pool_width)
 

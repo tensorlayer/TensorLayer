@@ -16,17 +16,17 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
-    'LocalResponseNormLayer',
-    'BatchNormLayer',
-    'InstanceNormLayer',
-    'LayerNormLayer',
-    'GroupNormLayer',
-    'SwitchNormLayer',
+    'LocalResponseNorm',
+    'BatchNorm',
+    'InstanceNorm',
+    'LayerNorm',
+    'GroupNorm',
+    'SwitchNorm',
 ]
 
 
-class LocalResponseNormLayer(Layer):
-    """The :class:`LocalResponseNormLayer` layer is for Local Response Normalization.
+class LocalResponseNorm(Layer):
+    """The :class:`LocalResponseNorm` layer is for Local Response Normalization.
     See ``tf.nn.local_response_normalization`` or ``tf.nn.lrn`` for new TF version.
     The 4-D input tensor is a 3-D array of 1-D vectors (along the last dimension), and each vector is normalized independently.
     Within a given vector, each component is divided by the weighted square-sum of inputs within depth_radius.
@@ -56,12 +56,12 @@ class LocalResponseNormLayer(Layer):
             bias=None,
             alpha=None,
             beta=None,
-            name='lrn_layer',
+            name='lrn',
     ):
-        super(LocalResponseNormLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(LocalResponseNorm, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info(
-            "LocalResponseNormLayer %s: depth_radius: %s, bias: %s, alpha: %s, beta: %s" %
+            "LocalResponseNorm %s: depth_radius: %s, bias: %s, alpha: %s, beta: %s" %
             (self.name, str(depth_radius), str(bias), str(alpha), str(beta))
         )
 
@@ -117,9 +117,9 @@ def batch_normalization(x, mean, variance, offset, scale, variance_epsilon, data
         return _bias_add(_bias_scale(x, a, df[data_format]), b, df[data_format])
 
 
-class BatchNormLayer(Layer):
+class BatchNorm(Layer):
     """
-    The :class:`BatchNormLayer` is a batch normalization layer for both fully-connected and convolution outputs.
+    The :class:`BatchNorm` is a batch normalization layer for both fully-connected and convolution outputs.
     See ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
 
     Parameters
@@ -164,12 +164,12 @@ class BatchNormLayer(Layer):
             gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
             moving_mean_init=tf.zeros_initializer(),
             data_format='channels_last',
-            name='batchnorm_layer',
+            name='batchnorm',
     ):
-        super(BatchNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        super(BatchNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
         logging.info(
-            "BatchNormLayer %s: decay: %f epsilon: %f act: %s is_train: %s" %
+            "BatchNorm %s: decay: %f epsilon: %f act: %s is_train: %s" %
             (self.name, decay, epsilon, self.act.__name__ if self.act is not None else 'No Activation', is_train)
         )
         if decay < 0 or 1 < decay:
@@ -261,8 +261,8 @@ class BatchNormLayer(Layer):
         self._add_params(variables)
 
 
-class InstanceNormLayer(Layer):
-    """The :class:`InstanceNormLayer` class is a for instance normalization.
+class InstanceNorm(Layer):
+    """The :class:`InstanceNorm` class is a for instance normalization.
 
     Parameters
     -----------
@@ -314,9 +314,9 @@ class InstanceNormLayer(Layer):
         self._add_params(variables)
 
 
-class LayerNormLayer(Layer):
+class LayerNorm(Layer):
     """
-    The :class:`LayerNormLayer` class is for layer normalization, see `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`__.
+    The :class:`LayerNorm` class is for layer normalization, see `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`__.
 
     Parameters
     ----------
@@ -335,10 +335,10 @@ class LayerNormLayer(Layer):
             outputs_collections=None, trainable=True, begin_norm_axis=1, begin_params_axis=-1, name='layernorm'
     ):
 
-        super(LayerNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        super(LayerNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
         logging.info(
-            "LayerNormLayer %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
+            "LayerNorm %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
         with tf.variable_scope(name) as vs:
@@ -362,8 +362,8 @@ class LayerNormLayer(Layer):
         self._add_params(variables)
 
 
-class GroupNormLayer(Layer):
-    """The :class:`GroupNormLayer` layer is for Group Normalization.
+class GroupNorm(Layer):
+    """The :class:`GroupNorm` layer is for Group Normalization.
     See `tf.contrib.layers.group_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/group_norm>`__.
 
     Parameters
@@ -384,12 +384,12 @@ class GroupNormLayer(Layer):
         super(GroupNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
         logging.info(
-            "GroupNormLayer %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
+            "GroupNorm %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
         shape = self.inputs.get_shape().as_list()
         if len(shape) != 4:
-            raise Exception("GroupNormLayer only supports 2D images.")
+            raise Exception("GroupNorm only supports 2D images.")
 
         if data_format == 'channels_last':
             channels = shape[-1]
@@ -436,9 +436,9 @@ class GroupNormLayer(Layer):
         self._add_params(variables)
 
 
-class SwitchNormLayer(Layer):
+class SwitchNorm(Layer):
     """
-    The :class:`SwitchNormLayer` is a switchable normalization.
+    The :class:`SwitchNorm` is a switchable normalization.
 
     Parameters
     ----------
@@ -474,12 +474,12 @@ class SwitchNormLayer(Layer):
             beta_init=tf.constant_initializer(0.0),
             gamma_init=tf.constant_initializer(1.0),
             moving_mean_init=tf.zeros_initializer(),
-            name='switchnorm_layer',
+            name='switchnorm',
     ):
-        super(SwitchNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        super(SwitchNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
         logging.info(
-            "SwitchNormLayer %s: epsilon: %f act: %s" %
+            "SwitchNorm %s: epsilon: %f act: %s" %
             (self.name, epsilon, self.act.__name__ if self.act is not None else 'No Activation')
         )
 

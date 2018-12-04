@@ -17,25 +17,25 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
-    'RNNLayer',
-    'BiRNNLayer',
+    'RNN',
+    'BiRNN',
     'ConvRNNCell',
     'BasicConvLSTMCell',
-    'ConvLSTMLayer',
+    'ConvLSTM',
     'advanced_indexing_op',
     'retrieve_seq_length_op',
     'retrieve_seq_length_op2',
     'retrieve_seq_length_op3',
     'target_mask_op',
-    'DynamicRNNLayer',
-    'BiDynamicRNNLayer',
+    'DynamicRNN',
+    'BiDynamicRNN',
     'Seq2Seq',
 ]
 
 
 class RNNLayer(Layer):
     """
-    The :class:`RNNLayer` class is a fixed length recurrent layer for implementing vanilla RNN,
+    The :class:`RNN` class is a fixed length recurrent layer for implementing vanilla RNN,
     LSTM, GRU and etc.
 
     Parameters
@@ -101,16 +101,16 @@ class RNNLayer(Layer):
     >>> keep_prob = 0.8
     >>> is_train = True
     >>> input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
-    >>> net = tl.layers.EmbeddingInputlayer(inputs=input_data, vocabulary_size=vocab_size,
+    >>> net = tl.layers.EmbeddingInput(inputs=input_data, vocabulary_size=vocab_size,
     ...     embedding_size=hidden_size, name='embed')
-    >>> net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_train, name='drop1')
-    >>> net = tl.layers.RNNLayer(net, cell_fn=tf.contrib.rnn.BasicLSTMCell,
+    >>> net = tl.layers.Dropout(net, keep=keep_prob, is_fix=True, is_train=is_train, name='drop1')
+    >>> net = tl.layers.RNN(net, cell_fn=tf.contrib.rnn.BasicLSTMCell,
     ...     n_hidden=hidden_size, n_steps=num_steps, return_last=False, name='lstm1')
-    >>> net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_train, name='drop2')
-    >>> net = tl.layers.RNNLayer(net, cell_fn=tf.contrib.rnn.BasicLSTMCell,
+    >>> net = tl.layers.Dropout(net, keep=keep_prob, is_fix=True, is_train=is_train, name='drop2')
+    >>> net = tl.layers.RNN(net, cell_fn=tf.contrib.rnn.BasicLSTMCell,
     ...     n_hidden=hidden_size, n_steps=num_steps, return_last=True, name='lstm2')
-    >>> net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_train, name='drop3')
-    >>> net = tl.layers.DenseLayer(net, n_units=vocab_size, name='output')
+    >>> net = tl.layers.Dropout(net, keep=keep_prob, is_fix=True, is_train=is_train, name='drop3')
+    >>> net = tl.layers.Dense(net, n_units=vocab_size, name='output')
 
     - For CNN+LSTM
 
@@ -118,15 +118,15 @@ class RNNLayer(Layer):
     >>> batch_size = 10
     >>> num_steps = 5
     >>> x = tf.placeholder(tf.float32, shape=[batch_size, image_size, image_size, 1])
-    >>> net = tl.layers.InputLayer(x, name='in')
+    >>> net = tl.layers.Input(x, name='in')
     >>> net = tl.layers.Conv2d(net, 32, (5, 5), (2, 2), tf.nn.relu, name='cnn1')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), name='pool1')
     >>> net = tl.layers.Conv2d(net, 10, (5, 5), (2, 2), tf.nn.relu, name='cnn2')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), name='pool2')
-    >>> net = tl.layers.FlattenLayer(net, name='flatten')
-    >>> net = tl.layers.ReshapeLayer(net, shape=[-1, num_steps, int(net.outputs._shape[-1])])
-    >>> rnn = tl.layers.RNNLayer(net, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=200, n_steps=num_steps, return_last=False, return_seq_2d=True, name='rnn')
-    >>> net = tl.layers.DenseLayer(rnn, 3, name='out')
+    >>> net = tl.layers.Flatten(net, name='flatten')
+    >>> net = tl.layers.Reshape(net, shape=[-1, num_steps, int(net.outputs._shape[-1])])
+    >>> rnn = tl.layers.RNN(net, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=200, n_steps=num_steps, return_last=False, return_seq_2d=True, name='rnn')
+    >>> net = tl.layers.Dense(rnn, 3, name='out')
 
     Notes
     -----
@@ -168,7 +168,7 @@ class RNNLayer(Layer):
                 logging.warning('pop state_is_tuple fails.')
 
         logging.info(
-            "RNNLayer %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s " %
+            "RNN %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s " %
             (self.name, n_hidden, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__)
         )
 
@@ -258,9 +258,9 @@ class RNNLayer(Layer):
         self._add_params(rnn_variables)
 
 
-class BiRNNLayer(Layer):
+class BiRNN(Layer):
     """
-    The :class:`BiRNNLayer` class is a fixed length Bidirectional recurrent layer.
+    The :class:`BiRNN` class is a fixed length Bidirectional recurrent layer.
 
     Parameters
     ----------
@@ -343,7 +343,7 @@ class BiRNNLayer(Layer):
             return_seq_2d=False,
             name='birnn',
     ):
-        super(BiRNNLayer, self).__init__(prev_layer=prev_layer, cell_init_args=cell_init_args, name=name)
+        super(BiRNN, self).__init__(prev_layer=prev_layer, cell_init_args=cell_init_args, name=name)
 
         if self.cell_init_args:
             self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True,
@@ -358,7 +358,7 @@ class BiRNNLayer(Layer):
             raise Exception("Please put in cell_fn")
 
         logging.info(
-            "BiRNNLayer %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d " % (
+            "BiRNN %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d " % (
                 self.name, n_hidden, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__,
                 dropout, n_layer
             )
@@ -648,7 +648,7 @@ def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=No
     return res + bias_term
 
 
-class ConvLSTMLayer(Layer):
+class ConvLSTM(Layer):
     """A fixed length Convolutional LSTM layer.
 
     See this `paper <https://arxiv.org/abs/1506.04214>`__ .
@@ -719,10 +719,10 @@ class ConvLSTMLayer(Layer):
             return_seq_2d=False,
             name='convlstm',
     ):
-        super(ConvLSTMLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(ConvLSTM, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info(
-            "ConvLSTMLayer %s: feature_map: %d, n_steps: %d, "
+            "ConvLSTM %s: feature_map: %d, n_steps: %d, "
             "in_dim: %d %s, cell_fn: %s " %
             (self.name, feature_map, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__)
         )
@@ -797,7 +797,7 @@ class ConvLSTMLayer(Layer):
 # Advanced Ops for Dynamic RNN
 def advanced_indexing_op(inputs, index):
     """Advanced Indexing for Sequences, returns the outputs by given sequence lengths.
-    When return the last output :class:`DynamicRNNLayer` uses it to get the last outputs with the sequence lengths.
+    When return the last output :class:`DynamicRNN` uses it to get the last outputs with the sequence lengths.
 
     Parameters
     -----------
@@ -1016,12 +1016,12 @@ class DynamicRNNLayer(Layer):
     Synced sequence input and output, for loss function see ``tl.cost.cross_entropy_seq_with_mask``.
 
     >>> input_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="input")
-    >>> net = tl.layers.EmbeddingInputlayer(
+    >>> net = tl.layers.EmbeddingInput(
     ...             inputs=input_seqs,
     ...             vocabulary_size=vocab_size,
     ...             embedding_size=embedding_size,
     ...             name='embedding')
-    >>> net = tl.layers.DynamicRNNLayer(net,
+    >>> net = tl.layers.DynamicRNN(net,
     ...             cell_fn=tf.contrib.rnn.BasicLSTMCell, # for TF0.2 use tf.nn.rnn_cell.BasicLSTMCell,
     ...             n_hidden=embedding_size,
     ...             dropout=(0.7 if is_train else None),
@@ -1029,7 +1029,7 @@ class DynamicRNNLayer(Layer):
     ...             return_last=False,                    # for encoder, set to True
     ...             return_seq_2d=True,                   # stack denselayer or compute cost after it
     ...             name='dynamicrnn')
-    >>> net = tl.layers.DenseLayer(net, n_units=vocab_size, name="output")
+    >>> net = tl.layers.Dense(net, n_units=vocab_size, name="output")
 
     References
     ----------
@@ -1061,7 +1061,7 @@ class DynamicRNNLayer(Layer):
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
 
-        super(DynamicRNNLayer, self).__init__(
+        super(DynamicRNN, self).__init__(
             prev_layer=prev_layer, cell_init_args=cell_init_args, dynamic_rnn_init_args=dynamic_rnn_init_args, name=name
         )
 
@@ -1216,9 +1216,9 @@ class DynamicRNNLayer(Layer):
         self._add_params(rnn_variables)
 
 
-class BiDynamicRNNLayer(Layer):
+class BiDynamicRNN(Layer):
     """
-    The :class:`BiDynamicRNNLayer` class is a RNN layer, you can implement vanilla RNN,
+    The :class:`BiDynamicRNN` class is a RNN layer, you can implement vanilla RNN,
     LSTM and GRU with it.
 
     Parameters
@@ -1312,9 +1312,9 @@ class BiDynamicRNNLayer(Layer):
             return_last=False,
             return_seq_2d=False,
             dynamic_rnn_init_args=None,
-            name='bi_dyrnn_layer',
+            name='bi_dyrnn',
     ):
-        super(BiDynamicRNNLayer, self).__init__(
+        super(BiDynamicRNN, self).__init__(
             prev_layer=prev_layer, cell_init_args=cell_init_args, dynamic_rnn_init_args=dynamic_rnn_init_args, name=name
         )
 
@@ -1542,14 +1542,13 @@ class Seq2Seq(Layer):
     >>>     # for chatbot, you can use the same embedding layer,
     >>>     # for translation, you may want to use 2 seperated embedding layers
     >>>     with tf.variable_scope("embedding") as vs:
-    >>>         net_encode = EmbeddingInputlayer(
+    >>>         net_encode = EmbeddingInput(
     ...                 inputs = encode_seqs,
     ...                 vocabulary_size = 10000,
     ...                 embedding_size = 200,
     ...                 name = 'seq_embedding')
     >>>         vs.reuse_variables()
-    >>>         tl.layers.set_name_reuse(True)
-    >>>         net_decode = EmbeddingInputlayer(
+    >>>         net_decode = EmbeddingInput(
     ...                 inputs = decode_seqs,
     ...                 vocabulary_size = 10000,
     ...                 embedding_size = 200,
@@ -1565,7 +1564,7 @@ class Seq2Seq(Layer):
     ...             n_layer = 1,
     ...             return_seq_2d = True,
     ...             name = 'seq2seq')
-    >>> net_out = DenseLayer(net, n_units=10000, act=None, name='output')
+    >>> net_out = Dense(net, n_units=10000, act=None, name='output')
     >>> e_loss = tl.cost.cross_entropy_seq_with_mask(logits=net_out.outputs, target_seqs=target_seqs, input_mask=target_mask, return_details=False, name='cost')
     >>> y = tf.nn.softmax(net_out.outputs)
     >>> net_out.print_params(False)
@@ -1612,14 +1611,14 @@ class Seq2Seq(Layer):
         with tf.variable_scope(name):
             # tl.layers.set_name_reuse(reuse)
             # network = InputLayer(self.inputs, name=name+'/input')
-            network_encode = DynamicRNNLayer(
+            network_encode = DynamicRNN(
                 net_encode_in, cell_fn=cell_fn, cell_init_args=self.cell_init_args, n_hidden=n_hidden,
                 initializer=initializer, initial_state=initial_state_encode, dropout=dropout, n_layer=n_layer,
                 sequence_length=encode_sequence_length, return_last=False, return_seq_2d=True, name='encode'
             )
             # vs.reuse_variables()
             # tl.layers.set_name_reuse(True)
-            network_decode = DynamicRNNLayer(
+            network_decode = DynamicRNN(
                 net_decode_in, cell_fn=cell_fn, cell_init_args=self.cell_init_args, n_hidden=n_hidden,
                 initializer=initializer,
                 initial_state=(network_encode.final_state if initial_state_decode is None else initial_state_decode),

@@ -18,11 +18,11 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
-    'ReconLayer',
+    'Recon',
 ]
 
 
-class ReconLayer(DenseLayer):
+class Recon(DenseLayer):
     """A reconstruction layer for :class:`DenseLayer` to implement AutoEncoder.
 
     It is often used to pre-train the previous :class:`DenseLayer`
@@ -47,9 +47,9 @@ class ReconLayer(DenseLayer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=(None, 784))
-    >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.DenseLayer(net, n_units=196, act=tf.nn.sigmoid, name='dense')
-    >>> recon = tl.layers.ReconLayer(net, x_recon=x, n_units=784, act=tf.nn.sigmoid, name='recon')
+    >>> net = tl.layers.Input(x, name='input')
+    >>> net = tl.layers.Dense(net, n_units=196, act=tf.nn.sigmoid, name='dense')
+    >>> recon = tl.layers.Recon(net, x_recon=x, n_units=784, act=tf.nn.sigmoid, name='recon')
     >>> sess = tf.InteractiveSession()
     >>> tl.layers.initialize_global_variables(sess)
     >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
@@ -58,11 +58,11 @@ class ReconLayer(DenseLayer):
     Methods
     -------
     pretrain(sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True, save_name='w1pre')
-        Start to pre-train the parameters of the previous DenseLayer.
+        Start to pre-train the parameters of the previous Dense layer.
 
     Notes
     -----
-    The input layer should be `DenseLayer` or a layer that has only one axes.
+    The input layer should be `Dense` or a layer that has only one axes.
     You may need to modify this part to define your own cost function.
     By default, the cost is implemented as follow:
     - For sigmoid layer, the implementation can be `UFLDL <http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial>`__
@@ -79,9 +79,9 @@ class ReconLayer(DenseLayer):
             act=tf.nn.softplus,
             name='recon',
     ):
-        super(ReconLayer, self).__init__(prev_layer=prev_layer, n_units=n_units, act=act, name=name)
+        super(Recon, self).__init__(prev_layer=prev_layer, n_units=n_units, act=act, name=name)
 
-        logging.info("ReconLayer %s" % self.name)
+        logging.info("Recon %s" % self.name)
 
         # y : reconstruction outputs; train_params : parameters to train
         # Note that: train_params = [W_encoder, b_encoder, W_decoder, b_encoder]

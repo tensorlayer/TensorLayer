@@ -13,14 +13,14 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
-    'TimeDistributedLayer',
+    'TimeDistributed',
 ]
 
 
-class TimeDistributedLayer(Layer):
+class TimeDistributed(Layer):
     """
-    The :class:`TimeDistributedLayer` class that applies a function to every timestep of the input tensor.
-    For example, if use :class:`DenseLayer` as the `layer_class`, we input (batch_size, length, dim) and
+    The :class:`TimeDistributed` class that applies a function to every timestep of the input tensor.
+    For example, if use :class:`Dense` as the `layer_class`, we input (batch_size, length, dim) and
     output (batch_size , length, new_dim).
 
     Parameters
@@ -42,10 +42,10 @@ class TimeDistributedLayer(Layer):
     >>> timestep = 20
     >>> input_dim = 100
     >>> x = tf.placeholder(dtype=tf.float32, shape=[batch_size, timestep, input_dim], name="encode_seqs")
-    >>> net = tl.layers.InputLayer(x, name='input')
+    >>> net = tl.layers.Input(x, name='input')
     [TL] InputLayer  input: (32, 20, 100)
-    >>> net = tl.layers.TimeDistributedLayer(net, layer_class=tl.layers.DenseLayer, args={'n_units':50, 'name':'dense'}, name='time_dense')
-    [TL] TimeDistributedLayer time_dense: layer_class:DenseLayer
+    >>> net = tl.layers.TimeDistributed(net, layer_class=tl.layers.Dense, args={'n_units':50, 'name':'dense'}, name='time_dense')
+    [TL] TimeDistributed time_dense: layer_class:Dense
     >>> print(net.outputs._shape)
     (32, 20, 50)
     >>> net.print_params(False)
@@ -66,13 +66,13 @@ class TimeDistributedLayer(Layer):
             name='time_distributed',
     ):
 
-        super(TimeDistributedLayer, self).__init__(prev_layer=prev_layer, layer_args=layer_args, name=name)
+        super(TimeDistributed, self).__init__(prev_layer=prev_layer, layer_args=layer_args, name=name)
 
         if not isinstance(self.inputs, tf.Tensor):
             self.inputs = tf.transpose(tf.stack(self.inputs), [1, 0, 2])
 
         logging.info(
-            "TimeDistributedLayer %s: layer_class: %s layer_args: %s" %
+            "TimeDistributed %s: layer_class: %s layer_args: %s" %
             (self.name, layer_class.__name__, self.layer_args)
         )
 
@@ -84,7 +84,7 @@ class TimeDistributedLayer(Layer):
         is_name_reuse = tf.get_variable_scope().reuse
         for i in range(0, timestep):
             with tf.variable_scope(name, reuse=(is_name_reuse if i == 0 else True)) as vs:
-                net = layer_class(InputLayer(x[i], name=self.layer_args['name'] + str(i)), **self.layer_args)
+                net = layer_class(Input(x[i], name=self.layer_args['name'] + str(i)), **self.layer_args)
                 x[i] = net.outputs
                 variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 

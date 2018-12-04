@@ -14,6 +14,7 @@ from .convolution import *
 from .core import *
 from .dense import *
 from .dropout import *
+from .deprecated import *
 from .extend import *
 from .flow_control import *
 from .image_resampling import *

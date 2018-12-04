@@ -12,11 +12,11 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
-    'SignLayer',
+    'Sign',
 ]
 
 
-class SignLayer(Layer):
+class Sign(Layer):
     """The :class:`SignLayer` class is for quantizing the layer outputs to -1 or 1 while inferencing.
 
     Parameters
@@ -34,9 +34,9 @@ class SignLayer(Layer):
             prev_layer,
             name='sign',
     ):
-        super(SignLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(Sign, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("SignLayer  %s" % self.name)
+        logging.info("Sign  %s" % self.name)
 
         with tf.variable_scope(name):
             # self.outputs = tl.act.sign(self.inputs)
