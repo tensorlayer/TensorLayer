@@ -22,8 +22,6 @@ class UpSampling2d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer with 4-D Tensor of the shape (batch, height, width, channels) or 3-D Tensor of the shape (height, width, channels).
     size : tuple of int/float
         (height, width) scale factor or new size of height and width.
     is_scale : boolean
@@ -36,56 +34,70 @@ class UpSampling2d(Layer):
             - Index 3 ResizeMethod.AREA, Area interpolation.
     align_corners : boolean
         If True, align the corners of the input and output. Default is False.
-    name : str
+    data_format : str
+        channels_last 'channel_last' (default) or channels_first.
+    name : None or str
         A unique layer name.
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             size,
             is_scale=True,
             method=0,
             align_corners=False,
-            name='upsample2d',
+            data_format='channel_last',
+            name=None, #'upsample2d',
     ):
-        super(UpSampling2d, self).__init__(prev_layer=prev_layer, name=name)
+        # super(UpSampling2d, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.size = size
+        self.is_scale = scale
+        self.method = method
+        self.align_corners = align_corners
+        self.data_format = data_format
 
         logging.info(
             "UpSampling2d %s: is_scale: %s size: %s method: %d align_corners: %s" %
-            (self.name, is_scale, size, method, align_corners)
+            (self.name, self.is_scale, self.size, self.method, self.align_corners)
         )
 
-        if not isinstance(size, (list, tuple)) and len(size) == 2:
+        if not isinstance(self.size, (list, tuple)) and len(self.size) == 2:
             raise AssertionError()
 
-        if len(self.inputs.get_shape()) == 3:
-            if is_scale:
+    def build(self, inputs):
+        if self.data_format != 'channel_last':
+            raise Exception("UpSampling2d tf.image.resize_images only support channel_last")
+
+        # if len(self.inputs.get_shape()) == 3:
+        if inputs.shape.ndims == 3:
+            if self.is_scale:
                 size_h = size[0] * tf.shape(self.inputs)[0]
                 size_w = size[1] * tf.shape(self.inputs)[1]
-                size = [size_h, size_w]
+                self.size = [size_h, size_w]
 
-        elif len(self.inputs.get_shape()) == 4:
-            if is_scale:
+        # elif len(self.inputs.get_shape()) == 4:
+        elif inputs.shape.ndims == 4:
+            if self.is_scale:
                 size_h = size[0] * tf.shape(self.inputs)[1]
                 size_w = size[1] * tf.shape(self.inputs)[2]
-                size = [size_h, size_w]
+                self.size = [size_h, size_w]
 
         else:
-            raise Exception("Donot support shape %s" % tf.shape(self.inputs))
+            raise Exception("Donot support shape %s" % str(inputs.shape.as_list()))
 
-        with tf.variable_scope(name):
-            try:
-                self.outputs = tf.image.resize_images(
-                    self.inputs, size=size, method=method, align_corners=align_corners
-                )
-            except Exception:  # for TF 0.10
-                self.outputs = tf.image.resize_images(
-                    self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners
-                )
+    def forward(self, inputs):
+        """
 
-        self._add_layers(self.outputs)
+        Parameters
+        ------------
+        prev_layer : :class:`Layer`
+            Previous layer with 4-D Tensor of the shape (batch, height, width, channels) or 3-D Tensor of the shape (height, width, channels).
+        """
+        outputs = tf.image.resize_images(
+                inputs, size=self.size, method=self.method, align_corners=self.align_corners
+            )
+        return outputs
 
 
 class DownSampling2d(Layer):
@@ -95,8 +107,6 @@ class DownSampling2d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer with 4-D Tensor in the shape of (batch, height, width, channels) or 3-D Tensor in the shape of (height, width, channels).
     size : tuple of int/float
         (height, width) scale factor or new size of height and width.
     is_scale : boolean
@@ -109,53 +119,67 @@ class DownSampling2d(Layer):
             - Index 3 ResizeMethod.AREA, Area interpolation.
     align_corners : boolean
         If True, exactly align all 4 corners of the input and output. Default is False.
-    name : str
+    data_format : str
+        channels_last 'channel_last' (default) or channels_first.
+    name : None or str
         A unique layer name.
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             size,
             is_scale=True,
             method=0,
             align_corners=False,
+            data_format='channel_last',
             name='downsample2d',
     ):
-        super(DownSampling2d, self).__init__(prev_layer=prev_layer, name=name)
+        # super(DownSampling2d, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.size = size
+        self.is_scale = scale
+        self.method = method
+        self.align_corners = align_corners
+        self.data_format = data_format
 
         logging.info(
             "DownSampling2d %s: is_scale: %s size: %s method: %d, align_corners: %s" %
-            (self.name, is_scale, size, method, align_corners)
+            (self.name, self.is_scale, self.size, self.method, self.align_corners)
         )
 
-        if not isinstance(size, (list, tuple)) and len(size) == 2:
+        if not isinstance(self.size, (list, tuple)) and len(self.size) == 2:
             raise AssertionError()
 
-        if len(self.inputs.get_shape()) == 3:
-            if is_scale:
+    def build(self, inputs):
+        if self.data_format != 'channel_last':
+            raise Exception("DownSampling2d tf.image.resize_images only support channel_last")
+
+        # if len(self.inputs.get_shape()) == 3:
+        elif inputs.shape.ndims == 4:
+            if self.is_scale:
                 size_h = size[0] * tf.shape(self.inputs)[0]
                 size_w = size[1] * tf.shape(self.inputs)[1]
-                size = [size_h, size_w]
+                self.size = [size_h, size_w]
 
-        elif len(self.inputs.get_shape()) == 4:
-            if is_scale:
+        # elif len(self.inputs.get_shape()) == 4:
+        elif inputs.shape.ndims == 4:
+            if self.is_scale:
                 size_h = size[0] * tf.shape(self.inputs)[1]
                 size_w = size[1] * tf.shape(self.inputs)[2]
-                size = [size_h, size_w]
+                self.size = [size_h, size_w]
 
         else:
-            raise Exception("Do not support shape %s" % tf.shape(self.inputs))
+            raise Exception("Donot support shape %s" % str(inputs.shape.as_list()))
 
-        with tf.variable_scope(name):
-            try:
-                self.outputs = tf.image.resize_images(
-                    self.inputs, size=size, method=method, align_corners=align_corners
-                )
-            except Exception:  # for TF 0.10
-                self.outputs = tf.image.resize_images(
-                    self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners
-                )
+    def forward(self, inputs):
+        """
 
-        self._add_layers(self.outputs)
+        Parameters
+        ------------
+        prev_layer : :class:`Layer`
+            Previous layer with 4-D Tensor of the shape (batch, height, width, channels) or 3-D Tensor of the shape (height, width, channels).
+        """
+        outputs = tf.image.resize_images(
+            inputs, size=self.size, method=self.method, align_corners=self.align_corners
+        )
+        return outputs

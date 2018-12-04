@@ -36,7 +36,7 @@ class Conv1d(Layer):
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     data_format : str
-        channels_last 'NWC' (default) or channels_first.
+        channels_last 'channel_last' (default) or channels_first.
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -118,7 +118,7 @@ class Conv2d(Layer):
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     data_format : str
-        "channels_last" (NHWC, default) or "channels_first" (NCHW). 
+        "channels_last" (NHWC, default) or "channels_first" (NCHW).
     W_init : initializer
         The initializer for the the weight matrix.
     b_init : initializer or None
