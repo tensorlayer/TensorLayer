@@ -21,8 +21,6 @@ class Stack(Layer):
 
     Parameters
     ----------
-    layers : list of :class:`Layer`
-        Previous layers to stack.
     axis : int
         Dimension along which to concatenate.
     name : str
@@ -44,23 +42,20 @@ class Stack(Layer):
 
     def __init__(
             self,
-            layers,
             axis=1,
-            name='stack',
+            name=None, #'stack',
     ):
+        # super(Stack, self).__init__(prev_layer=layers, name=name)
+        super().__init__(name)
+        self.axis = axis
+        logging.info("Stack %s: axis: %d" % (self.name, self.axis))
 
-        super(StackLayer, self).__init__(prev_layer=layers, name=name)
+    def build(self, inputs):
+        pass
 
-        logging.info("Stack %s: axis: %d" % (self.name, axis))
-
-        self.outputs = tf.stack(self.inputs, axis=axis, name=name)
-
-        # for i in range(1, len(layers)):
-        #     self._add_layers(list(layers[i].all_layers))
-        #     self._add_params(list(layers[i].all_params))
-        #     self.all_drop.update(dict(layers[i].all_drop))
-
-        self._add_layers(self.outputs)
+    def forward(self, inputs):
+        outputs = tf.stack(inputs, axis=self.axis, name=self.name)
+        return outputs
 
 
 class UnStack(Layer):
@@ -69,8 +64,6 @@ class UnStack(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer
     num : int or None
         The length of the dimension axis. Automatically inferred if None (the default).
     axis : int
@@ -85,23 +78,16 @@ class UnStack(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, num=None, axis=0, name='unstack'):
+    def __init__(self, num=None, axis=0, name=None):#'unstack'):
+        # super(UnStack, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.num = num
+        self.axis = axis
+        logging.info("UnStack %s: num: %s axis: %d" % (self.name, self.num, self.axis))
 
-        super(UnStack, self).__init__(prev_layer=prev_layer, name=name)
+    def build(self, inputs):
+        pass
 
-        outputs = tf.unstack(self.inputs, num=num, axis=axis, name=name)
-
-        logging.info("UnStack %s: num: %s axis: %d, n_outputs: %d" % (self.name, num, axis, len(outputs)))
-
-        net_new = []
-
-        for i, unstacked_dim in enumerate(outputs):
-            layer = Layer(prev_layer=self, name=name + str(i))
-            layer.outputs = unstacked_dim
-
-            net_new.append(layer)
-
-        self.outputs = net_new
-
-        self._add_layers(net_new)
+    def forward(self, inputs):
+        outputs = tf.unstack(inputs, num=self.num, axis=self.axis, name=self.name)
+        return outputs
