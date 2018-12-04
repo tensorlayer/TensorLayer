@@ -81,7 +81,7 @@ class Lambda(Layer):
         self._add_params(variables)
 
 
-class ElementwiseLambdaLayer(Layer):
+class ElementwiseLambda(Layer):
     """A layer that use a custom function to combine multiple :class:`Layer` inputs.
 
     Parameters

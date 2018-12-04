@@ -33,7 +33,7 @@ __all__ = [
 ]
 
 
-class RNNLayer(Layer):
+class RNN(Layer):
     """
     The :class:`RNN` class is a fixed length recurrent layer for implementing vanilla RNN,
     LSTM, GRU and etc.
@@ -941,9 +941,9 @@ def target_mask_op(data, pad_val=0):  # HangSheng: return tensor for mask,if inp
         raise ValueError("target_mask_op: handling data_shape_size %s hasn't been implemented!" % (data_shape_size))
 
 
-class DynamicRNNLayer(Layer):
+class DynamicRNN(Layer):
     """
-    The :class:`DynamicRNNLayer` class is a dynamic recurrent layer, see ``tf.nn.dynamic_rnn``.
+    The :class:`DynamicRNN` class is a dynamic recurrent layer, see ``tf.nn.dynamic_rnn``.
 
     Parameters
     ----------

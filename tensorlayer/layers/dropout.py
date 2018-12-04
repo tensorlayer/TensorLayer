@@ -14,8 +14,10 @@ __all__ = [
     'Dropout',
 ]
 
+
 class Dropout(Layer):
-    def __init__(self, keep, seed, name=None): #"dropout"):
+
+    def __init__(self, keep, seed, name=None):  #"dropout"):
         super().__init__(name)
         self.keep = keep
         self.seed = seed

@@ -11,7 +11,7 @@ from tensorlayer import visualize
 
 from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer.layers.dense import DenseLayer
+from tensorlayer.layers.dense import Dense
 
 from tensorlayer import logging
 
@@ -22,8 +22,8 @@ __all__ = [
 ]
 
 
-class Recon(DenseLayer):
-    """A reconstruction layer for :class:`DenseLayer` to implement AutoEncoder.
+class Recon(Dense):
+    """A reconstruction layer for :class:`Dense` to implement AutoEncoder.
 
     It is often used to pre-train the previous :class:`DenseLayer`
 

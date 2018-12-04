@@ -50,8 +50,7 @@ class PRelu(Layer):
             a_init_args=None, name="PReluLayer"
     ):
 
-        super(PRelu,
-              self).__init__(prev_layer=prev_layer, act=tf.nn.leaky_relu, a_init_args=a_init_args, name=name)
+        super(PRelu, self).__init__(prev_layer=prev_layer, act=tf.nn.leaky_relu, a_init_args=a_init_args, name=name)
 
         if channel_shared:
             w_shape = (1, )
@@ -201,8 +200,7 @@ class PTRelu6(Layer):
             a_init_args=None, name="PTReLU6_layer"
     ):
 
-        super(PTRelu6,
-              self).__init__(prev_layer=prev_layer, act=leaky_twice_relu6, a_init_args=a_init_args, name=name)
+        super(PTRelu6, self).__init__(prev_layer=prev_layer, act=leaky_twice_relu6, a_init_args=a_init_args, name=name)
 
         if channel_shared:
             w_shape = (1, )

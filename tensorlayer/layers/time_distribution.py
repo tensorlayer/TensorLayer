@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
-from tensorlayer.layers.inputs import InputLayer
+from tensorlayer.layers.inputs import Input
 
 from tensorlayer import logging
 
@@ -72,8 +72,7 @@ class TimeDistributed(Layer):
             self.inputs = tf.transpose(tf.stack(self.inputs), [1, 0, 2])
 
         logging.info(
-            "TimeDistributed %s: layer_class: %s layer_args: %s" %
-            (self.name, layer_class.__name__, self.layer_args)
+            "TimeDistributed %s: layer_class: %s layer_args: %s" % (self.name, layer_class.__name__, self.layer_args)
         )
 
         input_shape = self.inputs.get_shape()

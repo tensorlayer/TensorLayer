@@ -67,7 +67,7 @@ class Dense(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name=None, # 'dense',
+            name=None,  # 'dense',
     ):
 
         # super(Dense, self
@@ -93,21 +93,24 @@ class Dense(Layer):
         if self.inputs.shape.ndims != 2:
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
 
-
     def build(self, inputs):
         # self._make_weight(name=self.name, name2="W", shape=(self.n_in, self.n_units), initializer=self.)
         # if self.b_init is not None:
         #     self._make_weight(name=self.name, name2="b", shape=(self.n_units))
         self.W = tf.get_variable(
-            name='W', shape=(self.n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            name='W', shape=(self.n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype,
+            **self.W_init_args
         )
         if self.b_init is not None:
             try:
                 self.b = tf.get_variable(
-                    name='b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    name='b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+                    **self.b_init_args
                 )
             except Exception:  # If initializer is a constant, do not specify shape.
-                self.b = tf.get_variable(name='b', initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
+                self.b = tf.get_variable(
+                    name='b', initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                )
         self.add_weights(self.W, self.b)
 
     def forward(self, inputs, is_train):
