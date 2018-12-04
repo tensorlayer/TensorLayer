@@ -21,8 +21,6 @@ class GaussianNoise(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        Previous layer.
     mean : float
         The mean. Default is 0.
     stddev : float
@@ -46,27 +44,29 @@ class GaussianNoise(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
+            # prev_layer,
             mean=0.0,
             stddev=1.0,
-            is_train=True,
             seed=None,
-            name='gaussian_noise',
+            name=None, #'gaussian_noise',
     ):
-        super(GaussianNoiseLayer, self).__init__(prev_layer=prev_layer, name=name)
+        # super(GaussianNoise, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.mean = mean
+        self.stddev = stddev
+        self.seed = seed
+        logging.info("GaussianNoise %s: mean: %f stddev: %f" % (self.name, self.mean, self.stddev))
 
-        if is_train is False:
-            logging.info("  skip GaussianNoise")
-            self.outputs = prev_layer.outputs
+    def build(self, inputs):
+        pass
 
+    def forward(self, inputs, train):
+        if train is False:
+            outputs = inputs
         else:
-            logging.info("GaussianNoise %s: mean: %f stddev: %f" % (self.name, mean, stddev))
-            with tf.variable_scope(name):
-                # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
-                noise = tf.random_normal(shape=self.inputs.get_shape(), mean=mean, stddev=stddev, seed=seed)
-                self.outputs = self.inputs + noise
-
-            self._add_layers(self.outputs)
+            # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
+            noise = tf.random_normal(shape=inputs.get_shape(), mean=self.mean, stddev=self.stddev, seed=self.seed)
+            outputs = inputs + noise
+        return outputs
