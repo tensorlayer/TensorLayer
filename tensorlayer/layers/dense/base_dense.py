@@ -20,8 +20,6 @@ class Dense(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_units : int
         The number of units of this layer.
     act : activation function
@@ -34,7 +32,7 @@ class Dense(Layer):
         The arguments for the weight matrix initializer.
     b_init_args : dictionary
         The arguments for the bias vector initializer.
-    name : a str
+    name : None or str
         A unique layer name.
 
     Examples
@@ -53,14 +51,12 @@ class Dense(Layer):
 
     Notes
     -----
-    If the layer input has more than two axes, it needs to be flatten by using :class:`FlattenLayer`.
+    If the layer input has more than two axes, it needs to be flatten by using :class:`Flatten`.
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             n_units=100,
             act=None,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
