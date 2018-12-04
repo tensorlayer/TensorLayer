@@ -26,15 +26,13 @@ class PRelu(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     channel_shared : boolean
         If True, single weight is shared by all channels.
     a_init : initializer
         The initializer for initializing the alpha(s).
     a_init_args : dictionary
         The arguments for initializing the alpha(s).
-    name : str
+    name : None or str
         A unique layer name.
 
     References
@@ -44,38 +42,41 @@ class PRelu(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
-            a_init_args=None, name="PReluLayer"
+            self, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            a_init_args=None, name=None # "prelu"
     ):
 
-        super(PRelu, self).__init__(prev_layer=prev_layer, act=tf.nn.leaky_relu, a_init_args=a_init_args, name=name)
+        # super(PRelu, self).__init__(prev_layer=prev_layer, act=tf.nn.leaky_relu, a_init_args=a_init_args, name=name)
+        super().__init__(name)
+        self.channel_shared = channel_shared
+        self.a_init = a_init
+        self.a_init_args = a_init_args
 
-        if channel_shared:
+        logging.info("PRelu %s: channel_shared: %s" % (self.name, self.channel_shared))
+
+    def build(self, inputs):
+        if self.channel_shared:
             w_shape = (1, )
         else:
-            w_shape = int(self.inputs.get_shape()[-1])
+            w_shape = self.inputs.shape.as_list()[-1]
 
-        logging.info("PReluLayer %s: channel_shared: %s" % (self.name, channel_shared))
+        self.alpha_var = tf.get_variable(
+            name=self.name+'/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
+        )
 
-        # with tf.name_scope(name) as scope:
-        with tf.variable_scope(name):
-            alpha_var = tf.get_variable(
-                name='alpha', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
-            )
+        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
+        self.add_weights(self.alpha_var)
 
-            alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
-
-        self.outputs = self._apply_activation(
-            self.inputs, **{
-                'alpha': alpha_var_constrained,
-                'name': "PReLU_activation"
+    def forward(self, inputs):
+        outputs = self._apply_activation(
+            inputs, **{
+                'alpha': self.alpha_var_constrained,
+                'name': "prelu_activation"
             }
         )
 
-        self._add_layers(self.outputs)
-        self._add_params(alpha_var)
+
 
 
 class PRelu6(Layer):
@@ -99,15 +100,13 @@ class PRelu6(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     channel_shared : boolean
         If True, single weight is shared by all channels.
     a_init : initializer
         The initializer for initializing the alpha(s).
     a_init_args : dictionary
         The arguments for initializing the alpha(s).
-    name : str
+    name : None or str
         A unique layer name.
 
     References
@@ -118,38 +117,41 @@ class PRelu6(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
-            a_init_args=None, name="PReLU6_layer"
+            self, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            a_init_args=None, name=None # "prelu6"
     ):
 
-        super(PRelu6, self).__init__(prev_layer=prev_layer, act=leaky_relu6, a_init_args=a_init_args, name=name)
+        # super(PRelu6, self).__init__(prev_layer=prev_layer, act=leaky_relu6, a_init_args=a_init_args, name=name)
+        super().__init__(name)
+        self.channel_shared = channel_shared
+        self.a_init = a_init
+        self.a_init_args = a_init_args
 
-        if channel_shared:
+        logging.info("PRelu6 %s: channel_shared: %s" % (self.name, self.channel_shared))
+
+    def build(self, inputs):
+        if self.channel_shared:
             w_shape = (1, )
         else:
-            w_shape = int(self.inputs.get_shape()[-1])
+            w_shape = self.inputs.shape.as_list()[-1]
 
-        logging.info("PRelu6Layer %s: channel_shared: %s" % (self.name, channel_shared))
-
-        # with tf.name_scope(name) as scope:
-        with tf.variable_scope(name):
-            alpha_var = tf.get_variable(
-                name='alpha', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
-            )
-
-            alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
-
-        self.outputs = self._apply_activation(
-            self.inputs, **{
-                'alpha': alpha_var_constrained,
-                'name': "PReLU6_activation"
-            }
+        self.alpha_var = tf.get_variable(
+            name=self.name+'/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
         )
 
-        self._add_layers(self.outputs)
-        self._add_params(alpha_var)
+        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
+        self.add_weights(self.alpha_var)
+
+    def forward(self, inputs):
+        outputs = self._apply_activation(
+            self.inputs, **{
+                'alpha': self.alpha_var_constrained,
+                'name': "prelu6_activation"
+            }
+        )
+        return outputs
+
 
 
 class PTRelu6(Layer):
@@ -175,15 +177,13 @@ class PTRelu6(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     channel_shared : boolean
         If True, single weight is shared by all channels.
     a_init : initializer
         The initializer for initializing the alpha(s).
     a_init_args : dictionary
         The arguments for initializing the alpha(s).
-    name : str
+    name : None or str
         A unique layer name.
 
     References
@@ -194,45 +194,47 @@ class PTRelu6(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
-            a_init_args=None, name="PTReLU6_layer"
+            self, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            a_init_args=None, name=None # "ptreLU6"
     ):
 
-        super(PTRelu6, self).__init__(prev_layer=prev_layer, act=leaky_twice_relu6, a_init_args=a_init_args, name=name)
+        # super(PTRelu6, self).__init__(prev_layer=prev_layer, act=leaky_twice_relu6, a_init_args=a_init_args, name=name)
+        super().__init__(name)
+        self.channel_shared = channel_shared
+        self.a_init = a_init
+        self.a_init_args = a_init_args
 
-        if channel_shared:
+        logging.info("PTRelu6 %s: channel_shared: %s" % (self.name, self.channel_shared))
+
+    def build(self, inputs):
+        if self.channel_shared:
             w_shape = (1, )
         else:
-            w_shape = int(self.inputs.get_shape()[-1])
+            w_shape = self.inputs.shape.as_list()[-1]
 
-        logging.info("PTRelu6Layer %s: channel_shared: %s" % (self.name, channel_shared))
-
-        # with tf.name_scope(name) as scope:
-        with tf.variable_scope(name):
-
-            # Alpha for outputs lower than zeros
-            alpha_low = tf.get_variable(
-                name='alpha_low', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
-            )
-
-            alpha_low_constrained = tf.nn.sigmoid(alpha_low, name="constraining_alpha_low_in_0_1")
-
-            # Alpha for outputs higher than 6
-            alpha_high = tf.get_variable(
-                name='alpha_high', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
-            )
-
-            alpha_high_constrained = tf.nn.sigmoid(alpha_high, name="constraining_alpha_high_in_0_1")
-
-        self.outputs = self.outputs = self._apply_activation(
-            self.inputs, **{
-                'alpha_low': alpha_low_constrained,
-                'alpha_high': alpha_high_constrained,
-                'name': "PTReLU6_activation"
-            }
+        # Alpha for outputs lower than zeros
+        self.alpha_low = tf.get_variable(
+            name=self.name+'/alpha_low', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
         )
 
-        self._add_layers(self.outputs)
-        self._add_params([alpha_low, alpha_high])
+        self.alpha_low_constrained = tf.nn.sigmoid(self.alpha_low, name="constraining_alpha_low_in_0_1")
+
+        # Alpha for outputs higher than 6
+        self.alpha_high = tf.get_variable(
+            name=self.name+'/alpha_high', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
+        )
+
+        self.alpha_high_constrained = tf.nn.sigmoid(self.alpha_high, name="constraining_alpha_high_in_0_1")
+
+        self.add_weights([self.alpha_low, self.alpha_high])
+
+    def forward(self, inputs):
+        outputs = self._apply_activation(
+            inputs, **{
+                'alpha_low': self.alpha_low_constrained,
+                'alpha_high': self.alpha_high_constrained,
+                'name': "ptrelu6_activation"
+            }
+        )
+        return outputs

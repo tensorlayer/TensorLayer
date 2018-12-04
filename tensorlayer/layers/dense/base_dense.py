@@ -78,8 +78,8 @@ class Dense(Layer):
         self.b_init_args = b_init_args
 
         self.n_in = int(self.inputs.get_shape()[-1])
-        self.inputs_shape = self.inputs.shape.as_list()
-        self.outputs_shape = [self.inputs_shape[0], n_units]
+        # self.inputs_shape = self.inputs.shape.as_list() #
+        # self.outputs_shape = [self.inputs_shape[0], n_units]
 
         logging.info(
             "Dense  %s: %d %s" %
