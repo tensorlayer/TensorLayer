@@ -20,7 +20,7 @@ __all__ = [
 
 
 class QuanDenseLayerWithBN(Layer):
-    """The :class:`QuanDenseLayer` class is a quantized fully connected layer with BN, which weights are 'bitW' bits and the output of the previous layer
+    """The :class:`QuanDenseLayerWithBN` class is a quantized fully connected layer with BN, which weights are 'bitW' bits and the output of the previous layer
     are 'bitA' bits while inferencing.
 
     Parameters

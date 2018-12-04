@@ -14,12 +14,12 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
-    'TernaryDenseLayer',
+    'TernaryDense',
 ]
 
 
-class TernaryDenseLayer(Layer):
-    """The :class:`TernaryDenseLayer` class is a ternary fully connected layer, which weights are either -1 or 1 or 0 while inference.
+class TernaryDense(Layer):
+    """The :class:`TernaryDense` class is a ternary fully connected layer, which weights are either -1 or 1 or 0 while inference.
 
     Note that, the bias vector would not be tenaried.
 
@@ -59,11 +59,11 @@ class TernaryDenseLayer(Layer):
             b_init_args=None,
             name='ternary_dense',
     ):
-        super(TernaryDenseLayer, self
+        super(TernaryDense, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "TernaryDenseLayer  %s: %d %s" %
+            "TernaryDense  %s: %d %s" %
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 

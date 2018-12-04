@@ -15,12 +15,12 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
-    'DorefaDenseLayer',
+    'DorefaDense',
 ]
 
 
-class DorefaDenseLayer(Layer):
-    """The :class:`DorefaDenseLayer` class is a binary fully connected layer, which weights are 'bitW' bits and the output of the previous layer
+class DorefaDense(Layer):
+    """The :class:`DorefaDense` class is a binary fully connected layer, which weights are 'bitW' bits and the output of the previous layer
     are 'bitA' bits while inferencing.
 
     Note that, the bias vector would not be binarized.
@@ -36,7 +36,7 @@ class DorefaDenseLayer(Layer):
     n_units : int
         The number of units of this layer.
     act : activation function
-        The activation function of this layer, usually set to ``tf.act.sign`` or apply :class:`SignLayer` after :class:`BatchNormLayer`.
+        The activation function of this layer, usually set to ``tf.act.sign`` or apply :class:`Sign` after :class:`BatchNorm`.
     use_gemm : boolean
         If True, use gemm instead of ``tf.matmul`` for inferencing. (TODO).
     W_init : initializer
@@ -67,11 +67,11 @@ class DorefaDenseLayer(Layer):
             b_init_args=None,
             name='dorefa_dense',
     ):
-        super(DorefaDenseLayer, self
+        super(DorefaDense, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "DorefaDenseLayer  %s: %d %s" %
+            "DorefaDense  %s: %d %s" %
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 

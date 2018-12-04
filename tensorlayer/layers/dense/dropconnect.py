@@ -11,13 +11,13 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
-    'DropconnectDenseLayer',
+    'DropconnectDense',
 ]
 
 
-class DropconnectDenseLayer(Layer):
+class DropconnectDense(Layer):
     """
-    The :class:`DropconnectDenseLayer` class is :class:`DenseLayer` with DropConnect
+    The :class:`DropconnectDense` class is :class:`Dense` with DropConnect
     behaviour which randomly removes connections between this layer and the previous
     layer according to a keeping probability.
 
@@ -45,12 +45,12 @@ class DropconnectDenseLayer(Layer):
 
     Examples
     --------
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
-    >>> net = tl.layers.DropconnectDenseLayer(net, keep=0.8,
+    >>> net = tl.layers.Input(x, name='input')
+    >>> net = tl.layers.DropconnectDense(net, keep=0.8,
     ...         n_units=800, act=tf.nn.relu, name='relu1')
-    >>> net = tl.layers.DropconnectDenseLayer(net, keep=0.5,
+    >>> net = tl.layers.DropconnectDense(net, keep=0.5,
     ...         n_units=800, act=tf.nn.relu, name='relu2')
-    >>> net = tl.layers.DropconnectDenseLayer(net, keep=0.5,
+    >>> net = tl.layers.DropconnectDense(net, keep=0.5,
     ...         n_units=10, name='output')
 
     References
@@ -70,13 +70,13 @@ class DropconnectDenseLayer(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name='dropconnect_layer',
+            name='dropconnect',
     ):
-        super(DropconnectDenseLayer, self
+        super(DropconnectDense, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "DropconnectDenseLayer %s: %d %s" %
+            "DropconnectDense %s: %d %s" %
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
