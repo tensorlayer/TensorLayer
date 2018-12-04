@@ -16,7 +16,7 @@ from .dense import *
 from .dropout import *
 from .deprecated import *
 from .extend import *
-from .flow_control import *
+# from .flow_control import * # remove for TF 2.0
 from .image_resampling import *
 from .importer import *
 from .inputs import *
