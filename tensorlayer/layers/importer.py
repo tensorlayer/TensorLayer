@@ -13,8 +13,8 @@ from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'SlimNets',
-    'Keras',
-    'Estimator',
+    # 'Keras',
+    # 'Estimator',
 ]
 
 
@@ -81,93 +81,93 @@ class SlimNets(Layer):
         self._add_params(slim_variables)
 
 
-@deprecated(
-    date="2018-06-30", instructions="This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing"
-)
-class Keras(Layer):
-    """A layer to import Keras layers into TensorLayer.
-
-    Example can be found here `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`__.
-
-    Parameters
-    ----------
-    prev_layer : :class:`Layer`
-        Previous layer
-    keras_layer : function
-        A tensor in tensor out function for building model.
-    keras_args : dictionary
-        The arguments for the `keras_layer`.
-    name : str
-        A unique layer name.
-
-    """
-
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-            self,
-            prev_layer,
-            keras_layer,
-            keras_args=None,
-            name='keras_layer',
-    ):
-
-        super(Keras, self).__init__(prev_layer=prev_layer, keras_args=keras_args, name=name)
-
-        logging.info("Keras %s: %s" % (self.name, keras_layer))
-
-        logging.warning("This API will be removed, please use LambdaLayer instead.")
-
-        with tf.variable_scope(name) as vs:
-            self.outputs = keras_layer(self.inputs, **self.keras_args)
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-        self._add_layers(self.outputs)
-        self._add_params(variables)
-
-
-@deprecated(
-    date="2018-06-30", instructions="This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing"
-)
-class Estimator(Layer):
-    """A layer that accepts a user-defined model.
-
-    It is similar with :class:`KerasLayer`, see `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`__.
-
-    Parameters
-    ----------
-    prev_layer : :class:`Layer`
-        Previous layer
-    model_fn : function
-        A tensor in tensor out function for building model.
-    layer_args : dictionary
-        The arguments for the `model_fn`.
-    name : str
-        A unique layer name.
-
-    """
-
-    @deprecated_alias(
-        layer='prev_layer', args='layer_args', end_support_version=1.9
-    )  # TODO remove this line for the 1.9 release
-    def __init__(
-            self,
-            prev_layer,
-            model_fn,
-            layer_args=None,
-            name='estimator',
-    ):
-        super(Estimator, self).__init__(prev_layer=prev_layer, layer_args=layer_args, name=name)
-
-        logging.info("Estimator %s: %s" % (self.name, model_fn))
-
-        if model_fn is None:
-            raise ValueError('model fn is None')
-
-        logging.warning("This API will be removed, please use LambdaLayer instead.")
-
-        with tf.variable_scope(name) as vs:
-            self.outputs = model_fn(self.inputs, **self.layer_args)
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-        self._add_layers(self.outputs)
-        self._add_params(variables)
+# @deprecated(
+#     date="2018-06-30", instructions="This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing"
+# )
+# class Keras(Layer):
+#     """A layer to import Keras layers into TensorLayer.
+#
+#     Example can be found here `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`__.
+#
+#     Parameters
+#     ----------
+#     prev_layer : :class:`Layer`
+#         Previous layer
+#     keras_layer : function
+#         A tensor in tensor out function for building model.
+#     keras_args : dictionary
+#         The arguments for the `keras_layer`.
+#     name : str
+#         A unique layer name.
+#
+#     """
+#
+#     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+#     def __init__(
+#             self,
+#             prev_layer,
+#             keras_layer,
+#             keras_args=None,
+#             name='keras_layer',
+#     ):
+#
+#         super(Keras, self).__init__(prev_layer=prev_layer, keras_args=keras_args, name=name)
+#
+#         logging.info("Keras %s: %s" % (self.name, keras_layer))
+#
+#         logging.warning("This API will be removed, please use LambdaLayer instead.")
+#
+#         with tf.variable_scope(name) as vs:
+#             self.outputs = keras_layer(self.inputs, **self.keras_args)
+#             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+#
+#         self._add_layers(self.outputs)
+#         self._add_params(variables)
+#
+#
+# @deprecated(
+#     date="2018-06-30", instructions="This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing"
+# )
+# class Estimator(Layer):
+#     """A layer that accepts a user-defined model.
+#
+#     It is similar with :class:`KerasLayer`, see `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`__.
+#
+#     Parameters
+#     ----------
+#     prev_layer : :class:`Layer`
+#         Previous layer
+#     model_fn : function
+#         A tensor in tensor out function for building model.
+#     layer_args : dictionary
+#         The arguments for the `model_fn`.
+#     name : str
+#         A unique layer name.
+#
+#     """
+#
+#     @deprecated_alias(
+#         layer='prev_layer', args='layer_args', end_support_version=1.9
+#     )  # TODO remove this line for the 1.9 release
+#     def __init__(
+#             self,
+#             prev_layer,
+#             model_fn,
+#             layer_args=None,
+#             name='estimator',
+#     ):
+#         super(Estimator, self).__init__(prev_layer=prev_layer, layer_args=layer_args, name=name)
+#
+#         logging.info("Estimator %s: %s" % (self.name, model_fn))
+#
+#         if model_fn is None:
+#             raise ValueError('model fn is None')
+#
+#         logging.warning("This API will be removed, please use LambdaLayer instead.")
+#
+#         with tf.variable_scope(name) as vs:
+#             self.outputs = model_fn(self.inputs, **self.layer_args)
+#             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+#
+#         self._add_layers(self.outputs)
+#         self._add_params(variables)
