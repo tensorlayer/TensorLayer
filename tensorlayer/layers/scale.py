@@ -19,8 +19,6 @@ class Scale(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     init_scale : float
         The initial value for the scale factor.
     name : a str
@@ -28,21 +26,19 @@ class Scale(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             init_scale=0.05,
             name='scale',
     ):
-        super(Scale, self).__init__(prev_layer=prev_layer, name=name)
+        # super(Scale, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.init_scale = init_scale
+        logging.info("Scale  %s: init_scale: %f" % (self.name, self.init_scale))
 
-        logging.info("Scale  %s: init_scale: %f" % (self.name, init_scale))
+    def build(self, inputs):
+        self.scale = tf.get_variable("scale", shape=[1], initializer=tf.constant_initializer(value=self.init_scale))
+        self.add_weights(self.scale)
 
-        with tf.variable_scope(name):
-            # scale = tf.get_variable(name='scale_factor', init, trainable=True, )
-            scale = tf.get_variable("scale", shape=[1], initializer=tf.constant_initializer(value=init_scale))
-            self.outputs = self.inputs * scale
-
-        self._add_layers(self.outputs)
-        self._add_params(scale)
+    def forward(self, inputs):
+        outputs = inputs * self.scale
