@@ -34,8 +34,6 @@ class PoolLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     ksize : tuple of int
         The size of the window for each dimension of the input tensor.
         Note that: len(ksize) >= 4.
@@ -56,26 +54,33 @@ class PoolLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             ksize=(1, 2, 2, 1),
             strides=(1, 2, 2, 1),
             padding='SAME',
             pool=tf.nn.max_pool,
-            name='pool_layer',
+            name=None, #'pool_pro',
     ):
-        super(PoolLayer, self).__init__(prev_layer=prev_layer, name=name)
+        # super(PoolLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.ksize = ksize
+        self.strides = strides
+        self.padding = padding
+        self.pool = pool
 
         logging.info(
             "PoolLayer %s: ksize: %s strides: %s padding: %s pool: %s" %
-            (self.name, str(ksize), str(strides), padding, pool.__name__)
+            (self.name, str(self.ksize), str(self.strides), self.padding, pool.__name__)
         )
 
-        self.outputs = pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
+    def build(self, inputs):
+        pass
 
-        self._add_layers(self.outputs)
+    def forward(self, inputs):
+        outputs = self.pool(inputs, ksize=self.ksize, strides=self.strides, padding=self.padding, name=self.name)
+
+        return outputs
 
 
 class MaxPool1d(Layer):
@@ -83,8 +88,7 @@ class MaxPool1d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer with a output rank as 3 [batch, length, channel].
+
     filter_size : tuple of int
         Pooling window size.
     strides : tuple of int
@@ -109,11 +113,18 @@ class MaxPool1d(Layer):
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
-        self.outputs = tf.layers.max_pooling1d(
+    def forward(self, inputs):
+        """
+        prev_layer : :class:`Layer`
+            The previous layer with a output rank as 3 [batch, length, channel].
+        """
+        outputs = tf.layers.max_pooling1d(
             self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
+    # TODO
 
-        self._add_layers(self.outputs)
+    # TODO
+
 
 
 class MeanPool1d(Layer):
