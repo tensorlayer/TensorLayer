@@ -23,13 +23,11 @@ class PadLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     padding : list of lists of 2 ints, or a Tensor of type int32.
         The int32 values to pad.
     mode : str
         "CONSTANT", "REFLECT", or "SYMMETRIC" (case-insensitive).
-    name : str
+    name : None or str
         A unique layer name.
 
     Examples
@@ -37,30 +35,36 @@ class PadLayer(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> images = tf.placeholder(tf.float32, [None, 224, 224, 3])
-    >>> net = tl.layers.InputLayer(images, name='in')
+    >>> net = tl.layers.Input(images, name='in')
     >>> net = tl.layers.PadLayer(net, [[0, 0], [3, 3], [3, 3], [0, 0]], "REFLECT", name='inpad')
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             padding=None,
             mode='CONSTANT',
-            name='pad_layer',
+            name=None, #'pad_layer',
     ):
-        super(PadLayer, self).__init__(prev_layer=prev_layer, name=name)
+        # super(PadLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.padding = padding
+        self.mode = mode
 
-        logging.info("PadLayer   %s: padding: %s mode: %s" % (self.name, list(padding), mode))
+        logging.info("PadLayer   %s: padding: %s mode: %s" % (self.name, list(self.padding), self.mode))
 
-        if padding is None:
+        if self.padding is None:
             raise Exception(
                 "padding should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
             )
 
-        self.outputs = tf.pad(self.inputs, paddings=padding, mode=mode, name=name)
-        self._add_layers(self.outputs)
+    def build(self, inputs):
+        pass
+
+    def forward(self, inputs):
+
+        outputs = tf.pad(inputs, paddings=self.padding, mode=self.mode, name=self.name)
+        return outputs
 
 
 class ZeroPad1d(Layer):
@@ -69,32 +73,32 @@ class ZeroPad1d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     padding : int, or tuple of 2 ints
             - If int, zeros to add at the beginning and end of the padding dimension (axis 1).
             - If tuple of 2 ints, zeros to add at the beginning and at the end of the padding dimension.
-    name : str
+    name : None or str
         A unique layer name.
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             padding,
-            name='zeropad1d',
+            name=None, #'zeropad1d',
     ):
-        super(ZeroPad1d, self).__init__(prev_layer=prev_layer, name=name)
-
+        # super(ZeroPad1d, self).__init__(prev_layer=prev_layer, name=name)
+        self.padding = padding
         logging.info("ZeroPad1d   %s: padding: %s" % (self.name, str(padding)))
 
-        if not isinstance(padding, (int, tuple, dict)):
+        if not isinstance(self.padding, (int, tuple, dict)):
             raise AssertionError()
 
-        self.outputs = tf.keras.layers.ZeroPadding1D(padding=padding, name=name)(self.inputs)  # TODO: Stop using Keras
-        self._add_layers(self.outputs)
+    def build(self, inputs):
+        self.layer = tf.keras.layers.ZeroPadding1D(padding=self.padding, name=self.name)
+
+    def forward(self, inputs):
+        outputs = self.layer(inputs)
+
 
 
 class ZeroPad2d(Layer):
@@ -103,34 +107,34 @@ class ZeroPad2d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     padding : int, or tuple of 2 ints, or tuple of 2 tuples of 2 ints.
             - If int, the same symmetric padding is applied to width and height.
             - If tuple of 2 ints, interpreted as two different symmetric padding values for height and width as ``(symmetric_height_pad, symmetric_width_pad)``.
             - If tuple of 2 tuples of 2 ints, interpreted as ``((top_pad, bottom_pad), (left_pad, right_pad))``.
-    name : str
+    name : None or str
         A unique layer name.
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             padding,
-            name='zeropad2d',
+            name=None, #'zeropad2d',
     ):
-        super(ZeroPad2d, self).__init__(prev_layer=prev_layer, name=name)
+        # super(ZeroPad2d, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
 
-        logging.info("ZeroPad2d   %s: padding: %s" % (self.name, str(padding)))
+        self.padding = padding
+        logging.info("ZeroPad2d   %s: padding: %s" % (self.name, str(self.padding)))
 
-        if not isinstance(padding, (int, tuple)):
+        if not isinstance(self.padding, (int, tuple)):
             raise AssertionError("Padding should be of type `int` or `tuple`")
+    def build(self, inputs):
+        self.layer = tf.keras.layers.ZeroPadding2D(padding=self.padding, name=self.name)
 
-        self.outputs = tf.keras.layers.ZeroPadding2D(padding=padding, name=name)(self.inputs)  # TODO: Stop using Keras
-
-        self._add_layers(self.outputs)
+    def forward(self. inputs):
+        outputs = self.layer(inputs)
+        return outputs
 
 
 class ZeroPad3d(Layer):
@@ -139,30 +143,32 @@ class ZeroPad3d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     padding : int, or tuple of 2 ints, or tuple of 2 tuples of 2 ints.
             - If int, the same symmetric padding is applied to width and height.
             - If tuple of 2 ints, interpreted as two different symmetric padding values for height and width as ``(symmetric_dim1_pad, symmetric_dim2_pad, symmetric_dim3_pad)``.
             - If tuple of 2 tuples of 2 ints, interpreted as ``((left_dim1_pad, right_dim1_pad), (left_dim2_pad, right_dim2_pad), (left_dim3_pad, right_dim3_pad))``.
-    name : str
+    name : None or str
         A unique layer name.
 
     """
 
     def __init__(
             self,
-            prev_layer,
             padding,
-            name='zeropad3d',
+            name=None, #'zeropad3d',
     ):
-        super(ZeroPad3d, self).__init__(prev_layer=prev_layer, name=name)
+        # super(ZeroPad3d, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.padding = padding
 
-        logging.info("ZeroPad3d   %s: padding: %s" % (self.name, str(padding)))
+        logging.info("ZeroPad3d   %s: padding: %s" % (self.name, str(self.padding)))
 
-        if not isinstance(padding, (int, tuple)):
+        if not isinstance(self.padding, (int, tuple)):
             raise AssertionError()
 
-        self.outputs = tf.keras.layers.ZeroPadding3D(padding=padding, name=name)(self.inputs)  # TODO: Stop using Keras
+    def build(self, inputs):
+        self.layer = tf.keras.layers.ZeroPadding3D(padding=self.padding, name=self.name)
 
-        self._add_layers(self.outputs)
+    def forward(self, inputs):
+        outputs = self.layer(inputs)
+        return outputs
