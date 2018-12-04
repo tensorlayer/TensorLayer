@@ -132,7 +132,7 @@ class ZeroPad2d(Layer):
     def build(self, inputs):
         self.layer = tf.keras.layers.ZeroPadding2D(padding=self.padding, name=self.name)
 
-    def forward(self. inputs):
+    def forward(self, inputs):
         outputs = self.layer(inputs)
         return outputs
 

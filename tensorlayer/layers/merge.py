@@ -18,11 +18,9 @@ class Concat(Layer):
 
     Parameters
     ----------
-    prev_layer : list of :class:`Layer`
-        List of layers to concatenate.
     concat_dim : int
         The dimension to concatenate.
-    name : str
+    name : None or str
         A unique layer name.
 
     Examples
@@ -55,18 +53,27 @@ class Concat(Layer):
 
     def __init__(
             self,
-            prev_layer,
             concat_dim=-1,
-            name='concat',
+            name=None, #'concat',
     ):
 
-        super(ConcatLayer, self).__init__(prev_layer=prev_layer, name=name)
-
+        # super(ConcatLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.concat_dim = concat_dim
         logging.info("Concat %s: axis: %d" % (self.name, concat_dim))
 
-        self.outputs = tf.concat(self.inputs, concat_dim, name=name)
+    def build(self, inputs):
+        pass
 
-        self._add_layers(self.outputs)
+    def forward(self, inputs):
+        """
+
+        prev_layer : list of :class:`Layer`
+            List of layers to concatenate.
+        """
+        outputs = tf.concat(inputs, self.concat_dim, name=self.name)
+
+        return outputs
 
 
 class Elementwise(Layer):
@@ -75,14 +82,12 @@ class Elementwise(Layer):
 
     Parameters
     ----------
-    prev_layer : list of :class:`Layer`
-        The list of layers to combine.
     combine_fn : a TensorFlow element-wise combine function
         e.g. AND is ``tf.minimum`` ;  OR is ``tf.maximum`` ; ADD is ``tf.add`` ; MUL is ``tf.multiply`` and so on.
         See `TensorFlow Math API <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html#math>`__ .
     act : activation function
         The activation function of this layer.
-    name : str
+    name : None or str
         A unique layer name.
 
     Examples
@@ -107,27 +112,32 @@ class Elementwise(Layer):
 
     def __init__(
             self,
-            prev_layer,
             combine_fn=tf.minimum,
             act=None,
-            name='elementwise',
+            name=None, #'elementwise',
     ):
 
-        super(Elementwise, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        # super(Elementwise, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        super().__init__(name)
+
         logging.info(
-            "Elementwise %s: size: %s fn: %s" % (self.name, prev_layer[0].outputs.get_shape(), combine_fn.__name__)
+            "Elementwise %s: fn: %s act: %s" % (self.name, combine_fn.__name__, ('No Activation' if self.act is None else self.act.__name__))
         )
 
-        self.outputs = prev_layer[0].outputs
+    def build(self, inputs):
+        pass
 
-        for l in prev_layer[1:]:
-            self.outputs = combine_fn(self.outputs, l.outputs, name=name)
+    def forward(self, inputs):
+        """
 
-        self.outputs = self._apply_activation(self.outputs)
+        Parameters
+        ----------
+        prev_layer : list of :class:`Layer`
+            The list of layers to combine.
+        """
+        outputs = inputs[0]
+        for input in inputs[1:]:
+            outputs = combine_fn(outputs, input, name=self.name)
 
-        # for i in range(1, len(layers)):
-        #     self._add_layers(list(layers[i].all_layers))
-        #     self._add_params(list(layers[i].all_params))
-        #     self.all_drop.update(dict(layers[i].all_drop))
-
-        self._add_layers(self.outputs)
+        outputs = self.act(outputs)
+        return outputs
