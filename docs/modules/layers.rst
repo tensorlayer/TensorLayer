@@ -22,10 +22,6 @@ Print variables
 ^^^^^^^^^^^^^^^^^^
 .. autofunction:: print_all_variables
 
-Initialize variables
-^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: initialize_global_variables
-
 
 Understanding the Basic Layer
 -----------------------------
@@ -33,31 +29,31 @@ Understanding the Basic Layer
 All TensorLayer layers have a number of properties in common:
 
  - ``layer.outputs`` : a Tensor, the outputs of current layer.
- - ``layer.all_params`` : a list of Tensor, all network variables in order.
- - ``layer.all_layers`` : a list of Tensor, all network outputs in order.
+ - ``layer.all_weights`` : a list of Tensor, all network variables in order.
+ - ``layer.all_outputs`` : a list of Tensor, all network outputs in order.
  - ``layer.all_drop`` : a dictionary of {placeholder : float}, all keeping probabilities of noise layers.
 
 All TensorLayer layers have a number of methods in common:
 
- - ``layer.print_params()`` : print network variable information in order (after ``tl.layers.initialize_global_variables(sess)``). alternatively, print all variables by ``tl.layers.print_all_variables()``.
- - ``layer.print_layers()`` : print network layer information in order.
- - ``layer.count_params()`` : print the number of parameters in the network.
+ - ``layer.print_weights()`` : print network variable information in order (after ``sess.run(tf.global_variables_initializer())``). alternatively, print all variables by ``tl.layers.print_all_variables()``.
+ - ``layer.print_outputs()`` : print network layer information in order.
+ - ``layer.count_all_weights()`` : print the number of parameters in the network.
 
 A network starts with the input layer and is followed by layers stacked in order.
 A network is essentially a ``Layer`` class.
-The key properties of a network are ``network.all_params``, ``network.all_layers`` and ``network.all_drop``.
-The ``all_params`` is a list which store pointers to all network parameters in order. For example,
+The key properties of a network are ``network.all_weights``, ``network.all_outputs`` and ``network.all_drop``.
+The ``all_weights`` is a list which store pointers to all network parameters in order. For example,
 the following script define a 3 layer network, then:
 
-``all_params`` = [W1, b1, W2, b2, W_out, b_out]
+``all_weights`` = [W1, b1, W2, b2, W_out, b_out]
 
-To get specified variable information, you can use ``network.all_params[2:3]`` or ``get_variables_with_name()``.
-``all_layers`` is a list which stores the pointers to the outputs of all layers, see the example as follow:
+To get specified variable information, you can use ``network.all_weights[2:3]`` or ``get_variables_with_name()``.
+``all_outputs`` is a list which stores the pointers to the outputs of all layers, see the example as follow:
 
-``all_layers`` = [drop(?,784), relu(?,800), drop(?,800), relu(?,800), drop(?,800)], identity(?,10)]
+``all_outputs`` = [drop(?,784), relu(?,800), drop(?,800), relu(?,800), drop(?,800)], identity(?,10)]
 
 where ``?`` reflects a given batch size. You can print the layer and parameters information by
-using ``network.print_layers()`` and ``network.print_params()``.
+using ``network.print_outputs()`` and ``network.print_weights()``.
 To count the number of parameters in a network, run ``network.count_params()``.
 
 .. code-block:: python
@@ -67,16 +63,13 @@ To count the number of parameters in a network, run ``network.count_params()``.
   x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
   y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 
-  network = tl.layers.InputLayer(x, name='input_layer')
-  network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
-  network = tl.layers.DenseLayer(network, n_units=800,
-                                  act=tf.nn.relu, name='relu1')
-  network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
-  network = tl.layers.DenseLayer(network, n_units=800,
-                                  act=tf.nn.relu, name='relu2')
-  network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
-  network = tl.layers.DenseLayer(network, n_units=10,
-                                  act=None, name='output')
+  network = tl.layers.Input(name='input')(x)
+  network = tl.layers.Dropout(keep=0.8, name='drop1')(network)
+  network = tl.layers.Dense(n_units=800, act=tf.nn.relu, name='relu1')(network)
+  network = tl.layers.Dropout(keep=0.5, name='drop2')(network)
+  network = tl.layers.Dense(n_units=800, act=tf.nn.relu, name='relu2')(network)
+  network = tl.layers.Dropout(keep=0.5, name='drop3')(network)
+  network = tl.layers.Dense(n_units=10, act=None, name='output')(network)
 
 
   y = network.outputs
@@ -84,15 +77,15 @@ To count the number of parameters in a network, run ``network.count_params()``.
 
   cost = tl.cost.cross_entropy(y, y_)
 
-  train_params = network.all_params
+  train_params = network.all_weights
 
   train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999,
                               epsilon=1e-08, use_locking=False).minimize(cost, var_list = train_params)
 
-  tl.layers.initialize_global_variables(sess)
+  sess.run(tf.global_variables_initializer())
 
-  network.print_params()
-  network.print_layers()
+  network.print_weights()
+  network.print_outputs()
 
 In addition, ``network.all_drop`` is a dictionary which stores the keeping probabilities of all
 noise layers. In the above network, they represent the keeping probabilities of dropout layers.
@@ -129,35 +122,24 @@ Layer list
 
    get_variables_with_name
    get_layers_with_name
-   set_name_reuse
    print_all_variables
-   initialize_global_variables
 
    Layer
 
-   InputLayer
-   OneHotInputLayer
-   Word2vecEmbeddingInputlayer
-   EmbeddingInputlayer
-   AverageEmbeddingInputlayer
+   Input
+   OneHotInput
+   Word2vecEmbeddingInput
+   EmbeddingInput
+   AverageEmbeddingInput
 
-   DenseLayer
-   ReconLayer
-   DropoutLayer
-   GaussianNoiseLayer
-   DropconnectDenseLayer
+   Dense
+   Dropout
+   GaussianNoise
+   DropconnectDense
 
-   Conv1dLayer
-   Conv2dLayer
-   DeConv2dLayer
-   Conv3dLayer
-   DeConv3dLayer
-
-   UpSampling2dLayer
-   DownSampling2dLayer
-   AtrousConv1dLayer
-   AtrousConv2dLayer
-   AtrousDeConv2dLayer
+   UpSampling2d
+   DownSampling2d
+   AtrousDeConv2d
 
    Conv1d
    Conv2d
@@ -190,74 +172,72 @@ Layer list
    SubpixelConv1d
    SubpixelConv2d
 
-   SpatialTransformer2dAffineLayer
+   SpatialTransformer2dAffine
    transformer
    batch_transformer
 
-   BatchNormLayer
-   LocalResponseNormLayer
-   InstanceNormLayer
-   LayerNormLayer
-   GroupNormLayer
-   SwitchNormLayer
+   BatchNorm
+   LocalResponseNorm
+   InstanceNorm
+   LayerNorm
+   GroupNorm
+   SwitchNorm
 
    ROIPoolingLayer
 
-   TimeDistributedLayer
+   TimeDistributed
 
-   RNNLayer
-   BiRNNLayer
+   RNN
+   BiRNN
 
    ConvRNNCell
    BasicConvLSTMCell
-   ConvLSTMLayer
+   ConvLSTM
 
    advanced_indexing_op
    retrieve_seq_length_op
    retrieve_seq_length_op2
    retrieve_seq_length_op3
    target_mask_op
-   DynamicRNNLayer
-   BiDynamicRNNLayer
+   DynamicRNN
+   BiDynamicRNN
 
    Seq2Seq
 
-   FlattenLayer
-   ReshapeLayer
-   TransposeLayer
+   Flatten
+   Reshape
+   Transpose
 
-   LambdaLayer
+   Lambda
 
-   ConcatLayer
-   ElementwiseLayer
-   ElementwiseLambdaLayer
+   Concat
+   Elementwise
+   ElementwiseLambda
 
-   ExpandDimsLayer
-   TileLayer
+   ExpandDims
+   Tile
 
-   StackLayer
-   UnStackLayer
+   Stack
+   UnStack
 
-   SlimNetsLayer
+   SlimNets
 
-   SignLayer
-   ScaleLayer
-   BinaryDenseLayer
+   Sign
+   Scale
+   BinaryDense
    BinaryConv2d
-   TernaryDenseLayer
+   TernaryDense
    TernaryConv2d
-   DorefaDenseLayer
+   DorefaDense
    DorefaConv2d
-   QuanDenseLayer
-   QuanDenseLayerWithBN
-   QuanConv2d
-   QuanConv2dWithBN
+   QuantizedDense
+   QuantizedDenseWithBN
+   QuantizedConv2d
+   QuantizedConv2dWithBN
 
-   PReluLayer
-   PRelu6Layer
-   PTRelu6Layer
-
-   MultiplexerLayer
+   PRelu
+   PRelu6
+   PTRelu6
 
    flatten_reshape
    clear_layers_name
@@ -282,14 +262,14 @@ The following is an example implementation of a layer that multiplies its input 
 
 .. code-block:: python
 
-  class DoubleLayer(Layer):
+  class Double(Layer):
       def __init__(
           self,
           layer = None,
           name ='double_layer',
       ):
           # manage layer (fixed)
-          super(DoubleLayer, self).__init__(prev_layer=prev_layer, name=name)
+          super(Double, self).__init__(prev_layer=prev_layer, name=name)
 
           # the input of this layer is the output of previous layer (fixed)
           self.inputs = layer.outputs
@@ -298,7 +278,7 @@ The following is an example implementation of a layer that multiplies its input 
           self.outputs = self.inputs * 2
 
           # update layer (customized)
-          self._add_layers(self.outputs)
+
 
 Your Dense Layer
 ^^^^^^^^^^^^^^^^
@@ -306,11 +286,11 @@ Your Dense Layer
 Before creating your own TensorLayer layer, let's have a look at the Dense layer.
 It creates a weight matrix and a bias vector if not exists, and then implements
 the output expression.
-At the end, for a layer with parameters, we also append the parameters into ``all_params``.
+At the end, for a layer with parameters, we also append the parameters into ``all_weights``.
 
 .. code-block:: python
 
-  class MyDenseLayer(Layer):
+  class MyDense(Layer):
     def __init__(
         self,
         layer = None,
@@ -319,13 +299,13 @@ At the end, for a layer with parameters, we also append the parameters into ``al
         name ='simple_dense',
     ):
         # manage layer (fixed)
-        super(MyDenseLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        super(MyDense, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
         # the input of this layer is the output of previous layer (fixed)
         self.inputs = layer.outputs
 
         # print out info (customized)
-        print("  MyDenseLayer %s: %d, %s" % (self.name, n_units, act))
+        print("  MyDense %s: %d, %s" % (self.name, n_units, act))
 
         # operation (customized)
         n_in = int(self.inputs._shape[-1])
@@ -337,8 +317,8 @@ At the end, for a layer with parameters, we also append the parameters into ``al
             self.outputs = self._apply_activation(tf.matmul(self.inputs, W) + b)
 
         # update layer (customized)
-        self._add_layers(self.outputs)
-        self._add_params([W, b])
+
+
 
 .. -----------------------------------------------------------
 ..                        Basic Layers
@@ -358,23 +338,23 @@ Input Layers
 
 Input Layer
 ^^^^^^^^^^^^^^^^
-.. autoclass:: InputLayer
+.. autoclass:: Input
 
 One-hot Input Layer
 ^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: OneHotInputLayer
+.. autoclass:: OneHotInput
 
 Word2Vec Embedding Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: Word2vecEmbeddingInputlayer
+.. autoclass:: Word2vecEmbeddingInput
 
 Embedding Input Layer
 ^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: EmbeddingInputlayer
+.. autoclass:: EmbeddingInput
 
 Average Embedding Input Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: AverageEmbeddingInputlayer
+.. autoclass:: AverageEmbeddingInput
 
 .. -----------------------------------------------------------
 ..                     Activation Layers
@@ -386,17 +366,17 @@ Activation Layers
 
 PReLU Layer
 ^^^^^^^^^^^^^^^^^
-.. autoclass:: PReluLayer
+.. autoclass:: PRelu
 
 
 PReLU6 Layer
 ^^^^^^^^^^^^^^^^^^
-.. autoclass:: PRelu6Layer
+.. autoclass:: PRelu6
 
 
 PTReLU6 Layer
 ^^^^^^^^^^^^^^^^^^^
-.. autoclass:: PTRelu6Layer
+.. autoclass:: PTRelu6
 
 
 .. -----------------------------------------------------------
@@ -406,12 +386,8 @@ PTReLU6 Layer
 Convolutional Layers
 ---------------------
 
-Simplified Convolutions
+Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-For users don't familiar with TensorFlow, the following simplified functions may easier for you.
-We will provide more simplified functions later, but if you are good at TensorFlow, the professional
-APIs may better for you.
 
 Conv1d
 """""""""""""""""""""
@@ -422,12 +398,8 @@ Conv2d
 .. autoclass:: Conv2d
 
 
-Simplified Deconvolutions
+Deconvolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-For users don't familiar with TensorFlow, the following simplified functions may easier for you.
-We will provide more simplified functions later, but if you are good at TensorFlow, the professional
-APIs may better for you.
 
 DeConv2d
 """""""""""""""""""""
@@ -438,48 +410,12 @@ DeConv3d
 .. autoclass:: DeConv3d
 
 
-Expert Convolutions
+Atrous De-Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Conv1dLayer
+AtrousDeConv2d
 """""""""""""""""""""
-.. autoclass:: Conv1dLayer
-
-Conv2dLayer
-"""""""""""""""""""""
-.. autoclass:: Conv2dLayer
-
-Conv3dLayer
-"""""""""""""""""""""
-.. autoclass:: Conv3dLayer
-
-
-Expert Deconvolutions
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-DeConv2dLayer
-"""""""""""""""""""""
-.. autoclass:: DeConv2dLayer
-
-DeConv3dLayer
-"""""""""""""""""""""
-.. autoclass:: DeConv3dLayer
-
-
-Atrous (De)Convolutions
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-AtrousConv1dLayer
-"""""""""""""""""""""
-.. autofunction:: AtrousConv1dLayer
-
-AtrousConv2dLayer
-"""""""""""""""""""""
-.. autoclass:: AtrousConv2dLayer
-
-AtrousDeConv2dLayer
-"""""""""""""""""""""
-.. autoclass:: AtrousDeConv2dLayer
+.. autoclass:: AtrousDeConv2d
 
 Deformable Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -538,11 +474,11 @@ Dense Layers
 
 Dense Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: DenseLayer
+.. autoclass:: Dense
 
 Drop Connect Dense Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: DropconnectDenseLayer
+.. autoclass:: DropconnectDense
 
 
 .. -----------------------------------------------------------
@@ -551,7 +487,7 @@ Drop Connect Dense Layer
 
 Dropout Layers
 -------------------
-.. autoclass:: DropoutLayer
+.. autoclass:: Dropout
 
 .. -----------------------------------------------------------
 ..                        Extend Layers
@@ -562,12 +498,12 @@ Extend Layers
 
 Expand Dims Layer
 ^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: ExpandDimsLayer
+.. autoclass:: ExpandDims
 
 
 Tile layer
 ^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: TileLayer
+.. autoclass:: Tile
 
 
 .. -----------------------------------------------------------
@@ -582,18 +518,10 @@ TF-Slim Layer
 TF-Slim models can be connected into TensorLayer. All Google's Pre-trained model can be used easily ,
 see `Slim-model <https://github.com/tensorflow/models/tree/master/research/slim>`__.
 
-.. autoclass:: SlimNetsLayer
+.. autoclass:: SlimNets
 
 
 
-
-.. -----------------------------------------------------------
-..                    Flow Control Layer
-.. -----------------------------------------------------------
-
-Flow Control Layer
-----------------------
-.. autoclass:: MultiplexerLayer
 
 .. -----------------------------------------------------------
 ..                  Image Resampling Layers
@@ -604,11 +532,11 @@ Image Resampling Layers
 
 2D UpSampling
 ^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: UpSampling2dLayer
+.. autoclass:: UpSampling2d
 
 2D DownSampling
 ^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: DownSampling2dLayer
+.. autoclass:: DownSampling2d
 
 .. -----------------------------------------------------------
 ..                      Lambda Layer
@@ -619,11 +547,11 @@ Lambda Layers
 
 Lambda Layer
 ^^^^^^^^^^^^^^^^^^^
-.. autoclass:: LambdaLayer
+.. autoclass:: Lambda
 
 ElementWise Lambda Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: ElementwiseLambdaLayer
+.. autoclass:: ElementwiseLambda
 
 .. -----------------------------------------------------------
 ..                      Merge Layer
@@ -634,11 +562,11 @@ Merge Layers
 
 Concat Layer
 ^^^^^^^^^^^^^^^^^^^
-.. autoclass:: ConcatLayer
+.. autoclass:: Concat
 
 ElementWise Layer
 ^^^^^^^^^^^^^^^^^^^
-.. autoclass:: ElementwiseLayer
+.. autoclass:: Elementwise
 
 .. -----------------------------------------------------------
 ..                      Noise Layers
@@ -646,7 +574,7 @@ ElementWise Layer
 
 Noise Layer
 ---------------
-.. autoclass:: GaussianNoiseLayer
+.. autoclass:: GaussianNoise
 
 .. -----------------------------------------------------------
 ..                  Normalization Layers
@@ -660,27 +588,27 @@ you can also apply ``tf.nn.lrn`` on ``network.outputs``.
 
 Batch Normalization
 ^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: BatchNormLayer
+.. autoclass:: BatchNorm
 
 Local Response Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: LocalResponseNormLayer
+.. autoclass:: LocalResponseNorm
 
 Instance Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: InstanceNormLayer
+.. autoclass:: InstanceNorm
 
 Layer Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: LayerNormLayer
+.. autoclass:: LayerNorm
 
 Group Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: GroupNormLayer
+.. autoclass:: GroupNorm
 
 Switch Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: SwitchNormLayer
+.. autoclass:: SwitchNorm
 
 .. -----------------------------------------------------------
 ..                Object Detection Layers
@@ -790,15 +718,15 @@ Note that, these experimental APIs can be changed in the future
 
 Sign
 ^^^^^^^^^^^^^^
-.. autoclass:: SignLayer
+.. autoclass:: Sign
 
 Scale
 ^^^^^^^^^^^^^^
-.. autoclass:: ScaleLayer
+.. autoclass:: Scale
 
 Binary Dense Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: BinaryDenseLayer
+.. autoclass:: BinaryDense
 
 Binary (De)Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -810,9 +738,9 @@ BinaryConv2d
 Ternary Dense Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TernaryDenseLayer
+TernaryDense
 """""""""""""""""""""
-.. autoclass:: TernaryDenseLayer
+.. autoclass:: TernaryDense
 
 Ternary Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -838,24 +766,24 @@ DorefaConv2d
 Quantization Dense Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-QuanDenseLayer
+QuantizedDense
 """""""""""""""""""""
-.. autoclass:: QuanDenseLayer
+.. autoclass:: QuantizedDense
 
-QuanDenseLayerWithBN
+QuantizedDenseWithBN
 """"""""""""""""""""""""""""""""""""
-.. autoclass:: QuanDenseLayerWithBN
+.. autoclass:: QuantizedDenseWithBN
 
 Quantization Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Quantization
 """""""""""""""""""""
-.. autoclass:: QuanConv2d
+.. autoclass:: QuantizedConv2d
 
-QuanConv2dWithBN
+QuantizedConv2dWithBN
 """""""""""""""""""""
-.. autoclass:: QuanConv2dWithBN
+.. autoclass:: QuantizedConv2dWithBN
 
 
 .. -----------------------------------------------------------
@@ -871,11 +799,11 @@ All recurrent layers can implement any type of RNN cell by feeding different cel
 
 RNN layer
 """"""""""""""""""""""""""
-.. autoclass:: RNNLayer
+.. autoclass:: RNN
 
 Bidirectional layer
 """""""""""""""""""""""""""""""""
-.. autoclass:: BiRNNLayer
+.. autoclass:: BiRNN
 
 
 Recurrent Convolution
@@ -891,7 +819,7 @@ Basic Conv LSTM Cell
 
 Conv LSTM layer
 """""""""""""""""""""""""""""""""
-.. autoclass:: ConvLSTMLayer
+.. autoclass:: ConvLSTM
 
 
 Advanced Ops for Dynamic RNN
@@ -925,11 +853,11 @@ Dynamic RNN Layer
 
 RNN Layer
 """"""""""""""""""""""""""
-.. autoclass:: DynamicRNNLayer
+.. autoclass:: DynamicRNN
 
 Bidirectional Layer
 """""""""""""""""""""""""""""""""
-.. autoclass:: BiDynamicRNNLayer
+.. autoclass:: BiDynamicRNN
 
 
 Sequence to Sequence
@@ -949,15 +877,15 @@ Shape Layers
 
 Flatten Layer
 ^^^^^^^^^^^^^^^
-.. autoclass:: FlattenLayer
+.. autoclass:: Flatten
 
 Reshape Layer
 ^^^^^^^^^^^^^^^
-.. autoclass:: ReshapeLayer
+.. autoclass:: Reshape
 
 Transpose Layer
 ^^^^^^^^^^^^^^^^^
-.. autoclass:: TransposeLayer
+.. autoclass:: Transpose
 
 .. -----------------------------------------------------------
 ..               Spatial Transformer Layers
@@ -968,7 +896,7 @@ Spatial Transformer
 
 2D Affine Transformation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: SpatialTransformer2dAffineLayer
+.. autoclass:: SpatialTransformer2dAffine
 
 2D Affine Transformation function
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -987,11 +915,11 @@ Stack Layer
 
 Stack Layer
 ^^^^^^^^^^^^^^
-.. autoclass:: StackLayer
+.. autoclass:: Stack
 
 Unstack Layer
 ^^^^^^^^^^^^^^^
-.. autoclass:: UnStackLayer
+.. autoclass:: UnStack
 
 .. -----------------------------------------------------------
 ..                 Time Distributed Layer
@@ -999,7 +927,7 @@ Unstack Layer
 
 Time Distributed Layer
 ------------------------
-.. autoclass:: TimeDistributedLayer
+.. autoclass:: TimeDistributed
 
 
 .. -----------------------------------------------------------
