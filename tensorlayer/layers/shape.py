@@ -25,9 +25,7 @@ class Flatten(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
-    name : str
+    name : None or str
         A unique layer name.
 
     Examples
@@ -41,18 +39,17 @@ class Flatten(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, name='flatten'):
-        super(Flatten, self).__init__(prev_layer=prev_layer, name=name)
+    def __init__(self, name=None): #'flatten'):
+        # super(Flatten, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        logging.info("Flatten %s:" % (self.name))
 
-        _out = flatten_reshape(self.inputs, name=name)
-        self.n_units = int(_out.get_shape()[-1])
+    def build(self, inputs):
+        pass
 
-        logging.info("Flatten %s: %d" % (self.name, self.n_units))
+    def forward(self, inputs):
+        outputs = flatten_reshape(inputs, name=self.name)
 
-        self.outputs = _out
-
-        self._add_layers(self.outputs)
 
 
 class Reshape(Layer):
@@ -60,8 +57,6 @@ class Reshape(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer
     shape : tuple of int
         The output shape, see ``tf.reshape``.
     name : str
@@ -79,17 +74,19 @@ class Reshape(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, shape, name='reshape'):
-        super(Reshape, self).__init__(prev_layer=prev_layer, name=name)
-
-        if not shape:
+    def __init__(self, shape, name=None):#'reshape'):
+        # super(Reshape, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.shape = shape
+        logging.info("Reshape %s" % (self.name))
+        if not self.shape:
             raise ValueError("Shape list can not be empty")
 
-        self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
-        self._add_layers(self.outputs)
+    def build(self, inputs):
+        pass
 
-        logging.info("Reshape %s: %s" % (self.name, self.outputs.get_shape()))
+    def forward(self, inputs):
+        outputs = tf.reshape(inputs, shape=self.shape, name=self.name)
 
 
 class Transpose(Layer):
@@ -99,8 +96,6 @@ class Transpose(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer
     perm: list of int
         The permutation of the dimensions, similar with ``numpy.transpose``.
     name : str
@@ -117,15 +112,17 @@ class Transpose(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, perm, name='transpose'):
+    def __init__(self, perm, name=None):#'transpose'):
+        # super(Transpose, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.perm = perm
 
-        if perm is None:
+        logging.info("Transpose  %s: perm: %s" % (self.name, self.perm))
+        if self.perm is None:
             raise AssertionError("The `perm` argument cannot be None")
 
-        super(Transpose, self).__init__(prev_layer=prev_layer, name=name)
+    def build(self, inputs):
+        pass
 
-        logging.info("Transpose  %s: perm: %s" % (self.name, perm))
-
-        self.outputs = tf.transpose(self.inputs, perm=perm, name=name)
-        self._add_layers(self.outputs)
+    def forward(self, inputs):
+        outputs = tf.transpose(inputs, perm=self.perm, name=self.name)
