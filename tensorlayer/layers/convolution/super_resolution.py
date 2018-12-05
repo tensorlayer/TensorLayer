@@ -22,8 +22,6 @@ class SubpixelConv2d(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        Previous layer,
     scale : int
         The up-scaling ratio, a wrong setting will lead to dimension size error.
     n_out_channel : int or None
@@ -73,11 +71,13 @@ class SubpixelConv2d(Layer):
     """
 
     # github/Tetrachrome/subpixel  https://github.com/Tetrachrome/subpixel/blob/master/subpixel.py
-    @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, scale=2, n_out_channel=None, act=None, name='subpixel_conv2d'):
+    def __init__(self, scale=2, n_out_channel=None, act=None, name=None):#'subpixel_conv2d'):
 
-        super(SubpixelConv2d, self).__init__(prev_layer=prev_layer, act=act, name=name)
-
+        # super(SubpixelConv2d, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        super().__init__(name)
+        self.scale = scale
+        self.n_out_channel = n_out_channel
+        self.act = act
         if n_out_channel is None:
 
             if int(self.inputs.get_shape()[-1]) / (scale**2) % 1 != 0:
@@ -92,10 +92,18 @@ class SubpixelConv2d(Layer):
             (self.name, scale, n_out_channel, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-        with tf.variable_scope(name):
-            self.outputs = self._apply_activation(self._PS(self.inputs, r=scale, n_out_channels=n_out_channel))
+    def build(self, inputs):
+        pass
 
-        self._add_layers(self.outputs)
+    def forward(self, inputs):
+        """
+        prev_layer : :class:`Layer`
+            Previous layer,
+        """
+        # with tf.variable_scope(name):
+        #     self.outputs = self._apply_activation(self._PS(self.inputs, r=scale, n_out_channels=n_out_channel))
+        outputs = self.act(self._PS(inputs, r=self.scale, n_out_channels=self.n_out_channel))
+        return outputs
 
     @private_method
     def _PS(self, X, r, n_out_channels):
@@ -126,8 +134,6 @@ class SubpixelConv1d(Layer):
 
     Parameters
     ------------
-    net : :class:`Layer`
-        Previous layer with output shape of (batch, width, r).
     scale : int
         The up-scaling ratio, a wrong setting will lead to Dimension size error.
     act : activation function
@@ -151,20 +157,32 @@ class SubpixelConv1d(Layer):
 
     """
 
-    @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, scale=2, act=None, name='subpixel_conv1d'):
+    def __init__(self, scale=2, act=None, name=None):#'subpixel_conv1d'):
 
-        super(SubpixelConv1d, self).__init__(prev_layer=prev_layer, act=act, name=name)
-
+        # super(SubpixelConv1d, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        super().__init__(name)
+        self.scale = scale
+        self.act = act
         logging.info(
             "SubpixelConv1d  %s: scale: %d act: %s" %
             (self.name, scale, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-        with tf.name_scope(name):
-            self.outputs = self._apply_activation(self._PS(self.inputs, r=scale))
+    def build(self, inputs):
+        pass
 
-        self._add_layers(self.outputs)
+    def forward(self, inputs):
+        """
+        Parameters
+        ------------
+        net : :class:`Layer`
+            Previous layer with output shape of (batch, width, r).
+        """
+        # with tf.name_scope(name):
+        #     self.outputs = self._apply_activation(self._PS(self.inputs, r=scale))
+
+        outputs = self.act(self._PS(inputs, r=self.scale))
+        return outputs
 
     @private_method
     def _PS(self, I, r):
