@@ -33,8 +33,6 @@ class LocalResponseNorm(Layer):
 
     Parameters
     -----------
-    prev_layer : :class:`Layer`
-        The previous layer with a 4D output shape.
     depth_radius : int
         Depth radius. 0-D. Half-width of the 1-D normalization window.
     bias : float
@@ -43,32 +41,42 @@ class LocalResponseNorm(Layer):
         A scale factor which is usually positive.
     beta : float
         An exponent.
-    name : str
+    name : None or str
         A unique layer name.
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             depth_radius=None,
             bias=None,
             alpha=None,
             beta=None,
-            name='lrn',
+            name=None, #'lrn',
     ):
-        super(LocalResponseNorm, self).__init__(prev_layer=prev_layer, name=name)
+        # super(LocalResponseNorm, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.depth_radius = depth_radius
+        self.bias = bias
+        self.alpha = alpha
+        self.beta = beta
 
         logging.info(
             "LocalResponseNorm %s: depth_radius: %s, bias: %s, alpha: %s, beta: %s" %
             (self.name, str(depth_radius), str(bias), str(alpha), str(beta))
         )
 
-        with tf.variable_scope(name):
-            self.outputs = tf.nn.lrn(self.inputs, depth_radius=depth_radius, bias=bias, alpha=alpha, beta=beta)
+    def build(self, inputs):
+        pass
 
-        self._add_layers(self.outputs)
+    def forward(self, inputs):
+        """
+        prev_layer : :class:`Layer`
+            The previous layer with a 4D output shape.
+        """
+        outputs = tf.nn.lrn(inputs, depth_radius=self.depth_radius, bias=self.bias, alpha=self.alpha, beta=self.beta)
+        return outputs
+
 
 
 def _to_channel_first_bias(b):
@@ -142,7 +150,7 @@ class BatchNorm(Layer):
         The initializer for initializing gamma, if None, skip gamma.
         When the batch normalization layer is use instead of 'biases', or the next layer is linear, this can be
         disabled since the scaling can be done by the next layer. see `Inception-ResNet-v2 <https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_resnet_v2.py>`__
-    name : str
+    name : None or str
         A unique layer name.
 
     References
@@ -266,52 +274,73 @@ class InstanceNorm(Layer):
 
     Parameters
     -----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     act : activation function.
         The activation function of this layer.
     epsilon : float
         Eplison.
-    name : str
+    name : None or str
         A unique layer name
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             act=None,
             epsilon=1e-5,
-            name='instan_norm',
+            name=None, #'instan_norm',
     ):
-        super(InstanceNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        # super(InstanceNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        super().__init__(name)
+        self.act = act
+        self.epsilon = epsilon
 
         logging.info(
-            "InstanceNormLayer %s: epsilon: %f act: %s" %
+            "InstanceNorm %s: epsilon: %f act: %s" %
             (self.name, epsilon, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-        with tf.variable_scope(name) as vs:
-            mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
+    def build(self, inputs):
+        self.scale = tf.get_variable(
+            self.name+'\scale', [inputs.get_shape()[-1]],
+            initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype
+        )
 
-            scale = tf.get_variable(
-                'scale', [self.inputs.get_shape()[-1]],
-                initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype
-            )
+        self.offset = tf.get_variable(
+            self.name+'\offset', [inputs.get_shape()[-1]], initializer=tf.constant_initializer(0.0),
+            dtype=LayersConfig.tf_dtype
+        )
 
-            offset = tf.get_variable(
-                'offset', [self.inputs.get_shape()[-1]], initializer=tf.constant_initializer(0.0),
-                dtype=LayersConfig.tf_dtype
-            )
+        self.add_weights([self.scale, self.offset])
 
-            self.outputs = scale * tf.div(self.inputs - mean, tf.sqrt(var + epsilon)) + offset
-            self.outputs = self._apply_activation(self.outputs)
+    def forward(self, inputs):
 
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        mean, var = tf.nn.moments(inputs, [1, 2], keep_dims=True)
 
-        self._add_layers(self.outputs)
-        self._add_params(variables)
+        outputs = self.scale * tf.div(inputs - mean, tf.sqrt(var + self.epsilon)) + self.offset
+        outputs = self.act(outputs)
+
+        return outputs
+        
+        # with tf.variable_scope(name) as vs:
+        #     mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
+        #
+        #     scale = tf.get_variable(
+        #         'scale', [self.inputs.get_shape()[-1]],
+        #         initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype
+        #     )
+        #
+        #     offset = tf.get_variable(
+        #         'offset', [self.inputs.get_shape()[-1]], initializer=tf.constant_initializer(0.0),
+        #         dtype=LayersConfig.tf_dtype
+        #     )
+        #
+        #     self.outputs = scale * tf.div(self.inputs - mean, tf.sqrt(var + epsilon)) + offset
+        #     self.outputs = self._apply_activation(self.outputs)
+        #
+        #     variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        #
+        # self._add_layers(self.outputs)
+        # self._add_params(variables)
 
 
 class LayerNorm(Layer):
@@ -374,12 +403,11 @@ class GroupNorm(Layer):
         The activation function of this layer.
     epsilon : float
         Eplison.
-    name : str
+    name : None or str
         A unique layer name
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self, prev_layer, groups=32, epsilon=1e-06, act=None, data_format='channels_last', name='groupnorm'):
         super(GroupNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
