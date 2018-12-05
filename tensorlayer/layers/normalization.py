@@ -408,60 +408,69 @@ class GroupNorm(Layer):
 
     """
 
-    def __init__(self, prev_layer, groups=32, epsilon=1e-06, act=None, data_format='channels_last', name='groupnorm'):
-        super(GroupNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+    def __init__(self, groups=32, epsilon=1e-06, act=None, data_format='channels_last', name=None):#'groupnorm'):
+        # super(GroupNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        super().__init__(name)
+        self.groups = groups
+        self.epsilon = epsilon
+        self.act = act
+        self.data_format = data_format
 
         logging.info(
             "GroupNorm %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-        shape = self.inputs.get_shape().as_list()
+    def build(self, inputs):
+        shape = inputs.get_shape().as_list()
         if len(shape) != 4:
             raise Exception("GroupNorm only supports 2D images.")
 
-        if data_format == 'channels_last':
+        if self.data_format == 'channels_last':
             channels = shape[-1]
-            int_shape = tf.concat(
+            self.int_shape = tf.concat(
                 [tf.shape(self.inputs)[0:3],
-                 tf.convert_to_tensor([groups, channels // groups])], axis=0
+                 tf.convert_to_tensor([self.groups, channels // self.groups])], axis=0
             )
-        elif data_format == 'channels_first':
+        elif self.data_format == 'channels_first':
             channels = shape[1]
-            int_shape = tf.concat(
+            self.int_shape = tf.concat(
                 [
                     tf.shape(self.inputs)[0:1],
-                    tf.convert_to_tensor([groups, channels // groups]),
+                    tf.convert_to_tensor([self.groups, channels // self.groups]),
                     tf.shape(self.inputs)[2:4]
                 ], axis=0
             )
         else:
             raise ValueError("data_format must be 'channels_last' or 'channels_first'.")
 
-        if groups > channels:
-            raise ValueError('Invalid groups %d for %d channels.' % (groups, channels))
-        if channels % groups != 0:
-            raise ValueError('%d channels is not commensurate with %d groups.' % (channels, groups))
+        if self.groups > channels:
+            raise ValueError('Invalid groups %d for %d channels.' % (self.groups, channels))
+        if channels % self.groups != 0:
+            raise ValueError('%d channels is not commensurate with %d groups.' % (channels, self.groups))
 
-        with tf.variable_scope(name):
-            x = tf.reshape(self.inputs, int_shape)
-            if data_format == 'channels_last':
-                mean, var = tf.nn.moments(x, [1, 2, 4], keep_dims=True)
-                gamma = tf.get_variable('gamma', channels, initializer=tf.ones_initializer())
-                beta = tf.get_variable('beta', channels, initializer=tf.zeros_initializer())
-            else:
-                mean, var = tf.nn.moments(x, [2, 3, 4], keep_dims=True)
-                gamma = tf.get_variable('gamma', [1, channels, 1, 1], initializer=tf.ones_initializer())
-                beta = tf.get_variable('beta', [1, channels, 1, 1], initializer=tf.zeros_initializer())
+        if self.data_format == 'channels_last':
+            # mean, var = tf.nn.moments(x, [1, 2, 4], keep_dims=True)
+            self.gamma = tf.get_variable('gamma', channels, initializer=tf.ones_initializer())
+            self.beta = tf.get_variable('beta', channels, initializer=tf.zeros_initializer())
+        else:
+            # mean, var = tf.nn.moments(x, [2, 3, 4], keep_dims=True)
+            self.gamma = tf.get_variable('gamma', [1, channels, 1, 1], initializer=tf.ones_initializer())
+            self.beta = tf.get_variable('beta', [1, channels, 1, 1], initializer=tf.zeros_initializer())
 
-            x = (x - mean) / tf.sqrt(var + epsilon)
+        self.add_weights([self.gamma, self.bata])
 
-            self.outputs = tf.reshape(x, tf.shape(self.inputs)) * gamma + beta
-            self.outputs = self._apply_activation(self.outputs)
+    def forward(self, inputs):
+        x = tf.reshape(inputs, self.int_shape)
+        if self.data_format == 'channels_last':
+            mean, var = tf.nn.moments(x, [1, 2, 4], keep_dims=True)
+        else:
+            mean, var = tf.nn.moments(x, [2, 3, 4], keep_dims=True)
+        x = (x - mean) / tf.sqrt(var + self.epsilon)
 
-        variables = get_collection_trainable(self.name)
-
-        self._add_layers(self.outputs)
-        self._add_params(variables)
+        outputs = tf.reshape(x, tf.shape(inputs)) * self.gamma + self.beta
+        if self.act:
+            outputs = self.act(outputs)
+        return outputs
 
 
 class SwitchNorm(Layer):
