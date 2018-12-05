@@ -140,3 +140,4 @@ class DepthwiseConv2d(Layer):
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
         outputs = self.act(outputs)
+        return outputs

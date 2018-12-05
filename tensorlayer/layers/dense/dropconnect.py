@@ -23,8 +23,6 @@ class DropconnectDense(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     keep : float
         The keeping probability.
         The lower the probability it is, the more activations are set to zero.
@@ -59,10 +57,8 @@ class DropconnectDense(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             keep=0.5,
             n_units=100,
             act=None,
@@ -70,37 +66,46 @@ class DropconnectDense(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name='dropconnect',
+            name=None, # 'dropconnect',
     ):
-        super(DropconnectDense, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        # super(DropconnectDense, self
+        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super().__init__(name)
+        self.keep = keep
+        self.n_units = n_units
+        self.act = act
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args
+        self.b_init_args = b_init_args
 
         logging.info(
             "DropconnectDense %s: %d %s" %
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-        if self.inputs.get_shape().ndims != 2:
+    def build(self, inputs):
+
+        if inputs.shape.ndims != 2:
             raise Exception("The input dimension must be rank 2")
 
-        n_in = int(self.inputs.get_shape()[-1])
-        self.n_units = n_units
+        self.n_in = self.inputs.shape.as_list()[-1]
 
-        with tf.variable_scope(name):
-            W = tf.get_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+        self.W = tf.get_variable(
+                name=self.name+'\W', shape=(self.n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
-            b = tf.get_variable(
-                name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+        if self.b_init:
+            self.b = tf.get_variable(
+                name=self.name+'\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
             )
-            # self.outputs = tf.matmul(self.inputs, W) + b
+            self.add_weights([self.W, self.b])
+        else:
+            self.add_weights(self.W)
 
-            LayersConfig.set_keep[name] = tf.placeholder(tf.float32)
-
-            W_dropcon = tf.nn.dropout(W, LayersConfig.set_keep[name])
-
-            self.outputs = self._apply_activation(tf.matmul(self.inputs, W_dropcon) + b)
-
-        self.all_drop.update({LayersConfig.set_keep[name]: keep})
-        self._add_layers(self.outputs)
-        self._add_params([W, b])
+    def forward(self, inputs):
+        W_dropcon = tf.nn.dropout(self.W, self.keep)
+        outputs = tf.matmul(inputs, W_dropcon)
+        if self.b_init:
+            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+        outputs = self.act(outputs)
+        return outputs
