@@ -25,8 +25,6 @@ class DepthwiseConv2d(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        Previous layer.
     filter_size : tuple of int
         The filter size (height, width).
     stride : tuple of int
@@ -74,11 +72,9 @@ class DepthwiseConv2d(Layer):
     """
 
     # https://zhuanlan.zhihu.com/p/31551004  https://github.com/xiaohu2015/DeepLearning_tutorials/blob/master/CNNs/MobileNet.py
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
-            shape=(3, 3),
+            filter_size=(3, 3),
             strides=(1, 1),
             act=None,
             padding='SAME',
@@ -88,53 +84,59 @@ class DepthwiseConv2d(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name='depthwise_conv2d',
+            name=None, #'depthwise_conv2d',
     ):
-        super(DepthwiseConv2d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        # super(DepthwiseConv2d, self
+        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super().__init__(name)
+        self.filter_size = filter_size
+        self.stride = stride
+        self.act = act
+        self.padding = padding
+        self.dilation_rate = dilation_rate
+        self.depth_multiplier = depth_multiplier
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args
+        self.b_init_args = b_init_args
 
         logging.info(
-            "DepthwiseConv2d %s: shape: %s strides: %s pad: %s act: %s" % (
-                self.name, str(shape), str(strides), padding,
+            "DepthwiseConv2d %s: filter_size: %s strides: %s pad: %s act: %s" % (
+                self.name, str(filter_size), str(strides), padding,
                 self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
-        try:
-            pre_channel = int(prev_layer.outputs.get_shape()[-1])
-        except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
-            pre_channel = 1
+    def build(self, inputs):
+        self.pre_channel = inputs.shape.as_list[-1]
+        if self.pre_channel is None: # if pre_channel is ?, it happens when using Spatial Transformer Net
+            self.pre_channel = 1
             logging.info("[warnings] unknown input channels, set to 1")
 
-        shape = [shape[0], shape[1], pre_channel, depth_multiplier]
+        self.filter_size = [self.filter_size[0], self.filter_size[1], self.pre_channel, self.depth_multiplier]
 
-        if len(strides) == 2:
-            strides = [1, strides[0], strides[1], 1]
+        if len(self.strides) == 2:
+            self.strides = [1, self.strides[0], self.strides[1], 1]
 
-        if len(strides) != 4:
+        if len(self.strides) != 4:
             raise AssertionError("len(strides) should be 4.")
 
-        with tf.variable_scope(name):
+        self.W = tf.get_variable(
+            name=self.name+'\W_depthwise2d', shape=self.filter_size, initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+        )  # [filter_height, filter_width, in_channels, depth_multiplier]
 
-            W = tf.get_variable(
-                name='W_depthwise2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
-            )  # [filter_height, filter_width, in_channels, depth_multiplier]
-
-            self.outputs = tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=dilation_rate)
-
-            if b_init:
-                b = tf.get_variable(
-                    name='b_depthwise2d', shape=(pre_channel * depth_multiplier), initializer=b_init,
-                    dtype=LayersConfig.tf_dtype, **self.b_init_args
-                )
-
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
-
-            self.outputs = self._apply_activation(self.outputs)
-
-        self._add_layers(self.outputs)
-
-        if b_init:
-            self._add_params([W, b])
+        if self.b_init:
+            self.b = tf.get_variable(
+                name=self.name+'\b_depthwise2d', shape=(self.pre_channel * self.depth_multiplier), initializer=self.b_init,
+                dtype=LayersConfig.tf_dtype, **self.b_init_args
+            )
+            self.add_weights([self.W, self.b])
         else:
-            self._add_params(W)
+            self.add_weights(self.W)
+
+    def forward(self, inputs):
+
+        outputs = tf.nn.depthwise_conv2d(inputs, self.W, strides=self.strides, padding=self.padding, rate=self.dilation_rate)
+        if self.b_init:
+            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+        outputs = self.act(outputs)
