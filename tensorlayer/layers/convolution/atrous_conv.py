@@ -192,7 +192,7 @@ class AtrousDeConv2d(Layer):
         The arguments for the weight matrix initializer.
     b_init_args : dictionary
         The arguments for the bias vector initializer.
-    name : str
+    name : None or str
         A unique layer name.
 
     """
