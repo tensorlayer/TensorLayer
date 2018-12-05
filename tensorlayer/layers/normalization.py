@@ -320,7 +320,7 @@ class InstanceNorm(Layer):
         outputs = self.act(outputs)
 
         return outputs
-        
+
         # with tf.variable_scope(name) as vs:
         #     mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
         #
@@ -470,8 +470,6 @@ class SwitchNorm(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     act : activation function
         The activation function of this layer.
     epsilon : float
@@ -493,48 +491,52 @@ class SwitchNorm(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             act=None,
             epsilon=1e-5,
             beta_init=tf.constant_initializer(0.0),
             gamma_init=tf.constant_initializer(1.0),
             moving_mean_init=tf.zeros_initializer(),
-            name='switchnorm',
+            name=None, #'switchnorm',
     ):
-        super(SwitchNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        # super(SwitchNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        super().__init__(name)
+        self.act = act
+        self.epsilon = epsilon
+        self.beta_init = beta_init
+        self.gamma_init = gamma_init
+        self.moving_mean_init = moving_mean_init
 
         logging.info(
             "SwitchNorm %s: epsilon: %f act: %s" %
             (self.name, epsilon, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-        with tf.variable_scope(name):
-            x = self.inputs
-            ch = x.shape[-1]
-            epsilon = 1e-5
+    def build(self, inputs):
+        ch = inputs.shape[-1]
+        self.gamma = tf.get_variable("gamma", [ch], initializer=gamma_init)
+        self.beta = tf.get_variable("beta", [ch], initializer=beta_init)
 
-            batch_mean, batch_var = tf.nn.moments(x, [0, 1, 2], keep_dims=True)
-            ins_mean, ins_var = tf.nn.moments(x, [1, 2], keep_dims=True)
-            layer_mean, layer_var = tf.nn.moments(x, [1, 2, 3], keep_dims=True)
+        self.mean_weight_var = tf.get_variable("mean_weight", [3], initializer=tf.constant_initializer(1.0))
+        self.var_weight_var = tf.get_variable("var_weight", [3], initializer=tf.constant_initializer(1.0))
 
-            gamma = tf.get_variable("gamma", [ch], initializer=gamma_init)
-            beta = tf.get_variable("beta", [ch], initializer=beta_init)
+        self.add_weights([self.gamma, self.beta, self.mean_weight_var, self.var_weight_var])
 
-            mean_weight_var = tf.get_variable("mean_weight", [3], initializer=tf.constant_initializer(1.0))
-            var_weight_var = tf.get_variable("var_weight", [3], initializer=tf.constant_initializer(1.0))
+    def forward(self, inputs):
 
-            mean_weight = tf.nn.softmax(mean_weight_var)
-            var_weight = tf.nn.softmax(var_weight_var)
+        batch_mean, batch_var = tf.nn.moments(inputs, [0, 1, 2], keep_dims=True)
+        ins_mean, ins_var = tf.nn.moments(inputs, [1, 2], keep_dims=True)
+        layer_mean, layer_var = tf.nn.moments(inputs, [1, 2, 3], keep_dims=True)
 
-            mean = mean_weight[0] * batch_mean + mean_weight[1] * ins_mean + mean_weight[2] * layer_mean
-            var = var_weight[0] * batch_var + var_weight[1] * ins_var + var_weight[2] * layer_var
+        mean_weight = tf.nn.softmax(self.mean_weight_var)
+        var_weight = tf.nn.softmax(self.var_weight_var)
 
-            x = (x - mean) / (tf.sqrt(var + epsilon))
-            self.outputs = x * gamma + beta
-            self.outputs = self._apply_activation(self.outputs)
+        mean = mean_weight[0] * batch_mean + mean_weight[1] * ins_mean + mean_weight[2] * layer_mean
+        var = var_weight[0] * batch_var + var_weight[1] * ins_var + var_weight[2] * layer_var
 
-        self._add_layers(self.outputs)
-        self._add_params([beta, gamma, mean_weight_var, var_weight_var])
+        inputs = (inputs - mean) / (tf.sqrt(var + self.epsilon))
+        outputs = inputs * self.gamma + self.beta
+        if self.act:
+            outputs = self.act(outputs)
+        return outputs
