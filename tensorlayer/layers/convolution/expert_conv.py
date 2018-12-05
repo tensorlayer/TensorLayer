@@ -23,20 +23,18 @@ class Conv1dLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     act : activation function
         The activation function of this layer.
     shape : tuple of int
         The shape of the filters: (filter_length, in_channels, out_channels).
     stride : int
         The number of entries by which the filter is moved right at a step.
-    dilation_rate : int
-        Filter up-sampling/input down-sampling rate.
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     data_format : str
         Default is 'NWC' as it is a 1D CNN.
+    dilation_rate : int
+        Filter up-sampling/input down-sampling rate.
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -45,29 +43,38 @@ class Conv1dLayer(Layer):
         The arguments for the weight matrix initializer.
     b_init_args : dictionary
         The arguments for the bias vector initializer.
-    name : str
+    name : None or str
         A unique layer name
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             act=None,
             shape=(5, 1, 5),
             stride=1,
-            dilation_rate=1,
             padding='SAME',
             data_format='NWC',
+            dilation_rate=1,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name='cnn1d',
+            name=None, #'cnn1d',
     ):
-        super(Conv1dLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        # super(Conv1dLayer, self
+        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super().__init__(name)
+        self.act = act,
+        self.shape = shape
+        self.stride = stride
+        self.dilation_rate = dilation_rate
+        self.padding = padding
+        self.data_format = data_format
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args
+        self.b_init_args = b_init_args
 
         logging.info(
             "Conv1dLayer %s: shape: %s stride: %s pad: %s act: %s" % (
@@ -76,32 +83,31 @@ class Conv1dLayer(Layer):
             )
         )
 
-        with tf.variable_scope(name):
-
-            W = tf.get_variable(
-                name='W_conv1d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+    def build(self, inputs):
+        self.W = tf.get_variable(
+                name=self.name+'\W_conv1d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
-
-            self.outputs = tf.nn.convolution(
-                self.inputs, W, strides=(stride, ), padding=padding, dilation_rate=(dilation_rate, )
+        if self.b_init:
+            self.b = tf.get_variable(
+                name=self.name+'\b_conv1d', shape=(self.shape[-1]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+                **self.b_init_args
             )
-
-            if b_init:
-                b = tf.get_variable(
-                    name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
-                    **self.b_init_args
-                )
-
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
-
-            self.outputs = self._apply_activation(self.outputs)
-
-        self._add_layers(self.outputs)
-
-        if b_init:
-            self._add_params([W, b])
+            self.add_weights([self.W, self.b])
         else:
-            self._add_params(W)
+            self.add_weights(self.W)
+
+    def forward(self, inputs):
+
+        outputs = tf.nn.convolution(
+            inputs, self.W, strides=(self.stride, ), padding=self.padding, dilation_rate=(self.dilation_rate, )
+        )
+
+        if self.b_init:
+            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+
+        outputs = self.act(outputs)
+        return outputs
+
 
 
 class Conv2dLayer(Layer):
@@ -110,8 +116,6 @@ class Conv2dLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     act : activation function
         The activation function of this layer.
     shape : tuple of int
@@ -121,6 +125,10 @@ class Conv2dLayer(Layer):
         It must be in the same order as the ``shape`` parameter.
     padding : str
         The padding algorithm type: "SAME" or "VALID".
+    data_format : str
+        "NHWC" or "NCHW", default is "NHWC".
+    dilation_rate : int
+        Filter up-sampling/input down-sampling rate.
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -131,9 +139,7 @@ class Conv2dLayer(Layer):
         The arguments for the bias vector initializer.
     use_cudnn_on_gpu : bool
         Default is False.
-    data_format : str
-        "NHWC" or "NCHW", default is "NHWC".
-    name : str
+    name : None or str
         A unique layer name.
 
     Notes
@@ -146,7 +152,7 @@ class Conv2dLayer(Layer):
     With TensorLayer
 
     >>> x = tf.placeholder(tf.float32, shape=(None, 28, 28, 1))
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
+    >>> net = tl.layers.Input(x, name='input_layer')
     >>> net = tl.layers.Conv2dLayer(net,
     ...                   act = tf.nn.relu,
     ...                   shape = (5, 5, 1, 32),  # 32 features for each 5x5 patch
@@ -155,7 +161,7 @@ class Conv2dLayer(Layer):
     ...                   W_init=tf.truncated_normal_initializer(stddev=5e-2),
     ...                   b_init = tf.constant_initializer(value=0.0),
     ...                   name ='cnn_layer1')     # output: (?, 28, 28, 32)
-    >>> net = tl.layers.PoolLayer(net,
+    >>> net = tl.layers.Pool(net,
     ...                   ksize=(1, 2, 2, 1),
     ...                   strides=(1, 2, 2, 1),
     ...                   padding='SAME',
@@ -172,24 +178,34 @@ class Conv2dLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             act=None,
             shape=(5, 5, 1, 100),
             strides=(1, 1, 1, 1),
             padding='SAME',
+            data_format=None,
+            dilations=[1, 1, 1, 1],
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
             use_cudnn_on_gpu=None,
-            data_format=None,
-            name='cnn_layer',
+            name=None, #'cnn_layer',
     ):
-        super(Conv2dLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        # super(Conv2dLayer, self
+        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super().__init__(name)
+        self.act = act,
+        self.shape = shape
+        self.stride = stride
+        self.dilation_rate = dilation_rate
+        self.padding = padding
+        self.data_format = data_format
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args
+        self.b_init_args = b_init_args
 
         logging.info(
             "Conv2dLayer %s: shape: %s strides: %s pad: %s act: %s" % (
@@ -198,32 +214,33 @@ class Conv2dLayer(Layer):
             )
         )
 
-        with tf.variable_scope(name):
-            W = tf.get_variable(
-                name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+    def build(self, inputs):
+        self.W = tf.get_variable(
+            name=self.name+'\W_conv2d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+        )
+        if self.b_init:
+            self.b = tf.get_variable(
+                name=self.name+'\b_conv2d', shape=(self.shape[-1]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+                **self.b_init_args
             )
-
-            self.outputs = tf.nn.conv2d(
-                self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
-                data_format=data_format
-            )
-
-            if b_init:
-                b = tf.get_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
-                    **self.b_init_args
-                )
-
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
-
-            self.outputs = self._apply_activation(self.outputs)
-
-        self._add_layers(self.outputs)
-
-        if b_init:
-            self._add_params([W, b])
+            self.add_weights([self.W, self.b])
         else:
-            self._add_params(W)
+            self.add_weights(self.W)
+
+    def forward(self, inputs):
+
+        outputs = tf.nn.conv2d(
+            inputs, self.W, strides=self.strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
+            data_format=self.data_format, dilations=self.dilations
+        )
+
+        if self.b_init:
+            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+
+        if self.act:
+            outputs = self.act(outputs)
+        return outputs
+
 
 
 class Conv3dLayer(Layer):
@@ -232,8 +249,8 @@ class Conv3dLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
+    act : activation function
+        The activation function of this layer.
     shape : tuple of int
         Shape of the filters: (filter_depth, filter_height, filter_width, in_channels, out_channels).
     strides : tuple of int
@@ -241,8 +258,10 @@ class Conv3dLayer(Layer):
         Must be in the same order as the shape dimension.
     padding : str
         The padding algorithm type: "SAME" or "VALID".
-    act : activation function
-        The activation function of this layer.
+    data_format : str
+        "NHWC" or "NCDHW", default is "NDHWC".
+    dilation_rate : int
+        Filter up-sampling/input down-sampling rate.
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -251,33 +270,44 @@ class Conv3dLayer(Layer):
         The arguments for the weight matrix initializer.
     b_init_args : dictionary
         The arguments for the bias vector initializer.
-    name : str
+    name : None or str
         A unique layer name.
 
     Examples
     ---------
     >>> x = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
-    >>> n = tl.layers.InputLayer(x, name='in3')
+    >>> n = tl.layers.Input(x, name='in3')
     >>> n = tl.layers.Conv3dLayer(n, shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1))
     [None, 50, 50, 50, 32]
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
+            act=None,
             shape=(2, 2, 2, 3, 32),
             strides=(1, 2, 2, 2, 1),
             padding='SAME',
-            act=None,
+            data_format='NDHWC',
+            dilations=[1, 1, 1, 1, 1],
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name='cnn3d_layer',
+            name=None, #'cnn3d_layer',
     ):
-        super(Conv3dLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        # super(Conv3dLayer, self
+        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super().__init__(name)
+        self.act = act,
+        self.shape = shape
+        self.stride = stride
+        self.padding = padding
+        self.data_format = data_format
+        self.dilation_rate = dilation_rate
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args
+        self.b_init_args = b_init_args
 
         logging.info(
             "Conv3dLayer %s: shape: %s strides: %s pad: %s act: %s" % (
@@ -286,27 +316,26 @@ class Conv3dLayer(Layer):
             )
         )
 
-        with tf.variable_scope(name):
-
-            W = tf.get_variable(
-                name='W_conv3d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+    def build(self, inputs):
+        self.W = tf.get_variable(
+                name=self.name+'\W_conv3d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
 
-            self.outputs = tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None)
-
-            if b_init:
-                b = tf.get_variable(
-                    name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
-                    **self.b_init_args
-                )
-
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
-
-            self.outputs = self._apply_activation(self.outputs)
-
-        self._add_layers(self.outputs)
-
-        if b_init:
-            self._add_params([W, b])
+        if self.b_init:
+            self.b = tf.get_variable(
+                name=self.name+'\b_conv3d', shape=(self.shape[-1]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+                **self.b_init_args
+            )
+            self.add_weights([self.W, self.b])
         else:
-            self._add_params([W])
+            self.add_weights(self.W)
+    def forward(self, inputs):
+
+        outputs = tf.nn.conv3d(inputs, self.W, strides=self.strides, padding=self.padding, name=self.name)
+
+        if self.b_init:
+            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+
+        if self.act:
+            outputs = self.act(outputs)
+        return outputs
