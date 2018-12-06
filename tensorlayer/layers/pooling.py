@@ -45,7 +45,7 @@ class PoolLayer(Layer):
     pool : pooling function
         One of ``tf.nn.max_pool``, ``tf.nn.avg_pool``, ``tf.nn.max_pool3d`` and ``f.nn.avg_pool3d``.
         See `TensorFlow pooling APIs <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#pooling>`__
-    name : str
+    name : None or str
         A unique layer name.
 
     Examples
@@ -97,33 +97,39 @@ class MaxPool1d(Layer):
         The padding method: 'valid' or 'same'.
     data_format : str
         One of channels_last (default, [batch, length, channel]) or channels_first. The ordering of the dimensions in the inputs.
-    name : str
+    name : None or str
         A unique layer name.
 
     """
 
-    @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, filter_size=3, strides=2, padding='valid', data_format='channels_last', name='maxpool1d'
+            self, filter_size=3, strides=2, padding='valid', data_format='channels_last', name=None, #'maxpool1d'
     ):
-        super(MaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
+        # super(MaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.filter_size = filter_size
+        self.strides = strides
+        self.padding = padding
+        self.data_format = data_format
 
         logging.info(
             "MaxPool1d %s: filter_size: %s strides: %s padding: %s" %
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
+    def build(self, inputs):
+        pass
+
     def forward(self, inputs):
         """
         prev_layer : :class:`Layer`
             The previous layer with a output rank as 3 [batch, length, channel].
         """
+        # TODO : tf.layers will be removed in TF 2.0
         outputs = tf.layers.max_pooling1d(
-            self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
+            inputs, self.filter_size, self.strides, padding=self.padding, data_format=self.data_format, name=self.name
         )
-    # TODO
-
-    # TODO
+        return outputs
 
 
 
@@ -177,8 +183,6 @@ class MaxPool2d(Layer):
 
     Parameters
     -----------
-    prev_layer : :class:`Layer`
-        The previous layer with a output rank as 4.
     filter_size : tuple of int
         (height, width) for filter size.
     strides : tuple of int
@@ -187,32 +191,48 @@ class MaxPool2d(Layer):
         The padding method: 'valid' or 'same'.
     data_format : str
         One of channels_last (default, [batch, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
-    name : str
+    name : None or str
         A unique layer name.
 
     """
 
-    @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', data_format='channels_last',
-            name='maxpool2d'
+            self, filter_size=(3, 3), strides=(2, 2), padding='SAME', data_format='channels_last',
+            name=None, #'maxpool2d'
     ):
         if strides is None:
             strides = filter_size
 
-        super(MaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
+        # super(MaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.filter_size=filter_size
+        self.strides=strides
+        self.padding=padding
+        self.data_format=data_format
 
         logging.info(
             "MaxPool2d %s: filter_size: %s strides: %s padding: %s" %
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
-        self.outputs = tf.layers.max_pooling2d(
-            self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
-        )
+    def build(self, inputs):
+        self.strides=[1, self.strides[0], self.strides[1], 1]
 
-        self._add_layers(self.outputs)
-
+    def forward(self, inputs):
+        """
+        prev_layer : :class:`Layer`
+            The previous layer with a output rank as 4.
+        """
+        # outputs = tf.layers.max_pooling2d(
+        #     inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
+        # )
+        outputs = tf.nn.max_pool(inputs, ksize=self.strides, strides=self.strides, padding=self.padding, name=self.name)
+        # net = PoolLayer(net, ksize=[1, filter_size[0], filter_size[1], 1],
+        #         strides=[1, strides[0], strides[1], 1],
+        #         padding=padding,
+        #         pool = tf.nn.max_pool,
+        #         name = name)
+        return outputs
 
 class MeanPool2d(Layer):
     """Mean pooling for 2D image [batch, height, width, channel].
