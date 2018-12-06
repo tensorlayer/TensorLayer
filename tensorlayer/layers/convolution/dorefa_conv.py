@@ -25,8 +25,6 @@ class DorefaConv2d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     bitW : int
         The bits of this layer's parameter
     bitA : int
@@ -56,30 +54,13 @@ class DorefaConv2d(Layer):
         Default is False.
     data_format : str
         "NHWC" or "NCHW", default is "NHWC".
-    name : str
+    name : None or str
         A unique layer name.
-
-    Examples
-    ---------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder(tf.float32, [None, 256, 256, 3])
-    >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.DorefaConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
-    >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
-    >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=True, name='bn1')
-    ...
-    >>> net = tl.layers.SignLayer(net)
-    >>> net = tl.layers.DorefaConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='bcnn2')
-    >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
-    >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=True, name='bn2')
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             bitW=1,
             bitA=3,
             n_filter=32,
@@ -87,77 +68,81 @@ class DorefaConv2d(Layer):
             strides=(1, 1),
             act=None,
             padding='SAME',
+            data_format=None,
             use_gemm=False,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
             use_cudnn_on_gpu=None,
-            data_format=None,
-            # act=None,
-            # shape=(5, 5, 1, 100),
-            # strides=(1, 1, 1, 1),
-            # padding='SAME',
-            # W_init=tf.truncated_normal_initializer(stddev=0.02),
-            # b_init=tf.constant_initializer(value=0.0),
-            # W_init_args=None,
-            # b_init_args=None,
-            # use_cudnn_on_gpu=None,
-            # data_format=None,
-            name='dorefa_cnn2d',
+            name=None, #'dorefa_cnn2d',
     ):
-        super(DorefaConv2d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
-
+        # super(DorefaConv2d, self
+        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super().__init__(name)
+        self.bitW=bitW
+        self.bitA=bitA
+        self.n_filter=n_filter
+        self.filter_size=filter_size
+        self.strides=strides
+        self.act=act
+        self.padding=padding
+        self.data_format=data_format
+        self.use_gemm=use_gemm
+        self.W_init=W_init
+        self.b_init=b_init
+        self.W_init_args = W_init_args
+        self.b_init_args =b_init_args
+        self.use_cudnn_on_gpu = use_cudnn_on_gpu
         logging.info(
             "DorefaConv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
                 self.name, n_filter, str(filter_size), str(strides), padding,
                 self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
+    def build(self, inputs):
 
-        self.inputs = quantize_active(cabs(self.inputs), bitA)  # Do not remove
-
-        if use_gemm:
+        if self.use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
-        if len(strides) != 2:
+        if len(self.strides) != 2:
             raise ValueError("len(strides) should be 2.")
 
         try:
-            pre_channel = int(prev_layer.outputs.get_shape()[-1])
+            self.pre_channel = int(inputs.get_shape()[-1])
         except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
-            pre_channel = 1
+            self.pre_channel = 1
             logging.warning("[warnings] unknow input channels, set to 1")
 
-        shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
-        strides = (1, strides[0], strides[1], 1)
+        self.shape = (self.filter_size[0], self.filter_size[1], self.pre_channel, self.n_filter)
+        self.strides = (1, self.strides[0], self.strides[1], 1)
 
-        with tf.variable_scope(name):
-            W = tf.get_variable(
-                name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+        self.W = tf.get_variable(
+                name=self.name+'\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
-
-            W = quantize_weight(W, bitW)
-
-            self.outputs = tf.nn.conv2d(
-                self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
-                data_format=data_format
+        if self.b_init:
+            self.b = tf.get_variable(
+                name=self.name+'\bias', shape=(self.shape[-1]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+                **self.b_init_args
             )
-
-            if b_init:
-                b = tf.get_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
-                    **self.b_init_args
-                )
-
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
-
-            self.outputs = self._apply_activation(self.outputs)
-
-        self._add_layers(self.outputs)
-
-        if b_init:
-            self._add_params([W, b])
+            self.add_weights([self.W, self.b])
         else:
-            self._add_params(W)
+            self.add_weights(self.W)
+
+    def forward(self, inputs):
+
+        inputs = quantize_active(cabs(inputs), self.bitA)  # Do not remove
+
+        W_ = quantize_weight(self.W, self.bitW)
+
+        outputs = tf.nn.conv2d(
+            self.inputs, W_, strides=self.strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
+            data_format=self.data_format
+        )
+
+        if self.b_init:
+            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+        if self.act:
+        outputs = self.act(outputs)
+
+        return outputs
