@@ -351,36 +351,41 @@ class GlobalMaxPool1d(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        The previous layer with a output rank as 3 [batch, length, channel].
     data_format : str
         One of channels_last (default, [batch, length, channel]) or channels_first. The ordering of the dimensions in the inputs.
-    name : str
+    name : None or str
         A unique layer name.
 
     Examples
     ---------
     >>> x = tf.placeholder("float32", [None, 100, 30])
-    >>> n = InputLayer(x, name='in')
+    >>> n = Input(x, name='in')
     >>> n = GlobalMaxPool1d(n)
     [None, 30]
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, data_format="channels_last", name='globalmaxpool1d'):
-        super(GlobalMaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
+    def __init__(self, data_format="channels_last", name=None):#'globalmaxpool1d'):
+        # super(GlobalMaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info("GlobalMaxPool1d %s" % self.name)
 
-        if data_format == 'channels_last':
-            self.outputs = tf.reduce_max(self.inputs, axis=1, name=name)
-        elif data_format == 'channels_first':
-            self.outputs = tf.reduce_max(self.inputs, axis=2, name=name)
+    def build(self, inputs):
+        pass
+
+    def forward(self, inputs):
+        """
+        prev_layer : :class:`Layer`
+            The previous layer with a output rank as 3 [batch, length, channel] or [batch, channel, length].
+        """
+        if self.data_format == 'channels_last':
+            outputs = tf.reduce_max(inputs, axis=1, name=self.name)
+        elif self.data_format == 'channels_first':
+            self.outputs = tf.reduce_max(self.inputs, axis=2, name=self.name)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
             )
-        self._add_layers(self.outputs)
+        return outputs
 
 
 class GlobalMeanPool1d(Layer):
@@ -388,8 +393,6 @@ class GlobalMeanPool1d(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        The previous layer with a output rank as 3 [batch, length, channel].
     data_format : str
         One of channels_last (default, [batch, length, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : None or str
@@ -415,6 +418,10 @@ class GlobalMeanPool1d(Layer):
         pass
 
     def forward(self, inputs):
+        """
+        prev_layer : :class:`Layer`
+            The previous layer with a output rank as 3 [batch, length, channel] or [batch, channel, length].
+        """
         if self.data_format == 'channels_last':
             outputs = tf.reduce_mean(inputs, axis=1, name=self.name)
         elif self.data_format == 'channels_first':
@@ -458,7 +465,7 @@ class GlobalMaxPool2d(Layer):
     def forward(self, inputs):
         """
         prev_layer : :class:`Layer`
-            The previous layer with a output rank as 4 [batch, height, width, channel].
+            The previous layer with a output rank as 4 [batch, height, width, channel] or [batch, channel, height, width].
         """
         if self.data_format == 'channels_last':
             outputs = tf.reduce_max(inputs, axis=[1, 2], name=self.name)
@@ -502,7 +509,7 @@ class GlobalMeanPool2d(Layer):
     def forward(self, inputs):
         """
         prev_layer : :class:`Layer`
-            The previous layer with a output rank as 4 [batch, height, width, channel].
+            The previous layer with a output rank as 4 [batch, height, width, channel] or [batch, channel, height, width].
         """
         if self.data_format == 'channels_last':
             outputs = tf.reduce_mean(inputs, axis=[1, 2], name=self.name)
@@ -547,7 +554,7 @@ class GlobalMaxPool3d(Layer):
     def forward(self, inputs):
         """
         prev_layer : :class:`Layer`
-            The previous layer with a output rank as 5 [batch, depth, height, width, channel].
+            The previous layer with a output rank as 5 [batch, depth, height, width, channel] or [batch, channel, depth, height, width].
         """
         if self.data_format == 'channels_last':
             outputs = tf.reduce_max(inputs, axis=[1, 2, 3], name=self.name)
@@ -592,7 +599,7 @@ class GlobalMeanPool3d(Layer):
     def forward(self, inputs):
         """
         prev_layer : :class:`Layer`
-            The previous layer with a output rank as 5 [batch, depth, height, width, channel].
+            The previous layer with a output rank as 5 [batch, depth, height, width, channel] or [batch, channel, depth, height, width].
         """
         if self.data_format == 'channels_last':
             outputs = tf.reduce_mean(inputs, axis=[1, 2, 3], name=self.name)
