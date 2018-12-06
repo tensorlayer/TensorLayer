@@ -561,7 +561,7 @@ class GlobalMeanPool3d(Layer):
 
     def __init__(self, data_format='channels_last', name=None):#'globalmeanpool3d'):
         # super(GlobalMeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
-        super().__init__(name)
+        super().__init__(name) 
         self.data_format = data_format
         logging.info("GlobalMeanPool3d %s" % self.name)
 
