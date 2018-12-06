@@ -466,8 +466,6 @@ class GlobalMeanPool2d(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        The previous layer with a output rank as 4 [batch, height, width, channel].
     data_format : str
         One of channels_last (default, [batch, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : str
@@ -478,26 +476,33 @@ class GlobalMeanPool2d(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder("float32", [None, 100, 100, 30])
-    >>> n = tl.layers.InputLayer(x, name='in2')
+    >>> n = tl.layers.Input(x, name='in2')
     >>> n = tl.layers.GlobalMeanPool2d(n)
     [None, 30]
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, data_format='channels_last', name='globalmeanpool2d'):
-        super(GlobalMeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
-
+    def __init__(self, data_format='channels_last', name=None):#'globalmeanpool2d'):
+        # super(GlobalMeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
         logging.info("GlobalMeanPool2d %s" % self.name)
 
-        if data_format == 'channels_last':
-            self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2], name=name)
-        elif data_format == 'channels_first':
-            self.outputs = tf.reduce_mean(self.inputs, axis=[2, 3], name=name)
+    def build(self, inputs):
+        pass
+
+    def forward(self, inputs):
+        """
+        prev_layer : :class:`Layer`
+            The previous layer with a output rank as 4 [batch, height, width, channel].
+        """
+        if self.data_format == 'channels_last':
+            outputs = tf.reduce_mean(inputs, axis=[1, 2], name=self.name)
+        elif self.data_format == 'channels_first':
+            outputs = tf.reduce_mean(inputs, axis=[2, 3], name=self.name)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
             )
-        self._add_layers(self.outputs)
+        return outputs
 
 
 class GlobalMaxPool3d(Layer):
