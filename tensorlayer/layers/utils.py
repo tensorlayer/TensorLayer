@@ -12,7 +12,6 @@ from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'cabs',
-    'clear_layers_name',
     'compute_alpha',
     'flatten_reshape',
     'get_collection_trainable',
@@ -37,11 +36,6 @@ __all__ = [
 
 def cabs(x):
     return tf.minimum(1.0, tf.abs(x), name='cabs')
-
-
-@deprecated(date="2018-06-30", instructions="TensorLayer relies on TensorFlow to check naming")
-def clear_layers_name():
-    logging.warning('this method is DEPRECATED and has no effect, please remove it from your code.')
 
 
 def compute_alpha(x):
