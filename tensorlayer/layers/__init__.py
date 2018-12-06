@@ -28,7 +28,7 @@ from .object_detection import *
 from .padding import *
 from .pooling import *
 from .quantize import *
-from .reconstruction import *
+# from .reconstruction import * # remove for TF 2.0
 from .recurrent import *
 from .scale import *
 from .shape import *
