@@ -23,7 +23,7 @@ class DeConv2dLayer(Layer):
 
     Parameters
     ----------
-    act : activation function
+    act : activation function or None
         The activation function of this layer.
     shape : tuple of int
         Shape of the filters: (height, width, output_channels, in_channels).
@@ -152,9 +152,7 @@ class DeConv3dLayer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
-    act : activation function
+    act : activation function or None
         The activation function of this layer.
     shape : tuple of int
         The shape of the filters: (depth, height, width, output_channels, in_channels).
@@ -173,15 +171,13 @@ class DeConv3dLayer(Layer):
         The arguments for the weight matrix initializer.
     b_init_args : dictionary
         The arguments for the bias vector initializer.
-    name : str
+    name : None or str
         A unique layer name.
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             act=None,
             shape=(2, 2, 2, 128, 256),
             output_shape=(1, 12, 32, 32, 128),
@@ -191,41 +187,41 @@ class DeConv3dLayer(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name='decnn3d_layer',
+            name=None, #'decnn3d_layer',
     ):
-        super(DeConv3dLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
-
+        # super(DeConv3dLayer, self
+             # ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super().__init__(name)
+        self.act=act
+        self.shape=shape
+        self.output_shape=output_shape
+        self.strides=strides
+        self.padding=padding
+        self.W_init=W_init
+        self.b_init=b_init
+        self.W_init_args=W_init_args
+        self.b_init_args=b_init_args
         logging.info(
             "DeConv3dLayer %s: shape: %s out_shape: %s strides: %s pad: %s act: %s" % (
                 self.name, str(shape), str(output_shape), str(strides), padding,
                 self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
-
-        with tf.variable_scope(name):
-
-            W = tf.get_variable(
-                name='W_deconv3d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+    def build(self, inputs):
+        self.W = tf.get_variable(
+            name=self.name+'\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+        )
+        if self.b_init:
+            self.b = tf.get_variable(
+                name=self.name+'\kernel', shape=(self.shape[-2]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+                **self.b_init_args
             )
-
-            self.outputs = tf.nn.conv3d_transpose(
-                self.inputs, W, output_shape=output_shape, strides=strides, padding=padding
-            )
-
-            if b_init:
-                b = tf.get_variable(
-                    name='b_deconv3d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype,
-                    **self.b_init_args
-                )
-
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
-
-            self.outputs = self._apply_activation(self.outputs)
-
-        self._add_layers(self.outputs)
-
-        if b_init:
-            self._add_params([W, b])
-        else:
-            self._add_params([W])
+    def forward(self, inputs):
+        outputs = tf.nn.conv3d_transpose(
+            inputs, self.W, output_shape=self.output_shape, strides=self.strides, padding=self.padding
+        )
+        if self.b_init:
+            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+        if self.act:
+            outputs = self.act(outputs)
+        return outputs
