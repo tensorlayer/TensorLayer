@@ -427,11 +427,9 @@ class GlobalMaxPool2d(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        The previous layer with a output rank as 4 [batch, height, width, channel].
     data_format : str
         One of channels_last (default, [batch, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
-    name : str
+    name : None or str
         A unique layer name.
 
     Examples
@@ -439,26 +437,34 @@ class GlobalMaxPool2d(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> x = tf.placeholder("float32", [None, 100, 100, 30])
-    >>> n = tl.layers.InputLayer(x, name='in2')
+    >>> n = tl.layers.Input(x, name='in2')
     >>> n = tl.layers.GlobalMaxPool2d(n)
     [None, 30]
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, data_format='channels_last', name='globalmaxpool2d'):
-        super(GlobalMaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
-
+    def __init__(self, data_format='channels_last', name='globalmaxpool2d'):
+        # super(GlobalMaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.data_format = data_format
         logging.info("GlobalMaxPool2d %s" % self.name)
 
-        if data_format == 'channels_last':
-            self.outputs = tf.reduce_max(self.inputs, axis=[1, 2], name=name)
-        elif data_format == 'channels_first':
-            self.outputs = tf.reduce_max(self.inputs, axis=[2, 3], name=name)
+    def build(self, inputs):
+        pass
+
+    def forward(self, inputs):
+        """
+        prev_layer : :class:`Layer`
+            The previous layer with a output rank as 4 [batch, height, width, channel].
+        """
+        if self.data_format == 'channels_last':
+            outputs = tf.reduce_max(inputs, axis=[1, 2], name=self.name)
+        elif self.data_format == 'channels_first':
+            outputs = tf.reduce_max(inputs, axis=[2, 3], name=self.name)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
             )
-        self._add_layers(self.outputs)
+        return outputs
 
 
 class GlobalMeanPool2d(Layer):
@@ -468,7 +474,7 @@ class GlobalMeanPool2d(Layer):
     ------------
     data_format : str
         One of channels_last (default, [batch, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
-    name : str
+    name : None or str
         A unique layer name.
 
     Examples
@@ -512,7 +518,7 @@ class GlobalMaxPool3d(Layer):
     ------------
     data_format : str
         One of channels_last (default, [batch, depth, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
-    name : str
+    name : None or str
         A unique layer name.
 
     Examples
