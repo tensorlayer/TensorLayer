@@ -188,7 +188,7 @@ def get_variables_with_name(name=None, train_only=True, verbose=False):
     return d_vars
 
 
-@deprecated(date="2018-09-30", instructions="This API is deprecated in favor of `tf.global_variables_initializer`")
+@deprecated(date="2018-09-30", instructions="This API is deprecated in favor of `sess.run(tf.global_variables_initializer())`")
 def initialize_global_variables(sess):
     """Initialize the global variables of TensorFlow.
 
