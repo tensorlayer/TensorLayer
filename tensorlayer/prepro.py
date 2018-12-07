@@ -416,8 +416,8 @@ def affine_zoom_matrix(zoom_range=(0.8, 1.1)):
     else:
         raise Exception("zoom_range: float or tuple of 2 floats")
 
-    zoom_matrix = np.array([[scale, 0, 0], \
-                            [0, scale, 0], \
+    zoom_matrix = np.array([[1/scale, 0, 0], \
+                            [0, 1/scale, 0], \
                             [0, 0, 1]])
     return zoom_matrix
 
