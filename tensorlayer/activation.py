@@ -45,7 +45,7 @@ def ramp(x, v_min=0, v_max=1, name=None):
     return tf.clip_by_value(x, clip_value_min=v_min, clip_value_max=v_max, name=name)
 
 
-@deprecated(date="2018-09-30", instructions="This API is deprecated. Please use as `tf.nn.leaky_relu`")
+# @deprecated(date="2018-09-30", instructions="This API is deprecated. Please use as `tf.nn.leaky_relu`")
 def leaky_relu(x, alpha=0.2, name="leaky_relu"):
     """leaky_relu can be used through its shortcut: :func:`tl.act.lrelu`.
 

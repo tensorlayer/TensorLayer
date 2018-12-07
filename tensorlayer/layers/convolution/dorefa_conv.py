@@ -136,7 +136,7 @@ class DorefaConv2d(Layer):
         W_ = quantize_weight(self.W, self.bitW)
 
         outputs = tf.nn.conv2d(
-            self.inputs, W_, strides=self.strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
+            inputs, W_, strides=self.strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
             data_format=self.data_format
         )
 

@@ -72,15 +72,29 @@ class UpSampling2d(Layer):
         # if len(self.inputs.get_shape()) == 3:
         if inputs.shape.ndims == 3:
             if self.is_scale:
-                size_h = size[0] * tf.shape(self.inputs)[0]
-                size_w = size[1] * tf.shape(self.inputs)[1]
+                input_shape = inputs.shape.as_list()
+                if input_shape[0] is not None:
+                    size_h = self.size[0] * input_shape[0]
+                else:
+                    size_h = self.size[0] * tf.shape(inputs)[0]
+                if input_shape[1] is not None:
+                    size_w = self.size[1] * input_shape[1]
+                else:
+                    size_w = self.size[1] * tf.shape(inputs)[1]
                 self.size = [size_h, size_w]
 
         # elif len(self.inputs.get_shape()) == 4:
         elif inputs.shape.ndims == 4:
             if self.is_scale:
-                size_h = size[0] * tf.shape(self.inputs)[1]
-                size_w = size[1] * tf.shape(self.inputs)[2]
+                input_shape = inputs.shape.as_list()
+                if input_shape[1] is not None:
+                    size_h = self.size[0] * input_shape[1]
+                else:
+                    size_h = self.size[0] * tf.shape(inputs)[1]
+                if input_shape[2] is not None:
+                    size_w = self.size[1] * input_shape[2]
+                else:
+                    size_w = self.size[1] * tf.shape(inputs)[2]
                 self.size = [size_h, size_w]
 
         else:
@@ -155,17 +169,31 @@ class DownSampling2d(Layer):
             raise Exception("DownSampling2d tf.image.resize_images only support channel_last")
 
         # if len(self.inputs.get_shape()) == 3:
-        elif inputs.shape.ndims == 4:
+        if inputs.shape.ndims == 3:
             if self.is_scale:
-                size_h = size[0] * tf.shape(self.inputs)[0]
-                size_w = size[1] * tf.shape(self.inputs)[1]
+                input_shape = inputs.shape.as_list()
+                if input_shape[1] is not None:
+                    size_h = self.size[0] * input_shape[0]
+                else:
+                    size_h = self.size[0] * tf.shape(inputs)[0]
+                if input_shape[1] is not None:
+                    size_w = self.size[1] * input_shape[1]
+                else:
+                    size_w = self.size[1] * tf.shape(inputs)[1]
                 self.size = [size_h, size_w]
 
         # elif len(self.inputs.get_shape()) == 4:
         elif inputs.shape.ndims == 4:
             if self.is_scale:
-                size_h = size[0] * tf.shape(self.inputs)[1]
-                size_w = size[1] * tf.shape(self.inputs)[2]
+                input_shape = inputs.shape.as_list()
+                if input_shape[1] is not None:
+                    size_h = self.size[0] * input_shape[1]
+                else:
+                    size_h = self.size[0] * tf.shape(inputs)[1]
+                if input_shape[2] is not None:
+                    size_w = self.size[1] * input_shape[2]
+                else:
+                    size_w = self.size[1] * tf.shape(inputs)[2]
                 self.size = [size_h, size_w]
 
         else:
