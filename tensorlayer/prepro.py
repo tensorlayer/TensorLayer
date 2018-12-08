@@ -1451,7 +1451,7 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
 
 
 # zoom
-def zoom(x, zoom_range=(0.9, 1.1), row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1):
+def zoom(x, zoom_range=(0.9, 1.1), flags=None, border_mode='constant'):
     """Zooming/Scaling a single image that height and width are changed together.
 
     Parameters
@@ -1462,14 +1462,9 @@ def zoom(x, zoom_range=(0.9, 1.1), row_index=0, col_index=1, channel_index=2, fi
         The zooming/scaling ratio, greater than 1 means larger.
             - float, a fixed ratio.
             - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
-    row_index col_index and channel_index : int
-        Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
-    fill_mode : str
-        Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`, see `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
-    cval : float
-        Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
-    order : int
-        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.affine_transform`` and `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+    border_mode : str
+        - `constant`, pad the image with a constant value (i.e. black or 0)
+        - `replicate`, the row or column at the very edge of the original is replicated to the extra border.
 
     Returns
     -------
@@ -1478,9 +1473,9 @@ def zoom(x, zoom_range=(0.9, 1.1), row_index=0, col_index=1, channel_index=2, fi
 
     """
     zoom_matrix = affine_zoom_matrix(zoom_range=zoom_range)
-    h, w = x.shape[row_index], x.shape[col_index]
+    h, w = x.shape[0], x.shape[1]
     transform_matrix = transform_matrix_offset_center(zoom_matrix, h, w)
-    x = affine_transform(x, transform_matrix, channel_index, fill_mode, cval, order)
+    x = affine_transform_cv2(x, transform_matrix, flags=flags, border_mode=border_mode)
     return x
 
 
@@ -1524,10 +1519,7 @@ def respective_zoom(
     return x
 
 
-def zoom_multi(
-        x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
-        cval=0., order=1
-):
+def zoom_multi(x, zoom_range=(0.9, 1.1), flags=None, border_mode='constant'):
     """Zoom in and out of images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
 
@@ -1544,28 +1536,14 @@ def zoom_multi(
         A list of processed images.
 
     """
-    if len(zoom_range) != 2:
-        raise Exception('zoom_range should be a tuple or list of two floats. ' 'Received arg: ', zoom_range)
 
-    if is_random:
-        if zoom_range[0] == 1 and zoom_range[1] == 1:
-            zx, zy = 1, 1
-            tl.logging.info(" random_zoom : not zoom in/out")
-        else:
-            zx, zy = np.random.uniform(zoom_range[0], zoom_range[1], 2)
-    else:
-        zx, zy = zoom_range
-
-    zoom_matrix = np.array([[zx, 0, 0], [0, zy, 0], [0, 0, 1]])
-
-    h, w = x[0].shape[row_index], x[0].shape[col_index]
-    transform_matrix = transform_matrix_offset_center(zoom_matrix, h, w)
-    # x = affine_transform(x, transform_matrix, channel_index, fill_mode, cval)
-    # return x
+    zoom_matrix = affine_zoom_matrix(zoom_range=zoom_range)
     results = []
-    for data in x:
-        results.append(affine_transform(data, transform_matrix, channel_index, fill_mode, cval, order))
-    return np.asarray(results)
+    for img in x:
+        h, w = x.shape[0], x.shape[1]
+        transform_matrix = transform_matrix_offset_center(zoom_matrix, h, w)
+        results.append(affine_transform_cv2(x, transform_matrix, flags=flags, border_mode=border_mode))
+    return result
 
 
 # image = tf.image.random_brightness(image, max_delta=32. / 255.)
