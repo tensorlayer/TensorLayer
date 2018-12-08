@@ -1519,9 +1519,7 @@ def respective_zoom(
     return x
 
 
-def zoom_multi(
-        x, zoom_range=(0.9, 1.1), flags=None, border_mode='constant'):
-):
+def zoom_multi(x, zoom_range=(0.9, 1.1), flags=None, border_mode='constant'):
     """Zoom in and out of images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
 
@@ -1546,6 +1544,7 @@ def zoom_multi(
         transform_matrix = transform_matrix_offset_center(zoom_matrix, h, w)
         results.append(affine_transform_cv2(x, transform_matrix, flags=flags, border_mode=border_mode))
     return result
+
 
 # image = tf.image.random_brightness(image, max_delta=32. / 255.)
 # image = tf.image.random_saturation(image, lower=0.5, upper=1.5)
