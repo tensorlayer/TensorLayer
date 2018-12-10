@@ -817,12 +817,12 @@ def crop(x, wrg, hrg, is_random=False, row_index=0, col_index=1):
     """
     h, w = x.shape[row_index], x.shape[col_index]
 
-    if (h <= hrg) or (w <= wrg):
-        raise AssertionError("The size of cropping should smaller than the original image")
+    if (h < hrg) or (w < wrg):
+        raise AssertionError("The size of cropping should smaller than or equal to the original image")
 
     if is_random:
-        h_offset = int(np.random.uniform(0, h - hrg) - 1)
-        w_offset = int(np.random.uniform(0, w - wrg) - 1)
+        h_offset = int(np.random.uniform(0, h - hrg))
+        w_offset = int(np.random.uniform(0, w - wrg))
         # tl.logging.info(h_offset, w_offset, x[h_offset: hrg+h_offset ,w_offset: wrg+w_offset].shape)
         return x[h_offset:hrg + h_offset, w_offset:wrg + w_offset]
     else:  # central crop
@@ -857,12 +857,12 @@ def crop_multi(x, wrg, hrg, is_random=False, row_index=0, col_index=1):
     """
     h, w = x[0].shape[row_index], x[0].shape[col_index]
 
-    if (h <= hrg) or (w <= wrg):
-        raise AssertionError("The size of cropping should smaller than the original image")
+    if (h < hrg) or (w < wrg):
+        raise AssertionError("The size of cropping should smaller than or equal to the original image")
 
     if is_random:
-        h_offset = int(np.random.uniform(0, h - hrg) - 1)
-        w_offset = int(np.random.uniform(0, w - wrg) - 1)
+        h_offset = int(np.random.uniform(0, h - hrg))
+        w_offset = int(np.random.uniform(0, w - wrg))
         results = []
         for data in x:
             results.append(data[h_offset:hrg + h_offset, w_offset:wrg + w_offset])
@@ -1833,7 +1833,7 @@ def imresize(x, size=None, interp='bicubic', mode=None):
     interp : str
         Interpolation method for re-sizing (`nearest`, `lanczos`, `bilinear`, `bicubic` (default) or `cubic`).
     mode : str
-        The PIL image mode (`P`, `L`, etc.) to convert arr before resizing.
+        The PIL image mode (`P`, `L`, etc.) to convert image before resizing.
 
     Returns
     -------
