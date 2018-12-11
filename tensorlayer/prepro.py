@@ -465,7 +465,7 @@ def affine_respective_zoom_matrix(w_range=0.8, h_range=1.1):
 
 
 # affine transform
-def transform_matrix_offset_center(matrix, x, y):
+def transform_matrix_offset_center(matrix, y, x):
     """Convert the matrix from Cartesian coordinates (the origin in the middle of image) to Image coordinates (the origin on the top-left of image).
 
     Parameters
@@ -817,12 +817,12 @@ def crop(x, wrg, hrg, is_random=False, row_index=0, col_index=1):
     """
     h, w = x.shape[row_index], x.shape[col_index]
 
-    if (h <= hrg) or (w <= wrg):
-        raise AssertionError("The size of cropping should smaller than the original image")
+    if (h < hrg) or (w < wrg):
+        raise AssertionError("The size of cropping should smaller than or equal to the original image")
 
     if is_random:
-        h_offset = int(np.random.uniform(0, h - hrg) - 1)
-        w_offset = int(np.random.uniform(0, w - wrg) - 1)
+        h_offset = int(np.random.uniform(0, h - hrg))
+        w_offset = int(np.random.uniform(0, w - wrg))
         # tl.logging.info(h_offset, w_offset, x[h_offset: hrg+h_offset ,w_offset: wrg+w_offset].shape)
         return x[h_offset:hrg + h_offset, w_offset:wrg + w_offset]
     else:  # central crop
@@ -857,12 +857,12 @@ def crop_multi(x, wrg, hrg, is_random=False, row_index=0, col_index=1):
     """
     h, w = x[0].shape[row_index], x[0].shape[col_index]
 
-    if (h <= hrg) or (w <= wrg):
-        raise AssertionError("The size of cropping should smaller than the original image")
+    if (h < hrg) or (w < wrg):
+        raise AssertionError("The size of cropping should smaller than or equal to the original image")
 
     if is_random:
-        h_offset = int(np.random.uniform(0, h - hrg) - 1)
-        w_offset = int(np.random.uniform(0, w - wrg) - 1)
+        h_offset = int(np.random.uniform(0, h - hrg))
+        w_offset = int(np.random.uniform(0, w - wrg))
         results = []
         for data in x:
             results.append(data[h_offset:hrg + h_offset, w_offset:wrg + w_offset])
@@ -1479,10 +1479,7 @@ def zoom(x, zoom_range=(0.9, 1.1), flags=None, border_mode='constant'):
     return x
 
 
-def respective_zoom(
-        x, h_range=(0.9, 1.1), w_range=(0.9, 1.1), row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
-        cval=0., order=1
-):
+def respective_zoom(x, h_range=(0.9, 1.1), w_range=(0.9, 1.1), flags=None, border_mode='constant'):
     """Zooming/Scaling a single image that height and width are changed independently.
 
     Parameters
@@ -1497,14 +1494,9 @@ def respective_zoom(
         The zooming/scaling ratio of width, greater than 1 means larger.
             - float, a fixed ratio.
             - tuple of 2 floats, randomly sample a value as the ratio between 2 values.
-    row_index col_index and channel_index : int
-        Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
-    fill_mode : str
-        Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`, see `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
-    cval : float
-        Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
-    order : int
-        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.affine_transform`` and `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+    border_mode : str
+        - `constant`, pad the image with a constant value (i.e. black or 0)
+        - `replicate`, the row or column at the very edge of the original is replicated to the extra border.
 
     Returns
     -------
@@ -1513,9 +1505,11 @@ def respective_zoom(
 
     """
     zoom_matrix = affine_respective_zoom_matrix(h_range=h_range, w_range=w_range)
-    h, w = x.shape[row_index], x.shape[col_index]
+    h, w = x.shape[0], x.shape[1]
     transform_matrix = transform_matrix_offset_center(zoom_matrix, h, w)
-    x = affine_transform(x, transform_matrix, channel_index, fill_mode, cval, order)
+    x = affine_transform_cv2(
+        x, transform_matrix, flags=flags, border_mode=border_mode
+    )  #affine_transform(x, transform_matrix, channel_index, fill_mode, cval, order)
     return x
 
 
@@ -1839,7 +1833,7 @@ def imresize(x, size=None, interp='bicubic', mode=None):
     interp : str
         Interpolation method for re-sizing (`nearest`, `lanczos`, `bilinear`, `bicubic` (default) or `cubic`).
     mode : str
-        The PIL image mode (`P`, `L`, etc.) to convert arr before resizing.
+        The PIL image mode (`P`, `L`, etc.) to convert image before resizing.
 
     Returns
     -------
