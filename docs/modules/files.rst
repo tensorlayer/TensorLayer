@@ -49,11 +49,11 @@ Load benchmark dataset, save and restore model, save and load variables.
 
    natural_keys
 
-   ..
-      save_graph
-      load_graph
-      save_graph_and_params
-      load_graph_and_params
+..
+   save_graph
+   load_graph
+   save_graph_and_params
+   load_graph_and_params
 
    npz_to_W_pdf
 
