@@ -1852,7 +1852,7 @@ def imresize(x, size=None, interp='bicubic', mode=None):
         # greyscale
         x = scipy.misc.imresize(x[:, :, 0], size, interp=interp, mode=mode)
         return x[:, :, np.newaxis]
-    else
+    else:
         # rgb, bgr, rgba
         return scipy.misc.imresize(x, size, interp=interp, mode=mode)
 
