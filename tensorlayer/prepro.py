@@ -1852,11 +1852,9 @@ def imresize(x, size=None, interp='bicubic', mode=None):
         # greyscale
         x = scipy.misc.imresize(x[:, :, 0], size, interp=interp, mode=mode)
         return x[:, :, np.newaxis]
-    elif x.shape[-1] == 3:
-        # rgb, bgr ..
+    else
+        # rgb, bgr, rgba
         return scipy.misc.imresize(x, size, interp=interp, mode=mode)
-    else:
-        raise Exception("Unsupported channel %d" % x.shape[-1])
 
 
 # value scale
