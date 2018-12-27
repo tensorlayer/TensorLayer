@@ -165,7 +165,7 @@ The following is a typical Python program that applies rotation, shifting, flipp
     xx = tl.prepro.rotation(image, rg=-20, is_random=False)
     xx = tl.prepro.flip_axis(xx, axis=1, is_random=False)
     xx = tl.prepro.shear2(xx, shear=(0., -0.2), is_random=False)
-    xx = tl.prepro.zoom(xx, zoom_range=1/0.8)
+    xx = tl.prepro.zoom(xx, zoom_range=0.8)
     xx = tl.prepro.shift(xx, wrg=-0.1, hrg=0, is_random=False)
 
     tl.vis.save_image(xx, '_result_slow.png')
