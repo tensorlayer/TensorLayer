@@ -1766,7 +1766,7 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
 
     if not os.path.exists(name):
         logging.error("file {} doesn't exist.".format(name))
-        return
+        return False
 
     params = np.load(name)
     if len(params.keys()) != len(set(params.keys())):
