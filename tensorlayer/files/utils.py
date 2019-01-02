@@ -1711,7 +1711,7 @@ def load_and_assign_npz(sess=None, name=None, network=None):
         raise ValueError("session is None.")
     if not os.path.exists(name):
         logging.error("file {} doesn't exist.".format(name))
-        return
+        return False
     else:
         params = load_npz(name=name)
         assign_params(sess, params, network)
