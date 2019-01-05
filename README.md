@@ -131,7 +131,7 @@ NVIDIA-Docker is required for these containers to work: [Project Link](https://g
 ```bash
 # for GPU version and Python 2
 docker pull tensorlayer/tensorlayer:latest-gpu
-nvidia-docker run -it --rm -p 8888:88888 -p 6006:6006 -e PASSWORD=JUPYTER_NB_PASSWORD tensorlayer/tensorlayer:latest-gpu
+nvidia-docker run -it --rm -p 8888:8888 -p 6006:6006 -e PASSWORD=JUPYTER_NB_PASSWORD tensorlayer/tensorlayer:latest-gpu
 
 # for GPU version and Python 3
 docker pull tensorlayer/tensorlayer:latest-gpu-py3
