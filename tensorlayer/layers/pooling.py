@@ -75,9 +75,7 @@ class PoolLayer(Layer):
         )
 
     def forward(self, inputs):
-
         outputs = self.pool(inputs, ksize=self.ksize, strides=self.strides, padding=self.padding, name=self.name)
-
         return outputs
 
 
@@ -204,7 +202,7 @@ class MeanPool1d(Layer):
         else:
             raise Exception("unsupport data format")
 
-    def forward(inputs):
+    def forward(self, inputs):
         # self.outputs = tf.layers.average_pooling1d(
         #     prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         # )
@@ -301,25 +299,38 @@ class MeanPool2d(Layer):
     @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self, prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', data_format='channels_last',
-            name='meanpool2d'
+            name=None,#'meanpool2d'
     ):
-
         if strides is None:
             strides = filter_size
 
-        super(MeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
+        # super(MeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.filter_size=filter_size
+        self.strides=strides
+        self.padding=padding
+        self.data_format=data_format
 
         logging.info(
             "MeanPool2d %s: filter_size: %s strides: %s padding: %s" %
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
-        self.outputs = tf.layers.average_pooling2d(
-            self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
-        )
+    def build(self, inputs):
+        self.strides=[1, self.strides[0], self.strides[1], 1]
 
-        self._add_layers(self.outputs)
 
+    def forward(self, inputs):
+        """
+        prev_layer : :class:`Layer`
+            The previous layer with a output rank as 4.
+        """
+        # self.outputs = tf.layers.average_pooling2d(
+        #     self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
+        # )
+        # self._add_layers(self.outputs)
+        outputs = tf.nn.avg_pool(inputs, ksize=self.strides, strides=self.strides, padding=self.padding, name=self.name)
+        return outputs
 
 class MaxPool3d(Layer):
     """Max pooling for 3D volume.
