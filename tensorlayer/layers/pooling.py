@@ -145,7 +145,7 @@ class MaxPool1d(Layer):
 
 
 # x = tf.placeholder("float32", [None, 100, 3])
-# n = MaxPool1d()(x)
+# n = MaxPool1d(name='s')(x)
 # print(n.outputs)
 # exit()
 

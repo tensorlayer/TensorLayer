@@ -122,7 +122,8 @@ class Layer(object):
         self.act = act if act not in [None, tf.identity] else None
 
         if name is None:
-            raise ValueError('Layer must have a name.')
+            raise ValueError('Layer must have a name. \n TODO: Hao Dong: could we automatically add layer name when name=None e.g. layer0, layer1, batchnorm, layer3, layer4... ')
+            # name = 'layer' +
 
         # FIXME: double check needed: the scope name may be deprecated in TF2
         # scope_name = tf.get_variable_scope().name
