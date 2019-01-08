@@ -143,6 +143,6 @@ class DorefaConv2d(Layer):
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
         if self.act:
-        outputs = self.act(outputs)
+            outputs = self.act(outputs)
 
         return outputs

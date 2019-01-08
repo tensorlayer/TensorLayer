@@ -90,8 +90,8 @@ class MaxPool1d(Layer):
     ----------
     filter_size : tuple of int
         Pooling window size.
-    strides : tuple of int
-        Strides of the pooling operation.
+    strides : int
+        Stride of the pooling operation.
     padding : str
         The padding method: 'valid' or 'same'.
     data_format : str
@@ -124,21 +124,34 @@ class MaxPool1d(Layer):
         prev_layer : :class:`Layer`
             The previous layer with a output rank as 3 [batch, length, channel].
         """
-        # TODO : tf.layers will be removed in TF 2.0
-        outputs = tf.layers.max_pooling1d(
-            inputs, self.filter_size, self.strides, padding=self.padding, data_format=self.data_format, name=self.name
+        ## TODO : tf.layers will be removed in TF 2.0
+        # outputs = tf.layers.max_pooling1d(
+        #     inputs, self.filter_size, self.strides, padding=self.padding, data_format=self.data_format, name=self.name
+        # )
+        # https://www.tensorflow.org/api_docs/python/tf/nn/pool
+        tf.nn.pool(
+            inputs,
+            window_shape=1,
+            pooling_type="MAX",
+            padding=self.padding,
+            dilation_rate=None,
+            strides=self.strides,
+            name=self.name,
+            data_format=self.data_format
         )
         return outputs
-
-
+# x = tf.placeholder("float32", [None, 100, 3])
+# n = MaxPool1d()(x)
+# print(n.outputs)
+# exit()
 
 class MeanPool1d(Layer):
     """Mean pooling for 1D signal.
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        The previous layer with a output rank as 3.
+    # prev_layer : :class:`Layer`
+    #     The previous layer with a output rank as 3.
     filter_size : tuple of int
         Pooling window size.
     strides : tuple of int
