@@ -10,7 +10,7 @@ import numpy as np
 
 import tensorflow as tf
 
-from tensorlayer.layers.utils import list_remove_repeat
+from tensorlayer.layers.utils import list_remove_repeat, get_variable_with_initializer
 
 from tensorlayer import logging
 
@@ -40,6 +40,7 @@ TF_GRAPHKEYS_VARIABLES = tf.GraphKeys.GLOBAL_VARIABLES
 
 
 class Layer(object):
+    #FIXME: documentation update needed
     """The basic :class:`Layer` class represents a single layer of a neural network.
 
     It should be subclassed when implementing new types of layers.
@@ -112,25 +113,48 @@ class Layer(object):
     # Added to allow auto-completion
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, act=None, name=None, *args, **kwargs):
-
-        self.inputs = None
-        self.outputs = None
-        self.all_layers = list()
-        self.all_params = list()
-        self.all_drop = dict()
-
-        if name is None:
-            raise ValueError('Layer must have a name.')
+    def __init__(self, act=None, name=None, *args, **kwargs):
+        # Layer constants
 
         for key in kwargs.keys():
             setattr(self, key, self._argument_dict_checkup(kwargs[key]))
 
         self.act = act if act not in [None, tf.identity] else None
 
-        scope_name = tf.get_variable_scope().name
+        if name is None:
+            raise ValueError('Layer must have a name.')
 
-        self.name = scope_name + '/' + name if scope_name else name
+        # FIXME: double check needed: the scope name may be deprecated in TF2
+        # scope_name = tf.get_variable_scope().name
+        # self.name = scope_name + '/' + name if scope_name else name
+        self.name = name
+
+        self.inputs = None
+        self.outputs = None
+
+        self.all_layers = list()
+        self.all_params = list()
+        self.all_drop = dict()
+
+        # Layer weight state
+        self._built = False
+        self._weights = None
+
+        # Layer building state
+        self._inputs_shape = None
+        self._outputs_shape = None
+
+        # Layer forward state
+        self._input_layer = None
+
+
+    def __call__(self, prev_layer):
+
+        if self._built:
+            raise Exception(
+                "The layer has been built before."
+            )
+
 
         if isinstance(prev_layer, Layer):
             # 1. for normal layer have only 1 input i.e. DenseLayer
@@ -138,35 +162,69 @@ class Layer(object):
             # it is pass by reference.
 
             self.inputs = prev_layer.outputs
+            self._input_layer = prev_layer
+            self._inputs_shape = self._input_layer.outputs._outputs_shape
+
+            self._weights = list()
+            self._outputs_shape = self.build(self._inputs_shape)
+            self._built = True
 
             self._add_layers(prev_layer.all_layers)
+            self._add_params(self._weights)
             self._add_params(prev_layer.all_params)
             self._add_dropout_layers(prev_layer.all_drop)
 
-        elif isinstance(prev_layer, list):
-            # 2. for layer have multiply inputs i.e. ConcatLayer
+        else:
+            # FIXME: not sure yet how to handle other cases
 
-            self.inputs = [layer.outputs for layer in prev_layer]
+            '''
+            elif isinstance(prev_layer, list):
+                # 2. for layer have multiply inputs i.e. ConcatLayer
 
-            self._add_layers(sum([l.all_layers for l in prev_layer], []))
-            self._add_params(sum([l.all_params for l in prev_layer], []))
-            self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
+                self.inputs = [layer.outputs for layer in prev_layer]
 
-        elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
-            if self.__class__.__name__ not in ['InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer',
-                                               'EmbeddingInputlayer', 'AverageEmbeddingInputlayer']:
-                raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
+                self._add_layers(sum([l.all_layers for l in prev_layer], []))
+                self._add_params(sum([l.all_params for l in prev_layer], []))
+                self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
 
-            self.inputs = prev_layer
+            elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
+                if self.__class__.__name__ not in ['InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer',
+                                                   'EmbeddingInputlayer', 'AverageEmbeddingInputlayer']:
+                    raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
 
-        elif prev_layer is not None:
-            # 4. tl.models
-            self._add_layers(prev_layer.all_layers)
-            self._add_params(prev_layer.all_params)
-            self._add_dropout_layers(prev_layer.all_drop)
+                self.inputs = prev_layer
 
-            if hasattr(prev_layer, "outputs"):
-                self.inputs = prev_layer.outputs
+            elif prev_layer is not None:
+                # 4. tl.models
+                self._add_layers(prev_layer.all_layers)
+                self._add_params(prev_layer.all_params)
+                self._add_dropout_layers(prev_layer.all_drop)
+
+                if hasattr(prev_layer, "outputs"):
+                    self.inputs = prev_layer.outputs
+            '''
+
+        return self
+
+
+    def _add_weight(self, scope_name, var_name, shape):
+        weight = get_variable_with_initializer(
+            scope_name=scope_name, var_name=var_name, shape=shape)
+        self._weights.append(weight)  # Add into the weight collection
+        self.__setattr__(var_name, weight)
+        return weight
+
+    @abstractmethod
+    def build(self, inputs_shape):
+        raise Exception(
+            "The build_weights method must be implemented by inherited class"
+        )
+
+    @abstractmethod
+    def forward(self, inputs, is_train):
+        raise Exception(
+            "The forward method must be implemented by inherited class"
+        )
 
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""
