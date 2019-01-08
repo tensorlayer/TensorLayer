@@ -134,7 +134,7 @@ class Layer(object):
 
         self.all_layers = list()  # we change layers --> outputs ?
         self.all_params = list()  # we change params --> weights ?
-        self.all_drop = dict()    # remove all_drop
+        # self.all_drop = dict()    # remove all_drop
 
         # Layer weight state
         self._built = False
@@ -172,7 +172,7 @@ class Layer(object):
             self._add_layers(prev_layer.all_layers)
             self._add_params(self._weights)
             self._add_params(prev_layer.all_params)
-            self._add_dropout_layers(prev_layer.all_drop)
+            # self._add_dropout_layers(prev_layer.all_drop)
 
         else:
             # FIXME: not sure yet how to handle other cases
@@ -298,7 +298,7 @@ class Layer(object):
         net_new._add_layers(net_new.outputs)
 
         net_new._add_params(self.all_params)
-        net_new._add_dropout_layers(self.all_drop)
+        # net_new._add_dropout_layers(self.all_drop)
 
         return net_new
 
@@ -372,16 +372,16 @@ class Layer(object):
 
         self.all_params = list_remove_repeat(self.all_params)
 
-    @protected_method
-    def _add_dropout_layers(self, drop_layers):
-        if isinstance(drop_layers, dict) or isinstance(drop_layers, list):
-            self.all_drop.update(dict(drop_layers))
-
-        elif isinstance(drop_layers, tuple):
-            self.all_drop.update(list(drop_layers))
-
-        else:
-            raise ValueError()
+    # @protected_method
+    # def _add_dropout_layers(self, drop_layers):
+    #     if isinstance(drop_layers, dict) or isinstance(drop_layers, list):
+    #         self.all_drop.update(dict(drop_layers))
+    #
+    #     elif isinstance(drop_layers, tuple):
+    #         self.all_drop.update(list(drop_layers))
+    #
+    #     else:
+    #         raise ValueError()
 
     @private_method
     def _apply_activation(self, logits, **kwargs):
