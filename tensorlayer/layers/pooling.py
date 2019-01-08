@@ -88,7 +88,6 @@ class MaxPool1d(Layer):
 
     Parameters
     ----------
-
     filter_size : tuple of int
         Pooling window size.
     strides : tuple of int

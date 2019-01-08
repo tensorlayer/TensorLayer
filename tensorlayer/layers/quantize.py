@@ -21,8 +21,8 @@ class Sign(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
+    # prev_layer : :class:`Layer`
+    #     Previous layer.
     name : a str
         A unique layer name.
 
@@ -31,15 +31,20 @@ class Sign(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
-            name='sign',
+            # prev_layer,
+            name=None,#'sign',
     ):
-        super(Sign, self).__init__(prev_layer=prev_layer, name=name)
-
+        # super(Sign, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
         logging.info("Sign  %s" % self.name)
 
-        with tf.variable_scope(name):
-            # self.outputs = tl.act.sign(self.inputs)
-            self.outputs = quantize(self.inputs)
+    def build(self, inputs):
+        pass
 
-        self._add_layers(self.outputs)
+    def forward(inputs):
+        # with tf.variable_scope(name):
+            ## self.outputs = tl.act.sign(self.inputs)
+            # self.outputs = quantize(self.inputs)
+        outputs = quantize(inputs)
+        return outputs
+        # self._add_layers(self.outputs)
