@@ -1,6 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import numpy as np
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
@@ -16,6 +17,7 @@ __all__ = [
 
 
 class Dense(Layer):
+    # FIXME: documentation update needed
     """The :class:`Dense` class is a fully connected layer.
 
     Parameters
@@ -59,8 +61,11 @@ class Dense(Layer):
             self,
             n_units=100,
             act=None,
-            W_init=tf.truncated_normal_initializer(stddev=0.1),
-            b_init=tf.constant_initializer(value=0.0),
+            # TODO: how to support more initializers
+            # W_init=tf.truncated_normal_initializer(stddev=0.1),
+            # b_init=tf.constant_initializer(value=0.0),
+            W_init=np.random.normal,
+            b_init=np.random.normal,
             W_init_args=None,
             b_init_args=None,
             name=None,  # 'dense',
