@@ -19,8 +19,8 @@ from tensorlayer.decorators import protected_method
 from tensorlayer.decorators import private_method
 
 __all__ = [
-    'LayersConfig',
-    'TF_GRAPHKEYS_VARIABLES',
+    'LayersConfig',             # TODO : remove this??
+    'TF_GRAPHKEYS_VARIABLES',   # TODO : remove this??
     'Layer',
 ]
 
@@ -121,7 +121,7 @@ class Layer(object):
 
         self.act = act if act not in [None, tf.identity] else None
         if name is None:
-            raise ValueError('Layer must have a name. \n TODO: Hao Dong: could we automatically add layer name when name=None e.g. layer0, layer1, batchnorm, layer3, layer4... ')
+            raise ValueError('Layer must have a name. \n    TODO: Hao Dong: could we automatically add layer name when name=None e.g. layer0, layer1, batchnorm, layer3, layer4... ')
             # name = 'layer' + xxx
 
         # FIXME: double check needed: the scope name may be deprecated in TF2
@@ -132,9 +132,9 @@ class Layer(object):
         self.inputs = None
         self.outputs = None
 
-        self.all_layers = list()
-        self.all_params = list()  # we change params --> weights
-        self.all_drop = dict()
+        self.all_layers = list()  # we change layers --> outputs ?
+        self.all_params = list()  # we change params --> weights ?
+        self.all_drop = dict()    # remove all_drop
 
         # Layer weight state
         self._built = False
