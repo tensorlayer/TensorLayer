@@ -19,8 +19,8 @@ from tensorlayer.decorators import protected_method
 from tensorlayer.decorators import private_method
 
 __all__ = [
-    'LayersConfig',             # TODO : remove this??
-    'TF_GRAPHKEYS_VARIABLES',   # TODO : remove this??
+    'LayersConfig',  # TODO : remove this??
+    'TF_GRAPHKEYS_VARIABLES',  # TODO : remove this??
     'Layer',
 ]
 
@@ -121,7 +121,9 @@ class Layer(object):
 
         self.act = act if act not in [None, tf.identity] else None
         if name is None:
-            raise ValueError('Layer must have a name. \n    TODO: Hao Dong: could we automatically add layer name when name=None e.g. layer0, layer1, batchnorm, layer3, layer4... ')
+            raise ValueError(
+                'Layer must have a name. \n    TODO: Hao Dong: could we automatically add layer name when name=None e.g. layer0, layer1, batchnorm, layer3, layer4... '
+            )
             # name = 'layer' + xxx
 
         # FIXME: double check needed: the scope name may be deprecated in TF2
@@ -147,14 +149,10 @@ class Layer(object):
         # Layer forward state
         self._input_layer = None
 
-
     def __call__(self, prev_layer):
 
         if self._built:
-            raise Exception(
-                "The layer has been built before."
-            )
-
+            raise Exception("The layer has been built before.")
 
         if isinstance(prev_layer, Layer):
             # 1. for normal layer have only 1 input i.e. DenseLayer
@@ -176,7 +174,6 @@ class Layer(object):
 
         else:
             # FIXME: not sure yet how to handle other cases
-
             '''
             elif isinstance(prev_layer, list):
                 # 2. for layer have multiply inputs i.e. ConcatLayer
@@ -206,27 +203,21 @@ class Layer(object):
 
         return self
 
-
-    def _add_weight(self, scope_name, var_name, shape,
-                    init=np.random.normal, init_args=None):
+    def _add_weight(self, scope_name, var_name, shape, init=np.random.normal, init_args=None):
         weight = get_variable_with_initializer(
-            scope_name=scope_name, var_name=var_name, shape=shape,
-            init=init, init_args=init_args)
+            scope_name=scope_name, var_name=var_name, shape=shape, init=init, init_args=init_args
+        )
         self._weights.append(weight)  # Add into the weight collection
         self.__setattr__(var_name, weight)
         return weight
 
     @abstractmethod
     def build(self, inputs_shape):
-        raise Exception(
-            "The build_weights method must be implemented by inherited class"
-        )
+        raise Exception("The build_weights method must be implemented by inherited class")
 
     @abstractmethod
     def forward(self, inputs, is_train):
-        raise Exception(
-            "The forward method must be implemented by inherited class"
-        )
+        raise Exception("The forward method must be implemented by inherited class")
 
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""
