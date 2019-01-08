@@ -94,10 +94,8 @@ class Dense(Layer):
         if self.inputs.shape.ndims != 2:
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
 
+    '''
     def build(self, inputs):
-        # self._make_weight(name=self.name, name2="W", shape=(self.n_in, self.n_units), initializer=self.)
-        # if self.b_init is not None:
-        #     self._make_weight(name=self.name, name2="b", shape=(self.n_units))
         self.W = tf.get_variable(
             name='W', shape=(self.n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype,
             **self.W_init_args
@@ -113,10 +111,28 @@ class Dense(Layer):
                     name='b', initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
                 )
         self.add_weights(self.W, self.b)
+    '''
 
+    def build(self, inputs_shape):
+        # self._make_weight(name=self.name, name2="W", shape=(self.n_in, self.n_units), initializer=self.)
+        # if self.b_init is not None:
+        #     self._make_weight(name=self.name, name2="b", shape=(self.n_units))
+        shape = [inputs_shape[1], self.n_units]
+        self._add_weight(self.name, "w1", tuple(shape))
+        self._add_weight(self.name, "b1", int(self.n_units))
+        outputs_shape = [inputs_shape[0], self.n_units]
+        return outputs_shape
+
+    '''
     def forward(self, inputs, is_train):
         outputs = tf.matmul(inputs, self.W)
         if self.b_init is not None:
             outputs = tf.add(z, self.b)
         outputs = self.act(outputs)
         return outputs
+    '''
+    def forward(self, inputs, is_train):
+        y = tf.matmul(inputs, self.w1)
+        z = tf.add(y, self.b1)
+        z = self._act(z)
+        return z
