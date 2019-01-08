@@ -175,7 +175,6 @@ class MeanPool1d(Layer):
     # net_new.outputs = outputs
     # net_new.all_layers.extend([outputs])
     # return net_new
-    @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self, #prev_layer,
             filter_size=3, strides=2, padding='valid', data_format='channels_last', name=None, #'meanpool1d'
@@ -237,7 +236,6 @@ class MaxPool2d(Layer):
         A unique layer name.
 
     """
-
     def __init__(
             self, filter_size=(3, 3), strides=(2, 2), padding='SAME', data_format='channels_last',
             name=None, #'maxpool2d'
@@ -259,6 +257,12 @@ class MaxPool2d(Layer):
 
     def build(self, inputs):
         self.strides=[1, self.strides[0], self.strides[1], 1]
+        if self.data_format == 'channels_last':
+            self.data_format == 'NHWC'
+        elif self.data_format == 'channels_first':
+            self.data_format = 'NCHW'
+        else:
+            raise Exception("unsupport data format")
 
     def forward(self, inputs):
         """
@@ -281,8 +285,8 @@ class MeanPool2d(Layer):
 
     Parameters
     -----------
-    prev_layer : :class:`Layer`
-        The previous layer with a output rank as 4 [batch, height, width, channel].
+    # prev_layer : :class:`Layer`
+    #     The previous layer with a output rank as 4 [batch, height, width, channel].
     filter_size : tuple of int
         (height, width) for filter size.
     strides : tuple of int
@@ -295,10 +299,9 @@ class MeanPool2d(Layer):
         A unique layer name.
 
     """
-
-    @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', data_format='channels_last',
+            self, #prev_layer,
+            filter_size=(3, 3), strides=(2, 2), padding='SAME', data_format='channels_last',
             name=None,#'meanpool2d'
     ):
         if strides is None:
@@ -318,7 +321,12 @@ class MeanPool2d(Layer):
 
     def build(self, inputs):
         self.strides=[1, self.strides[0], self.strides[1], 1]
-
+        if self.data_format == 'channels_last':
+            self.data_format == 'NHWC'
+        elif self.data_format == 'channels_first':
+            self.data_format = 'NCHW'
+        else:
+            raise Exception("unsupport data format")
 
     def forward(self, inputs):
         """
@@ -337,8 +345,8 @@ class MaxPool3d(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        The previous layer with a output rank as 5.
+    # prev_layer : :class:`Layer`
+    #     The previous layer with a output rank as 5.
     filter_size : tuple of int
         Pooling window size.
     strides : tuple of int
@@ -356,25 +364,50 @@ class MaxPool3d(Layer):
         A max pooling 3-D layer with a output rank as 5.
 
     """
-
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last',
-            name='maxpool3d'
+            self, #prev_layer,
+            filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last',
+            name=None, #'maxpool3d'
     ):
-        super(MaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
+        # super(MaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.filter_size=filter_size
+        self.strides=strides
+        self.padding=padding
+        self.data_format=data_format
 
         logging.info(
             "MaxPool3d %s: filter_size: %s strides: %s padding: %s" %
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
-        self.outputs = tf.layers.max_pooling3d(
-            self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
+    def build(self, inputs):
+        self.strides=[1, self.strides[0], self.strides[1], self.strides[2], 1]
+        if self.data_format == 'channels_last':
+            self.data_format == 'NDHWC'
+        elif self.data_format == 'channels_first':
+            self.data_format = 'NCDHW'
+        else:
+            raise Exception("unsupport data format")
+
+    def forward(self, inputs):
+        """
+        prev_layer : :class:`Layer`
+            The previous layer with a output rank as 5.
+        """
+        # self.outputs = tf.layers.max_pooling3d(
+        #     self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
+        # )
+        # self._add_layers(self.outputs)
+        outputs = tf.nn.max_pool3d(
+            input=inputs,
+            ksize=self.filter_size,
+            strides=self.strides,
+            padding=self.filter_size,
+            data_format=self.data_format,
+            name=self.name,
         )
-
-        self._add_layers(self.outputs)
-
+        return outputs
 
 class MeanPool3d(Layer):
     """Mean pooling for 3D volume.
@@ -401,19 +434,32 @@ class MeanPool3d(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last',
-            name='meanpool3d'
+            self, #prev_layer,
+            filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last',
+            name=None, #'meanpool3d'
     ):
 
-        super(MeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
+        # super(MeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.filter_size=filter_size
+        self.strides=strides
+        self.padding=padding
+        self.data_format=data_format
 
         logging.info(
             "MeanPool3d %s: filter_size: %s strides: %s padding: %s" %
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
+    def build(self, inputs):
+        self.strides=[1, self.strides[0], self.strides[1], self.strides[2], 1]
+
+    def forward(self, inputs):
+        """
+        prev_layer : :class:`Layer`
+            The previous layer with a output rank as 5.
+        """
         self.outputs = tf.layers.average_pooling3d(
             prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
