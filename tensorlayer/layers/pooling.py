@@ -74,10 +74,8 @@ class PoolLayer(Layer):
             (self.name, str(self.ksize), str(self.strides), self.padding, pool.__name__)
         )
 
-    def build(self, inputs):
-        pass
-
     def forward(self, inputs):
+
         outputs = self.pool(inputs, ksize=self.ksize, strides=self.strides, padding=self.padding, name=self.name)
 
         return outputs
@@ -117,7 +115,14 @@ class MaxPool1d(Layer):
         )
 
     def build(self, inputs):
-        pass
+        # pass
+        # https://www.tensorflow.org/api_docs/python/tf/nn/pool
+        if self.data_format == 'channels_last':
+            self.data_format == 'NWC'
+        elif self.data_format == 'channels_first':
+            self.data_format == 'NCW'
+        else:
+            raise Exception("unsupport data format")
 
     def forward(self, inputs):
         """
@@ -129,7 +134,7 @@ class MaxPool1d(Layer):
         #     inputs, self.filter_size, self.strides, padding=self.padding, data_format=self.data_format, name=self.name
         # )
         # https://www.tensorflow.org/api_docs/python/tf/nn/pool
-        tf.nn.pool(
+        outputs = tf.nn.pool(
             inputs,
             window_shape=1,
             pooling_type="MAX",
@@ -174,21 +179,48 @@ class MeanPool1d(Layer):
     # return net_new
     @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, filter_size=3, strides=2, padding='valid', data_format='channels_last', name='meanpool1d'
+            self, #prev_layer,
+            filter_size=3, strides=2, padding='valid', data_format='channels_last', name=None, #'meanpool1d'
     ):
-        super(MeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
+        # super(MeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        self.filter_size = filter_size
+        self.strides = strides
+        self.padding = padding
+        self.data_format = data_format
 
         logging.info(
             "MeanPool1d %s: filter_size: %s strides: %s padding: %s" %
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
-        self.outputs = tf.layers.average_pooling1d(
-            prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
+    def build(self, inputs):
+        # pass
+        # https://www.tensorflow.org/api_docs/python/tf/nn/pool
+        if self.data_format == 'channels_last':
+            self.data_format == 'NWC'
+        elif self.data_format == 'channels_first':
+            self.data_format == 'NCW'
+        else:
+            raise Exception("unsupport data format")
+
+    def forward(inputs):
+        # self.outputs = tf.layers.average_pooling1d(
+        #     prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
+        # )
+        # self._add_layers(self.outputs)
+        # https://www.tensorflow.org/api_docs/python/tf/nn/pool
+        outputs = tf.nn.pool(
+            inputs,
+            window_shape=1,
+            pooling_type="AVG",
+            padding=self.padding,
+            dilation_rate=None,
+            strides=self.strides,
+            name=self.name,
+            data_format=self.data_format
         )
-
-        self._add_layers(self.outputs)
-
+        return outputs
 
 class MaxPool2d(Layer):
     """Max pooling for 2D image.
