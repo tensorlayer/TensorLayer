@@ -33,21 +33,42 @@ class Input(Layer):
     def __init__(self, shape=None, name=None):#'input'):
         # super(InputLayer, self).__init__(prev_layer=inputs, name=name)
         super().__init__(name)
-        self.shape = shape
-        logging.info("Input  %s: %s" % (self.name, str(self.shape)))
 
-    def build(self, inputs):
-        pass
+        logging.info("Input  %s: %s" % (self.name, str(shape)))
 
-    def forward(self, inputs):
+        # Layer constants
+        self.name = name
+
+        # Layer building state
+        self._inputs_shape = shape
+        self._outputs_shape = self.build(self._inputs_shape)
+
+        # Layer forward state
+        self._input_layer = None
+        self._inputs = None
+        self._outputs = None
+
+    def build(self, inputs_shape):
+        # FIXME: documentation need double check
+        """
+        Parameters
+        ----------
+        inputs_shape : tupe
+            The shape of inputs.
+        """
+        return inputs_shape
+
+    def forward(self, inputs, is_train):
+        # FIXME: documentation need double check
         """
         Parameters
         ----------
         inputs : placeholder or tensor
             The input of a network.
+        is_train: bool
+            train (True) or test (False)
         """
-        outputs = inputs
-        return outputs
+        return inputs
 
 
 class OneHotInput(Layer):
