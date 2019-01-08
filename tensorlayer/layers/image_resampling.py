@@ -47,7 +47,7 @@ class UpSampling2d(Layer):
             method=0,
             align_corners=False,
             data_format='channel_last',
-            name=None, #'upsample2d',
+            name=None,  #'upsample2d',
     ):
         # super(UpSampling2d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
@@ -108,9 +108,7 @@ class UpSampling2d(Layer):
         prev_layer : :class:`Layer`
             Previous layer with 4-D Tensor of the shape (batch, height, width, channels) or 3-D Tensor of the shape (height, width, channels).
         """
-        outputs = tf.image.resize_images(
-                inputs, size=self.size, method=self.method, align_corners=self.align_corners
-            )
+        outputs = tf.image.resize_images(inputs, size=self.size, method=self.method, align_corners=self.align_corners)
         return outputs
 
 
@@ -207,7 +205,5 @@ class DownSampling2d(Layer):
         prev_layer : :class:`Layer`
             Previous layer with 4-D Tensor of the shape (batch, height, width, channels) or 3-D Tensor of the shape (height, width, channels).
         """
-        outputs = tf.image.resize_images(
-            inputs, size=self.size, method=self.method, align_corners=self.align_corners
-        )
+        outputs = tf.image.resize_images(inputs, size=self.size, method=self.method, align_corners=self.align_corners)
         return outputs

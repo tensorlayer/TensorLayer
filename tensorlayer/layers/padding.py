@@ -44,7 +44,7 @@ class PadLayer(Layer):
             self,
             padding=None,
             mode='CONSTANT',
-            name=None, #'pad_layer',
+            name=None,  #'pad_layer',
     ):
         # super(PadLayer, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
@@ -84,7 +84,7 @@ class ZeroPad1d(Layer):
     def __init__(
             self,
             padding,
-            name=None, #'zeropad1d',
+            name=None,  #'zeropad1d',
     ):
         # super(ZeroPad1d, self).__init__(prev_layer=prev_layer, name=name)
         self.padding = padding
@@ -98,7 +98,6 @@ class ZeroPad1d(Layer):
 
     def forward(self, inputs):
         outputs = self.layer(inputs)
-
 
 
 class ZeroPad2d(Layer):
@@ -119,7 +118,7 @@ class ZeroPad2d(Layer):
     def __init__(
             self,
             padding,
-            name=None, #'zeropad2d',
+            name=None,  #'zeropad2d',
     ):
         # super(ZeroPad2d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
@@ -129,6 +128,7 @@ class ZeroPad2d(Layer):
 
         if not isinstance(self.padding, (int, tuple)):
             raise AssertionError("Padding should be of type `int` or `tuple`")
+
     def build(self, inputs):
         self.layer = tf.keras.layers.ZeroPadding2D(padding=self.padding, name=self.name)
 
@@ -155,7 +155,7 @@ class ZeroPad3d(Layer):
     def __init__(
             self,
             padding,
-            name=None, #'zeropad3d',
+            name=None,  #'zeropad3d',
     ):
         # super(ZeroPad3d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)

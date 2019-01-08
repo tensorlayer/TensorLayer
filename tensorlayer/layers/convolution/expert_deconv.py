@@ -102,33 +102,35 @@ class DeConv2dLayer(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name=None, #'decnn2d_layer',
+            name=None,  #'decnn2d_layer',
     ):
         # super(DeConv2dLayer, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
-        self.act=act
-        self.shape=shape
-        self.output_shape=output_shape
-        self.strides=strides
-        self.padding=padding
-        self.W_init=W_init
-        self.b_init=b_init
-        self.W_init_args=W_init_args
-        self.b_init_args=b_init_args
+        self.act = act
+        self.shape = shape
+        self.output_shape = output_shape
+        self.strides = strides
+        self.padding = padding
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args
+        self.b_init_args = b_init_args
         logging.info(
             "DeConv2dLayer %s: shape: %s out_shape: %s strides: %s pad: %s act: %s" % (
                 self.name, str(shape), str(output_shape), str(strides), padding,
                 self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
+
     def build(self, inputs):
         self.W = tf.get_variable(
-                name=self.name+'\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
-            )
+            name=self.name + '\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
+            **self.W_init_args
+        )
         if self.b_init:
             self.b = tf.get_variable(
-                name=self.name+'\bias', shape=(self.shape[-2]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+                name=self.name + '\bias', shape=(self.shape[-2]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
                 **self.b_init_args
             )
             self.add_weights([self.W, self.b])
@@ -144,7 +146,6 @@ class DeConv2dLayer(Layer):
         if self.act:
             outputs = self.act(outputs)
         return outputs
-
 
 
 class DeConv3dLayer(Layer):
@@ -187,35 +188,38 @@ class DeConv3dLayer(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name=None, #'decnn3d_layer',
+            name=None,  #'decnn3d_layer',
     ):
         # super(DeConv3dLayer, self
-             # ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        # ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
-        self.act=act
-        self.shape=shape
-        self.output_shape=output_shape
-        self.strides=strides
-        self.padding=padding
-        self.W_init=W_init
-        self.b_init=b_init
-        self.W_init_args=W_init_args
-        self.b_init_args=b_init_args
+        self.act = act
+        self.shape = shape
+        self.output_shape = output_shape
+        self.strides = strides
+        self.padding = padding
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args
+        self.b_init_args = b_init_args
         logging.info(
             "DeConv3dLayer %s: shape: %s out_shape: %s strides: %s pad: %s act: %s" % (
                 self.name, str(shape), str(output_shape), str(strides), padding,
                 self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
+
     def build(self, inputs):
         self.W = tf.get_variable(
-            name=self.name+'\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            name=self.name + '\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
+            **self.W_init_args
         )
         if self.b_init:
             self.b = tf.get_variable(
-                name=self.name+'\kernel', shape=(self.shape[-2]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
-                **self.b_init_args
+                name=self.name + '\kernel', shape=(self.shape[-2]), initializer=self.b_init,
+                dtype=LayersConfig.tf_dtype, **self.b_init_args
             )
+
     def forward(self, inputs):
         outputs = tf.nn.conv3d_transpose(
             inputs, self.W, output_shape=self.output_shape, strides=self.strides, padding=self.padding

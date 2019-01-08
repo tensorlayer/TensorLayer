@@ -58,13 +58,13 @@ class TernaryDense(Layer):
         # super(TernaryDense, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
-        self.n_units=n_units
-        self.act=act
-        self.use_gemm=use_gemm
-        self.W_init=W_init
-        self.b_init=b_init
-        self.W_init_args=W_init_args
-        self.b_init_args=b_init_args
+        self.n_units = n_units
+        self.act = act
+        self.use_gemm = use_gemm
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args
+        self.b_init_args = b_init_args
         logging.info(
             "TernaryDense  %s: %d %s" %
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
@@ -80,15 +80,19 @@ class TernaryDense(Layer):
         n_in = int(inputs.get_shape()[-1])
 
         self.W = tf.get_variable(
-                name=self.name+'\W', shape=(n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
-            )
+            name=self.name + '\W', shape=(n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype,
+            **self.W_init_args
+        )
         if self.b_init is not None:
             try:
                 self.b = tf.get_variable(
-                    name=self.name+'\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    name=self.name + '\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+                    **self.b_init_args
                 )
             except Exception:  # If initializer is a constant, do not specify shape.
-                self.b = tf.get_variable(name=self.name+'\b', initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
+                self.b = tf.get_variable(
+                    name=self.name + '\b', initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                )
             self.add_weights([self.W, self.b])
         else:
             self.add_weights(self.W)
@@ -106,5 +110,5 @@ class TernaryDense(Layer):
         if self.b_init is not None:
             outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
         if self.act:
-        outputs = self.act(outputs)
+            outputs = self.act(outputs)
         return outputs

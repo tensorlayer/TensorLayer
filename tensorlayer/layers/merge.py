@@ -54,7 +54,7 @@ class Concat(Layer):
     def __init__(
             self,
             concat_dim=-1,
-            name=None, #'concat',
+            name=None,  #'concat',
     ):
 
         # super(ConcatLayer, self).__init__(prev_layer=prev_layer, name=name)
@@ -114,14 +114,15 @@ class Elementwise(Layer):
             self,
             combine_fn=tf.minimum,
             act=None,
-            name=None, #'elementwise',
+            name=None,  #'elementwise',
     ):
 
         # super(Elementwise, self).__init__(prev_layer=prev_layer, act=act, name=name)
         super().__init__(name)
 
         logging.info(
-            "Elementwise %s: fn: %s act: %s" % (self.name, combine_fn.__name__, ('No Activation' if self.act is None else self.act.__name__))
+            "Elementwise %s: fn: %s act: %s" %
+            (self.name, combine_fn.__name__, ('No Activation' if self.act is None else self.act.__name__))
         )
 
     def build(self, inputs):

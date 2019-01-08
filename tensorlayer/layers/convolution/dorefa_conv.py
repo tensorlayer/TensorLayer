@@ -75,24 +75,24 @@ class DorefaConv2d(Layer):
             W_init_args=None,
             b_init_args=None,
             use_cudnn_on_gpu=None,
-            name=None, #'dorefa_cnn2d',
+            name=None,  #'dorefa_cnn2d',
     ):
         # super(DorefaConv2d, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
-        self.bitW=bitW
-        self.bitA=bitA
-        self.n_filter=n_filter
-        self.filter_size=filter_size
-        self.strides=strides
-        self.act=act
-        self.padding=padding
-        self.data_format=data_format
-        self.use_gemm=use_gemm
-        self.W_init=W_init
-        self.b_init=b_init
+        self.bitW = bitW
+        self.bitA = bitA
+        self.n_filter = n_filter
+        self.filter_size = filter_size
+        self.strides = strides
+        self.act = act
+        self.padding = padding
+        self.data_format = data_format
+        self.use_gemm = use_gemm
+        self.W_init = W_init
+        self.b_init = b_init
         self.W_init_args = W_init_args
-        self.b_init_args =b_init_args
+        self.b_init_args = b_init_args
         self.use_cudnn_on_gpu = use_cudnn_on_gpu
         logging.info(
             "DorefaConv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
@@ -100,6 +100,7 @@ class DorefaConv2d(Layer):
                 self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
+
     def build(self, inputs):
 
         if self.use_gemm:
@@ -118,11 +119,12 @@ class DorefaConv2d(Layer):
         self.strides = (1, self.strides[0], self.strides[1], 1)
 
         self.W = tf.get_variable(
-                name=self.name+'\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
-            )
+            name=self.name + '\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
+            **self.W_init_args
+        )
         if self.b_init:
             self.b = tf.get_variable(
-                name=self.name+'\bias', shape=(self.shape[-1]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+                name=self.name + '\bias', shape=(self.shape[-1]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
                 **self.b_init_args
             )
             self.add_weights([self.W, self.b])
@@ -143,6 +145,6 @@ class DorefaConv2d(Layer):
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
         if self.act:
-        outputs = self.act(outputs)
+            outputs = self.act(outputs)
 
         return outputs

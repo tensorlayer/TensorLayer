@@ -39,7 +39,7 @@ class Flatten(Layer):
 
     """
 
-    def __init__(self, name=None): #'flatten'):
+    def __init__(self, name=None):  #'flatten'):
         # super(Flatten, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         logging.info("Flatten %s:" % (self.name))
@@ -49,7 +49,6 @@ class Flatten(Layer):
 
     def forward(self, inputs):
         outputs = flatten_reshape(inputs, name=self.name)
-
 
 
 class Reshape(Layer):
@@ -74,7 +73,7 @@ class Reshape(Layer):
 
     """
 
-    def __init__(self, shape, name=None):#'reshape'):
+    def __init__(self, shape, name=None):  #'reshape'):
         # super(Reshape, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.shape = shape
@@ -112,7 +111,7 @@ class Transpose(Layer):
 
     """
 
-    def __init__(self, perm, name=None):#'transpose'):
+    def __init__(self, perm, name=None):  #'transpose'):
         # super(Transpose, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.perm = perm

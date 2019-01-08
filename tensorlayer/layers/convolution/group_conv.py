@@ -56,44 +56,49 @@ class GroupConv2d(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name=None, #'groupconv',
+            name=None,  #'groupconv',
     ):  # Windaway
 
         # super(GroupConv2d, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
-        self.n_filter=n_filter
-        self.filter_size=filter_size
-        self.strides=strides
-        self.n_group=n_group
-        self.act=act
-        self.padding=padding
-        self.W_init=W_init
-        self.b_init=b_init
-        self.W_init_args=W_init_args
-        self.b_init_args=b_init_args
+        self.n_filter = n_filter
+        self.filter_size = filter_size
+        self.strides = strides
+        self.n_group = n_group
+        self.act = act
+        self.padding = padding
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args
+        self.b_init_args = b_init_args
         logging.info(
             "GroupConv2d %s: n_filter: %d size: %s strides: %s n_group: %d pad: %s act: %s" % (
                 self.name, n_filter, str(filter_size), str(strides), n_group, padding,
                 self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
+
     def build(self, inputs):
-        self.groupConv = lambda i, k: tf.nn.conv2d(i, k, strides=[1, self.strides[0], self.strides[1], 1], padding=self.padding)
+        self.groupConv = lambda i, k: tf.nn.conv2d(
+            i, k, strides=[1, self.strides[0], self.strides[1], 1], padding=self.padding
+        )
         channels = int(inputs.get_shape()[-1])
 
         self.We = tf.get_variable(
-            name=self.name+'\W', shape=[self.filter_size[0], self.filter_size[1], channels / self.n_group, self.n_filter], initializer=self.W_init,
-            dtype=LayersConfig.tf_dtype, trainable=True, **self.W_init_args
+            name=self.name + '\W',
+            shape=[self.filter_size[0], self.filter_size[1], channels / self.n_group, self.n_filter],
+            initializer=self.W_init, dtype=LayersConfig.tf_dtype, trainable=True, **self.W_init_args
         )
         if self.b_init:
             self.b = tf.get_variable(
-                name=self.name+'\b', shape=self.n_filter, initializer=self.b_init, dtype=LayersConfig.tf_dtype, trainable=True,
-                **self.b_init_args
+                name=self.name + '\b', shape=self.n_filter, initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+                trainable=True, **self.b_init_args
             )
             self.add_weights([self.We, self.b])
         else:
             self.add_weights(self.We)
+
     def forward(self, inputs):
         if self.n_group == 1:
             outputs = self.groupConv(inputs, self.We)

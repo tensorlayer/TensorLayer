@@ -83,7 +83,7 @@ class TernaryConv2d(Layer):
             W_init_args=None,
             b_init_args=None,
             use_cudnn_on_gpu=None,
-            name=None, #'ternary_cnn2d',
+            name=None,  #'ternary_cnn2d',
     ):
         # super(TernaryConv2d, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
@@ -125,16 +125,18 @@ class TernaryConv2d(Layer):
         self.strides = (1, self.strides[0], self.strides[1], 1)
 
         self.W = tf.get_variable(
-                name=self.name+'\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
-            )
+            name=self.name + '\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
+            **self.W_init_args
+        )
         if self.b_init:
             self.b = tf.get_variable(
-                name=self.name+'\bias', shape=(self.shape[-1]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+                name=self.name + '\bias', shape=(self.shape[-1]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
                 **self.b_init_args
             )
             self.add_weights([self.W, self.b])
         else:
             self.add_weights(self.W)
+
     def forward(self, inputs):
 
         alpha = compute_alpha(self.W)

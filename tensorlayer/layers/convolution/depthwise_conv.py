@@ -84,7 +84,7 @@ class DepthwiseConv2d(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name=None, #'depthwise_conv2d',
+            name=None,  #'depthwise_conv2d',
     ):
         # super(DepthwiseConv2d, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
@@ -109,7 +109,7 @@ class DepthwiseConv2d(Layer):
 
     def build(self, inputs):
         self.pre_channel = inputs.shape.as_list[-1]
-        if self.pre_channel is None: # if pre_channel is ?, it happens when using Spatial Transformer Net
+        if self.pre_channel is None:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             self.pre_channel = 1
             logging.info("[warnings] unknown input channels, set to 1")
 
@@ -122,13 +122,14 @@ class DepthwiseConv2d(Layer):
             raise AssertionError("len(strides) should be 4.")
 
         self.W = tf.get_variable(
-            name=self.name+'\W_depthwise2d', shape=self.filter_size, initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            name=self.name + '\W_depthwise2d', shape=self.filter_size, initializer=self.W_init,
+            dtype=LayersConfig.tf_dtype, **self.W_init_args
         )  # [filter_height, filter_width, in_channels, depth_multiplier]
 
         if self.b_init:
             self.b = tf.get_variable(
-                name=self.name+'\b_depthwise2d', shape=(self.pre_channel * self.depth_multiplier), initializer=self.b_init,
-                dtype=LayersConfig.tf_dtype, **self.b_init_args
+                name=self.name + '\b_depthwise2d', shape=(self.pre_channel * self.depth_multiplier),
+                initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
             )
             self.add_weights([self.W, self.b])
         else:
@@ -136,7 +137,9 @@ class DepthwiseConv2d(Layer):
 
     def forward(self, inputs):
 
-        outputs = tf.nn.depthwise_conv2d(inputs, self.W, strides=self.strides, padding=self.padding, rate=self.dilation_rate)
+        outputs = tf.nn.depthwise_conv2d(
+            inputs, self.W, strides=self.strides, padding=self.padding, rate=self.dilation_rate
+        )
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
         outputs = self.act(outputs)

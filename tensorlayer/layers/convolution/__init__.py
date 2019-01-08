@@ -45,9 +45,9 @@ __all__ = [
     'DeConv3dLayer',
 
     # atrous
-    'AtrousConv1dLayer',
-    'AtrousConv2dLayer',
-    'AtrousDeConv2dLayer',
+    # 'AtrousConv1dLayer',
+    # 'AtrousConv2dLayer',
+    'AtrousDeConv2d',
 
     # binary
     'BinaryConv2d',
