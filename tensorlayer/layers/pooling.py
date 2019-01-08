@@ -454,18 +454,31 @@ class MeanPool3d(Layer):
 
     def build(self, inputs):
         self.strides=[1, self.strides[0], self.strides[1], self.strides[2], 1]
+        if self.data_format == 'channels_last':
+            self.data_format == 'NDHWC'
+        elif self.data_format == 'channels_first':
+            self.data_format = 'NCDHW'
+        else:
+            raise Exception("unsupport data format")
 
     def forward(self, inputs):
         """
         prev_layer : :class:`Layer`
             The previous layer with a output rank as 5.
         """
-        self.outputs = tf.layers.average_pooling3d(
-            prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
+        # self.outputs = tf.layers.average_pooling3d(
+        #     prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
+        # )
+        # self._add_layers(self.outputs)
+        outputs = tf.nn.avg_pool3d(
+            input=inputs,
+            ksize=self.filter_size,
+            strides=self.strides,
+            padding=self.filter_size,
+            data_format=self.data_format,
+            name=self.name,
         )
-
-        self._add_layers(self.outputs)
-
+        return outputs
 
 class GlobalMaxPool1d(Layer):
     """The :class:`GlobalMaxPool1d` class is a 1D Global Max Pooling layer.
