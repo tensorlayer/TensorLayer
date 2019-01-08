@@ -101,7 +101,7 @@ class MaxPool1d(Layer):
             self,
             filter_size=3,
             strides=2,
-            padding='valid',
+            padding='SAME',
             data_format='channels_last',
             name=None,  #'maxpool1d'
     ):
@@ -118,37 +118,42 @@ class MaxPool1d(Layer):
         )
 
     def build(self, inputs):
-        # pass
         # https://www.tensorflow.org/api_docs/python/tf/nn/pool
         if self.data_format == 'channels_last':
-            self.data_format == 'NWC'
+            self.data_format = 'NWC'
         elif self.data_format == 'channels_first':
-            self.data_format == 'NCW'
+            self.data_format = 'NCW'
         else:
-            raise Exception("unsupport data format")
+            raise Exception("unsupported data format")
+        self.filter_size = [self.filter_size]
+        self.strides = [self.strides]
 
     def forward(self, inputs):
         """
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 3 [batch, length, channel].
+        prev_layer : :class:`Layer`  # NO PREVIOUS LAYER NOW
+            The previous layer with a output rank as 3 [batch, length(width), channel].
         """
         ## TODO : tf.layers will be removed in TF 2.0
         # outputs = tf.layers.max_pooling1d(
         #     inputs, self.filter_size, self.strides, padding=self.padding, data_format=self.data_format, name=self.name
         # )
         # https://www.tensorflow.org/api_docs/python/tf/nn/pool
+        print(self.strides, self.data_format)
         outputs = tf.nn.pool(
-            inputs, window_shape=1, pooling_type="MAX", padding=self.padding, dilation_rate=None, strides=self.strides,
+            inputs, window_shape=self.filter_size, pooling_type="MAX", padding=self.padding, dilation_rate=None, strides=self.strides,
             name=self.name, data_format=self.data_format
         )
         return outputs
 
-
 # x = tf.placeholder("float32", [None, 100, 3])
-# n = MaxPool1d(name='s')(x)
-# print(n.outputs)
+# n = MaxPool1d(name='sasds')
+# print(type(n))
+# n.build(x)
+# print(n.strides, n.filter_size, n.data_format)
+# # exit()
+# y = n.forward(x)
+# print(type(y), y)#.outputs)
 # exit()
-
 
 class MeanPool1d(Layer):
     """Mean pooling for 1D signal.
@@ -165,7 +170,7 @@ class MeanPool1d(Layer):
         The padding method: 'valid' or 'same'.
     data_format : str
         One of channels_last (default, [batch, length, channel]) or channels_first. The ordering of the dimensions in the inputs.
-    name : str
+    name : None or str
         A unique layer name.
 
     """
@@ -181,7 +186,7 @@ class MeanPool1d(Layer):
             self,  #prev_layer,
             filter_size=3,
             strides=2,
-            padding='valid',
+            padding='SAME',
             data_format='channels_last',
             name=None,  #'meanpool1d'
     ):
@@ -205,7 +210,9 @@ class MeanPool1d(Layer):
         elif self.data_format == 'channels_first':
             self.data_format == 'NCW'
         else:
-            raise Exception("unsupport data format")
+            raise Exception("unsupported data format")
+        self.filter_size = [self.filter_size]
+        self.strides = [self.strides]
 
     def forward(self, inputs):
         # self.outputs = tf.layers.average_pooling1d(
@@ -264,11 +271,11 @@ class MaxPool2d(Layer):
     def build(self, inputs):
         self.strides = [1, self.strides[0], self.strides[1], 1]
         if self.data_format == 'channels_last':
-            self.data_format == 'NHWC'
+            self.data_format = 'NHWC'
         elif self.data_format == 'channels_first':
             self.data_format = 'NCHW'
         else:
-            raise Exception("unsupport data format")
+            raise Exception("unsupported data format")
 
     def forward(self, inputs):
         """
@@ -302,7 +309,7 @@ class MeanPool2d(Layer):
         The padding method: 'valid' or 'same'.
     data_format : str
         One of channels_last (default, [batch, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
-    name : str
+    name : None or str
         A unique layer name.
 
     """
@@ -333,11 +340,11 @@ class MeanPool2d(Layer):
     def build(self, inputs):
         self.strides = [1, self.strides[0], self.strides[1], 1]
         if self.data_format == 'channels_last':
-            self.data_format == 'NHWC'
+            self.data_format = 'NHWC'
         elif self.data_format == 'channels_first':
             self.data_format = 'NCHW'
         else:
-            raise Exception("unsupport data format")
+            raise Exception("unsupported data format")
 
     def forward(self, inputs):
         """
@@ -367,7 +374,7 @@ class MaxPool3d(Layer):
         The padding method: 'valid' or 'same'.
     data_format : str
         One of channels_last (default, [batch, depth, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
-    name : str
+    name : None or str
         A unique layer name.
 
     Returns
@@ -400,11 +407,11 @@ class MaxPool3d(Layer):
     def build(self, inputs):
         self.strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
         if self.data_format == 'channels_last':
-            self.data_format == 'NDHWC'
+            self.data_format = 'NDHWC'
         elif self.data_format == 'channels_first':
             self.data_format = 'NCDHW'
         else:
-            raise Exception("unsupport data format")
+            raise Exception("unsupported data format")
 
     def forward(self, inputs):
         """
@@ -441,7 +448,7 @@ class MeanPool3d(Layer):
         The padding method: 'valid' or 'same'.
     data_format : str
         One of channels_last (default, [batch, depth, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
-    name : str
+    name : None or str
         A unique layer name.
 
     Returns
@@ -475,11 +482,11 @@ class MeanPool3d(Layer):
     def build(self, inputs):
         self.strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
         if self.data_format == 'channels_last':
-            self.data_format == 'NDHWC'
+            self.data_format = 'NDHWC'
         elif self.data_format == 'channels_first':
             self.data_format = 'NCDHW'
         else:
-            raise Exception("unsupport data format")
+            raise Exception("unsupported data format")
 
     def forward(self, inputs):
         """

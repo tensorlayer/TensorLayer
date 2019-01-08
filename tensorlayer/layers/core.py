@@ -113,17 +113,16 @@ class Layer(object):
     # Added to allow auto-completion
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, act=None, name=None, *args, **kwargs):
+    def __init__(self, name=None, act=None, *args, **kwargs):
         # Layer constants
 
         for key in kwargs.keys():
             setattr(self, key, self._argument_dict_checkup(kwargs[key]))
 
         self.act = act if act not in [None, tf.identity] else None
-
         if name is None:
             raise ValueError('Layer must have a name. \n TODO: Hao Dong: could we automatically add layer name when name=None e.g. layer0, layer1, batchnorm, layer3, layer4... ')
-            # name = 'layer' +
+            # name = 'layer' + xxx
 
         # FIXME: double check needed: the scope name may be deprecated in TF2
         # scope_name = tf.get_variable_scope().name
@@ -134,7 +133,7 @@ class Layer(object):
         self.outputs = None
 
         self.all_layers = list()
-        self.all_params = list()
+        self.all_params = list()  # we change params --> weights
         self.all_drop = dict()
 
         # Layer weight state
@@ -284,6 +283,7 @@ class Layer(object):
         return _params
 
     def __str__(self):
+        print("TODO: Hao Dong: in graph mode, layers have outputs, model has all_outputs")
         return "  Last layer is: %s (%s) %s" % (self.__class__.__name__, self.name, self.outputs.get_shape().as_list())
 
     def __getitem__(self, key):
@@ -398,6 +398,10 @@ class Layer(object):
             )
 
         return args if args is not None else {}
+
+    @property
+    def weights(self):
+        return self._weights
 
     # def __getstate__(self): # pickle save
     #     return {'version': 0.1,
