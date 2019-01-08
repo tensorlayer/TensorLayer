@@ -81,7 +81,7 @@ class Tile(Layer):
     [None, 100, 3]
     """
 
-    def __init__(self, multiples=None, name=None):#'tile'):
+    def __init__(self, multiples=None, name=None):  #'tile'):
 
         # super(Tile, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)

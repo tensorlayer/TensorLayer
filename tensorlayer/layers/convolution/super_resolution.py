@@ -71,7 +71,7 @@ class SubpixelConv2d(Layer):
     """
 
     # github/Tetrachrome/subpixel  https://github.com/Tetrachrome/subpixel/blob/master/subpixel.py
-    def __init__(self, scale=2, n_out_channel=None, act=None, name=None):#'subpixel_conv2d'):
+    def __init__(self, scale=2, n_out_channel=None, act=None, name=None):  #'subpixel_conv2d'):
 
         # super(SubpixelConv2d, self).__init__(prev_layer=prev_layer, act=act, name=name)
         super().__init__(name)
@@ -157,7 +157,7 @@ class SubpixelConv1d(Layer):
 
     """
 
-    def __init__(self, scale=2, act=None, name=None):#'subpixel_conv1d'):
+    def __init__(self, scale=2, act=None, name=None):  #'subpixel_conv1d'):
 
         # super(SubpixelConv1d, self).__init__(prev_layer=prev_layer, act=act, name=name)
         super().__init__(name)

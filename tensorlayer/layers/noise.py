@@ -50,7 +50,7 @@ class GaussianNoise(Layer):
             mean=0.0,
             stddev=1.0,
             seed=None,
-            name=None, #'gaussian_noise',
+            name=None,  #'gaussian_noise',
     ):
         # super(GaussianNoise, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)

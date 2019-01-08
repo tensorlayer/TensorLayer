@@ -121,13 +121,14 @@ class BinaryConv2d(Layer):
         self.strides = (1, strides[0], strides[1], 1)
 
         self.W = tf.get_variable(
-                name=self.name+'\W_conv2d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
-            )
+            name=self.name + '\W_conv2d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
+            **self.W_init_args
+        )
 
         if self.b_init:
             self.b = tf.get_variable(
-                name=self.name+'\b_conv2d', shape=(self.shape[-1]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
-                **self.b_init_args
+                name=self.name + '\b_conv2d', shape=(self.shape[-1]), initializer=self.b_init,
+                dtype=LayersConfig.tf_dtype, **self.b_init_args
             )
 
         if self.b_init:

@@ -43,7 +43,7 @@ class Stack(Layer):
     def __init__(
             self,
             axis=1,
-            name=None, #'stack',
+            name=None,  #'stack',
     ):
         # super(Stack, self).__init__(prev_layer=layers, name=name)
         super().__init__(name)
@@ -78,7 +78,7 @@ class UnStack(Layer):
 
     """
 
-    def __init__(self, num=None, axis=0, name=None):#'unstack'):
+    def __init__(self, num=None, axis=0, name=None):  #'unstack'):
         # super(UnStack, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.num = num

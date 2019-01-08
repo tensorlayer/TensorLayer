@@ -52,7 +52,7 @@ class LocalResponseNorm(Layer):
             bias=None,
             alpha=None,
             beta=None,
-            name=None, #'lrn',
+            name=None,  #'lrn',
     ):
         # super(LocalResponseNorm, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
@@ -76,7 +76,6 @@ class LocalResponseNorm(Layer):
         """
         outputs = tf.nn.lrn(inputs, depth_radius=self.depth_radius, bias=self.bias, alpha=self.alpha, beta=self.beta)
         return outputs
-
 
 
 def _to_channel_first_bias(b):
@@ -287,7 +286,7 @@ class InstanceNorm(Layer):
             self,
             act=None,
             epsilon=1e-5,
-            name=None, #'instan_norm',
+            name=None,  #'instan_norm',
     ):
         # super(InstanceNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
         super().__init__(name)
@@ -301,12 +300,12 @@ class InstanceNorm(Layer):
 
     def build(self, inputs):
         self.scale = tf.get_variable(
-            self.name+'\scale', [inputs.get_shape()[-1]],
+            self.name + '\scale', [inputs.get_shape()[-1]],
             initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype
         )
 
         self.offset = tf.get_variable(
-            self.name+'\offset', [inputs.get_shape()[-1]], initializer=tf.constant_initializer(0.0),
+            self.name + '\offset', [inputs.get_shape()[-1]], initializer=tf.constant_initializer(0.0),
             dtype=LayersConfig.tf_dtype
         )
 
@@ -408,7 +407,7 @@ class GroupNorm(Layer):
 
     """
 
-    def __init__(self, groups=32, epsilon=1e-06, act=None, data_format='channels_last', name=None):#'groupnorm'):
+    def __init__(self, groups=32, epsilon=1e-06, act=None, data_format='channels_last', name=None):  #'groupnorm'):
         # super(GroupNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
         super().__init__(name)
         self.groups = groups
@@ -507,7 +506,7 @@ class SwitchNorm(Layer):
             beta_init=tf.constant_initializer(0.0),
             gamma_init=tf.constant_initializer(1.0),
             moving_mean_init=tf.zeros_initializer(),
-            name=None, #'switchnorm',
+            name=None,  #'switchnorm',
     ):
         # super(SwitchNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
         super().__init__(name)

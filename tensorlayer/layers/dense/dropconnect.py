@@ -66,7 +66,7 @@ class DropconnectDense(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name=None, # 'dropconnect',
+            name=None,  # 'dropconnect',
     ):
         # super(DropconnectDense, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
@@ -92,11 +92,13 @@ class DropconnectDense(Layer):
         self.n_in = self.inputs.shape.as_list()[-1]
 
         self.W = tf.get_variable(
-                name=self.name+'\W', shape=(self.n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
-            )
+            name=self.name + '\W', shape=(self.n_in, self.n_units), initializer=self.W_init,
+            dtype=LayersConfig.tf_dtype, **self.W_init_args
+        )
         if self.b_init:
             self.b = tf.get_variable(
-                name=self.name+'\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                name=self.name + '\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+                **self.b_init_args
             )
             self.add_weights([self.W, self.b])
         else:

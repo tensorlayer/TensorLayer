@@ -43,8 +43,11 @@ class PRelu(Layer):
     """
 
     def __init__(
-            self, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
-            a_init_args=None, name=None # "prelu"
+            self,
+            channel_shared=False,
+            a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            a_init_args=None,
+            name=None  # "prelu"
     ):
 
         # super(PRelu, self).__init__(prev_layer=prev_layer, act=tf.nn.leaky_relu, a_init_args=a_init_args, name=name)
@@ -62,21 +65,15 @@ class PRelu(Layer):
             w_shape = self.inputs.shape.as_list()[-1]
 
         self.alpha_var = tf.get_variable(
-            name=self.name+'/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
+            name=self.name + '/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
+            **self.a_init_args
         )
 
         self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
         self.add_weights(self.alpha_var)
 
     def forward(self, inputs):
-        outputs = self._apply_activation(
-            inputs, **{
-                'alpha': self.alpha_var_constrained,
-                'name': "prelu_activation"
-            }
-        )
-
-
+        outputs = self._apply_activation(inputs, **{'alpha': self.alpha_var_constrained, 'name': "prelu_activation"})
 
 
 class PRelu6(Layer):
@@ -118,8 +115,11 @@ class PRelu6(Layer):
     """
 
     def __init__(
-            self, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
-            a_init_args=None, name=None # "prelu6"
+            self,
+            channel_shared=False,
+            a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            a_init_args=None,
+            name=None  # "prelu6"
     ):
 
         # super(PRelu6, self).__init__(prev_layer=prev_layer, act=leaky_relu6, a_init_args=a_init_args, name=name)
@@ -137,7 +137,8 @@ class PRelu6(Layer):
             w_shape = self.inputs.shape.as_list()[-1]
 
         self.alpha_var = tf.get_variable(
-            name=self.name+'/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
+            name=self.name + '/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
+            **self.a_init_args
         )
 
         self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
@@ -151,7 +152,6 @@ class PRelu6(Layer):
             }
         )
         return outputs
-
 
 
 class PTRelu6(Layer):
@@ -195,8 +195,11 @@ class PTRelu6(Layer):
     """
 
     def __init__(
-            self, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
-            a_init_args=None, name=None # "ptreLU6"
+            self,
+            channel_shared=False,
+            a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            a_init_args=None,
+            name=None  # "ptreLU6"
     ):
 
         # super(PTRelu6, self).__init__(prev_layer=prev_layer, act=leaky_twice_relu6, a_init_args=a_init_args, name=name)
@@ -215,14 +218,16 @@ class PTRelu6(Layer):
 
         # Alpha for outputs lower than zeros
         self.alpha_low = tf.get_variable(
-            name=self.name+'/alpha_low', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
+            name=self.name + '/alpha_low', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
+            **self.a_init_args
         )
 
         self.alpha_low_constrained = tf.nn.sigmoid(self.alpha_low, name="constraining_alpha_low_in_0_1")
 
         # Alpha for outputs higher than 6
         self.alpha_high = tf.get_variable(
-            name=self.name+'/alpha_high', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
+            name=self.name + '/alpha_high', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
+            **self.a_init_args
         )
 
         self.alpha_high_constrained = tf.nn.sigmoid(self.alpha_high, name="constraining_alpha_high_in_0_1")

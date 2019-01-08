@@ -31,6 +31,7 @@ class Dropout(Layer):
         A unique layer name.
 
     """
+
     def __init__(self, keep, seed, name=None):  #"dropout"):
         super().__init__(name)
         self.keep = keep

@@ -60,7 +60,7 @@ class Conv1dLayer(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name=None, #'cnn1d',
+            name=None,  #'cnn1d',
     ):
         # super(Conv1dLayer, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
@@ -85,12 +85,13 @@ class Conv1dLayer(Layer):
 
     def build(self, inputs):
         self.W = tf.get_variable(
-                name=self.name+'\W_conv1d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
-            )
+            name=self.name + '\W_conv1d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
+            **self.W_init_args
+        )
         if self.b_init:
             self.b = tf.get_variable(
-                name=self.name+'\b_conv1d', shape=(self.shape[-1]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
-                **self.b_init_args
+                name=self.name + '\b_conv1d', shape=(self.shape[-1]), initializer=self.b_init,
+                dtype=LayersConfig.tf_dtype, **self.b_init_args
             )
             self.add_weights([self.W, self.b])
         else:
@@ -107,7 +108,6 @@ class Conv1dLayer(Layer):
 
         outputs = self.act(outputs)
         return outputs
-
 
 
 class Conv2dLayer(Layer):
@@ -191,7 +191,7 @@ class Conv2dLayer(Layer):
             W_init_args=None,
             b_init_args=None,
             use_cudnn_on_gpu=None,
-            name=None, #'cnn_layer',
+            name=None,  #'cnn_layer',
     ):
         # super(Conv2dLayer, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
@@ -216,12 +216,13 @@ class Conv2dLayer(Layer):
 
     def build(self, inputs):
         self.W = tf.get_variable(
-            name=self.name+'\W_conv2d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            name=self.name + '\W_conv2d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
+            **self.W_init_args
         )
         if self.b_init:
             self.b = tf.get_variable(
-                name=self.name+'\b_conv2d', shape=(self.shape[-1]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
-                **self.b_init_args
+                name=self.name + '\b_conv2d', shape=(self.shape[-1]), initializer=self.b_init,
+                dtype=LayersConfig.tf_dtype, **self.b_init_args
             )
             self.add_weights([self.W, self.b])
         else:
@@ -240,7 +241,6 @@ class Conv2dLayer(Layer):
         if self.act:
             outputs = self.act(outputs)
         return outputs
-
 
 
 class Conv3dLayer(Layer):
@@ -293,7 +293,7 @@ class Conv3dLayer(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name=None, #'cnn3d_layer',
+            name=None,  #'cnn3d_layer',
     ):
         # super(Conv3dLayer, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
@@ -318,17 +318,19 @@ class Conv3dLayer(Layer):
 
     def build(self, inputs):
         self.W = tf.get_variable(
-                name=self.name+'\W_conv3d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
-            )
+            name=self.name + '\W_conv3d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
+            **self.W_init_args
+        )
 
         if self.b_init:
             self.b = tf.get_variable(
-                name=self.name+'\b_conv3d', shape=(self.shape[-1]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
-                **self.b_init_args
+                name=self.name + '\b_conv3d', shape=(self.shape[-1]), initializer=self.b_init,
+                dtype=LayersConfig.tf_dtype, **self.b_init_args
             )
             self.add_weights([self.W, self.b])
         else:
             self.add_weights(self.W)
+
     def forward(self, inputs):
 
         outputs = tf.nn.conv3d(inputs, self.W, strides=self.strides, padding=self.padding, name=self.name)

@@ -60,7 +60,7 @@ class PoolLayer(Layer):
             strides=(1, 2, 2, 1),
             padding='SAME',
             pool=tf.nn.max_pool,
-            name=None, #'pool_pro',
+            name=None,  #'pool_pro',
     ):
         # super(PoolLayer, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
@@ -98,7 +98,12 @@ class MaxPool1d(Layer):
     """
 
     def __init__(
-            self, filter_size=3, strides=2, padding='valid', data_format='channels_last', name=None, #'maxpool1d'
+            self,
+            filter_size=3,
+            strides=2,
+            padding='valid',
+            data_format='channels_last',
+            name=None,  #'maxpool1d'
     ):
         # super(MaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
@@ -133,20 +138,17 @@ class MaxPool1d(Layer):
         # )
         # https://www.tensorflow.org/api_docs/python/tf/nn/pool
         outputs = tf.nn.pool(
-            inputs,
-            window_shape=1,
-            pooling_type="MAX",
-            padding=self.padding,
-            dilation_rate=None,
-            strides=self.strides,
-            name=self.name,
-            data_format=self.data_format
+            inputs, window_shape=1, pooling_type="MAX", padding=self.padding, dilation_rate=None, strides=self.strides,
+            name=self.name, data_format=self.data_format
         )
         return outputs
+
+
 # x = tf.placeholder("float32", [None, 100, 3])
 # n = MaxPool1d()(x)
 # print(n.outputs)
 # exit()
+
 
 class MeanPool1d(Layer):
     """Mean pooling for 1D signal.
@@ -176,8 +178,12 @@ class MeanPool1d(Layer):
     # net_new.all_layers.extend([outputs])
     # return net_new
     def __init__(
-            self, #prev_layer,
-            filter_size=3, strides=2, padding='valid', data_format='channels_last', name=None, #'meanpool1d'
+            self,  #prev_layer,
+            filter_size=3,
+            strides=2,
+            padding='valid',
+            data_format='channels_last',
+            name=None,  #'meanpool1d'
     ):
         # super(MeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
@@ -208,16 +214,11 @@ class MeanPool1d(Layer):
         # self._add_layers(self.outputs)
         # https://www.tensorflow.org/api_docs/python/tf/nn/pool
         outputs = tf.nn.pool(
-            inputs,
-            window_shape=1,
-            pooling_type="AVG",
-            padding=self.padding,
-            dilation_rate=None,
-            strides=self.strides,
-            name=self.name,
-            data_format=self.data_format
+            inputs, window_shape=1, pooling_type="AVG", padding=self.padding, dilation_rate=None, strides=self.strides,
+            name=self.name, data_format=self.data_format
         )
         return outputs
+
 
 class MaxPool2d(Layer):
     """Max pooling for 2D image.
@@ -236,19 +237,24 @@ class MaxPool2d(Layer):
         A unique layer name.
 
     """
+
     def __init__(
-            self, filter_size=(3, 3), strides=(2, 2), padding='SAME', data_format='channels_last',
-            name=None, #'maxpool2d'
+            self,
+            filter_size=(3, 3),
+            strides=(2, 2),
+            padding='SAME',
+            data_format='channels_last',
+            name=None,  #'maxpool2d'
     ):
         if strides is None:
             strides = filter_size
 
         # super(MaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
-        self.filter_size=filter_size
-        self.strides=strides
-        self.padding=padding
-        self.data_format=data_format
+        self.filter_size = filter_size
+        self.strides = strides
+        self.padding = padding
+        self.data_format = data_format
 
         logging.info(
             "MaxPool2d %s: filter_size: %s strides: %s padding: %s" %
@@ -256,7 +262,7 @@ class MaxPool2d(Layer):
         )
 
     def build(self, inputs):
-        self.strides=[1, self.strides[0], self.strides[1], 1]
+        self.strides = [1, self.strides[0], self.strides[1], 1]
         if self.data_format == 'channels_last':
             self.data_format == 'NHWC'
         elif self.data_format == 'channels_first':
@@ -280,6 +286,7 @@ class MaxPool2d(Layer):
         #         name = name)
         return outputs
 
+
 class MeanPool2d(Layer):
     """Mean pooling for 2D image [batch, height, width, channel].
 
@@ -299,20 +306,24 @@ class MeanPool2d(Layer):
         A unique layer name.
 
     """
+
     def __init__(
-            self, #prev_layer,
-            filter_size=(3, 3), strides=(2, 2), padding='SAME', data_format='channels_last',
-            name=None,#'meanpool2d'
+            self,  #prev_layer,
+            filter_size=(3, 3),
+            strides=(2, 2),
+            padding='SAME',
+            data_format='channels_last',
+            name=None,  #'meanpool2d'
     ):
         if strides is None:
             strides = filter_size
 
         # super(MeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
-        self.filter_size=filter_size
-        self.strides=strides
-        self.padding=padding
-        self.data_format=data_format
+        self.filter_size = filter_size
+        self.strides = strides
+        self.padding = padding
+        self.data_format = data_format
 
         logging.info(
             "MeanPool2d %s: filter_size: %s strides: %s padding: %s" %
@@ -320,7 +331,7 @@ class MeanPool2d(Layer):
         )
 
     def build(self, inputs):
-        self.strides=[1, self.strides[0], self.strides[1], 1]
+        self.strides = [1, self.strides[0], self.strides[1], 1]
         if self.data_format == 'channels_last':
             self.data_format == 'NHWC'
         elif self.data_format == 'channels_first':
@@ -339,6 +350,7 @@ class MeanPool2d(Layer):
         # self._add_layers(self.outputs)
         outputs = tf.nn.avg_pool(inputs, ksize=self.strides, strides=self.strides, padding=self.padding, name=self.name)
         return outputs
+
 
 class MaxPool3d(Layer):
     """Max pooling for 3D volume.
@@ -364,17 +376,21 @@ class MaxPool3d(Layer):
         A max pooling 3-D layer with a output rank as 5.
 
     """
+
     def __init__(
-            self, #prev_layer,
-            filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last',
-            name=None, #'maxpool3d'
+            self,  #prev_layer,
+            filter_size=(3, 3, 3),
+            strides=(2, 2, 2),
+            padding='valid',
+            data_format='channels_last',
+            name=None,  #'maxpool3d'
     ):
         # super(MaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
-        self.filter_size=filter_size
-        self.strides=strides
-        self.padding=padding
-        self.data_format=data_format
+        self.filter_size = filter_size
+        self.strides = strides
+        self.padding = padding
+        self.data_format = data_format
 
         logging.info(
             "MaxPool3d %s: filter_size: %s strides: %s padding: %s" %
@@ -382,7 +398,7 @@ class MaxPool3d(Layer):
         )
 
     def build(self, inputs):
-        self.strides=[1, self.strides[0], self.strides[1], self.strides[2], 1]
+        self.strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
         if self.data_format == 'channels_last':
             self.data_format == 'NDHWC'
         elif self.data_format == 'channels_first':
@@ -408,6 +424,7 @@ class MaxPool3d(Layer):
             name=self.name,
         )
         return outputs
+
 
 class MeanPool3d(Layer):
     """Mean pooling for 3D volume.
@@ -435,17 +452,20 @@ class MeanPool3d(Layer):
     """
 
     def __init__(
-            self, #prev_layer,
-            filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last',
-            name=None, #'meanpool3d'
+            self,  #prev_layer,
+            filter_size=(3, 3, 3),
+            strides=(2, 2, 2),
+            padding='valid',
+            data_format='channels_last',
+            name=None,  #'meanpool3d'
     ):
 
         # super(MeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
-        self.filter_size=filter_size
-        self.strides=strides
-        self.padding=padding
-        self.data_format=data_format
+        self.filter_size = filter_size
+        self.strides = strides
+        self.padding = padding
+        self.data_format = data_format
 
         logging.info(
             "MeanPool3d %s: filter_size: %s strides: %s padding: %s" %
@@ -453,7 +473,7 @@ class MeanPool3d(Layer):
         )
 
     def build(self, inputs):
-        self.strides=[1, self.strides[0], self.strides[1], self.strides[2], 1]
+        self.strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
         if self.data_format == 'channels_last':
             self.data_format == 'NDHWC'
         elif self.data_format == 'channels_first':
@@ -480,6 +500,7 @@ class MeanPool3d(Layer):
         )
         return outputs
 
+
 class GlobalMaxPool1d(Layer):
     """The :class:`GlobalMaxPool1d` class is a 1D Global Max Pooling layer.
 
@@ -498,7 +519,7 @@ class GlobalMaxPool1d(Layer):
     [None, 30]
     """
 
-    def __init__(self, data_format="channels_last", name=None):#'globalmaxpool1d'):
+    def __init__(self, data_format="channels_last", name=None):  #'globalmaxpool1d'):
         # super(GlobalMaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info("GlobalMaxPool1d %s" % self.name)
@@ -542,7 +563,7 @@ class GlobalMeanPool1d(Layer):
     [None, 30]
     """
 
-    def __init__(self, data_format='channels_last', name=None):#'globalmeanpool1d'):
+    def __init__(self, data_format='channels_last', name=None):  #'globalmeanpool1d'):
         # super(GlobalMeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.data_format = data_format
@@ -587,7 +608,7 @@ class GlobalMaxPool2d(Layer):
     [None, 30]
     """
 
-    def __init__(self, data_format='channels_last', name=None):#'globalmaxpool2d'):
+    def __init__(self, data_format='channels_last', name=None):  #'globalmaxpool2d'):
         # super(GlobalMaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.data_format = data_format
@@ -632,7 +653,7 @@ class GlobalMeanPool2d(Layer):
     [None, 30]
     """
 
-    def __init__(self, data_format='channels_last', name=None):#'globalmeanpool2d'):
+    def __init__(self, data_format='channels_last', name=None):  #'globalmeanpool2d'):
         # super(GlobalMeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         logging.info("GlobalMeanPool2d %s" % self.name)
@@ -676,7 +697,7 @@ class GlobalMaxPool3d(Layer):
     [None, 30]
     """
 
-    def __init__(self, data_format='channels_last', name=None):#'globalmaxpool3d'):
+    def __init__(self, data_format='channels_last', name=None):  #'globalmaxpool3d'):
         # super(GlobalMaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.data_format = data_format
@@ -721,7 +742,7 @@ class GlobalMeanPool3d(Layer):
     [None, 30]
     """
 
-    def __init__(self, data_format='channels_last', name=None):#'globalmeanpool3d'):
+    def __init__(self, data_format='channels_last', name=None):  #'globalmeanpool3d'):
         # super(GlobalMeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.data_format = data_format

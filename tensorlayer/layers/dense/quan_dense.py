@@ -58,24 +58,25 @@ class QuanDense(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name=None, #'quan_dense',
+            name=None,  #'quan_dense',
     ):
         # super(QuanDense, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
-        self.n_units=n_units
-        self.act=act
-        self.bitW=bitW
-        self.bitA=bitA
-        self.use_gemm=use_gemm
-        self.W_init=W_init
-        self.b_init=b_init
-        self.W_init_args=W_init_args
-        self.b_init_args=b_init_args
+        self.n_units = n_units
+        self.act = act
+        self.bitW = bitW
+        self.bitA = bitA
+        self.use_gemm = use_gemm
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args
+        self.b_init_args = b_init_args
         logging.info(
             "QuanDense  %s: %d %s" %
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
+
     def build(self, inputs):
         if inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
@@ -86,16 +87,20 @@ class QuanDense(Layer):
         n_in = int(inputs.get_shape()[-1])
 
         self.W = tf.get_variable(
-                name=self.name+'\W', shape=(n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
-            )
+            name=self.name + '\W', shape=(n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype,
+            **self.W_init_args
+        )
 
         if self.b_init is not None:
             try:
                 self.b = tf.get_variable(
-                    name=self.name+'\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    name=self.name + '\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+                    **self.b_init_args
                 )
             except Exception:  # If initializer is a constant, do not specify shape.
-                self.b = tf.get_variable(name=self.name+'\b', initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
+                self.b = tf.get_variable(
+                    name=self.name + '\b', initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                )
             self.add_weights([self.W, self.b])
         else:
             self.add_weights(self.W)

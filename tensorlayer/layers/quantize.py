@@ -32,7 +32,7 @@ class Sign(Layer):
     def __init__(
             self,
             # prev_layer,
-            name=None,#'sign',
+            name=None,  #'sign',
     ):
         # super(Sign, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
@@ -43,8 +43,8 @@ class Sign(Layer):
 
     def forward(inputs):
         # with tf.variable_scope(name):
-            ## self.outputs = tl.act.sign(self.inputs)
-            # self.outputs = quantize(self.inputs)
+        ## self.outputs = tl.act.sign(self.inputs)
+        # self.outputs = quantize(self.inputs)
         outputs = quantize(inputs)
         return outputs
         # self._add_layers(self.outputs)
