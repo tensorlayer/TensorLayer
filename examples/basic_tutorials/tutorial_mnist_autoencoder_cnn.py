@@ -76,7 +76,7 @@ def main_test_layers(model='relu'):
     print_freq = 5
     train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost)
 
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.global_variables_initializer())
 
     net.print_params()
     net.print_layers()
@@ -179,7 +179,7 @@ def main_test_denoise_AE(model='relu'):
         recon_layer1 = tl.layers.ReconLayer(net, x_recon=x, n_units=784, act=tf.nn.sigmoid, name='recon_layer1')
 
     # ready to train
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.global_variables_initializer())
 
     # print all params
     print("All net Params")
@@ -253,7 +253,7 @@ def main_test_stacked_denoise_AE(model='relu'):
     train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost, var_list=train_params)
 
     # Initialize all variables including weights, biases and the variables in train_op
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.global_variables_initializer())
 
     # Pre-train
     print("\nAll net Params before pre-train")
@@ -417,7 +417,7 @@ def main_test_cnn_layer():
     train_params = net.all_params
     train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost, var_list=train_params)
 
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.global_variables_initializer())
     net.print_params()
     net.print_layers()
 

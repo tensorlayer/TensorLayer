@@ -64,7 +64,7 @@ train_op = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.9, beta2=0.999, 
                                   use_locking=False).minimize(cost, var_list=train_params)
 
 # initialize all variables in the session
-tl.layers.initialize_global_variables(sess)
+sess.run(tf.global_variables_initializer())
 
 # train the network
 n_epoch = 500
