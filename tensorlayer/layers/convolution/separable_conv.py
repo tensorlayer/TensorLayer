@@ -66,7 +66,7 @@ class SeparableConv1d(Layer):
             # use_bias=True,
             depthwise_init=None,
             pointwise_init=None,
-            b_init=tf.zeros_initializer(),
+            b_init=tf.compat.v1.initializers.zeros(),
             # depthwise_regularizer=None,
             # pointwise_regularizer=None,
             # bias_regularizer=None,
@@ -89,7 +89,7 @@ class SeparableConv1d(Layer):
             )
         )
         # with tf.variable_scope(name) as vs:
-        nn = tf.layers.SeparableConv1D(
+        nn = tf.compat.v1.layers.SeparableConv1D(
             filters=n_filter,
             kernel_size=filter_size,
             strides=strides,
@@ -173,7 +173,7 @@ class SeparableConv2d(Layer):
             # use_bias=True,
             depthwise_init=None,
             pointwise_init=None,
-            b_init=tf.zeros_initializer(),
+            b_init=tf.compat.v1.initializers.zeros(),
             # depthwise_regularizer=None,
             # pointwise_regularizer=None,
             # bias_regularizer=None,
@@ -202,7 +202,7 @@ class SeparableConv2d(Layer):
         )
 
         # with tf.variable_scope(name) as vs:
-        nn = tf.layers.SeparableConv2D(
+        nn = tf.compat.v1.layers.SeparableConv2D(
             filters=n_filter,
             kernel_size=filter_size,
             strides=strides,

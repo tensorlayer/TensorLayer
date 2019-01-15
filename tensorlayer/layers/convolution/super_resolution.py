@@ -119,7 +119,7 @@ class SubpixelConv2d(Layer):
             # Xr=tf.concat(Xs,2) #b*h*(r*w)*r
             # X=tf.reshape(Xr,(bsize,r*a,r*b,n_out_channel)) # b*(r*h)*(r*w)*c
 
-            X = tf.depth_to_space(X, r)
+            X = tf.compat.v1.depth_to_space(input=X, block_size=r)
         else:
             raise RuntimeError(_err_log)
 
@@ -186,7 +186,7 @@ class SubpixelConv1d(Layer):
 
     @private_method
     def _PS(self, I, r):
-        X = tf.transpose(I, [2, 1, 0])  # (r, w, b)
-        X = tf.batch_to_space_nd(X, [r], [[0, 0]])  # (1, r*w, b)
-        X = tf.transpose(X, [2, 1, 0])
+        X = tf.transpose(a=I, perm=[2, 1, 0])  # (r, w, b)
+        X = tf.batch_to_space(X, [r], [[0, 0]])  # (1, r*w, b)
+        X = tf.transpose(a=X, perm=[2, 1, 0])
         return X

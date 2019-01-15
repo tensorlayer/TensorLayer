@@ -70,8 +70,8 @@ class Conv1d(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self, prev_layer, n_filter=32, filter_size=5, stride=1, dilation_rate=1, act=None, padding='SAME',
-            data_format="channels_last", W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0), W_init_args=None, b_init_args=None, name='conv1d'
+            data_format="channels_last", W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+            b_init=tf.compat.v1.initializers.constant(value=0.0), W_init_args=None, b_init_args=None, name='conv1d'
     ):
         super(Conv1d, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
@@ -83,7 +83,7 @@ class Conv1d(Layer):
             )
         )
 
-        _conv1d = tf.layers.Conv1D(
+        _conv1d = tf.compat.v1.layers.Conv1D(
             filters=n_filter, kernel_size=filter_size, strides=stride, padding=padding, data_format=data_format,
             dilation_rate=dilation_rate, activation=self.act, use_bias=(True if b_init else False),
             kernel_initializer=W_init, bias_initializer=b_init, name=name
@@ -161,8 +161,8 @@ class Conv2d(Layer):
             padding='SAME',
             data_format='channels_last',
             dilation_rate=(1, 1),
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
+            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+            b_init=tf.compat.v1.initializers.constant(value=0.0),
             W_init_args=None,
             b_init_args=None,
             use_cudnn_on_gpu=None,
@@ -188,7 +188,7 @@ class Conv2d(Layer):
             )
         )
         # with tf.variable_scope(name) as vs:
-        conv2d = tf.layers.Conv2D(
+        conv2d = tf.compat.v1.layers.Conv2D(
             # inputs=self.inputs,
             filters=n_filter,
             kernel_size=filter_size,

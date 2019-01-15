@@ -1314,7 +1314,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         n_objs, objs_info = convert_annotation(ann_file)
         n_objs_list.append(n_objs)
         objs_info_list.append(objs_info)
-        with tf.gfile.GFile(ann_file, 'r') as fid:
+        with tf.io.gfile.GFile(ann_file, 'r') as fid:
             xml_str = fid.read()
         xml = etree.fromstring(xml_str)
         data = _recursive_parse_xml_to_dict(xml)['annotation']
@@ -1776,7 +1776,7 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
         try:
             # tensor = tf.get_default_graph().get_tensor_by_name(key)
             # varlist = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=key)
-            varlist = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=key)
+            varlist = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.GLOBAL_VARIABLES, scope=key)
             if len(varlist) > 1:
                 raise Exception("[!] Multiple candidate variables to be assigned for name %s" % key)
             elif len(varlist) == 0:
@@ -1823,7 +1823,7 @@ def save_ckpt(
 
     ckpt_file = os.path.join(save_dir, mode_name)
     if var_list == []:
-        var_list = tf.global_variables()
+        var_list = tf.compat.v1.global_variables()
 
     logging.info("[*] save %s n_params: %d" % (ckpt_file, len(var_list)))
 
@@ -1831,7 +1831,7 @@ def save_ckpt(
         for idx, v in enumerate(var_list):
             logging.info("  param {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
 
-    saver = tf.train.Saver(var_list)
+    saver = tf.compat.v1.train.Saver(var_list)
     saver.save(sess, ckpt_file, global_step=global_step)
 
 
@@ -1883,7 +1883,7 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
         ckpt_file = os.path.join(save_dir, mode_name)
 
     if not var_list:
-        var_list = tf.global_variables()
+        var_list = tf.compat.v1.global_variables()
 
     logging.info("[*] load %s n_params: %d" % (ckpt_file, len(var_list)))
 
@@ -1892,7 +1892,7 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
             logging.info("  param {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
 
     try:
-        saver = tf.train.Saver(var_list)
+        saver = tf.compat.v1.train.Saver(var_list)
         saver.restore(sess, ckpt_file)
     except Exception as e:
         logging.info(e)

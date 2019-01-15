@@ -246,8 +246,8 @@ class VGG19(VGG19Base):
     """
 
     def __init__(self, x, end_with='fc3_relu', reuse=None):
-        with tf.variable_scope("vgg19", reuse=reuse):
-            scope_name = tf.get_variable_scope().name
+        with tf.compat.v1.variable_scope("vgg19", reuse=reuse):
+            scope_name = tf.compat.v1.get_variable_scope().name
             self.name = scope_name + '/vgg19' if scope_name else '/vgg19'
 
             net = InputLayer(x, name='input')

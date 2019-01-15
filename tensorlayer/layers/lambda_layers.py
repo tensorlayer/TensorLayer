@@ -73,9 +73,9 @@ class Lambda(Layer):
         if fn is None:
             raise AssertionError("The `fn` argument cannot be None")
 
-        with tf.variable_scope(name) as vs:
+        with tf.compat.v1.variable_scope(name) as vs:
             self.outputs = fn(self.inputs, **self.fn_args)
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            variables = tf.compat.v1.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self._add_layers(self.outputs)
         self._add_params(variables)
@@ -129,10 +129,10 @@ class ElementwiseLambda(Layer):
         super(ElementwiseLambda, self).__init__(prev_layer=layers, act=act, fn_args=fn_args, name=name)
         logging.info("ElementwiseLambda %s" % self.name)
 
-        with tf.variable_scope(name) as vs:
+        with tf.compat.v1.variable_scope(name) as vs:
             self.outputs = self._apply_activation(fn(*self.inputs, **self.fn_args))
 
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            variables = tf.compat.v1.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self._add_layers(self.outputs)
         self._add_params(variables)

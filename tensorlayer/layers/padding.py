@@ -63,7 +63,7 @@ class PadLayer(Layer):
 
     def forward(self, inputs):
 
-        outputs = tf.pad(inputs, paddings=self.padding, mode=self.mode, name=self.name)
+        outputs = tf.pad(tensor=inputs, paddings=self.padding, mode=self.mode, name=self.name)
         return outputs
 
 

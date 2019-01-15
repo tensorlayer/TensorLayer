@@ -52,8 +52,8 @@ class GroupConv2d(Layer):
             n_group=2,
             act=None,
             padding='SAME',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
+            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+            b_init=tf.compat.v1.initializers.constant(value=0.0),
             W_init_args=None,
             b_init_args=None,
             name=None,  #'groupconv',
@@ -85,13 +85,13 @@ class GroupConv2d(Layer):
         )
         channels = int(inputs.get_shape()[-1])
 
-        self.We = tf.get_variable(
+        self.We = tf.compat.v1.get_variable(
             name=self.name + '\W',
             shape=[self.filter_size[0], self.filter_size[1], channels / self.n_group, self.n_filter],
             initializer=self.W_init, dtype=LayersConfig.tf_dtype, trainable=True, **self.W_init_args
         )
         if self.b_init:
-            self.b = tf.get_variable(
+            self.b = tf.compat.v1.get_variable(
                 name=self.name + '\b', shape=self.n_filter, initializer=self.b_init, dtype=LayersConfig.tf_dtype,
                 trainable=True, **self.b_init_args
             )

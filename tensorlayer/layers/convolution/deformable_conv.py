@@ -74,8 +74,8 @@ class DeformableConv2d(Layer):
             filter_size=(3, 3),
             act=None,
             name='deformable_conv_2d',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
+            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+            b_init=tf.compat.v1.initializers.constant(value=0.0),
             W_init_args=None,
             b_init_args=None
     ):
@@ -97,7 +97,7 @@ class DeformableConv2d(Layer):
             logging.info("[warnings] unknow input channels, set to 1")
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
 
-        with tf.variable_scope(name):
+        with tf.compat.v1.variable_scope(name):
             offset = self.offset_layer.outputs
 
             if offset.get_shape()[-1] != 2 * shape[0] * shape[1]:
@@ -128,7 +128,7 @@ class DeformableConv2d(Layer):
 
             input_deform = self._tf_batch_map_offsets(self.inputs, offset, grid_offset)
 
-            W = tf.get_variable(
+            W = tf.compat.v1.get_variable(
                 name='W_deformableconv2d', shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]], initializer=W_init,
                 dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
@@ -136,7 +136,7 @@ class DeformableConv2d(Layer):
             _tensor = tf.nn.conv3d(input_deform, W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None)
 
             if b_init:
-                b = tf.get_variable(
+                b = tf.compat.v1.get_variable(
                     name='b_deformableconv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
                     **self.b_init_args
                 )
@@ -144,7 +144,7 @@ class DeformableConv2d(Layer):
                 _tensor = tf.nn.bias_add(_tensor, b, name='bias_add')
 
             self.outputs = tf.reshape(
-                tensor=self._apply_activation(_tensor), shape=[tf.shape(self.inputs)[0], input_h, input_w, shape[-1]]
+                tensor=self._apply_activation(_tensor), shape=[tf.shape(input=self.inputs)[0], input_h, input_w, shape[-1]]
             )
 
         self._add_layers(self.outputs)
@@ -157,7 +157,7 @@ class DeformableConv2d(Layer):
     @private_method
     def _to_bc_h_w(self, x, x_shape):
         """(b, h, w, c) -> (b*c, h, w)"""
-        x = tf.transpose(x, [0, 3, 1, 2])
+        x = tf.transpose(a=x, perm=[0, 3, 1, 2])
         x = tf.reshape(x, (-1, x_shape[1], x_shape[2]))
         return x
 
@@ -165,7 +165,7 @@ class DeformableConv2d(Layer):
     def _to_b_h_w_n_c(self, x, x_shape):
         """(b*c, h, w, n) -> (b, h, w, n, c)"""
         x = tf.reshape(x, (-1, x_shape[4], x_shape[1], x_shape[2], x_shape[3]))
-        x = tf.transpose(x, [0, 2, 3, 4, 1])
+        x = tf.transpose(a=x, perm=[0, 2, 3, 4, 1])
         return x
 
     @private_method
@@ -217,14 +217,14 @@ class DeformableConv2d(Layer):
         """
         input_shape = inputs.get_shape()
         coords_shape = coords.get_shape()
-        batch_channel = tf.shape(inputs)[0]
+        batch_channel = tf.shape(input=inputs)[0]
         input_h = int(input_shape[1])
         input_w = int(input_shape[2])
         kernel_n = int(coords_shape[3])
         n_coords = input_h * input_w * kernel_n
 
         coords_lt = tf.cast(tf.floor(coords), 'int32')
-        coords_rb = tf.cast(tf.ceil(coords), 'int32')
+        coords_rb = tf.cast(tf.math.ceil(coords), 'int32')
         coords_lb = tf.stack([coords_lt[:, :, :, :, 0], coords_rb[:, :, :, :, 1]], axis=-1)
         coords_rt = tf.stack([coords_rb[:, :, :, :, 0], coords_lt[:, :, :, :, 1]], axis=-1)
 
@@ -263,7 +263,7 @@ class DeformableConv2d(Layer):
 
         """
         input_shape = inputs.get_shape()
-        batch_size = tf.shape(inputs)[0]
+        batch_size = tf.shape(input=inputs)[0]
         kernel_n = int(int(offsets.get_shape()[3]) / 2)
         input_h = input_shape[1]
         input_w = input_shape[2]

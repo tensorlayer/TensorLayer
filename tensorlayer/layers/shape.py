@@ -124,4 +124,4 @@ class Transpose(Layer):
         pass
 
     def forward(self, inputs):
-        outputs = tf.transpose(inputs, perm=self.perm, name=self.name)
+        outputs = tf.transpose(a=inputs, perm=self.perm, name=self.name)

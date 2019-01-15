@@ -98,8 +98,8 @@ class DeConv2dLayer(Layer):
             output_shape=(1, 256, 256, 128),
             strides=(1, 2, 2, 1),
             padding='SAME',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
+            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+            b_init=tf.compat.v1.initializers.constant(value=0.0),
             W_init_args=None,
             b_init_args=None,
             name=None,  #'decnn2d_layer',
@@ -124,12 +124,12 @@ class DeConv2dLayer(Layer):
         )
 
     def build(self, inputs):
-        self.W = tf.get_variable(
+        self.W = tf.compat.v1.get_variable(
             name=self.name + '\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
             **self.W_init_args
         )
         if self.b_init:
-            self.b = tf.get_variable(
+            self.b = tf.compat.v1.get_variable(
                 name=self.name + '\bias', shape=(self.shape[-2]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
                 **self.b_init_args
             )
@@ -184,8 +184,8 @@ class DeConv3dLayer(Layer):
             output_shape=(1, 12, 32, 32, 128),
             strides=(1, 2, 2, 2, 1),
             padding='SAME',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
+            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+            b_init=tf.compat.v1.initializers.constant(value=0.0),
             W_init_args=None,
             b_init_args=None,
             name=None,  #'decnn3d_layer',
@@ -210,12 +210,12 @@ class DeConv3dLayer(Layer):
         )
 
     def build(self, inputs):
-        self.W = tf.get_variable(
+        self.W = tf.compat.v1.get_variable(
             name=self.name + '\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
             **self.W_init_args
         )
         if self.b_init:
-            self.b = tf.get_variable(
+            self.b = tf.compat.v1.get_variable(
                 name=self.name + '\kernel', shape=(self.shape[-2]), initializer=self.b_init,
                 dtype=LayersConfig.tf_dtype, **self.b_init_args
             )

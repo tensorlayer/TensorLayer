@@ -167,9 +167,9 @@ class BatchNorm(Layer):
             epsilon=0.00001,
             act=None,
             is_train=False,
-            beta_init=tf.zeros_initializer,
-            gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
-            moving_mean_init=tf.zeros_initializer(),
+            beta_init=tf.compat.v1.initializers.zeros,
+            gamma_init=tf.compat.v1.initializers.random_normal(mean=1.0, stddev=0.002),
+            moving_mean_init=tf.compat.v1.initializers.zeros(),
             data_format='channels_last',
             name='batchnorm',
     ):
@@ -191,7 +191,7 @@ class BatchNorm(Layer):
             raise ValueError('data_format should be either %s or %s' % ('channels_last', 'channels_first'))
         params_shape = x_shape[axis]
 
-        with tf.variable_scope(name):
+        with tf.compat.v1.variable_scope(name):
             axes = [i for i in range(len(x_shape)) if i != axis]
 
             # 1. beta, gamma
@@ -199,10 +199,10 @@ class BatchNorm(Layer):
 
             if beta_init:
 
-                if beta_init == tf.zeros_initializer:
+                if beta_init == tf.compat.v1.initializers.zeros:
                     beta_init = beta_init()
 
-                beta = tf.get_variable(
+                beta = tf.compat.v1.get_variable(
                     'beta', shape=params_shape, initializer=beta_init, dtype=LayersConfig.tf_dtype, trainable=is_train
                 )
 
@@ -212,7 +212,7 @@ class BatchNorm(Layer):
                 beta = None
 
             if gamma_init:
-                gamma = tf.get_variable(
+                gamma = tf.compat.v1.get_variable(
                     'gamma',
                     shape=params_shape,
                     initializer=gamma_init,
@@ -225,21 +225,21 @@ class BatchNorm(Layer):
 
             # 2.
 
-            moving_mean = tf.get_variable(
+            moving_mean = tf.compat.v1.get_variable(
                 'moving_mean', params_shape, initializer=moving_mean_init, dtype=LayersConfig.tf_dtype, trainable=False
             )
 
-            moving_variance = tf.get_variable(
+            moving_variance = tf.compat.v1.get_variable(
                 'moving_variance',
                 params_shape,
-                initializer=tf.constant_initializer(1.),
+                initializer=tf.compat.v1.initializers.constant(1.),
                 dtype=LayersConfig.tf_dtype,
                 trainable=False,
             )
 
             # 3.
             # These ops will only be preformed when training.
-            mean, variance = tf.nn.moments(self.inputs, axes)
+            mean, variance = tf.nn.moments(x=self.inputs, axes=axes)
 
             update_moving_mean = moving_averages.assign_moving_average(
                 moving_mean, mean, decay, zero_debias=False
@@ -299,13 +299,13 @@ class InstanceNorm(Layer):
         )
 
     def build(self, inputs):
-        self.scale = tf.get_variable(
+        self.scale = tf.compat.v1.get_variable(
             self.name + '\scale', [inputs.get_shape()[-1]],
-            initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype
+            initializer=tf.compat.v1.initializers.truncated_normal(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype
         )
 
-        self.offset = tf.get_variable(
-            self.name + '\offset', [inputs.get_shape()[-1]], initializer=tf.constant_initializer(0.0),
+        self.offset = tf.compat.v1.get_variable(
+            self.name + '\offset', [inputs.get_shape()[-1]], initializer=tf.compat.v1.initializers.constant(0.0),
             dtype=LayersConfig.tf_dtype
         )
 
@@ -313,9 +313,9 @@ class InstanceNorm(Layer):
 
     def forward(self, inputs):
 
-        mean, var = tf.nn.moments(inputs, [1, 2], keep_dims=True)
+        mean, var = tf.nn.moments(x=inputs, axes=[1, 2], keepdims=True)
 
-        outputs = self.scale * tf.div(inputs - mean, tf.sqrt(var + self.epsilon)) + self.offset
+        outputs = self.scale * tf.compat.v1.div(inputs - mean, tf.sqrt(var + self.epsilon)) + self.offset
         outputs = self.act(outputs)
 
         return outputs
@@ -369,7 +369,7 @@ class LayerNorm(Layer):
             "LayerNorm %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-        with tf.variable_scope(name) as vs:
+        with tf.compat.v1.variable_scope(name) as vs:
             self.outputs = tf.contrib.layers.layer_norm(
                 self.inputs,
                 center=center,
@@ -384,7 +384,7 @@ class LayerNorm(Layer):
                 scope='var',
             )
 
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            variables = tf.compat.v1.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self._add_layers(self.outputs)
         self._add_params(variables)
@@ -427,16 +427,16 @@ class GroupNorm(Layer):
         if self.data_format == 'channels_last':
             channels = shape[-1]
             self.int_shape = tf.concat(
-                [tf.shape(self.inputs)[0:3],
-                 tf.convert_to_tensor([self.groups, channels // self.groups])], axis=0
+                [tf.shape(input=self.inputs)[0:3],
+                 tf.convert_to_tensor(value=[self.groups, channels // self.groups])], axis=0
             )
         elif self.data_format == 'channels_first':
             channels = shape[1]
             self.int_shape = tf.concat(
                 [
-                    tf.shape(self.inputs)[0:1],
-                    tf.convert_to_tensor([self.groups, channels // self.groups]),
-                    tf.shape(self.inputs)[2:4]
+                    tf.shape(input=self.inputs)[0:1],
+                    tf.convert_to_tensor(value=[self.groups, channels // self.groups]),
+                    tf.shape(input=self.inputs)[2:4]
                 ], axis=0
             )
         else:
@@ -449,24 +449,24 @@ class GroupNorm(Layer):
 
         if self.data_format == 'channels_last':
             # mean, var = tf.nn.moments(x, [1, 2, 4], keep_dims=True)
-            self.gamma = tf.get_variable('gamma', channels, initializer=tf.ones_initializer())
-            self.beta = tf.get_variable('beta', channels, initializer=tf.zeros_initializer())
+            self.gamma = tf.compat.v1.get_variable('gamma', channels, initializer=tf.compat.v1.initializers.ones())
+            self.beta = tf.compat.v1.get_variable('beta', channels, initializer=tf.compat.v1.initializers.zeros())
         else:
             # mean, var = tf.nn.moments(x, [2, 3, 4], keep_dims=True)
-            self.gamma = tf.get_variable('gamma', [1, channels, 1, 1], initializer=tf.ones_initializer())
-            self.beta = tf.get_variable('beta', [1, channels, 1, 1], initializer=tf.zeros_initializer())
+            self.gamma = tf.compat.v1.get_variable('gamma', [1, channels, 1, 1], initializer=tf.compat.v1.initializers.ones())
+            self.beta = tf.compat.v1.get_variable('beta', [1, channels, 1, 1], initializer=tf.compat.v1.initializers.zeros())
 
         self.add_weights([self.gamma, self.bata])
 
     def forward(self, inputs):
         x = tf.reshape(inputs, self.int_shape)
         if self.data_format == 'channels_last':
-            mean, var = tf.nn.moments(x, [1, 2, 4], keep_dims=True)
+            mean, var = tf.nn.moments(x=x, axes=[1, 2, 4], keepdims=True)
         else:
-            mean, var = tf.nn.moments(x, [2, 3, 4], keep_dims=True)
+            mean, var = tf.nn.moments(x=x, axes=[2, 3, 4], keepdims=True)
         x = (x - mean) / tf.sqrt(var + self.epsilon)
 
-        outputs = tf.reshape(x, tf.shape(inputs)) * self.gamma + self.beta
+        outputs = tf.reshape(x, tf.shape(input=inputs)) * self.gamma + self.beta
         if self.act:
             outputs = self.act(outputs)
         return outputs
@@ -503,9 +503,9 @@ class SwitchNorm(Layer):
             self,
             act=None,
             epsilon=1e-5,
-            beta_init=tf.constant_initializer(0.0),
-            gamma_init=tf.constant_initializer(1.0),
-            moving_mean_init=tf.zeros_initializer(),
+            beta_init=tf.compat.v1.initializers.constant(0.0),
+            gamma_init=tf.compat.v1.initializers.constant(1.0),
+            moving_mean_init=tf.compat.v1.initializers.zeros(),
             name=None,  #'switchnorm',
     ):
         # super(SwitchNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
@@ -523,19 +523,19 @@ class SwitchNorm(Layer):
 
     def build(self, inputs):
         ch = inputs.shape[-1]
-        self.gamma = tf.get_variable("gamma", [ch], initializer=gamma_init)
-        self.beta = tf.get_variable("beta", [ch], initializer=beta_init)
+        self.gamma = tf.compat.v1.get_variable("gamma", [ch], initializer=gamma_init)
+        self.beta = tf.compat.v1.get_variable("beta", [ch], initializer=beta_init)
 
-        self.mean_weight_var = tf.get_variable("mean_weight", [3], initializer=tf.constant_initializer(1.0))
-        self.var_weight_var = tf.get_variable("var_weight", [3], initializer=tf.constant_initializer(1.0))
+        self.mean_weight_var = tf.compat.v1.get_variable("mean_weight", [3], initializer=tf.compat.v1.initializers.constant(1.0))
+        self.var_weight_var = tf.compat.v1.get_variable("var_weight", [3], initializer=tf.compat.v1.initializers.constant(1.0))
 
         self.add_weights([self.gamma, self.beta, self.mean_weight_var, self.var_weight_var])
 
     def forward(self, inputs):
 
-        batch_mean, batch_var = tf.nn.moments(inputs, [0, 1, 2], keep_dims=True)
-        ins_mean, ins_var = tf.nn.moments(inputs, [1, 2], keep_dims=True)
-        layer_mean, layer_var = tf.nn.moments(inputs, [1, 2, 3], keep_dims=True)
+        batch_mean, batch_var = tf.nn.moments(x=inputs, axes=[0, 1, 2], keepdims=True)
+        ins_mean, ins_var = tf.nn.moments(x=inputs, axes=[1, 2], keepdims=True)
+        layer_mean, layer_var = tf.nn.moments(x=inputs, axes=[1, 2, 3], keepdims=True)
 
         mean_weight = tf.nn.softmax(self.mean_weight_var)
         var_weight = tf.nn.softmax(self.var_weight_var)

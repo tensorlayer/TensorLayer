@@ -57,8 +57,8 @@ class DorefaDense(Layer):
             n_units=100,
             act=None,
             use_gemm=False,
-            W_init=tf.truncated_normal_initializer(stddev=0.1),
-            b_init=tf.constant_initializer(value=0.0),
+            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.1),
+            b_init=tf.compat.v1.initializers.constant(value=0.0),
             W_init_args=None,
             b_init_args=None,
             name=None,  #'dorefa_dense',
@@ -87,19 +87,19 @@ class DorefaDense(Layer):
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         n_in = int(inputs.get_shape()[-1])
-        self.W = tf.get_variable(
+        self.W = tf.compat.v1.get_variable(
             name=self.name + '\W', shape=(n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype,
             **self.W_init_args
         )
         if self.b_init is not None:
             try:
-                self.b = tf.get_variable(
+                self.b = tf.compat.v1.get_variable(
                     name=self.name + '\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
                     **self.b_init_args
                 )
 
             except Exception:  # If initializer is a constant, do not specify shape.
-                self.b = tf.get_variable(
+                self.b = tf.compat.v1.get_variable(
                     name=self.name + '\b', initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
                 )
             self.add_weights([self.W, self.b])

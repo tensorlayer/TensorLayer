@@ -69,7 +69,7 @@ class TimeDistributed(Layer):
         super(TimeDistributed, self).__init__(prev_layer=prev_layer, layer_args=layer_args, name=name)
 
         if not isinstance(self.inputs, tf.Tensor):
-            self.inputs = tf.transpose(tf.stack(self.inputs), [1, 0, 2])
+            self.inputs = tf.transpose(a=tf.stack(self.inputs), perm=[1, 0, 2])
 
         logging.info(
             "TimeDistributed %s: layer_class: %s layer_args: %s" % (self.name, layer_class.__name__, self.layer_args)
@@ -80,12 +80,12 @@ class TimeDistributed(Layer):
         timestep = input_shape[1]
         x = tf.unstack(self.inputs, axis=1)
 
-        is_name_reuse = tf.get_variable_scope().reuse
+        is_name_reuse = tf.compat.v1.get_variable_scope().reuse
         for i in range(0, timestep):
-            with tf.variable_scope(name, reuse=(is_name_reuse if i == 0 else True)) as vs:
+            with tf.compat.v1.variable_scope(name, reuse=(is_name_reuse if i == 0 else True)) as vs:
                 net = layer_class(Input(x[i], name=self.layer_args['name'] + str(i)), **self.layer_args)
                 x[i] = net.outputs
-                variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+                variables = tf.compat.v1.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self.outputs = tf.stack(x, axis=1, name=name)
 

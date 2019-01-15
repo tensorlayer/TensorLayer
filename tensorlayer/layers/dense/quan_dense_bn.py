@@ -81,10 +81,10 @@ class QuanDenseLayerWithBN(Layer):
             is_train=False,
             bitW=8,
             bitA=8,
-            gamma_init=tf.ones_initializer,
-            beta_init=tf.zeros_initializer,
+            gamma_init=tf.compat.v1.initializers.ones,
+            beta_init=tf.compat.v1.initializers.zeros,
             use_gemm=False,
-            W_init=tf.truncated_normal_initializer(stddev=0.1),
+            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.1),
             W_init_args=None,
             name='quan_dense_with_bn',
     ):
@@ -106,9 +106,9 @@ class QuanDenseLayerWithBN(Layer):
         self.inputs = quantize_active_overflow(self.inputs, bitA)
         self.n_units = n_units
 
-        with tf.variable_scope(name):
+        with tf.compat.v1.variable_scope(name):
 
-            W = tf.get_variable(
+            W = tf.compat.v1.get_variable(
                 name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
 
@@ -117,7 +117,7 @@ class QuanDenseLayerWithBN(Layer):
             para_bn_shape = mid_out.get_shape()[-1:]
 
             if gamma_init:
-                scale_para = tf.get_variable(
+                scale_para = tf.compat.v1.get_variable(
                     name='scale_para', shape=para_bn_shape, initializer=gamma_init, dtype=LayersConfig.tf_dtype,
                     trainable=is_train
                 )
@@ -125,27 +125,27 @@ class QuanDenseLayerWithBN(Layer):
                 scale_para = None
 
             if beta_init:
-                offset_para = tf.get_variable(
+                offset_para = tf.compat.v1.get_variable(
                     name='offset_para', shape=para_bn_shape, initializer=beta_init, dtype=LayersConfig.tf_dtype,
                     trainable=is_train
                 )
             else:
                 offset_para = None
 
-            moving_mean = tf.get_variable(
-                'moving_mean', para_bn_shape, initializer=tf.constant_initializer(1.), dtype=LayersConfig.tf_dtype,
+            moving_mean = tf.compat.v1.get_variable(
+                'moving_mean', para_bn_shape, initializer=tf.compat.v1.initializers.constant(1.), dtype=LayersConfig.tf_dtype,
                 trainable=False
             )
 
-            moving_variance = tf.get_variable(
+            moving_variance = tf.compat.v1.get_variable(
                 'moving_variance',
                 para_bn_shape,
-                initializer=tf.constant_initializer(1.),
+                initializer=tf.compat.v1.initializers.constant(1.),
                 dtype=LayersConfig.tf_dtype,
                 trainable=False,
             )
 
-            mean, variance = tf.nn.moments(mid_out, list(range(len(mid_out.get_shape()) - 1)))
+            mean, variance = tf.nn.moments(x=mid_out, axes=list(range(len(mid_out.get_shape()) - 1)))
 
             update_moving_mean = moving_averages.assign_moving_average(
                 moving_mean, mean, decay, zero_debias=False
@@ -185,8 +185,8 @@ class QuanDenseLayerWithBN(Layer):
 
 
 def _w_fold(w, gama, var, epsilon):
-    return tf.div(tf.multiply(gama, w), tf.sqrt(var + epsilon))
+    return tf.compat.v1.div(tf.multiply(gama, w), tf.sqrt(var + epsilon))
 
 
 def _bias_fold(beta, gama, mean, var, epsilon):
-    return tf.subtract(beta, tf.div(tf.multiply(gama, mean), tf.sqrt(var + epsilon)))
+    return tf.subtract(beta, tf.compat.v1.div(tf.multiply(gama, mean), tf.sqrt(var + epsilon)))

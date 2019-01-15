@@ -66,8 +66,8 @@ class DeConv2d(Layer):
             # batch_size=None,  # remove
             act=None,
             data_format='channels_last',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
+            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+            b_init=tf.compat.v1.initializers.constant(value=0.0),
             W_init_args=None,  # TODO: Remove when TF <1.3 not supported
             b_init_args=None,  # TODO: Remove when TF <1.3 not supported
             name='decnn2d'
@@ -85,7 +85,7 @@ class DeConv2d(Layer):
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2, DeConv2d and DeConv2dLayer are different.")
 
-        conv2d_transpose = tf.layers.Conv2DTranspose(
+        conv2d_transpose = tf.compat.v1.layers.Conv2DTranspose(
             filters=n_filter, kernel_size=filter_size, strides=strides, padding=padding, data_format=data_format,
             activation=self.act, kernel_initializer=W_init, bias_initializer=b_init, name=name
         )
@@ -141,8 +141,8 @@ class DeConv3d(Layer):
             padding='SAME',
             act=None,
             data_format='channels_last',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
+            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+            b_init=tf.compat.v1.initializers.constant(value=0.0),
             W_init_args=None,  # TODO: Remove when TF <1.3 not supported
             b_init_args=None,  # TODO: Remove when TF <1.3 not supported
             name='decnn3d'
@@ -158,7 +158,7 @@ class DeConv3d(Layer):
         )
 
         # with tf.variable_scope(name) as vs:
-        nn = tf.layers.Conv3DTranspose(
+        nn = tf.compat.v1.layers.Conv3DTranspose(
             filters=n_filter, kernel_size=filter_size, strides=strides, padding=padding, activation=self.act,
             data_format=data_format, kernel_initializer=W_init, bias_initializer=b_init, name=name
         )

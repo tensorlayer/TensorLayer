@@ -80,8 +80,8 @@ class DepthwiseConv2d(Layer):
             padding='SAME',
             dilation_rate=(1, 1),
             depth_multiplier=1,
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
+            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+            b_init=tf.compat.v1.initializers.constant(value=0.0),
             W_init_args=None,
             b_init_args=None,
             name=None,  #'depthwise_conv2d',
@@ -121,13 +121,13 @@ class DepthwiseConv2d(Layer):
         if len(self.strides) != 4:
             raise AssertionError("len(strides) should be 4.")
 
-        self.W = tf.get_variable(
+        self.W = tf.compat.v1.get_variable(
             name=self.name + '\W_depthwise2d', shape=self.filter_size, initializer=self.W_init,
             dtype=LayersConfig.tf_dtype, **self.W_init_args
         )  # [filter_height, filter_width, in_channels, depth_multiplier]
 
         if self.b_init:
-            self.b = tf.get_variable(
+            self.b = tf.compat.v1.get_variable(
                 name=self.name + '\b_depthwise2d', shape=(self.pre_channel * self.depth_multiplier),
                 initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
             )
@@ -138,7 +138,7 @@ class DepthwiseConv2d(Layer):
     def forward(self, inputs):
 
         outputs = tf.nn.depthwise_conv2d(
-            inputs, self.W, strides=self.strides, padding=self.padding, rate=self.dilation_rate
+            input=inputs, filter=self.W, strides=self.strides, padding=self.padding, dilations=self.dilation_rate
         )
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')

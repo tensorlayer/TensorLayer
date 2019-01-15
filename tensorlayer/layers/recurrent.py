@@ -148,7 +148,7 @@ class RNN(Layer):
             cell_fn,
             cell_init_args=None,
             n_hidden=100,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
+            initializer=tf.compat.v1.initializers.random_uniform(-0.1, 0.1),
             n_steps=5,
             initial_state=None,
             return_last=False,
@@ -215,7 +215,7 @@ class RNN(Layer):
         outputs = []
 
         if 'reuse' in getfullargspec(cell_fn.__init__).args:
-            self.cell = cell = cell_fn(num_units=n_hidden, reuse=tf.get_variable_scope().reuse, **self.cell_init_args)
+            self.cell = cell = cell_fn(num_units=n_hidden, reuse=tf.compat.v1.get_variable_scope().reuse, **self.cell_init_args)
         else:
             self.cell = cell = cell_fn(num_units=n_hidden, **self.cell_init_args)
 
@@ -224,15 +224,15 @@ class RNN(Layer):
 
         state = self.initial_state
 
-        with tf.variable_scope(name, initializer=initializer) as vs:
+        with tf.compat.v1.variable_scope(name, initializer=initializer) as vs:
             for time_step in range(n_steps):
-                if time_step > 0: tf.get_variable_scope().reuse_variables()
+                if time_step > 0: tf.compat.v1.get_variable_scope().reuse_variables()
                 (cell_output, state) = cell(self.inputs[:, time_step, :], state)
                 outputs.append(cell_output)
 
             # Retrieve just the RNN variables.
             # rnn_variables = [v for v in tf.all_variables() if v.name.startswith(vs.name)]
-            rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            rnn_variables = tf.compat.v1.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
             logging.info("     n_params : %d" % (len(rnn_variables)))
 
@@ -333,7 +333,7 @@ class BiRNN(Layer):
             cell_fn,
             cell_init_args=None,
             n_hidden=100,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
+            initializer=tf.compat.v1.initializers.random_uniform(-0.1, 0.1),
             n_steps=5,
             fw_initial_state=None,
             bw_initial_state=None,
@@ -380,7 +380,7 @@ class BiRNN(Layer):
         except Exception:
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps, n_features]")
 
-        with tf.variable_scope(name, initializer=initializer) as vs:
+        with tf.compat.v1.variable_scope(name, initializer=initializer) as vs:
             rnn_creator = lambda: cell_fn(num_units=n_hidden, **self.cell_init_args)
             # Apply dropout
             if dropout:
@@ -476,7 +476,7 @@ class BiRNN(Layer):
             self.bw_final_state = bw_state
 
             # Retrieve just the RNN variables.
-            rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            rnn_variables = tf.compat.v1.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         logging.info("     n_params : %d" % (len(rnn_variables)))
 
@@ -569,7 +569,7 @@ class BasicConvLSTMCell(ConvRNNCell):
 
     def __call__(self, inputs, state, scope=None):
         """Long short-term memory cell (LSTM)."""
-        with tf.variable_scope(scope or type(self).__name__):  # "BasicLSTMCell"
+        with tf.compat.v1.variable_scope(scope or type(self).__name__):  # "BasicLSTMCell"
             # Parameters of gates are concatenated into one multiply for efficiency.
             if self._state_is_tuple:
                 c, h = state
@@ -632,8 +632,8 @@ def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=No
     dtype = [a.dtype for a in args][0]
 
     # Now the computation.
-    with tf.variable_scope(scope or "Conv"):
-        matrix = tf.get_variable(
+    with tf.compat.v1.variable_scope(scope or "Conv"):
+        matrix = tf.compat.v1.get_variable(
             "Matrix", [filter_size[0], filter_size[1], total_arg_size_depth, num_features], dtype=dtype
         )
         if len(args) == 1:
@@ -642,8 +642,8 @@ def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=No
             res = tf.nn.conv2d(tf.concat(args, 3), matrix, strides=[1, 1, 1, 1], padding='SAME')
         if not bias:
             return res
-        bias_term = tf.get_variable(
-            "Bias", [num_features], dtype=dtype, initializer=tf.constant_initializer(bias_start, dtype=dtype)
+        bias_term = tf.compat.v1.get_variable(
+            "Bias", [num_features], dtype=dtype, initializer=tf.compat.v1.initializers.constant(bias_start, dtype=dtype)
         )
     return res + bias_term
 
@@ -712,7 +712,7 @@ class ConvLSTM(Layer):
             feature_map=1,
             filter_size=(3, 3),
             cell_fn=BasicConvLSTMCell,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
+            initializer=tf.compat.v1.initializers.random_uniform(-0.1, 0.1),
             n_steps=5,
             initial_state=None,
             return_last=False,
@@ -761,15 +761,15 @@ class ConvLSTM(Layer):
         state = self.initial_state
 
         # with tf.variable_scope("model", reuse=None, initializer=initializer):
-        with tf.variable_scope(name, initializer=initializer) as vs:
+        with tf.compat.v1.variable_scope(name, initializer=initializer) as vs:
             for time_step in range(n_steps):
-                if time_step > 0: tf.get_variable_scope().reuse_variables()
+                if time_step > 0: tf.compat.v1.get_variable_scope().reuse_variables()
                 (cell_output, state) = cell(self.inputs[:, time_step, :, :, :], state)
                 outputs.append(cell_output)
 
             # Retrieve just the RNN variables.
             # rnn_variables = [v for v in tf.all_variables() if v.name.startswith(vs.name)]
-            rnn_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+            rnn_variables = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.VARIABLES, scope=vs.name)
 
             logging.info(" n_params : %d" % (len(rnn_variables)))
 
@@ -836,9 +836,9 @@ def advanced_indexing_op(inputs, index):
     - Modified from TFlearn (the original code is used for fixed length rnn), `references <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`__.
 
     """
-    batch_size = tf.shape(inputs)[0]
+    batch_size = tf.shape(input=inputs)[0]
     # max_length = int(inputs.get_shape()[1])    # for fixed length rnn, length is given
-    max_length = tf.shape(inputs)[1]  # for dynamic_rnn, length is unknown
+    max_length = tf.shape(input=inputs)[1]  # for dynamic_rnn, length is unknown
     dim_size = int(inputs.get_shape()[2])
     index = tf.range(0, batch_size) * max_length + (index - 1)
     flat = tf.reshape(inputs, [-1, dim_size])
@@ -883,8 +883,8 @@ def retrieve_seq_length_op(data):
 
     """
     with tf.name_scope('GetLength'):
-        used = tf.sign(tf.reduce_max(tf.abs(data), 2))
-        length = tf.reduce_sum(used, 1)
+        used = tf.sign(tf.reduce_max(input_tensor=tf.abs(data), axis=2))
+        length = tf.reduce_sum(input_tensor=used, axis=1)
 
         return tf.cast(length, tf.int32)
 
@@ -910,16 +910,16 @@ def retrieve_seq_length_op2(data):
     [2 3 4]
 
     """
-    return tf.reduce_sum(tf.cast(tf.greater(data, tf.zeros_like(data)), tf.int32), 1)
+    return tf.reduce_sum(input_tensor=tf.cast(tf.greater(data, tf.zeros_like(data)), tf.int32), axis=1)
 
 
 def retrieve_seq_length_op3(data, pad_val=0):  # HangSheng: return tensor for sequence length, if input is tf.string
     """Return tensor for sequence length, if input is ``tf.string``."""
     data_shape_size = data.get_shape().ndims
     if data_shape_size == 3:
-        return tf.reduce_sum(tf.cast(tf.reduce_any(tf.not_equal(data, pad_val), axis=2), dtype=tf.int32), 1)
+        return tf.reduce_sum(input_tensor=tf.cast(tf.reduce_any(input_tensor=tf.not_equal(data, pad_val), axis=2), dtype=tf.int32), axis=1)
     elif data_shape_size == 2:
-        return tf.reduce_sum(tf.cast(tf.not_equal(data, pad_val), dtype=tf.int32), 1)
+        return tf.reduce_sum(input_tensor=tf.cast(tf.not_equal(data, pad_val), dtype=tf.int32), axis=1)
     elif data_shape_size == 1:
         raise ValueError("retrieve_seq_length_op3: data has wrong shape!")
     else:
@@ -932,7 +932,7 @@ def target_mask_op(data, pad_val=0):  # HangSheng: return tensor for mask,if inp
     """Return tensor for mask, if input is ``tf.string``."""
     data_shape_size = data.get_shape().ndims
     if data_shape_size == 3:
-        return tf.cast(tf.reduce_any(tf.not_equal(data, pad_val), axis=2), dtype=tf.int32)
+        return tf.cast(tf.reduce_any(input_tensor=tf.not_equal(data, pad_val), axis=2), dtype=tf.int32)
     elif data_shape_size == 2:
         return tf.cast(tf.not_equal(data, pad_val), dtype=tf.int32)
     elif data_shape_size == 1:
@@ -1048,7 +1048,7 @@ class DynamicRNN(Layer):
             cell_fn,  #tf.nn.rnn_cell.LSTMCell,
             cell_init_args=None,
             n_hidden=256,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
+            initializer=tf.compat.v1.initializers.random_uniform(-0.1, 0.1),
             sequence_length=None,
             initial_state=None,
             dropout=None,
@@ -1136,7 +1136,7 @@ class DynamicRNN(Layer):
             try:
                 MultiRNNCell_fn = tf.contrib.rnn.MultiRNNCell
             except Exception:
-                MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
+                MultiRNNCell_fn = tf.compat.v1.nn.rnn_cell.MultiRNNCell
 
             # cell_instance_fn2=cell_instance_fn # HanSheng
             if dropout:
@@ -1170,8 +1170,8 @@ class DynamicRNN(Layer):
             )
 
         # Main - Computes outputs and last_states
-        with tf.variable_scope(name, initializer=initializer) as vs:
-            outputs, last_states = tf.nn.dynamic_rnn(
+        with tf.compat.v1.variable_scope(name, initializer=initializer) as vs:
+            outputs, last_states = tf.compat.v1.nn.dynamic_rnn(
                 cell=self.cell,
                 # inputs=X
                 inputs=self.inputs,
@@ -1180,7 +1180,7 @@ class DynamicRNN(Layer):
                 initial_state=self.initial_state,
                 **self.dynamic_rnn_init_args
             )
-            rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            rnn_variables = tf.compat.v1.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
             # logging.info("     n_params : %d" % (len(rnn_variables)))
             # Manage the outputs
@@ -1201,8 +1201,8 @@ class DynamicRNN(Layer):
                 else:
                     # <akara>:
                     # 3D Tensor [batch_size, n_steps(max), n_hidden]
-                    max_length = tf.shape(outputs)[1]
-                    batch_size = tf.shape(outputs)[0]
+                    max_length = tf.shape(input=outputs)[1]
+                    batch_size = tf.shape(input=outputs)[0]
 
                     self.outputs = tf.reshape(tf.concat(outputs, 1), [batch_size, max_length, n_hidden])
                     # self.outputs = tf.reshape(tf.concat(1, outputs), [-1, max_length, n_hidden])
@@ -1303,7 +1303,7 @@ class BiDynamicRNN(Layer):
             cell_fn,  #tf.nn.rnn_cell.LSTMCell,
             cell_init_args=None,
             n_hidden=256,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
+            initializer=tf.compat.v1.initializers.random_uniform(-0.1, 0.1),
             sequence_length=None,
             fw_initial_state=None,
             bw_initial_state=None,
@@ -1356,7 +1356,7 @@ class BiDynamicRNN(Layer):
 
         self.batch_size = batch_size
 
-        with tf.variable_scope(name, initializer=initializer) as vs:
+        with tf.compat.v1.variable_scope(name, initializer=initializer) as vs:
             # Creats the cell function
             # cell_instance_fn=lambda: cell_fn(num_units=n_hidden, **self.cell_init_args) # HanSheng
             rnn_creator = lambda: cell_fn(num_units=n_hidden, **self.cell_init_args)
@@ -1373,7 +1373,7 @@ class BiDynamicRNN(Layer):
                 try:
                     DropoutWrapper_fn = tf.contrib.rnn.DropoutWrapper
                 except Exception:
-                    DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
+                    DropoutWrapper_fn = tf.compat.v1.nn.rnn_cell.DropoutWrapper
 
                     # cell_instance_fn1=cell_instance_fn            # HanSheng
                     # cell_instance_fn=lambda: DropoutWrapper_fn(
@@ -1421,13 +1421,13 @@ class BiDynamicRNN(Layer):
             else:
                 self.fw_cell = cell_creator()
                 self.bw_cell = cell_creator()
-                outputs, (states_fw, states_bw) = tf.nn.bidirectional_dynamic_rnn(
+                outputs, (states_fw, states_bw) = tf.compat.v1.nn.bidirectional_dynamic_rnn(
                     cell_fw=self.fw_cell, cell_bw=self.bw_cell, inputs=self.inputs, sequence_length=sequence_length,
                     initial_state_fw=self.fw_initial_state, initial_state_bw=self.bw_initial_state,
                     dtype=LayersConfig.tf_dtype, **self.dynamic_rnn_init_args
                 )
 
-            rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            rnn_variables = tf.compat.v1.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
             logging.info("     n_params : %d" % (len(rnn_variables)))
 
@@ -1448,8 +1448,8 @@ class BiDynamicRNN(Layer):
                 else:
                     # <akara>:
                     # 3D Tensor [batch_size, n_steps(max), 2 * n_hidden]
-                    max_length = tf.shape(outputs)[1]
-                    batch_size = tf.shape(outputs)[0]
+                    max_length = tf.shape(input=outputs)[1]
+                    batch_size = tf.shape(input=outputs)[0]
 
                     self.outputs = tf.reshape(tf.concat(outputs, 1), [batch_size, max_length, 2 * n_hidden])
 
@@ -1578,7 +1578,7 @@ class Seq2Seq(Layer):
             cell_fn,  #tf.nn.rnn_cell.LSTMCell,
             cell_init_args=None,
             n_hidden=256,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
+            initializer=tf.compat.v1.initializers.random_uniform(-0.1, 0.1),
             encode_sequence_length=None,
             decode_sequence_length=None,
             initial_state_encode=None,
@@ -1608,7 +1608,7 @@ class Seq2Seq(Layer):
             (self.name, n_hidden, cell_fn.__name__, dropout, n_layer)
         )
 
-        with tf.variable_scope(name):
+        with tf.compat.v1.variable_scope(name):
             # tl.layers.set_name_reuse(reuse)
             # network = InputLayer(self.inputs, name=name+'/input')
             network_encode = DynamicRNN(

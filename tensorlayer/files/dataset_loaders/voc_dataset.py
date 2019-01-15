@@ -329,7 +329,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         n_objs, objs_info = convert_annotation(ann_file)
         n_objs_list.append(n_objs)
         objs_info_list.append(objs_info)
-        with tf.gfile.GFile(ann_file, 'r') as fid:
+        with tf.io.gfile.GFile(ann_file, 'r') as fid:
             xml_str = fid.read()
         xml = etree.fromstring(xml_str)
         data = _recursive_parse_xml_to_dict(xml)['annotation']

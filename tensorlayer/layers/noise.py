@@ -67,6 +67,6 @@ class GaussianNoise(Layer):
             outputs = inputs
         else:
             # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
-            noise = tf.random_normal(shape=inputs.get_shape(), mean=self.mean, stddev=self.stddev, seed=self.seed)
+            noise = tf.random.normal(shape=inputs.get_shape(), mean=self.mean, stddev=self.stddev, seed=self.seed)
             outputs = inputs + noise
         return outputs

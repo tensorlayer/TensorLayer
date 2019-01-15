@@ -45,7 +45,7 @@ class PRelu(Layer):
     def __init__(
             self,
             channel_shared=False,
-            a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            a_init=tf.compat.v1.initializers.truncated_normal(mean=0.0, stddev=0.1),
             a_init_args=None,
             name=None  # "prelu"
     ):
@@ -64,7 +64,7 @@ class PRelu(Layer):
         else:
             w_shape = self.inputs.shape.as_list()[-1]
 
-        self.alpha_var = tf.get_variable(
+        self.alpha_var = tf.compat.v1.get_variable(
             name=self.name + '/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
             **self.a_init_args
         )
@@ -117,7 +117,7 @@ class PRelu6(Layer):
     def __init__(
             self,
             channel_shared=False,
-            a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            a_init=tf.compat.v1.initializers.truncated_normal(mean=0.0, stddev=0.1),
             a_init_args=None,
             name=None  # "prelu6"
     ):
@@ -136,7 +136,7 @@ class PRelu6(Layer):
         else:
             w_shape = self.inputs.shape.as_list()[-1]
 
-        self.alpha_var = tf.get_variable(
+        self.alpha_var = tf.compat.v1.get_variable(
             name=self.name + '/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
             **self.a_init_args
         )
@@ -197,7 +197,7 @@ class PTRelu6(Layer):
     def __init__(
             self,
             channel_shared=False,
-            a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            a_init=tf.compat.v1.initializers.truncated_normal(mean=0.0, stddev=0.1),
             a_init_args=None,
             name=None  # "ptreLU6"
     ):
@@ -217,7 +217,7 @@ class PTRelu6(Layer):
             w_shape = self.inputs.shape.as_list()[-1]
 
         # Alpha for outputs lower than zeros
-        self.alpha_low = tf.get_variable(
+        self.alpha_low = tf.compat.v1.get_variable(
             name=self.name + '/alpha_low', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
             **self.a_init_args
         )
@@ -225,7 +225,7 @@ class PTRelu6(Layer):
         self.alpha_low_constrained = tf.nn.sigmoid(self.alpha_low, name="constraining_alpha_low_in_0_1")
 
         # Alpha for outputs higher than 6
-        self.alpha_high = tf.get_variable(
+        self.alpha_high = tf.compat.v1.get_variable(
             name=self.name + '/alpha_high', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
             **self.a_init_args
         )

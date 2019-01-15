@@ -57,7 +57,7 @@ class Dropout(Layer):
         if is_train:
             outputs = tf.nn.dropout(
                 inputs,
-                keep_prob=self.keep,
+                rate=1 - (self.keep),
                 seed=self.seed,
                 name=self.name
             )

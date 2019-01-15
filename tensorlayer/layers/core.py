@@ -36,7 +36,7 @@ class LayersConfig(object):
         pass
 
 
-TF_GRAPHKEYS_VARIABLES = tf.GraphKeys.GLOBAL_VARIABLES
+TF_GRAPHKEYS_VARIABLES = tf.compat.v1.GraphKeys.GLOBAL_VARIABLES
 
 
 class Layer(object):

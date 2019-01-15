@@ -62,8 +62,8 @@ class DropconnectDense(Layer):
             keep=0.5,
             n_units=100,
             act=None,
-            W_init=tf.truncated_normal_initializer(stddev=0.1),
-            b_init=tf.constant_initializer(value=0.0),
+            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.1),
+            b_init=tf.compat.v1.initializers.constant(value=0.0),
             W_init_args=None,
             b_init_args=None,
             name=None,  # 'dropconnect',
@@ -91,12 +91,12 @@ class DropconnectDense(Layer):
 
         self.n_in = self.inputs.shape.as_list()[-1]
 
-        self.W = tf.get_variable(
+        self.W = tf.compat.v1.get_variable(
             name=self.name + '\W', shape=(self.n_in, self.n_units), initializer=self.W_init,
             dtype=LayersConfig.tf_dtype, **self.W_init_args
         )
         if self.b_init:
-            self.b = tf.get_variable(
+            self.b = tf.compat.v1.get_variable(
                 name=self.name + '\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
                 **self.b_init_args
             )
@@ -105,7 +105,7 @@ class DropconnectDense(Layer):
             self.add_weights(self.W)
 
     def forward(self, inputs):
-        W_dropcon = tf.nn.dropout(self.W, self.keep)
+        W_dropcon = tf.nn.dropout(self.W, 1 - (self.keep))
         outputs = tf.matmul(inputs, W_dropcon)
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')

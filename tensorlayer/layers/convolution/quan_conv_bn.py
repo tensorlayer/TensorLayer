@@ -105,12 +105,12 @@ class QuanConv2dWithBN(Layer):
             decay=0.9,
             epsilon=1e-5,
             is_train=False,
-            gamma_init=tf.ones_initializer,
-            beta_init=tf.zeros_initializer,
+            gamma_init=tf.compat.v1.initializers.ones,
+            beta_init=tf.compat.v1.initializers.zeros,
             bitW=8,
             bitA=8,
             use_gemm=False,
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
             W_init_args=None,
             use_cudnn_on_gpu=None,
             data_format=None,
@@ -143,8 +143,8 @@ class QuanConv2dWithBN(Layer):
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
         strides = (1, strides[0], strides[1], 1)
 
-        with tf.variable_scope(name):
-            W = tf.get_variable(
+        with tf.compat.v1.variable_scope(name):
+            W = tf.compat.v1.get_variable(
                 name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
 
@@ -155,7 +155,7 @@ class QuanConv2dWithBN(Layer):
             para_bn_shape = conv.get_shape()[-1:]
 
             if gamma_init:
-                scale_para = tf.get_variable(
+                scale_para = tf.compat.v1.get_variable(
                     name='scale_para', shape=para_bn_shape, initializer=gamma_init, dtype=LayersConfig.tf_dtype,
                     trainable=is_train
                 )
@@ -163,27 +163,27 @@ class QuanConv2dWithBN(Layer):
                 scale_para = None
 
             if beta_init:
-                offset_para = tf.get_variable(
+                offset_para = tf.compat.v1.get_variable(
                     name='offset_para', shape=para_bn_shape, initializer=beta_init, dtype=LayersConfig.tf_dtype,
                     trainable=is_train
                 )
             else:
                 offset_para = None
 
-            moving_mean = tf.get_variable(
-                'moving_mean', para_bn_shape, initializer=tf.constant_initializer(1.), dtype=LayersConfig.tf_dtype,
+            moving_mean = tf.compat.v1.get_variable(
+                'moving_mean', para_bn_shape, initializer=tf.compat.v1.initializers.constant(1.), dtype=LayersConfig.tf_dtype,
                 trainable=False
             )
 
-            moving_variance = tf.get_variable(
+            moving_variance = tf.compat.v1.get_variable(
                 'moving_variance',
                 para_bn_shape,
-                initializer=tf.constant_initializer(1.),
+                initializer=tf.compat.v1.initializers.constant(1.),
                 dtype=LayersConfig.tf_dtype,
                 trainable=False,
             )
 
-            mean, variance = tf.nn.moments(conv, list(range(len(conv.get_shape()) - 1)))
+            mean, variance = tf.nn.moments(x=conv, axes=list(range(len(conv.get_shape()) - 1)))
 
             update_moving_mean = moving_averages.assign_moving_average(
                 moving_mean, mean, decay, zero_debias=False
@@ -222,8 +222,8 @@ class QuanConv2dWithBN(Layer):
 
 
 def _w_fold(w, gama, var, epsilon):
-    return tf.div(tf.multiply(gama, w), tf.sqrt(var + epsilon))
+    return tf.compat.v1.div(tf.multiply(gama, w), tf.sqrt(var + epsilon))
 
 
 def _bias_fold(beta, gama, mean, var, epsilon):
-    return tf.subtract(beta, tf.div(tf.multiply(gama, mean), tf.sqrt(var + epsilon)))
+    return tf.subtract(beta, tf.compat.v1.div(tf.multiply(gama, mean), tf.sqrt(var + epsilon)))

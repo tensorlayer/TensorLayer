@@ -61,10 +61,10 @@ class SlimNets(Layer):
         #     net, end_points = slim_layer(self.inputs, **slim_args)
         #     slim_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        with tf.variable_scope(name):
+        with tf.compat.v1.variable_scope(name):
             self.outputs, end_points = slim_layer(self.inputs, **self.slim_args)
 
-        slim_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)
+        slim_variables = tf.compat.v1.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)
 
         if slim_variables == []:
             raise RuntimeError(

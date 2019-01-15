@@ -140,7 +140,7 @@ class MaxPool1d(Layer):
         # https://www.tensorflow.org/api_docs/python/tf/nn/pool
         print(self.strides, self.data_format)
         outputs = tf.nn.pool(
-            inputs, window_shape=self.filter_size, pooling_type="MAX", padding=self.padding, dilation_rate=None, strides=self.strides,
+            input=inputs, window_shape=self.filter_size, pooling_type="MAX", padding=self.padding, dilations=None, strides=self.strides,
             name=self.name, data_format=self.data_format
         )
         return outputs
@@ -221,7 +221,7 @@ class MeanPool1d(Layer):
         # self._add_layers(self.outputs)
         # https://www.tensorflow.org/api_docs/python/tf/nn/pool
         outputs = tf.nn.pool(
-            inputs, window_shape=1, pooling_type="AVG", padding=self.padding, dilation_rate=None, strides=self.strides,
+            input=inputs, window_shape=1, pooling_type="AVG", padding=self.padding, dilations=None, strides=self.strides,
             name=self.name, data_format=self.data_format
         )
         return outputs
@@ -540,9 +540,9 @@ class GlobalMaxPool1d(Layer):
             The previous layer with a output rank as 3 [batch, length, channel] or [batch, channel, length].
         """
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_max(inputs, axis=1, name=self.name)
+            outputs = tf.reduce_max(input_tensor=inputs, axis=1, name=self.name)
         elif self.data_format == 'channels_first':
-            self.outputs = tf.reduce_max(self.inputs, axis=2, name=self.name)
+            self.outputs = tf.reduce_max(input_tensor=self.inputs, axis=2, name=self.name)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
@@ -585,9 +585,9 @@ class GlobalMeanPool1d(Layer):
             The previous layer with a output rank as 3 [batch, length, channel] or [batch, channel, length].
         """
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_mean(inputs, axis=1, name=self.name)
+            outputs = tf.reduce_mean(input_tensor=inputs, axis=1, name=self.name)
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_mean(inputs, axis=2, name=self.name)
+            outputs = tf.reduce_mean(input_tensor=inputs, axis=2, name=self.name)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
@@ -630,9 +630,9 @@ class GlobalMaxPool2d(Layer):
             The previous layer with a output rank as 4 [batch, height, width, channel] or [batch, channel, height, width].
         """
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_max(inputs, axis=[1, 2], name=self.name)
+            outputs = tf.reduce_max(input_tensor=inputs, axis=[1, 2], name=self.name)
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_max(inputs, axis=[2, 3], name=self.name)
+            outputs = tf.reduce_max(input_tensor=inputs, axis=[2, 3], name=self.name)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
@@ -674,9 +674,9 @@ class GlobalMeanPool2d(Layer):
             The previous layer with a output rank as 4 [batch, height, width, channel] or [batch, channel, height, width].
         """
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_mean(inputs, axis=[1, 2], name=self.name)
+            outputs = tf.reduce_mean(input_tensor=inputs, axis=[1, 2], name=self.name)
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_mean(inputs, axis=[2, 3], name=self.name)
+            outputs = tf.reduce_mean(input_tensor=inputs, axis=[2, 3], name=self.name)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
@@ -719,9 +719,9 @@ class GlobalMaxPool3d(Layer):
             The previous layer with a output rank as 5 [batch, depth, height, width, channel] or [batch, channel, depth, height, width].
         """
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_max(inputs, axis=[1, 2, 3], name=self.name)
+            outputs = tf.reduce_max(input_tensor=inputs, axis=[1, 2, 3], name=self.name)
         elif data_format == 'channels_first':
-            outputs = tf.reduce_max(inputs, axis=[2, 3, 4], name=self.name)
+            outputs = tf.reduce_max(input_tensor=inputs, axis=[2, 3, 4], name=self.name)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
@@ -764,9 +764,9 @@ class GlobalMeanPool3d(Layer):
             The previous layer with a output rank as 5 [batch, depth, height, width, channel] or [batch, channel, depth, height, width].
         """
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_mean(inputs, axis=[1, 2, 3], name=self.name)
+            outputs = tf.reduce_mean(input_tensor=inputs, axis=[1, 2, 3], name=self.name)
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_mean(inputs, axis=[2, 3, 4], name=self.name)
+            outputs = tf.reduce_mean(input_tensor=inputs, axis=[2, 3, 4], name=self.name)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
