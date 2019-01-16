@@ -115,7 +115,7 @@ class Dense(Layer):
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
         shape = [inputs_shape[1], self.n_units]
         self.W = self._get_weights("weights", shape=tuple(shape), init=self.W_init, init_args=self.W_init_args)
-        self.b = self._get_weights("biases", shape=int(self.n_units), init=self.b_init, init_args=self.b_init_args)
+        self.b = self._get_weights("biases", shape=(self.n_units, ), init=self.b_init, init_args=self.b_init_args)
         # outputs_shape = [inputs_shape[0], self.n_units]
         # return outputs_shape
 
@@ -140,34 +140,53 @@ if __name__ == "__main__":
     from tensorlayer.layers import Input
     from tensorlayer.models import Model
 
-    tf.enable_eager_execution()
+    def eager_test():
+        tf.enable_eager_execution()
 
-    def generator(inputs_shape):
-        innet = Input(inputs_shape)
-        net = Dense(n_units=64, act=tf.nn.relu)(innet)
-        # net = Dropout(keep=0.8, seed=1)(net)
-        net = Dense(n_units=64, act=tf.nn.relu)(net)
-        net1 = Dense(n_units=1, act=tf.nn.relu)(net)
-        net2 = Dense(n_units=5, act=tf.nn.relu)(net)
+        def generator(inputs_shape):
+            innet = Input(inputs_shape)
+            net = Dense(n_units=64, act=tf.nn.relu)(innet)
+            net = Dense(n_units=64, act=tf.nn.relu)(net)
+            net1 = Dense(n_units=1, act=tf.nn.relu)(net)
+            net2 = Dense(n_units=5, act=tf.nn.relu)(net)
 
-        G = Model(inputs=innet, outputs=[net1, net2])
-        return G, net2
+            G = Model(inputs=innet, outputs=[net1, net2])
+            return G, net2
 
-    latent_space_size = 100
-    G, net2 = generator((None, latent_space_size))
-    inputs = np.zeros([100, 100], dtype="float32")
-    inputs = tf.convert_to_tensor(inputs)
-    outputs_train = G(inputs, True)
-    outputs_test = G(inputs, False)
-    # print(outputs_train)
-    # print(outputs_test)
+        latent_space_size = 100
+        G, net2 = generator((None, latent_space_size))
+        inputs = np.zeros([100, 100], dtype="float32")
+        inputs = tf.convert_to_tensor(inputs)
+        outputs_train = G(inputs, True)
+        outputs_test = G(inputs, False)
+        print(outputs_train, [_.shape for _ in outputs_train])
+        print(outputs_test, [_.shape for _ in outputs_test])
 
-    # G, net2 = generator(inputs, train=True)
-    # G.print_weights(True)
-    # G.print_layers()
-    # G.count_weights()
-    # print(G.weights)
-    # print(G.outputs) # keras: [<DeferredTensor 'None' shape=(?, ?, 1) dtype=float32>, <DeferredTensor 'None' shape=(?, ?, 64) dtype=float32>]
-    # print(net2.output) # keras: AttributeError: 'DeferredTensor' object has no attribute 'output'
-    # inputs = np.ones((10, latent_space_size), dtype="float32")
+    def graph_test():
+        def disciminator(inputs_shape):
+            innet = Input(inputs_shape)
+            net = Dense(n_units=32, act=tf.nn.relu)(innet)
+            net1 = Dense(n_units=1, act=tf.nn.relu)(net)
+            net2 = Dense(n_units=5, act=tf.nn.relu)(net)
+            D = Model(inputs=innet, outputs=[net1, net2])
+            return D
+
+        inputs = tf.placeholder(shape=[None, 100], dtype=tf.float32)
+        D = disciminator(inputs_shape=[None, 100])
+        outputs_train = D(inputs, is_train=True)
+        outputs_test = D(inputs, is_train=False)
+
+        sess = tf.Session()
+        sess.run(tf.global_variables_initializer())
+
+        real_inputs = np.ones((100, 100))
+        real_outputs_train = sess.run(outputs_train, feed_dict={inputs: real_inputs})
+        real_outputs_test = sess.run(outputs_test, feed_dict={inputs: real_inputs})
+        print(real_outputs_train, [_.shape for _ in real_outputs_train])
+        print(real_outputs_test, [_.shape for _ in real_outputs_test])
+
+    # eager_test()
+    graph_test()
+
+
 
