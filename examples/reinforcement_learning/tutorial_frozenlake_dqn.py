@@ -68,7 +68,7 @@ lambd = .99  # decay factor
 e = 0.1  # e-Greedy Exploration, the larger the more random
 num_episodes = 10000
 with tf.Session() as sess:
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.global_variables_initializer())
     for i in range(num_episodes):
         ## Reset environment and get first new observation
         episode_time = time.time()
