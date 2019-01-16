@@ -234,6 +234,7 @@ class AtrousDeConv2d(Layer):
         #     name=self.name + '\W_atrous_conv2d_transpose', shape=self.shape, initializer=self.W_init,
         #     dtype=LayersConfig.tf_dtype, **self.W_init_args
         # )
+        self.W = self.kernels_atrous_conv2d_transpose
 
         if self.b_init:
             self._add_weight(scope_name=self.name, var_name="biases_atrous_conv2d_transpose", shape=(self.shape[-2]), init=self.b_init, init_args=self.b_init_args)
@@ -241,6 +242,7 @@ class AtrousDeConv2d(Layer):
             #     name=self.name + '\b_atrous_conv2d_transpose', shape=(self.shape[-2]), initializer=self.b_init,
             #     dtype=LayersConfig.tf_dtype, **self.b_init_args
             # )
+            self.b = self.biases_atrous_conv2d_transpose
 
         # if self.b_init:
         #     self.add_weights([self.W, self.b])
@@ -260,10 +262,10 @@ class AtrousDeConv2d(Layer):
 
         if self.b_init:
             self.outputs = tf.nn.bias_add(self.outputs, self.b, name='bias_add')
+        if self.act:
+            self.outputs = self.act(self.outputs)
 
-        self.outputs = self.act(self.outputs)
-
-        self._add_layers(self.outputs)
+        # self._add_layers(self.outputs)
 
 
 # Alias

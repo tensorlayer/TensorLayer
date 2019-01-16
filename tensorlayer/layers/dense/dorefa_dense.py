@@ -87,13 +87,13 @@ class DorefaDense(Layer):
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         n_in = inputs_shape[-1]
-        self._add_weight(scope_name=self.name, var_name="weights", shape=(n_in, self.n_units), init=self.W_init, init_args=self.W_init_args)
+        self.W = self._get_weight("weights", shape=(n_in, self.n_units), init=self.W_init, init_args=self.W_init_args)
         # self.W = tf.compat.v1.get_variable(
         #     name=self.name + '\W', shape=(n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype,
         #     **self.W_init_args
         # )
         if self.b_init is not None:
-            self._add_weight(scope_name=self.name, var_name="biases", shape=(self.n_units), init=self.b_init, init_args=self.b_init_args)
+            self.b = self._get_weight("biases", shape=(self.n_units), init=self.b_init, init_args=self.b_init_args)
         #     try:
         #         self.b = tf.compat.v1.get_variable(
         #             name=self.name + '\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
@@ -104,17 +104,17 @@ class DorefaDense(Layer):
         #         self.b = tf.compat.v1.get_variable(
         #             name=self.name + '\b', initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
         #         )
-        #     self.add_weights([self.W, self.b])
+        #     self.get_weights([self.W, self.b])
         # else:
-        #     self.add_weights(self.W)
+        #     self.get_weights(self.W)
 
     def forward(self, inputs):
         inputs = quantize_active(cabs(inputs), self.bitA)
-        W_ = quantize_weight(self.weights, self.bitW)
+        W_ = quantize_weight(self.W, self.bitW)
         outputs = tf.matmul(inputs, W_)
         # self.outputs = xnor_gemm(self.inputs, W) # TODO
         if self.b_init is not None:
-            outputs = tf.nn.bias_add(outputs, self.biases, name='bias_add')
+            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
             # self.outputs = xnor_gemm(self.inputs, W) + b # TODO
         if self.act:
             outputs = self.act(outputs)

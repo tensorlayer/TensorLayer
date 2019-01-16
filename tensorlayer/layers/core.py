@@ -208,9 +208,10 @@ class Layer(object):
 
         return self
 
-    def _add_weight(self, scope_name, var_name, shape, init=np.random.normal, init_args=None):
+    # def _get_weight(self, scope_name, var_name, shape, init=np.random.normal, init_args=None):
+    def _get_weight(self, var_name, shape, init=np.random.normal, init_args=None):
         weight = get_variable_with_initializer(
-            scope_name=scope_name, var_name=var_name, shape=shape, init=init, init_args=init_args
+            scope_name=self.name, var_name=var_name, shape=shape, init=init, init_args=init_args
         )
         self._weights.append(weight)  # Add into the weight collection
         self.__setattr__(var_name, weight)

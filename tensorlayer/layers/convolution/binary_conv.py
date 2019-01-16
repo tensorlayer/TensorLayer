@@ -112,29 +112,30 @@ class BinaryConv2d(Layer):
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2.")
 
-    def build(self, inputs):
-        if inputs.shape.as_list()[-1] is None:
+    def build(self, inputs_shape):
+        if inputs_shape[-1] is None:
             logging.warning("unknown input channels, set to 1")
             pre_channel = 1
 
         self.shape = (self.filter_size[0], self.filter_size[1], pre_channel, self.n_filter)
         self.strides = (1, strides[0], strides[1], 1)
 
-        self.W = tf.compat.v1.get_variable(
-            name=self.name + '\W_conv2d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
-            **self.W_init_args
-        )
-
+        # self.W = tf.compat.v1.get_variable(
+        #     name=self.name + '\W_conv2d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
+        #     **self.W_init_args
+        # )
+        self._add_weight(scope_name=self.name, var_name="filters_binary_conv2d", shape=self.shape, init=self.W_init, init_args=self.W_init_args)
+        self.W = self.filters_binary_conv2d
         if self.b_init:
-            self.b = tf.compat.v1.get_variable(
-                name=self.name + '\b_conv2d', shape=(self.shape[-1]), initializer=self.b_init,
-                dtype=LayersConfig.tf_dtype, **self.b_init_args
-            )
+            # self.b = tf.compat.v1.get_variable(
+            #     name=self.name + '\b_conv2d', shape=(self.shape[-1]), initializer=self.b_init,
+            #     dtype=LayersConfig.tf_dtype, **self.b_init_args
+            # )
 
-        if self.b_init:
-            self.add_weights([self.W, self.b])
-        else:
-            self.add_weights(self.W)
+        # if self.b_init:
+        #     self.add_weights([self.W, self.b])
+        # else:
+        #     self.add_weights(self.W)
 
     def forward(self, inputs):
         """

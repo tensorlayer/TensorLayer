@@ -107,22 +107,16 @@ class Dense(Layer):
                 self.b = tf.get_variable(
                     name='b', initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
                 )
-        self.add_weights(self.W, self.b)
+        self.get_weights(self.W, self.b)
     '''
 
     def build(self, inputs_shape):
         if len(inputs_shape) != 2:
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
-        # raise Exception("What is the inputs_shape come from?")
-        # self._make_weight(name=self.name, name2="W", shape=(self.n_in, self.n_units), initializer=self.)
-        # if self.b_init is not None:
-        #     self._make_weight(name=self.name, name2="b", shape=(self.n_units))
         shape = [inputs_shape[1], self.n_units]
-        # raise Exception("self.name could be internal?")
-        self._add_weight(scope_name=self.name, var_name="weights", shape=tuple(shape), init=self.W_init, init_args=self.W_init_args)
-        self._add_weight(scope_name=self.name, var_name="biases", shape=int(self.n_units), init=self.b_init, init_args=self.b_init_args)
+        self.W = self._get_weight("weights", shape=tuple(shape), init=self.W_init, init_args=self.W_init_args)
+        sel.b = self._get_weight("biases", shape=int(self.n_units), init=self.b_init, init_args=self.b_init_args)
         outputs_shape = [inputs_shape[0], self.n_units]
-        # raise Exception("Dense TODO: W_init, W_init_args")
         return outputs_shape
 
     '''
@@ -134,7 +128,7 @@ class Dense(Layer):
         return outputs
     '''
     def forward(self, inputs, is_train):
-        y = tf.matmul(inputs, self.weights)
-        z = tf.add(y, self.biases)
+        y = tf.matmul(inputs, self.W)
+        z = tf.add(y, self.b)
         z = self._act(z)
         return z
