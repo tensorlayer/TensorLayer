@@ -30,33 +30,29 @@ class Input(Layer):
 
     """
 
-    def __init__(self, shape=None, name=None):  #'input'):
+    def __init__(self, shape, name=None):  #'input'):
         # super(InputLayer, self).__init__(prev_layer=inputs, name=name)
         super().__init__(name)
 
         logging.info("Input  %s: %s" % (self.name, str(shape)))
 
-        # Layer constants
-        self.name = name
+        self.outputs = self.forward(
+            tf.initializers.constant()(shape),
+            is_train=False
+        )
 
-        # Layer building state
-        self._inputs_shape = shape
-        self._outputs_shape = self.build(self._inputs_shape)
-
-        # Layer forward state
-        self._input_layer = None
-        self._inputs = None
-        self._outputs = None
+    def __call__(self, prev_layer):
+        # FIXME: better exception raising
+        raise Exception(
+            "__call__() of Input deactivated"
+        )
 
     def build(self, inputs_shape):
         # FIXME: documentation need double check
         """
-        Parameters
-        ----------
-        inputs_shape : tupe
-            The shape of inputs.
+        no weights to define
         """
-        return inputs_shape
+        pass
 
     def forward(self, inputs, is_train):
         # FIXME: documentation need double check
