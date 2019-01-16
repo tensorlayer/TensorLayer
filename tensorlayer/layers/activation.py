@@ -4,7 +4,7 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
+# from tensorlayer.layers.core import LayersConfig
 
 from tensorlayer.activation import leaky_relu6
 from tensorlayer.activation import leaky_twice_relu6
@@ -58,19 +58,18 @@ class PRelu(Layer):
 
         logging.info("PRelu %s: channel_shared: %s" % (self.name, self.channel_shared))
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         if self.channel_shared:
             w_shape = (1, )
         else:
-            w_shape = self.inputs.shape.as_list()[-1]
-
-        self.alpha_var = tf.compat.v1.get_variable(
-            name=self.name + '/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
-            **self.a_init_args
-        )
-
-        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
-        self.add_weights(self.alpha_var)
+            w_shape = inputs_shape[-1]
+        self._add_weight(scope_name=self.name, var_name="alpha", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
+        # self.alpha_var = tf.compat.v1.get_variable(
+        #     name=self.name + '/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
+        #     **self.a_init_args
+        # )
+        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha, name="constraining_alpha_var_in_0_1")
+        # self.add_weights(self.alpha_var)
 
     def forward(self, inputs):
         outputs = self._apply_activation(inputs, **{'alpha': self.alpha_var_constrained, 'name': "prelu_activation"})
@@ -130,23 +129,23 @@ class PRelu6(Layer):
 
         logging.info("PRelu6 %s: channel_shared: %s" % (self.name, self.channel_shared))
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         if self.channel_shared:
             w_shape = (1, )
         else:
-            w_shape = self.inputs.shape.as_list()[-1]
+            w_shape = inputs_shape[-1]
+        self._add_weight(scope_name=self.name, var_name="alpha", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
+        # self.alpha_var = tf.compat.v1.get_variable(
+        #     name=self.name + '/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
+        #     **self.a_init_args
+        # )
 
-        self.alpha_var = tf.compat.v1.get_variable(
-            name=self.name + '/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
-            **self.a_init_args
-        )
-
-        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
-        self.add_weights(self.alpha_var)
+        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha, name="constraining_alpha_var_in_0_1")
+        # self.add_weights(self.alpha_var)
 
     def forward(self, inputs):
         outputs = self._apply_activation(
-            self.inputs, **{
+            inputs, **{
                 'alpha': self.alpha_var_constrained,
                 'name': "prelu6_activation"
             }
@@ -210,25 +209,26 @@ class PTRelu6(Layer):
 
         logging.info("PTRelu6 %s: channel_shared: %s" % (self.name, self.channel_shared))
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         if self.channel_shared:
             w_shape = (1, )
         else:
-            w_shape = self.inputs.shape.as_list()[-1]
+            w_shape = inputs_shape[-1]
 
         # Alpha for outputs lower than zeros
-        self.alpha_low = tf.compat.v1.get_variable(
-            name=self.name + '/alpha_low', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
-            **self.a_init_args
-        )
-
+        self._add_weight(scope_name=self.name, var_name="alpha_low", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
+        # self.alpha_low = tf.compat.v1.get_variable(
+        #     name=self.name + '/alpha_low', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
+        #     **self.a_init_args
+        # )
         self.alpha_low_constrained = tf.nn.sigmoid(self.alpha_low, name="constraining_alpha_low_in_0_1")
 
         # Alpha for outputs higher than 6
-        self.alpha_high = tf.compat.v1.get_variable(
-            name=self.name + '/alpha_high', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
-            **self.a_init_args
-        )
+        self._add_weight(scope_name=self.name, var_name="alpha_high", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
+        # self.alpha_high = tf.compat.v1.get_variable(
+        #     name=self.name + '/alpha_high', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
+        #     **self.a_init_args
+        # )
 
         self.alpha_high_constrained = tf.nn.sigmoid(self.alpha_high, name="constraining_alpha_high_in_0_1")
 

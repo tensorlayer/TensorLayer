@@ -9,8 +9,8 @@ import tensorflow as tf
 from tensorflow.python.ops import array_ops
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
-from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+# from tensorlayer.layers.core import LayersConfig
+# from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer.layers.utils import flatten_reshape
 

@@ -4,7 +4,7 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
+# from tensorlayer.layers.core import LayersConfig
 
 from tensorlayer.layers.utils import quantize_active_overflow
 from tensorlayer.layers.utils import quantize_weight_overflow
@@ -77,44 +77,47 @@ class QuanDense(Layer):
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-    def build(self, inputs):
-        if inputs.get_shape().ndims != 2:
+    def build(self, inputs_shape):
+        # if inputs.get_shape().ndims != 2:
+        if len(inputs_shape) != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
         if self.use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
-        n_in = int(inputs.get_shape()[-1])
+        n_in = inputs_shape[-1]
 
-        self.W = tf.compat.v1.get_variable(
-            name=self.name + '\W', shape=(n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype,
-            **self.W_init_args
-        )
-
+        # self.W = tf.compat.v1.get_variable(
+        #     name=self.name + '\W', shape=(n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype,
+        #     **self.W_init_args
+        # )
+        self._add_weight(scope_name=self.name, var_name="weights", shape=(n_in, self.n_units), init=self.W_init, init_args=self.W_init_args)
         if self.b_init is not None:
-            try:
-                self.b = tf.compat.v1.get_variable(
-                    name=self.name + '\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
-                    **self.b_init_args
-                )
-            except Exception:  # If initializer is a constant, do not specify shape.
-                self.b = tf.compat.v1.get_variable(
-                    name=self.name + '\b', initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
-                )
-            self.add_weights([self.W, self.b])
-        else:
-            self.add_weights(self.W)
+            self._add_weight(scope_name=self.name, var_name="biases", shape=int(self.n_units), init=self.b_init, init_args=self.b_init_args)
+        #     try:
+        #         self.b = tf.compat.v1.get_variable(
+        #             name=self.name + '\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+        #             **self.b_init_args
+        #         )
+        #     except Exception:  # If initializer is a constant, do not specify shape.
+        #         self.b = tf.compat.v1.get_variable(
+        #             name=self.name + '\b', initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+        #         )
+        #     self.add_weights([self.W, self.b])
+        # else:
+        #     self.add_weights(self.W)
 
     def forward(self, inputs):
 
         inputs = quantize_active_overflow(inputs, self.bitA)
 
-        W_ = quantize_weight_overflow(self.W, self.bitW)
+        W_ = quantize_weight_overflow(self.weights, self.bitW)
 
-        outputs = tf.matmul(inputs, self.W)
+        # outputs = tf.matmul(inputs, self.W)
+        outputs = tf.matmul(inputs, W_) # hao dong change to this
 
         if self.b_init is not None:
-            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+            outputs = tf.nn.bias_add(outputs, self.biases, name='bias_add')
         if self.act:
             outputs = self.act(outputs)
         return outputs

@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
+# from tensorlayer.layers.core import LayersConfig
 
 from tensorlayer import logging
 
@@ -82,7 +82,7 @@ class Dense(Layer):
         self.W_init_args = W_init_args
         self.b_init_args = b_init_args
 
-        self.n_in = int(self.inputs.get_shape()[-1])
+        # self.n_in = int(self.inputs.get_shape()[-1])
         # self.inputs_shape = self.inputs.shape.as_list() #
         # self.outputs_shape = [self.inputs_shape[0], n_units]
 
@@ -90,9 +90,6 @@ class Dense(Layer):
             "Dense  %s: %d %s" %
             (self.name, self.n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
-
-        if self.inputs.shape.ndims != 2:
-            raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
 
     '''
     def build(self, inputs):
@@ -114,13 +111,18 @@ class Dense(Layer):
     '''
 
     def build(self, inputs_shape):
+        if len(inputs_shape) != 2:
+            raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
+        # raise Exception("What is the inputs_shape come from?")
         # self._make_weight(name=self.name, name2="W", shape=(self.n_in, self.n_units), initializer=self.)
         # if self.b_init is not None:
         #     self._make_weight(name=self.name, name2="b", shape=(self.n_units))
         shape = [inputs_shape[1], self.n_units]
-        self._add_weight(self.name, "w1", tuple(shape))
-        self._add_weight(self.name, "b1", int(self.n_units))
+        # raise Exception("self.name could be internal?")
+        self._add_weight(scope_name=self.name, var_name="weights", shape=tuple(shape), init=self.W_init, init_args=self.W_init_args)
+        self._add_weight(scope_name=self.name, var_name="biases", shape=int(self.n_units), init=self.b_init, init_args=self.b_init_args)
         outputs_shape = [inputs_shape[0], self.n_units]
+        # raise Exception("Dense TODO: W_init, W_init_args")
         return outputs_shape
 
     '''
@@ -132,7 +134,7 @@ class Dense(Layer):
         return outputs
     '''
     def forward(self, inputs, is_train):
-        y = tf.matmul(inputs, self.w1)
-        z = tf.add(y, self.b1)
+        y = tf.matmul(inputs, self.weights)
+        z = tf.add(y, self.biases)
         z = self._act(z)
         return z

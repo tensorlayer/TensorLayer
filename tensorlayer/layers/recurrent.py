@@ -9,8 +9,8 @@ from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
 from tensorflow.python.ops.rnn_cell import LSTMStateTuple
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
-from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+# from tensorlayer.layers.core import LayersConfig
+# from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer import logging
 
@@ -501,7 +501,7 @@ class ConvRNNCell(object):
         """Integer or TensorShape: size of outputs produced by this cell."""
         raise NotImplementedError("Abstract method")
 
-    def zero_state(self, batch_size, dtype=LayersConfig.tf_dtype):
+    def zero_state(self, batch_size):#, dtype=LayersConfig.tf_dtype):
         """Return zero-filled state tensor(s).
         Args:
           batch_size: int, float, or unit Tensor representing the batch size.
@@ -510,6 +510,7 @@ class ConvRNNCell(object):
           filled with zeros
 
         """
+        dtype = LayersConfig.tf_dtype
         shape = self.shape
         num_features = self.num_features
         # TODO : TypeError: 'NoneType' object is not subscriptable

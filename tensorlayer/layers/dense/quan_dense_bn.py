@@ -4,7 +4,7 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
+# from tensorlayer.layers.core import LayersConfig
 from tensorflow.python.training import moving_averages
 
 from tensorlayer.layers.utils import quantize_active_overflow
@@ -86,7 +86,7 @@ class QuanDenseLayerWithBN(Layer):
             use_gemm=False,
             W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.1),
             W_init_args=None,
-            name='quan_dense_with_bn',
+            name=None,#'quan_dense_with_bn',
     ):
         super(QuanDenseLayerWithBN, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
 

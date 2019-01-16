@@ -4,7 +4,7 @@
 import numpy as np
 import tensorflow as tf
 
-from tensorlayer.layers.core import LayersConfig
+# from tensorlayer.layers.core import LayersConfig
 
 __all__ = ['deconv2d_bilinear_upsampling_initializer']
 

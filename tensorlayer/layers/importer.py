@@ -4,7 +4,7 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+# from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer import logging
 

@@ -19,24 +19,25 @@ from tensorlayer.decorators import protected_method
 from tensorlayer.decorators import private_method
 
 __all__ = [
-    'LayersConfig',  # TODO : remove this??
-    'TF_GRAPHKEYS_VARIABLES',  # TODO : remove this??
+    # 'LayersConfig',  # TODO : remove this??
+    # 'TF_GRAPHKEYS_VARIABLES',  # TODO : remove this??
     'Layer',
 ]
 
+_global_layer_index = 0 # TODO: better implementation?
 
-@six.add_metaclass(ABCMeta)
-class LayersConfig(object):
+# @six.add_metaclass(ABCMeta)
+# class LayersConfig(object):
+#
+#     tf_dtype = tf.float32  # TensorFlow DType
+#     set_keep = {}  # A dictionary for holding tf.placeholders
+#
+#     @abstractmethod
+#     def __init__(self):
+#         pass
 
-    tf_dtype = tf.float32  # TensorFlow DType
-    set_keep = {}  # A dictionary for holding tf.placeholders
 
-    @abstractmethod
-    def __init__(self):
-        pass
-
-
-TF_GRAPHKEYS_VARIABLES = tf.compat.v1.GraphKeys.GLOBAL_VARIABLES
+# TF_GRAPHKEYS_VARIABLES = tf.compat.v1.GraphKeys.GLOBAL_VARIABLES
 
 
 class Layer(object):
@@ -59,14 +60,15 @@ class Layer(object):
 
     Methods
     ---------
-    print_params(details=True, session=None)
-        Print all parameters of this network.
-    print_layers()
-        Print all outputs of all layers of this network.
-    count_params()
-        Return the number of parameters of this network.
-    get_all_params()
-        Return the parameters in a list of array.
+    check this https://github.com/luomai/tensorlayer2-design/issues/7
+    # print_params(details=True, session=None)
+    #     Print all parameters of this network.
+    # print_layers()
+    #     Print all outputs of all layers of this network.
+    # count_params()
+    #     Return the number of parameters of this network.
+    # get_all_params()
+    #     Return the parameters in a list of array.
 
     Examples
     ---------
@@ -74,7 +76,7 @@ class Layer(object):
 
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
-    >>> x = tf.placeholder("float32", [None, 100])
+    >>> x = tf.placeholder("float32", [None, 100])      # TODO: rewrite
     >>> n = tl.layers.InputLayer(x, name='in')
     >>> n = tl.layers.DenseLayer(n, 80, name='d1')
     >>> n = tl.layers.DenseLayer(n, 80, name='d2')
@@ -120,11 +122,14 @@ class Layer(object):
             setattr(self, key, self._argument_dict_checkup(kwargs[key]))
 
         self.act = act if act not in [None, tf.identity] else None
+
+        global _global_layer_index
         if name is None:
-            raise ValueError(
-                'Layer must have a name. \n    TODO: Hao Dong: could we automatically add layer name when name=None e.g. layer0, layer1, batchnorm, layer3, layer4... '
-            )
-            # name = 'layer' + xxx
+            name = 'layer%d' % _global_layer_index
+        _global_layer_index += 1
+            # raise ValueError(
+            #     'Layer must have a name. \n    TODO: Hao Dong: could we automatically add layer name when name=None e.g. layer0, layer1, batchnorm, layer3, layer4... '
+            # )
 
         # FIXME: double check needed: the scope name may be deprecated in TF2
         # scope_name = tf.get_variable_scope().name

@@ -7,8 +7,8 @@ from tensorflow.python.framework import ops
 from tensorflow.python.ops import math_ops
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
-from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+# from tensorlayer.layers.core import LayersConfig
+# from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 from tensorlayer.layers.utils import get_collection_trainable
 
 from tensorlayer import logging
@@ -357,13 +357,14 @@ class LayerNorm(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, center=True, scale=True, act=None, reuse=None, variables_collections=None,
+            self, #prev_layer,
+            center=True, scale=True, act=None, reuse=None, variables_collections=None,
             outputs_collections=None, trainable=True, begin_norm_axis=1, begin_params_axis=-1, name='layernorm'
     ):
 
-        super(LayerNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        # super(LayerNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        super().__init__(name)
 
         logging.info(
             "LayerNorm %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
@@ -462,8 +463,10 @@ class GroupNorm(Layer):
         x = tf.reshape(inputs, self.int_shape)
         if self.data_format == 'channels_last':
             mean, var = tf.nn.moments(x=x, axes=[1, 2, 4], keepdims=True)
-        else:
+        elif self.data_format == 'channels_first':
             mean, var = tf.nn.moments(x=x, axes=[2, 3, 4], keepdims=True)
+        else:
+            raise Exception("unknown data_format")
         x = (x - mean) / tf.sqrt(var + self.epsilon)
 
         outputs = tf.reshape(x, tf.shape(input=inputs)) * self.gamma + self.beta

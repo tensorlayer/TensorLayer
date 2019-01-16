@@ -4,7 +4,7 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
+# from tensorlayer.layers.core import LayersConfig
 
 from tensorlayer.layers.convolution.expert_conv import Conv1dLayer
 
@@ -228,23 +228,24 @@ class AtrousDeConv2d(Layer):
             )
         )
 
-    def build(self, inputs):
-        self.W = tf.compat.v1.get_variable(
-            name=self.name + '\W_atrous_conv2d_transpose', shape=self.shape, initializer=self.W_init,
-            dtype=LayersConfig.tf_dtype, **self.W_init_args
-        )
+    def build(self, inputs_shape):
+        self._add_weight(scope_name=self.name, var_name="kernels_atrous_conv2d_transpose", shape=self.shape, init=self.W_init, init_args=self.W_init_args)
+        # self.W = tf.compat.v1.get_variable(
+        #     name=self.name + '\W_atrous_conv2d_transpose', shape=self.shape, initializer=self.W_init,
+        #     dtype=LayersConfig.tf_dtype, **self.W_init_args
+        # )
 
         if self.b_init:
-            self.b = tf.compat.v1.get_variable(
-                name=self.name + '\b_atrous_conv2d_transpose', shape=(self.shape[-2]), initializer=self.b_init,
-                dtype=LayersConfig.tf_dtype, **self.b_init_args
-            )
+            self._add_weight(scope_name=self.name, var_name="biases_atrous_conv2d_transpose", shape=(self.shape[-2]), init=self.b_init, init_args=self.b_init_args)
+            # self.b = tf.compat.v1.get_variable(
+            #     name=self.name + '\b_atrous_conv2d_transpose', shape=(self.shape[-2]), initializer=self.b_init,
+            #     dtype=LayersConfig.tf_dtype, **self.b_init_args
+            # )
 
-        if self.b_init:
-            self.add_weights([self.W, self.b])
-        else:
-
-            self.add_weights(self.W)
+        # if self.b_init:
+        #     self.add_weights([self.W, self.b])
+        # else:
+        #     self.add_weights(self.W)
 
     def forward(self, inputs):
         """
