@@ -145,17 +145,17 @@ def get_layers_with_name(net, name="", verbose=False):
 
 
 def get_variable_with_initializer(scope_name, var_name, shape,
-                                  init=np.random.normal, init_args=None):
+                                  init=tf.initializers.random_normal, init_args=None):
     # FIXME: documentation needed
     # TODO: more initializer needed, the initializer can be a numpy.random function
     # if tf.executing_eagerly():
     var_name = scope_name + "/" + var_name
     if init_args is not None:
-        initial_value = init(size=shape, **init_args)
+        initial_value = init(**init_args)(shape=shape)
     else:
-        initial_value = init(size=shape)
+        initial_value = init()(shape=shape)
     var = tf.Variable(
-        initial_value=tf.convert_to_tensor(value=initial_value, dtype=tf.float32), name=var_name)
+        initial_value=initial_value, name=var_name)
     # else:
     #     with tf.variable_scope(scope_name, reuse=tf.AUTO_REUSE):
     #         var = tf.get_variable(name=var_name, initializer=tf.zeros(shape), trainable=train)
