@@ -1,6 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import numpy as np
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
@@ -36,8 +37,9 @@ class Input(Layer):
 
         logging.info("Input  %s: %s" % (self.name, str(shape)))
 
+        shape_without_none = [_ if _ is not None else 1 for _ in shape]
         self.outputs = self.forward(
-            tf.initializers.constant()(shape),
+            tf.initializers.constant(value=0.0)(shape_without_none),
             is_train=False
         )
 
@@ -416,7 +418,7 @@ class AverageEmbeddingInput(Layer):
             embedding_size,
             pad_value=0,
             E_init=tf.compat.v1.initializers.random_uniform(-0.1, 0.1),
-            E_init=None,
+            # E_init=None,
             name=None,  # 'average_embedding',
     ):
 
