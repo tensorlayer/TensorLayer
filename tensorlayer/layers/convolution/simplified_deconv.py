@@ -23,8 +23,8 @@ class DeConv2d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
+    # prev_layer : :class:`Layer`
+    #     Previous layer.
     n_filter : int
         The number of filters.
     filter_size : tuple of int
@@ -47,17 +47,14 @@ class DeConv2d(Layer):
         The arguments for the weight matrix initializer (For TF < 1.3).
     b_init_args : dictionary
         The arguments for the bias vector initializer (For TF < 1.3).
-    name : str
+    name : None or str
         A unique layer name.
 
     """
 
-    @deprecated_alias(
-        layer='prev_layer', n_out_channel='n_filter', end_support_version=1.9
-    )  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
+            # prev_layer,
             n_filter=32,
             filter_size=(3, 3),
             # out_size=(30, 30),  # remove
@@ -70,10 +67,21 @@ class DeConv2d(Layer):
             b_init=tf.compat.v1.initializers.constant(value=0.0),
             W_init_args=None,  # TODO: Remove when TF <1.3 not supported
             b_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            name='decnn2d'
+            name=None, #'decnn2d'
     ):
-        super(DeConv2d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        # super(DeConv2d, self
+        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super().__init__(name)
+        self.n_filter=n_filter
+        self.filter_size=filter_size
+        self.strides=strides
+        self.padding=padding
+        self.act=act
+        self.data_format=data_format
+        self.W_init=W_init
+        self.b_init=b_init
+        self.W_init_args=W_init_args  # TODO: Remove when TF <1.3 not supported
+        self.b_init_args=b_init_args  # TODO: Remove when TF <1.3 not supported
 
         logging.info(
             "DeConv2d %s: n_filters: %s strides: %s pad: %s act: %s" % (
@@ -85,18 +93,34 @@ class DeConv2d(Layer):
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2, DeConv2d and DeConv2dLayer are different.")
 
-        conv2d_transpose = tf.compat.v1.layers.Conv2DTranspose(
-            filters=n_filter, kernel_size=filter_size, strides=strides, padding=padding, data_format=data_format,
-            activation=self.act, kernel_initializer=W_init, bias_initializer=b_init, name=name
+    def build(self, inputs_shape):
+        self.layer = tf.keras.layers.Conv2DTranspose(
+            filters=self.n_filter,
+            kernel_size=self.filter_size,
+            strides=self.strides,
+            padding=self.padding,
+            data_format=self.data_format,
+            activation=self.act,
+            use_bias=(True if self.b_init is not None else False),
+            kernel_initializer=self.W_init,
+            bias_initializer=self.b_init,
+            name=self.name,
         )
 
-        self.outputs = conv2d_transpose(self.inputs)
-        # new_variables = conv2d_transpose.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-        new_variables = get_collection_trainable(self.name)
+        _out = self.layer(np.random.uniform([1]+list(inputs_shape))) # initialize weights
+        outputs_shape = _out.shape
+        self._add_weights(self.layer.weights)
 
-        self._add_layers(self.outputs)
-        self._add_params(new_variables)
+    def forward(self, inputs):
+        outputs = self.layer(inputs)
+        return outputs
+        # self.outputs = conv2d_transpose(self.inputs)
+        # # new_variables = conv2d_transpose.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        # # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        # new_variables = get_collection_trainable(self.name)
+        #
+        # self._add_layers(self.outputs)
+        # self._add_params(new_variables)
 
 
 class DeConv3d(Layer):
@@ -104,8 +128,8 @@ class DeConv3d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
+    # prev_layer : :class:`Layer`
+    #     Previous layer.
     n_filter : int
         The number of filters.
     filter_size : tuple of int
@@ -117,7 +141,7 @@ class DeConv3d(Layer):
     act : activation function
         The activation function of this layer.
     data_format : str
-        "channels_last" (NDHWC, default) or "channels_first" (NCDHW). 
+        "channels_last" (NDHWC, default) or "channels_first" (NCDHW).
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -126,15 +150,14 @@ class DeConv3d(Layer):
         The arguments for the weight matrix initializer (For TF < 1.3).
     b_init_args : dictionary
         The arguments for the bias vector initializer (For TF < 1.3).
-    name : str
+    name : None or str
         A unique layer name.
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
+            # prev_layer,
             n_filter=32,
             filter_size=(3, 3, 3),
             strides=(2, 2, 2),
@@ -145,10 +168,21 @@ class DeConv3d(Layer):
             b_init=tf.compat.v1.initializers.constant(value=0.0),
             W_init_args=None,  # TODO: Remove when TF <1.3 not supported
             b_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            name='decnn3d'
+            name=None, #'decnn3d'
     ):
-        super(DeConv3d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        # super(DeConv3d, self
+        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super().__init__(name)
+        self.n_filter=n_filter
+        self.filter_size=filter_size
+        self.strides=strides
+        self.padding=padding
+        self.act=act
+        self.data_format=data_format
+        self.W_init=W_init
+        self.b_init=b_init
+        self.W_init_args=W_init_args  # TODO: Remove when TF <1.3 not supported
+        self.b_init_args=b_init_args  # TODO: Remove when TF <1.3 not supported
 
         logging.info(
             "DeConv3d %s: n_filters: %s strides: %s pad: %s act: %s" % (
@@ -157,16 +191,32 @@ class DeConv3d(Layer):
             )
         )
 
+    def build(self, inputs_shape):
         # with tf.variable_scope(name) as vs:
-        nn = tf.compat.v1.layers.Conv3DTranspose(
-            filters=n_filter, kernel_size=filter_size, strides=strides, padding=padding, activation=self.act,
-            data_format=data_format, kernel_initializer=W_init, bias_initializer=b_init, name=name
+        self.layer = tf.keras.layers.Conv3DTranspose(
+            filters=self.n_filter,
+            kernel_size=self.filter_size,
+            strides=self.strides,
+            padding=self.padding,
+            activation=self.act,
+            use_bias=(True if self.b_init is not None else False),
+            data_format=self.data_format,
+            kernel_initializer=self.W_init,
+            bias_initializer=self.b_init,
+            name=self.name,
         )
 
-        self.outputs = nn(self.inputs)
-        # new_variables = nn.weights  # tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-        new_variables = get_collection_trainable(self.name)
+        _out = self.layer(np.random.uniform([1]+list(inputs_shape))) # initialize weights
+        outputs_shape = _out.shape
+        self._add_weights(self.layer.weights)
 
-        self._add_layers(self.outputs)
-        self._add_params(new_variables)
+    def forward(self, inputs):
+        outputs = self.layer(inputs)
+        return outputs
+        # self.outputs = nn(self.inputs)
+        # # new_variables = nn.weights  # tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        # # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        # new_variables = get_collection_trainable(self.name)
+        #
+        # self._add_layers(self.outputs)
+        # self._add_params(new_variables)
