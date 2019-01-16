@@ -325,8 +325,13 @@ class Layer(object):
         return _weights
 
     def __str__(self):
-        return "  %s (%s) outputs_shape: %s" % (self.__class__.__name__, self.name,
-                [o.shape.as_list() for o in self.outputs])
+        if self.outputs is not None:
+            _outputs_shape = [o.shape.as_list() for o in self.outputs]
+            if len(_outputs_shape) == 1:
+                _outputs_shape = _outputs_shape[0]
+        else:
+            _outputs_shape = "unknown for unbuilt layer"
+        return "  %s (%s) outputs_shape: %s" % (self.__class__.__name__, self.name,_outputs_shape)
         # self._outputs_shape)#outputs.get_shape().as_list())
 
     # def __getitem__(self, key):
