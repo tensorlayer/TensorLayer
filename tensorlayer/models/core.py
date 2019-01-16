@@ -41,3 +41,13 @@ class Model():
             results.append(z)
         return results
 
+    def __str__(self):
+        return "  %{} (%{}) outputs_shape: {}".format(self.__class__.__name__, self.name, [o._outputs_shape[1:] for o in self.outputs])#_outputs_shape)#outputs.get_shape().as_list())
+
+    ## raise Exceptions for old version codes
+    def print_params(self, **kwargs):
+        raise Exception("please change print_params --> print_weights")
+
+    @property
+    def all_params(self):
+        raise Exception("please change all_params --> weights")

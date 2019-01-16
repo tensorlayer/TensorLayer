@@ -24,7 +24,7 @@ __all__ = [
     'Layer',
 ]
 
-_global_layer_index = 0 # TODO: better implementation?
+_global_layer_name_dict = {} # TODO: better implementation?
 
 # @six.add_metaclass(ABCMeta)
 # class LayersConfig(object):
@@ -61,13 +61,13 @@ class Layer(object):
     Methods
     ---------
     check this https://github.com/luomai/tensorlayer2-design/issues/7
-    # print_params(details=True, session=None)
+    # print_weights(details=True, session=None)
     #     Print all parameters of this network.
     # print_layers()
     #     Print all outputs of all layers of this network.
-    # count_params()
+    # count_weights()
     #     Return the number of parameters of this network.
-    # get_all_params()
+    # get_all_weights()
     #     Return the parameters in a list of array.
 
     Examples
@@ -88,13 +88,13 @@ class Layer(object):
     >>> n.print_layers()
     [TL]   layer   0: d1/Identity:0        (?, 80)            float32
     [TL]   layer   1: d2/Identity:0        (?, 80)            float32
-    >>> n.print_params(False)
+    >>> n.print_weights(False)
     [TL]   param   0: d1/W:0               (100, 80)          float32_ref
     [TL]   param   1: d1/b:0               (80,)              float32_ref
     [TL]   param   2: d2/W:0               (80, 80)           float32_ref
     [TL]   param   3: d2/b:0               (80,)              float32_ref
-    [TL]   num of params: 14560
-    >>> n.count_params()
+    [TL]   num of weights: 14560
+    >>> n.count_weights()
     14560
 
     - Slicing the outputs
@@ -123,10 +123,17 @@ class Layer(object):
 
         self.act = act if act not in [None, tf.identity] else None
 
-        global _global_layer_index
+        ## Hao Dong: automatically add layer type as the prefix of the layers
+        global _global_layer_name_dict
         if name is None:
-            name = 'layer%d' % _global_layer_index
-        _global_layer_index += 1
+            prefix = self.__class__.__name__.lower()
+            if prefix in _global_layer_name_dict.keys():
+                _global_layer_name_dict[prefix] += 1
+                name = prefix + '_' + str(_global_layer_name_dict[prefix])
+            else:
+                _global_layer_name_dict[prefix] = 0
+                name = prefix
+        # _global_layer_index += 1
             # raise ValueError(
             #     'Layer must have a name. \n    TODO: Hao Dong: could we automatically add layer name when name=None e.g. layer0, layer1, batchnorm, layer3, layer4... '
             # )
@@ -147,7 +154,7 @@ class Layer(object):
 
         # TODO: need to update
         # self.all_layers = list()  # we change layers --> outputs ?
-        # self.all_params = list()  # we change params --> weights ?
+        # self.all_weights = list()  # we change weights --> weights ?
         # self.all_drop = dict()    # remove all_drop
 
         # Layer building state
@@ -157,11 +164,11 @@ class Layer(object):
         self._weights = None
 
     @property
-    def _inputs_shape(self):
+    def _inputs_shape(self):  # TODO, if self.outputs is a list ???
         return self._input_layer._outputs_shape
 
     @property
-    def _outputs_shape(self):
+    def _outputs_shape(self): # TODO, if self.outputs is a list ???
         return self.outputs.get_shape().as_list()
 
     @property
@@ -192,8 +199,8 @@ class Layer(object):
 
             # TODO: need update
             # self._add_layers(prev_layer.all_layers)
-            # self._add_params(self._weights)
-            # self._add_params(prev_layer.all_params)
+            # self._add_weights(self._weights)
+            # self._add_weights(prev_layer.all_weights)
             # self._add_dropout_layers(prev_layer.all_drop)
 
         else:
@@ -205,7 +212,7 @@ class Layer(object):
                 self.inputs = [layer.outputs for layer in prev_layer]
 
                 self._add_layers(sum([l.all_layers for l in prev_layer], []))
-                self._add_params(sum([l.all_params for l in prev_layer], []))
+                self._add_weights(sum([l.all_weights for l in prev_layer], []))
                 self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
 
             elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
@@ -218,7 +225,7 @@ class Layer(object):
             elif prev_layer is not None:
                 # 4. tl.models
                 self._add_layers(prev_layer.all_layers)
-                self._add_params(prev_layer.all_params)
+                self._add_weights(prev_layer.all_weights)
                 self._add_dropout_layers(prev_layer.all_drop)
 
                 if hasattr(prev_layer, "outputs"):
@@ -259,9 +266,16 @@ class Layer(object):
         """
         raise Exception("The forward method must be implemented by inherited class")
 
-    def print_params(self, details=True, session=None):
-        """Print all info of parameters in the network"""
-        for i, p in enumerate(self.all_params):
+    def print_weights(self, **kwargs):
+        raise Exception("please change print_weights --> print_weights")
+
+    @property
+    def all_weights(self):
+        raise Exception("please change all_weights --> all_weights")
+
+    def print_weights(self, details=False, session=None):
+        """Print all information of weights in the model. """
+        for i, p in enumerate(self.all_weights):
             if details:
                 try:
                     val = p.eval(session=session)
@@ -272,12 +286,12 @@ class Layer(object):
                 except Exception as e:
                     logging.info(str(e))
                     raise Exception(
-                        "Hint: print params details after tl.layers.initialize_global_variables(sess) "
-                        "or use network.print_params(False)."
+                        "Hint: print weights details after tl.layers.initialize_global_variables(sess) "
+                        "or use network.print_weights(False)."
                     )
             else:
                 logging.info("  param {:3}: {:20} {:15}    {}".format(i, p.name, str(p.get_shape()), p.dtype.name))
-        logging.info("  num of params: %d" % self.count_params())
+        logging.info("  num of weights: %d" % self.count_weights())
 
     # TODO: deprecated if no all_layers
     def print_layers(self):
@@ -288,11 +302,14 @@ class Layer(object):
                 "  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name)
             )
 
+    def count_weights(self, **kwargs):
+        raise Exception("please change count_weights --> count_weights")
+
     # TODO: need to rewrite
-    def count_params(self):
+    def count_weights(self):
         """Returns the number of parameters in the network."""
-        n_params = 0
-        for _i, p in enumerate(self.all_params):
+        n_weights = 0
+        for _i, p in enumerate(self.all_weights):
             n = 1
             # for s in p.eval().shape:
             for s in p.get_shape():
@@ -302,39 +319,40 @@ class Layer(object):
                     s = 1
                 if s:
                     n = n * s
-            n_params = n_params + n
-        return n_params
+            n_weights = n_weights + n
+        return n_weights
 
     # TODO: need to rewrite
-    def get_all_params(self, session=None):
-        """Return the parameters in a list of array."""
-        _params = []
-        for p in self.all_params:
-            if session is None:
-                _params.append(p.eval())
+    def get_all_weights(self, sess=None):
+        """Return the weights in a list of array."""
+        _weights = []
+        for p in self.all_weights:
+            if sess is None:
+                _weights.append(p.eval())
             else:
-                _params.append(session.run(p))
-        return _params
+                _weights.append(sess.run(p))
+        return _weights
 
     def __str__(self):
-        print("TODO: Hao Dong: in graph mode, layers have outputs, model has all_outputs")
-        return "  Last layer is: %s (%s) %s" % (self.__class__.__name__, self.name, self.outputs.get_shape().as_list())
+        return "  %s (%s) outputs_shape: %s" % (self.__class__.__name__, self.name,
+                [o.shape.as_list() for o in self.outputs])
+        # self._outputs_shape)#outputs.get_shape().as_list())
 
-    def __getitem__(self, key):
-
-        net_new = Layer(prev_layer=None, name=self.name)
-
-        net_new.name = self.name + '_indexing'
-        net_new.inputs = self.inputs
-        net_new.outputs = self.outputs[key]
-
-        net_new._add_layers(self.all_layers[:-1])
-        net_new._add_layers(net_new.outputs)
-
-        net_new._add_params(self.all_params)
-        # net_new._add_dropout_layers(self.all_drop)
-
-        return net_new
+    # def __getitem__(self, key):
+    #
+    #     net_new = Layer(prev_layer=None, name=self.name)
+    #
+    #     net_new.name = self.name + '_indexing'
+    #     net_new.inputs = self.inputs
+    #     net_new.outputs = self.outputs[key]
+    #
+    #     net_new._add_layers(self.all_layers[:-1])
+    #     net_new._add_layers(net_new.outputs)
+    #
+    #     net_new._add_weights(self.all_weights)
+    #     # net_new._add_dropout_layers(self.all_drop)
+    #
+    #     return net_new
 
     def __setitem__(self, key, item):
         raise TypeError("The Layer API does not allow to use the method: `__setitem__`")
@@ -343,7 +361,7 @@ class Layer(object):
         raise TypeError("The Layer API does not allow to use the method: `__delitem__`")
 
     def __iter__(self):
-        for x in self.all_layers:
+        for x in self.all_layers: # FIXME: it is good for eager mode?
             yield x
 
     def __len__(self):
@@ -351,7 +369,7 @@ class Layer(object):
 
     @protected_method
     def _get_init_args(self, skip=4):
-        """Get all arguments of current layer for saving the graph."""
+        """Get all arguments of current layer for the configuration information."""
         stack = inspect.stack()
 
         if len(stack) < skip + 1:
@@ -359,7 +377,7 @@ class Layer(object):
 
         args, _, _, values = inspect.getargvalues(stack[skip][0])
 
-        params = {}
+        weights = {}
 
         for arg in args:
 
@@ -370,43 +388,43 @@ class Layer(object):
 
                 # change function (e.g. act) into dictionary of module path and function name
                 if inspect.isfunction(val):
-                    params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
+                    weights[arg] = {"module_path": val.__module__, "func_name": val.__name__}
                 # ignore more args e.g. TF class
                 elif arg.endswith('init'):
                     continue
                 # for other data type, save them directly
                 else:
-                    params[arg] = val
+                    weights[arg] = val
 
-        return params
+        return weights
 
-    # todo: deprecated if no all_layer
-    @protected_method
-    def _add_layers(self, layers):
-        if isinstance(layers, list):
-            try:  # list of class Layer
-                new_layers = [layer.outputs for layer in layers]
-                self.all_layers.extend(list(new_layers))
+    # # todo: deprecated if no all_layer
+    # @protected_method
+    # def _add_layers(self, layers):
+    #     if isinstance(layers, list):
+    #         try:  # list of class Layer
+    #             new_layers = [layer.outputs for layer in layers]
+    #             self.all_layers.extend(list(new_layers))
+    #
+    #         except AttributeError:  # list of tf.Tensor
+    #             self.all_layers.extend(list(layers))
+    #
+    #     else:
+    #         self.all_layers.append(layers)
+    #
+    #     self.all_layers = list_remove_repeat(self.all_layers)
 
-            except AttributeError:  # list of tf.Tensor
-                self.all_layers.extend(list(layers))
-
-        else:
-            self.all_layers.append(layers)
-
-        self.all_layers = list_remove_repeat(self.all_layers)
-
-    # todo: deprecated if no all_params
-    @protected_method
-    def _add_params(self, params):
-
-        if isinstance(params, list):
-            self.all_params.extend(list(params))
-
-        else:
-            self.all_params.append(params)
-
-        self.all_params = list_remove_repeat(self.all_params)
+    # # todo: deprecated if no all_weights
+    # @protected_method
+    # def _add_weights(self, weights):
+    #
+    #     if isinstance(weights, list):
+    #         self.all_weights.extend(list(weights))
+    #
+    #     else:
+    #         self.all_weights.append(weights)
+    #
+    #     self.all_weights = list_remove_repeat(self.all_weights)
 
     # @protected_method
     # def _add_dropout_layers(self, drop_layers):
@@ -419,7 +437,7 @@ class Layer(object):
     #     else:
     #         raise ValueError()
 
-    # FIXME: may not be necessary ???
+    # FIXME: may not be necessary ???  Hao: I think it is not necessary..
     @private_method
     def _apply_activation(self, logits, **kwargs):
         if not kwargs:

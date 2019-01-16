@@ -130,7 +130,8 @@ class Dense(Layer):
     def forward(self, inputs, is_train):
         y = tf.matmul(inputs, self.W)
         z = tf.add(y, self.b)
-        z = self.act(z)
+        if self.act:
+            z = self.act(z)
         return z
 
 
@@ -187,6 +188,3 @@ if __name__ == "__main__":
 
     # eager_test()
     graph_test()
-
-
-
