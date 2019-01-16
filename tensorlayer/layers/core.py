@@ -136,24 +136,33 @@ class Layer(object):
         # self.name = scope_name + '/' + name if scope_name else name
         self.name = name
 
+        # Layer input outputs
         self.inputs = None
         self.outputs = None # TODO: not accessible to eager mode but accessible to graph mode
+
+        # self._inputs_shape = None
+        # self._outputs_shape = None
+
+        self._input_layer = None
 
         # TODO: need to update
         # self.all_layers = list()  # we change layers --> outputs ?
         # self.all_params = list()  # we change params --> weights ?
         # self.all_drop = dict()    # remove all_drop
 
-        # Layer weight state
+        # Layer building state
         self._built = False
+
+        # Layer weight state
         self._weights = None
 
-        # Layer building state
-        self._inputs_shape = None
-        self._outputs_shape = None
+    @property
+    def _inputs_shape(self):
+        return self._input_layer._outputs_shape
 
-        # Layer forward state
-        self._input_layer = None
+    @property
+    def _outputs_shape(self):
+        return self.outputs.get_shape().as_list()
 
     def __call__(self, prev_layer):
 
@@ -167,13 +176,13 @@ class Layer(object):
 
             self.inputs = prev_layer.outputs
             self._input_layer = prev_layer
-            self._inputs_shape = self._input_layer._outputs_shape
+            # self._inputs_shape = self._input_layer._outputs_shape
 
             self._weights = list()
 
             self.build(self._inputs_shape)
             self.outputs = self.forward(self.inputs, is_train=False)
-            self._outputs_shape = self.outputs.get_shape().as_list()
+            # self._outputs_shape = self.outputs.get_shape().as_list()
 
             self._built = True
 
