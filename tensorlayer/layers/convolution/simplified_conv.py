@@ -123,7 +123,7 @@ class Conv1d(Layer):
                 padding=self.padding,
                 use_cudnn_on_gpu=None,
                 data_format=self.data_format,
-                name=self.name
+                name=self.name,
             )
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
@@ -269,7 +269,7 @@ class Conv2d(Layer):
                 use_cudnn_on_gpu=self.use_cudnn_on_gpu, #True,
                 data_format=self.data_format, #'NHWC',
                 dilations=self.dilation_rate, #[1, 1, 1, 1],
-                name=self.name
+                name=self.name,
             )
             if self.b_init:
                 outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
@@ -415,7 +415,7 @@ class Conv3d(Layer):
                 # use_cudnn_on_gpu=self.use_cudnn_on_gpu, #True,
                 data_format=self.data_format, #'NDHWC',
                 dilations=self.dilation_rate, #[1, 1, 1, 1, 1],
-                name=self.name
+                name=self.name,
             )
             if self.b_init:
                 outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
