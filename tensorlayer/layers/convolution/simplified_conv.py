@@ -45,7 +45,9 @@ class Conv1d(Layer):
         The arguments for the weight matrix initializer (deprecated).
     b_init_args : dictionary
         The arguments for the bias vector initializer (deprecated).
-    name : str
+    use_cudnn_on_gpu : bool
+        Default is False.
+    name : None or str
         A unique layer name
 
     Examples
@@ -67,15 +69,27 @@ class Conv1d(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, n_filter=32, filter_size=5, stride=1, dilation_rate=1, act=None, padding='SAME',
-            data_format="channels_last", W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            b_init=tf.compat.v1.initializers.constant(value=0.0), W_init_args=None, b_init_args=None, name='conv1d'
+            self, #prev_layer,
+            n_filter=32, filter_size=5, stride=1, dilation_rate=1, act=None, padding='SAME',
+            data_format="channels_last",
+            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+            b_init=tf.compat.v1.initializers.constant(value=0.0), W_init_args=None, b_init_args=None, name=None, #'conv1d'
     ):
-        super(Conv1d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
-
+        # super(Conv1d, self
+        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super().__init__(name)
+        self.n_filter = n_filter
+        self.filter_size = filter_size
+        self.stride = stride
+        self.act = act
+        self.padding = padding
+        self.dilation_rate = dilation_rate
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args
+        self.b_init_args = b_init_args
+        self.use_cudnn_on_gpu = use_cudnn_on_gpu
         logging.info(
             "Conv1d %s: n_filter: %d filter_size: %s stride: %d pad: %s act: %s dilation_rate: %d" % (
                 self.name, n_filter, filter_size, stride, padding,
@@ -83,20 +97,51 @@ class Conv1d(Layer):
             )
         )
 
-        _conv1d = tf.compat.v1.layers.Conv1D(
-            filters=n_filter, kernel_size=filter_size, strides=stride, padding=padding, data_format=data_format,
-            dilation_rate=dilation_rate, activation=self.act, use_bias=(True if b_init else False),
-            kernel_initializer=W_init, bias_initializer=b_init, name=name
-        )
+    def build(self, inputs_shape):
+        if self.data_format == 'channels_last':
+            self.data_format == 'HWC'
+            self.pre_channel = inputs_shape[-1]
+        elif self.data_format == 'channels_first':
+            self.data_format == 'HCW'
+            self.pre_channel = inputs_shape[1]
+        else:
+            raise Exception("data_format should be either channels_last or channels_first")
+
+        self.filter_size = (self.filter_size, self.pre_channel, self.n_filter)
+
+        # TODO : check
+        self.W = self._get_weights("filters", shape=self.filter_size, init=self.W_init, init_args=self.W_init_args)
+        if self.b_init:
+            self.b = self._get_weights("biases", shape=(self.n_filter), init=self.b_init, init_args=self.b_init_args)
+
+    def forward(self, inputs):
+        outputs = tf.nn.conv1d(
+                value=inputs,
+                filters=self.W,
+                stride=self.stride,
+                padding=self.padding,
+                use_cudnn_on_gpu=None,
+                data_format=self.data_format,
+                name=self.name
+            )
+        if self.b_init:
+            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+        outputs = self.act(outputs)
+        return outputs
+        # _conv1d = tf.compat.v1.layers.Conv1D(
+        #     filters=n_filter, kernel_size=filter_size, strides=stride, padding=padding, data_format=data_format,
+        #     dilation_rate=dilation_rate, activation=self.act, use_bias=(True if b_init else False),
+        #     kernel_initializer=W_init, bias_initializer=b_init, name=name
+        # )
 
         # _conv1d.dtype = LayersConfig.tf_dtype   # unsupport, it will use the same dtype of inputs
-        self.outputs = _conv1d(self.inputs)
-        # new_variables = _conv1d.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-        new_variables = get_collection_trainable(self.name)
-
-        self._add_layers(self.outputs)
-        self._add_params(new_variables)
+        # self.outputs = _conv1d(self.inputs)
+        # # new_variables = _conv1d.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        # # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        # new_variables = get_collection_trainable(self.name)
+        #
+        # self._add_layers(self.outputs)
+        # self._add_params(new_variables)
 
 
 class Conv2d(Layer):
@@ -128,8 +173,8 @@ class Conv2d(Layer):
     b_init_args : dictionary
         The arguments for the bias vector initializer (for TF < 1.5).
     use_cudnn_on_gpu : bool
-        Default is False (for TF < 1.5).
-    name : str
+        Default is False.
+    name : None or str
         A unique layer name.
 
     Returns
@@ -150,10 +195,9 @@ class Conv2d(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
+            # prev_layer,
             n_filter=32,
             filter_size=(3, 3),
             strides=(1, 1),
@@ -166,7 +210,7 @@ class Conv2d(Layer):
             W_init_args=None,
             b_init_args=None,
             use_cudnn_on_gpu=None,
-            name='conv2d',
+            name=None, #'conv2d',
     ):
         # if len(strides) != 2:
         #     raise ValueError("len(strides) should be 2, Conv2d and Conv2dLayer are different.")
@@ -178,51 +222,100 @@ class Conv2d(Layer):
         #     pre_channel = 1
         #     logging.info("[warnings] unknow input channels, set to 1")
 
-        super(Conv2d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
-
+        # super(Conv2d, self
+        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super().__init__(name)
+        self.n_filter = n_filter
+        self.filter_size = filter_size
+        self.strides = strides
+        self.act = act
+        self.padding = padding
+        self.dilation_rate = dilation_rate
+        self.data_format = data_format
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args
+        self.b_init_args = b_init_args
+        self.use_cudnn_on_gpu = use_cudnn_on_gpu
         logging.info(
             "Conv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
                 self.name, n_filter, str(filter_size), str(strides), padding,
                 self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
-        # with tf.variable_scope(name) as vs:
-        conv2d = tf.compat.v1.layers.Conv2D(
-            # inputs=self.inputs,
-            filters=n_filter,
-            kernel_size=filter_size,
-            strides=strides,
-            padding=padding,
-            data_format=data_format,
-            dilation_rate=dilation_rate,
-            activation=self.act,
-            use_bias=(False if b_init is None else True),
-            kernel_initializer=W_init,  # None,
-            bias_initializer=b_init,  # f.zeros_initializer(),
-            kernel_regularizer=None,
-            bias_regularizer=None,
-            activity_regularizer=None,
-            kernel_constraint=None,
-            bias_constraint=None,
-            trainable=True,
-            name=name,
-            # reuse=None,
-        )
-        self.outputs = conv2d(self.inputs)  # must put before ``new_variables``
-        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-        new_variables = get_collection_trainable(self.name)
-        # new_variables = []
-        # for p in tf.trainable_variables():
-        #     # print(p.name.rpartition('/')[0], self.name)
-        #     if p.name.rpartition('/')[0] == self.name:
-        #         new_variables.append(p)
-        # exit()
-        # TF_GRAPHKEYS_VARIABLES  TF_GRAPHKEYS_VARIABLES
-        # print(self.name, name)
-        # print(tf.trainable_variables())#tf.GraphKeys.TRAINABLE_VARIABLES)
-        # print(new_variables)
-        # print(conv2d.weights)
 
-        self._add_layers(self.outputs)
-        self._add_params(new_variables)  # conv2d.weights)
+        def build(self, inputs_shape):
+
+            if self.data_format == 'channels_last':
+                self.data_format == 'NHWC'
+                self.pre_channel = inputs_shape[-1]
+                self.strides = [1, self.strides[0], self.strides[1], 1]
+                self.dilation_rate = [1, self.dilation_rate[0], self.dilation_rate[1], 1]
+            elif self.data_format == 'channels_first':
+                self.data_format == 'NCHW'
+                self.pre_channel = inputs_shape[1]
+                self.strides = [1, 1, self.strides[0], self.strides[1]]
+                self.dilation_rate = [1, 1, self.dilation_rate[0], self.dilation_rate[1]]
+            else:
+                raise Exception("data_format should be either channels_last or channels_first")
+
+            self.filter_shape = (self.filter_size[0], self.filter_size[1], self.pre_channel, self.n_filter)
+
+            self.W = self._get_weights("filters", shape=self.filter_size, init=self.W_init, init_args=self.W_init_args)
+            if self.b_init:
+                self.b = self._get_weights("biases", shape=(self.n_filter), init=self.b_init, init_args=self.b_init_args)
+
+        def forward(self, inputs):
+            outputs = tf.nn.conv2d(
+                input=inputs,
+                filter=self.W,
+                strides=self.strides,
+                padding=self.padding,
+                use_cudnn_on_gpu=self.use_cudnn_on_gpu, #True,
+                data_format=self.data_format, #'NHWC',
+                dilations=self.dilation_rate, #[1, 1, 1, 1],
+                name=self.name
+            )
+            if self.b_init:
+                outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+            outputs = self.act(outputs)
+            return outputs
+        # # with tf.variable_scope(name) as vs:
+        # conv2d = tf.compat.v1.layers.Conv2D(
+        #     # inputs=self.inputs,
+        #     filters=n_filter,
+        #     kernel_size=filter_size,
+        #     strides=strides,
+        #     padding=padding,
+        #     data_format=data_format,
+        #     dilation_rate=dilation_rate,
+        #     activation=self.act,
+        #     use_bias=(False if b_init is None else True),
+        #     kernel_initializer=W_init,  # None,
+        #     bias_initializer=b_init,  # f.zeros_initializer(),
+        #     kernel_regularizer=None,
+        #     bias_regularizer=None,
+        #     activity_regularizer=None,
+        #     kernel_constraint=None,
+        #     bias_constraint=None,
+        #     trainable=True,
+        #     name=name,
+        #     # reuse=None,
+        # )
+        # self.outputs = conv2d(self.inputs)  # must put before ``new_variables``
+        # # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        # new_variables = get_collection_trainable(self.name)
+        # # new_variables = []
+        # # for p in tf.trainable_variables():
+        # #     # print(p.name.rpartition('/')[0], self.name)
+        # #     if p.name.rpartition('/')[0] == self.name:
+        # #         new_variables.append(p)
+        # # exit()
+        # # TF_GRAPHKEYS_VARIABLES  TF_GRAPHKEYS_VARIABLES
+        # # print(self.name, name)
+        # # print(tf.trainable_variables())#tf.GraphKeys.TRAINABLE_VARIABLES)
+        # # print(new_variables)
+        # # print(conv2d.weights)
+        #
+        # self._add_layers(self.outputs)
+        # self._add_params(new_variables)  # conv2d.weights)
