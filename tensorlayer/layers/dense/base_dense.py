@@ -64,8 +64,8 @@ class Dense(Layer):
             # TODO: how to support more initializers
             # W_init=tf.truncated_normal_initializer(stddev=0.1),
             # b_init=tf.constant_initializer(value=0.0),
-            W_init=np.random.normal,
-            b_init=np.random.normal,
+            W_init=tf.initializers.truncated_normal,
+            b_init=tf.initializers.constant,
             W_init_args=None,
             b_init_args=None,
             name=None,  # 'dense',
@@ -116,8 +116,8 @@ class Dense(Layer):
         shape = [inputs_shape[1], self.n_units]
         self.W = self._get_weights("weights", shape=tuple(shape), init=self.W_init, init_args=self.W_init_args)
         self.b = self._get_weights("biases", shape=int(self.n_units), init=self.b_init, init_args=self.b_init_args)
-        outputs_shape = [inputs_shape[0], self.n_units]
-        return outputs_shape
+        # outputs_shape = [inputs_shape[0], self.n_units]
+        # return outputs_shape
 
     '''
     def forward(self, inputs, is_train):
@@ -130,5 +130,5 @@ class Dense(Layer):
     def forward(self, inputs, is_train):
         y = tf.matmul(inputs, self.W)
         z = tf.add(y, self.b)
-        z = self._act(z)
+        z = self.act(z)
         return z
