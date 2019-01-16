@@ -30,6 +30,7 @@ __all__ = [
     # simplified conv
     'Conv1d',
     'Conv2d',
+    'Conv3d',
 
     # simplified deconv
     'DeConv2d',
