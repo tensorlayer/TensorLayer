@@ -143,6 +143,7 @@ Layer list
 
    Conv1d
    Conv2d
+   Conv3d
    DeConv2d
    DeConv3d
    DepthwiseConv2d
@@ -397,6 +398,9 @@ Conv2d
 """""""""""""""""""""
 .. autoclass:: Conv2d
 
+Conv3d
+"""""""""""""""""""""
+.. autoclass:: Conv3d
 
 Deconvolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
