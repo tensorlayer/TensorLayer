@@ -164,6 +164,10 @@ class Layer(object):
     def _outputs_shape(self):
         return self.outputs.get_shape().as_list()
 
+    @property
+    def weights(self):
+        return self._weights
+
     def __call__(self, prev_layer):
 
         if self._built:
@@ -275,6 +279,7 @@ class Layer(object):
                 logging.info("  param {:3}: {:20} {:15}    {}".format(i, p.name, str(p.get_shape()), p.dtype.name))
         logging.info("  num of params: %d" % self.count_params())
 
+    # TODO: deprecated if no all_layers
     def print_layers(self):
         """Print all info of layers in the network."""
         for i, layer in enumerate(self.all_layers):
@@ -283,6 +288,7 @@ class Layer(object):
                 "  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name)
             )
 
+    # TODO: need to rewrite
     def count_params(self):
         """Returns the number of parameters in the network."""
         n_params = 0
@@ -299,6 +305,7 @@ class Layer(object):
             n_params = n_params + n
         return n_params
 
+    # TODO: need to rewrite
     def get_all_params(self, session=None):
         """Return the parameters in a list of array."""
         _params = []
@@ -373,6 +380,7 @@ class Layer(object):
 
         return params
 
+    # todo: deprecated if no all_layer
     @protected_method
     def _add_layers(self, layers):
         if isinstance(layers, list):
@@ -388,6 +396,7 @@ class Layer(object):
 
         self.all_layers = list_remove_repeat(self.all_layers)
 
+    # todo: deprecated if no all_params
     @protected_method
     def _add_params(self, params):
 
@@ -410,12 +419,14 @@ class Layer(object):
     #     else:
     #         raise ValueError()
 
+    # FIXME: may not be necessary ???
     @private_method
     def _apply_activation(self, logits, **kwargs):
         if not kwargs:
             kwargs = {}
         return self.act(logits, **kwargs) if self.act is not None else logits
 
+    # TODO: may need update
     @private_method
     def _argument_dict_checkup(self, args):
 
@@ -426,9 +437,6 @@ class Layer(object):
 
         return args if args is not None else {}
 
-    @property
-    def weights(self):
-        return self._weights
 
     # def __getstate__(self): # pickle save
     #     return {'version': 0.1,
