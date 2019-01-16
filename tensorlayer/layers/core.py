@@ -137,10 +137,11 @@ class Layer(object):
         self.name = name
 
         self.inputs = None
-        self.outputs = None
+        self.outputs = None # TODO: not accessible to eager mode but accessible to graph mode
 
-        self.all_layers = list()  # we change layers --> outputs ?
-        self.all_params = list()  # we change params --> weights ?
+        # TODO: need to update
+        # self.all_layers = list()  # we change layers --> outputs ?
+        # self.all_params = list()  # we change params --> weights ?
         # self.all_drop = dict()    # remove all_drop
 
         # Layer weight state
@@ -166,15 +167,20 @@ class Layer(object):
 
             self.inputs = prev_layer.outputs
             self._input_layer = prev_layer
-            self._inputs_shape = self._input_layer.outputs._outputs_shape
+            self._inputs_shape = self._input_layer._outputs_shape
 
             self._weights = list()
-            self._outputs_shape = self.build(self._inputs_shape)
+
+            self.build(self._inputs_shape)
+            self.outputs = self.forward(self.inputs, is_train=False)
+            self._outputs_shape = self.outputs.get_shape().as_list()
+
             self._built = True
 
-            self._add_layers(prev_layer.all_layers)
-            self._add_params(self._weights)
-            self._add_params(prev_layer.all_params)
+            # TODO: need update
+            # self._add_layers(prev_layer.all_layers)
+            # self._add_params(self._weights)
+            # self._add_params(prev_layer.all_params)
             # self._add_dropout_layers(prev_layer.all_drop)
 
         else:
@@ -209,20 +215,35 @@ class Layer(object):
         return self
 
     # def _get_weights(self, scope_name, var_name, shape, init=np.random.normal, init_args=None):
-    def _get_weights(self, var_name, shape, init=np.random.normal, init_args=None):
+    def _get_weights(self, var_name, shape, init=tf.initializers.random_normal, init_args=None):
         weight = get_variable_with_initializer(
             scope_name=self.name, var_name=var_name, shape=shape, init=init, init_args=init_args
         )
         self._weights.append(weight)  # Add into the weight collection
-        self.__setattr__(var_name, weight)
+        # self.__setattr__(var_name, weight) # FIXME: prefer to remove this line, the weights should be manually defined as members of the Layer
         return weight
 
     @abstractmethod
     def build(self, inputs_shape):
+        # FIXME: documentation needed
+        """
+        An abstract method which should be overwritten in derived classes to define all necessary weights of the layer.
+
+        :param inputs_shape: tuple
+        :return: void
+        """
         raise Exception("The build_weights method must be implemented by inherited class")
 
     @abstractmethod
     def forward(self, inputs, is_train):
+        # FIXME: documentation needed
+        """
+        An abstract method which should be overwritten in derived classes to define forward feeding operations of the layer.
+
+        :param inputs: Tensor
+        :param is_train: boolean, True for training and False for testing
+        :return: Tensor
+        """
         raise Exception("The forward method must be implemented by inherited class")
 
     def print_params(self, details=True, session=None):
