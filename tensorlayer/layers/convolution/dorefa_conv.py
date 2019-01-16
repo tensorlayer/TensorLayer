@@ -124,7 +124,7 @@ class DorefaConv2d(Layer):
         # )
         self.W = self._get_weights("filters", shape=self.shape, init=self.W_init, init_args=self.W_init_args)
         if self.b_init:
-            self.b = self._get_weights("biases", shape=(self.shape[-1]), init=self.b_init, init_args=self.b_init_args)
+            self.b = self._get_weights("biases", shape=(self.n_filter), init=self.b_init, init_args=self.b_init_args)
         #     self.b = tf.compat.v1.get_variable(
         #         name=self.name + '\bias', shape=(self.shape[-1]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
         #         **self.b_init_args
