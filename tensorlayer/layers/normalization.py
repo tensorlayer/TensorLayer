@@ -435,8 +435,8 @@ class GroupNorm(Layer):
             channels = inputs_shape[-1]
             self.int_shape = tf.concat(
                 [#tf.shape(input=self.inputs)[0:3],
-                inputs_shape[0:3]
-                 tf.convert_to_tensor(value=[self.groups, channels // self.groups])], axis=0
+                inputs_shape[0:3],
+                tf.convert_to_tensor(value=[self.groups, channels // self.groups])], axis=0
             )
         elif self.data_format == 'channels_first':
             channels = shape[1]
