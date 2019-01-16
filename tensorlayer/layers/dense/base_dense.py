@@ -114,8 +114,8 @@ class Dense(Layer):
         if len(inputs_shape) != 2:
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
         shape = [inputs_shape[1], self.n_units]
-        self.W = self._get_weight("weights", shape=tuple(shape), init=self.W_init, init_args=self.W_init_args)
-        sel.b = self._get_weight("biases", shape=int(self.n_units), init=self.b_init, init_args=self.b_init_args)
+        self.W = self._get_weights("weights", shape=tuple(shape), init=self.W_init, init_args=self.W_init_args)
+        self.b = self._get_weights("biases", shape=int(self.n_units), init=self.b_init, init_args=self.b_init_args)
         outputs_shape = [inputs_shape[0], self.n_units]
         return outputs_shape
 

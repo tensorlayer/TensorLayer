@@ -63,12 +63,12 @@ class PRelu(Layer):
             w_shape = (1, )
         else:
             w_shape = inputs_shape[-1]
-        self._add_weight(scope_name=self.name, var_name="alpha", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
+        self.alpha_var = self._get_weights("alpha", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
         # self.alpha_var = tf.compat.v1.get_variable(
         #     name=self.name + '/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
         #     **self.a_init_args
         # )
-        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha, name="constraining_alpha_var_in_0_1")
+        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
         # self.add_weights(self.alpha_var)
 
     def forward(self, inputs):
@@ -134,13 +134,13 @@ class PRelu6(Layer):
             w_shape = (1, )
         else:
             w_shape = inputs_shape[-1]
-        self._add_weight(scope_name=self.name, var_name="alpha", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
+        self.alpha_var = self._get_weights("alpha", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
         # self.alpha_var = tf.compat.v1.get_variable(
         #     name=self.name + '/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
         #     **self.a_init_args
         # )
 
-        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha, name="constraining_alpha_var_in_0_1")
+        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
         # self.add_weights(self.alpha_var)
 
     def forward(self, inputs):
@@ -216,7 +216,7 @@ class PTRelu6(Layer):
             w_shape = inputs_shape[-1]
 
         # Alpha for outputs lower than zeros
-        self._add_weight(scope_name=self.name, var_name="alpha_low", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
+        self.alpha_low = self._get_weights("alpha_low", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
         # self.alpha_low = tf.compat.v1.get_variable(
         #     name=self.name + '/alpha_low', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
         #     **self.a_init_args
@@ -224,7 +224,7 @@ class PTRelu6(Layer):
         self.alpha_low_constrained = tf.nn.sigmoid(self.alpha_low, name="constraining_alpha_low_in_0_1")
 
         # Alpha for outputs higher than 6
-        self._add_weight(scope_name=self.name, var_name="alpha_high", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
+        self.alpha_high = self._get_weights("alpha_high", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
         # self.alpha_high = tf.compat.v1.get_variable(
         #     name=self.name + '/alpha_high', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
         #     **self.a_init_args
@@ -232,7 +232,7 @@ class PTRelu6(Layer):
 
         self.alpha_high_constrained = tf.nn.sigmoid(self.alpha_high, name="constraining_alpha_high_in_0_1")
 
-        self.add_weights([self.alpha_low, self.alpha_high])
+        # self.add_weights([self.alpha_low, self.alpha_high])
 
     def forward(self, inputs):
         outputs = self._apply_activation(

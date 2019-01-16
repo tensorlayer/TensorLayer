@@ -27,7 +27,7 @@ class Lambda(Layer):
         The function that applies to the outputs of previous layer.
     fn_args : dictionary or None
         The arguments for the function (option).
-    name : str
+    name : str or None
         A unique layer name.
 
     Examples
@@ -63,7 +63,7 @@ class Lambda(Layer):
             prev_layer,
             fn,
             fn_args=None,
-            name='lambda',
+            name=None,#'lambda',
     ):
 
         super(LambdaLayer, self).__init__(prev_layer=prev_layer, fn_args=fn_args, name=name)
@@ -123,7 +123,7 @@ class ElementwiseLambda(Layer):
             fn,
             fn_args=None,
             act=None,
-            name='elementwiselambda',
+            name=None,#'elementwiselambda',
     ):
 
         super(ElementwiseLambda, self).__init__(prev_layer=layers, act=act, fn_args=fn_args, name=name)

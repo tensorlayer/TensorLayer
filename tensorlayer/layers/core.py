@@ -208,8 +208,8 @@ class Layer(object):
 
         return self
 
-    # def _get_weight(self, scope_name, var_name, shape, init=np.random.normal, init_args=None):
-    def _get_weight(self, var_name, shape, init=np.random.normal, init_args=None):
+    # def _get_weights(self, scope_name, var_name, shape, init=np.random.normal, init_args=None):
+    def _get_weights(self, var_name, shape, init=np.random.normal, init_args=None):
         weight = get_variable_with_initializer(
             scope_name=self.name, var_name=var_name, shape=shape, init=init, init_args=init_args
         )

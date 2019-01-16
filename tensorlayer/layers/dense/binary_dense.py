@@ -79,13 +79,13 @@ class BinaryDense(Layer):
 
         n_in = inputs_shape[-1]
 
-        self.W = self._get_weight("weights", shape=tuple(shape), init=self.W_init, init_args=self.W_init_args)
+        self.W = self._get_weights("weights", shape=tuple(shape), init=self.W_init, init_args=self.W_init_args)
         # self.W = tf.compat.v1.get_variable(
         #     name=self.name + '\W', shape=(n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype,
         #     **self.W_init_args
         # )
         if self.b_init is not None:
-            self.b = self._get_weight("biases", shape=(self.n_units), init=self.b_init, init_args=self.b_init_args)
+            self.b = self._get_weights("biases", shape=(self.n_units), init=self.b_init, init_args=self.b_init_args)
             # try:
             #     self.b = tf.compat.v1.get_variable(
             #         name=self.name + '\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype,

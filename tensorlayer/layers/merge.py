@@ -139,6 +139,6 @@ class Elementwise(Layer):
         outputs = inputs[0]
         for input in inputs[1:]:
             outputs = combine_fn(outputs, input, name=self.name)
-
-        outputs = self.act(outputs)
+        if self.act:
+            outputs = self.act(outputs)
         return outputs

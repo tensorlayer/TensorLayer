@@ -84,9 +84,9 @@ class TernaryDense(Layer):
         #     name=self.name + '\W', shape=(n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype,
         #     **self.W_init_args
         # )
-        self.W = self._get_weight(scope_name=self.name, var_name="weights", shape=(n_in, self.n_units), init=self.W_init, init_args=self.W_init_args)
+        self.W = self._get_weights(scope_name=self.name, var_name="weights", shape=(n_in, self.n_units), init=self.W_init, init_args=self.W_init_args)
         if self.b_init is not None:
-            self.b = self._get_weight(scope_name=self.name, var_name="biases", shape=(self.n_units), init=self.b_init, init_args=self.b_init_args)
+            self.b = self._get_weights(scope_name=self.name, var_name="biases", shape=(self.n_units), init=self.b_init, init_args=self.b_init_args)
         #     try:
         #         self.b = tf.compat.v1.get_variable(
         #             name=self.name + '\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype,

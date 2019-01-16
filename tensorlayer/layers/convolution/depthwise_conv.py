@@ -107,8 +107,8 @@ class DepthwiseConv2d(Layer):
             )
         )
 
-    def build(self, inputs):
-        self.pre_channel = inputs.shape.as_list[-1]
+    def build(self, inputs_shape):
+        self.pre_channel = inputs_shape[-1]
         if self.pre_channel is None:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             self.pre_channel = 1
             logging.info("[warnings] unknown input channels, set to 1")
@@ -121,22 +121,22 @@ class DepthwiseConv2d(Layer):
         if len(self.strides) != 4:
             raise AssertionError("len(strides) should be 4.")
 
-        self.W = tf.compat.v1.get_variable(
-            name=self.name + '\W_depthwise2d', shape=self.filter_size, initializer=self.W_init,
-            dtype=LayersConfig.tf_dtype, **self.W_init_args
-        )  # [filter_height, filter_width, in_channels, depth_multiplier]
-
+        # self.W = tf.compat.v1.get_variable(
+        #     name=self.name + '\W_depthwise2d', shape=self.filter_size, initializer=self.W_init,
+        #     dtype=LayersConfig.tf_dtype, **self.W_init_args
+        # )  # [filter_height, filter_width, in_channels, depth_multiplier]
+        self.W = self._get_weights("filters", shape=self.filter_size, init=self.W_init, init_args=self.W_init_args)
         if self.b_init:
-            self.b = tf.compat.v1.get_variable(
-                name=self.name + '\b_depthwise2d', shape=(self.pre_channel * self.depth_multiplier),
-                initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
-            )
-            self.add_weights([self.W, self.b])
-        else:
-            self.add_weights(self.W)
+            self.b = self._get_weights("biases", shape=(self.pre_channel * self.depth_multiplier), init=self.b_init, init_args=self.b_init_args)
+        #     self.b = tf.compat.v1.get_variable(
+        #         name=self.name + '\b_depthwise2d', shape=(self.pre_channel * self.depth_multiplier),
+        #         initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+        #     )
+        #     self.add_weights([self.W, self.b])
+        # else:
+        #     self.add_weights(self.W)
 
     def forward(self, inputs):
-
         outputs = tf.nn.depthwise_conv2d(
             input=inputs, filter=self.W, strides=self.strides, padding=self.padding, dilations=self.dilation_rate
         )

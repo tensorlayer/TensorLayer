@@ -85,19 +85,22 @@ class GroupConv2d(Layer):
         )
         channels = int(inputs.get_shape()[-1])
 
-        self.We = tf.compat.v1.get_variable(
-            name=self.name + '\W',
-            shape=[self.filter_size[0], self.filter_size[1], channels / self.n_group, self.n_filter],
-            initializer=self.W_init, dtype=LayersConfig.tf_dtype, trainable=True, **self.W_init_args
-        )
+        # self.We = tf.compat.v1.get_variable(
+        #     name=self.name + '\W',
+        #     shape=[self.filter_size[0], self.filter_size[1], channels / self.n_group, self.n_filter],
+        #     initializer=self.W_init, dtype=LayersConfig.tf_dtype, trainable=True, **self.W_init_args
+        # )
+        self.We = self._get_weights("filters", shape=[self.filter_size[0], self.filter_size[1], channels / self.n_group, self.n_filter], init=self.W_init, init_args=self.W_init_args)
         if self.b_init:
-            self.b = tf.compat.v1.get_variable(
-                name=self.name + '\b', shape=self.n_filter, initializer=self.b_init, dtype=LayersConfig.tf_dtype,
-                trainable=True, **self.b_init_args
-            )
-            self.add_weights([self.We, self.b])
-        else:
-            self.add_weights(self.We)
+            self.b = self._get_weights("biases", shape=self.n_filter, init=self.b_init, init_args=self.b_init_args)
+        # if self.b_init:
+        #     self.b = tf.compat.v1.get_variable(
+        #         name=self.name + '\b', shape=self.n_filter, initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+        #         trainable=True, **self.b_init_args
+        #     )
+        #     self.add_weights([self.We, self.b])
+        # else:
+        #     self.add_weights(self.We)
 
     def forward(self, inputs):
         if self.n_group == 1:

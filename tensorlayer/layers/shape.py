@@ -44,7 +44,7 @@ class Flatten(Layer):
         super().__init__(name)
         logging.info("Flatten %s:" % (self.name))
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         pass
 
     def forward(self, inputs):
@@ -81,12 +81,12 @@ class Reshape(Layer):
         if not self.shape:
             raise ValueError("Shape list can not be empty")
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         pass
 
     def forward(self, inputs):
         outputs = tf.reshape(inputs, shape=self.shape, name=self.name)
-
+        return outputs
 
 class Transpose(Layer):
     """A layer that transposes the dimension of a tensor.
@@ -120,8 +120,9 @@ class Transpose(Layer):
         if self.perm is None:
             raise AssertionError("The `perm` argument cannot be None")
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         pass
 
     def forward(self, inputs):
         outputs = tf.transpose(a=inputs, perm=self.perm, name=self.name)
+        return outputs

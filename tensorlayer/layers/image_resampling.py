@@ -65,14 +65,14 @@ class UpSampling2d(Layer):
         if not isinstance(self.size, (list, tuple)) and len(self.size) == 2:
             raise AssertionError()
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         if self.data_format != 'channel_last':
             raise Exception("UpSampling2d tf.image.resize_images only support channel_last")
 
         # if len(self.inputs.get_shape()) == 3:
-        if inputs.shape.ndims == 3:
+        if len(inputs_shape) == 3:
             if self.is_scale:
-                input_shape = inputs.shape.as_list()
+                # input_shape = inputs.shape.as_list()
                 if input_shape[0] is not None:
                     size_h = self.size[0] * input_shape[0]
                 else:
@@ -84,9 +84,9 @@ class UpSampling2d(Layer):
                 self.size = [size_h, size_w]
 
         # elif len(self.inputs.get_shape()) == 4:
-        elif inputs.shape.ndims == 4:
+        elif len(inputs_shape) == 4:
             if self.is_scale:
-                input_shape = inputs.shape.as_list()
+                # input_shape = inputs.shape.as_list()
                 if input_shape[1] is not None:
                     size_h = self.size[0] * input_shape[1]
                 else:
@@ -162,14 +162,14 @@ class DownSampling2d(Layer):
         if not isinstance(self.size, (list, tuple)) and len(self.size) == 2:
             raise AssertionError()
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         if self.data_format != 'channel_last':
             raise Exception("DownSampling2d tf.image.resize_images only support channel_last")
 
-        # if len(self.inputs.get_shape()) == 3:
-        if inputs.shape.ndims == 3:
+        if len(inputs_shape) == 3:
+        # if inputs.shape.ndims == 3:
             if self.is_scale:
-                input_shape = inputs.shape.as_list()
+                # input_shape = inputs.shape.as_list()
                 if input_shape[1] is not None:
                     size_h = self.size[0] * input_shape[0]
                 else:
@@ -180,10 +180,10 @@ class DownSampling2d(Layer):
                     size_w = self.size[1] * tf.shape(input=inputs)[1]
                 self.size = [size_h, size_w]
 
-        # elif len(self.inputs.get_shape()) == 4:
-        elif inputs.shape.ndims == 4:
+        elif len(inputs_shape) == 4:
+        # elif inputs.shape.ndims == 4:
             if self.is_scale:
-                input_shape = inputs.shape.as_list()
+                # input_shape = inputs.shape.as_list()
                 if input_shape[1] is not None:
                     size_h = self.size[0] * input_shape[1]
                 else:

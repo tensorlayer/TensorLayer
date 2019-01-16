@@ -74,6 +74,9 @@ class PoolLayer(Layer):
             (self.name, str(self.ksize), str(self.strides), self.padding, pool.__name__)
         )
 
+    def build(self, inputs_shape):
+        pass
+
     def forward(self, inputs):
         outputs = self.pool(inputs, ksize=self.ksize, strides=self.strides, padding=self.padding, name=self.name)
         return outputs
@@ -117,7 +120,7 @@ class MaxPool1d(Layer):
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         # https://www.tensorflow.org/api_docs/python/tf/nn/pool
         if self.data_format == 'channels_last':
             self.data_format = 'NWC'
@@ -138,7 +141,7 @@ class MaxPool1d(Layer):
         #     inputs, self.filter_size, self.strides, padding=self.padding, data_format=self.data_format, name=self.name
         # )
         # https://www.tensorflow.org/api_docs/python/tf/nn/pool
-        print(self.strides, self.data_format)
+        # print(self.strides, self.data_format)
         outputs = tf.nn.pool(
             input=inputs, window_shape=self.filter_size, pooling_type="MAX", padding=self.padding, dilations=None, strides=self.strides,
             name=self.name, data_format=self.data_format
@@ -202,7 +205,7 @@ class MeanPool1d(Layer):
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         # pass
         # https://www.tensorflow.org/api_docs/python/tf/nn/pool
         if self.data_format == 'channels_last':
@@ -268,7 +271,7 @@ class MaxPool2d(Layer):
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         self.strides = [1, self.strides[0], self.strides[1], 1]
         if self.data_format == 'channels_last':
             self.data_format = 'NHWC'
@@ -337,7 +340,7 @@ class MeanPool2d(Layer):
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         self.strides = [1, self.strides[0], self.strides[1], 1]
         if self.data_format == 'channels_last':
             self.data_format = 'NHWC'
@@ -404,7 +407,7 @@ class MaxPool3d(Layer):
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         self.strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
         if self.data_format == 'channels_last':
             self.data_format = 'NDHWC'
@@ -479,7 +482,7 @@ class MeanPool3d(Layer):
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         self.strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
         if self.data_format == 'channels_last':
             self.data_format = 'NDHWC'
@@ -531,7 +534,7 @@ class GlobalMaxPool1d(Layer):
 
         logging.info("GlobalMaxPool1d %s" % self.name)
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         pass
 
     def forward(self, inputs):
@@ -576,7 +579,7 @@ class GlobalMeanPool1d(Layer):
         self.data_format = data_format
         logging.info("GlobalMeanPool1d %s" % self.name)
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         pass
 
     def forward(self, inputs):
@@ -621,7 +624,7 @@ class GlobalMaxPool2d(Layer):
         self.data_format = data_format
         logging.info("GlobalMaxPool2d %s" % self.name)
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         pass
 
     def forward(self, inputs):
@@ -665,7 +668,7 @@ class GlobalMeanPool2d(Layer):
         super().__init__(name)
         logging.info("GlobalMeanPool2d %s" % self.name)
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         pass
 
     def forward(self, inputs):
@@ -710,7 +713,7 @@ class GlobalMaxPool3d(Layer):
         self.data_format = data_format
         logging.info("GlobalMaxPool3d %s" % self.name)
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         pass
 
     def forward(self, inputs):
@@ -755,7 +758,7 @@ class GlobalMeanPool3d(Layer):
         self.data_format = data_format
         logging.info("GlobalMeanPool3d %s" % self.name)
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         pass
 
     def forward(self, inputs):

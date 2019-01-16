@@ -101,7 +101,7 @@ class DorefaConv2d(Layer):
             )
         )
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
 
         if self.use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
@@ -110,7 +110,7 @@ class DorefaConv2d(Layer):
             raise ValueError("len(strides) should be 2.")
 
         try:
-            self.pre_channel = int(inputs.get_shape()[-1])
+            self.pre_channel = inputs_shape[-1]
         except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             self.pre_channel = 1
             logging.warning("[warnings] unknow input channels, set to 1")
@@ -118,18 +118,20 @@ class DorefaConv2d(Layer):
         self.shape = (self.filter_size[0], self.filter_size[1], self.pre_channel, self.n_filter)
         self.strides = (1, self.strides[0], self.strides[1], 1)
 
-        self.W = tf.compat.v1.get_variable(
-            name=self.name + '\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
-            **self.W_init_args
-        )
+        # self.W = tf.compat.v1.get_variable(
+        #     name=self.name + '\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
+        #     **self.W_init_args
+        # )
+        self.W = self._get_weights("filters", shape=self.shape, init=self.W_init, init_args=self.W_init_args)
         if self.b_init:
-            self.b = tf.compat.v1.get_variable(
-                name=self.name + '\bias', shape=(self.shape[-1]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
-                **self.b_init_args
-            )
-            self.add_weights([self.W, self.b])
-        else:
-            self.add_weights(self.W)
+            self.b = self._get_weights("biases", shape=(self.shape[-1]), init=self.b_init, init_args=self.b_init_args)
+        #     self.b = tf.compat.v1.get_variable(
+        #         name=self.name + '\bias', shape=(self.shape[-1]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+        #         **self.b_init_args
+        #     )
+        #     self.add_weights([self.W, self.b])
+        # else:
+        #     self.add_weights(self.W)
 
     def forward(self, inputs):
 

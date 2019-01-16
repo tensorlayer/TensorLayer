@@ -229,20 +229,18 @@ class AtrousDeConv2d(Layer):
         )
 
     def build(self, inputs_shape):
-        self._add_weight(scope_name=self.name, var_name="kernels_atrous_conv2d_transpose", shape=self.shape, init=self.W_init, init_args=self.W_init_args)
+        self.W = self._get_weights("kernels_atrous_conv2d_transpose", shape=self.shape, init=self.W_init, init_args=self.W_init_args)
         # self.W = tf.compat.v1.get_variable(
         #     name=self.name + '\W_atrous_conv2d_transpose', shape=self.shape, initializer=self.W_init,
         #     dtype=LayersConfig.tf_dtype, **self.W_init_args
         # )
-        self.W = self.kernels_atrous_conv2d_transpose
 
         if self.b_init:
-            self._add_weight(scope_name=self.name, var_name="biases_atrous_conv2d_transpose", shape=(self.shape[-2]), init=self.b_init, init_args=self.b_init_args)
+            self.b = self._get_weights("biases_atrous_conv2d_transpose", shape=(self.shape[-2]), init=self.b_init, init_args=self.b_init_args)
             # self.b = tf.compat.v1.get_variable(
             #     name=self.name + '\b_atrous_conv2d_transpose', shape=(self.shape[-2]), initializer=self.b_init,
             #     dtype=LayersConfig.tf_dtype, **self.b_init_args
             # )
-            self.b = self.biases_atrous_conv2d_transpose
 
         # if self.b_init:
         #     self.add_weights([self.W, self.b])
@@ -256,16 +254,15 @@ class AtrousDeConv2d(Layer):
         prev_layer : :class:`Layer`
             Previous layer with a 4D output tensor in the shape of (batch, height, width, channels).
         """
-        self.outputs = tf.nn.atrous_conv2d_transpose(
-            self.inputs, filters=self.W, output_shape=self.output_shape, rate=self.rate, padding=self.padding
+        outputs = tf.nn.atrous_conv2d_transpose(
+            inputs, filters=self.W, output_shape=self.output_shape, rate=self.rate, padding=self.padding
         )
 
         if self.b_init:
-            self.outputs = tf.nn.bias_add(self.outputs, self.b, name='bias_add')
+            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
         if self.act:
-            self.outputs = self.act(self.outputs)
-
-        # self._add_layers(self.outputs)
+            outputs = self.act(outputs)
+        return outputs
 
 
 # Alias

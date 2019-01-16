@@ -50,7 +50,7 @@ class Stack(Layer):
         self.axis = axis
         logging.info("Stack %s: axis: %d" % (self.name, self.axis))
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         pass
 
     def forward(self, inputs):
@@ -85,7 +85,7 @@ class UnStack(Layer):
         self.axis = axis
         logging.info("UnStack %s: num: %s axis: %d" % (self.name, self.num, self.axis))
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         pass
 
     def forward(self, inputs):

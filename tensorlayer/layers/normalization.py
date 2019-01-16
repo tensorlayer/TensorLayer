@@ -149,6 +149,8 @@ class BatchNorm(Layer):
         The initializer for initializing gamma, if None, skip gamma.
         When the batch normalization layer is use instead of 'biases', or the next layer is linear, this can be
         disabled since the scaling can be done by the next layer. see `Inception-ResNet-v2 <https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_resnet_v2.py>`__
+    data_format : str
+        channels_last 'channel_last' (default) or channels_first.
     name : None or str
         A unique layer name.
 
@@ -298,18 +300,18 @@ class InstanceNorm(Layer):
             (self.name, epsilon, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-    def build(self, inputs):
-        self.scale = tf.compat.v1.get_variable(
-            self.name + '\scale', [inputs.get_shape()[-1]],
-            initializer=tf.compat.v1.initializers.truncated_normal(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype
-        )
-
-        self.offset = tf.compat.v1.get_variable(
-            self.name + '\offset', [inputs.get_shape()[-1]], initializer=tf.compat.v1.initializers.constant(0.0),
-            dtype=LayersConfig.tf_dtype
-        )
-
-        self.add_weights([self.scale, self.offset])
+    def build(self, inputs_shape):
+        # self.scale = tf.compat.v1.get_variable(
+        #     self.name + '\scale', [inputs.get_shape()[-1]],
+        #     initializer=tf.compat.v1.initializers.truncated_normal(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype
+        # )
+        self.scale = self._get_weights("scale", shape=[inputs_shape[-1]], init=tf.compat.v1.initializers.truncated_normal(mean=1.0, stddev=0.02))
+        # self.offset = tf.compat.v1.get_variable(
+        #     self.name + '\offset', [inputs.get_shape()[-1]], initializer=tf.compat.v1.initializers.constant(0.0),
+        #     dtype=LayersConfig.tf_dtype
+        # )
+        self.offset = self._get_weights("offset", shape=[inputs_shape[-1]], init=tf.compat.v1.initializers.constant(0.0))
+        # self.add_weights([self.scale, self.offset])
 
     def forward(self, inputs):
 
@@ -397,12 +399,16 @@ class GroupNorm(Layer):
 
     Parameters
     -----------
-    prev_layer : :class:`Layer`
-        The previous layer.
+    # prev_layer : :class:`Layer`
+    #     The previous layer.
+    groups : int
+        The number of groups
     act : activation function
         The activation function of this layer.
     epsilon : float
         Eplison.
+    data_format : str
+        channels_last 'channel_last' (default) or channels_first.
     name : None or str
         A unique layer name
 
@@ -420,24 +426,27 @@ class GroupNorm(Layer):
             "GroupNorm %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-    def build(self, inputs):
-        shape = inputs.get_shape().as_list()
-        if len(shape) != 4:
-            raise Exception("GroupNorm only supports 2D images.")
+    def build(self, inputs_shape):
+        # shape = inputs.get_shape().as_list()
+        if len(inputs_shape) != 4:
+            raise Exception("This GroupNorm only supports 2D images.")
 
         if self.data_format == 'channels_last':
-            channels = shape[-1]
+            channels = inputs_shape[-1]
             self.int_shape = tf.concat(
-                [tf.shape(input=self.inputs)[0:3],
+                [#tf.shape(input=self.inputs)[0:3],
+                inputs_shape[0:3]
                  tf.convert_to_tensor(value=[self.groups, channels // self.groups])], axis=0
             )
         elif self.data_format == 'channels_first':
             channels = shape[1]
             self.int_shape = tf.concat(
                 [
-                    tf.shape(input=self.inputs)[0:1],
+                    # tf.shape(input=self.inputs)[0:1],
+                    inputs_shape[0:1],
                     tf.convert_to_tensor(value=[self.groups, channels // self.groups]),
-                    tf.shape(input=self.inputs)[2:4]
+                    # tf.shape(input=self.inputs)[2:4]
+                    inputs_shape[2:4],
                 ], axis=0
             )
         else:
@@ -450,14 +459,17 @@ class GroupNorm(Layer):
 
         if self.data_format == 'channels_last':
             # mean, var = tf.nn.moments(x, [1, 2, 4], keep_dims=True)
-            self.gamma = tf.compat.v1.get_variable('gamma', channels, initializer=tf.compat.v1.initializers.ones())
-            self.beta = tf.compat.v1.get_variable('beta', channels, initializer=tf.compat.v1.initializers.zeros())
-        else:
+            self.gamma = self._get_weights("gamma", shape=channels, init=tf.compat.v1.initializers.ones())
+            # self.gamma = tf.compat.v1.get_variable('gamma', channels, initializer=tf.compat.v1.initializers.ones())
+            self.beta = self._get_weights("beta", shape=channels, init=tf.compat.v1.initializers.zeros())
+            # self.beta = tf.compat.v1.get_variable('beta', channels, initializer=tf.compat.v1.initializers.zeros())
+        elif self.data_format == 'channels_first':
             # mean, var = tf.nn.moments(x, [2, 3, 4], keep_dims=True)
-            self.gamma = tf.compat.v1.get_variable('gamma', [1, channels, 1, 1], initializer=tf.compat.v1.initializers.ones())
-            self.beta = tf.compat.v1.get_variable('beta', [1, channels, 1, 1], initializer=tf.compat.v1.initializers.zeros())
-
-        self.add_weights([self.gamma, self.bata])
+            self.gamma = self._get_weights("gamma", shape=[1, channels, 1, 1], init=tf.compat.v1.initializers.ones())
+            # self.gamma = tf.compat.v1.get_variable('gamma', [1, channels, 1, 1], initializer=tf.compat.v1.initializers.ones())
+            self.beta = self._get_weights("beta", shape=[1, channels, 1, 1], init=tf.compat.v1.initializers.zeros())
+            # self.beta = tf.compat.v1.get_variable('beta', [1, channels, 1, 1], initializer=tf.compat.v1.initializers.zeros())
+        # self.add_weights([self.gamma, self.bata])
 
     def forward(self, inputs):
         x = tf.reshape(inputs, self.int_shape)
@@ -492,7 +504,11 @@ class SwitchNorm(Layer):
         The initializer for initializing gamma, if None, skip gamma.
         When the batch normalization layer is use instead of 'biases', or the next layer is linear, this can be
         disabled since the scaling can be done by the next layer. see `Inception-ResNet-v2 <https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_resnet_v2.py>`__
-    name : str
+    moving_mean_init : initializer or None
+        The initializer for initializing moving mean, if None, skip moving mean.
+    data_format : str
+        channels_last 'channel_last' (default) or channels_first.
+    name : None or str
         A unique layer name.
 
     References
@@ -509,6 +525,7 @@ class SwitchNorm(Layer):
             beta_init=tf.compat.v1.initializers.constant(0.0),
             gamma_init=tf.compat.v1.initializers.constant(1.0),
             moving_mean_init=tf.compat.v1.initializers.zeros(),
+            data_format='channels_last',
             name=None,  #'switchnorm',
     ):
         # super(SwitchNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
@@ -518,21 +535,30 @@ class SwitchNorm(Layer):
         self.beta_init = beta_init
         self.gamma_init = gamma_init
         self.moving_mean_init = moving_mean_init
+        self.data_format = data_format
 
         logging.info(
             "SwitchNorm %s: epsilon: %f act: %s" %
             (self.name, epsilon, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-    def build(self, inputs):
-        ch = inputs.shape[-1]
-        self.gamma = tf.compat.v1.get_variable("gamma", [ch], initializer=gamma_init)
-        self.beta = tf.compat.v1.get_variable("beta", [ch], initializer=beta_init)
+    def build(self, inputs_shape):
+        if len(inputs_shape) != 4:
+            raise Exception("This SwitchNorm only supports 2D images.")
+        if self.data_format != 'channels_last':
+            raise Exception("This SwitchNorm only supports channels_last.")
+        ch = inputs_shape[-1]
+        self.gamma = self._get_weights("gamma", shape=[ch], init=self.gamma_init)
+        # self.gamma = tf.compat.v1.get_variable("gamma", [ch], initializer=gamma_init)
+        self.beta = self._get_weights("beta", shape=[ch], init=self.beta_init)
+        # self.beta = tf.compat.v1.get_variable("beta", [ch], initializer=beta_init)
 
-        self.mean_weight_var = tf.compat.v1.get_variable("mean_weight", [3], initializer=tf.compat.v1.initializers.constant(1.0))
-        self.var_weight_var = tf.compat.v1.get_variable("var_weight", [3], initializer=tf.compat.v1.initializers.constant(1.0))
+        self.mean_weight_var = self._get_weights("mean_weight", shape=[3], init=tf.compat.v1.initializers.constant(1.0))
+        # self.mean_weight_var = tf.compat.v1.get_variable("mean_weight", [3], initializer=tf.compat.v1.initializers.constant(1.0))
+        self.var_weight_var = self._get_weights("var_weight", shape=[3], init=tf.compat.v1.initializers.constant(1.0))
+        # self.var_weight_var = tf.compat.v1.get_variable("var_weight", [3], initializer=tf.compat.v1.initializers.constant(1.0))
 
-        self.add_weights([self.gamma, self.beta, self.mean_weight_var, self.var_weight_var])
+        # self.add_weights([self.gamma, self.beta, self.mean_weight_var, self.var_weight_var])
 
     def forward(self, inputs):
 

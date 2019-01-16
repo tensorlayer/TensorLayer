@@ -49,7 +49,7 @@ class ExpandDims(Layer):
         self.axis = axis
         logging.info("ExpandDims  %s: axis: %d" % (self.name, self.axis))
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         pass
 
     def forward(self, inputs):
@@ -89,7 +89,7 @@ class Tile(Layer):
 
         logging.info("Tile  %s: multiples: %s" % (self.name, self.multiples))
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         pass
 
     def forward(self, inputs):
