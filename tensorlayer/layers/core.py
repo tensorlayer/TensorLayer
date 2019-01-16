@@ -266,13 +266,6 @@ class Layer(object):
         """
         raise Exception("The forward method must be implemented by inherited class")
 
-    def print_weights(self, **kwargs):
-        raise Exception("please change print_weights --> print_weights")
-
-    @property
-    def all_weights(self):
-        raise Exception("please change all_weights --> all_weights")
-
     def print_weights(self, details=False, session=None):
         """Print all information of weights in the model. """
         for i, p in enumerate(self.all_weights):
@@ -302,8 +295,6 @@ class Layer(object):
                 "  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name)
             )
 
-    def count_weights(self, **kwargs):
-        raise Exception("please change count_weights --> count_weights")
 
     # TODO: need to rewrite
     def count_weights(self):
@@ -463,3 +454,14 @@ class Layer(object):
     #
     # def __setstate__(self, state): # pickle restore
     #     self.outputs = state['outputs']
+
+    ## raise Exceptions for old version codes
+    def count_params(self, **kwargs):
+        raise Exception("please change count_params --> count_weights")
+
+    def print_params(self, **kwargs):
+        raise Exception("please change print_params --> print_weights")
+
+    @property
+    def all_params(self):
+        raise Exception("please change all_params --> weights")

@@ -11,10 +11,10 @@ from tensorlayer import logging
 
 __all__ = [
     'Input',
-    'OneHotInput',
-    'Word2vecEmbeddingInput',
-    'EmbeddingInput',
-    'AverageEmbeddingInput',
+    'OneHotInput',              # --> OneHot
+    'Word2vecEmbeddingInput',   # --> Word2vecEmbedding
+    'EmbeddingInput',           # --> Embedding
+    'AverageEmbeddingInput',    # --> AverageEmbeddin
 ]
 
 

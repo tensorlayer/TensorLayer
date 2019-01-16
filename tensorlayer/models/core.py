@@ -3,7 +3,17 @@
 import tensorflow as tf
 
 class Model():
+    """The :class:`Model` class represents a neural network.
 
+    Parameters
+    -----------
+    inputs : a Layer or list of Layer
+        The input(s) to the model.
+    outputs : a Layer or list of Layer
+        The output(s) to the model.
+    name : None or str
+        The name of the model.
+    """
     @property
     def inputs(self):
         return self._inputs
@@ -12,7 +22,7 @@ class Model():
     def outputs(self):
         return self._outputs
 
-    def __init__(self, inputs=None, outputs=None, name="mymodel"):
+    def __init__(self, inputs=None, outputs=None, name=None):
         # Model properties
         self.name = name
 
@@ -45,9 +55,16 @@ class Model():
         return "  %{} (%{}) outputs_shape: {}".format(self.__class__.__name__, self.name, [o._outputs_shape[1:] for o in self.outputs])#_outputs_shape)#outputs.get_shape().as_list())
 
     ## raise Exceptions for old version codes
+    def count_params(self, **kwargs):
+        raise Exception("please change count_params --> count_weights")
+
     def print_params(self, **kwargs):
         raise Exception("please change print_params --> print_weights")
 
     @property
     def all_params(self):
         raise Exception("please change all_params --> weights")
+
+    @property
+    def all_drop(self):
+        raise Exception("all_drop is deprecated")

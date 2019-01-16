@@ -36,6 +36,7 @@ from tensorlayer.layers import DenseLayer
 from tensorlayer.layers import FlattenLayer
 from tensorlayer.layers import InputLayer
 from tensorlayer.layers import MaxPool2d
+from tensorlayer.models import Model
 
 from tensorlayer.files import maybe_download_and_extract
 from tensorlayer.files import assign_params
@@ -44,6 +45,8 @@ __all__ = [
     'VGG16',
 ]
 
+# class VGG16(Model):
+#
 
 class VGG16Base(object):
     """The VGG16 model."""
