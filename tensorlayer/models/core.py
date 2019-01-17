@@ -24,7 +24,13 @@ class Model():
     def outputs(self):
         return self._outputs
 
-    def __init__(self, inputs, outputs, name=None):
+    def __init__(self, inputs, outputs, name):
+        '''
+
+        :param inputs: Layer or list of Layer
+        :param outputs: Layer or list of Layer
+        :param name: str
+        '''
         # Model properties
         self.name = name
 
