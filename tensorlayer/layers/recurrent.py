@@ -215,7 +215,9 @@ class RNN(Layer):
         outputs = []
 
         if 'reuse' in getfullargspec(cell_fn.__init__).args:
-            self.cell = cell = cell_fn(num_units=n_hidden, reuse=tf.compat.v1.get_variable_scope().reuse, **self.cell_init_args)
+            self.cell = cell = cell_fn(
+                num_units=n_hidden, reuse=tf.compat.v1.get_variable_scope().reuse, **self.cell_init_args
+            )
         else:
             self.cell = cell = cell_fn(num_units=n_hidden, **self.cell_init_args)
 
@@ -501,7 +503,7 @@ class ConvRNNCell(object):
         """Integer or TensorShape: size of outputs produced by this cell."""
         raise NotImplementedError("Abstract method")
 
-    def zero_state(self, batch_size):#, dtype=LayersConfig.tf_dtype):
+    def zero_state(self, batch_size):  #, dtype=LayersConfig.tf_dtype):
         """Return zero-filled state tensor(s).
         Args:
           batch_size: int, float, or unit Tensor representing the batch size.
@@ -644,7 +646,8 @@ def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=No
         if not bias:
             return res
         bias_term = tf.compat.v1.get_variable(
-            "Bias", [num_features], dtype=dtype, initializer=tf.compat.v1.initializers.constant(bias_start, dtype=dtype)
+            "Bias", [num_features], dtype=dtype,
+            initializer=tf.compat.v1.initializers.constant(bias_start, dtype=dtype)
         )
     return res + bias_term
 
@@ -918,7 +921,10 @@ def retrieve_seq_length_op3(data, pad_val=0):  # HangSheng: return tensor for se
     """Return tensor for sequence length, if input is ``tf.string``."""
     data_shape_size = data.get_shape().ndims
     if data_shape_size == 3:
-        return tf.reduce_sum(input_tensor=tf.cast(tf.reduce_any(input_tensor=tf.not_equal(data, pad_val), axis=2), dtype=tf.int32), axis=1)
+        return tf.reduce_sum(
+            input_tensor=tf.cast(tf.reduce_any(input_tensor=tf.not_equal(data, pad_val), axis=2), dtype=tf.int32),
+            axis=1
+        )
     elif data_shape_size == 2:
         return tf.reduce_sum(input_tensor=tf.cast(tf.not_equal(data, pad_val), dtype=tf.int32), axis=1)
     elif data_shape_size == 1:

@@ -127,7 +127,9 @@ class DepthwiseConv2d(Layer):
         # )  # [filter_height, filter_width, in_channels, depth_multiplier]
         self.W = self._get_weights("filters", shape=self.filter_size, init=self.W_init, init_args=self.W_init_args)
         if self.b_init:
-            self.b = self._get_weights("biases", shape=(self.pre_channel * self.depth_multiplier), init=self.b_init, init_args=self.b_init_args)
+            self.b = self._get_weights(
+                "biases", shape=(self.pre_channel * self.depth_multiplier), init=self.b_init, init_args=self.b_init_args
+            )
         #     self.b = tf.compat.v1.get_variable(
         #         name=self.name + '\b_depthwise2d', shape=(self.pre_channel * self.depth_multiplier),
         #         initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args

@@ -37,7 +37,9 @@ class Scale(Layer):
         logging.info("Scale  %s: init_scale: %f" % (self.name, self.init_scale))
 
     def build(self, inputs_shape):
-        self.scale = self._get_weights("scale", shape=[1], init=tf.compat.v1.initializers.constant(value=self.init_scale))#, init_args=self.W_init_args)
+        self.scale = self._get_weights(
+            "scale", shape=[1], init=tf.compat.v1.initializers.constant(value=self.init_scale)
+        )  #, init_args=self.W_init_args)
         # self.scale = tf.compat.v1.get_variable("scale", shape=[1], initializer=tf.compat.v1.initializers.constant(value=self.init_scale))
         # self.add_weights(self.scale)
 

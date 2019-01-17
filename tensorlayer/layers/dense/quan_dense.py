@@ -114,7 +114,7 @@ class QuanDense(Layer):
         W_ = quantize_weight_overflow(self.W, self.bitW)
 
         # outputs = tf.matmul(inputs, self.W)
-        outputs = tf.matmul(inputs, W_) # hao dong change to this
+        outputs = tf.matmul(inputs, W_)  # hao dong change to this
 
         if self.b_init is not None:
             outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')

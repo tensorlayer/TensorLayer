@@ -90,7 +90,10 @@ class GroupConv2d(Layer):
         #     shape=[self.filter_size[0], self.filter_size[1], channels / self.n_group, self.n_filter],
         #     initializer=self.W_init, dtype=LayersConfig.tf_dtype, trainable=True, **self.W_init_args
         # )
-        self.We = self._get_weights("filters", shape=[self.filter_size[0], self.filter_size[1], channels / self.n_group, self.n_filter], init=self.W_init, init_args=self.W_init_args)
+        self.We = self._get_weights(
+            "filters", shape=[self.filter_size[0], self.filter_size[1], channels / self.n_group, self.n_filter],
+            init=self.W_init, init_args=self.W_init_args
+        )
         if self.b_init:
             self.b = self._get_weights("biases", shape=self.n_filter, init=self.b_init, init_args=self.b_init_args)
         # if self.b_init:

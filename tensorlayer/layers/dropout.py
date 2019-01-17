@@ -56,12 +56,7 @@ class Dropout(Layer):
 
     def forward(self, inputs, is_train):
         if is_train:
-            outputs = tf.nn.dropout(
-                inputs,
-                rate=1 - (self.keep),
-                seed=self.seed,
-                name=self.name
-            )
+            outputs = tf.nn.dropout(inputs, rate=1 - (self.keep), seed=self.seed, name=self.name)
         else:
             outputs = inputs
         return outputs

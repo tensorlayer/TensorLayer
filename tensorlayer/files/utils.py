@@ -1648,8 +1648,10 @@ def load_npz(path='', name='model.npz'):
     d = np.load(os.path.join(path, name))
     return d['params']
 
+
 def assign_params(**kwargs):
     raise Exception("please change assign_params --> assign_weights")
+
 
 def assign_weights(sess, weights, network):
     """Assign the given parameters to the TensorLayer network.

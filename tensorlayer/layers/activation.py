@@ -144,12 +144,7 @@ class PRelu6(Layer):
         # self.add_weights(self.alpha_var)
 
     def forward(self, inputs):
-        outputs = self._apply_activation(
-            inputs, **{
-                'alpha': self.alpha_var_constrained,
-                'name': "prelu6_activation"
-            }
-        )
+        outputs = self._apply_activation(inputs, **{'alpha': self.alpha_var_constrained, 'name': "prelu6_activation"})
         return outputs
 
 

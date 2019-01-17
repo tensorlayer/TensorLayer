@@ -90,8 +90,12 @@ class Conv1dLayer(Layer):
         # )
         self.W = self._get_weights("filters", shape=self.shape, init=self.W_init, init_args=self.W_init_args)
         if self.b_init:
-            self.b = self._get_weights("biases", shape=(self.n_filter), #self.shape[-1]),
-                init=self.b_init, init_args=self.b_init_args)
+            self.b = self._get_weights(
+                "biases",
+                shape=(self.n_filter),  #self.shape[-1]),
+                init=self.b_init,
+                init_args=self.b_init_args
+            )
         #     self.b = tf.compat.v1.get_variable(
         #         name=self.name + '\b_conv1d', shape=(self.shape[-1]), initializer=self.b_init,
         #         dtype=LayersConfig.tf_dtype, **self.b_init_args
@@ -361,8 +365,8 @@ class Conv3dLayer(Layer):
             strides=self.strides,
             padding=self.padding,
             # use_cudnn_on_gpu=self.use_cudnn_on_gpu, #True,
-            data_format=self.data_format, #'NDHWC',
-            dilations=self.dilation_rate, #[1, 1, 1, 1, 1],
+            data_format=self.data_format,  #'NDHWC',
+            dilations=self.dilation_rate,  #[1, 1, 1, 1, 1],
             name=self.name,
         )
 

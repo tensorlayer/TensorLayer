@@ -144,7 +144,8 @@ class DeformableConv2d(Layer):
                 _tensor = tf.nn.bias_add(_tensor, b, name='bias_add')
 
             self.outputs = tf.reshape(
-                tensor=self._apply_activation(_tensor), shape=[tf.shape(input=self.inputs)[0], input_h, input_w, shape[-1]]
+                tensor=self._apply_activation(_tensor),
+                shape=[tf.shape(input=self.inputs)[0], input_h, input_w, shape[-1]]
             )
 
         self._add_layers(self.outputs)

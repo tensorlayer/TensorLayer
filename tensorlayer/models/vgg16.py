@@ -45,6 +45,7 @@ __all__ = [
     'VGG16',
 ]
 
+
 class VGG16(Model):
     """Pre-trained VGG-16 model.
 
@@ -94,7 +95,9 @@ class VGG16(Model):
     >>> vgg1.restore_params(sess)
 
     """
-    def __init__(self, end_with='outputs'):
+
+    def __init__(self, end_with='outputs', name=None):
+        # TODO Model
         self.layers = [
             # conv1
             Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1'),

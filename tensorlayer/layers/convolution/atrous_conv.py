@@ -229,14 +229,18 @@ class AtrousDeConv2d(Layer):
         )
 
     def build(self, inputs_shape):
-        self.W = self._get_weights("kernels_atrous_conv2d_transpose", shape=self.shape, init=self.W_init, init_args=self.W_init_args)
+        self.W = self._get_weights(
+            "kernels_atrous_conv2d_transpose", shape=self.shape, init=self.W_init, init_args=self.W_init_args
+        )
         # self.W = tf.compat.v1.get_variable(
         #     name=self.name + '\W_atrous_conv2d_transpose', shape=self.shape, initializer=self.W_init,
         #     dtype=LayersConfig.tf_dtype, **self.W_init_args
         # )
 
         if self.b_init:
-            self.b = self._get_weights("biases_atrous_conv2d_transpose", shape=(self.shape[-2]), init=self.b_init, init_args=self.b_init_args)
+            self.b = self._get_weights(
+                "biases_atrous_conv2d_transpose", shape=(self.shape[-2]), init=self.b_init, init_args=self.b_init_args
+            )
             # self.b = tf.compat.v1.get_variable(
             #     name=self.name + '\b_atrous_conv2d_transpose', shape=(self.shape[-2]), initializer=self.b_init,
             #     dtype=LayersConfig.tf_dtype, **self.b_init_args

@@ -171,8 +171,8 @@ class QuanConv2dWithBN(Layer):
                 offset_para = None
 
             moving_mean = tf.compat.v1.get_variable(
-                'moving_mean', para_bn_shape, initializer=tf.compat.v1.initializers.constant(1.), dtype=LayersConfig.tf_dtype,
-                trainable=False
+                'moving_mean', para_bn_shape, initializer=tf.compat.v1.initializers.constant(1.),
+                dtype=LayersConfig.tf_dtype, trainable=False
             )
 
             moving_variance = tf.compat.v1.get_variable(

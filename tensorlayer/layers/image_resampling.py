@@ -167,7 +167,7 @@ class DownSampling2d(Layer):
             raise Exception("DownSampling2d tf.image.resize_images only support channel_last")
 
         if len(inputs_shape) == 3:
-        # if inputs.shape.ndims == 3:
+            # if inputs.shape.ndims == 3:
             if self.is_scale:
                 # input_shape = inputs.shape.as_list()
                 if input_shape[1] is not None:
@@ -181,7 +181,7 @@ class DownSampling2d(Layer):
                 self.size = [size_h, size_w]
 
         elif len(inputs_shape) == 4:
-        # elif inputs.shape.ndims == 4:
+            # elif inputs.shape.ndims == 4:
             if self.is_scale:
                 # input_shape = inputs.shape.as_list()
                 if input_shape[1] is not None:

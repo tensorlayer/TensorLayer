@@ -24,7 +24,7 @@ __all__ = [
     'Layer',
 ]
 
-_global_layer_name_dict = {} # TODO: better implementation?
+_global_layer_name_dict = {}  # TODO: better implementation?
 
 # @six.add_metaclass(ABCMeta)
 # class LayersConfig(object):
@@ -35,7 +35,6 @@ _global_layer_name_dict = {} # TODO: better implementation?
 #     @abstractmethod
 #     def __init__(self):
 #         pass
-
 
 # TF_GRAPHKEYS_VARIABLES = tf.compat.v1.GraphKeys.GLOBAL_VARIABLES
 
@@ -134,9 +133,9 @@ class Layer(object):
                 _global_layer_name_dict[prefix] = 0
                 name = prefix
         # _global_layer_index += 1
-            # raise ValueError(
-            #     'Layer must have a name. \n    TODO: Hao Dong: could we automatically add layer name when name=None e.g. layer0, layer1, batchnorm, layer3, layer4... '
-            # )
+        # raise ValueError(
+        #     'Layer must have a name. \n    TODO: Hao Dong: could we automatically add layer name when name=None e.g. layer0, layer1, batchnorm, layer3, layer4... '
+        # )
 
         # FIXME: double check needed: the scope name may be deprecated in TF2
         # scope_name = tf.get_variable_scope().name
@@ -145,7 +144,7 @@ class Layer(object):
 
         # Layer input outputs
         self.inputs = None
-        self.outputs = None # TODO: not accessible to eager mode but accessible to graph mode
+        self.outputs = None  # TODO: not accessible to eager mode but accessible to graph mode
 
         # self._inputs_shape = None
         # self._outputs_shape = None
@@ -168,7 +167,7 @@ class Layer(object):
         return self._input_layer._outputs_shape
 
     @property
-    def _outputs_shape(self): # TODO, if self.outputs is a list ???
+    def _outputs_shape(self):  # TODO, if self.outputs is a list ???
         return self.outputs.get_shape().as_list()
 
     @property
@@ -295,7 +294,6 @@ class Layer(object):
                 "  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name)
             )
 
-
     # TODO: need to rewrite
     def count_weights(self):
         """Returns the number of parameters in the network."""
@@ -326,12 +324,12 @@ class Layer(object):
 
     def __str__(self):
         if self.outputs is not None:
-            _outputs_shape = [o.shape.as_list() for o in self.outputs]
+            _outputs_shape = [tuple(['batch_size'] + o.shape.as_list()) for o in self.outputs]
             if len(_outputs_shape) == 1:
                 _outputs_shape = _outputs_shape[0]
         else:
             _outputs_shape = "unknown for unbuilt layer"
-        return "  %s (%s) outputs_shape: %s" % (self.__class__.__name__, self.name,_outputs_shape)
+        return "  {} ({}) outputs_shape: {}".format(self.__class__.__name__, self.name, _outputs_shape)
         # self._outputs_shape)#outputs.get_shape().as_list())
 
     # def __getitem__(self, key):
@@ -357,7 +355,7 @@ class Layer(object):
         raise TypeError("The Layer API does not allow to use the method: `__delitem__`")
 
     def __iter__(self):
-        for x in self.all_layers: # FIXME: it is good for eager mode?
+        for x in self.all_layers:  # FIXME: it is good for eager mode?
             yield x
 
     def __len__(self):
@@ -450,7 +448,6 @@ class Layer(object):
             )
 
         return args if args is not None else {}
-
 
     # def __getstate__(self): # pickle save
     #     return {'version': 0.1,

@@ -1,6 +1,5 @@
-
-
 import tensorflow as tf
+
 
 class Model():
     """The :class:`Model` class represents a neural network.
@@ -14,6 +13,7 @@ class Model():
     name : None or str
         The name of the model.
     """
+
     @property
     def inputs(self):
         return self._inputs
@@ -52,7 +52,9 @@ class Model():
         return results
 
     def __str__(self):
-        return "  %{} (%{}) outputs_shape: {}".format(self.__class__.__name__, self.name, [o._outputs_shape[1:] for o in self.outputs])#_outputs_shape)#outputs.get_shape().as_list())
+        return "  {} ({}) outputs_shape: {}".format(
+            self.__class__.__name__, self.name, [tuple(['batch_size'] + o._outputs_shape[1:]) for o in self.outputs]
+        )  #_outputs_shape)#outputs.get_shape().as_list())
 
     ## raise Exceptions for old version codes
     def count_params(self, **kwargs):

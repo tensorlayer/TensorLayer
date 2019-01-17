@@ -67,21 +67,21 @@ class DeConv2d(Layer):
             b_init=tf.compat.v1.initializers.constant(value=0.0),
             W_init_args=None,  # TODO: Remove when TF <1.3 not supported
             b_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            name=None, #'decnn2d'
+            name=None,  #'decnn2d'
     ):
         # super(DeConv2d, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
-        self.n_filter=n_filter
-        self.filter_size=filter_size
-        self.strides=strides
-        self.padding=padding
-        self.act=act
-        self.data_format=data_format
-        self.W_init=W_init
-        self.b_init=b_init
-        self.W_init_args=W_init_args  # TODO: Remove when TF <1.3 not supported
-        self.b_init_args=b_init_args  # TODO: Remove when TF <1.3 not supported
+        self.n_filter = n_filter
+        self.filter_size = filter_size
+        self.strides = strides
+        self.padding = padding
+        self.act = act
+        self.data_format = data_format
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args  # TODO: Remove when TF <1.3 not supported
+        self.b_init_args = b_init_args  # TODO: Remove when TF <1.3 not supported
 
         logging.info(
             "DeConv2d %s: n_filters: %s strides: %s pad: %s act: %s" % (
@@ -107,7 +107,7 @@ class DeConv2d(Layer):
             name=self.name,
         )
 
-        _out = self.layer(np.random.uniform([1]+list(inputs_shape))) # initialize weights
+        _out = self.layer(np.random.uniform([1] + list(inputs_shape)))  # initialize weights
         outputs_shape = _out.shape
         self._add_weights(self.layer.weights)
 
@@ -168,21 +168,21 @@ class DeConv3d(Layer):
             b_init=tf.compat.v1.initializers.constant(value=0.0),
             W_init_args=None,  # TODO: Remove when TF <1.3 not supported
             b_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            name=None, #'decnn3d'
+            name=None,  #'decnn3d'
     ):
         # super(DeConv3d, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
-        self.n_filter=n_filter
-        self.filter_size=filter_size
-        self.strides=strides
-        self.padding=padding
-        self.act=act
-        self.data_format=data_format
-        self.W_init=W_init
-        self.b_init=b_init
-        self.W_init_args=W_init_args  # TODO: Remove when TF <1.3 not supported
-        self.b_init_args=b_init_args  # TODO: Remove when TF <1.3 not supported
+        self.n_filter = n_filter
+        self.filter_size = filter_size
+        self.strides = strides
+        self.padding = padding
+        self.act = act
+        self.data_format = data_format
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args  # TODO: Remove when TF <1.3 not supported
+        self.b_init_args = b_init_args  # TODO: Remove when TF <1.3 not supported
 
         logging.info(
             "DeConv3d %s: n_filters: %s strides: %s pad: %s act: %s" % (
@@ -206,7 +206,7 @@ class DeConv3d(Layer):
             name=self.name,
         )
 
-        _out = self.layer(np.random.uniform([1]+list(inputs_shape))) # initialize weights
+        _out = self.layer(np.random.uniform([1] + list(inputs_shape)))  # initialize weights
         outputs_shape = _out.shape
         self._add_weights(self.layer.weights)
 

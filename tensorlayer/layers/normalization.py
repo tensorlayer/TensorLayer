@@ -305,12 +305,16 @@ class InstanceNorm(Layer):
         #     self.name + '\scale', [inputs.get_shape()[-1]],
         #     initializer=tf.compat.v1.initializers.truncated_normal(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype
         # )
-        self.scale = self._get_weights("scale", shape=[inputs_shape[-1]], init=tf.compat.v1.initializers.truncated_normal(mean=1.0, stddev=0.02))
+        self.scale = self._get_weights(
+            "scale", shape=[inputs_shape[-1]], init=tf.compat.v1.initializers.truncated_normal(mean=1.0, stddev=0.02)
+        )
         # self.offset = tf.compat.v1.get_variable(
         #     self.name + '\offset', [inputs.get_shape()[-1]], initializer=tf.compat.v1.initializers.constant(0.0),
         #     dtype=LayersConfig.tf_dtype
         # )
-        self.offset = self._get_weights("offset", shape=[inputs_shape[-1]], init=tf.compat.v1.initializers.constant(0.0))
+        self.offset = self._get_weights(
+            "offset", shape=[inputs_shape[-1]], init=tf.compat.v1.initializers.constant(0.0)
+        )
         # self.add_weights([self.scale, self.offset])
 
     def forward(self, inputs):
@@ -360,9 +364,17 @@ class LayerNorm(Layer):
     """
 
     def __init__(
-            self, #prev_layer,
-            center=True, scale=True, act=None, reuse=None, variables_collections=None,
-            outputs_collections=None, trainable=True, begin_norm_axis=1, begin_params_axis=-1, name='layernorm'
+            self,  #prev_layer,
+            center=True,
+            scale=True,
+            act=None,
+            reuse=None,
+            variables_collections=None,
+            outputs_collections=None,
+            trainable=True,
+            begin_norm_axis=1,
+            begin_params_axis=-1,
+            name='layernorm'
     ):
 
         # super(LayerNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
@@ -447,7 +459,8 @@ class GroupNorm(Layer):
                     tf.convert_to_tensor(value=[self.groups, channels // self.groups]),
                     # tf.shape(input=self.inputs)[2:4]
                     inputs_shape[2:4],
-                ], axis=0
+                ],
+                axis=0
             )
         else:
             raise ValueError("data_format must be 'channels_last' or 'channels_first'.")

@@ -88,6 +88,7 @@ class Reshape(Layer):
         outputs = tf.reshape(inputs, shape=self.shape, name=self.name)
         return outputs
 
+
 class Transpose(Layer):
     """A layer that transposes the dimension of a tensor.
 

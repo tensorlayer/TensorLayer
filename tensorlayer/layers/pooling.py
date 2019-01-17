@@ -143,10 +143,11 @@ class MaxPool1d(Layer):
         # https://www.tensorflow.org/api_docs/python/tf/nn/pool
         # print(self.strides, self.data_format)
         outputs = tf.nn.pool(
-            input=inputs, window_shape=self.filter_size, pooling_type="MAX", padding=self.padding, dilations=None, strides=self.strides,
-            name=self.name, data_format=self.data_format
+            input=inputs, window_shape=self.filter_size, pooling_type="MAX", padding=self.padding, dilations=None,
+            strides=self.strides, name=self.name, data_format=self.data_format
         )
         return outputs
+
 
 # x = tf.placeholder("float32", [None, 100, 3])
 # n = MaxPool1d(name='sasds')
@@ -157,6 +158,7 @@ class MaxPool1d(Layer):
 # y = n.forward(x)
 # print(type(y), y)#.outputs)
 # exit()
+
 
 class MeanPool1d(Layer):
     """Mean pooling for 1D signal.
@@ -224,8 +226,8 @@ class MeanPool1d(Layer):
         # self._add_layers(self.outputs)
         # https://www.tensorflow.org/api_docs/python/tf/nn/pool
         outputs = tf.nn.pool(
-            input=inputs, window_shape=1, pooling_type="AVG", padding=self.padding, dilations=None, strides=self.strides,
-            name=self.name, data_format=self.data_format
+            input=inputs, window_shape=1, pooling_type="AVG", padding=self.padding, dilations=None,
+            strides=self.strides, name=self.name, data_format=self.data_format
         )
         return outputs
 

@@ -23,9 +23,13 @@ class RoiPoolingTest(tf.test.TestCase):
             y = roi_pooling(input_const, rois_const, pool_height=2, pool_width=2)
             mean = tf.reduce_mean(input_tensor=y)
 
-            numerical_grad_error_1 = tf.compat.v1.test.compute_gradient_error([input_const], [input_value.shape], y, [5, 2, 2, 1])
+            numerical_grad_error_1 = tf.compat.v1.test.compute_gradient_error(
+                [input_const], [input_value.shape], y, [5, 2, 2, 1]
+            )
 
-            numerical_grad_error_2 = tf.compat.v1.test.compute_gradient_error([input_const], [input_value.shape], mean, [])
+            numerical_grad_error_2 = tf.compat.v1.test.compute_gradient_error(
+                [input_const], [input_value.shape], mean, []
+            )
 
             self.assertLess(numerical_grad_error_1, 1e-4)
             self.assertLess(numerical_grad_error_2, 1e-4)

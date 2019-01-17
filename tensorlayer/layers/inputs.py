@@ -11,10 +11,10 @@ from tensorlayer import logging
 
 __all__ = [
     'Input',
-    'OneHotInput',              # --> OneHot
-    'Word2vecEmbeddingInput',   # --> Word2vecEmbedding
-    'EmbeddingInput',           # --> Embedding
-    'AverageEmbeddingInput',    # --> AverageEmbeddin
+    'OneHotInput',  # --> OneHot
+    'Word2vecEmbeddingInput',  # --> Word2vecEmbedding
+    'EmbeddingInput',  # --> Embedding
+    'AverageEmbeddingInput',  # --> AverageEmbeddin
 ]
 
 
@@ -38,16 +38,11 @@ class Input(Layer):
         logging.info("Input  %s: %s" % (self.name, str(shape)))
 
         shape_without_none = [_ if _ is not None else 1 for _ in shape]
-        self.outputs = self.forward(
-            tf.initializers.constant(value=0.0)(shape_without_none),
-            is_train=False
-        )
+        self.outputs = self.forward(tf.initializers.constant(value=0.0)(shape_without_none), is_train=False)
 
     def __call__(self, prev_layer):
         # FIXME: better exception raising
-        raise Exception(
-            "__call__() of Input deactivated"
-        )
+        raise Exception("__call__() of Input deactivated")
 
     def build(self, inputs_shape):
         # FIXME: documentation need double check
@@ -261,7 +256,10 @@ class Word2vecEmbeddingInput(Layer):
         #     name=self.name + '/embeddings', shape=(self.vocabulary_size, self.embedding_size), initializer=self.E_init,
         #     dtype=LayersConfig.tf_dtype, **self.E_init_args
         # )
-        self.embeddings = self._get_weights("embeddings", shape=(self.vocabulary_size, self.embedding_size), init=self.E_init, init_args=self.E_init_args)
+        self.embeddings = self._get_weights(
+            "embeddings", shape=(self.vocabulary_size, self.embedding_size), init=self.E_init,
+            init_args=self.E_init_args
+        )
 
         self.normalized_embeddings = tf.nn.l2_normalize(self.embeddings, 1)
 
@@ -270,13 +268,18 @@ class Word2vecEmbeddingInput(Layer):
         #     name=self.name + '/nce_weights', shape=(self.vocabulary_size, self.embedding_size),
         #     initializer=self.nce_W_init, dtype=LayersConfig.tf_dtype, **self.nce_W_init_args
         # )
-        self.nce_weights = self._get_weights("nce_weights", shape=(self.vocabulary_size, self.embedding_size), init=self.nce_W_init, init_args=self.nce_W_init_args)
+        self.nce_weights = self._get_weights(
+            "nce_weights", shape=(self.vocabulary_size, self.embedding_size), init=self.nce_W_init,
+            init_args=self.nce_W_init_args
+        )
 
         # self.nce_biases = tf.compat.v1.get_variable(
         #     name=self.name + '/nce_biases', shape=(self.vocabulary_size), initializer=self.nce_b_init,
         #     dtype=LayersConfig.tf_dtype, **self.nce_b_init_args
         # )
-        self.nce_biases = self._get_weights("nce_biases", shape=(self.vocabulary_size), init=self.nce_b_init, init_args=self.nce_b_init_args)
+        self.nce_biases = self._get_weights(
+            "nce_biases", shape=(self.vocabulary_size), init=self.nce_b_init, init_args=self.nce_b_init_args
+        )
 
     def forward(self, inputs, train_labels):
         """
@@ -294,8 +297,13 @@ class Word2vecEmbeddingInput(Layer):
         # each time we evaluate the loss.
         self.nce_cost = tf.reduce_mean(
             input_tensor=tf.nn.nce_loss(
-                weights=self.nce_weights, biases=self.nce_biases, inputs=outputs, labels=train_labels, #self.train_labels,
-                num_sampled=self.num_sampled, num_classes=self.vocabulary_size, **self.nce_loss_args
+                weights=self.nce_weights,
+                biases=self.nce_biases,
+                inputs=outputs,
+                labels=train_labels,  #self.train_labels,
+                num_sampled=self.num_sampled,
+                num_classes=self.vocabulary_size,
+                **self.nce_loss_args
             )
         )
         return outputs
@@ -361,7 +369,10 @@ class EmbeddingInput(Layer):
         #     name=self.name + '/embeddings', shape=(self.vocabulary_size, self.embedding_size), initializer=self.E_init,
         #     dtype=LayersConfig.tf_dtype, **self.E_init_args
         # )
-        self.embeddings = self._get_weights("embeddings", shape=(self.vocabulary_size, self.embedding_size), init=self.E_init, init_args=self.E_init_args)
+        self.embeddings = self._get_weights(
+            "embeddings", shape=(self.vocabulary_size, self.embedding_size), init=self.E_init,
+            init_args=self.E_init_args
+        )
 
     def forward(self, inputs):
         """
@@ -441,7 +452,10 @@ class AverageEmbeddingInput(Layer):
         #     name=self.name + '/embeddings', shape=(self.vocabulary_size, self.embedding_size),
         #     initializer=self.E_init, dtype=LayersConfig.tf_dtype, **self.E_init_argst
         # )
-        self.embeddings = self._get_weights("embeddings", shape=(self.vocabulary_size, self.embedding_size), init=self.E_init, init_args=self.E_init_args)
+        self.embeddings = self._get_weights(
+            "embeddings", shape=(self.vocabulary_size, self.embedding_size), init=self.E_init,
+            init_args=self.E_init_args
+        )
 
     def forward(self, inputs):
         """
@@ -458,10 +472,9 @@ class AverageEmbeddingInput(Layer):
         )
         # Zero out embeddings of pad value
         masks = tf.not_equal(inputs, pad_value, name='masks')
-        word_embeddings *= tf.cast(
-            tf.expand_dims(masks, axis=-1),
-            # dtype=LayersConfig.tf_dtype,
-        )
+        word_embeddings *= tf.cast(tf.expand_dims(masks, axis=-1),
+                                   # dtype=LayersConfig.tf_dtype,
+                                  )
         sum_word_embeddings = tf.reduce_sum(input_tensor=word_embeddings, axis=1)
 
         # Count number of non-padding words in each sentence

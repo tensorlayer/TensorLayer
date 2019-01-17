@@ -127,6 +127,7 @@ class Dense(Layer):
         outputs = self.act(outputs)
         return outputs
     '''
+
     def forward(self, inputs, is_train):
         y = tf.matmul(inputs, self.W)
         z = tf.add(y, self.b)
@@ -164,6 +165,7 @@ if __name__ == "__main__":
         print(outputs_test, [_.shape for _ in outputs_test])
 
     def graph_test():
+
         def disciminator(inputs_shape):
             innet = Input(inputs_shape)
             net = Dense(n_units=32, act=tf.nn.relu)(innet)

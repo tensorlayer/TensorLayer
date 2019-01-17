@@ -63,7 +63,7 @@ class Lambda(Layer):
             prev_layer,
             fn,
             fn_args=None,
-            name=None,#'lambda',
+            name=None,  #'lambda',
     ):
 
         super(LambdaLayer, self).__init__(prev_layer=prev_layer, fn_args=fn_args, name=name)
@@ -123,7 +123,7 @@ class ElementwiseLambda(Layer):
             fn,
             fn_args=None,
             act=None,
-            name=None,#'elementwiselambda',
+            name=None,  #'elementwiselambda',
     ):
 
         super(ElementwiseLambda, self).__init__(prev_layer=layers, act=act, fn_args=fn_args, name=name)

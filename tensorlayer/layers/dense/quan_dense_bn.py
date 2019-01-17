@@ -86,7 +86,7 @@ class QuanDenseLayerWithBN(Layer):
             use_gemm=False,
             W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.1),
             W_init_args=None,
-            name=None,#'quan_dense_with_bn',
+            name=None,  #'quan_dense_with_bn',
     ):
         super(QuanDenseLayerWithBN, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
 
@@ -133,8 +133,8 @@ class QuanDenseLayerWithBN(Layer):
                 offset_para = None
 
             moving_mean = tf.compat.v1.get_variable(
-                'moving_mean', para_bn_shape, initializer=tf.compat.v1.initializers.constant(1.), dtype=LayersConfig.tf_dtype,
-                trainable=False
+                'moving_mean', para_bn_shape, initializer=tf.compat.v1.initializers.constant(1.),
+                dtype=LayersConfig.tf_dtype, trainable=False
             )
 
             moving_variance = tf.compat.v1.get_variable(
