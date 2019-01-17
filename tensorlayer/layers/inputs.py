@@ -44,7 +44,7 @@ class Input(Layer):
         # FIXME: better exception raising
         raise Exception("__call__() of Input deactivated")
 
-    def build(self, input_shape):
+    def build(self, inputs_shape):
         # FIXME: documentation need double check
         """
         no weights to define

@@ -75,9 +75,9 @@ class TimeDistributed(Layer):
             "TimeDistributed %s: layer_class: %s layer_args: %s" % (self.name, layer_class.__name__, self.layer_args)
         )
 
-        input_shape = self.inputs.get_shape()
+        inputs_shape = self.inputs.get_shape()
 
-        timestep = input_shape[1]
+        timestep = inputs_shape[1]
         x = tf.unstack(self.inputs, axis=1)
 
         is_name_reuse = tf.compat.v1.get_variable_scope().reuse

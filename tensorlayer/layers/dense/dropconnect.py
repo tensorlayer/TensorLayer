@@ -84,12 +84,12 @@ class DropconnectDense(Layer):
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-    def build(self, input_shape):
+    def build(self, inputs_shape):
 
-        if len(input_shape) != 2:
+        if len(inputs_shape) != 2:
             raise Exception("The input dimension must be rank 2")
 
-        self.n_in = input_shape[-1]
+        self.n_in = inputs_shape[-1]
 
         self.W = self._get_weights("weights", shape=(n_in, self.n_units), init=self.W_init, init_args=self.W_init_args)
         # self.W = tf.compat.v1.get_variable(

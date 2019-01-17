@@ -83,8 +83,8 @@ class Dense(Layer):
         self.b_init_args = b_init_args
 
         # self.n_in = int(self.inputs.get_shape()[-1])
-        # self.input_shape = self.inputs.shape.as_list() #
-        # self.output_shape = [self.input_shape[0], n_units]
+        # self.inputs_shape = self.inputs.shape.as_list() #
+        # self.outputs_shape = [self.inputs_shape[0], n_units]
 
         logging.info(
             "Dense  %s: %d %s" %
@@ -110,14 +110,14 @@ class Dense(Layer):
         self.get_weights(self.W, self.b)
     '''
 
-    def build(self, input_shape):
-        if len(input_shape) != 2:
+    def build(self, inputs_shape):
+        if len(inputs_shape) != 2:
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
-        shape = [input_shape[1], self.n_units]
+        shape = [inputs_shape[1], self.n_units]
         self.W = self._get_weights("weights", shape=tuple(shape), init=self.W_init, init_args=self.W_init_args)
         self.b = self._get_weights("biases", shape=(self.n_units, ), init=self.b_init, init_args=self.b_init_args)
-        # output_shape = [input_shape[0], self.n_units]
-        # return output_shape
+        # outputs_shape = [inputs_shape[0], self.n_units]
+        # return outputs_shape
 
     '''
     def forward(self, inputs, is_train):
@@ -145,8 +145,8 @@ if __name__ == "__main__":
     def eager_test():
         tf.enable_eager_execution()
 
-        def generator(input_shape):
-            innet = Input(input_shape)
+        def generator(inputs_shape):
+            innet = Input(inputs_shape)
             net = Dense(n_units=64, act=tf.nn.relu)(innet)
             net = Dense(n_units=64, act=tf.nn.relu)(net)
             net1 = Dense(n_units=1, act=tf.nn.relu)(net)
@@ -166,8 +166,8 @@ if __name__ == "__main__":
 
     def graph_test():
 
-        def disciminator(input_shape):
-            innet = Input(input_shape)
+        def disciminator(inputs_shape):
+            innet = Input(inputs_shape)
             net = Dense(n_units=32, act=tf.nn.relu)(innet)
             net1 = Dense(n_units=1, act=tf.nn.relu)(net)
             net2 = Dense(n_units=5, act=tf.nn.relu)(net)
@@ -175,7 +175,7 @@ if __name__ == "__main__":
             return D
 
         inputs = tf.placeholder(shape=[None, 100], dtype=tf.float32)
-        D = disciminator(input_shape=[None, 100])
+        D = disciminator(inputs_shape=[None, 100])
         outputs_train = D(inputs, is_train=True)
         outputs_test = D(inputs, is_train=False)
 

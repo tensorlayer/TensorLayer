@@ -103,7 +103,7 @@ class SeparableConv1d(Layer):
             )
         )
 
-    def build(self, input_shape):
+    def build(self, inputs_shape):
         self.layer = tf.keras.SeparableConv1D(
             filters=self.n_filter,
             kernel_size=self.filter_size,
@@ -128,7 +128,7 @@ class SeparableConv1d(Layer):
             name=self.name
         )
 
-        _out = self.layer(np.random.uniform([1] + list(input_shape)))  # initialize weights
+        _out = self.layer(np.random.uniform([1] + list(inputs_shape)))  # initialize weights
         outputs_shape = _out.shape
         self._add_weights(self.layer.weights)
 
@@ -237,7 +237,7 @@ class SeparableConv2d(Layer):
             )
         )
 
-    def build(self, input_shape):
+    def build(self, inputs_shape):
         self.layer = tf.keras.layers.SeparableConv2D(
             filters=self.n_filter,
             kernel_size=self.filter_size,
@@ -261,7 +261,7 @@ class SeparableConv2d(Layer):
             trainable=True,
             name=self.name
         )
-        _out = self.layer(np.random.uniform([1] + list(input_shape)))  # initialize weights
+        _out = self.layer(np.random.uniform([1] + list(inputs_shape)))  # initialize weights
         outputs_shape = _out.shape
         self._add_weights(self.layer.weights)
 

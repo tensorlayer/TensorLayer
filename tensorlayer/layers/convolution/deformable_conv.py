@@ -216,11 +216,11 @@ class DeformableConv2d(Layer):
             A Tensor with the shape as (b*c, h, w, n)
 
         """
-        input_shape = inputs.get_shape()
+        inputs_shape = inputs.get_shape()
         coords_shape = coords.get_shape()
         batch_channel = tf.shape(input=inputs)[0]
-        input_h = int(input_shape[1])
-        input_w = int(input_shape[2])
+        input_h = int(inputs_shape[1])
+        input_w = int(inputs_shape[2])
         kernel_n = int(coords_shape[3])
         n_coords = input_h * input_w * kernel_n
 
@@ -263,15 +263,15 @@ class DeformableConv2d(Layer):
             A Tensor with the shape as (b, h, w, c)
 
         """
-        input_shape = inputs.get_shape()
+        inputs_shape = inputs.get_shape()
         batch_size = tf.shape(input=inputs)[0]
         kernel_n = int(int(offsets.get_shape()[3]) / 2)
-        input_h = input_shape[1]
-        input_w = input_shape[2]
-        channel = input_shape[3]
+        input_h = inputs_shape[1]
+        input_w = inputs_shape[2]
+        channel = inputs_shape[3]
 
         # inputs (b, h, w, c) --> (b*c, h, w)
-        inputs = self._to_bc_h_w(inputs, input_shape)
+        inputs = self._to_bc_h_w(inputs, inputs_shape)
 
         # offsets (b, h, w, 2*n) --> (b, h, w, n, 2)
         offsets = tf.reshape(offsets, (batch_size, input_h, input_w, kernel_n, 2))

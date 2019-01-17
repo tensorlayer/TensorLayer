@@ -132,7 +132,7 @@ class VGG16(Model):
             Dense(n_units=1000, name='outputs'),
         ]
 
-    # def build(input_shape):
+    # def build(inputs_shape):
 
     def forward(self, inputs):
         """

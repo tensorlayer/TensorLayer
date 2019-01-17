@@ -28,7 +28,7 @@ class DeConv2dLayer(Layer):
     shape : tuple of int
         Shape of the filters: (height, width, output_channels, in_channels).
         The filter's ``in_channels`` dimension must match that of value.
-    output_shape : tuple of int
+    outputs_shape : tuple of int
         Output shape of the deconvolution,
     strides : tuple of int
         The sliding window strides for corresponding input dimensions.
@@ -49,7 +49,7 @@ class DeConv2dLayer(Layer):
     -----
     - We recommend to use `DeConv2d` with TensorFlow version higher than 1.3.
     - shape = [h, w, the number of output channels of this layer, the number of output channel of the previous layer].
-    - output_shape = [batch_size, any, any, the number of output channels of this layer].
+    - outputs_shape = [batch_size, any, any, the number of output channels of this layer].
     - the number of output channel of a layer is its last dimension.
 
     Examples
@@ -70,7 +70,7 @@ class DeConv2dLayer(Layer):
     (64, 4, 4, 512)
     >>> net_h1 = tl.layers.DeConv2dLayer(net_h0,
     ...                            shape=(5, 5, 256, 512),
-    ...                            output_shape=(batch_size, 8, 8, 256),
+    ...                            outputs_shape=(batch_size, 8, 8, 256),
     ...                            strides=(1, 2, 2, 1),
     ...                            act=None, name='g/h1/decon2d')
     >>> net_h1 = tl.layers.BatchNormLayer(net_h1, act=tf.nn.relu, is_train=is_train, name='g/h1/batch_norm')
@@ -86,7 +86,7 @@ class DeConv2dLayer(Layer):
     >>> print(conv10.outputs)
     (batch_size, 32, 32, 1024)
     >>> deconv1 = tl.layers.DeConv2dLayer(conv10, act=tf.nn.relu,
-    ...         shape=(3,3,512,1024), strides=(1,2,2,1), output_shape=(batch_size,64,64,512),
+    ...         shape=(3,3,512,1024), strides=(1,2,2,1), outputs_shape=(batch_size,64,64,512),
     ...         padding='SAME', W_init=w_init, b_init=b_init, name='devcon1_1')
 
     """
@@ -95,7 +95,7 @@ class DeConv2dLayer(Layer):
             self,
             act=None,
             shape=(3, 3, 128, 256),
-            output_shape=(1, 256, 256, 128),
+            outputs_shape=(1, 256, 256, 128),
             strides=(1, 2, 2, 1),
             padding='SAME',
             W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
@@ -109,7 +109,7 @@ class DeConv2dLayer(Layer):
         super().__init__(name)
         self.act = act
         self.shape = shape
-        self.output_shape = output_shape
+        self.outputs_shape = outputs_shape
         self.strides = strides
         self.padding = padding
         self.W_init = W_init
@@ -118,7 +118,7 @@ class DeConv2dLayer(Layer):
         self.b_init_args = b_init_args
         logging.info(
             "DeConv2dLayer %s: shape: %s out_shape: %s strides: %s pad: %s act: %s" % (
-                self.name, str(shape), str(output_shape), str(strides), padding,
+                self.name, str(shape), str(outputs_shape), str(strides), padding,
                 self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
@@ -142,7 +142,7 @@ class DeConv2dLayer(Layer):
 
     def forward(self, inputs):
         outputs = tf.nn.conv2d_transpose(
-            inputs, self.W, output_shape=self.output_shape, strides=self.strides, padding=self.padding
+            inputs, self.W, outputs_shape=self.outputs_shape, strides=self.strides, padding=self.padding
         )
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
@@ -161,7 +161,7 @@ class DeConv3dLayer(Layer):
     shape : tuple of int
         The shape of the filters: (depth, height, width, output_channels, in_channels).
         The filter's in_channels dimension must match that of value.
-    output_shape : tuple of int
+    outputs_shape : tuple of int
         The output shape of the deconvolution.
     strides : tuple of int
         The sliding window strides for corresponding input dimensions.
@@ -184,7 +184,7 @@ class DeConv3dLayer(Layer):
             self,
             act=None,
             shape=(2, 2, 2, 128, 256),
-            output_shape=(1, 12, 32, 32, 128),
+            outputs_shape=(1, 12, 32, 32, 128),
             strides=(1, 2, 2, 2, 1),
             padding='SAME',
             W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
@@ -198,7 +198,7 @@ class DeConv3dLayer(Layer):
         super().__init__(name)
         self.act = act
         self.shape = shape
-        self.output_shape = output_shape
+        self.outputs_shape = outputs_shape
         self.strides = strides
         self.padding = padding
         self.W_init = W_init
@@ -207,7 +207,7 @@ class DeConv3dLayer(Layer):
         self.b_init_args = b_init_args
         logging.info(
             "DeConv3dLayer %s: shape: %s out_shape: %s strides: %s pad: %s act: %s" % (
-                self.name, str(shape), str(output_shape), str(strides), padding,
+                self.name, str(shape), str(outputs_shape), str(strides), padding,
                 self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
@@ -228,7 +228,7 @@ class DeConv3dLayer(Layer):
 
     def forward(self, inputs):
         outputs = tf.nn.conv3d_transpose(
-            inputs, self.W, output_shape=self.output_shape, strides=self.strides, padding=self.padding
+            inputs, self.W, outputs_shape=self.outputs_shape, strides=self.strides, padding=self.padding
         )
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')

@@ -107,8 +107,8 @@ class DepthwiseConv2d(Layer):
             )
         )
 
-    def build(self, input_shape):
-        self.pre_channel = input_shape[-1]
+    def build(self, inputs_shape):
+        self.pre_channel = inputs_shape[-1]
         if self.pre_channel is None:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             self.pre_channel = 1
             logging.info("[warnings] unknown input channels, set to 1")

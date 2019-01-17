@@ -173,7 +173,7 @@ class AtrousDeConv2d(Layer):
         Previous layer with a 4D output tensor in the shape of (batch, height, width, channels).
     shape : tuple of int
         The shape of the filters: (filter_height, filter_width, out_channels, in_channels).
-    output_shape : tuple of int
+    outputs_shape : tuple of int
         Output shape of the deconvolution.
     rate : int
         The stride that we sample input values in the height and width dimensions.
@@ -199,7 +199,7 @@ class AtrousDeConv2d(Layer):
     def __init__(
             self,
             shape=(3, 3, 128, 256),
-            output_shape=(1, 64, 64, 128),
+            outputs_shape=(1, 64, 64, 128),
             rate=2,
             act=None,
             padding='SAME',
@@ -213,7 +213,7 @@ class AtrousDeConv2d(Layer):
         # super(AtrousDeConv2d, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         self.shape = shape
-        self.output_shape = output_shape
+        self.outputs_shape = outputs_shape
         self.rate = rate
         self.act = act
         self.padding = padding
@@ -222,13 +222,13 @@ class AtrousDeConv2d(Layer):
         self.W_init_args = W_init_args
         self.b_init_args = b_init_args
         logging.info(
-            "AtrousDeConv2d %s: shape: %s output_shape: %s rate: %d pad: %s act: %s" % (
-                self.name, shape, output_shape, rate, padding,
+            "AtrousDeConv2d %s: shape: %s outputs_shape: %s rate: %d pad: %s act: %s" % (
+                self.name, shape, outputs_shape, rate, padding,
                 self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
-    def build(self, input_shape):
+    def build(self, inputs_shape):
         self.W = self._get_weights(
             "kernels_atrous_conv2d_transpose", shape=self.shape, init=self.W_init, init_args=self.W_init_args
         )
@@ -259,7 +259,7 @@ class AtrousDeConv2d(Layer):
             Previous layer with a 4D output tensor in the shape of (batch, height, width, channels).
         """
         outputs = tf.nn.atrous_conv2d_transpose(
-            inputs, filters=self.W, output_shape=self.output_shape, rate=self.rate, padding=self.padding
+            inputs, filters=self.W, outputs_shape=self.outputs_shape, rate=self.rate, padding=self.padding
         )
 
         if self.b_init:

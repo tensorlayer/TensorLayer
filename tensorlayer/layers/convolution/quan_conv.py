@@ -114,7 +114,7 @@ class QuanConv2d(Layer):
             )
         )
 
-    def build(self, input_shape):
+    def build(self, inputs_shape):
 
         if self.use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
@@ -123,7 +123,7 @@ class QuanConv2d(Layer):
             raise ValueError("len(strides) should be 2.")
 
         try:
-            self.pre_channel = input_shape[-1]
+            self.pre_channel = inputs_shape[-1]
         except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             self.pre_channel = 1
             logging.warning("[warnings] unknow input channels, set to 1")
