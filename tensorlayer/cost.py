@@ -131,22 +131,18 @@ def mean_squared_error(output, target, is_mean=False, name="mean_squared_error")
     """
     # with tf.name_scope(name):
     if output.get_shape().ndims == 2:  # [batch_size, n_feature]
-        if is_mean:
-            mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), 1), name=name)
-        else:
-            mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), 1), name=name)
+        axis = 1
     elif output.get_shape().ndims == 3:  # [batch_size, w, h]
-        if is_mean:
-            mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), [1, 2]), name=name)
-        else:
-            mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), [1, 2]), name=name)
+        axis = [1, 2]
     elif output.get_shape().ndims == 4:  # [batch_size, w, h, c]
-        if is_mean:
-            mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), [1, 2, 3]), name=name)
-        else:
-            mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), [1, 2, 3]), name=name)
+        axis = [1, 2, 3]
     else:
         raise Exception("Unknow dimension")
+
+    if is_mean:
+        mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), axis), name=name)
+    else:
+        mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), axis), name=name)
     return mse
 
 
@@ -165,14 +161,13 @@ def normalized_mean_square_error(output, target, name="normalized_mean_squared_e
     """
     # with tf.name_scope("normalized_mean_squared_error_loss"):
     if output.get_shape().ndims == 2:  # [batch_size, n_feature]
-        nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=1))
-        nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=1))
+        axis = 1
     elif output.get_shape().ndims == 3:  # [batch_size, w, h]
-        nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=[1, 2]))
-        nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=[1, 2]))
+        axis = [1, 2]
     elif output.get_shape().ndims == 4:  # [batch_size, w, h, c]
-        nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=[1, 2, 3]))
-        nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=[1, 2, 3]))
+        axis = [1, 2, 3]
+    nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=axis))
+    nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=axis))
     nmse = tf.reduce_mean(nmse_a / nmse_b, name=name)
     return nmse
 
@@ -196,22 +191,17 @@ def absolute_difference_error(output, target, is_mean=False, name="absolute_diff
     """
     # with tf.name_scope("absolute_difference_error_loss"):
     if output.get_shape().ndims == 2:  # [batch_size, n_feature]
-        if is_mean:
-            loss = tf.reduce_mean(tf.reduce_mean(tf.abs(output - target), 1), name=name)
-        else:
-            loss = tf.reduce_mean(tf.reduce_sum(tf.abs(output - target), 1), name=name)
+        axis = 1
     elif output.get_shape().ndims == 3:  # [batch_size, w, h]
-        if is_mean:
-            loss = tf.reduce_mean(tf.reduce_mean(tf.abs(output - target), [1, 2]), name=name)
-        else:
-            loss = tf.reduce_mean(tf.reduce_sum(tf.abs(output - target), [1, 2]), name=name)
+        axis = [1, 2]
     elif output.get_shape().ndims == 4:  # [batch_size, w, h, c]
-        if is_mean:
-            loss = tf.reduce_mean(tf.reduce_mean(tf.abs(output - target), [1, 2, 3]), name=name)
-        else:
-            loss = tf.reduce_mean(tf.reduce_sum(tf.abs(output - target), [1, 2, 3]), name=name)
+        axis = [1, 2, 3]
     else:
         raise Exception("Unknow dimension")
+    if is_mean:
+        loss = tf.reduce_mean(tf.reduce_mean(tf.abs(output - target), axis), name=name)
+    else:
+        loss = tf.reduce_mean(tf.reduce_sum(tf.abs(output - target), axis), name=name)
     return loss
 
 
