@@ -53,13 +53,19 @@ class Model():
                                 (check_order[co], type(check_argu)))
 
         # Model inputs and outputs
-        self._inputs = inputs
+        self._inputs = inputs if isinstance(inputs, list) else [inputs]
         self._outputs = outputs
 
         # Model state: train or test
         # self.is_train = is_train
 
     def __call__(self, inputs, is_train):
+        """
+
+        :param inputs: Tensor or list of Tensor, numpy.ndarray (if in eager mode)
+        :param is_train: boolean
+        :return:
+        """
 
         # convert inputs to tensor if it is originally not
         if isinstance(inputs, list):
@@ -69,27 +75,48 @@ class Model():
         elif isinstance(inputs, np.ndarray):
             inputs = tf.convert_to_tensor(inputs)
 
-        # check inputs
-        if isinstance(self._inputs, Layer):
-            print(self._inputs._outputs_shape)
-            print(inputs.get_shape().as_list())
-        exit()
-
-        # TODO: check inputs corresponds with self._inputs
+        inputs_list = inputs if isinstance(inputs, list) else [inputs]
+        outputs_list = self._outputs if isinstance(self._outputs, list) else [self._outputs]
         results = list()
-        for out in self._outputs:
+        memory = dict()
+
+        for out in outputs_list:
             stacked_layers = list()
             current = out
-            # TODO: if inputs is not Input but BaseLayer?
             while current is not None:
                 stacked_layers.append(current)
+                # FIXME: assume only one input layer
                 current = current._input_layer
-            # FIXME: assume there is only one inputs
-            z = inputs
+
+            idx_of_input = self._find_idx_of_inputs(stacked_layers[-1])
+            z = inputs_list[idx_of_input]
+
             for layer in stacked_layers[::-1]:
-                z = layer.forward(z, is_train)
+                if layer.name in memory:
+                    z = memory[layer.name]
+                else:
+                    z = layer.forward(z, is_train)
+                    memory[layer.name] = z
             results.append(z)
-        return results
+
+        if not isinstance(self._outputs, list):
+            return results[0]
+        else:
+            return results
+
+    def _find_idx_of_inputs(self, target_input):
+        """
+        Return the index of the target_input in self._inputs.
+        Return -1 if not found.
+
+        :param target_input: the input layer needs to be located
+        :return:
+        """
+        if isinstance(self._inputs, list):
+            for idx, input in enumerate(self._inputs):
+                if input == target_input:
+                    return idx
+        return -1
 
     def __str__(self):
         return "  {} ({}) outputs_shape: {}".format(

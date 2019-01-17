@@ -152,13 +152,14 @@ if __name__ == "__main__":
             net1 = Dense(n_units=1, act=tf.nn.relu)(net)
             net2 = Dense(n_units=5, act=tf.nn.relu)(net)
 
-            G = Model(inputs=innet, outputs=[net1, net2])
+            G = Model(inputs=innet, outputs=[net1, net2], name="generator")
             return G, net2
 
         latent_space_size = 100
         G, net2 = generator((None, latent_space_size))
         inputs = np.zeros([100, 100], dtype="float32")
-        inputs = tf.convert_to_tensor(inputs)
+        # TODO: auto convert to tensor in Model.__call__
+        # inputs = tf.convert_to_tensor(inputs)
         outputs_train = G(inputs, True)
         outputs_test = G(inputs, False)
         print(outputs_train, [_.shape for _ in outputs_train])
@@ -171,11 +172,12 @@ if __name__ == "__main__":
             net = Dense(n_units=32, act=tf.nn.relu)(innet)
             net1 = Dense(n_units=1, act=tf.nn.relu)(net)
             net2 = Dense(n_units=5, act=tf.nn.relu)(net)
-            D = Model(inputs=innet, outputs=[net1, net2])
+            D = Model(inputs=innet, outputs=[net1, net2], name="discriminator")
             return D
 
         inputs = tf.placeholder(shape=[None, 100], dtype=tf.float32)
         D = disciminator(inputs_shape=[None, 100])
+
         outputs_train = D(inputs, is_train=True)
         outputs_test = D(inputs, is_train=False)
 
@@ -188,5 +190,5 @@ if __name__ == "__main__":
         print(real_outputs_train, [_.shape for _ in real_outputs_train])
         print(real_outputs_test, [_.shape for _ in real_outputs_test])
 
-    # eager_test()
-    graph_test()
+    eager_test()
+    # graph_test()

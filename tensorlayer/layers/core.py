@@ -204,6 +204,7 @@ class Layer(object):
 
         else:
             # FIXME: not sure yet how to handle other cases
+            # FIXME: if the prev_layer is a list, corresponding code in Model() needs update
             '''
             elif isinstance(prev_layer, list):
                 # 2. for layer have multiply inputs i.e. ConcatLayer
