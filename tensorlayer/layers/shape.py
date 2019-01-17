@@ -44,7 +44,7 @@ class Flatten(Layer):
         super().__init__(name)
         logging.info("Flatten %s:" % (self.name))
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         pass
 
     def forward(self, inputs):
@@ -81,7 +81,7 @@ class Reshape(Layer):
         if not self.shape:
             raise ValueError("Shape list can not be empty")
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         pass
 
     def forward(self, inputs):
@@ -121,7 +121,7 @@ class Transpose(Layer):
         if self.perm is None:
             raise AssertionError("The `perm` argument cannot be None")
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         pass
 
     def forward(self, inputs):

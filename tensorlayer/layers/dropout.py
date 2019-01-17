@@ -50,8 +50,8 @@ class Dropout(Layer):
         return outputs
     '''
 
-    def build(self, inputs_shape):
-        # return inputs_shape
+    def build(self, input_shape):
+        # return input_shape
         pass
 
     def forward(self, inputs, is_train):

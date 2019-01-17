@@ -228,7 +228,7 @@ class AtrousDeConv2d(Layer):
             )
         )
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         self.W = self._get_weights(
             "kernels_atrous_conv2d_transpose", shape=self.shape, init=self.W_init, init_args=self.W_init_args
         )

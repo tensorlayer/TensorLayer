@@ -58,7 +58,7 @@ class PadLayer(Layer):
                 "padding should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
             )
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         pass
 
     def forward(self, inputs):
@@ -92,7 +92,7 @@ class ZeroPad1d(Layer):
         if not isinstance(self.padding, (int, tuple, dict)):
             raise AssertionError()
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         self.layer = tf.keras.layers.ZeroPadding1D(padding=self.padding, name=self.name)
 
     def forward(self, inputs):
@@ -128,7 +128,7 @@ class ZeroPad2d(Layer):
         if not isinstance(self.padding, (int, tuple)):
             raise AssertionError("Padding should be of type `int` or `tuple`")
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         self.layer = tf.keras.layers.ZeroPadding2D(padding=self.padding, name=self.name)
 
     def forward(self, inputs):
@@ -165,7 +165,7 @@ class ZeroPad3d(Layer):
         if not isinstance(self.padding, (int, tuple)):
             raise AssertionError()
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         self.layer = tf.keras.layers.ZeroPadding3D(padding=self.padding, name=self.name)
 
     def forward(self, inputs):

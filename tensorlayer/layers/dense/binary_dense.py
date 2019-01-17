@@ -69,15 +69,15 @@ class BinaryDense(Layer):
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         # if inputs.get_shape().ndims != 2:
-        if len(inputs_shape) != 2:
+        if len(input_shape) != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
         if self.use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
-        n_in = inputs_shape[-1]
+        n_in = input_shape[-1]
 
         self.W = self._get_weights("weights", shape=tuple(shape), init=self.W_init, init_args=self.W_init_args)
         # self.W = tf.compat.v1.get_variable(

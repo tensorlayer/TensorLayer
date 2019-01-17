@@ -300,20 +300,20 @@ class InstanceNorm(Layer):
             (self.name, epsilon, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         # self.scale = tf.compat.v1.get_variable(
         #     self.name + '\scale', [inputs.get_shape()[-1]],
         #     initializer=tf.compat.v1.initializers.truncated_normal(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype
         # )
         self.scale = self._get_weights(
-            "scale", shape=[inputs_shape[-1]], init=tf.compat.v1.initializers.truncated_normal(mean=1.0, stddev=0.02)
+            "scale", shape=[input_shape[-1]], init=tf.compat.v1.initializers.truncated_normal(mean=1.0, stddev=0.02)
         )
         # self.offset = tf.compat.v1.get_variable(
         #     self.name + '\offset', [inputs.get_shape()[-1]], initializer=tf.compat.v1.initializers.constant(0.0),
         #     dtype=LayersConfig.tf_dtype
         # )
         self.offset = self._get_weights(
-            "offset", shape=[inputs_shape[-1]], init=tf.compat.v1.initializers.constant(0.0)
+            "offset", shape=[input_shape[-1]], init=tf.compat.v1.initializers.constant(0.0)
         )
         # self.add_weights([self.scale, self.offset])
 
@@ -438,16 +438,16 @@ class GroupNorm(Layer):
             "GroupNorm %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         # shape = inputs.get_shape().as_list()
-        if len(inputs_shape) != 4:
+        if len(input_shape) != 4:
             raise Exception("This GroupNorm only supports 2D images.")
 
         if self.data_format == 'channels_last':
-            channels = inputs_shape[-1]
+            channels = input_shape[-1]
             self.int_shape = tf.concat(
                 [#tf.shape(input=self.inputs)[0:3],
-                inputs_shape[0:3],
+                input_shape[0:3],
                 tf.convert_to_tensor(value=[self.groups, channels // self.groups])], axis=0
             )
         elif self.data_format == 'channels_first':
@@ -455,10 +455,10 @@ class GroupNorm(Layer):
             self.int_shape = tf.concat(
                 [
                     # tf.shape(input=self.inputs)[0:1],
-                    inputs_shape[0:1],
+                    input_shape[0:1],
                     tf.convert_to_tensor(value=[self.groups, channels // self.groups]),
                     # tf.shape(input=self.inputs)[2:4]
-                    inputs_shape[2:4],
+                    input_shape[2:4],
                 ],
                 axis=0
             )
@@ -555,12 +555,12 @@ class SwitchNorm(Layer):
             (self.name, epsilon, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-    def build(self, inputs_shape):
-        if len(inputs_shape) != 4:
+    def build(self, input_shape):
+        if len(input_shape) != 4:
             raise Exception("This SwitchNorm only supports 2D images.")
         if self.data_format != 'channels_last':
             raise Exception("This SwitchNorm only supports channels_last.")
-        ch = inputs_shape[-1]
+        ch = input_shape[-1]
         self.gamma = self._get_weights("gamma", shape=[ch], init=self.gamma_init)
         # self.gamma = tf.compat.v1.get_variable("gamma", [ch], initializer=gamma_init)
         self.beta = self._get_weights("beta", shape=[ch], init=self.beta_init)

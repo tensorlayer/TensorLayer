@@ -97,7 +97,7 @@ class VGG16(Model):
     """
 
     def __init__(self, end_with='outputs', name=None):
-        # TODO Model
+        super(VGG16, self).__init__()
         self.layers = [
             # conv1
             Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1'),
@@ -132,7 +132,7 @@ class VGG16(Model):
             Dense(n_units=1000, name='outputs'),
         ]
 
-    # def build(inputs_shape):
+    # def build(input_shape):
 
     def forward(self, inputs):
         """

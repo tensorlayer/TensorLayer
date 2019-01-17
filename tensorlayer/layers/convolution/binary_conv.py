@@ -112,8 +112,8 @@ class BinaryConv2d(Layer):
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2.")
 
-    def build(self, inputs_shape):
-        if inputs_shape[-1] is None:
+    def build(self, input_shape):
+        if input_shape[-1] is None:
             logging.warning("unknown input channels, set to 1")
             pre_channel = 1
 

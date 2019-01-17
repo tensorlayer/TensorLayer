@@ -146,8 +146,8 @@ class Layer(object):
         self.inputs = None
         self.outputs = None  # TODO: not accessible to eager mode but accessible to graph mode
 
-        # self._inputs_shape = None
-        # self._outputs_shape = None
+        # self._input_shape = None
+        # self._output_shape = None
 
         self._input_layer = None
 
@@ -163,11 +163,11 @@ class Layer(object):
         self._weights = None
 
     @property
-    def _inputs_shape(self):  # TODO, if self.outputs is a list ???
-        return self._input_layer._outputs_shape
+    def _input_shape(self):  # TODO, if self.outputs is a list ???
+        return self._input_layer._output_shape
 
     @property
-    def _outputs_shape(self):  # TODO, if self.outputs is a list ???
+    def _output_shape(self):  # TODO, if self.outputs is a list ???
         return self.outputs.get_shape().as_list()
 
     @property
@@ -186,13 +186,13 @@ class Layer(object):
 
             self.inputs = prev_layer.outputs
             self._input_layer = prev_layer
-            # self._inputs_shape = self._input_layer._outputs_shape
+            # self._input_shape = self._input_layer._output_shape
 
             self._weights = list()
 
-            self.build(self._inputs_shape)
+            self.build(self._input_shape)
             self.outputs = self.forward(self.inputs, is_train=False)
-            # self._outputs_shape = self.outputs.get_shape().as_list()
+            # self._output_shape = self.outputs.get_shape().as_list()
 
             self._built = True
 
@@ -243,12 +243,12 @@ class Layer(object):
         return weight
 
     @abstractmethod
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         # FIXME: documentation needed
         """
         An abstract method which should be overwritten in derived classes to define all necessary weights of the layer.
 
-        :param inputs_shape: tuple
+        :param input_shape: tuple
         :return: void
         """
         raise Exception("The build_weights method must be implemented by inherited class")
@@ -311,6 +311,10 @@ class Layer(object):
             n_weights = n_weights + n
         return n_weights
 
+    @property
+    def n_weights():
+        return count_weights()
+
     # TODO: need to rewrite
     def get_all_weights(self, sess=None):
         """Return the weights in a list of array."""
@@ -324,13 +328,13 @@ class Layer(object):
 
     def __str__(self):
         if self.outputs is not None:
-            _outputs_shape = [tuple(['batch_size'] + o.shape.as_list()) for o in self.outputs]
-            if len(_outputs_shape) == 1:
-                _outputs_shape = _outputs_shape[0]
+            _output_shape = [tuple(['batch_size'] + o.shape.as_list()) for o in self.outputs]
+            if len(_output_shape) == 1:
+                _output_shape = _output_shape[0]
         else:
-            _outputs_shape = "unknown for unbuilt layer"
-        return "  {} ({}) outputs_shape: {}".format(self.__class__.__name__, self.name, _outputs_shape)
-        # self._outputs_shape)#outputs.get_shape().as_list())
+            _output_shape = "unknown for unbuilt layer"
+        return "  {} ({}) output_shape: {}".format(self.__class__.__name__, self.name, _output_shape)
+        # self._output_shape)#outputs.get_shape().as_list())
 
     # def __getitem__(self, key):
     #

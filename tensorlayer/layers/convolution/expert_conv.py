@@ -83,7 +83,7 @@ class Conv1dLayer(Layer):
             )
         )
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         # self.W = tf.compat.v1.get_variable(
         #     name=self.name + '\W_conv1d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
         #     **self.W_init_args

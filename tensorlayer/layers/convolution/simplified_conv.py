@@ -106,13 +106,13 @@ class Conv1d(Layer):
             )
         )
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         if self.data_format == 'channels_last':
             self.data_format == 'HWC'
-            self.pre_channel = inputs_shape[-1]
+            self.pre_channel = input_shape[-1]
         elif self.data_format == 'channels_first':
             self.data_format == 'HCW'
-            self.pre_channel = inputs_shape[1]
+            self.pre_channel = input_shape[1]
         else:
             raise Exception("data_format should be either channels_last or channels_first")
 
@@ -248,15 +248,15 @@ class Conv2d(Layer):
             )
         )
 
-        def build(self, inputs_shape):
+        def build(self, input_shape):
             if self.data_format == 'channels_last':
                 self.data_format == 'NHWC'
-                self.pre_channel = inputs_shape[-1]
+                self.pre_channel = input_shape[-1]
                 self.strides = [1, self.strides[0], self.strides[1], 1]
                 self.dilation_rate = [1, self.dilation_rate[0], self.dilation_rate[1], 1]
             elif self.data_format == 'channels_first':
                 self.data_format == 'NCHW'
-                self.pre_channel = inputs_shape[1]
+                self.pre_channel = input_shape[1]
                 self.strides = [1, 1, self.strides[0], self.strides[1]]
                 self.dilation_rate = [1, 1, self.dilation_rate[0], self.dilation_rate[1]]
             else:
@@ -397,15 +397,15 @@ class Conv3d(Layer):
             )
         )
 
-        def build(self, inputs_shape):
+        def build(self, input_shape):
             if self.data_format == 'channels_last':
                 self.data_format == 'NDHWC'
-                self.pre_channel = inputs_shape[-1]
+                self.pre_channel = input_shape[-1]
                 self.strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
                 self.dilation_rate = [1, self.dilation_rate[0], self.dilation_rate[1], self.dilation_rate[2], 1]
             elif self.data_format == 'channels_first':
                 self.data_format == 'NCDHW'
-                self.pre_channel = inputs_shape[1]
+                self.pre_channel = input_shape[1]
                 self.strides = [1, 1, self.strides[0], self.strides[1], self.strides[2]]
                 self.dilation_rate = [1, 1, self.dilation_rate[0], self.dilation_rate[1], self.dilation_rate[2]]
             else:

@@ -92,7 +92,7 @@ class SubpixelConv2d(Layer):
             (self.name, scale, n_out_channel, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         pass
 
     def forward(self, inputs):
@@ -168,7 +168,7 @@ class SubpixelConv1d(Layer):
             (self.name, scale, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         pass
 
     def forward(self, inputs):

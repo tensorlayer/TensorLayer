@@ -93,7 +93,7 @@ class DeConv2d(Layer):
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2, DeConv2d and DeConv2dLayer are different.")
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         self.layer = tf.keras.layers.Conv2DTranspose(
             filters=self.n_filter,
             kernel_size=self.filter_size,
@@ -107,7 +107,7 @@ class DeConv2d(Layer):
             name=self.name,
         )
 
-        _out = self.layer(np.random.uniform([1] + list(inputs_shape)))  # initialize weights
+        _out = self.layer(np.random.uniform([1] + list(input_shape)))  # initialize weights
         outputs_shape = _out.shape
         self._add_weights(self.layer.weights)
 
@@ -191,7 +191,7 @@ class DeConv3d(Layer):
             )
         )
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         # with tf.variable_scope(name) as vs:
         self.layer = tf.keras.layers.Conv3DTranspose(
             filters=self.n_filter,
@@ -206,7 +206,7 @@ class DeConv3d(Layer):
             name=self.name,
         )
 
-        _out = self.layer(np.random.uniform([1] + list(inputs_shape)))  # initialize weights
+        _out = self.layer(np.random.uniform([1] + list(input_shape)))  # initialize weights
         outputs_shape = _out.shape
         self._add_weights(self.layer.weights)
 

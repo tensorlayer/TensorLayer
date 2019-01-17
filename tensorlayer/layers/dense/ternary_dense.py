@@ -70,15 +70,15 @@ class TernaryDense(Layer):
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         # if inputs.get_shape().ndims != 2:
-        if len(inputs_shape) != 2:
+        if len(input_shape) != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
         if self.use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
-        n_in = inputs_shape[-1]
+        n_in = input_shape[-1]
 
         # self.W = tf.compat.v1.get_variable(
         #     name=self.name + '\W', shape=(n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype,

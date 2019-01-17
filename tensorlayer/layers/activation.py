@@ -58,11 +58,11 @@ class PRelu(Layer):
 
         logging.info("PRelu %s: channel_shared: %s" % (self.name, self.channel_shared))
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         if self.channel_shared:
             w_shape = (1, )
         else:
-            w_shape = inputs_shape[-1]
+            w_shape = input_shape[-1]
         self.alpha_var = self._get_weights("alpha", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
         # self.alpha_var = tf.compat.v1.get_variable(
         #     name=self.name + '/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
@@ -129,11 +129,11 @@ class PRelu6(Layer):
 
         logging.info("PRelu6 %s: channel_shared: %s" % (self.name, self.channel_shared))
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         if self.channel_shared:
             w_shape = (1, )
         else:
-            w_shape = inputs_shape[-1]
+            w_shape = input_shape[-1]
         self.alpha_var = self._get_weights("alpha", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
         # self.alpha_var = tf.compat.v1.get_variable(
         #     name=self.name + '/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
@@ -204,11 +204,11 @@ class PTRelu6(Layer):
 
         logging.info("PTRelu6 %s: channel_shared: %s" % (self.name, self.channel_shared))
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         if self.channel_shared:
             w_shape = (1, )
         else:
-            w_shape = inputs_shape[-1]
+            w_shape = input_shape[-1]
 
         # Alpha for outputs lower than zeros
         self.alpha_low = self._get_weights("alpha_low", shape=w_shape, init=self.a_init, init_args=self.a_init_args)

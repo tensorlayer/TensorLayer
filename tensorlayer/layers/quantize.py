@@ -38,7 +38,7 @@ class Sign(Layer):
         super().__init__(name)
         logging.info("Sign  %s" % self.name)
 
-    def build(self, inputs_shape):
+    def build(self, input_shape):
         pass
 
     def forward(inputs):
