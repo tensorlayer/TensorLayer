@@ -17,7 +17,7 @@ from tensorlayer.layers import DropoutLayer
 from tensorlayer.layers import GlobalMeanPool2d
 
 from tensorlayer.files import maybe_download_and_extract
-from tensorlayer.files import assign_params
+from tensorlayer.files import assign_weights
 from tensorlayer.files import load_npz
 
 __all__ = [
@@ -187,5 +187,5 @@ class SqueezeNetV1(Layer):
             expected_bytes=7405613
         )  # ls -al
         params = load_npz(name=os.path.join(path, 'squeezenet.npz'))
-        assign_params(sess, params[:len(self.net.all_params)], self.net)
+        assign_weights(sess, params[:len(self.net.all_params)], self.net)
         del params

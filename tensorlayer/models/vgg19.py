@@ -37,7 +37,7 @@ from tensorlayer.layers import InputLayer
 from tensorlayer.layers import MaxPool2d
 
 from tensorlayer.files import maybe_download_and_extract
-from tensorlayer.files import assign_params
+from tensorlayer.files import assign_weights
 
 __all__ = [
     'VGG19',
@@ -187,7 +187,7 @@ class VGG19Base(object):
                 break
 
         print("Restoring model from npz file")
-        assign_params(sess, params, self.net)
+        assign_weights(sess, params, self.net)
         del params
 
 

@@ -39,15 +39,62 @@ from tensorlayer.layers import MaxPool2d
 from tensorlayer.models import Model
 
 from tensorlayer.files import maybe_download_and_extract
-from tensorlayer.files import assign_params
+from tensorlayer.files import assign_weights
 
 __all__ = [
     'VGG16',
 ]
 
 class VGG16(Model):
-    def __init__(self, end_with='outputs'):
+    """Pre-trained VGG-16 model.
 
+    Parameters
+    ------------
+    end_with : str
+        The end point of the model. Default ``fc3_relu`` i.e. the whole model.
+
+    Examples
+    ---------
+    Classify ImageNet classes with VGG16, see `tutorial_models_vgg16.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_vgg16.py>`__
+
+    >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
+    >>> # get the whole model
+    >>> vgg = tl.models.VGG16(x)
+    >>> # restore pre-trained VGG parameters
+    >>> sess = tf.InteractiveSession()
+    >>> vgg.restore_params(sess)
+    >>> # use for inferencing
+    >>> probs = tf.nn.softmax(vgg.outputs)
+
+    Extract features with VGG16 and Train a classifier with 100 classes
+
+    >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
+    >>> # get VGG without the last layer
+    >>> vgg = tl.models.VGG16(x, end_with='fc2_relu')
+    >>> # add one more layer
+    >>> net = tl.layers.DenseLayer(vgg, 100, name='out')
+    >>> # initialize all parameters
+    >>> sess = tf.InteractiveSession()
+    >>> tl.layers.initialize_global_variables(sess)
+    >>> # restore pre-trained VGG parameters
+    >>> vgg.restore_params(sess)
+    >>> # train your own classifier (only update the last layer)
+    >>> train_params = tl.layers.get_variables_with_name('out')
+
+    Reuse model
+
+    >>> x1 = tf.placeholder(tf.float32, [None, 224, 224, 3])
+    >>> x2 = tf.placeholder(tf.float32, [None, 224, 224, 3])
+    >>> # get VGG without the last layer
+    >>> vgg1 = tl.models.VGG16(x1, end_with='fc2_relu')
+    >>> # reuse the parameters of vgg1 with different input
+    >>> vgg2 = tl.models.VGG16(x2, end_with='fc2_relu', reuse=True)
+    >>> # restore pre-trained VGG parameters (as they share parameters, we don’t need to restore vgg2)
+    >>> sess = tf.InteractiveSession()
+    >>> vgg1.restore_params(sess)
+
+    """
+    def __init__(self, end_with='outputs'):
         self.layers = [
             # conv1
             Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1'),
@@ -82,7 +129,17 @@ class VGG16(Model):
             Dense(n_units=1000, name='outputs'),
         ]
 
+    # def build(inputs_shape):
+
     def forward(self, inputs):
+        """
+        inputs : tensor
+            Shape [None, 224, 224, 3], value range [0, 1].
+        """
+        outputs = inputs * 255.0
+        mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
+        outputs = outputs - mean
+
         outputs = inputs
         for layer in self.layers:
             outputs = layer(outputs)
@@ -90,7 +147,27 @@ class VGG16(Model):
                 break
         return outputs
 
+    def restore_params(self, **kwargs):
+        raise Exception("please change restore_params --> restore_weights")
 
+    def restore_weights(self, sess):
+        logging.info("Restore pre-trained weights")
+        ## download weights
+        maybe_download_and_extract(
+            'vgg16_weights.npz', 'models', 'http://www.cs.toronto.edu/~frossard/vgg16/', expected_bytes=553436134
+        )
+        npz = np.load(os.path.join('models', 'vgg16_weights.npz'))
+        ## get weight list
+        weights = []
+        for val in sorted(npz.items()):
+            logging.info("  Loading weights %s" % str(val[1].shape))
+            weights.append(val[1])
+            # if len(self.all_weights) == len(weights):
+            if len(self.weights) == len(weights):
+                break
+        ## assign weight values
+        assign_weights(sess, weights, self.net)
+        del weights
 
 
 # class VGG16Base(object):

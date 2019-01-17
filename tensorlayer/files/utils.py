@@ -49,7 +49,7 @@ from tensorlayer import utils
 from tensorlayer import visualize
 
 __all__ = [
-    'assign_params',
+    'assign_weights',
     'del_file',
     'del_folder',
     'download_file_from_google_drive',
@@ -1586,7 +1586,7 @@ def save_npz(save_list=None, name='model.npz', sess=None):
     Load model from npz (Method 1)
 
     >>> load_params = tl.files.load_npz(name='model.npz')
-    >>> tl.files.assign_params(sess, load_params, network)
+    >>> tl.files.assign_weights(sess, load_params, network)
 
     Load model from npz (Method 2)
 
@@ -1601,7 +1601,7 @@ def save_npz(save_list=None, name='model.npz', sess=None):
     `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
 
     """
-    logging.info("[*] Saving TL params into %s" % name)
+    logging.info("[*] Saving TL weights into %s" % name)
     if save_list is None:
         save_list = []
 
@@ -1648,23 +1648,25 @@ def load_npz(path='', name='model.npz'):
     d = np.load(os.path.join(path, name))
     return d['params']
 
+def assign_params(**kwargs):
+    raise Exception("please change assign_params --> assign_weights")
 
-def assign_params(sess, params, network):
+def assign_weights(sess, weights, network):
     """Assign the given parameters to the TensorLayer network.
 
     Parameters
     ----------
     sess : Session
         TensorFlow Session.
-    params : list of array
-        A list of parameters (array) in order.
+    weights : list of array
+        A list of model weights (array) in order.
     network : :class:`Layer`
         The network to be assigned.
 
     Returns
     --------
     list of operations
-        A list of tf ops in order that assign params. Support sess.run(ops) manually.
+        A list of tf ops in order that assign weights. Support sess.run(ops) manually.
 
     Examples
     --------
@@ -1676,8 +1678,9 @@ def assign_params(sess, params, network):
 
     """
     ops = []
-    for idx, param in enumerate(params):
-        ops.append(network.all_params[idx].assign(param))
+    for idx, param in enumerate(weights):
+        # ops.append(network.all_params[idx].assign(param))
+        ops.append(network.weights[idx].assign(param))
     if sess is not None:
         sess.run(ops)
     return ops
@@ -1713,8 +1716,8 @@ def load_and_assign_npz(sess=None, name=None, network=None):
         logging.error("file {} doesn't exist.".format(name))
         return
     else:
-        params = load_npz(name=name)
-        assign_params(sess, params, network)
+        weights = load_npz(name=name)
+        assign_weights(sess, weights, network)
         logging.info("[*] Load {} SUCCESS!".format(name))
         return network
 
@@ -1768,11 +1771,11 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
         logging.error("file {} doesn't exist.".format(name))
         return
 
-    params = np.load(name)
-    if len(params.keys()) != len(set(params.keys())):
+    weights = np.load(name)
+    if len(weights.keys()) != len(set(weights.keys())):
         raise Exception("Duplication in model npz_dict %s" % name)
     ops = list()
-    for key in params.keys():
+    for key in weights.keys():
         try:
             # tensor = tf.get_default_graph().get_tensor_by_name(key)
             # varlist = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=key)
@@ -1782,8 +1785,8 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
             elif len(varlist) == 0:
                 raise KeyError
             else:
-                ops.append(varlist[0].assign(params[key]))
-                logging.info("[*] params restored: %s" % key)
+                ops.append(varlist[0].assign(weights[key]))
+                logging.info("[*] weights restored: %s" % key)
         except KeyError:
             logging.info("[!] Warning: Tensor named %s not found in network." % key)
 
@@ -1825,7 +1828,7 @@ def save_ckpt(
     if var_list == []:
         var_list = tf.compat.v1.global_variables()
 
-    logging.info("[*] save %s n_params: %d" % (ckpt_file, len(var_list)))
+    logging.info("[*] save %s n_weights: %d" % (ckpt_file, len(var_list)))
 
     if printable:
         for idx, v in enumerate(var_list):
@@ -1885,11 +1888,11 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
     if not var_list:
         var_list = tf.compat.v1.global_variables()
 
-    logging.info("[*] load %s n_params: %d" % (ckpt_file, len(var_list)))
+    logging.info("[*] load %s n_weights: %d" % (ckpt_file, len(var_list)))
 
     if printable:
         for idx, v in enumerate(var_list):
-            logging.info("  param {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
+            logging.info("  weights {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
 
     try:
         saver = tf.compat.v1.train.Saver(var_list)

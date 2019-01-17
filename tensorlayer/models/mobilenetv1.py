@@ -17,7 +17,7 @@ from tensorlayer.layers import GlobalMeanPool2d
 from tensorlayer.layers import InputLayer
 from tensorlayer.layers import ReshapeLayer
 
-from tensorlayer.files import maybe_download_and_extract, assign_params, load_npz
+from tensorlayer.files import maybe_download_and_extract, assign_weights, load_npz
 
 __all__ = [
     'MobileNetV1',
@@ -183,5 +183,5 @@ class MobileNetV1(Layer):
             expected_bytes=25600116
         )  # ls -al
         params = load_npz(name=os.path.join(path, 'mobilenet.npz'))
-        assign_params(sess, params[:len(self.net.all_params)], self.net)
+        assign_weights(sess, params[:len(self.net.all_params)], self.net)
         del params
