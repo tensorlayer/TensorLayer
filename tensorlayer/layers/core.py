@@ -130,10 +130,6 @@ class Layer(object):
             else:
                 _global_layer_name_dict[prefix] = 0
                 name = prefix
-        # _global_layer_index += 1
-        # raise ValueError(
-        #     'Layer must have a name. \n    TODO: Hao Dong: could we automatically add layer name when name=None e.g. layer0, layer1, batchnorm, layer3, layer4... '
-        # )
 
         # FIXME: double check needed: the scope name may be deprecated in TF2
         # scope_name = tf.get_variable_scope().name
