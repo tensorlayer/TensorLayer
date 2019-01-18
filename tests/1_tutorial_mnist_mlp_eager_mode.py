@@ -24,9 +24,9 @@ def get_model(inputs_shape):
     ni = Input(inputs_shape)
     nn = Dropout(keep=0.8)(ni)
     nn = Dense(n_units=800, act=tf.nn.relu)(nn)
-    nn = Dropout(keep=0.5)(nn)
+    nn = Dropout(keep=0.8)(nn)
     nn = Dense(n_units=800, act=tf.nn.relu)(nn)
-    nn = Dropout(keep=0.5)(nn)
+    nn = Dropout(keep=0.8)(nn)
     nn = Dense(n_units=10, act=tf.nn.relu)(nn)
     M = Model(inputs=ni, outputs=nn, name="mlp")
     return M
@@ -47,6 +47,7 @@ optimizer = tf.train.AdamOptimizer(learning_rate=0.0001)
 for epoch in range(n_epoch): ## iterate the dataset n_epoch times
     start_time = time.time()
     ## iterate over the entire training set once
+
     for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True): # shuffle the data via training
         with tf.GradientTape() as tape:
             ## compute outputs
@@ -54,23 +55,28 @@ for epoch in range(n_epoch): ## iterate the dataset n_epoch times
             ## compute loss and update model
             _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
 
+
         grad = tape.gradient(_loss, train_weights)
         optimizer.apply_gradients(zip(grad, train_weights))
 
     ## use training and evaluation sets to evaluate the model every print_freq epoch
     if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
+
         print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
+
         train_loss, train_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=False):
             _logits = MLP(X_batch, is_train=False) # is_train=False, disable dropout
             train_loss += tl.cost.cross_entropy(_logits, y_batch, name='eval_loss')
             train_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
             if n_iter == 0:
+                print(train_loss)
                 print(np.argmax(_logits, 1))
                 print(y_batch)
             n_iter += 1
         print("   train loss: {}".format(train_loss / n_iter))
         print("   train acc:  {}".format(train_acc / n_iter))
+
         val_loss, val_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=False):
             _logits = MLP(X_batch, is_train=False) # is_train=False, disable dropout
