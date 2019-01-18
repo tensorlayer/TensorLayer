@@ -55,7 +55,6 @@ for epoch in range(n_epoch): ## iterate the dataset n_epoch times
             ## compute loss and update model
             _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
 
-
         grad = tape.gradient(_loss, train_weights)
         optimizer.apply_gradients(zip(grad, train_weights))
 
@@ -69,10 +68,6 @@ for epoch in range(n_epoch): ## iterate the dataset n_epoch times
             _logits = MLP(X_batch, is_train=False) # is_train=False, disable dropout
             train_loss += tl.cost.cross_entropy(_logits, y_batch, name='eval_loss')
             train_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
-            if n_iter == 0:
-                print(train_loss)
-                print(np.argmax(_logits, 1))
-                print(y_batch)
             n_iter += 1
         print("   train loss: {}".format(train_loss / n_iter))
         print("   train acc:  {}".format(train_acc / n_iter))

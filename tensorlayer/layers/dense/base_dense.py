@@ -66,7 +66,7 @@ class Dense(Layer):
             # b_init=tf.constant_initializer(value=0.0),
             W_init=tf.initializers.truncated_normal,
             b_init=tf.initializers.constant,
-            W_init_args=None,
+            W_init_args={'stddev': 0.1},
             b_init_args=None,
             name=None,  # 'dense',
     ):
@@ -157,7 +157,7 @@ if __name__ == "__main__":
 
         latent_space_size = 100
         G, net2 = generator((None, latent_space_size))
-        inputs = np.random.normal(0.0, 1.0, size=[100, 100])
+        inputs = np.random.normal(0.0, 1.0, size=[2, 100]).astype(dtype=np.float32)
         # TODO: auto convert to tensor in Model.__call__
         # inputs = tf.convert_to_tensor(inputs)
         outputs_train = G(inputs, True)

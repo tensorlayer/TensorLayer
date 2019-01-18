@@ -149,7 +149,7 @@ def get_variable_with_initializer(scope_name, var_name, shape, init=tf.initializ
     # TODO: more initializer needed, the initializer can be a numpy.random function
     # if tf.executing_eagerly():
     var_name = scope_name + "/" + var_name
-    if init_args is not None:
+    if init_args is not None and len(init_args) != 0:
         initial_value = init(**init_args)(shape=shape)
     else:
         initial_value = init()(shape=shape)
