@@ -56,6 +56,19 @@ class Model():
         self._inputs = inputs if isinstance(inputs, list) else [inputs]
         self._outputs = outputs
 
+        # weights
+
+        self._weights = list()
+        outputs_list = self._outputs if isinstance(self._outputs, list) else [self._outputs]
+        for out in outputs_list:
+            current = out
+            while current is not None:
+                if current.weights is not None:
+                    self._weights.extend(current.weights)
+                # FIXME: assume each layer has only one prev layer
+                current = current._input_layer
+
+
         # Model state: train or test
         # self.is_train = is_train
 
@@ -86,7 +99,7 @@ class Model():
             current = out
             while current is not None:
                 stacked_layers.append(current)
-                # FIXME: assume only one input layer
+                # FIXME: assume each layer has only one prev layer
                 current = current._input_layer
 
             idx_of_input = self._find_idx_of_inputs(stacked_layers[-1])
@@ -96,7 +109,7 @@ class Model():
                 if layer.name in memory:
                     z = memory[layer.name]
                 else:
-                    # FIXME: assume only one input layer
+                    # FIXME: assume each layer has only one prev layer
                     z = layer.forward(z, is_train)
                     memory[layer.name] = z
             results.append(z)
@@ -105,6 +118,10 @@ class Model():
             return results[0]
         else:
             return results
+
+    @property
+    def weights(self):
+        return self._weights
 
     def _find_idx_of_inputs(self, target_input):
         """
@@ -116,7 +133,7 @@ class Model():
         """
         if isinstance(self._inputs, list):
             for idx, input in enumerate(self._inputs):
-                if input == target_input:
+                if input is target_input:
                     return idx
         return -1
 
