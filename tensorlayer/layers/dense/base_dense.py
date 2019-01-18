@@ -130,9 +130,9 @@ class Dense(Layer):
     '''
 
     def forward(self, inputs, is_train):
-        z = tf.matmul(inputs, self.W)
+        y = tf.matmul(inputs, self.W)
         if self.b_init:
-            z = tf.add(z, self.b)
+            z = tf.add(y, self.b)
         if self.act:
             z = self.act(z)
         return z
