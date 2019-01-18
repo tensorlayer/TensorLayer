@@ -126,7 +126,7 @@ class Layer(object):
         global _global_layer_name_dict
         if name is None:
             prefix = self.__class__.__name__.lower()
-            if prefix in _global_layer_name_dict.keys():
+            if _global_layer_name_dict.get(prefix) is not None:
                 _global_layer_name_dict[prefix] += 1
                 name = prefix + '_' + str(_global_layer_name_dict[prefix])
             else:
