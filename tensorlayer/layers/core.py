@@ -112,8 +112,6 @@ class Layer(object):
     """
 
     # Added to allow auto-completion
-
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self, name=None, act=None, *args, **kwargs):
         # Layer constants
 
@@ -126,16 +124,12 @@ class Layer(object):
         global _global_layer_name_dict
         if name is None:
             prefix = self.__class__.__name__.lower()
-            if prefix in _global_layer_name_dict.keys():
+            if _global_layer_name_dict.get(prefix) is not None:
                 _global_layer_name_dict[prefix] += 1
                 name = prefix + '_' + str(_global_layer_name_dict[prefix])
             else:
                 _global_layer_name_dict[prefix] = 0
                 name = prefix
-        # _global_layer_index += 1
-        # raise ValueError(
-        #     'Layer must have a name. \n    TODO: Hao Dong: could we automatically add layer name when name=None e.g. layer0, layer1, batchnorm, layer3, layer4... '
-        # )
 
         # FIXME: double check needed: the scope name may be deprecated in TF2
         # scope_name = tf.get_variable_scope().name
