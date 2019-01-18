@@ -115,7 +115,8 @@ class Dense(Layer):
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
         shape = [inputs_shape[1], self.n_units]
         self.W = self._get_weights("weights", shape=tuple(shape), init=self.W_init, init_args=self.W_init_args)
-        self.b = self._get_weights("biases", shape=(self.n_units, ), init=self.b_init, init_args=self.b_init_args)
+        if self.b_init:
+            self.b = self._get_weights("biases", shape=(self.n_units, ), init=self.b_init, init_args=self.b_init_args)
         # outputs_shape = [inputs_shape[0], self.n_units]
         # return outputs_shape
 
@@ -129,8 +130,9 @@ class Dense(Layer):
     '''
 
     def forward(self, inputs, is_train):
-        y = tf.matmul(inputs, self.W)
-        z = tf.add(y, self.b)
+        z = tf.matmul(inputs, self.W)
+        if self.b_init:
+            z = tf.add(z, self.b)
         if self.act:
             z = self.act(z)
         return z
