@@ -83,8 +83,7 @@ class Model():
         # convert inputs to tensor if it is originally not
         if isinstance(inputs, list):
             for idx in range(len(inputs)):
-                if isinstance(inputs[idx], np.ndarray):
-                    inputs[idx] = tf.convert_to_tensor(inputs[idx])
+                inputs[idx] = tf.convert_to_tensor(inputs[idx])
         elif isinstance(inputs, np.ndarray):
             inputs = tf.convert_to_tensor(inputs)
 

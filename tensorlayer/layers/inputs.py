@@ -38,7 +38,7 @@ class Input(Layer):
         logging.info("Input  %s: %s" % (self.name, str(shape)))
 
         shape_without_none = [_ if _ is not None else 1 for _ in shape]
-        self.outputs = self.forward(tf.initializers.constant(value=0.0)(shape_without_none), is_train=False)
+        self.outputs = self.forward(tf.initializers.random_normal()(shape_without_none), is_train=False)
 
     def __call__(self, prev_layer):
         # FIXME: better exception raising

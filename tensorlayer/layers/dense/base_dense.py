@@ -157,7 +157,7 @@ if __name__ == "__main__":
 
         latent_space_size = 100
         G, net2 = generator((None, latent_space_size))
-        inputs = np.zeros([100, 100], dtype="float32")
+        inputs = np.random.normal(0.0, 1.0, size=[100, 100])
         # TODO: auto convert to tensor in Model.__call__
         # inputs = tf.convert_to_tensor(inputs)
         outputs_train = G(inputs, True)
