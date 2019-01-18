@@ -62,7 +62,7 @@ class Model():
     def __call__(self, inputs, is_train):
         """
 
-        :param inputs: Tensor or list of Tensor, numpy.ndarray (if in eager mode)
+        :param inputs: Tensor or list of Tensor, numpy.ndarray of list of numpy.ndarray (if in eager mode)
         :param is_train: boolean
         :return:
         """
@@ -75,6 +75,7 @@ class Model():
         elif isinstance(inputs, np.ndarray):
             inputs = tf.convert_to_tensor(inputs)
 
+        # convert inputs to list for convenience
         inputs_list = inputs if isinstance(inputs, list) else [inputs]
         outputs_list = self._outputs if isinstance(self._outputs, list) else [self._outputs]
         results = list()
@@ -95,6 +96,7 @@ class Model():
                 if layer.name in memory:
                     z = memory[layer.name]
                 else:
+                    # FIXME: assume only one input layer
                     z = layer.forward(z, is_train)
                     memory[layer.name] = z
             results.append(z)
