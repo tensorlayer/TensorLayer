@@ -34,5 +34,5 @@ from .scale import *
 from .shape import *
 from .spatial_transformer import *
 from .stack import *
-from .time_distribution import *
+# from .time_distribution import * # remove for TF 2.0
 from .utils import *

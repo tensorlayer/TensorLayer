@@ -374,4 +374,5 @@ __all__ += [
 
 
 def TimeDistributedLayer(*args, **kwargs):
-    raise NonExistingLayerError("TimeDistributedLayer(x1, x2, name='a') --> TimeDistributed(name='a')(x1, x2)")
+    # raise NonExistingLayerError("TimeDistributedLayer(x1, x2, name='a') --> TimeDistributed(name='a')(x1, x2)")
+    raise NonExistingLayerError("TimeDistributedLayer is removed for TF 2.0, please use eager mode instead.")
