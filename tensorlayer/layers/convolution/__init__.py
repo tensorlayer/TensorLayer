@@ -9,7 +9,7 @@ layers that allow user to apply ``tf.nn.lrn`` on ``network.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`__.
 """
 
-from .atrous_conv import *
+# from .atrous_conv import * # remove for TF 2.0
 from .binary_conv import *
 from .deformable_conv import *
 from .depthwise_conv import *

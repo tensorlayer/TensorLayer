@@ -39,6 +39,8 @@ class DeConv2d(Layer):
         The activation function of this layer.
     data_format : str
         "channels_last" (NHWC, default) or "channels_first" (NCHW).
+    dilation_rate : int of tuple of int
+        The dilation rate to use for dilated convolution
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -78,15 +80,17 @@ class DeConv2d(Layer):
         self.padding = padding
         self.act = act
         self.data_format = data_format
+        seff.dilation_rate = dilation_rate
         self.W_init = W_init
         self.b_init = b_init
         self.W_init_args = W_init_args  # TODO: Remove when TF <1.3 not supported
         self.b_init_args = b_init_args  # TODO: Remove when TF <1.3 not supported
 
         logging.info(
-            "DeConv2d %s: n_filters: %s strides: %s pad: %s act: %s" % (
+            "DeConv2d {}: n_filters: {} strides: {} padding: {} act: {} dilation: {}".format(
                 self.name, str(n_filter), str(strides), padding,
-                self.act.__name__ if self.act is not None else 'No Activation'
+                self.act.__name__ if self.act is not None else 'No Activation',
+                dilation_rate,
             )
         )
 
@@ -100,6 +104,7 @@ class DeConv2d(Layer):
             strides=self.strides,
             padding=self.padding,
             data_format=self.data_format,
+            dilation_rate=self.dilation_rate,
             activation=self.act,
             use_bias=(True if self.b_init is not None else False),
             kernel_initializer=self.W_init,

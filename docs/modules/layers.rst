@@ -127,10 +127,11 @@ Layer list
    Layer
 
    Input
-   OneHotInput
-   Word2vecEmbeddingInput
-   EmbeddingInput
-   AverageEmbeddingInput
+
+   OneHot
+   Word2vecEmbedding
+   Embedding
+   AverageEmbedding
 
    Dense
    Dropout
@@ -139,7 +140,6 @@ Layer list
 
    UpSampling2d
    DownSampling2d
-   AtrousDeConv2d
 
    Conv1d
    Conv2d
@@ -185,8 +185,6 @@ Layer list
    SwitchNorm
 
    ROIPoolingLayer
-
-   TimeDistributed
 
    RNN
    BiRNN
@@ -331,7 +329,7 @@ Basic Layer
 .. autoclass:: Layer
 
 .. -----------------------------------------------------------
-..                        Input Layers
+..                        Input Layer
 .. -----------------------------------------------------------
 
 Input Layers
@@ -341,21 +339,26 @@ Input Layer
 ^^^^^^^^^^^^^^^^
 .. autoclass:: Input
 
-One-hot Input Layer
+.. -----------------------------------------------------------
+..                        Embedding Layers
+.. -----------------------------------------------------------
+
+
+One-hot Layer
 ^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: OneHotInput
+.. autoclass:: OneHot
 
 Word2Vec Embedding Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: Word2vecEmbeddingInput
+.. autoclass:: Word2vecEmbedding
 
-Embedding Input Layer
+Embedding Layer
 ^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: EmbeddingInput
+.. autoclass:: Embedding
 
-Average Embedding Input Layer
+Average Embedding Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: AverageEmbeddingInput
+.. autoclass:: AverageEmbedding
 
 .. -----------------------------------------------------------
 ..                     Activation Layers
@@ -413,13 +416,6 @@ DeConv3d
 """""""""""""""""""""
 .. autoclass:: DeConv3d
 
-
-Atrous De-Convolutions
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-AtrousDeConv2d
-"""""""""""""""""""""
-.. autoclass:: AtrousDeConv2d
 
 Deformable Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -924,14 +920,6 @@ Stack Layer
 Unstack Layer
 ^^^^^^^^^^^^^^^
 .. autoclass:: UnStack
-
-.. -----------------------------------------------------------
-..                 Time Distributed Layer
-.. -----------------------------------------------------------
-
-Time Distributed Layer
-------------------------
-.. autoclass:: TimeDistributed
 
 
 .. -----------------------------------------------------------

@@ -45,8 +45,8 @@ def AtrousConv2dLayer(*args, **kwargs):
 
 
 def AtrousDeConv2dLayer(*args, **kwargs):
-    raise NonExistingLayerError("AtrousDeConv2dLayer(net, name='a') --> AtrousDeConv2d(name='a')(net)")
-
+    # raise NonExistingLayerError("AtrousDeConv2dLayer(net, name='a') --> AtrousDeConv2d(name='a')(net)")
+    raise NonExistingLayerError("use `tl.layers.DeConv2d` with dilation instead")
 
 # dense/base_dense.py
 __all__ += [
@@ -156,6 +156,14 @@ def KerasLayer(*args, **kwargs):
 # inputs.py
 __all__ += [
     'InputLayer',
+]
+
+
+def InputLayer(*args, **kwargs):
+    raise NonExistingLayerError("InputLayer(x, name='a') --> Input(name='a')(x)")
+
+# embedding.py
+__all__ += [
     'OneHotInputLayer',
     'Word2vecEmbeddingInputlayer',
     'EmbeddingInputlayer',
@@ -163,24 +171,20 @@ __all__ += [
 ]
 
 
-def InputLayer(*args, **kwargs):
-    raise NonExistingLayerError("InputLayer(x, name='a') --> Input(name='a')(x)")
-
-
 def OneHotInputLayer(*args, **kwargs):
-    raise NonExistingLayerError("OneHotInputLayer(x, name='a') --> OneHotInput(name='a')(x)")
+    raise NonExistingLayerError("Not longer Input layer: OneHotInputLayer(x, name='a') --> OneHot(name='a')(layer)")
 
 
 def Word2vecEmbeddingInputlayer(*args, **kwargs):
-    raise NonExistingLayerError("Word2vecEmbeddingInputlayer(x, name='a') --> Word2vecEmbeddingInput(name='a')(x)")
+    raise NonExistingLayerError("Not longer Input layer: Word2vecEmbeddingInputlayer(x, name='a') --> Word2vecEmbedding(name='a')(layer)")
 
 
 def EmbeddingInputlayer(*args, **kwargs):
-    raise NonExistingLayerError("EmbeddingInputlayer(x, name='a') --> EmbeddingInput(name='a')(x)")
+    raise NonExistingLayerError("Not longer Input layer: EmbeddingInputlayer(x, name='a') --> Embedding(name='a')(layer)")
 
 
 def AverageEmbeddingInputlayer(*args, **kwargs):
-    raise NonExistingLayerError("AverageEmbeddingInputlayer(x, name='a') --> AverageEmbeddingInput(name='a')(x)")
+    raise NonExistingLayerError("Not longer Input layer: AverageEmbeddingInputlayer(x, name='a') --> AverageEmbedding(name='a')(layer)")
 
 
 # lambda.py
