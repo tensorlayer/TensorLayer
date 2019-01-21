@@ -72,7 +72,7 @@ class Model():
         # Model state: train or test
         # self.is_train = is_train
 
-    def __call__(self, inputs, is_train):
+    def __call__(self, inputs):
         """
 
         :param inputs: Tensor or list of Tensor, numpy.ndarray of list of numpy.ndarray (if in eager mode)
@@ -109,7 +109,7 @@ class Model():
                     z = memory[layer.name]
                 else:
                     # FIXME: assume each layer has only one prev layer
-                    z = layer.forward(z, is_train)
+                    z = layer.forward(z)
                     memory[layer.name] = z
             results.append(z)
 
