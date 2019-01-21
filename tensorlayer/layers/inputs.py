@@ -47,7 +47,7 @@ class Input(Layer):
         """
         pass
 
-    def forward(self, inputs, is_train):
+    def forward(self, inputs):
         # FIXME: documentation need double check
         """
         Parameters
