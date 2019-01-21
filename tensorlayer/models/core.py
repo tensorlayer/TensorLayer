@@ -72,7 +72,7 @@ class Model():
         # Model state: train or test
         # self.is_train = is_train
 
-    def __call__(self, inputs):
+    def __call__(self, inputs, is_train):
         """
 
         :param inputs: Tensor or list of Tensor, numpy.ndarray of list of numpy.ndarray (if in eager mode)
@@ -108,6 +108,8 @@ class Model():
                 if layer.name in memory:
                     z = memory[layer.name]
                 else:
+                    # FIXME: not sure if there is a better way
+                    layer.is_train = is_train
                     # FIXME: assume each layer has only one prev layer
                     z = layer.forward(z)
                     memory[layer.name] = z

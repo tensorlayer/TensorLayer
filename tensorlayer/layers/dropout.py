@@ -33,7 +33,7 @@ class Dropout(Layer):
     """
 
     def __init__(self, keep, seed=None, name=None):  #"dropout"):
-        super().__init__(name)
+        super(Dropout, self).__init__(name)
         self.keep = keep
         self.seed = seed
         logging.info("Dropout %s: keep: %f " % (self.name, self.keep))

@@ -156,6 +156,9 @@ class Layer(object):
         # Layer weight state
         self._weights = None
 
+        # Layer training state
+        self.is_train = True
+
     @property
     def _inputs_shape(self):  # TODO, if self.outputs is a list ???
         return self._input_layer._outputs_shape
@@ -185,11 +188,10 @@ class Layer(object):
             self._weights = list()
 
             self.build(self._inputs_shape)
-            self.outputs = self.forward(self.inputs, is_train=False)
+            self.outputs = self.forward(self.inputs)
             # self._outputs_shape = self.outputs.get_shape().as_list()
 
             self._built = True
-            self.is_train = True
 
             # TODO: need update
             # self._add_layers(prev_layer.all_layers)
