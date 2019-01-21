@@ -263,6 +263,7 @@ class Layer(object):
         """
         raise Exception("The forward method must be implemented by inherited class")
 
+    '''
     def print_weights(self, details=False, session=None):
         """Print all information of weights in the model. """
         for i, p in enumerate(self.all_weights):
@@ -323,8 +324,10 @@ class Layer(object):
             else:
                 _weights.append(sess.run(p))
         return _weights
+    '''
 
     def __str__(self):
+
         if self.outputs is not None:
             _outputs_shape = [tuple(['batch_size'] + o.shape.as_list()) for o in self.outputs]
             if len(_outputs_shape) == 1:
@@ -356,13 +359,17 @@ class Layer(object):
     def __delitem__(self, key):
         raise TypeError("The Layer API does not allow to use the method: `__delitem__`")
 
+    # FIXME: all_layers are removed in new API
+    '''
     def __iter__(self):
         for x in self.all_layers:  # FIXME: it is good for eager mode?
             yield x
 
     def __len__(self):
         return len(self.all_layers)
+    '''
 
+    '''
     @protected_method
     def _get_init_args(self, skip=4):
         """Get all arguments of current layer for the configuration information."""
@@ -393,6 +400,7 @@ class Layer(object):
                     weights[arg] = val
 
         return weights
+    '''
 
     # # todo: deprecated if no all_layer
     # @protected_method
@@ -433,6 +441,7 @@ class Layer(object):
     #     else:
     #         raise ValueError()
 
+    '''
     # FIXME: may not be necessary ???  Hao: I think it is not necessary..
     @private_method
     def _apply_activation(self, logits, **kwargs):
@@ -450,6 +459,7 @@ class Layer(object):
             )
 
         return args if args is not None else {}
+    '''
 
     # def __getstate__(self): # pickle save
     #     return {'version': 0.1,
