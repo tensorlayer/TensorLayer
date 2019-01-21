@@ -189,6 +189,7 @@ class Layer(object):
             # self._outputs_shape = self.outputs.get_shape().as_list()
 
             self._built = True
+            self.is_train = True
 
             # TODO: need update
             # self._add_layers(prev_layer.all_layers)
@@ -249,7 +250,7 @@ class Layer(object):
         raise Exception("The build_weights method must be implemented by inherited class")
 
     @abstractmethod
-    def forward(self, inputs, is_train):
+    def forward(self, inputs):
         # FIXME: documentation needed
         """
         An abstract method which should be overwritten in derived classes to define forward feeding operations of the layer.
