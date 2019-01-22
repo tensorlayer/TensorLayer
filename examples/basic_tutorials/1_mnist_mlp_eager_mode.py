@@ -16,6 +16,7 @@ tf.enable_eager_execution()
 ## prepare MNIST data
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 
+
 ## define the network
 # the softmax is implemented internally in tl.cost.cross_entropy(y, y_) to
 # speed up computation, so we use identity here.
@@ -31,6 +32,7 @@ def get_model(inputs_shape):
     M = Model(inputs=ni, outputs=nn, name="mlp")
     return M
 
+
 MLP = get_model([None, 784])
 # MLP.print_layers()
 # MLP.print_weights()
@@ -44,17 +46,17 @@ train_weights = MLP.weights
 optimizer = tf.train.AdamOptimizer(learning_rate=0.0001)
 
 ## the following code can help you understand SGD deeply
-for epoch in range(n_epoch): ## iterate the dataset n_epoch times
+for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
     start_time = time.time()
-    ## iterate over the entire training set once
+    ## iterate over the entire training set once (shuffle the data via training)
 
-    for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True): # shuffle the data via training
+    for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
 
-        MLP.train()
+        MLP.train()  # enable dropout
 
         with tf.GradientTape() as tape:
             ## compute outputs
-            _logits = MLP(X_batch) # is_train=True, enable dropout
+            _logits = MLP(X_batch)
             ## compute loss and update model
             _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
 
@@ -64,13 +66,13 @@ for epoch in range(n_epoch): ## iterate the dataset n_epoch times
     ## use training and evaluation sets to evaluate the model every print_freq epoch
     if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
 
-        MLP.eval()
+        MLP.eval()  # disable dropout
 
         print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
 
         train_loss, train_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=False):
-            _logits = MLP(X_batch) # is_train=False, disable dropout
+            _logits = MLP(X_batch)
             train_loss += tl.cost.cross_entropy(_logits, y_batch, name='eval_loss')
             train_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
             n_iter += 1
@@ -79,7 +81,7 @@ for epoch in range(n_epoch): ## iterate the dataset n_epoch times
 
         val_loss, val_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=False):
-            _logits = MLP(X_batch) # is_train=False, disable dropout
+            _logits = MLP(X_batch)  # is_train=False, disable dropout
             val_loss += tl.cost.cross_entropy(_logits, y_batch, name='eval_loss')
             val_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
             n_iter += 1

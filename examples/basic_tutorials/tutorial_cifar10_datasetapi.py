@@ -100,8 +100,9 @@ def _map_fn_test(img, target):
 
 
 # dataset API and augmentation
-ds = tf.data.Dataset().from_generator(generator_train, output_types=(tf.float32,
-                                                                     tf.int32))  # , output_shapes=((24, 24, 3), (1)))
+ds = tf.data.Dataset().from_generator(
+    generator_train, output_types=(tf.float32, tf.int32)
+)  # , output_shapes=((24, 24, 3), (1)))
 ds = ds.map(_map_fn_train, num_parallel_calls=multiprocessing.cpu_count())
 ds = ds.repeat(n_epoch)
 ds = ds.shuffle(shuffle_buffer_size)
@@ -109,8 +110,9 @@ ds = ds.prefetch(buffer_size=4096)
 ds = ds.batch(batch_size)
 value = ds.make_one_shot_iterator().get_next()
 
-ds = tf.data.Dataset().from_generator(generator_test, output_types=(tf.float32,
-                                                                    tf.int32))  # , output_shapes=((24, 24, 3), (1)))
+ds = tf.data.Dataset().from_generator(
+    generator_test, output_types=(tf.float32, tf.int32)
+)  # , output_shapes=((24, 24, 3), (1)))
 ds = ds.shuffle(shuffle_buffer_size)
 ds = ds.map(_map_fn_test, num_parallel_calls=multiprocessing.cpu_count())
 ds = ds.repeat(n_epoch)
