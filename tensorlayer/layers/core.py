@@ -36,7 +36,7 @@ _global_layer_name_dict = {}  # TODO: better implementation?
 #     def __init__(self):
 #         pass
 
-# TF_GRAPHKEYS_VARIABLES = tf.compat.v1.GraphKeys.GLOBAL_VARIABLES
+# TF_GRAPHKEYS_VARIABLES = tf.compat.v1.GraphKeys.GLOBAL_VARIABLE
 
 
 class Layer(object):
@@ -232,7 +232,7 @@ class Layer(object):
         return self
 
     # def _get_weights(self, scope_name, var_name, shape, init=np.random.normal, init_args=None):
-    def _get_weights(self, var_name, shape, init=tf.initializers.random_normal, init_args=None):
+    def _get_weights(self, var_name, shape, init=tf.compat.v1.initializers.random_normal, init_args=None):
         weight = get_variable_with_initializer(
             scope_name=self.name, var_name=var_name, shape=shape, init=init, init_args=init_args
         )

@@ -1,6 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-
+import sys
+sys.path.append('/home/wurundi/PycharmProjects/tensorlayer2')
 import tensorflow as tf
 from tensorflow.python.training import moving_averages
 from tensorflow.python.framework import ops
@@ -131,8 +132,6 @@ class BatchNorm(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     decay : float
         A decay factor for `ExponentialMovingAverage`.
         Suggest to use a large value for large dataset.
@@ -149,6 +148,10 @@ class BatchNorm(Layer):
         The initializer for initializing gamma, if None, skip gamma.
         When the batch normalization layer is use instead of 'biases', or the next layer is linear, this can be
         disabled since the scaling can be done by the next layer. see `Inception-ResNet-v2 <https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_resnet_v2.py>`__
+    moving_mean_init : initializer or None
+        The initializer for initializing moving mean, if None, skip moving mean.
+    moving_var_init : initializer or None
+        The initializer for initializing moving var, if None, skip moving var.
     data_format : str
         channels_last 'channel_last' (default) or channels_first.
     name : None or str
@@ -161,113 +164,144 @@ class BatchNorm(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             decay=0.9,
             epsilon=0.00001,
             act=None,
             is_train=False,
-            beta_init=tf.compat.v1.initializers.zeros,
+            beta_init=tf.compat.v1.initializers.zeros(),
             gamma_init=tf.compat.v1.initializers.random_normal(mean=1.0, stddev=0.002),
             moving_mean_init=tf.compat.v1.initializers.zeros(),
+            moving_var_init=tf.compat.v1.initializers.zeros(),
             data_format='channels_last',
             name='batchnorm',
     ):
-        super(BatchNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
+        super(BatchNorm, self).__init__(name=name)
+        self.act = act
+        self.decay = decay
+        self.epsilon = epsilon
+        self.data_format = data_format
+        self.beta_init = beta_init
+        self.gamma_init = gamma_init
+        self.moving_mean_init = moving_mean_init
+        self.moving_var_init = moving_var_init
 
         logging.info(
             "BatchNorm %s: decay: %f epsilon: %f act: %s is_train: %s" %
             (self.name, decay, epsilon, self.act.__name__ if self.act is not None else 'No Activation', is_train)
         )
-        if decay < 0 or 1 < decay:
+
+    def build(self, inputs_shape):
+        if self.decay < 0 or 1 < self.decay:
             raise Exception("decay should be between 0 to 1")
 
-        x_shape = self.inputs.get_shape()
-        if data_format == 'channels_last':
-            axis = len(x_shape) - 1
-        elif data_format == 'channels_first':
+        # x_shape = self.inputs.get_shape()
+        if self.data_format == 'channels_last':
+            axis = len(inputs_shape) - 1
+            channels = inputs_shape[-1]
+            params_shape = [1] * (len(inputs_shape) - 1) + [channels]
+        elif self.data_format == 'channels_first':
             axis = 1
+            channels = inputs_shape[1]
+            params_shape = [1, channels] + [1] * (len(inputs_shape) - 2)
         else:
             raise ValueError('data_format should be either %s or %s' % ('channels_last', 'channels_first'))
-        params_shape = x_shape[axis]
 
-        with tf.compat.v1.variable_scope(name):
-            axes = [i for i in range(len(x_shape)) if i != axis]
+        # params_shape = inputs_shape[axis]
+        self.axes = [i for i in range(len(inputs_shape)) if i != axis]
 
-            # 1. beta, gamma
-            variables = []
+        self.beta = self._get_weights("beta", shape=params_shape, init=self.beta_init)
+        # with tf.variable_scope(name):
+        #     axes = [i for i in range(len(x_shape)) if i != axis]
+        #
+        #     # 1. beta, gamma
+        #     variables = []
+        #
+        #     if beta_init:
+        #
+        #         if beta_init == tf.zeros_initializer:
+        #             beta_init = beta_init()
+        #
+        #         beta = tf.get_variable(
+        #             'beta', shape=params_shape, initializer=beta_init, dtype=LayersConfig.tf_dtype, trainable=is_train
+        #         )
+        #
+        #         variables.append(beta)
+        #
+        #     else:
+        #         beta = None
+        self.gamma = self._get_weights("gamma", shape=params_shape, init=self.gamma_init)
+        #     if gamma_init:
+        #         gamma = tf.get_variable(
+        #             'gamma',
+        #             shape=params_shape,
+        #             initializer=gamma_init,
+        #             dtype=LayersConfig.tf_dtype,
+        #             trainable=is_train,
+        #         )
+        #         variables.append(gamma)
+        #     else:
+        #         gamma = None
+        #
+        #     # 2.
+        self.moving_mean = self._get_weights("moving_mean", shape=params_shape, init=self.moving_mean_init)
+        #     moving_mean = tf.get_variable(
+        #         'moving_mean', params_shape, initializer=moving_mean_init, dtype=LayersConfig.tf_dtype, trainable=False
+        #     )
+        #
+        #     moving_variance = tf.get_variable(
+        #         'moving_variance',
+        #         params_shape,
+        #         initializer=tf.constant_initializer(1.),
+        #         dtype=LayersConfig.tf_dtype,
+        #         trainable=False,
+        #     )
+        self.moving_var = self._get_weights("moving_var", shape=params_shape, init=self.moving_var_init)
 
-            if beta_init:
-
-                if beta_init == tf.compat.v1.initializers.zeros:
-                    beta_init = beta_init()
-
-                beta = tf.compat.v1.get_variable(
-                    'beta', shape=params_shape, initializer=beta_init, dtype=LayersConfig.tf_dtype, trainable=is_train
-                )
-
-                variables.append(beta)
-
-            else:
-                beta = None
-
-            if gamma_init:
-                gamma = tf.compat.v1.get_variable(
-                    'gamma',
-                    shape=params_shape,
-                    initializer=gamma_init,
-                    dtype=LayersConfig.tf_dtype,
-                    trainable=is_train,
-                )
-                variables.append(gamma)
-            else:
-                gamma = None
-
-            # 2.
-
-            moving_mean = tf.compat.v1.get_variable(
-                'moving_mean', params_shape, initializer=moving_mean_init, dtype=LayersConfig.tf_dtype, trainable=False
-            )
-
-            moving_variance = tf.compat.v1.get_variable(
-                'moving_variance',
-                params_shape,
-                initializer=tf.compat.v1.initializers.constant(1.),
-                dtype=LayersConfig.tf_dtype,
-                trainable=False,
-            )
-
-            # 3.
-            # These ops will only be preformed when training.
-            mean, variance = tf.nn.moments(x=self.inputs, axes=axes)
-
-            update_moving_mean = moving_averages.assign_moving_average(
-                moving_mean, mean, decay, zero_debias=False
-            )  # if zero_debias=True, has bias
-
-            update_moving_variance = moving_averages.assign_moving_average(
-                moving_variance, variance, decay, zero_debias=False
-            )  # if zero_debias=True, has bias
-
-            def mean_var_with_update():
-                with tf.control_dependencies([update_moving_mean, update_moving_variance]):
-                    return tf.identity(mean), tf.identity(variance)
-
-            if is_train:
-                mean, var = mean_var_with_update()
-            else:
-                mean, var = moving_mean, moving_variance
-
-            self.outputs = self._apply_activation(
-                batch_normalization(self.inputs, mean, var, beta, gamma, epsilon, data_format)
-            )
-
-            variables.extend([moving_mean, moving_variance])
-
-        self._add_layers(self.outputs)
-        self._add_params(variables)
+    def forward(self, inputs):
+        mean, var = tf.nn.moments(inputs, self.axes)
+        if self.is_train:
+            # update moving_mean and moving_var
+            self.moving_mean = moving_averages.assign_moving_average(self.moving_mean, mean,
+                                                                       self.decay, zero_debias=False)
+            self.moving_var = moving_averages.assign_moving_average(self.moving_var, var,
+                                                                      self.decay, zero_debias=False)
+            outputs = batch_normalization(inputs, mean, var, self.beta, self.gamma,
+                                          self.epsilon, self.data_format)
+        else:
+            outputs = batch_normalization(inputs, self.moving_mean, self.moving_var, self.beta, self.gamma,
+                                          self.epsilon, self.data_format)
+        if self.act:
+            outputs = self.act(outputs)
+        return outputs
+        #     # 3.
+        #     # These ops will only be preformed when training.
+        #     mean, variance = tf.nn.moments(self.inputs, axes)
+        #     update_moving_mean = moving_averages.assign_moving_average(
+        #         moving_mean, mean, decay, zero_debias=False
+        #     )  # if zero_debias=True, has bias
+        #     update_moving_variance = moving_averages.assign_moving_average(
+        #         moving_variance, variance, decay, zero_debias=False
+        #     )  # if zero_debias=True, has bias
+        #
+        #     def mean_var_with_update():
+        #         with tf.control_dependencies([update_moving_mean, update_moving_variance]):
+        #             return tf.identity(mean), tf.identity(variance)
+        #
+        #     if is_train:
+        #         mean, var = mean_var_with_update()
+        #     else:
+        #         mean, var = moving_mean, moving_variance
+        #
+        #     self.outputs = self._apply_activation(
+        #         batch_normalization(self.inputs, mean, var, beta, gamma, epsilon, data_format)
+        #     )
+        #
+        #     variables.extend([moving_mean, moving_variance])
+        #
+        # self._add_layers(self.outputs)
+        # self._add_params(variables)
 
 
 class InstanceNorm(Layer):
@@ -348,6 +382,7 @@ class InstanceNorm(Layer):
         # self._add_params(variables)
 
 
+# TODO refactor this later
 class LayerNorm(Layer):
     """
     The :class:`LayerNorm` class is for layer normalization, see `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`__.
@@ -399,7 +434,7 @@ class LayerNorm(Layer):
                 scope='var',
             )
 
-            variables = tf.compat.v1.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            variables = tf.compat.v1.get_collection("TF_GRAPHKEYS_VARIABLES", scope=vs.name)
 
         self._add_layers(self.outputs)
         self._add_params(variables)
@@ -451,7 +486,7 @@ class GroupNorm(Layer):
                 tf.convert_to_tensor(value=[self.groups, channels // self.groups])], axis=0
             )
         elif self.data_format == 'channels_first':
-            channels = shape[1]
+            channels = inputs_shape[1]
             self.int_shape = tf.concat(
                 [
                     # tf.shape(input=self.inputs)[0:1],

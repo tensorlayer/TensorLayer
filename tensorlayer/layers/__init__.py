@@ -30,7 +30,7 @@ from .padding import *
 from .pooling import *
 from .quantize import *
 # from .reconstruction import * # remove for TF 2.0
-from .recurrent import *
+# from .recurrent import * # TODO uncomment this after recurrent part has been refactored
 from .scale import *
 from .shape import *
 from .spatial_transformer import *
