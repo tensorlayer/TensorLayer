@@ -49,9 +49,12 @@ for epoch in range(n_epoch): ## iterate the dataset n_epoch times
     ## iterate over the entire training set once
 
     for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True): # shuffle the data via training
+
+        MLP.train()
+
         with tf.GradientTape() as tape:
             ## compute outputs
-            _logits = MLP(X_batch, is_train=True) # is_train=True, enable dropout
+            _logits = MLP(X_batch) # is_train=True, enable dropout
             ## compute loss and update model
             _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
 
@@ -61,11 +64,13 @@ for epoch in range(n_epoch): ## iterate the dataset n_epoch times
     ## use training and evaluation sets to evaluate the model every print_freq epoch
     if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
 
+        MLP.eval()
+
         print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
 
         train_loss, train_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=False):
-            _logits = MLP(X_batch, is_train=False) # is_train=False, disable dropout
+            _logits = MLP(X_batch) # is_train=False, disable dropout
             train_loss += tl.cost.cross_entropy(_logits, y_batch, name='eval_loss')
             train_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
             n_iter += 1
@@ -74,7 +79,7 @@ for epoch in range(n_epoch): ## iterate the dataset n_epoch times
 
         val_loss, val_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=False):
-            _logits = MLP(X_batch, is_train=False) # is_train=False, disable dropout
+            _logits = MLP(X_batch) # is_train=False, disable dropout
             val_loss += tl.cost.cross_entropy(_logits, y_batch, name='eval_loss')
             val_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
             n_iter += 1
@@ -82,9 +87,10 @@ for epoch in range(n_epoch): ## iterate the dataset n_epoch times
         print("   val acc:  {}".format(val_acc / n_iter))
 
 ## use testing data to evaluate the model
+MLP.eval()
 test_loss, test_acc, n_iter = 0, 0, 0
 for X_batch, y_batch in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=False):
-    _logits = MLP(X_batch, is_train=False)
+    _logits = MLP(X_batch)
     test_loss += tl.cost.cross_entropy(_logits, y_batch, name='test_loss')
     test_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
     n_iter += 1

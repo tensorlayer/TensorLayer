@@ -70,9 +70,9 @@ class Model():
 
 
         # Model state: train or test
-        # self.is_train = is_train
+        self.is_train = True
 
-    def __call__(self, inputs, is_train):
+    def __call__(self, inputs):
         """
 
         :param inputs: Tensor or list of Tensor, numpy.ndarray of list of numpy.ndarray (if in eager mode)
@@ -109,7 +109,7 @@ class Model():
                     z = memory[layer.name]
                 else:
                     # FIXME: not sure if there is a better way
-                    layer.is_train = is_train
+                    layer.is_train = self.is_train
                     # FIXME: assume each layer has only one prev layer
                     z = layer.forward(z)
                     memory[layer.name] = z
@@ -123,6 +123,15 @@ class Model():
     @property
     def weights(self):
         return self._weights
+
+    def train(self):
+        self.is_train = True
+
+    def test(self):
+        self.is_train = False
+
+    def eval(self):
+        self.is_train = False
 
     def _find_idx_of_inputs(self, target_input):
         """
