@@ -7,6 +7,7 @@ from tensorflow.python.framework import ops
 from tensorflow.python.ops import math_ops
 
 from tensorlayer.layers.core import Layer
+from tensorlayer import initializers
 # from tensorlayer.layers.core import LayersConfig
 # from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 from tensorlayer.layers.utils import get_collection_trainable
@@ -210,7 +211,9 @@ class BatchNorm(Layer):
         # params_shape = inputs_shape[axis]
         self.axes = [i for i in range(len(inputs_shape)) if i != axis]
 
-        self.beta = self._get_weights("beta", shape=params_shape, init=self.beta_init)
+        self.beta, self.gamma = None, None
+        if self.beta_init:
+            self.beta = self._get_weights("beta", shape=params_shape, init=self.beta_init)
         # with tf.variable_scope(name):
         #     axes = [i for i in range(len(x_shape)) if i != axis]
         #
@@ -230,7 +233,8 @@ class BatchNorm(Layer):
         #
         #     else:
         #         beta = None
-        self.gamma = self._get_weights("gamma", shape=params_shape, init=self.gamma_init)
+        if self.gamma_init:
+            self.gamma = self._get_weights("gamma", shape=params_shape, init=self.gamma_init)
         #     if gamma_init:
         #         gamma = tf.get_variable(
         #             'gamma',
@@ -381,7 +385,7 @@ class InstanceNorm(Layer):
         # self._add_params(variables)
 
 
-# TODO refactor this later
+# FIXME : not sure about the correctness, need testing
 class LayerNorm(Layer):
     """
     The :class:`LayerNorm` class is for layer normalization, see `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`__.
@@ -402,41 +406,72 @@ class LayerNorm(Layer):
             center=True,
             scale=True,
             act=None,
-            reuse=None,
-            variables_collections=None,
-            outputs_collections=None,
-            trainable=True,
+            # reuse=None,
+            # variables_collections=None,
+            # outputs_collections=None,
+            # trainable=True,
+            epsilon=1e-12,
             begin_norm_axis=1,
             begin_params_axis=-1,
+            beta_init=initializers.Zeros(),
+            gamma_init=initializers.Ones(),
+            data_format='channels_last',
             name='layernorm'
     ):
 
         # super(LayerNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
-        super().__init__(name)
+        super(LayerNorm, self).__init__(name)
+        self.center = center
+        self.scale = scale
+        self.act = act
+        self.epsilon = epsilon
+        self.begin_norm_axis = begin_norm_axis
+        self.begin_params_axis = begin_params_axis
+        self.beta_init = beta_init
+        self.gamma_init = gamma_init
+        self.data_format = data_format
 
         logging.info(
             "LayerNorm %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-        with tf.compat.v1.variable_scope(name) as vs:
-            self.outputs = tf.contrib.layers.layer_norm(
-                self.inputs,
-                center=center,
-                scale=scale,
-                activation_fn=self.act,
-                reuse=reuse,
-                variables_collections=variables_collections,
-                outputs_collections=outputs_collections,
-                trainable=trainable,
-                begin_norm_axis=begin_norm_axis,
-                begin_params_axis=begin_params_axis,
-                scope='var',
-            )
+    def build(self, inputs_shape):
+        params_shape = inputs_shape[self.begin_params_axis:]
+        self.beta, self.gamma = None, None
+        if self.center:
+            self.beta = self._get_weights("beta", shape=params_shape, init=self.beta_init)
+        if self.scale:
+            self.gamma = self._get_weights("gamma", shape=params_shape, init=self.gamma_init)
 
-            variables = tf.compat.v1.get_collection("TF_GRAPHKEYS_VARIABLES", scope=vs.name)
+        self.norm_axes = range(self.begin_norm_axis, len(inputs_shape))
 
-        self._add_layers(self.outputs)
-        self._add_params(variables)
+    def forward(self, inputs):
+        mean, var = tf.nn.moments(inputs, self.norm_axes, keepdims=True)
+        # compute layer normalization using batch_normalization function
+        outputs = batch_normalization(inputs, mean, var, self.beta, self.gamma,
+                                      self.epsilon, data_format=self.data_format)
+        if self.act:
+            outputs = self.act(outputs)
+        return outputs
+    #     with tf.compat.v1.variable_scope(name) as vs:
+    #         self.outputs = tf.contrib.layers.layer_norm(
+    #             self.inputs,
+    #             center=center,
+    #             scale=scale,
+    #             activation_fn=self.act,
+    #             reuse=reuse,
+    #             variables_collections=variables_collections,
+    #             outputs_collections=outputs_collections,
+    #             trainable=trainable,
+    #             begin_norm_axis=begin_norm_axis,
+    #             begin_params_axis=begin_params_axis,
+    #             scope='var',
+    #         )
+    #
+    #         variables = tf.compat.v1.get_collection("TF_GRAPHKEYS_VARIABLES", scope=vs.name)
+    #
+    #     self._add_layers(self.outputs)
+    #     self._add_params(variables)
 
 
 class GroupNorm(Layer):
