@@ -162,7 +162,7 @@ class Layer(object):
 
     @property
     def _inputs_shape(self):  # TODO, if self.outputs is a list ???
-        return self._input_layer._outputs_shape
+        return self.inputs.get_shape().as_list()
 
     @property
     def _outputs_shape(self):  # TODO, if self.outputs is a list ???
@@ -174,25 +174,32 @@ class Layer(object):
 
     def __call__(self, prev_layer):
 
-        if self._built:
-            raise Exception("The layer has been built before.")
+        if self.__class__.__name__ in tl.layers.inputs.__all__:
+            # 1. for input layers
+            # Input layers should use tf.convert_to_tensor to make sure the inputs is converted into tf.Tensor
 
-        if isinstance(prev_layer, Layer):
-            # 1. for normal layer have only 1 input i.e. DenseLayer
+            # code in tl 1.0
+            # raise RuntimeError("Please use layers in `tl.layers.inputs` to convert Variable/Tensor/Placeholder/Numpy arrays to a TL layer")
+            self.inputs = tf.convert_to_tensor(prev_layer)
+            self._input_layer = None
+            self._built = True
+            self.outputs = self.forward(self.inputs)
+
+        elif isinstance(prev_layer, Layer):
+            # 2. for normal layer have only 1 input i.e. DenseLayer
             # Hint : list(), dict() is pass by value (shallow), without them,
             # it is pass by reference.
 
             self.inputs = prev_layer.outputs
             self._input_layer = prev_layer
-            # self._inputs_shape = self._input_layer._outputs_shape
 
-            self._weights = list()
+            if not self._built:
+                self._weights = list()
+                self.build(self._inputs_shape)
+                self._built = True
 
-            self.build(self._inputs_shape)
             self.outputs = self.forward(self.inputs)
             # self._outputs_shape = self.outputs.get_shape().as_list()
-
-            self._built = True
 
             # TODO: need update
             # self._add_layers(prev_layer.all_layers)
@@ -212,13 +219,6 @@ class Layer(object):
                 self._add_layers(sum([l.all_layers for l in prev_layer], []))
                 self._add_weights(sum([l.all_weights for l in prev_layer], []))
                 self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
-
-            elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
-                if self.__class__.__name__ not in ['InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer',
-                                                   'EmbeddingInputlayer', 'AverageEmbeddingInputlayer']:
-                    raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
-
-                self.inputs = prev_layer
 
             elif prev_layer is not None:
                 # 4. tl.models
@@ -259,7 +259,6 @@ class Layer(object):
         An abstract method which should be overwritten in derived classes to define forward feeding operations of the layer.
 
         :param inputs: Tensor
-        :param is_train: boolean, True for training and False for testing
         :return: Tensor
         """
         raise Exception("The forward method must be implemented by inherited class")
@@ -451,6 +450,7 @@ class Layer(object):
         return self.act(logits, **kwargs) if self.act is not None else logits
 
     # TODO: may need update
+    '''
     @private_method
     def _argument_dict_checkup(self, args):
 
@@ -460,7 +460,6 @@ class Layer(object):
             )
 
         return args if args is not None else {}
-    '''
 
     # def __getstate__(self): # pickle save
     #     return {'version': 0.1,

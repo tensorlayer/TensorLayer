@@ -36,9 +36,8 @@ class Input(Layer):
         shape_without_none = [_ if _ is not None else 1 for _ in shape]
         self.outputs = self.forward(tf.compat.v1.initializers.random_normal()(shape_without_none))
 
-    def __call__(self, prev_layer):
-        # FIXME: better exception raising
-        raise Exception("__call__() of Input deactivated")
+    def __call__(self, inputs):
+        return super(Input, self).__call__(prev_layer=inputs)
 
     def build(self, inputs_shape):
         # FIXME: documentation need double check

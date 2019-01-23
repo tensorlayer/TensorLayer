@@ -84,7 +84,7 @@ class Model():
         if isinstance(inputs, list):
             for idx in range(len(inputs)):
                 inputs[idx] = tf.convert_to_tensor(inputs[idx])
-        elif isinstance(inputs, np.ndarray):
+        else:
             inputs = tf.convert_to_tensor(inputs)
 
         # convert inputs to list for convenience
@@ -111,9 +111,10 @@ class Model():
                     # FIXME: not sure if there is a better way
                     layer.is_train = self.is_train
                     # FIXME: assume each layer has only one prev layer
-                    z = layer.forward(z)
+                    # z = layer.forward(z)
+                    z = layer(z)
                     memory[layer.name] = z
-            results.append(z)
+            results.append(z.outputs)
 
         if not isinstance(self._outputs, list):
             return results[0]
