@@ -272,4 +272,4 @@ ones = Ones
 constant = Constant
 random_uniform = RandomUniform
 random_normal = RandomNormal
-truncate_normal = TruncatedNormal
+truncated_normal = TruncatedNormal
