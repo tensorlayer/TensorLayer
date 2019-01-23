@@ -14,7 +14,8 @@ __all__ = [
     'RandomUniform',
     'RandomNormal',
     'TruncatedNormal',
-    'deconv2d_bilinear_upsampling_initializer']
+    'deconv2d_bilinear_upsampling_initializer'
+]
 
 
 class Initializer(object):
@@ -263,3 +264,12 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     # assign numpy array to constant_initalizer and pass to get_variable
     # FIXME : How to deal with this? Will LayersConfig be removed?
     return tf.constant_initializer(value=weights, dtype=LayersConfig.tf_dtype)
+
+
+# Alias
+zeros = Zeros
+ones = Ones
+constant = Constant
+random_uniform = RandomUniform
+random_normal = RandomNormal
+truncate_normal = TruncatedNormal

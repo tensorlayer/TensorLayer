@@ -144,7 +144,7 @@ def get_layers_with_name(net, name="", verbose=False):
     return layers
 
 
-def get_variable_with_initializer(scope_name, var_name, shape, init=tf.compat.v1.initializers.random_normal(), init_args=None):
+def get_variable_with_initializer(scope_name, var_name, shape, init=tf.compat.v1.initializers.random_normal()):
     # FIXME: documentation needed
     # TODO: more initializer needed, the initializer can be a numpy.random function
     # if tf.executing_eagerly():

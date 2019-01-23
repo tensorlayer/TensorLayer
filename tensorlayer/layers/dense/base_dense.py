@@ -3,6 +3,7 @@
 
 import numpy as np
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer.layers.core import Layer
 # from tensorlayer.layers.core import LayersConfig
@@ -62,12 +63,14 @@ class Dense(Layer):
             n_units=100,
             act=None,
             # TODO: how to support more initializers
-            W_init=tf.compat.v1.truncated_normal_initializer(stddev=0.1),
-            b_init=tf.constant_initializer(value=0.0),
+            W_init=tl.initializers.truncated_normal(stddev=0.1),
+            b_init=tl.initializers.constant(value=0.0),
+            # W_init=tf.compat.v1.truncated_normal_initializer(stddev=0.1),
+            # b_init=tf.constant_initializer(value=0.0),
             # W_init=tf.compat.v1.initializers.truncated_normal,
             # b_init=tf.compat.v1.initializers.constant,
-            W_init_args={'stddev': 0.1},
-            b_init_args=None,
+            # W_init_args={'stddev': 0.1},
+            # b_init_args=None,
             name=None,  # 'dense',
     ):
 
@@ -79,8 +82,8 @@ class Dense(Layer):
         self.act = act
         self.W_init = W_init
         self.b_init = b_init
-        self.W_init_args = W_init_args
-        self.b_init_args = b_init_args
+        # self.W_init_args = W_init_args
+        # self.b_init_args = b_init_args
 
         # self.n_in = int(self.inputs.get_shape()[-1])
         # self.inputs_shape = self.inputs.shape.as_list() #
@@ -114,9 +117,9 @@ class Dense(Layer):
         if len(inputs_shape) != 2:
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
         shape = [inputs_shape[1], self.n_units]
-        self.W = self._get_weights("weights", shape=tuple(shape), init=self.W_init, init_args=self.W_init_args)
+        self.W = self._get_weights("weights", shape=tuple(shape), init=self.W_init)
         if self.b_init:
-            self.b = self._get_weights("biases", shape=(self.n_units, ), init=self.b_init, init_args=self.b_init_args)
+            self.b = self._get_weights("biases", shape=(self.n_units, ), init=self.b_init)
         # outputs_shape = [inputs_shape[0], self.n_units]
         # return outputs_shape
 

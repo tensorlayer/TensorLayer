@@ -9,6 +9,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer.layers.utils import list_remove_repeat, get_variable_with_initializer
 
@@ -232,9 +233,9 @@ class Layer(object):
         return self
 
     # def _get_weights(self, scope_name, var_name, shape, init=np.random.normal, init_args=None):
-    def _get_weights(self, var_name, shape, init=tf.compat.v1.initializers.random_normal, init_args=None):
+    def _get_weights(self, var_name, shape, init=tl.initializers.random_normal()):
         weight = get_variable_with_initializer(
-            scope_name=self.name, var_name=var_name, shape=shape, init=init, init_args=init_args
+            scope_name=self.name, var_name=var_name, shape=shape, init=init
         )
         self._weights.append(weight)  # Add into the weight collection
         # self.__setattr__(var_name, weight) # FIXME: prefer to remove this line, the weights should be manually defined as members of the Layer
