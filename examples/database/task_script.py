@@ -53,7 +53,7 @@ train_params = tl.layers.get_variables_with_name('MLP', True, False)
 train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_params)
 
 # initialize all variables in the session
-tl.layers.initialize_global_variables(sess)
+sess.run(tf.global_variables_initializer())
 
 # train the network
 tl.utils.fit(

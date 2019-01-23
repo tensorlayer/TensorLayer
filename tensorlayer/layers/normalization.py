@@ -308,10 +308,10 @@ class InstanceNormLayer(Layer):
             self.outputs = scale * tf.div(self.inputs - mean, tf.sqrt(var + epsilon)) + offset
             self.outputs = self._apply_activation(self.outputs)
 
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            # variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self._add_layers(self.outputs)
-        self._add_params(variables)
+        self._add_params([scale, offset])
 
 
 class LayerNormLayer(Layer):
