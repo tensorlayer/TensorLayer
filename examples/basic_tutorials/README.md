@@ -8,7 +8,7 @@ Something you need to know:
 
 ### 2. Switching Training and testing
 
-There are two ways to switch training and testing: 
+There are two ways to switch the training and testing mode: 
 
 1 ) use Pytorch-like method, turn on and off the training/evaluation as follow:
 
@@ -19,7 +19,7 @@ model.eval() # disable dropout, fix batch norm weights and etc
 y2 = model(x)
 ```
 
-2) use TensorLayer 1.x method, input `is_train` to the model.
+2) use TensorLayer 1.x method, input `is_train` to the model while inferencing.
 
 ```python
 y1 = model(x, is_train=True)
