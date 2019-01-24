@@ -6,7 +6,7 @@ from tensorlayer.models import Model
 # import tensorflow.contrib.eager as tfe
 
 ## enable debug logging
-tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 # ## enable eager mode
