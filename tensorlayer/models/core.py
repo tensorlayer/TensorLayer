@@ -2,6 +2,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorlayer.layers import Layer
+from tensorlayer import logging
 
 class Model():
     """The :class:`Model` class represents a neural network.
@@ -70,15 +71,25 @@ class Model():
 
 
         # Model state: train or test
-        self.is_train = True
+        self.is_train = None
 
-    def __call__(self, inputs):
+    def __call__(self, inputs, is_train=None):
         """
 
         :param inputs: Tensor or list of Tensor, numpy.ndarray of list of numpy.ndarray (if in eager mode)
         :param is_train: boolean
         :return:
         """
+
+        if is_train is None and self.is_train is None:
+            raise ValueError("Training / inference mode not defined. Argument `is_train` should be set as True / False. Otherwise please use `Model.train()` / `Model.eval()` to switch the mode.")
+        elif is_train is not None and self.is_train is not None:
+            if is_train == self.is_train:
+                logging.warning("Training / inference mode redefined redundantly. Please EITHER use the argument `is_train` OR `Model.train()` / `Model.eval()` to define the mode.")
+            else:
+                raise AttributeError("Training / inference mode mismatch. The argument `is_train` is set as %s, " % is_train +
+                                     "but the mode is currently set as %s. " % ('Training by Model.train()' if self.is_train else 'Inference by Model.eval()') +
+                                     "Please EITHER use the argument `is_train` OR `Model.train()` / `Model.test()` to define the mode.")
 
         # convert inputs to tensor if it is originally not
         if isinstance(inputs, list):
@@ -109,7 +120,10 @@ class Model():
                     z = memory[layer.name]
                 else:
                     # FIXME: not sure if there is a better way
-                    layer.is_train = self.is_train
+                    if is_train is not None:
+                        layer.is_train = is_train
+                    else:
+                        layer.is_train = self.is_train
                     # FIXME: assume each layer has only one prev layer
                     # z = layer.forward(z)
                     z = layer(z)
@@ -128,11 +142,14 @@ class Model():
     def train(self):
         self.is_train = True
 
-    def test(self):
-        self.is_train = False
-
     def eval(self):
         self.is_train = False
+
+    def test(self):
+        self.eval()
+
+    def infer(self):
+        self.eval()
 
     def _find_idx_of_inputs(self, target_input):
         """
