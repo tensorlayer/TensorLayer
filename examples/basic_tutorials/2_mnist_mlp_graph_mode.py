@@ -44,8 +44,15 @@ MLP = get_model([None, 784])
 x = tf.placeholder(tf.float32, shape=[None, 784], name='inputs')
 y_ = tf.placeholder(tf.int64, shape=[None], name='targets')
 
+## get output tensors for training and testing
+# 1) use ``is_train''
 y1 = MLP(x, is_train=True)
 y2 = MLP(x, is_train=False)
+# 2) alternatively, you can use the switching method
+# MLP.train()
+# y1 = MLP(x)
+# MLP.eval()
+# y2 = MLP(x)
 
 ## cost and optimizer for training
 cost = tl.cost.cross_entropy(y1, y_, name='train_loss')
