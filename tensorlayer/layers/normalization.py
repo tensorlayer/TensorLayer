@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+import tensorlayer as tl
 from tensorflow.python.training import moving_averages
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import math_ops
 
 from tensorlayer.layers.core import Layer
-from tensorlayer import initializers
 # from tensorlayer.layers.core import LayersConfig
 # from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 from tensorlayer.layers.utils import get_collection_trainable
@@ -170,10 +170,14 @@ class BatchNorm(Layer):
             epsilon=0.00001,
             act=None,
             is_train=False,
-            beta_init=tf.compat.v1.initializers.zeros(),
-            gamma_init=tf.compat.v1.initializers.random_normal(mean=1.0, stddev=0.002),
-            moving_mean_init=tf.compat.v1.initializers.zeros(),
-            moving_var_init=tf.compat.v1.initializers.zeros(),
+            beta_init=tl.initializers.zeros(),
+            gamma_init=tl.initializers.random_normal(mean=1.0, stddev=0.002),
+            moving_mean_init=tl.initializers.zeros(),
+            moving_var_init=tl.initializers.zeros(),
+            # beta_init=tf.compat.v1.initializers.zeros(),
+            # gamma_init=tf.compat.v1.initializers.random_normal(mean=1.0, stddev=0.002),
+            # moving_mean_init=tf.compat.v1.initializers.zeros(),
+            # moving_var_init=tf.compat.v1.initializers.zeros(),
             data_format='channels_last',
             name='batchnorm',
     ):
@@ -413,8 +417,8 @@ class LayerNorm(Layer):
             epsilon=1e-12,
             begin_norm_axis=1,
             begin_params_axis=-1,
-            beta_init=initializers.Zeros(),
-            gamma_init=initializers.Ones(),
+            beta_init=tl.initializers.zeros(),
+            gamma_init=tl.initializers.ones(),
             data_format='channels_last',
             name='layernorm'
     ):
@@ -541,15 +545,15 @@ class GroupNorm(Layer):
 
         if self.data_format == 'channels_last':
             # mean, var = tf.nn.moments(x, [1, 2, 4], keep_dims=True)
-            self.gamma = self._get_weights("gamma", shape=channels, init=tf.compat.v1.initializers.ones())
+            self.gamma = self._get_weights("gamma", shape=channels, init=tl.initializers.ones())
             # self.gamma = tf.compat.v1.get_variable('gamma', channels, initializer=tf.compat.v1.initializers.ones())
-            self.beta = self._get_weights("beta", shape=channels, init=tf.compat.v1.initializers.zeros())
+            self.beta = self._get_weights("beta", shape=channels, init=tl.initializers.zeros())
             # self.beta = tf.compat.v1.get_variable('beta', channels, initializer=tf.compat.v1.initializers.zeros())
         elif self.data_format == 'channels_first':
             # mean, var = tf.nn.moments(x, [2, 3, 4], keep_dims=True)
-            self.gamma = self._get_weights("gamma", shape=[1, channels, 1, 1], init=tf.compat.v1.initializers.ones())
+            self.gamma = self._get_weights("gamma", shape=[1, channels, 1, 1], init=tl.initializers.ones())
             # self.gamma = tf.compat.v1.get_variable('gamma', [1, channels, 1, 1], initializer=tf.compat.v1.initializers.ones())
-            self.beta = self._get_weights("beta", shape=[1, channels, 1, 1], init=tf.compat.v1.initializers.zeros())
+            self.beta = self._get_weights("beta", shape=[1, channels, 1, 1], init=tl.initializers.zeros())
             # self.beta = tf.compat.v1.get_variable('beta', [1, channels, 1, 1], initializer=tf.compat.v1.initializers.zeros())
         # self.add_weights([self.gamma, self.bata])
 
@@ -604,9 +608,12 @@ class SwitchNorm(Layer):
             self,
             act=None,
             epsilon=1e-5,
-            beta_init=tf.compat.v1.initializers.constant(0.0),
-            gamma_init=tf.compat.v1.initializers.constant(1.0),
-            moving_mean_init=tf.compat.v1.initializers.zeros(),
+            beta_init=tl.initializers.constant(0.0),
+            gamma_init=tl.initializers.constant(1.0),
+            moving_mean_init=tl.initializers.zeros(),
+            # beta_init=tf.compat.v1.initializers.constant(0.0),
+            # gamma_init=tf.compat.v1.initializers.constant(1.0),
+            # moving_mean_init=tf.compat.v1.initializers.zeros(),
             data_format='channels_last',
             name=None,  #'switchnorm',
     ):
@@ -635,9 +642,9 @@ class SwitchNorm(Layer):
         self.beta = self._get_weights("beta", shape=[ch], init=self.beta_init)
         # self.beta = tf.compat.v1.get_variable("beta", [ch], initializer=beta_init)
 
-        self.mean_weight_var = self._get_weights("mean_weight", shape=[3], init=tf.compat.v1.initializers.constant(1.0))
+        self.mean_weight_var = self._get_weights("mean_weight", shape=[3], init=tl.initializers.constant(1.0))
         # self.mean_weight_var = tf.compat.v1.get_variable("mean_weight", [3], initializer=tf.compat.v1.initializers.constant(1.0))
-        self.var_weight_var = self._get_weights("var_weight", shape=[3], init=tf.compat.v1.initializers.constant(1.0))
+        self.var_weight_var = self._get_weights("var_weight", shape=[3], init=tl.initializers.constant(1.0))
         # self.var_weight_var = tf.compat.v1.get_variable("var_weight", [3], initializer=tf.compat.v1.initializers.constant(1.0))
 
         # self.add_weights([self.gamma, self.beta, self.mean_weight_var, self.var_weight_var])
