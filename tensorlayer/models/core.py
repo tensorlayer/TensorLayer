@@ -25,7 +25,7 @@ class Model():
     def outputs(self):
         return self._outputs
 
-    def __init__(self, inputs, outputs, name):
+    def __init__(self, inputs=None, outputs=None, name=None):
         '''
 
         :param inputs: Layer or list of Layer
@@ -33,47 +33,43 @@ class Model():
         :param name: str
         '''
         # Model properties
+        # TODO: model auto naming
         self.name = name
-
-        # check type of inputs and outputs
-        check_order = ['inputs', 'outputs']
-        for co, check_argu in enumerate([inputs, outputs]):
-            if isinstance(check_argu, Layer):
-                pass
-            elif isinstance(check_argu, list):
-                for idx in range(len(check_argu)):
-                    if not isinstance(check_argu[idx], Layer):
-                        raise TypeError(
-                            "The argument %s should be either Layer or a list of Layer "
-                            % (check_order[co]) +
-                            "but the %s[%d] is detected as %s"
-                            % (check_order[co], idx, type(check_argu[idx]))
-                        )
-            else:
-                raise TypeError("The argument %s should be either Layer or a list of Layer but received %s" %
-                                (check_order[co], type(check_argu)))
-
-        # Model inputs and outputs
-        self._inputs = inputs if isinstance(inputs, list) else [inputs]
-        self._outputs = outputs
-
-        # weights
-
-        self._weights = list()
-        outputs_list = self._outputs if isinstance(self._outputs, list) else [self._outputs]
-        for out in outputs_list:
-            current = out
-            while current is not None:
-                if current.weights is not None:
-                    self._weights.extend(current.weights)
-                # FIXME: assume each layer has only one prev layer
-                current = current._input_layer
-
 
         # Model state: train or test
         self.is_train = None
 
-    def __call__(self, inputs, is_train=None):
+        # Model weights
+        self._weights = None
+
+        if inputs is None and outputs is None:
+            pass
+
+        else:
+            # check type of inputs and outputs
+            check_order = ['inputs', 'outputs']
+            for co, check_argu in enumerate([inputs, outputs]):
+                if isinstance(check_argu, Layer):
+                    pass
+                elif isinstance(check_argu, list):
+                    for idx in range(len(check_argu)):
+                        if not isinstance(check_argu[idx], Layer):
+                            raise TypeError(
+                                "The argument %s should be either Layer or a list of Layer "
+                                % (check_order[co]) +
+                                "but the %s[%d] is detected as %s"
+                                % (check_order[co], idx, type(check_argu[idx]))
+                            )
+                else:
+                    raise TypeError("The argument %s should be either Layer or a list of Layer but received %s" %
+                                    (check_order[co], type(check_argu)))
+
+        # Model inputs and outputs
+        self._inputs = inputs
+        self._outputs = outputs
+
+
+    def __call__(self, inputs, is_train=None, **kwargs):
         """
 
         :param inputs: Tensor or list of Tensor, numpy.ndarray of list of numpy.ndarray (if in eager mode)
@@ -98,45 +94,89 @@ class Model():
         else:
             inputs = tf.convert_to_tensor(inputs)
 
-        # convert inputs to list for convenience
-        inputs_list = inputs if isinstance(inputs, list) else [inputs]
-        outputs_list = self._outputs if isinstance(self._outputs, list) else [self._outputs]
-        results = list()
-        memory = dict()
+        # FIXME: currently using self._outputs to judge static network or dynamic network
+        if self._outputs is not None:
+            # self._inputs and self._outputs are defined when the model is created
 
-        for out in outputs_list:
-            stacked_layers = list()
-            current = out
-            while current is not None:
-                stacked_layers.append(current)
-                # FIXME: assume each layer has only one prev layer
-                current = current._input_layer
+            # convert inputs to list for convenience
+            # inputs_list = inputs if isinstance(inputs, list) else [inputs]
+            outputs_list = self._outputs if isinstance(self._outputs, list) else [self._outputs]
+            results = list()
+            memory = dict()
 
-            idx_of_input = self._find_idx_of_inputs(stacked_layers[-1])
-            z = inputs_list[idx_of_input]
-
-            for layer in stacked_layers[::-1]:
-                if layer.name in memory:
-                    z = memory[layer.name]
-                else:
-                    # FIXME: not sure if there is a better way
-                    if is_train is not None:
-                        layer.is_train = is_train
-                    else:
-                        layer.is_train = self.is_train
+            for out in outputs_list:
+                stacked_layers = list()
+                current = out
+                while current is not None:
+                    stacked_layers.append(current)
                     # FIXME: assume each layer has only one prev layer
-                    # z = layer.forward(z)
-                    z = layer(z)
-                    memory[layer.name] = z
-            results.append(z.outputs)
+                    current = current._input_layer
 
-        if not isinstance(self._outputs, list):
-            return results[0]
+                if isinstance(self.inputs, list):
+                    idx_of_input = self._find_idx_of_inputs(stacked_layers[-1])
+                    z = inputs[idx_of_input]
+                else:
+                    z = inputs
+
+                for layer in stacked_layers[::-1]:
+                    if layer.name in memory:
+                        z = memory[layer.name]
+                    else:
+                        # FIXME: not sure if there is a better way
+                        layer.is_train = is_train if is_train is not None else self.is_train
+                        # FIXME: assume each layer has only one prev layer
+                        # z = layer.forward(z)
+                        z = layer(z)
+                        memory[layer.name] = z
+                results.append(z)
+
+            if not isinstance(self._outputs, list):
+                return results[0]
+            else:
+                return results
         else:
-            return results
+            # self._inputs and self._outputs are NOT defined when self is created (eager mode)
+
+            attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
+            attr_list.remove("weights")
+            for idx, attr in enumerate(attr_list):
+                try:
+                    if isinstance(getattr(self, attr), Layer):
+                        getattr(self, attr).is_train = is_train if is_train is not None else self.is_train
+                except Exception:
+                    pass
+
+            return self.forward(inputs, **kwargs)
+
 
     @property
     def weights(self):
+        if self._weights is not None and len(self._weights) > 0:
+            # self._weights already extracted, so do nothing
+            pass
+        elif self._outputs is not None:
+            # self._inputs and self._outputs are defined when self is created
+            self._weights = list()
+            outputs_list = self._outputs if isinstance(self._outputs, list) else [self._outputs]
+            for out in outputs_list:
+                current = out
+                while current is not None:
+                    if current.weights is not None:
+                        self._weights.extend(current.weights)
+                    # FIXME: assume each layer has only one prev layer
+                    current = current._input_layer
+        else:
+            # self._inputs and self._outputs are NOT defined when self is created (eager mode)
+            self._weights = list()
+            attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
+            attr_list.remove("weights")
+            for idx, attr in enumerate(attr_list):
+                try:
+                    if isinstance(getattr(self, attr), Layer):
+                        self._weights.extend(getattr(self, attr).weights)
+                except Exception:
+                    pass
+
         return self._weights
 
     def train(self):
@@ -150,6 +190,19 @@ class Model():
 
     def infer(self):
         self.eval()
+
+    '''
+    def _set_mode_for_layers(self, is_train):
+        attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
+        attr_list.remove("weights")
+        for idx, attr in enumerate(attr_list):
+            try:
+                if isinstance(getattr(self, attr), Layer):
+                    getattr(self, attr).is_train = is_train 
+            except Exception:
+                pass
+    '''
+
 
     def _find_idx_of_inputs(self, target_input):
         """
