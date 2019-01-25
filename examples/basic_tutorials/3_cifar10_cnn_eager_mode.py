@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
+sys.path.append("/home/wurundi/PycharmProjects/tensorlayer2")
 import time
 import multiprocessing
 import tensorflow as tf
+tf.enable_eager_execution()
 import tensorlayer as tl
 from tensorlayer.layers import Input, Conv2d, BatchNorm, MaxPool2d, Flatten, Dense
 from tensorlayer.models import Model
@@ -12,6 +15,8 @@ import numpy as np
 # enable debug logging
 tl.logging.set_verbosity(tl.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
+
+# enable eager mode
 
 # prepare cifar10 data
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
@@ -45,7 +50,6 @@ def get_model_batch_norm(inputs_shape):
 
 # get the network
 net = get_model_batch_norm([None, 32, 32, 3])
-net.print_all_layers()
 
 
 # training settings
@@ -111,15 +115,15 @@ for epoch in range(n_epoch):
         net.train()
 
         with tf.GradientTape() as tape:
-            ## compute outputs
+            # compute outputs
             _logits = net(X_batch)
-            ## compute loss and update model
+            # compute loss and update model
             _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
 
         grad = tape.gradient(_loss, train_weights)
         optimizer.apply_gradients(zip(grad, train_weights))
 
-## use training and evaluation sets to evaluate the model every print_freq epoch
+# use training and evaluation sets to evaluate the model every print_freq epoch
     if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
 
         net.eval()  # disable dropout
@@ -144,8 +148,7 @@ for epoch in range(n_epoch):
         print("   val loss: {}".format(val_loss / n_iter))
         print("   val acc:  {}".format(val_acc / n_iter))
 
-
-## use testing data to evaluate the model
+# use testing data to evaluate the model
 net.eval()
 test_loss, test_acc, n_iter = 0, 0, 0
 for X_batch, y_batch in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=False):
