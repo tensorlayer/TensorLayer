@@ -6,7 +6,7 @@ from tensorlayer.models import Model
 # import tensorflow.contrib.eager as tfe
 
 ## enable debug logging
-tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 # ## enable eager mode
@@ -44,8 +44,15 @@ MLP = get_model([None, 784])
 x = tf.placeholder(tf.float32, shape=[None, 784], name='inputs')
 y_ = tf.placeholder(tf.int64, shape=[None], name='targets')
 
+## get output tensors for training and testing
+# 1) use ``is_train''
 y1 = MLP(x, is_train=True).outputs
 y2 = MLP(x, is_train=False).outputs
+# 2) alternatively, you can use the switching method
+# MLP.train()
+# y1 = MLP(x).outputs
+# MLP.eval()
+# y2 = MLP(x).outputs
 
 ## cost and optimizer for training
 cost = tl.cost.cross_entropy(y1, y_, name='train_loss')

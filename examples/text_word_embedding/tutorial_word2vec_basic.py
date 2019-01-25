@@ -145,8 +145,9 @@ def main_word2vec_basic():
     else:
         data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size, True, _UNK)
 
-    print('Most 5 common words (+UNK)',
-          count[:5])  # [['UNK', 418391], (b'the', 1061396), (b'of', 593677), (b'and', 416629), (b'one', 411764)]
+    print(
+        'Most 5 common words (+UNK)', count[:5]
+    )  # [['UNK', 418391], (b'the', 1061396), (b'of', 593677), (b'and', 416629), (b'one', 411764)]
     print('Sample data', data[:10], [reverse_dictionary[i] for i in data[:10]])
     # [5243, 3081, 12, 6, 195, 2, 3135, 46, 59, 156] [b'anarchism', b'originated', b'as', b'a', b'term', b'of', b'abuse', b'first', b'used', b'against']
 

@@ -49,6 +49,7 @@ class Flatten(Layer):
 
     def forward(self, inputs):
         outputs = flatten_reshape(inputs, name=self.name)
+        return outputs
 
 
 class Reshape(Layer):
