@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
-sys.path.append("/home/wurundi/PycharmProjects/tensorlayer2")
 import time
 import multiprocessing
 import tensorflow as tf
-tf.enable_eager_execution()
 import tensorlayer as tl
 from tensorlayer.layers import Input, Conv2d, BatchNorm, MaxPool2d, Flatten, Dense
 from tensorlayer.models import Model
@@ -17,6 +14,7 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 # enable eager mode
+tf.enable_eager_execution()
 
 # prepare cifar10 data
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
