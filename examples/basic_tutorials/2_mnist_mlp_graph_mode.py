@@ -28,9 +28,9 @@ def get_model(inputs_shape):
     ni = Input(inputs_shape)
     nn = Dropout(keep=0.8)(ni)
     nn = Dense(n_units=800, act=tf.nn.relu)(nn)
-    nn = Dropout(keep=0.5)(nn)
+    nn = Dropout(keep=0.8)(nn)
     nn = Dense(n_units=800, act=tf.nn.relu)(nn)
-    nn = Dropout(keep=0.5)(nn)
+    nn = Dropout(keep=0.8)(nn)
     nn = Dense(n_units=10, act=tf.nn.relu)(nn)
     M = Model(inputs=ni, outputs=nn, name="mlp")
     return M
@@ -44,15 +44,15 @@ MLP = get_model([None, 784])
 x = tf.placeholder(tf.float32, shape=[None, 784], name='inputs')
 y_ = tf.placeholder(tf.int64, shape=[None], name='targets')
 
-y1 = MLP(x, is_train=True)
-y2 = MLP(x, is_train=False)
+y1 = MLP(x, is_train=True).outputs
+y2 = MLP(x, is_train=False).outputs
 
 ## cost and optimizer for training
 cost = tl.cost.cross_entropy(y1, y_, name='train_loss')
 train_weights = MLP.weights  #tl.layers.get_variables_with_name('MLP', True, False)
 train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_weights)
 
-## cost and accuracy for evalution
+## cost and accuracy for evaluation
 cost_test = tl.cost.cross_entropy(y2, y_, name='test_loss')
 correct_prediction = tf.equal(tf.argmax(y2, 1), y_)
 acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
