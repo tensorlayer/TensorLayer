@@ -56,7 +56,7 @@ for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
 
         with tf.GradientTape() as tape:
             ## compute outputs
-            _logits = MLP(X_batch)
+            _logits = MLP(X_batch)  # alternatively, you can use MLP(x, is_train=True) and remove MLP.train()
             ## compute loss and update model
             _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
 
@@ -72,7 +72,7 @@ for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
 
         train_loss, train_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=False):
-            _logits = MLP(X_batch)
+            _logits = MLP(X_batch)  # alternatively, you can use MLP(x, is_train=False) and remove MLP.eval()
             train_loss += tl.cost.cross_entropy(_logits, y_batch, name='eval_loss')
             train_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
             n_iter += 1

@@ -149,8 +149,9 @@ class ACNet(object):
             self.v = v.outputs
 
     def update_global(self, feed_dict):  # run by a local
-        _, _, t = sess.run([self.update_a_op, self.update_c_op, self.test],
-                           feed_dict)  # local grads applies to global net
+        _, _, t = sess.run(
+            [self.update_a_op, self.update_c_op, self.test], feed_dict
+        )  # local grads applies to global net
         return t
 
     def pull_global(self):  # run by a local
