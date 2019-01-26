@@ -23,6 +23,7 @@ __all__ = [
     # 'LayersConfig',  # TODO : remove this??
     # 'TF_GRAPHKEYS_VARIABLES',  # TODO : remove this??
     'Layer',
+    'ModelLayer'
 ]
 
 _global_layer_name_dict = {}  # TODO: better implementation?
@@ -479,3 +480,43 @@ class Layer(object):
     @property
     def all_params(self):
         raise Exception("please change all_params --> weights")
+
+
+
+class ModelLayer(Layer):
+    # TODO: documentation
+    '''
+    Documentation pending
+    '''
+
+    def __init__(self, model):
+        super(ModelLayer, self).__init__(name="%s_layer" % model.name)
+
+        self.model = model
+
+        # Layer input outputs
+        # FIXME: model.inputs can be a list or None
+        self.inputs = model.inputs.outputs
+        # FIXME: model.outputs can be a list or None
+        self.outputs = model.forward(self.inputs).outputs
+
+
+        # self._inputs_shape = None
+        # self._outputs_shape = None
+
+        self._input_layer = model.inputs
+
+        # Layer building state
+        self._built = True
+
+        # Layer weight state
+        self._weights = model.weights
+
+        # Layer training state
+        self.is_train = True
+
+    def build(self, inputs_shape):
+        pass
+
+    def forward(self, inputs):
+        return self.model.forward(inputs).outputs

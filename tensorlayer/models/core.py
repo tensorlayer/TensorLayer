@@ -2,8 +2,12 @@
 import numpy as np
 from abc import ABCMeta, abstractmethod
 import tensorflow as tf
-from tensorlayer.layers import Layer
+from tensorlayer.layers import Layer, ModelLayer
 from tensorlayer import logging
+
+__all__ = [
+    'Model',
+]
 
 class Model():
     """The :class:`Model` class represents a neural network.
@@ -46,6 +50,9 @@ class Model():
         # Model inputs and outputs
         self._inputs = inputs
         self._outputs = outputs
+
+        # Model converted into a Layer
+        self._model_layer = None
 
         if inputs is None and outputs is None:
             pass
@@ -142,7 +149,7 @@ class Model():
         return self.forward(inputs, **kwargs)
 
     @abstractmethod
-    def forward(self, inputs, **kwargs):
+    def forward(self, *inputs):
         # FIXME: currently using self._outputs to judge static network or dynamic network
         if self._outputs is None:
             raise ValueError("Outputs not defined. Please define inputs and outputs when the model is created. Or overwrite forward() function.")
@@ -155,9 +162,9 @@ class Model():
             # idx_of_input should not be -1 as it has been checked in __init__
             if isinstance(self._inputs, list):
                 idx_of_input = self._find_idx_of_inputs(stacked_layers[-1])
-                z = inputs[idx_of_input]
+                z = inputs[0][idx_of_input]
             else:
-                z = inputs
+                z = inputs[0]
 
             for layer in stacked_layers[::-1]:
                 if layer.name in memory:
@@ -205,12 +212,14 @@ class Model():
         return self._weights
 
     def train(self):
-        self.is_train = True
-        self._set_mode_for_layers(True)
+        if self.is_train != True:
+            self.is_train = True
+            self._set_mode_for_layers(True)
 
     def eval(self):
-        self.is_train = False
-        self._set_mode_for_layers(False)
+        if self.is_train != False:
+            self.is_train = False
+            self._set_mode_for_layers(False)
 
     def test(self):
         self.eval()
@@ -218,18 +227,37 @@ class Model():
     def infer(self):
         self.eval()
 
+    def as_layer(self):
+
+        if self._outputs is None:
+            raise AttributeError(
+                "Dynamic network cannot be converted to Layer."
+            )
+
+        if self._model_layer is None:
+            self._model_layer = ModelLayer(self)
+
+        return self._model_layer
+
     def _set_mode_for_layers(self, is_train):
         # FIXME: currently using self._outputs to judge static network or dynamic network
         if self._outputs is not None:
             for stacked_layers in self._stacked_layers:
                 for layer in stacked_layers:
                     layer.is_train = is_train
+                    # TODO: test THIS
+                    if isinstance(layer, ModelLayer):
+                        layer.model._set_mode_for_layers(is_train)
         else:
             attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
             attr_list.remove("weights")
             for idx, attr in enumerate(attr_list):
                 try:
-                    if isinstance(getattr(self, attr), Layer):
+                    if isinstance(getattr(self, attr), ModelLayer):
+                        # FIXME: dynamic network cannot be converted to Layer, so this condition never triggered
+                        getattr(self, attr).is_train = is_train
+                        getattr(self, attr).model._set_mode_for_layers(is_train)
+                    elif isinstance(getattr(self, attr), Layer):
                         getattr(self, attr).is_train = is_train
                 except Exception:
                     pass
