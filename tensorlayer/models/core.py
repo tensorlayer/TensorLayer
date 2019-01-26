@@ -57,16 +57,21 @@ class Model():
                 if isinstance(check_argu, Layer):
                     pass
                 elif isinstance(check_argu, list):
+                    if len(check_argu) == 0:
+                        raise ValueError(
+                            "The argument `%s` is detected as an empty list. " % check_order[co] +
+                            "It should be either Layer or a list of Layer."
+                        )
                     for idx in range(len(check_argu)):
                         if not isinstance(check_argu[idx], Layer):
                             raise TypeError(
-                                "The argument %s should be either Layer or a list of Layer "
+                                "The argument `%s` should be either Layer or a list of Layer "
                                 % (check_order[co]) +
                                 "but the %s[%d] is detected as %s"
                                 % (check_order[co], idx, type(check_argu[idx]))
                             )
                 else:
-                    raise TypeError("The argument %s should be either Layer or a list of Layer but received %s" %
+                    raise TypeError("The argument `%s` should be either Layer or a list of Layer but received %s" %
                                     (check_order[co], type(check_argu)))
 
             # automatically connecting layers
@@ -80,6 +85,19 @@ class Model():
                     stacked_layers.append(current)
                     # FIXME: assume each layer has only one prev layer
                     current = current._input_layer
+
+                if isinstance(self._inputs, list):
+                    # check if the input_layer is in self._inputs
+                    idx_of_input = self._find_idx_of_inputs(stacked_layers[-1])
+                    flag_input_not_found = True if idx_of_input == -1 else False
+                else:
+                    flag_input_not_found = True if self._inputs is not stacked_layers[-1] else False
+                if flag_input_not_found:
+                    raise ValueError(
+                        "The layer named `%s` not found in the inputs of the model. " % stacked_layers[-1].name +
+                        "Please check the argument `inputs` when the model is created."
+                    )
+
                 self._stacked_layers.append(stacked_layers)
 
 
@@ -106,6 +124,14 @@ class Model():
         if is_train is not None:
             self._set_mode_for_layers(is_train)
 
+        # if self._input is a list, then it must be a static network
+        if isinstance(self._inputs, list):
+            if not isinstance(inputs, list):
+                raise ValueError("The argument `inputs` should be a list of values but detected as %s." % type(inputs))
+            elif len(inputs) != len(self._inputs):
+                raise ValueError("The argument `inputs` should be a list with len=%d but detected as len=%d."
+                                 % (len(self._inputs), len(inputs)))
+
         # convert inputs to tensor if it is originally not
         if isinstance(inputs, list):
             for idx in range(len(inputs)):
@@ -126,7 +152,8 @@ class Model():
 
         for stacked_layers in self._stacked_layers:
 
-            if isinstance(self.inputs, list):
+            # idx_of_input should not be -1 as it has been checked in __init__
+            if isinstance(self._inputs, list):
                 idx_of_input = self._find_idx_of_inputs(stacked_layers[-1])
                 z = inputs[idx_of_input]
             else:

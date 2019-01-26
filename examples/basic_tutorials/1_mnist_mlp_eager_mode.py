@@ -31,6 +31,7 @@ def get_model(inputs_shape):
     nn = Dense(n_units=800, act=tf.nn.relu)(nn)
     nn = Dropout(keep=0.8)(nn)
     nn = Dense(n_units=10, act=tf.nn.relu)(nn)
+    # M = Model(inputs=ni, outputs=nn, name="mlp")
     M = Model(inputs=ni, outputs=nn, name="mlp")
     return M
 
