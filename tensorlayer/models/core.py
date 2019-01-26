@@ -1,5 +1,6 @@
 
 import numpy as np
+from abc import ABCMeta, abstractmethod
 import tensorflow as tf
 from tensorlayer.layers import Layer
 from tensorlayer import logging
@@ -42,6 +43,10 @@ class Model():
         # Model weights
         self._weights = None
 
+        # Model inputs and outputs
+        self._inputs = inputs
+        self._outputs = outputs
+
         if inputs is None and outputs is None:
             pass
 
@@ -64,9 +69,18 @@ class Model():
                     raise TypeError("The argument %s should be either Layer or a list of Layer but received %s" %
                                     (check_order[co], type(check_argu)))
 
-        # Model inputs and outputs
-        self._inputs = inputs
-        self._outputs = outputs
+            # automatically connecting layers
+            outputs_list = self._outputs if isinstance(self._outputs, list) else [self._outputs]
+            self._stacked_layers = list()
+
+            for out in outputs_list:
+                stacked_layers = list()
+                current = out
+                while current is not None:
+                    stacked_layers.append(current)
+                    # FIXME: assume each layer has only one prev layer
+                    current = current._input_layer
+                self._stacked_layers.append(stacked_layers)
 
 
     def __call__(self, inputs, is_train=None, **kwargs):
@@ -77,6 +91,7 @@ class Model():
         :return:
         """
 
+        # contradiction test
         if is_train is None and self.is_train is None:
             raise ValueError("Training / inference mode not defined. Argument `is_train` should be set as True / False. Otherwise please use `Model.train()` / `Model.eval()` to switch the mode.")
         elif is_train is not None and self.is_train is not None:
@@ -87,6 +102,10 @@ class Model():
                                      "but the mode is currently set as %s. " % ('Training by Model.train()' if self.is_train else 'Inference by Model.eval()') +
                                      "Please EITHER use the argument `is_train` OR `Model.train()` / `Model.test()` to define the mode.")
 
+        # set training / inference mode if necessary
+        if is_train is not None:
+            self._set_mode_for_layers(is_train)
+
         # convert inputs to tensor if it is originally not
         if isinstance(inputs, list):
             for idx in range(len(inputs)):
@@ -94,66 +113,45 @@ class Model():
         else:
             inputs = tf.convert_to_tensor(inputs)
 
+        return self.forward(inputs, **kwargs)
+
+    @abstractmethod
+    def forward(self, inputs, **kwargs):
         # FIXME: currently using self._outputs to judge static network or dynamic network
-        if self._outputs is not None:
-            # self._inputs and self._outputs are defined when the model is created
+        if self._outputs is None:
+            raise ValueError("Outputs not defined. Please define inputs and outputs when the model is created. Or overwrite forward() function.")
 
-            # convert inputs to list for convenience
-            # inputs_list = inputs if isinstance(inputs, list) else [inputs]
-            outputs_list = self._outputs if isinstance(self._outputs, list) else [self._outputs]
-            results = list()
-            memory = dict()
+        results = list()
+        memory = dict()
 
-            for out in outputs_list:
-                stacked_layers = list()
-                current = out
-                while current is not None:
-                    stacked_layers.append(current)
-                    # FIXME: assume each layer has only one prev layer
-                    current = current._input_layer
+        for stacked_layers in self._stacked_layers:
 
-                if isinstance(self.inputs, list):
-                    idx_of_input = self._find_idx_of_inputs(stacked_layers[-1])
-                    z = inputs[idx_of_input]
-                else:
-                    z = inputs
-
-                for layer in stacked_layers[::-1]:
-                    if layer.name in memory:
-                        z = memory[layer.name]
-                    else:
-                        # FIXME: not sure if there is a better way
-                        layer.is_train = is_train if is_train is not None else self.is_train
-                        # FIXME: assume each layer has only one prev layer
-                        # z = layer.forward(z)
-                        z = layer(z)
-                        memory[layer.name] = z
-                results.append(z)
-
-            if not isinstance(self._outputs, list):
-                return results[0]
+            if isinstance(self.inputs, list):
+                idx_of_input = self._find_idx_of_inputs(stacked_layers[-1])
+                z = inputs[idx_of_input]
             else:
-                return results
+                z = inputs
+
+            for layer in stacked_layers[::-1]:
+                if layer.name in memory:
+                    z = memory[layer.name]
+                else:
+                    # FIXME: assume each layer has only one prev layer
+                    z = layer(z)
+                    memory[layer.name] = z
+            results.append(z)
+
+        if not isinstance(self._outputs, list):
+            return results[0]
         else:
-            # self._inputs and self._outputs are NOT defined when self is created (eager mode)
-
-            attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
-            attr_list.remove("weights")
-            for idx, attr in enumerate(attr_list):
-                try:
-                    if isinstance(getattr(self, attr), Layer):
-                        getattr(self, attr).is_train = is_train if is_train is not None else self.is_train
-                except Exception:
-                    pass
-
-            return self.forward(inputs, **kwargs)
-
+            return results
 
     @property
     def weights(self):
         if self._weights is not None and len(self._weights) > 0:
             # self._weights already extracted, so do nothing
             pass
+        # FIXME: currently using self._outputs to judge static network or dynamic network
         elif self._outputs is not None:
             # self._inputs and self._outputs are defined when self is created
             self._weights = list()
@@ -181,9 +179,11 @@ class Model():
 
     def train(self):
         self.is_train = True
+        self._set_mode_for_layers(True)
 
     def eval(self):
         self.is_train = False
+        self._set_mode_for_layers(False)
 
     def test(self):
         self.eval()
@@ -191,18 +191,21 @@ class Model():
     def infer(self):
         self.eval()
 
-    '''
     def _set_mode_for_layers(self, is_train):
-        attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
-        attr_list.remove("weights")
-        for idx, attr in enumerate(attr_list):
-            try:
-                if isinstance(getattr(self, attr), Layer):
-                    getattr(self, attr).is_train = is_train 
-            except Exception:
-                pass
-    '''
-
+        # FIXME: currently using self._outputs to judge static network or dynamic network
+        if self._outputs is not None:
+            for stacked_layers in self._stacked_layers:
+                for layer in stacked_layers:
+                    layer.is_train = is_train
+        else:
+            attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
+            attr_list.remove("weights")
+            for idx, attr in enumerate(attr_list):
+                try:
+                    if isinstance(getattr(self, attr), Layer):
+                        getattr(self, attr).is_train = is_train
+                except Exception:
+                    pass
 
     def _find_idx_of_inputs(self, target_input):
         """
