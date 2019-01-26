@@ -1,6 +1,9 @@
+import tensorflow as tf
+## enable eager mode
+tf.enable_eager_execution()
+
 import time
 import numpy as np
-import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import Input, Dense, Dropout
 from tensorlayer.models import Model
@@ -9,9 +12,6 @@ import tensorflow.contrib.eager as tfe
 ## enable debug logging
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
-
-## enable eager mode
-tf.enable_eager_execution()
 
 ## prepare MNIST data
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
