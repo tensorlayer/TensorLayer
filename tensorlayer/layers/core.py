@@ -495,9 +495,9 @@ class ModelLayer(Layer):
         self.model = model
 
         # Layer input outputs
-        # FIXME: model.inputs can be a list or None
+        # FIXME: model.inputs can be a list
         self.inputs = model.inputs.outputs
-        # FIXME: model.outputs can be a list or None
+        # FIXME: model.outputs can be a list
         self.outputs = model.forward(self.inputs).outputs
 
 
