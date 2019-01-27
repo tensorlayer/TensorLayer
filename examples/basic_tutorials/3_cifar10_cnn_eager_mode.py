@@ -49,6 +49,31 @@ def get_model(inputs_shape):
     return M
 
 
+def get_model_batchnorm(inputs_shape):
+    # self defined initialization
+    W_init = tl.initializers.truncated_normal(stddev=5e-2)
+    W_init2 = tl.initializers.truncated_normal(stddev=0.04)
+    b_init2 = tl.initializers.constant(value=0.1)
+
+    # build network
+    ni = Input(inputs_shape)
+    nn = Conv2d(64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='conv1')(ni)
+    nn = BatchNorm(decay=0.99, act=tf.nn.relu, name='batch1')(nn)
+    nn = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(nn)
+
+    nn = Conv2d(64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='conv2')(nn)
+    nn = BatchNorm(decay=0.99, act=tf.nn.relu, name='batch2')(nn)
+    nn = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(nn)
+
+    nn = Flatten(name='flatten')(nn)
+    nn = Dense(384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='dense1relu')(nn)
+    nn = Dense(192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='dense2relu')(nn)
+    nn = Dense(10, act=None, W_init=W_init2, name='output')(nn)
+
+    M = Model(inputs=ni, outputs=nn, name='cnn')
+    return M
+
+
 # get the network
 net = get_model([None, 24, 24, 3])
 
@@ -60,8 +85,13 @@ learning_rate = 0.0001
 print_freq = 5
 n_step_epoch = int(len(y_train) / batch_size)
 n_step = n_epoch * n_step_epoch
-shuffle_buffer_size = 100
+shuffle_buffer_size = 128 # 100
+# init_learning_rate = 0.1
+# learning_rate_decay_factor = 0.1
+# num_epoch_decay = 350
+
 train_weights = net.weights
+# learning_rate = tf.Variable(init_learning_rate)
 optimizer = tf.train.AdamOptimizer(learning_rate)
 
 
@@ -109,6 +139,7 @@ def _map_fn_test(img, target):
     target = tf.reshape(target, ())
     return img, target
 
+
 # dataset API and augmentation
 train_ds = tf.data.Dataset.from_generator(
     generator_train, output_types=(tf.float32, tf.int32)
@@ -144,7 +175,7 @@ for epoch in range(n_epoch):
             _loss_ce = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
             _loss_L2 = 0
             # for p in tl.layers.get_variables_with_name('relu/W', True, True):
-            #     _loss_L2 += tl.cost.mean_squared_error()
+            #      _loss_L2 += tl.cost.lo_regularizer(1.0)(p)
             _loss = _loss_ce + _loss_L2
 
         grad = tape.gradient(_loss, train_weights)
@@ -153,7 +184,6 @@ for epoch in range(n_epoch):
         train_loss += _loss
         train_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
         n_iter += 1
-
 
     # use training and evaluation sets to evaluate the model every print_freq epoch
     if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
@@ -173,6 +203,10 @@ for epoch in range(n_epoch):
             n_iter += 1
         print("   val loss: {}".format(val_loss / n_iter))
         print("   val acc:  {}".format(val_acc / n_iter))
+
+    # FIXME : how to apply lr decay in eager mode?
+    # learning_rate.assign(tf.train.exponential_decay(init_learning_rate, epoch, num_epoch_decay,
+    #                                                 learning_rate_decay_factor))
 
 # use testing data to evaluate the model
 net.eval()
