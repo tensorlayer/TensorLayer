@@ -116,16 +116,7 @@ class Model():
         :return:
         """
 
-        # contradiction test
-        if is_train is None and self.is_train is None:
-            raise ValueError("Training / inference mode not defined. Argument `is_train` should be set as True / False. Otherwise please use `Model.train()` / `Model.eval()` to switch the mode.")
-        elif is_train is not None and self.is_train is not None:
-            if is_train == self.is_train:
-                logging.warning("Training / inference mode redefined redundantly. Please EITHER use the argument `is_train` OR `Model.train()` / `Model.eval()` to define the mode.")
-            else:
-                raise AttributeError("Training / inference mode mismatch. The argument `is_train` is set as %s, " % is_train +
-                                     "but the mode is currently set as %s. " % ('Training by Model.train()' if self.is_train else 'Inference by Model.eval()') +
-                                     "Please EITHER use the argument `is_train` OR `Model.train()` / `Model.test()` to define the mode.")
+        self._check_mode(is_train)
 
         # set training / inference mode if necessary
         if is_train is not None:
@@ -238,6 +229,18 @@ class Model():
             self._model_layer = ModelLayer(self)
 
         return self._model_layer
+
+    def _check_mode(self, is_train):
+        # contradiction test
+        if is_train is None and self.is_train is None:
+            raise ValueError("Training / inference mode not defined. Argument `is_train` should be set as True / False. Otherwise please use `Model.train()` / `Model.eval()` to switch the mode.")
+        elif is_train is not None and self.is_train is not None:
+            if is_train == self.is_train:
+                logging.warning("Training / inference mode redefined redundantly. Please EITHER use the argument `is_train` OR `Model.train()` / `Model.eval()` to define the mode.")
+            else:
+                raise AttributeError("Training / inference mode mismatch. The argument `is_train` is set as %s, " % is_train +
+                                     "but the mode is currently set as %s. " % ('Training by Model.train()' if self.is_train else 'Inference by Model.eval()') +
+                                     "Please EITHER use the argument `is_train` OR `Model.train()` / `Model.test()` to define the mode.")
 
     def _set_mode_for_layers(self, is_train):
         # FIXME: currently using self._outputs to judge static network or dynamic network

@@ -23,7 +23,8 @@ __all__ = [
     # 'LayersConfig',  # TODO : remove this??
     # 'TF_GRAPHKEYS_VARIABLES',  # TODO : remove this??
     'Layer',
-    'ModelLayer'
+    'ModelLayer',
+    'SequentialLayer'
 ]
 
 _global_layer_name_dict = {}  # TODO: better implementation?
@@ -500,10 +501,6 @@ class ModelLayer(Layer):
         # FIXME: model.outputs can be a list
         self.outputs = model.forward(self.inputs).outputs
 
-
-        # self._inputs_shape = None
-        # self._outputs_shape = None
-
         self._input_layer = model.inputs
 
         # Layer building state
@@ -515,8 +512,58 @@ class ModelLayer(Layer):
         # Layer training state
         self.is_train = True
 
+        logging.info(
+            "ModelLayer %s from Model: %s" %
+            (self.name, self.model.name)
+        )
+
     def build(self, inputs_shape):
         pass
 
     def forward(self, inputs):
         return self.model.forward(inputs).outputs
+
+
+class SequentialLayer(Layer):
+
+
+    def __init__(self, prev_layer, following_layers, name=None):
+
+        super(SequentialLayer, self).__init__(name=name)
+
+        # Layer input outputs
+        self.inputs = prev_layer.outputs
+        self._input_layer = prev_layer
+
+        # Layer weight state
+        self._weights = list()
+
+        # TODO: check type of following layers
+        self.following_layer = list()
+        in_layer = prev_layer
+        for layer in following_layers:
+            nlayer = layer(in_layer)
+            self.following_layer.append(nlayer)
+            self._weights.extend(nlayer.weights)
+            in_layer = nlayer
+
+        self.outputs = self.forward(self.inputs)
+
+        # Layer building state
+        self._built = True
+
+        logging.info(
+            "SequentialLayer %s including layers [%s]" %
+            (self.name, ', '.join([layer.name for layer in self.following_layer]))
+        )
+
+    def build(self, inputs_shape):
+        pass
+
+    def forward(self, inputs):
+        z = inputs
+        for layer in self.following_layer:
+            z = layer.forward(z)
+        return z
+
+

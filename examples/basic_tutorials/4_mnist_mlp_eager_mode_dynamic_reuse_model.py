@@ -5,7 +5,7 @@ tf.enable_eager_execution()
 import time
 import numpy as np
 import tensorlayer as tl
-from tensorlayer.layers import Input, Dense, Dropout
+from tensorlayer.layers import Input, Dense, Dropout, SequentialLayer
 from tensorlayer.models import Model
 import tensorflow.contrib.eager as tfe
 
@@ -24,17 +24,22 @@ class CustomModelHidden(Model):
 
         self.innet = Input([None, 784])
         self.dropout1 = Dropout(keep=0.8)(self.innet)
-        self.dense1 = Dense(n_units=800, act=tf.nn.relu)(self.dropout1)
-        self.dropout2 = Dropout(keep=0.8)(self.dense1)
-        self.dense2 = Dense(n_units=800, act=tf.nn.relu)(self.dropout2)
-        self.dropout3 = Dropout(keep=0.8)(self.dense2)
+
+        self.seq = SequentialLayer(
+            self.dropout1,
+            [
+                Dense(n_units=800, act=tf.nn.relu),
+                Dropout(keep=0.8),
+                Dense(n_units=800, act=tf.nn.relu),
+            ]
+        )
+
+        self.dropout3 = Dropout(keep=0.8)(self.seq)
 
     def forward(self, x):
         z = self.innet(x)
         z = self.dropout1(z)
-        z = self.dense1(z)
-        z = self.dropout2(z)
-        z = self.dense2(z)
+        z = self.seq(z)
         z = self.dropout3(z)
         return z
 
