@@ -240,7 +240,7 @@ class Model():
             else:
                 raise AttributeError("Training / inference mode mismatch. The argument `is_train` is set as %s, " % is_train +
                                      "but the mode is currently set as %s. " % ('Training by Model.train()' if self.is_train else 'Inference by Model.eval()') +
-                                     "Please EITHER use the argument `is_train` OR `Model.train()` / `Model.test()` to define the mode.")
+                                     "Please EITHER use the argument `is_train` OR `Model.train()` / `Model.eval()` to define the mode.")
 
     def _set_mode_for_layers(self, is_train):
         # FIXME: currently using self._outputs to judge static network or dynamic network
