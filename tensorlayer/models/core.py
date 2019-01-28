@@ -131,6 +131,7 @@ class Model():
                                  % (len(self._inputs), len(inputs)))
 
         # convert inputs to tensor if it is originally not
+        # FIXME: not sure convert_to_tensor here or ask user to do it
         if isinstance(inputs, list):
             for idx in range(len(inputs)):
                 inputs[idx] = tf.convert_to_tensor(inputs[idx])
@@ -146,9 +147,10 @@ class Model():
             raise ValueError("Outputs not defined. Please define inputs and outputs when the model is created. Or overwrite forward() function.")
 
         results = list()
-        memory = dict()
+        # memory = dict()
 
         for stacked_layers in self._stacked_layers:
+            # TODO: how to reuse model
 
             # idx_of_input should not be -1 as it has been checked in __init__
             if isinstance(self._inputs, list):
@@ -158,12 +160,12 @@ class Model():
                 z = inputs[0]
 
             for layer in stacked_layers[::-1]:
-                if layer.name in memory:
-                    z = memory[layer.name]
-                else:
-                    # FIXME: assume each layer has only one prev layer
-                    z = layer(z)
-                    memory[layer.name] = z
+                # if layer.name in memory:
+                #     z = memory[layer.name]
+                # else:
+                # FIXME: assume each layer has only one prev layer
+                z = layer(z)
+                # memory[layer.name] = z
             results.append(z)
 
         if not isinstance(self._outputs, list):
@@ -179,6 +181,7 @@ class Model():
         # FIXME: currently using self._outputs to judge static network or dynamic network
         elif self._outputs is not None:
             # self._inputs and self._outputs are defined when self is created
+            # TODO: weights order compatible with TL1.0
             self._weights = list()
             outputs_list = self._outputs if isinstance(self._outputs, list) else [self._outputs]
             for out in outputs_list:

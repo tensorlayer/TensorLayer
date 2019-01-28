@@ -182,6 +182,7 @@ class Layer(object):
 
             # code in tl 1.0
             # raise RuntimeError("Please use layers in `tl.layers.inputs` to convert Variable/Tensor/Placeholder/Numpy arrays to a TL layer")
+            # FIXME: not sure convert_to_tensor here or ask user to do it
             self.inputs = tf.convert_to_tensor(prev_layer)
             self._input_layer = None
             self._built = True
