@@ -100,14 +100,14 @@ def distort_fn(x, is_train=False):
     .. Randomly distort the image brightness.
     """
     # print('begin',x.shape, np.min(x), np.max(x))
-    x = tl.prepro.crop(x, 24, 24, is_random=is_train)
+    x = tl.prepro.crop_multi(x, 24, 24, is_random=is_train)
     # print('after crop',x.shape, np.min(x), np.max(x))
     if is_train:
         # x = tl.prepro.zoom(x, zoom_range=(0.9, 1.0), is_random=True)
         # print('after zoom', x.shape, np.min(x), np.max(x))
-        x = tl.prepro.flip_axis(x, axis=1, is_random=True)
+        x = tl.prepro.flip_axis_multi(x, axis=1, is_random=True)
         # print('after flip',x.shape, np.min(x), np.max(x))
-        x = tl.prepro.brightness(x, gamma=0.1, gain=1, is_random=True)
+        x = tl.prepro.brightness_multi(x, gamma=0.1, gain=1, is_random=True)
         # print('after brightness',x.shape, np.min(x), np.max(x))
         # tmp = np.max(x)
         # x += np.random.uniform(-20, 20)
@@ -128,7 +128,7 @@ for epoch in range(n_epoch):
 
     train_loss, train_acc, n_iter = 0, 0, 0
     for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
-        X_batch_a = tl.prepro.threading_data(X_batch, fn=distort_fn, is_train=True)
+        X_batch_a = tl.prepro.threading_data(X_batch, fn=distort_fn, thread_count=8, is_train=True)
         _loss, _acc, _ = sess.run([cost, acc, train_op], feed_dict={x: X_batch_a, y_: y_batch})
         train_loss += _loss
         train_acc += _acc
@@ -142,7 +142,7 @@ for epoch in range(n_epoch):
 
         val_loss, val_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=False):
-            X_batch_a = tl.prepro.threading_data(X_batch, fn=distort_fn, is_train=False)
+            X_batch_a = tl.prepro.threading_data(X_batch, fn=distort_fn, thread_count=8, is_train=False)
             _loss, _acc = sess.run([cost_test, acc_test], feed_dict={x: X_batch_a, y_: y_batch})
             val_loss += _loss
             val_acc += _acc

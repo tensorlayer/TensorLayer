@@ -869,8 +869,8 @@ def crop_multi(x, wrg, hrg, is_random=False, row_index=0, col_index=1):
         return np.asarray(results)
     else:
         # central crop
-        h_offset = (h - hrg) / 2
-        w_offset = (w - wrg) / 2
+        h_offset = int(np.floor((h - hrg) / 2.))
+        w_offset = int(np.floor((w - wrg) / 2.))
         results = []
         for data in x:
             results.append(data[h_offset:h - h_offset, w_offset:w - w_offset])
