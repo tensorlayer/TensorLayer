@@ -88,7 +88,6 @@ class Dense(Layer):
         self.in_channels = in_channels
 
         if self.in_channels is not None:
-            self._weights = list()
             self.build(self.in_channels)
             self._built = True
         # self.W_init_args = W_init_args

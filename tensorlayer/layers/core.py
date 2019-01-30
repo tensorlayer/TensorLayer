@@ -198,7 +198,6 @@ class Layer(object):
             self._input_layer = prev_layer
 
             if not self._built:
-                self._weights = list()
                 self.build(self._inputs_shape)
                 self._built = True
 
@@ -241,6 +240,8 @@ class Layer(object):
         weight = get_variable_with_initializer(
             scope_name=self.name, var_name=var_name, shape=shape, init=init
         )
+        if self._weights is None:
+            self._weights = list()
         self._weights.append(weight)  # Add into the weight collection
         # self.__setattr__(var_name, weight) # FIXME: prefer to remove this line, the weights should be manually defined as members of the Layer
         return weight
