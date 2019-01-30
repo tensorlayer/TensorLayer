@@ -23,18 +23,18 @@ class CustomModelHidden(Model):
         super(CustomModelHidden, self).__init__()
 
         self.innet = Input([None, 784])
-        self.dropout1 = Dropout(keep=0.8)(self.innet)
+        self.dropout1 = Dropout(keep=0.8)#(self.innet)
 
         self.seq = SequentialLayer(
             self.dropout1,
             [
-                Dense(n_units=800, act=tf.nn.relu),
+                Dense(n_units=800, act=tf.nn.relu, in_channels=784),
                 Dropout(keep=0.8),
                 Dense(n_units=800, act=tf.nn.relu),
             ]
         )
 
-        self.dropout3 = Dropout(keep=0.8)(self.seq)
+        self.dropout3 = Dropout(keep=0.8)#(self.seq)
 
     def forward(self, x):
         z = self.innet(x)

@@ -35,6 +35,8 @@ class Dense(Layer):
         The arguments for the weight matrix initializer.
     b_init_args : dictionary
         The arguments for the bias vector initializer.
+    in_channels
+    
     name : None or str
         A unique layer name.
 
@@ -71,6 +73,7 @@ class Dense(Layer):
             # b_init=tf.compat.v1.initializers.constant,
             # W_init_args={'stddev': 0.1},
             # b_init_args=None,
+            in_channels=None,
             name=None,  # 'dense',
     ):
 
@@ -82,6 +85,7 @@ class Dense(Layer):
         self.act = act
         self.W_init = W_init
         self.b_init = b_init
+        self.in_channels = in_channels
         # self.W_init_args = W_init_args
         # self.b_init_args = b_init_args
 
@@ -116,7 +120,10 @@ class Dense(Layer):
     def build(self, inputs_shape):
         if len(inputs_shape) != 2:
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
-        shape = [inputs_shape[1], self.n_units]
+        if self.in_channels:
+            shape = [self.in_channels, self.n_units]
+        else:
+            shape = [inputs_shape[1], self.n_units]
         self.W = self._get_weights("weights", shape=tuple(shape), init=self.W_init)
         if self.b_init:
             self.b = self._get_weights("biases", shape=(self.n_units, ), init=self.b_init)
@@ -139,4 +146,3 @@ class Dense(Layer):
         if self.act:
             z = self.act(z)
         return z
-

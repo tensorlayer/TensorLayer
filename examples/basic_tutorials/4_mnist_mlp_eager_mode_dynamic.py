@@ -23,13 +23,13 @@ class CustomModel(Model):
         super(CustomModel, self).__init__()
 
         self.innet = Input([None, 784])
-        self.dropout1 = Dropout(keep=0.8)(self.innet)
-        self.dense1 = Dense(n_units=800, act=tf.nn.relu)(self.dropout1)
-        self.dropout2 = Dropout(keep=0.8)(self.dense1)
-        self.dense2 = Dense(n_units=800, act=tf.nn.relu)(self.dropout2)
-        self.dropout3 = Dropout(keep=0.8)(self.dense2)
-        self.dense3 = Dense(n_units=10, act=tf.nn.relu)(self.dropout3)
-        self.dense4 = Dense(n_units=10)(self.dropout3)
+        self.dropout1 = Dropout(keep=0.8)#(self.innet)
+        self.dense1 = Dense(n_units=800, act=tf.nn.relu, in_channels=784)#(self.dropout1)
+        self.dropout2 = Dropout(keep=0.8)#(self.dense1)
+        self.dense2 = Dense(n_units=800, act=tf.nn.relu, in_channels=800)#(self.dropout2)
+        self.dropout3 = Dropout(keep=0.8)#(self.dense2)
+        self.dense3 = Dense(n_units=10, act=tf.nn.relu, in_channels=800)#(self.dropout3)
+        self.dense4 = Dense(n_units=10, in_channels=800)#(self.dropout3)
 
     def forward(self, x, foo=0):
         z = self.innet(x)
