@@ -140,8 +140,9 @@ class Layer(object):
         self.name = name
 
         # Layer input outputs
+        # TODO: note that in dynamic network, inputs and outputs can be both None, may cause problem, test needed
         self.inputs = None
-        self.outputs = None  # TODO: not accessible to eager mode but accessible to graph mode
+        self.outputs = None
 
         # self._inputs_shape = None
         # self._outputs_shape = None

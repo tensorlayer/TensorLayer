@@ -86,6 +86,11 @@ class Dense(Layer):
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = in_channels
+
+        if self.in_channels is not None:
+            self._weights = list()
+            self.build(self.in_channels)
+            self._built = True
         # self.W_init_args = W_init_args
         # self.b_init_args = b_init_args
 
@@ -118,7 +123,7 @@ class Dense(Layer):
     '''
 
     def build(self, inputs_shape):
-        if len(inputs_shape) != 2:
+        if self.in_channels is None and len(inputs_shape) != 2:
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
         if self.in_channels:
             shape = [self.in_channels, self.n_units]

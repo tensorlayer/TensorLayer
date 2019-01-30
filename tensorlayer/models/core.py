@@ -48,6 +48,7 @@ class Model():
         self._weights = None
 
         # Model inputs and outputs
+        # TODO: note that in dynamic network, inputs and outputs are both None, may cause problem, test needed
         self._inputs = inputs
         self._outputs = outputs
 
