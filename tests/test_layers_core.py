@@ -99,6 +99,9 @@ class Layer_Core_Test(CustomTestCase):
         print(self.dense2)
         print(self.dense3)
 
+    def test_net2(self):
+        print(self.innet)
+
 
 if __name__ == '__main__':
 
