@@ -235,7 +235,6 @@ class Layer(object):
 
         return self
 
-    # def _get_weights(self, scope_name, var_name, shape, init=np.random.normal, init_args=None):
     def _get_weights(self, var_name, shape, init=tl.initializers.random_normal()):
         weight = get_variable_with_initializer(
             scope_name=self.name, var_name=var_name, shape=shape, init=init
@@ -334,9 +333,9 @@ class Layer(object):
     def __str__(self):
 
         if self.outputs is not None:
-            _outputs_shape = [tuple(['batch_size'] + o.shape.as_list()) for o in self.outputs]
-            if len(_outputs_shape) == 1:
-                _outputs_shape = _outputs_shape[0]
+            _outputs_shape = self._outputs_shape
+            if _outputs_shape[0] == 1:
+                _outputs_shape[0] = "batch_size"
         else:
             _outputs_shape = "unknown for unbuilt layer"
         return "  {} ({}) outputs_shape: {}".format(self.__class__.__name__, self.name, _outputs_shape)
@@ -475,6 +474,7 @@ class Layer(object):
     #     self.outputs = state['outputs']
 
     ## raise Exceptions for old version codes
+    '''
     def count_params(self, **kwargs):
         raise Exception("please change count_params --> count_weights")
 
@@ -484,7 +484,7 @@ class Layer(object):
     @property
     def all_params(self):
         raise Exception("please change all_params --> weights")
-
+    '''
 
 
 class ModelLayer(Layer):
