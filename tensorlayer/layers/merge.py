@@ -119,6 +119,7 @@ class Elementwise(Layer):
 
         # super(Elementwise, self).__init__(prev_layer=prev_layer, act=act, name=name)
         super().__init__(name)
+        self.combine_fn = combine_fn
 
         logging.info(
             "Elementwise %s: fn: %s act: %s" %
@@ -138,7 +139,7 @@ class Elementwise(Layer):
         """
         outputs = inputs[0]
         for input in inputs[1:]:
-            outputs = combine_fn(outputs, input, name=self.name)
+            outputs = self.combine_fn(outputs, input, name=self.name)
         if self.act:
             outputs = self.act(outputs)
         return outputs

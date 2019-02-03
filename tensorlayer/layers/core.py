@@ -210,28 +210,34 @@ class Layer(object):
             # self._add_weights(prev_layer.all_weights)
             # self._add_dropout_layers(prev_layer.all_drop)
 
+        elif isinstance(prev_layer, list):
+            # 3. for layer have multiply inputs i.e. ConcatLayer
+
+            self.inputs = [layer.outputs for layer in prev_layer]
+            self._input_layer = prev_layer # FIXME: not sure how to deal with it
+
+            # FIXME: only support concat/elementwise, where build does nothing
+            if not self._built:
+                self._built = True
+
+            self.outputs = self.forward(self.inputs)
+
+            # TODO: need update
+            # self._add_layers(sum([l.all_layers for l in prev_layer], []))
+            # self._add_weights(sum([l.all_weights for l in prev_layer], []))
+            # self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
+
         else:
-            # FIXME: not sure yet how to handle other cases
-            # FIXME: if the prev_layer is a list, corresponding code in Model() needs update
-            '''
-            elif isinstance(prev_layer, list):
-                # 2. for layer have multiply inputs i.e. ConcatLayer
-
-                self.inputs = [layer.outputs for layer in prev_layer]
-
-                self._add_layers(sum([l.all_layers for l in prev_layer], []))
-                self._add_weights(sum([l.all_weights for l in prev_layer], []))
-                self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
-
-            elif prev_layer is not None:
-                # 4. tl.models
-                self._add_layers(prev_layer.all_layers)
-                self._add_weights(prev_layer.all_weights)
-                self._add_dropout_layers(prev_layer.all_drop)
-
-                if hasattr(prev_layer, "outputs"):
-                    self.inputs = prev_layer.outputs
-            '''
+            # FIXME: not sure if there is other cases
+            pass
+            # elif prev_layer is not None:
+            #     # 4. tl.models
+            #     self._add_layers(prev_layer.all_layers)
+            #     self._add_weights(prev_layer.all_weights)
+            #     self._add_dropout_layers(prev_layer.all_drop)
+            #
+            #     if hasattr(prev_layer, "outputs"):
+            #         self.inputs = prev_layer.outputs
 
         return self
 
