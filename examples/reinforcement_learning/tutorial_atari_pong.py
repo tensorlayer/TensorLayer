@@ -77,7 +77,7 @@ loss = tl.rein.cross_entropy_reward_loss(probs, t_actions, t_discount_rewards)
 train_op = tf.train.RMSPropOptimizer(learning_rate, decay_rate).minimize(loss)
 
 with tf.Session() as sess:
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.global_variables_initializer())
     # if resume:
     #     load_params = tl.files.load_npz(name=model_file_name+'.npz')
     #     tl.files.assign_params(sess, load_params, network)

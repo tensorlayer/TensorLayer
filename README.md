@@ -34,6 +34,8 @@
 
 TensorLayer is a novel TensorFlow-based deep learning and reinforcement learning library designed for researchers and engineers. It provides a large collection of customizable neural layers / functions that are key to build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software by the [ACM Multimedia Society](http://www.acmmm.org/2017/mm-2017-awardees/).
 
+🚀🚀🚀🚀 We are working hard on updating TensorLayer for TensorFlow 2.0 [here](https://github.com/tensorlayer/tensorlayer/issues/900), feel free to discuss and contribute!
+
 # Features
 
 As deep learning practitioners, we have been looking for a library that can address various development

@@ -263,7 +263,7 @@ if __name__ == "__main__":
             workers.append(Worker(i_name, GLOBAL_AC))
 
     COORD = tf.train.Coordinator()
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.global_variables_initializer())
 
     # start TF threading
     worker_threads = []
@@ -278,7 +278,7 @@ if __name__ == "__main__":
     # ============================= EVALUATION =============================
     # env = gym.make(GAME)
     # GLOBAL_AC = ACNet(GLOBAL_NET_SCOPE)
-    # tl.layers.initialize_global_variables(sess)
+    # sess.run(tf.global_variables_initializer())
     # GLOBAL_AC.load_ckpt()
     # while True:
     #     s = env.reset()

@@ -65,7 +65,7 @@ train_params = tl.layers.get_variables_with_name('binarynet', True, True)
 train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_params)
 
 # initialize all variables in the session
-tl.layers.initialize_global_variables(sess)
+sess.run(tf.global_variables_initializer())
 
 net_train.print_params()
 net_train.print_layers()
