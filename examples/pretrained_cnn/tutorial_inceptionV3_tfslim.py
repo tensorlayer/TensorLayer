@@ -94,7 +94,7 @@ def print_prob(prob):
 #                                     )
 # sess = tf.InteractiveSession()
 # # sess.run(tf.global_variables_initializer())
-# tl.layers.initialize_global_variables(sess)
+# sess.run(tf.global_variables_initializer())
 # network.print_params()
 
 ## InceptionV3 / All TF-Slim nets can be merged into TensorLayer

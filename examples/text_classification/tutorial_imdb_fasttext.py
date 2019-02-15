@@ -129,7 +129,7 @@ def train_test_and_save_model():
     )
 
     with tf.Session() as sess:
-        tl.layers.initialize_global_variables(sess)
+        sess.run(tf.global_variables_initializer())
 
         for epoch in range(N_EPOCH):
             start_time = time.time()

@@ -212,7 +212,7 @@ x = tf.placeholder("float", [None, 224, 224, 3])
 net = Vgg19_simple_api(x)
 y = net.outputs
 probs = tf.nn.softmax(y, name="prob")
-tl.layers.initialize_global_variables(sess)
+sess.run(tf.global_variables_initializer())
 
 # You need to download the pre-trained model - VGG19 NPY
 if not os.path.isfile(MODEL_PATH):

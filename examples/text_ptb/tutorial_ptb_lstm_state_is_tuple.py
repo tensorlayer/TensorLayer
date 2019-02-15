@@ -252,7 +252,7 @@ def main(_):
     net_test, lstm1_test, lstm2_test = inference(input_data_test, is_training=False, num_steps=1, reuse=True)
 
     # sess.run(tf.global_variables_initializer())
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.global_variables_initializer())
 
     def loss_fn(outputs, targets, batch_size):
         # See tl.cost.cross_entropy_seq()
@@ -287,7 +287,7 @@ def main(_):
     train_op = optimizer.apply_gradients(zip(grads, tvars))
 
     # sess.run(tf.global_variables_initializer())
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.global_variables_initializer())
 
     net.print_params()
     net.print_layers()

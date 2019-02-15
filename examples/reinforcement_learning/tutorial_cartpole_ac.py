@@ -151,7 +151,7 @@ actor = Actor(sess, n_features=N_F, n_actions=N_A, lr=LR_A)
 # we need a good teacher, so the teacher should learn faster than the actor
 critic = Critic(sess, n_features=N_F, lr=LR_C)
 
-tl.layers.initialize_global_variables(sess)
+sess.run(tf.global_variables_initializer())
 
 if OUTPUT_GRAPH:
     tf.summary.FileWriter("logs/", sess.graph)
