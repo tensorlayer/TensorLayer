@@ -218,9 +218,7 @@ def main_word2vec_basic():
     # transpose_b=True, normalized_embeddings is transposed before multiplication.
 
     # Step 5: Start training.
-    print()
-
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.global_variables_initializer())
     if resume:
         print("Load existing model" + "!" * 10)
         # Load from ckpt or npz file

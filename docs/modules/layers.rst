@@ -39,7 +39,7 @@ All TensorLayer layers have a number of properties in common:
 
 All TensorLayer layers have a number of methods in common:
 
- - ``layer.print_params()`` : print network variable information in order (after ``tl.layers.initialize_global_variables(sess)``). alternatively, print all variables by ``tl.layers.print_all_variables()``.
+ - ``layer.print_params()`` : print network variable information in order (after ``sess.run(tf.global_variables_initializer())``). alternatively, print all variables by ``tl.layers.print_all_variables()``.
  - ``layer.print_layers()`` : print network layer information in order.
  - ``layer.count_params()`` : print the number of parameters in the network.
 
@@ -89,7 +89,7 @@ To count the number of parameters in a network, run ``network.count_params()``.
   train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999,
                               epsilon=1e-08, use_locking=False).minimize(cost, var_list = train_params)
 
-  tl.layers.initialize_global_variables(sess)
+  sess.run(tf.global_variables_initializer())
 
   network.print_params()
   network.print_layers()
