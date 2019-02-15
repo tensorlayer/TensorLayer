@@ -207,7 +207,7 @@ with tf.device('/cpu:0'):
     with tf.device('/gpu:0'):  # <-- remove it if you don't have GPU
         train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost)
 
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.global_variables_initializer())
     if resume:
         print("Load existing model " + "!" * 10)
         saver = tf.train.Saver()
