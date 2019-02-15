@@ -157,7 +157,7 @@ def main_restore_embedding_layer():
     emb_net = tl.layers.EmbeddingInputlayer(x, vocabulary_size, embedding_size, name='emb')
 
     # sess.run(tf.global_variables_initializer())
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.global_variables_initializer())
 
     tl.files.assign_params(sess, [load_params[0]], emb_net)
 
@@ -283,7 +283,7 @@ def main_lstm_generate_text():
     train_op = optimizer.apply_gradients(zip(grads, tvars))
 
     # ===== Training
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.global_variables_initializer())
 
     print("\nStart learning a model to generate text")
     for i in range(max_max_epoch):

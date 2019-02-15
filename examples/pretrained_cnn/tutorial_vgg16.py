@@ -122,7 +122,7 @@ probs = tf.nn.softmax(y)
 # correct_prediction = tf.equal(tf.cast(tf.argmax(y, 1), tf.float32), tf.cast(y_, tf.float32))
 # acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-tl.layers.initialize_global_variables(sess)
+sess.run(tf.global_variables_initializer())
 net.print_params()
 net.print_layers()
 
