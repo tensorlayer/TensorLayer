@@ -54,7 +54,7 @@ class PadLayer(Layer):
 
         logging.info("PadLayer   %s: padding: %s mode: %s" % (self.name, list(padding), mode))
 
-        if not isinstance(paddings, tf.Tensor):
+        if not isinstance(padding, tf.Tensor):
             raise Exception(
                 "padding should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
             )
