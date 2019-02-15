@@ -101,7 +101,7 @@ n.print_layers()
 n.print_params(False)
 
 sess = tf.InteractiveSession()
-# tl.layers.initialize_global_variables(sess)
+# sess.run(tf.global_variables_initializer())
 
 if not os.path.isfile(MODEL_PATH):
     raise Exception("Please download mobilenet.npz from : https://github.com/tensorlayer/pretrained-models")

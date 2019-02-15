@@ -48,7 +48,7 @@ learning_rate = 0.0001
 train_params = network.all_params
 train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost, var_list=train_params)
 
-tl.layers.initialize_global_variables(sess)
+sess.run(tf.global_variables_initializer())
 
 for epoch in range(n_epoch):
     start_time = time.time()
