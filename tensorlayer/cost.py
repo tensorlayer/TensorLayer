@@ -130,11 +130,11 @@ def mean_squared_error(output, target, is_mean=False, name="mean_squared_error")
 
     """
     # with tf.name_scope(name):
-    if output.get_shape().ndims == 2:  # [batch_size, n_feature]
+    if len(output.shape) == 2:  # [batch_size, n_feature]
         axis = 1
-    elif output.get_shape().ndims == 3:  # [batch_size, w, h]
+    elif len(output.shape) == 3:  # [batch_size, w, h]
         axis = [1, 2]
-    elif output.get_shape().ndims == 4:  # [batch_size, w, h, c]
+    elif len(output.shape) == 4:  # [batch_size, w, h, c]
         axis = [1, 2, 3]
     else:
         raise Exception("Unknow dimension")
@@ -160,11 +160,11 @@ def normalized_mean_square_error(output, target, name="normalized_mean_squared_e
 
     """
     # with tf.name_scope("normalized_mean_squared_error_loss"):
-    if output.get_shape().ndims == 2:  # [batch_size, n_feature]
+    if len(output.shape) == 2:  # [batch_size, n_feature]
         axis = 1
-    elif output.get_shape().ndims == 3:  # [batch_size, w, h]
+    elif len(output.shape) == 3:  # [batch_size, w, h]
         axis = [1, 2]
-    elif output.get_shape().ndims == 4:  # [batch_size, w, h, c]
+    elif len(output.shape) == 4:  # [batch_size, w, h, c]
         axis = [1, 2, 3]
     nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=axis))
     nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=axis))
@@ -190,11 +190,11 @@ def absolute_difference_error(output, target, is_mean=False, name="absolute_diff
 
     """
     # with tf.name_scope("absolute_difference_error_loss"):
-    if output.get_shape().ndims == 2:  # [batch_size, n_feature]
+    if len(output.shape) == 2:  # [batch_size, n_feature]
         axis = 1
-    elif output.get_shape().ndims == 3:  # [batch_size, w, h]
+    elif len(output.shape) == 3:  # [batch_size, w, h]
         axis = [1, 2]
-    elif output.get_shape().ndims == 4:  # [batch_size, w, h, c]
+    elif len(output.shape) == 4:  # [batch_size, w, h, c]
         axis = [1, 2, 3]
     else:
         raise Exception("Unknow dimension")
