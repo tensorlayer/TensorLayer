@@ -4,6 +4,7 @@ from abc import ABCMeta, abstractmethod
 import tensorflow as tf
 from tensorlayer.layers import Layer, ModelLayer
 from tensorlayer import logging
+from queue import Queue
 
 __all__ = [
     'Model',
@@ -82,31 +83,34 @@ class Model():
                     raise TypeError("The argument `%s` should be either Layer or a list of Layer but received %s" %
                                     (check_order[co], type(check_argu)))
 
+            # build network graph
+            self.layer_dict, edges, self.layer_by_depth = self._construct_graph()
+
             # automatically connecting layers
-            outputs_list = self._outputs if isinstance(self._outputs, list) else [self._outputs]
-            self._stacked_layers = list()
-
-            for out in outputs_list:
-                stacked_layers = list()
-                current = out
-                while current is not None:
-                    stacked_layers.append(current)
-                    # FIXME: assume each layer has only one prev layer
-                    current = current._input_layer
-
-                if isinstance(self._inputs, list):
-                    # check if the input_layer is in self._inputs
-                    idx_of_input = self._find_idx_of_inputs(stacked_layers[-1])
-                    flag_input_not_found = True if idx_of_input == -1 else False
-                else:
-                    flag_input_not_found = True if self._inputs is not stacked_layers[-1] else False
-                if flag_input_not_found:
-                    raise ValueError(
-                        "The layer named `%s` not found in the inputs of the model. " % stacked_layers[-1].name +
-                        "Please check the argument `inputs` when the model is created."
-                    )
-
-                self._stacked_layers.append(stacked_layers)
+            # outputs_list = self._outputs if isinstance(self._outputs, list) else [self._outputs]
+            # self._stacked_layers = list()
+            #
+            # for out in outputs_list:
+            #     stacked_layers = list()
+            #     current = out
+            #     while current is not None:
+            #         stacked_layers.append(current)
+            #         # FIXME: assume each layer has only one prev layer
+            #         current = current._input_layer
+            #
+            #     if isinstance(self._inputs, list):
+            #         # check if the input_layer is in self._inputs
+            #         idx_of_input = self._find_idx_of_inputs(stacked_layers[-1])
+            #         flag_input_not_found = True if idx_of_input == -1 else False
+            #     else:
+            #         flag_input_not_found = True if self._inputs is not stacked_layers[-1] else False
+            #     if flag_input_not_found:
+            #         raise ValueError(
+            #             "The layer named `%s` not found in the inputs of the model. " % stacked_layers[-1].name +
+            #             "Please check the argument `inputs` when the model is created."
+            #         )
+            #
+            #     self._stacked_layers.append(stacked_layers)
 
 
     def __call__(self, inputs, is_train=None, **kwargs):
@@ -147,32 +151,54 @@ class Model():
         if self._outputs is None:
             raise ValueError("Outputs not defined. Please define inputs and outputs when the model is created. Or overwrite forward() function.")
 
-        results = list()
-        # memory = dict()
+        # results = list()
+        # TODO: clear memory when necessary
+        memory = dict()
 
-        for stacked_layers in self._stacked_layers:
-            # TODO: how to reuse model
-
-            # idx_of_input should not be -1 as it has been checked in __init__
-            if isinstance(self._inputs, list):
-                idx_of_input = self._find_idx_of_inputs(stacked_layers[-1])
-                z = inputs[0][idx_of_input]
+        # get each layer's output by going through the graph in depth order
+        for depth, layers in enumerate(self.layer_by_depth):
+            if depth == 0:
+                # the first level of layers should contains all Input layers
+                if isinstance(self._inputs, list):
+                    assert len(inputs[0]) == len(layers)
+                    for idx, layer in enumerate(layers):
+                        memory[layer.name] = layer(inputs[0][idx])
+                else:
+                    memory[layers[0].name] = layers[0](inputs[0])
             else:
-                z = inputs[0]
+                for layer in layers:
+                    prev_layer = layer._input_layer
+                    if isinstance(prev_layer, list):
+                        layer_input = [memory[player.name] for player in prev_layer]
+                    else:
+                        layer_input = memory[prev_layer.name]
+                    memory[layer.name] = layer(layer_input)
 
-            for layer in stacked_layers[::-1]:
-                # if layer.name in memory:
-                #     z = memory[layer.name]
-                # else:
-                # FIXME: assume each layer has only one prev layer
-                z = layer(z)
-                # memory[layer.name] = z
-            results.append(z)
+        # for stacked_layers in self._stacked_layers:
+        #     # TODO: how to reuse model
+        #
+        #     # idx_of_input should not be -1 as it has been checked in __init__
+        #     if isinstance(self._inputs, list):
+        #         idx_of_input = self._find_idx_of_inputs(stacked_layers[-1])
+        #         z = inputs[0][idx_of_input]
+        #     else:
+        #         z = inputs[0]
+        #
+        #     for layer in stacked_layers[::-1]:
+        #         # if layer.name in memory:
+        #         #     z = memory[layer.name]
+        #         # else:
+        #         # FIXME: assume each layer has only one prev layer
+        #         z = layer(z)
+        #         # memory[layer.name] = z
+        #     results.append(z)
 
         if not isinstance(self._outputs, list):
-            return results[0]
+            return memory[self._outputs.name]
+            # return results[0]
         else:
-            return results
+            return [memory[layer.name] for layer in self._outputs]
+            # return results
 
     @property
     def weights(self):
@@ -182,16 +208,21 @@ class Model():
         # FIXME: currently using self._outputs to judge static network or dynamic network
         elif self._outputs is not None:
             # self._inputs and self._outputs are defined when self is created
-            # TODO: weights order compatible with TL1.0
             self._weights = list()
-            outputs_list = self._outputs if isinstance(self._outputs, list) else [self._outputs]
-            for out in outputs_list:
-                current = out
-                while current is not None:
-                    if current.weights is not None:
-                        self._weights.extend(current.weights)
-                    # FIXME: assume each layer has only one prev layer
-                    current = current._input_layer
+            for depth_layers in self.layer_by_depth:
+                for layer in depth_layers:
+                    if layer.weights is not None:
+                        self._weights.extend(layer.weights)
+
+            # # TODO: weights order compatible with TL1.0
+            # outputs_list = self._outputs if isinstance(self._outputs, list) else [self._outputs]
+            # for out in outputs_list:
+            #     current = out
+            #     while current is not None:
+            #         if current.weights is not None:
+            #             self._weights.extend(current.weights)
+            #         # FIXME: assume each layer has only one prev layer
+            #         current = current._input_layer
         else:
             # self._inputs and self._outputs are NOT defined when self is created (eager mode)
             self._weights = list()
@@ -249,12 +280,18 @@ class Model():
     def _set_mode_for_layers(self, is_train):
         # FIXME: currently using self._outputs to judge static network or dynamic network
         if self._outputs is not None:
-            for stacked_layers in self._stacked_layers:
-                for layer in stacked_layers:
+            for depth_layers in self.layer_by_depth:
+                for layer in depth_layers:
                     layer.is_train = is_train
                     # TODO: test THIS
                     if isinstance(layer, ModelLayer):
                         layer.model._set_mode_for_layers(is_train)
+            # for stacked_layers in self._stacked_layers:
+            #     for layer in stacked_layers:
+            #         layer.is_train = is_train
+            #         # TODO: test THIS
+            #         if isinstance(layer, ModelLayer):
+            #             layer.model._set_mode_for_layers(is_train)
         else:
             attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
             attr_list.remove("weights")
@@ -312,3 +349,93 @@ class Model():
     @property
     def all_drop(self):
         raise Exception("all_drop is deprecated")
+
+    def _construct_graph(self):
+        layer_dict = {}      # {'layer_name': layer, ...}
+        edges = {}           # {'father_layer_name': 'child_layer_name', ...}
+        layer_by_depth = []  # [ [layer0, layer1, ...], [layer2, layer3, ...], ... ]
+
+        queue_layer = Queue()
+        indegrees = {}
+
+        # BFS to visit all layers
+        outputs_list = self.outputs if isinstance(self.outputs, list) else [self.outputs]
+        for output_layer in outputs_list:
+            queue_layer.put(output_layer)
+
+            while not queue_layer.empty():
+                cur_layer = queue_layer.get()
+
+                prev_layers = cur_layer._input_layer
+
+                if not cur_layer.name in layer_dict.keys():
+                    layer_dict[cur_layer.name] = cur_layer
+
+                if prev_layers is None:
+                    # find input layer
+                    indegrees[cur_layer.name] = 0
+                    continue
+
+                if not isinstance(prev_layers, list):
+                    prev_layers = [prev_layers]
+
+                indegrees[cur_layer.name] = len(prev_layers)
+
+                for layer in prev_layers:
+                    if layer.name not in edges.keys():
+                        queue_layer.put(layer)
+                        edges[layer.name] = [cur_layer.name]
+                    else:
+                        edges[layer.name].append(cur_layer.name)
+
+        cur_depth = []
+        next_depth = []
+
+        # find input layers, whose indegrees should be zero
+        # TODO : judge whether they are input layers
+        for k, v in indegrees.items():
+            if v == 0:
+                cur_depth.append(layer_dict[k])
+
+        # top-sort style to decide each layer's depth
+        while not len(cur_depth) == 0:
+            layer_by_depth.append(cur_depth)
+            for layer in cur_depth:
+                if layer.name in edges.keys():
+                    for child_layer_name in edges[layer.name]:
+                        indegrees[child_layer_name] -= 1
+                        if indegrees[child_layer_name] == 0:
+                            next_depth.append(layer_dict[child_layer_name])
+
+            cur_depth = next_depth
+            next_depth = []
+
+        return layer_dict, edges, layer_by_depth
+
+
+if __name__ == '__main__':
+    import tensorlayer as tl
+    from tensorlayer.layers import Input, Conv2d, BatchNorm, MaxPool2d, Flatten, Dense, LocalResponseNorm, Concat
+    from tensorlayer.models import Model
+
+    def get_model(inputs_shape):
+        ni = Input(inputs_shape)
+        nn1 = Dense(384, act=tf.nn.relu, name='dense1relu')(ni)
+        nn2 = Dense(192, act=tf.nn.relu, name='dense2relu')(ni)
+        nn2 = Dense(64, act=tf.nn.relu, name='dense3relu')(nn2)
+        nn = Concat(name='concat')([nn1, nn2])
+
+        M = Model(inputs=ni, outputs=nn, name='cnn')
+        return M
+
+    net = get_model((None, 784))
+    for i, l in enumerate(net.layer_by_depth):
+        print(i, l)
+
+    x = tf.placeholder(tf.float32, shape=[None, 784], name='inputs')
+    y_ = tf.placeholder(tf.int64, shape=[None], name='targets')
+
+    ## get output tensors for training and testing
+    # 1) use ``is_train''
+    y1 = net(x, is_train=True).outputs
+    ce = tl.cost.cross_entropy(y1, y_, name='cost')

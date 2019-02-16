@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# import sys
-# sys.path.append("/home/haodong2/Rundi/code/tensorlayer2")
+import sys
+sys.path.append("/home/haodong2/Rundi/code/tensorlayer2")
 import time
 import multiprocessing
 import tensorflow as tf
