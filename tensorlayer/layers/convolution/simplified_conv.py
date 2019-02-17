@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.utils import get_collection_trainable
@@ -79,10 +80,13 @@ class Conv1d(Layer):
             act=None,
             padding='SAME',
             data_format="channels_last",
-            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            b_init=tf.compat.v1.initializers.constant(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
+            W_init=tl.initializers.truncated_normal(stddev=0.02),
+            b_init=tl.initializers.constant(value=0.0),
+            # W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+            # b_init=tf.compat.v1.initializers.constant(value=0.0),
+            # W_init_args=None,
+            # b_init_args=None,
+            use_cudnn_on_gpu=None,
             name=None,  #'conv1d'
     ):
         # super(Conv1d, self
@@ -96,8 +100,9 @@ class Conv1d(Layer):
         self.dilation_rate = dilation_rate
         self.W_init = W_init
         self.b_init = b_init
-        self.W_init_args = W_init_args
-        self.b_init_args = b_init_args
+        # self.W_init_args = W_init_args
+        # self.b_init_args = b_init_args
+        # FIXME: Don't know the use of use_cudnn_on_gpu
         self.use_cudnn_on_gpu = use_cudnn_on_gpu
         logging.info(
             "Conv1d %s: n_filter: %d filter_size: %s stride: %d pad: %s act: %s dilation_rate: %d" % (
@@ -209,8 +214,10 @@ class Conv2d(Layer):
             padding='SAME',
             data_format='channels_last',
             dilation_rate=(1, 1),
-            W_init = tf.truncated_normal_initializer(stddev=0.02),
-            b_init = tf.constant(value=0.0),
+            W_init=tl.initializers.truncated_normal(stddev=0.02),
+            b_init=tl.initializers.constant(value=0.0),
+            # W_init = tf.truncated_normal_initializer(stddev=0.02),
+            # b_init = tf.constant(value=0.0),
             # W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
             # b_init=tf.compat.v1.initializers.constant(value=0.0),
             # W_init_args=None,
@@ -269,7 +276,7 @@ class Conv2d(Layer):
         self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init)
 
         if self.b_init:
-            self.b = self._get_weights("biases", shape=(self.n_filter), init=self.b_init)
+            self.b = self._get_weights("biases", shape=(self.n_filter,), init=self.b_init)
 
     def forward(self, inputs):
         outputs = tf.nn.conv2d(
@@ -372,10 +379,12 @@ class Conv3d(Layer):
             padding='SAME',
             data_format='channels_last',
             dilation_rate=(1, 1, 1),
-            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            b_init=tf.compat.v1.initializers.constant(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
+            W_init=tl.initializers.truncated_normal(stddev=0.02),
+            b_init=tl.initializers.constant(value=0.0),
+            # W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+            # b_init=tf.compat.v1.initializers.constant(value=0.0),
+            # W_init_args=None,
+            # b_init_args=None,
             # use_cudnn_on_gpu=None,
             name=None,  #'conv3d',
     ):
@@ -389,8 +398,8 @@ class Conv3d(Layer):
         self.data_format = data_format
         self.W_init = W_init
         self.b_init = b_init
-        self.W_init_args = W_init_args
-        self.b_init_args = b_init_args
+        # self.W_init_args = W_init_args
+        # self.b_init_args = b_init_args
         # self.use_cudnn_on_gpu = use_cudnn_on_gpu
         logging.info(
             "Conv3d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
@@ -420,7 +429,7 @@ class Conv3d(Layer):
             self.W = self._get_weights("filters", shape=self.filter_size, init=self.W_init, init_args=self.W_init_args)
             if self.b_init:
                 self.b = self._get_weights(
-                    "biases", shape=(self.n_filter), init=self.b_init, init_args=self.b_init_args
+                    "biases", shape=(self.n_filter,), init=self.b_init, init_args=self.b_init_args
                 )
 
         def forward(self, inputs):
