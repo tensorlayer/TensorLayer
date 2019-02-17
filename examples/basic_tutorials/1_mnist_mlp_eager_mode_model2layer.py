@@ -35,8 +35,7 @@ def get_model(inputs_shape):
 
     nn = Dropout(keep=0.8)(M_hidden.as_layer())
     nn = Dense(n_units=10, act=tf.nn.relu)(nn)
-    M = Model(inputs=ni, outputs=nn, name="mlp")
-    return M
+    return Model(inputs=ni, outputs=nn, name="mlp")
 
 MLP = get_model([None, 784])
 # MLP.print_layers()

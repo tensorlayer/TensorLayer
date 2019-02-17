@@ -58,8 +58,7 @@ running_reward = None
 def get_model(inputs_shape):
     ni = tl.layers.Input(inputs_shape, name='observation')
     nn = tl.layers.Dense(4, act=None, W_init=tf.random_uniform_initializer(0, 0.01), b_init=None, name='q_a_s')(ni)
-    M = tl.models.Model(inputs=ni, outputs=nn, name="Q-Network")
-    return M
+    return tl.models.Model(inputs=ni, outputs=nn, name="Q-Network")
 qnetwork = get_model([1, 16])
 qnetwork.train()
 train_weights = qnetwork.weights
