@@ -87,6 +87,7 @@ class Conv1d(Layer):
             # W_init_args=None,
             # b_init_args=None,
             use_cudnn_on_gpu=None,
+            in_channels=None,
             name=None,  #'conv1d'
     ):
         # super(Conv1d, self
@@ -100,6 +101,12 @@ class Conv1d(Layer):
         self.dilation_rate = dilation_rate
         self.W_init = W_init
         self.b_init = b_init
+        self.in_channels = in_channels
+
+        if self.in_channels:
+            self.build(None)
+            self._built = True
+
         # self.W_init_args = W_init_args
         # self.b_init_args = b_init_args
         # FIXME: Don't know the use of use_cudnn_on_gpu
@@ -114,10 +121,16 @@ class Conv1d(Layer):
     def build(self, inputs_shape):
         if self.data_format == 'channels_last':
             self.data_format == 'HWC'
-            self.pre_channel = inputs_shape[-1]
+            if self.in_channels:
+                self.pre_channel = self.in_channels
+            else:
+                self.pre_channel = inputs_shape[-1]
         elif self.data_format == 'channels_first':
             self.data_format == 'HCW'
-            self.pre_channel = inputs_shape[1]
+            if self.in_channels:
+                self.pre_channel = self.in_channels
+            else:
+                self.pre_channel = inputs_shape[1]
         else:
             raise Exception("data_format should be either channels_last or channels_first")
 
@@ -223,6 +236,7 @@ class Conv2d(Layer):
             # W_init_args=None,
             # b_init_args=None,
             use_cudnn_on_gpu=None,
+            in_channels=None,
             name=None,  #'conv2d',
     ):
         # if len(strides) != 2:
@@ -250,6 +264,12 @@ class Conv2d(Layer):
         # self.W_init_args = W_init_args
         # self.b_init_args = b_init_args
         self.use_cudnn_on_gpu = use_cudnn_on_gpu
+        self.in_channels = in_channels
+
+        if self.in_channels:
+            self.build(None)
+            self._built = True
+
         logging.info(
             "Conv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
                 self.name, n_filter, str(filter_size), str(strides), padding,
@@ -260,12 +280,18 @@ class Conv2d(Layer):
     def build(self, inputs_shape):
         if self.data_format == 'channels_last':
             self.data_format = 'NHWC'
-            self.pre_channel = inputs_shape[-1]
+            if self.in_channels:
+                self.pre_channel = self.in_channels
+            else:
+                self.pre_channel = inputs_shape[-1]
             self.strides = [1, self.strides[0], self.strides[1], 1]
             self.dilation_rate = [1, self.dilation_rate[0], self.dilation_rate[1], 1]
         elif self.data_format == 'channels_first':
             self.data_format = 'NCHW'
-            self.pre_channel = inputs_shape[1]
+            if self.in_channels:
+                self.pre_channel = self.in_channels
+            else:
+                self.pre_channel = inputs_shape[1]
             self.strides = [1, 1, self.strides[0], self.strides[1]]
             self.dilation_rate = [1, 1, self.dilation_rate[0], self.dilation_rate[1]]
         else:
@@ -386,6 +412,7 @@ class Conv3d(Layer):
             # W_init_args=None,
             # b_init_args=None,
             # use_cudnn_on_gpu=None,
+            in_channels=None,
             name=None,  #'conv3d',
     ):
         super().__init__(name)
@@ -398,6 +425,11 @@ class Conv3d(Layer):
         self.data_format = data_format
         self.W_init = W_init
         self.b_init = b_init
+        self.in_channels = in_channels
+
+        if self.in_channels:
+            self.build(None)
+            self._built = True
         # self.W_init_args = W_init_args
         # self.b_init_args = b_init_args
         # self.use_cudnn_on_gpu = use_cudnn_on_gpu
@@ -411,12 +443,18 @@ class Conv3d(Layer):
         def build(self, inputs_shape):
             if self.data_format == 'channels_last':
                 self.data_format == 'NDHWC'
-                self.pre_channel = inputs_shape[-1]
+                if self.in_channels:
+                    self.pre_channel = self.in_channels
+                else:
+                    self.pre_channel = inputs_shape[-1]
                 self.strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
                 self.dilation_rate = [1, self.dilation_rate[0], self.dilation_rate[1], self.dilation_rate[2], 1]
             elif self.data_format == 'channels_first':
                 self.data_format == 'NCDHW'
-                self.pre_channel = inputs_shape[1]
+                if self.in_channels:
+                    self.pre_channel = self.in_channels
+                else:
+                    self.pre_channel = inputs_shape[1]
                 self.strides = [1, 1, self.strides[0], self.strides[1], self.strides[2]]
                 self.dilation_rate = [1, 1, self.dilation_rate[0], self.dilation_rate[1], self.dilation_rate[2]]
             else:
