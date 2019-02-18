@@ -108,7 +108,7 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
     #     loss(x, z) = - sum_i (x[i] * log(z[i]) + (1 - x[i]) * log(1 - z[i]))
 
 
-def mean_squared_error(output, target, is_mean=False, name="mean_squared_error"):
+def mean_squared_error(output, target, is_mean=False, axis=-1, name="mean_squared_error"):
     """Return the TensorFlow expression of mean-square-error (L2) of two batch of data.
 
     Parameters
@@ -121,6 +121,8 @@ def mean_squared_error(output, target, is_mean=False, name="mean_squared_error")
         Whether compute the mean or sum for each example.
             - If True, use ``tf.reduce_mean`` to compute the loss between one target and predict data.
             - If False, use ``tf.reduce_sum`` (default).
+    axis : int or list of int
+        The dimensions to reduce.
     name : str
         An optional name to attach to this function.
 
@@ -130,14 +132,14 @@ def mean_squared_error(output, target, is_mean=False, name="mean_squared_error")
 
     """
     # with tf.name_scope(name):
-    if len(output.shape) == 2:  # [batch_size, n_feature]
-        axis = 1
-    elif len(output.shape) == 3:  # [batch_size, w, h]
-        axis = [1, 2]
-    elif len(output.shape) == 4:  # [batch_size, w, h, c]
-        axis = [1, 2, 3]
-    else:
-        raise Exception("Unknow dimension")
+    # if len(output.shape) == 2:  # [batch_size, n_feature]
+    #     axis = 1
+    # elif len(output.shape) == 3:  # [batch_size, w, h]
+    #     axis = [1, 2]
+    # elif len(output.shape) == 4:  # [batch_size, w, h, c]
+    #     axis = [1, 2, 3]
+    # else:
+    #     raise Exception("Unknow dimension")
 
     if is_mean:
         mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), axis), name=name)
@@ -146,7 +148,7 @@ def mean_squared_error(output, target, is_mean=False, name="mean_squared_error")
     return mse
 
 
-def normalized_mean_square_error(output, target, name="normalized_mean_squared_error_loss"):
+def normalized_mean_square_error(output, target, axis=-1, name="normalized_mean_squared_error_loss"):
     """Return the TensorFlow expression of normalized mean-square-error of two distributions.
 
     Parameters
@@ -155,24 +157,26 @@ def normalized_mean_square_error(output, target, name="normalized_mean_squared_e
         2D, 3D or 4D tensor i.e. [batch_size, n_feature], [batch_size, height, width] or [batch_size, height, width, channel].
     target : Tensor
         The target distribution, format the same with `output`.
+    axis : int or list of int
+        The dimensions to reduce.
     name : str
         An optional name to attach to this function.
 
     """
-    # with tf.name_scope("normalized_mean_squared_error_loss"):
-    if len(output.shape) == 2:  # [batch_size, n_feature]
-        axis = 1
-    elif len(output.shape) == 3:  # [batch_size, w, h]
-        axis = [1, 2]
-    elif len(output.shape) == 4:  # [batch_size, w, h, c]
-        axis = [1, 2, 3]
+    with tf.name_scope("normalized_mean_squared_error_loss"):
+    # if len(output.shape) == 2:  # [batch_size, n_feature]
+    #     axis = 1
+    # elif len(output.shape) == 3:  # [batch_size, w, h]
+    #     axis = [1, 2]
+    # elif len(output.shape) == 4:  # [batch_size, w, h, c]
+    #     axis = [1, 2, 3]
     nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=axis))
     nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=axis))
     nmse = tf.reduce_mean(nmse_a / nmse_b, name=name)
     return nmse
 
 
-def absolute_difference_error(output, target, is_mean=False, name="absolute_difference_error_loss"):
+def absolute_difference_error(output, target, is_mean=False, axis=-1, name="absolute_difference_error_loss"):
     """Return the TensorFlow expression of absolute difference error (L1) of two batch of data.
 
     Parameters
@@ -185,19 +189,21 @@ def absolute_difference_error(output, target, is_mean=False, name="absolute_diff
         Whether compute the mean or sum for each example.
             - If True, use ``tf.reduce_mean`` to compute the loss between one target and predict data.
             - If False, use ``tf.reduce_sum`` (default).
+    axis : int or list of int
+        The dimensions to reduce.
     name : str
         An optional name to attach to this function.
 
     """
-    # with tf.name_scope("absolute_difference_error_loss"):
-    if len(output.shape) == 2:  # [batch_size, n_feature]
-        axis = 1
-    elif len(output.shape) == 3:  # [batch_size, w, h]
-        axis = [1, 2]
-    elif len(output.shape) == 4:  # [batch_size, w, h, c]
-        axis = [1, 2, 3]
-    else:
-        raise Exception("Unknow dimension")
+    # # with tf.name_scope("absolute_difference_error_loss"):
+    # if len(output.shape) == 2:  # [batch_size, n_feature]
+    #     axis = 1
+    # elif len(output.shape) == 3:  # [batch_size, w, h]
+    #     axis = [1, 2]
+    # elif len(output.shape) == 4:  # [batch_size, w, h, c]
+    #     axis = [1, 2, 3]
+    # else:
+    #     raise Exception("Unknow dimension")
     if is_mean:
         loss = tf.reduce_mean(tf.reduce_mean(tf.abs(output - target), axis), name=name)
     else:
