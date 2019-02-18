@@ -24,7 +24,8 @@ __all__ = [
     # 'TF_GRAPHKEYS_VARIABLES',  # TODO : remove this??
     'Layer',
     'ModelLayer',
-    'SequentialLayer'
+    'SequentialLayer',
+    'LayerList'
 ]
 
 _global_layer_name_dict = {}  # TODO: better implementation?
@@ -576,3 +577,93 @@ class SequentialLayer(Layer):
         return z
 
 
+class LayerList(Layer):
+    # TODO: documentation
+    '''
+    Documentation pending
+    '''
+    def __init__(self, layers:list, name=None):
+        super(LayerList, self).__init__(name=name)
+        self.layers = layers
+
+        for layer in self.layers:
+            if layer._built == True and layer.weights is not None:
+                # some layers in the list passed in have already been built
+                # e.g. using input shape to construct layers in dynamic eager
+                if self._weights == None:
+                    self._weights = list()
+                self._weights.extend(layer.weights)
+
+        logging.info(
+            "LayerList %s including layers [%s]" %
+            (self.name, ', '.join([layer.name for layer in self.layers]))
+        )
+
+    def __getitem__(self, idx):
+        if isinstance(idx, slice):
+            return LayerList(list(self.layers)[idx])
+        else:
+            return self.layers[idx]
+
+    def __len__(self):
+        return len(self.layers)
+
+    def build(self, inputs_shape):
+        in_layer = self._input_layer
+        for layer in self.layers:
+            is_build = layer._built
+            nlayer = layer(in_layer)
+            if is_build == False and layer.weights is not None:
+                if self._weights == None:
+                    self._weights = list()
+                self._weights.extend(layer.weights)
+            layer._built = True
+            in_layer = nlayer
+
+    def forward(self, inputs):
+        z = inputs
+        for layer in self.layers:
+            z = layer.forward(z)
+        return z
+
+
+# if __name__ == '__main__':
+#
+#     from tensorlayer.layers import Input, Dense, Dropout, LayerList
+#     from tensorlayer.models import Model
+#
+#     class mynet(Model):
+#
+#         def __init__(self):
+#             super(mynet, self).__init__()
+#
+#             self.layers = LayerList([
+#                 Input([None, 784]),
+#                 Dropout(keep=0.8),
+#                 Dense(n_units=800, act=tf.nn.relu, in_channels=784),
+#                 Dense(n_units=800, act=tf.nn.relu, in_channels=800)
+#             ])
+#
+#         def forward(self, x):
+#             z = x
+#             for i in range(3):
+#                 z = self.layers[i](z)
+#             return z
+#
+#     def get_model(inputs_shape):
+#         ni = Input(inputs_shape)
+#         nn = LayerList([
+#             Dropout(keep=0.8),
+#             Dense(n_units=800, act=tf.nn.relu),
+#             Dropout(keep=0.8),
+#             Dense(n_units=800, act=tf.nn.relu)
+#         ])(ni)
+#
+#         M = Model(inputs=ni, outputs=nn)
+#
+#         return M
+#
+#     #net = mynet()
+#     net = get_model([None, 784])
+#     print(net.weights)
+#     print(net.layer_dict['layerlist']._built)
