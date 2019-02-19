@@ -25,6 +25,9 @@ beforehand. Distorted images might end up being misclassified. One way of safely
 feeding images of multiple sizes is by doing center cropping.
 """
 
+# import sys
+# sys.path.append("D:\\tensorlayer2")
+
 import os
 import numpy as np
 import tensorflow as tf
@@ -36,6 +39,7 @@ from tensorlayer.layers import Dense
 from tensorlayer.layers import Flatten
 from tensorlayer.layers import Input
 from tensorlayer.layers import MaxPool2d
+from tensorlayer.layers import LayerList
 from tensorlayer.models import Model
 
 from tensorlayer.files import maybe_download_and_extract
@@ -98,39 +102,47 @@ class VGG16(Model):
 
     def __init__(self, end_with='outputs', name=None):
         super(VGG16, self).__init__()
-        self.layers = [
+        self.end_with = end_with
+        self.innet = Input([None, 224, 224, 3])
+        self.layers = LayerList([
             # conv1
-            Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1'),
-            Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2'),
+            Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=3, name='conv1_1'),
+            Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=64, name='conv1_2'),
             MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1'),
 
             # conv2
-            Conv2d(n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_1'),
-            Conv2d(n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_2'),
+            Conv2d(n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=64, name='conv2_1'),
+            Conv2d(n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=128, name='conv2_2'),
             MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2'),
 
             # conv3
-            Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_1'),
-            Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_2'),
-            Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_3'),
+            Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=128, name='conv3_1'),
+            Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=256, name='conv3_2'),
+            Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=256, name='conv3_3'),
             MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool3'),
 
             # conv4
-            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1'),
-            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2'),
-            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_3'),
+            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=256, name='conv4_1'),
+            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512, name='conv4_2'),
+            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512, name='conv4_3'),
             MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool4'),
 
             # conv5
-            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_1'),
-            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_2'),
-            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_3'),
+            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512, name='conv5_1'),
+            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512, name='conv5_2'),
+            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512, name='conv5_3'),
             MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5'),
             Flatten(name='flatten'),
-            Dense(n_units=4096, act=tf.nn.relu, name='fc1_relu'),
-            Dense(n_units=4096, act=tf.nn.relu, name='fc2_relu'),
-            Dense(n_units=1000, name='outputs'),
-        ]
+            Dense(n_units=4096, act=tf.nn.relu, in_channels=512*7*7, name='fc1_relu'),
+            Dense(n_units=4096, act=tf.nn.relu, in_channels=4096, name='fc2_relu'),
+            Dense(n_units=1000, in_channels=4096, name='outputs'),
+        ])
+
+        '''prev_layer = self.innet
+        for layer in self.layers:
+            prev_layer = layer(prev_layer)'''
+
+
 
     # def build(inputs_shape):
 
@@ -142,8 +154,9 @@ class VGG16(Model):
         outputs = inputs * 255.0
         mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
         outputs = outputs - mean
+        # outputs = inputs
 
-        outputs = inputs
+        outputs = self.innet(outputs)
         for layer in self.layers:
             outputs = layer(outputs)
             if layer.name == self.end_with:
@@ -163,13 +176,13 @@ class VGG16(Model):
         ## get weight list
         weights = []
         for val in sorted(npz.items()):
-            logging.info("  Loading weights %s" % str(val[1].shape))
+            logging.info("  Loading weights %s in %s" % (str(val[1].shape), val[0]))
             weights.append(val[1])
-            # if len(self.all_weights) == len(weights):
             if len(self.weights) == len(weights):
                 break
         ## assign weight values
-        assign_weights(sess, weights, self.net)
+        print(self.weights)
+        assign_weights(sess, weights, self)
         del weights
 
 
