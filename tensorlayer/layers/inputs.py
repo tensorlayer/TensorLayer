@@ -35,7 +35,8 @@ class Input(Layer):
         logging.info("Input  %s: %s" % (self.name, str(shape)))
 
         shape_without_none = [_ if _ is not None else 1 for _ in shape]
-        self.outputs = self.forward(tl.initializers.random_normal()(shape_without_none))
+        # self.outputs = self.forward(tl.initializers.random_normal()(shape_without_none))
+        self.outputs = self.forward(tl.initializers.ones()(shape_without_none, dtype=dtype))
 
     def __call__(self, inputs):
         return super(Input, self).__call__(prev_layer=inputs)
