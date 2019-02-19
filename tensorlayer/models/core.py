@@ -231,7 +231,16 @@ class Model():
             for idx, attr in enumerate(attr_list):
                 try:
                     if isinstance(getattr(self, attr), Layer):
-                        self._weights.extend(getattr(self, attr).weights)
+                        nowlayer = getattr(self, attr)
+                        if (nowlayer.weights != None):
+                            self._weights.extend(getattr(self, attr).weights)
+                    # if isinstance(getattr(self, attr), list):
+                    #     nowlist = getattr(self, attr)
+                    #     for itms in nowlist:
+                    #         if isinstance(itms, Layer):
+                    #             if (itms.weights == None):
+                    #                 continue
+                    #             self._weights.extend(itms.weights)
                 except Exception:
                     pass
 
