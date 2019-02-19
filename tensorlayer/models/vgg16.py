@@ -103,6 +103,11 @@ class VGG16(Model):
     def __init__(self, end_with='outputs', name=None):
         super(VGG16, self).__init__()
         self.end_with = end_with
+
+        self.layer_names = ['conv1_1', 'conv1_2', 'pool1', 'conv2_1', 'conv2_2', 'pool2',
+                            'conv3_1', 'conv3_2', 'conv3_3', 'pool3', 'conv4_1', 'conv4_2', 'conv4_3', 'pool4',
+                            'conv5_1', 'conv5_2', 'conv5_3', 'pool5',
+                            'flatten', 'fc1_relu', 'fc2_relu', 'outputs']
         self.innet = Input([None, 224, 224, 3])
         self.layers = LayerList([
             # conv1
@@ -136,15 +141,7 @@ class VGG16(Model):
             Dense(n_units=4096, act=tf.nn.relu, in_channels=512*7*7, name='fc1_relu'),
             Dense(n_units=4096, act=tf.nn.relu, in_channels=4096, name='fc2_relu'),
             Dense(n_units=1000, in_channels=4096, name='outputs'),
-        ])
-
-        '''prev_layer = self.innet
-        for layer in self.layers:
-            prev_layer = layer(prev_layer)'''
-
-
-
-    # def build(inputs_shape):
+        ][:self.layer_names.index(self.end_with) + 1])
 
     def forward(self, inputs):
         """
@@ -157,10 +154,11 @@ class VGG16(Model):
         # outputs = inputs
 
         outputs = self.innet(outputs)
-        for layer in self.layers:
-            outputs = layer(outputs)
-            if layer.name == self.end_with:
-                break
+        outputs = self.layers(outputs)
+        # for layer in self.layers:
+        #     outputs = layer(outputs)
+        #     if layer.name == self.end_with:
+        #         break
         return outputs
 
     def restore_params(self, **kwargs):
