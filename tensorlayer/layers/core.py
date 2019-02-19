@@ -179,9 +179,7 @@ class Layer(object):
 
     def __call__(self, prev_layer):
 
-        # TODO: embedding layers are special input layers so far
-        if self.__class__.__name__ in tl.layers.inputs.__all__ or \
-            self.__class__.__name__ in tl.layers.embedding.__all__:
+        if self.__class__.__name__ in tl.layers.inputs.__all__:
             # 1. for input layers
             # Input layers should use tf.convert_to_tensor to make sure the inputs is converted into tf.Tensor
 
