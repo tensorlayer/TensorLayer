@@ -78,8 +78,9 @@ class FastTextClassifier(object):
         self.labels = tf.placeholder(tf.int32, shape=[None], name='labels')
 
         # Model structure
-        net_in = AverageEmbedding(self.vocab_size, self.embedding_size)(self.inputs)
-        net = Dense(n_units=10)(net_in)
+        net_in = Input([None, None], dtype=tf.int32)
+        net = AverageEmbedding(self.vocab_size, self.embedding_size)(net_in)
+        net = Dense(n_units=10)(net)
         net_out = Dense(n_units=self.n_labels)(net)
         self.model = Model(inputs=net_in, outputs=net_out, name="fast_text_classifier")
 
