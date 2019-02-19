@@ -164,15 +164,15 @@ def normalized_mean_square_error(output, target, axis=-1, name="normalized_mean_
 
     """
     with tf.name_scope("normalized_mean_squared_error_loss"):
-    # if len(output.shape) == 2:  # [batch_size, n_feature]
-    #     axis = 1
-    # elif len(output.shape) == 3:  # [batch_size, w, h]
-    #     axis = [1, 2]
-    # elif len(output.shape) == 4:  # [batch_size, w, h, c]
-    #     axis = [1, 2, 3]
-    nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=axis))
-    nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=axis))
-    nmse = tf.reduce_mean(nmse_a / nmse_b, name=name)
+        # if len(output.shape) == 2:  # [batch_size, n_feature]
+        #     axis = 1
+        # elif len(output.shape) == 3:  # [batch_size, w, h]
+        #     axis = [1, 2]
+        # elif len(output.shape) == 4:  # [batch_size, w, h, c]
+        #     axis = [1, 2, 3]
+        nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=axis))
+        nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=axis))
+        nmse = tf.reduce_mean(nmse_a / nmse_b, name=name)
     return nmse
 
 

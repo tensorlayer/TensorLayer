@@ -116,6 +116,7 @@ class Layer(object):
     """
 
     # Added to allow auto-completion
+    # FIXME: it seems act is never used in derived Layers
     def __init__(self, name=None, act=None, *args, **kwargs):
         # Layer constants
 
@@ -178,7 +179,9 @@ class Layer(object):
 
     def __call__(self, prev_layer):
 
-        if self.__class__.__name__ in tl.layers.inputs.__all__:
+        # TODO: embedding layers are special input layers so far
+        if self.__class__.__name__ in tl.layers.inputs.__all__ or \
+            self.__class__.__name__ in tl.layers.embedding.__all__:
             # 1. for input layers
             # Input layers should use tf.convert_to_tensor to make sure the inputs is converted into tf.Tensor
 
@@ -188,6 +191,7 @@ class Layer(object):
             self.inputs = tf.convert_to_tensor(prev_layer)
             self._input_layer = None
             self._built = True
+            self.build(self._inputs_shape)
             self.outputs = self.forward(self.inputs)
 
         elif isinstance(prev_layer, Layer):

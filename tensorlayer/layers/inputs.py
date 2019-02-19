@@ -3,6 +3,7 @@
 
 import numpy as np
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer.layers.core import Layer
 # from tensorlayer.layers.core import LayersConfig
@@ -27,14 +28,14 @@ class Input(Layer):
 
     """
 
-    def __init__(self, shape, name=None):  #'input'):
+    def __init__(self, shape, dtype=tf.float32, name=None):  #'input'):
         # super(InputLayer, self).__init__(prev_layer=inputs, name=name)
         super(Input, self).__init__(name)
 
         logging.info("Input  %s: %s" % (self.name, str(shape)))
 
         shape_without_none = [_ if _ is not None else 1 for _ in shape]
-        self.outputs = self.forward(tf.compat.v1.initializers.random_normal()(shape_without_none))
+        self.outputs = self.forward(tl.initializers.random_normal()(shape_without_none))
 
     def __call__(self, inputs):
         return super(Input, self).__call__(prev_layer=inputs)

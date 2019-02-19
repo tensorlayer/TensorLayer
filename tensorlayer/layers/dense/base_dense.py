@@ -62,9 +62,8 @@ class Dense(Layer):
 
     def __init__(
             self,
-            n_units=100,
+            n_units,
             act=None,
-            # TODO: how to support more initializers
             W_init=tl.initializers.truncated_normal(stddev=0.1),
             b_init=tl.initializers.constant(value=0.0),
             # W_init=tf.compat.v1.truncated_normal_initializer(stddev=0.1),
