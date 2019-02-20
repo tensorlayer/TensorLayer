@@ -2378,10 +2378,28 @@ def tf_variables_to_numpy(variables, sess=None):
             # eager mode
             results.extend([v.numpy() for v in var_list])
         except Exception:
-            logging.info(
+            logging.error(
                 "Fail to convert tf variables to numpy array. Hint: pass sess as argument if in graph mode."
             )
     return results
+
+
+def assign_tf_variable(variable, value, sess=None):
+    # TODO : Documentation pending
+    """"""
+    if sess:
+        # graph mode
+        assign_op = variable.assign(value)
+        sess.run(assign_op)
+    else:
+        # eager mode
+        try:
+            variable.assign(value)
+        except Exception:
+            logging.error(
+                "Fail to assign the tensorflow variable {}"
+                " Hint: pass sess as argument if in graph mode.".format(variable)
+            )
 
 
 def save_weights_to_hdf5(f, weights, sess=None):
@@ -2404,8 +2422,44 @@ def save_weights_to_hdf5(f, weights, sess=None):
 
 
 def load_hdf5_to_weights_in_order(f, weights, sess=None):
-    pass
+    # TODO : Documentation pending
+    """"""
+    try:
+        weights_names = list(f.attrs['weights_names'])
+    except Exception:
+        raise NameError("The loaded hdf5 file needs to have 'weights_names' as attributes. "
+                        "Please check whether this hdf5 file is saved from TL.")
+
+    if len(weights) != len(weights_names):
+        logging.warning("Number of weights mismatch."
+                     "Trying to load a weight file with " + str(len(weights)) +
+                     " weights into a model with " + str(len(weights_names)) +
+                     " weights.")
+
+    for idx, name in enumerate(weights_names):
+        weights_val = np.asarray(f[name])
+        assign_tf_variable(weights[idx], weights_val, sess)
 
 
 def load_hdf5_to_weights(f, weights, sess=None):
-    pass
+    # TODO : Documentation pending
+    """"""
+    try:
+        weights_names = list(f.attrs['weights_names'])
+    except Exception:
+        raise NameError("The loaded hdf5 file needs to have 'weights_names' as attributes. "
+                        "Please check whether this hdf5 file is saved from TL.")
+
+    if len(weights) != len(weights_names):
+        logging.warning("Number of weights mismatch."
+                     "Trying to load a weight file with " + str(len(weights)) +
+                     " weights into a model with " + str(len(weights_names)) +
+                     " weights.")
+
+    for var in weights:
+        try:
+            weights_val = np.asarray(f[var.name])
+            assign_tf_variable(var, weights_val, sess)
+        except Exception:
+            raise NameError("Unable to load weights by name " + var.name +
+                            ". Maybe name mismatch? Try to load weights in order.")

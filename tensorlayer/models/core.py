@@ -1,12 +1,10 @@
-import sys
-sys.path.append('/home/haodong2/Rundi/code/tensorlayer2')
 import numpy as np
 from abc import ABCMeta, abstractmethod
 import tensorflow as tf
 from tensorlayer.layers import Layer, ModelLayer
 from tensorlayer import logging
 from queue import Queue
-from tensorlayer.files.utils import save_weights_to_hdf5
+from tensorlayer.files.utils import save_weights_to_hdf5, load_hdf5_to_weights, load_hdf5_to_weights_in_order
 
 
 try:
@@ -484,6 +482,8 @@ class Model():
             save_weights_to_hdf5(f, self.weights, sess)
             f.flush()
 
+        logging.info("Successfully save weights to " + filepath)
+
     def load_weights(self, filepath, sess=None, in_order=True):
         # TODO: Documentation pending
         """
@@ -503,9 +503,11 @@ class Model():
 
         with h5py.File(filepath, 'r') as f:
             if in_order == True:
-                pass
+                load_hdf5_to_weights_in_order(f, self.weights, sess)
             else:
-                pass
+                load_hdf5_to_weights(f, self.weights, sess)
+
+        logging.info("Successfully load weights from " + filepath)
 
 
 
