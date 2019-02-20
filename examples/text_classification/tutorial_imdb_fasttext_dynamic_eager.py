@@ -25,6 +25,7 @@ After 5 epochs, you should get test accuracy around 90.3%.
 [3] https://www.tensorflow.org/api_guides/python/nn#Candidate_Sampling
 
 """
+import os
 import array
 import hashlib
 import time
@@ -67,7 +68,7 @@ BATCH_SIZE = 32
 LEARNING_RATE = 0.01
 
 # Path to which to save the trained model
-MODEL_FILE_PATH = 'model_dynamic.npz'
+MODEL_FILE_PATH = 'model_dynamic.hdf5'
 
 
 class FastTextModel(Model):
@@ -124,36 +125,41 @@ def train_test_and_save_model():
     )
     optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE)
 
-    # training
-    model.train()
+    if os.path.exists(MODEL_FILE_PATH):
+        # loading pre-trained model if applicable
+        model.load_weights(MODEL_FILE_PATH)
 
-    for epoch in range(N_EPOCH):
-        start_time = time.time()
-        print('Epoch %d/%d' % (epoch + 1, N_EPOCH))
-        train_accuracy = list()
-        for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size=BATCH_SIZE, shuffle=True):
+    else:
+        # training
+        model.train()
 
-            # forward and define the loss function
-            with tf.GradientTape() as tape:
-                y_pred = model(tl.prepro.pad_sequences(X_batch)).outputs
-                cost = tl.cost.cross_entropy(y_pred, y_batch, name='cost')
+        for epoch in range(N_EPOCH):
+            start_time = time.time()
+            print('Epoch %d/%d' % (epoch + 1, N_EPOCH))
+            train_accuracy = list()
+            for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size=BATCH_SIZE, shuffle=True):
 
-            # backward, calculate gradients and update the weights
-            grad = tape.gradient(cost, model.weights)
-            optimizer.apply_gradients(zip(grad, model.weights))
+                # forward and define the loss function
+                with tf.GradientTape() as tape:
+                    y_pred = model(tl.prepro.pad_sequences(X_batch)).outputs
+                    cost = tl.cost.cross_entropy(y_pred, y_batch, name='cost')
 
-            # calculate the accuracy
-            predictions = tf.argmax(y_pred, axis=1, output_type=tf.int32)
-            are_predictions_correct = tf.equal(predictions, y_batch)
-            accuracy = tf.reduce_mean(tf.cast(are_predictions_correct, tf.float32))
+                # backward, calculate gradients and update the weights
+                grad = tape.gradient(cost, model.weights)
+                optimizer.apply_gradients(zip(grad, model.weights))
 
-            train_accuracy.append(accuracy)
-            if len(train_accuracy) % N_STEPS_TO_PRINT == 0:
-                print("\t[%d/%d][%d]accuracy " % (epoch + 1, N_EPOCH, len(train_accuracy)),
-                      np.mean(train_accuracy[-N_STEPS_TO_PRINT:]))
+                # calculate the accuracy
+                predictions = tf.argmax(y_pred, axis=1, output_type=tf.int32)
+                are_predictions_correct = tf.equal(predictions, y_batch)
+                accuracy = tf.reduce_mean(tf.cast(are_predictions_correct, tf.float32))
 
-        print("\tSummary: time %.5fs, overall accuracy" % (time.time() - start_time),
-              np.mean(train_accuracy))
+                train_accuracy.append(accuracy)
+                if len(train_accuracy) % N_STEPS_TO_PRINT == 0:
+                    print("\t[%d/%d][%d]accuracy " % (epoch + 1, N_EPOCH, len(train_accuracy)),
+                          np.mean(train_accuracy[-N_STEPS_TO_PRINT:]))
+
+            print("\tSummary: time %.5fs, overall accuracy" % (time.time() - start_time),
+                  np.mean(train_accuracy))
 
     # evaluation and testing
     model.eval()
@@ -166,7 +172,8 @@ def train_test_and_save_model():
 
     print('Test accuracy: %.5f' % test_accuracy)
 
-    # classifier.save(sess, MODEL_FILE_PATH)
+    # saving the model
+    model.save_weights(MODEL_FILE_PATH)
 
 
 if __name__ == '__main__':

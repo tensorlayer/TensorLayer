@@ -4,7 +4,7 @@
 The demos implement [FastText](http://arxiv.org/abs/1607.01759)[1] for sentence classification. 
 
 * Graph mode (static): [tutorial_imdb_fasttext.py](tutorial_imdb_fasttext.py)
-* Eager mode (dynamic): [tutorial_imdb_fastext_dynamic_eager.py](tutorial_imdb_fast_text_dynamic_eager.py)
+* Eager mode (dynamic): [tutorial_imdb_fasttext_dynamic_eager.py](tutorial_imdb_fasttext_dynamic_eager.py)
 
 FastText is a simple model for text classification with performance often close
 to state-of-the-art, and is useful as a solid baseline.

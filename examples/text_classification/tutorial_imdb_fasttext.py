@@ -25,6 +25,7 @@ After 5 epochs, you should get test accuracy around 90.3%.
 
 """
 
+import os
 import array
 import hashlib
 import time
@@ -33,6 +34,7 @@ import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
 from tensorlayer.models import *
+
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -63,7 +65,7 @@ BATCH_SIZE = 32
 LEARNING_RATE = 0.01
 
 # Path to which to save the trained model
-MODEL_FILE_PATH = 'model.npz'
+MODEL_FILE_PATH = 'model_static.hdf5'
 
 
 class FastTextClassifier(object):
@@ -96,12 +98,11 @@ class FastTextClassifier(object):
         are_predictions_correct = tf.equal(self.predictions, self.labels)
         self.accuracy = tf.reduce_mean(tf.cast(are_predictions_correct, tf.float32))
 
-    # TODO: when saving and restoring of models are ready
     def save(self, sess, filename):
-        tl.files.save_npz(self.network.all_params, name=filename, sess=sess)
+        self.model.save_weights(filename, sess=sess)
 
     def load(self, sess, filename):
-        tl.files.load_and_assign_npz(sess, name=filename, network=self.network)
+        self.model.load_weights(filename, sess=sess, in_order=False)
 
 
 def augment_with_ngrams(unigrams, unigram_vocab_size, n_buckets, n=2):
@@ -142,24 +143,30 @@ def train_test_and_save_model():
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
-        for epoch in range(N_EPOCH):
-            start_time = time.time()
-            print('Epoch %d/%d' % (epoch + 1, N_EPOCH))
-            train_accuracy = list()
-            for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size=BATCH_SIZE, shuffle=True):
-                accuracy, _ = sess.run(
-                    [classifier.accuracy, classifier.train_op], feed_dict={
-                        classifier.inputs: tl.prepro.pad_sequences(X_batch),
-                        classifier.labels: y_batch,
-                    }
-                )
-                train_accuracy.append(accuracy)
-                if len(train_accuracy) % N_STEPS_TO_PRINT == 0:
-                    print("\t[%d/%d][%d]accuracy " % (epoch + 1, N_EPOCH, len(train_accuracy)),
-                          np.mean(train_accuracy[-N_STEPS_TO_PRINT:]))
+        if os.path.exists(MODEL_FILE_PATH):
+            # loading pre-trained model if applicable
+            classifier.load(sess, MODEL_FILE_PATH)
 
-            print("\tSummary: time %.5fs, overall accuracy" % (time.time() - start_time),
-                  np.mean(train_accuracy))
+        else:
+
+            for epoch in range(N_EPOCH):
+                start_time = time.time()
+                print('Epoch %d/%d' % (epoch + 1, N_EPOCH))
+                train_accuracy = list()
+                for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size=BATCH_SIZE, shuffle=True):
+                    accuracy, _ = sess.run(
+                        [classifier.accuracy, classifier.train_op], feed_dict={
+                            classifier.inputs: tl.prepro.pad_sequences(X_batch),
+                            classifier.labels: y_batch,
+                        }
+                    )
+                    train_accuracy.append(accuracy)
+                    if len(train_accuracy) % N_STEPS_TO_PRINT == 0:
+                        print("\t[%d/%d][%d]accuracy " % (epoch + 1, N_EPOCH, len(train_accuracy)),
+                              np.mean(train_accuracy[-N_STEPS_TO_PRINT:]))
+
+                print("\tSummary: time %.5fs, overall accuracy" % (time.time() - start_time),
+                      np.mean(train_accuracy))
 
         test_accuracy = sess.run(
             classifier.accuracy, feed_dict={
@@ -169,8 +176,8 @@ def train_test_and_save_model():
         )
         print('Test accuracy: %.5f' % test_accuracy)
 
-        # classifier.save(sess, MODEL_FILE_PATH)
-
+        # saving the model
+        classifier.save(sess, MODEL_FILE_PATH)
 
 if __name__ == '__main__':
     train_test_and_save_model()
