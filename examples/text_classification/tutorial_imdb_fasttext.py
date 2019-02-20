@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-This demo implements FastText[1] for sentence classification.
+This demo implements FastText[1] for sentence classification. This demo should be run in graph mode.
 
 FastText is a simple model for text classification with performance often close
 to state-of-the-art, and is useful as a solid baseline.
@@ -11,7 +11,7 @@ with mini-batches. Hierarchical softmax is also not supported; if you have
 a large label space, consider utilizing candidate sampling methods provided
 by TensorFlow[3].
 
-After 5 epochs, you should get test accuracy close to 90.9%.
+After 5 epochs, you should get test accuracy around 90.3%.
 
 [1] Joulin, A., Grave, E., Bojanowski, P., & Mikolov, T. (2016).
     Bag of Tricks for Efficient Text Classification.
