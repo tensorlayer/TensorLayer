@@ -38,6 +38,13 @@ class Input(Layer):
         # self.outputs = self.forward(tl.initializers.random_normal()(shape_without_none))
         self.outputs = self.forward(tl.initializers.ones()(shape_without_none, dtype=dtype))
 
+    def __repr__(self):
+        s = 'Input(shape=%s' % str(self.shape)
+        if self.name is not None:
+            s += (', name=%s' % self.name)
+        s += ')'
+        return s
+
     def __call__(self, inputs):
         return super(Input, self).__call__(prev_layer=inputs)
 

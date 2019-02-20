@@ -15,10 +15,9 @@ from tensorlayer.models.imagenet_classes import class_names
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
-x = tf.placeholder(tf.float32, [None, 224, 224, 3])
 
 # get the whole model
-vgg = tl.models.VGG16(x)
+vgg = tl.models.VGG16()
 
 # restore pre-trained VGG parameters
 sess = tf.InteractiveSession()

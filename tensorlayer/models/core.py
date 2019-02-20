@@ -10,6 +10,17 @@ __all__ = [
     'Model',
 ]
 
+def _addindent(s_, numSpaces):
+    s = s_.split('\n')
+    # don't do anything for single-line stuff
+    if len(s) == 1:
+        return s_
+    first = s.pop(0)
+    s = [(numSpaces * ' ') + line for line in s]
+    s = '\n'.join(s)
+    s = first + '\n' + s
+    return s
+
 class Model():
     """The :class:`Model` class represents a neural network.
 
@@ -329,13 +340,33 @@ class Model():
                     return idx
         return -1
 
-    def __str__(self):
-        return "  {} ({}) outputs_shape: {}".format(
-            self.__class__.__name__, self.name, [tuple(['batch_size'] + o._outputs_shape[1:]) for o in self.outputs]
-        )  #_outputs_shape)#outputs.get_shape().as_list())
+    def __repr__(self):
+        tmpstr = self.__class__.__name__ + '(\n'
+        attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
+        attr_list.remove("weights")
+        for idx, attr in enumerate(attr_list):
+            try:
+                if isinstance(getattr(self, attr), Layer) or isinstance(getattr(self, attr), Model):
+                    nowlayer = getattr(self, attr)
+                    modstr = nowlayer.__repr__()
+                    modstr = _addindent(modstr, 2)
+                    tmpstr = tmpstr + '  (' + attr + '): ' + modstr + '\n'
+
+            except Exception:
+                pass
+        tmpstr = tmpstr + ')'
+        return tmpstr
+
+    # def __str__(self):
+    #     return "  {} ({}) outputs_shape: {}".format(
+    #         self.__class__.__name__, self.name, [tuple(['batch_size'] + o._outputs_shape[1:]) for o in self.outputs]
+    #     )  #_outputs_shape)#outputs.get_shape().as_list())
 
     def print_all_layers(self):
-        for out in self._outputs:
+        nowoutputs = self._outputs
+        if (isinstance(nowoutputs, list) == False):
+            nowoutputs = [nowoutputs]
+        for out in nowoutputs:
             stacked_layers = list()
             current = out
             while current is not None:

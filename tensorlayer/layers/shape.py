@@ -44,6 +44,13 @@ class Flatten(Layer):
         super().__init__(name)
         logging.info("Flatten %s:" % (self.name))
 
+    def __repr__(self):
+        s = '{classname}('
+        if self.name is not None:
+            s += 'name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
     def build(self, inputs_shape):
         pass
 
