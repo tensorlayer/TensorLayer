@@ -1,10 +1,18 @@
-
+import sys
+sys.path.append('/home/haodong2/Rundi/code/tensorlayer2')
 import numpy as np
 from abc import ABCMeta, abstractmethod
 import tensorflow as tf
 from tensorlayer.layers import Layer, ModelLayer
 from tensorlayer import logging
 from queue import Queue
+from tensorlayer.files.utils import save_weights_to_hdf5
+
+
+try:
+    import h5py
+except ImportError:
+    h5py = None
 
 __all__ = [
     'Model',
@@ -452,30 +460,95 @@ class Model():
 
         return layer_dict, edges, layer_by_depth
 
+    def save_weights(self, filepath, sess=None):
+        # TODO: Documentation pending
+        """
+
+        Parameters
+        ----------
+        filepath
+        sess
+
+        Returns
+        -------
+
+        """
+        if h5py is None:
+            raise ImportError('`save_weights` requires h5py.')
+
+        if self.weights is None:
+            logging.warning("Model contains no weights or layers haven't been built, nothing saved")
+            return
+
+        with h5py.File(filepath, 'w') as f:
+            save_weights_to_hdf5(f, self.weights, sess)
+            f.flush()
+
+    def load_weights(self, filepath, sess=None, in_order=True):
+        # TODO: Documentation pending
+        """
+
+        Parameters
+        ----------
+        filepath
+        sess
+        in_order
+
+        Returns
+        -------
+
+        """
+        if h5py is None:
+            raise ImportError('`load_weights` requires h5py.')
+
+        with h5py.File(filepath, 'r') as f:
+            if in_order == True:
+                pass
+            else:
+                pass
+
+
+
 
 if __name__ == '__main__':
     import tensorlayer as tl
     from tensorlayer.layers import Input, Conv2d, BatchNorm, MaxPool2d, Flatten, Dense, LocalResponseNorm, Concat
     from tensorlayer.models import Model
+    from tensorlayer.layers import LayerList, Dropout
 
+    # def get_model(inputs_shape):
+    #     ni = Input(inputs_shape)
+    #     nn1 = Dense(384, act=tf.nn.relu, name='dense1relu')(ni)
+    #     nn2 = Dense(192, act=tf.nn.relu, name='dense2relu')(ni)
+    #     nn2 = Dense(64, act=tf.nn.relu, name='dense3relu')(nn2)
+    #     nn = Concat(name='concat')([nn1, nn2])
+    #
+    #     M = Model(inputs=ni, outputs=nn, name='cnn')
+    #     return M
     def get_model(inputs_shape):
         ni = Input(inputs_shape)
-        nn1 = Dense(384, act=tf.nn.relu, name='dense1relu')(ni)
-        nn2 = Dense(192, act=tf.nn.relu, name='dense2relu')(ni)
-        nn2 = Dense(64, act=tf.nn.relu, name='dense3relu')(nn2)
-        nn = Concat(name='concat')([nn1, nn2])
+        nn = Dropout(keep=0.8)(ni)
+        nn = Dense(n_units=800, act=tf.nn.relu)(nn)
+        nn = Dropout(keep=0.8)(nn)
+        nn = Dense(n_units=800, act=tf.nn.relu)(nn)
 
-        M = Model(inputs=ni, outputs=nn, name='cnn')
-        return M
+        # FIXME: currently assume the inputs and outputs are both Layer. They can be lists.
+        M_hidden = Model(inputs=ni, outputs=nn, name="mlp_hidden")
+
+        nn = Dropout(keep=0.8)(M_hidden.as_layer())
+        nn = Dense(n_units=10, act=tf.nn.relu)(nn)
+        return Model(inputs=ni, outputs=nn, name="mlp")
 
     net = get_model((None, 784))
-    for i, l in enumerate(net.layer_by_depth):
-        print(i, l)
-
-    x = tf.placeholder(tf.float32, shape=[None, 784], name='inputs')
-    y_ = tf.placeholder(tf.int64, shape=[None], name='targets')
-
-    ## get output tensors for training and testing
-    # 1) use ``is_train''
-    y1 = net(x, is_train=True).outputs
-    ce = tl.cost.cross_entropy(y1, y_, name='cost')
+    for x in net.weights:
+        print(x)
+    # for i, l in enumerate(net.layer_by_depth):
+    #     print(i, l)
+    #
+    # x = tf.placeholder(tf.float32, shape=[None, 784], name='inputs')
+    # y_ = tf.placeholder(tf.int64, shape=[None], name='targets')
+    #
+    # ## get output tensors for training and testing
+    # # 1) use ``is_train''
+    # y1 = net(x, is_train=True).outputs
+    # ce = tl.cost.cross_entropy(y1, y_, name='cost')

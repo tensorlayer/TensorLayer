@@ -2359,3 +2359,53 @@ def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
         W = load_npz(path, f)[0]
         logging.info("%s --> %s" % (f, f.split('.')[0] + '.pdf'))
         visualize.draw_weights(W, second=10, saveable=True, name=f.split('.')[0], fig_idx=2012)
+
+
+def tf_variables_to_numpy(variables, sess=None):
+    # TODO : Documentation pending
+    """"""
+    if not isinstance(variables, list):
+        var_list = [variables]
+    else:
+        var_list = variables
+
+    results = []
+    if sess:
+        # graph mode
+        results = sess.run(var_list)
+    else:
+        try:
+            # eager mode
+            results.extend([v.numpy() for v in var_list])
+        except Exception:
+            logging.info(
+                "Fail to convert tf variables to numpy array. Hint: pass sess as argument if in graph mode."
+            )
+    return results
+
+
+def save_weights_to_hdf5(f, weights, sess=None):
+    # TODO : Documentation pending
+    """"""
+    weights_names = [w.name for w in weights]
+    f.attrs['weights_names'] = weights_names  # 'layer_name/weight_name'
+
+    save_val_list = tf_variables_to_numpy(weights, sess)
+
+    for name, val in zip(weights_names, save_val_list):
+        # each layer as a group
+        val_dataset = f.create_dataset(name, val.shape, dtype=val.dtype)
+
+        if not val.shape:
+            # scalar
+            val_dataset[()] = val
+        else:
+            val_dataset[:] = val
+
+
+def load_hdf5_to_weights_in_order(f, weights, sess=None):
+    pass
+
+
+def load_hdf5_to_weights(f, weights, sess=None):
+    pass
