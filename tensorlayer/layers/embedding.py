@@ -3,6 +3,7 @@
 
 import numpy as np
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer.layers.core import Layer
 # from tensorlayer.layers.core import LayersConfig
@@ -376,28 +377,26 @@ class AverageEmbedding(Layer):
 
     def __init__(
             self,
-            # inputs,
             vocabulary_size,
             embedding_size,
             pad_value=0,
-            E_init=tf.compat.v1.initializers.random_uniform(-0.1, 0.1),
-            # E_init=None,
+            E_init=tl.initializers.random_uniform(-0.1, 0.1),
             name=None,  # 'average_embedding',
     ):
 
         # super(AverageEmbedding, self).__init__(prev_layer=inputs, embeddings_kwargs=embeddings_kwargs, name=name)
-        super().__init__(name)
+        super(AverageEmbedding, self).__init__(name)
         self.vocabulary_size = vocabulary_size
         self.embedding_size = embedding_size
         self.pad_value = pad_value
         self.E_init = E_init
-        self.E_init_args = E_init_args
         logging.info("AverageEmbedding %s: (%d, %d)" % (self.name, self.vocabulary_size, self.embedding_size))
 
         # if embeddings_kwargs is None:
         #     embeddings_kwargs = {}
-    def build(self, inputs):
-        if inputs.shape.ndims != 2:
+
+    def build(self, inputs_shape):
+        if len(inputs_shape) != 2:
             raise ValueError('inputs must be of size batch_size * batch_sentence_length')
 
         # self.embeddings = tf.compat.v1.get_variable(
@@ -406,7 +405,6 @@ class AverageEmbedding(Layer):
         # )
         self.embeddings = self._get_weights(
             "embeddings", shape=(self.vocabulary_size, self.embedding_size), init=self.E_init,
-            init_args=self.E_init_args
         )
 
     def forward(self, inputs):
@@ -422,19 +420,21 @@ class AverageEmbedding(Layer):
             ids=inputs,
             name='word_embeddings',
         )
+
         # Zero out embeddings of pad value
-        masks = tf.not_equal(inputs, pad_value, name='masks')
-        word_embeddings *= tf.cast(tf.expand_dims(masks, axis=-1),
-                                   # dtype=LayersConfig.tf_dtype,
-                                  )
+        masks = tf.not_equal(inputs, self.pad_value, name='masks')
+        word_embeddings *= tf.cast(
+            tf.expand_dims(masks, axis=-1),
+            dtype=tf.float32
+        )
         sum_word_embeddings = tf.reduce_sum(input_tensor=word_embeddings, axis=1)
 
         # Count number of non-padding words in each sentence
-        sentence_lengths = tf.compat.v1.count_nonzero(
+        sentence_lengths = tf.math.count_nonzero(
             masks,
             axis=1,
             keepdims=True,
-            # dtype=LayersConfig.tf_dtype,
+            dtype=tf.float32,
             name='sentence_lengths',
         )
 

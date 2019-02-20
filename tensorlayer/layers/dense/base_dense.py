@@ -62,9 +62,8 @@ class Dense(Layer):
 
     def __init__(
             self,
-            n_units=100,
+            n_units,
             act=None,
-            # TODO: how to support more initializers
             W_init=tl.initializers.truncated_normal(stddev=0.1),
             b_init=tl.initializers.constant(value=0.0),
             # W_init=tf.compat.v1.truncated_normal_initializer(stddev=0.1),
@@ -102,6 +101,14 @@ class Dense(Layer):
             (self.name, self.n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(n_units={n_units}, ' + actstr)
+        if self.name is not None:
+            s += ', name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
     '''
     def build(self, inputs):
         self.W = tf.get_variable(
@@ -122,6 +129,8 @@ class Dense(Layer):
     '''
 
     def build(self, inputs_shape):
+        # import ipdb
+        # ipdb.set_trace()
         if self.in_channels is None and len(inputs_shape) != 2:
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
         if self.in_channels:

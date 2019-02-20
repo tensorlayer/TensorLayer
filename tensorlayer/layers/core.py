@@ -43,6 +43,17 @@ _global_layer_name_dict = {}  # TODO: better implementation?
 # TF_GRAPHKEYS_VARIABLES = tf.compat.v1.GraphKeys.GLOBAL_VARIABLE
 
 
+def _addindent(s_, numSpaces):
+    s = s_.split('\n')
+    # don't do anything for single-line stuff
+    if len(s) == 1:
+        return s_
+    first = s.pop(0)
+    s = [(numSpaces * ' ') + line for line in s]
+    s = '\n'.join(s)
+    s = first + '\n' + s
+    return s
+
 class Layer(object):
     #FIXME: documentation update needed
     """The basic :class:`Layer` class represents a single layer of a neural network.
@@ -116,6 +127,7 @@ class Layer(object):
     """
 
     # Added to allow auto-completion
+    # FIXME: it seems act is never used in derived Layers
     def __init__(self, name=None, act=None, *args, **kwargs):
         # Layer constants
 
@@ -188,6 +200,7 @@ class Layer(object):
             self.inputs = tf.convert_to_tensor(prev_layer)
             self._input_layer = None
             self._built = True
+            self.build(self._inputs_shape)
             self.outputs = self.forward(self.inputs)
 
         elif isinstance(prev_layer, Layer):
@@ -336,6 +349,10 @@ class Layer(object):
                 _weights.append(sess.run(p))
         return _weights
     '''
+
+    def __repr__(self):
+        reprstr = "Layer"
+        return reprstr
 
     def __str__(self):
 
@@ -607,6 +624,16 @@ class LayerList(Layer):
 
     def __len__(self):
         return len(self.layers)
+
+    def __repr__(self):
+        tmpstr = 'LayerList' + '(\n'
+        for idx, layer in enumerate(self.layers):
+            modstr = layer.__repr__()
+            modstr = _addindent(modstr, 2)
+            tmpstr = tmpstr + '  (' + str(idx) + '): ' + modstr + '\n'
+
+        tmpstr = tmpstr + ')'
+        return tmpstr
 
     def build(self, inputs_shape):
         in_layer = self._input_layer

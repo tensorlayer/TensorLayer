@@ -118,6 +118,20 @@ class Conv1d(Layer):
             )
         )
 
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
+             ', stride={stride}, padding={padding}')
+        if self.dilation_rate != 1:
+            s += ', dilation={dilation_rate}'
+        if self.b_init is None:
+            s += ', bias=False'
+        s += (', ' + actstr)
+        if self.name is not None:
+            s += ', name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
     def build(self, inputs_shape):
         if self.data_format == 'channels_last':
             self.data_format == 'HWC'
@@ -125,12 +139,14 @@ class Conv1d(Layer):
                 self.pre_channel = self.in_channels
             else:
                 self.pre_channel = inputs_shape[-1]
+                self.in_channels = self.pre_channel
         elif self.data_format == 'channels_first':
             self.data_format == 'HCW'
             if self.in_channels:
                 self.pre_channel = self.in_channels
             else:
                 self.pre_channel = inputs_shape[1]
+                self.in_channels = self.pre_channel
         else:
             raise Exception("data_format should be either channels_last or channels_first")
 
@@ -255,9 +271,11 @@ class Conv2d(Layer):
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = strides
+        self.init_strides = strides
         self.act = act
         self.padding = padding
         self.dilation_rate = dilation_rate
+        self.init_dilation_rate = dilation_rate
         self.data_format = data_format
         self.W_init = W_init
         self.b_init = b_init
@@ -277,6 +295,20 @@ class Conv2d(Layer):
             )
         )
 
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
+             ', strides={init_strides}, padding={padding}')
+        if self.init_dilation_rate != (1,) * len(self.init_dilation_rate):
+            s += ', dilation={init_dilation_rate}'
+        if self.b_init is None:
+            s += ', bias=False'
+        s += (', ' + actstr)
+        if self.name is not None:
+            s += ', name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
     def build(self, inputs_shape):
         if self.data_format == 'channels_last':
             self.data_format = 'NHWC'
@@ -284,6 +316,7 @@ class Conv2d(Layer):
                 self.pre_channel = self.in_channels
             else:
                 self.pre_channel = inputs_shape[-1]
+                self.in_channels = self.pre_channel
             self.strides = [1, self.strides[0], self.strides[1], 1]
             self.dilation_rate = [1, self.dilation_rate[0], self.dilation_rate[1], 1]
         elif self.data_format == 'channels_first':
@@ -292,6 +325,7 @@ class Conv2d(Layer):
                 self.pre_channel = self.in_channels
             else:
                 self.pre_channel = inputs_shape[1]
+                self.in_channels = self.pre_channel
             self.strides = [1, 1, self.strides[0], self.strides[1]]
             self.dilation_rate = [1, 1, self.dilation_rate[0], self.dilation_rate[1]]
         else:
@@ -419,9 +453,11 @@ class Conv3d(Layer):
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = strides
+        self.init_strides = strides
         self.act = act
         self.padding = padding
         self.dilation_rate = dilation_rate
+        self.init_dilation_rate = dilation_rate
         self.data_format = data_format
         self.W_init = W_init
         self.b_init = b_init
@@ -440,48 +476,64 @@ class Conv3d(Layer):
             )
         )
 
-        def build(self, inputs_shape):
-            if self.data_format == 'channels_last':
-                self.data_format == 'NDHWC'
-                if self.in_channels:
-                    self.pre_channel = self.in_channels
-                else:
-                    self.pre_channel = inputs_shape[-1]
-                self.strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
-                self.dilation_rate = [1, self.dilation_rate[0], self.dilation_rate[1], self.dilation_rate[2], 1]
-            elif self.data_format == 'channels_first':
-                self.data_format == 'NCDHW'
-                if self.in_channels:
-                    self.pre_channel = self.in_channels
-                else:
-                    self.pre_channel = inputs_shape[1]
-                self.strides = [1, 1, self.strides[0], self.strides[1], self.strides[2]]
-                self.dilation_rate = [1, 1, self.dilation_rate[0], self.dilation_rate[1], self.dilation_rate[2]]
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
+             ', strides={init_strides}, padding={padding}')
+        if self.init_dilation_rate != (1,) * len(self.init_dilation_rate):
+            s += ', dilation={init_dilation_rate}'
+        if self.b_init is None:
+            s += ', bias=False'
+        s += (', ' + actstr)
+        if self.name is not None:
+            s += ', name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape):
+        if self.data_format == 'channels_last':
+            self.data_format == 'NDHWC'
+            if self.in_channels:
+                self.pre_channel = self.in_channels
             else:
-                raise Exception("data_format should be either channels_last or channels_first")
+                self.pre_channel = inputs_shape[-1]
+                self.in_channels = self.pre_channel
+            self.strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
+            self.dilation_rate = [1, self.dilation_rate[0], self.dilation_rate[1], self.dilation_rate[2], 1]
+        elif self.data_format == 'channels_first':
+            self.data_format == 'NCDHW'
+            if self.in_channels:
+                self.pre_channel = self.in_channels
+            else:
+                self.pre_channel = inputs_shape[1]
+                self.in_channels = self.pre_channel
+            self.strides = [1, 1, self.strides[0], self.strides[1], self.strides[2]]
+            self.dilation_rate = [1, 1, self.dilation_rate[0], self.dilation_rate[1], self.dilation_rate[2]]
+        else:
+            raise Exception("data_format should be either channels_last or channels_first")
 
-            self.filter_shape = (
-                self.filter_size[0], self.filter_size[1], self.filter_size[2], self.pre_channel, self.n_filter
+        self.filter_shape = (
+            self.filter_size[0], self.filter_size[1], self.filter_size[2], self.pre_channel, self.n_filter
+        )
+
+        self.W = self._get_weights("filters", shape=self.filter_size, init=self.W_init, init_args=self.W_init_args)
+        if self.b_init:
+            self.b = self._get_weights(
+                "biases", shape=(self.n_filter,), init=self.b_init, init_args=self.b_init_args
             )
 
-            self.W = self._get_weights("filters", shape=self.filter_size, init=self.W_init, init_args=self.W_init_args)
-            if self.b_init:
-                self.b = self._get_weights(
-                    "biases", shape=(self.n_filter,), init=self.b_init, init_args=self.b_init_args
-                )
-
-        def forward(self, inputs):
-            outputs = tf.nn.conv3d(
-                input=inputs,
-                filter=self.W,
-                strides=self.strides,
-                padding=self.padding,
-                # use_cudnn_on_gpu=self.use_cudnn_on_gpu, #True,
-                data_format=self.data_format,  #'NDHWC',
-                dilations=self.dilation_rate,  #[1, 1, 1, 1, 1],
-                name=self.name,
-            )
-            if self.b_init:
-                outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
-            outputs = self.act(outputs)
-            return outputs
+    def forward(self, inputs):
+        outputs = tf.nn.conv3d(
+            input=inputs,
+            filter=self.W,
+            strides=self.strides,
+            padding=self.padding,
+            # use_cudnn_on_gpu=self.use_cudnn_on_gpu, #True,
+            data_format=self.data_format,  #'NDHWC',
+            dilations=self.dilation_rate,  #[1, 1, 1, 1, 1],
+            name=self.name,
+        )
+        if self.b_init:
+            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+        outputs = self.act(outputs)
+        return outputs

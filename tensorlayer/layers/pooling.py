@@ -74,6 +74,13 @@ class PoolLayer(Layer):
             (self.name, str(self.ksize), str(self.strides), self.padding, pool.__name__)
         )
 
+    def __repr__(self):
+        s = '{classname}(pool={poolname}, ksize={strides}, padding={padding}'
+        if self.name is not None:
+            s += ', name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, poolname=self.pool.__name__, **self.__dict__)
+
     def build(self, inputs_shape):
         pass
 
@@ -119,6 +126,14 @@ class MaxPool1d(Layer):
             "MaxPool1d %s: filter_size: %s strides: %s padding: %s" %
             (self.name, str(filter_size), str(strides), str(padding))
         )
+
+    def __repr__(self):
+        s = ('{classname}(filter_size={filter_size}'
+             ', strides={strides}, padding={padding}')
+        if self.name is not None:
+            s += ', name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
         # https://www.tensorflow.org/api_docs/python/tf/nn/pool
@@ -207,6 +222,14 @@ class MeanPool1d(Layer):
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
+    def __repr__(self):
+        s = ('{classname}(filter_size={filter_size}'
+             ', strides={strides}, padding={padding}')
+        if self.name is not None:
+            s += ', name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
     def build(self, inputs_shape):
         # pass
         # https://www.tensorflow.org/api_docs/python/tf/nn/pool
@@ -272,6 +295,14 @@ class MaxPool2d(Layer):
             "MaxPool2d %s: filter_size: %s strides: %s padding: %s" %
             (self.name, str(filter_size), str(strides), str(padding))
         )
+
+    def __repr__(self):
+        s = ('{classname}(filter_size={filter_size}'
+             ', strides={strides}, padding={padding}')
+        if self.name is not None:
+            s += ', name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
         self.strides = [1, self.strides[0], self.strides[1], 1]
@@ -342,6 +373,14 @@ class MeanPool2d(Layer):
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
+    def __repr__(self):
+        s = ('{classname}(filter_size={filter_size}'
+             ', strides={strides}, padding={padding}')
+        if self.name is not None:
+            s += ', name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
     def build(self, inputs_shape):
         self.strides = [1, self.strides[0], self.strides[1], 1]
         if self.data_format == 'channels_last':
@@ -408,6 +447,14 @@ class MaxPool3d(Layer):
             "MaxPool3d %s: filter_size: %s strides: %s padding: %s" %
             (self.name, str(filter_size), str(strides), str(padding))
         )
+
+    def __repr__(self):
+        s = ('{classname}(filter_size={filter_size}'
+             ', strides={strides}, padding={padding}')
+        if self.name is not None:
+            s += ', name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
         self.strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
@@ -484,6 +531,14 @@ class MeanPool3d(Layer):
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
+    def __repr__(self):
+        s = ('{classname}(filter_size={filter_size}'
+             ', strides={strides}, padding={padding}')
+        if self.name is not None:
+            s += ', name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
     def build(self, inputs_shape):
         self.strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
         if self.data_format == 'channels_last':
@@ -536,6 +591,13 @@ class GlobalMaxPool1d(Layer):
 
         logging.info("GlobalMaxPool1d %s" % self.name)
 
+    def __repr__(self):
+        s = '{classname}('
+        if self.name is not None:
+            s += 'name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
     def build(self, inputs_shape):
         pass
 
@@ -580,6 +642,13 @@ class GlobalMeanPool1d(Layer):
         super().__init__(name)
         self.data_format = data_format
         logging.info("GlobalMeanPool1d %s" % self.name)
+
+    def __repr__(self):
+        s = '{classname}('
+        if self.name is not None:
+            s += 'name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
         pass
@@ -626,6 +695,13 @@ class GlobalMaxPool2d(Layer):
         self.data_format = data_format
         logging.info("GlobalMaxPool2d %s" % self.name)
 
+    def __repr__(self):
+        s = '{classname}('
+        if self.name is not None:
+            s += 'name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
     def build(self, inputs_shape):
         pass
 
@@ -669,6 +745,13 @@ class GlobalMeanPool2d(Layer):
         # super(GlobalMeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         logging.info("GlobalMeanPool2d %s" % self.name)
+
+    def __repr__(self):
+        s = '{classname}('
+        if self.name is not None:
+            s += 'name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
         pass
@@ -715,6 +798,13 @@ class GlobalMaxPool3d(Layer):
         self.data_format = data_format
         logging.info("GlobalMaxPool3d %s" % self.name)
 
+    def __repr__(self):
+        s = '{classname}('
+        if self.name is not None:
+            s += ', name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
     def build(self, inputs_shape):
         pass
 
@@ -759,6 +849,13 @@ class GlobalMeanPool3d(Layer):
         super().__init__(name)
         self.data_format = data_format
         logging.info("GlobalMeanPool3d %s" % self.name)
+
+    def __repr__(self):
+        s = '{classname}('
+        if self.name is not None:
+            s += 'name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
         pass
