@@ -5,6 +5,7 @@ from tensorlayer.layers import Layer, ModelLayer
 from tensorlayer import logging
 from queue import Queue
 from tensorlayer.files.utils import save_weights_to_hdf5, load_hdf5_to_weights, load_hdf5_to_weights_in_order
+from tensorlayer.files.utils import save_npz, load_and_assign_npz
 
 
 try:
@@ -471,6 +472,7 @@ class Model():
         -------
 
         """
+        logging.info("[*] Saving TL weights into %s" % filepath)
         if h5py is None:
             raise ImportError('`save_weights` requires h5py.')
 
@@ -482,7 +484,7 @@ class Model():
             save_weights_to_hdf5(f, self.weights, sess)
             f.flush()
 
-        logging.info("Successfully save weights to " + filepath)
+        logging.info("[*] Saved")
 
     def load_weights(self, filepath, sess=None, in_order=True):
         # TODO: Documentation pending
@@ -509,7 +511,30 @@ class Model():
 
         logging.info("Successfully load weights from " + filepath)
 
+    def save_weights_to_npz(self, filepath, sess=None):
+        # TODO: Documentation pending
+        """
+        Parameters
+        ----------
+        filepath
+        sess
 
+        Examples
+        --------
+
+        Notes
+        -----
+        If you got session issues, you can change the value.eval() to value.eval(session=sess)
+
+        References
+        ----------
+        `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
+
+        """
+        save_npz(self.weights, filepath, sess)
+
+    def load_weights_from_npz(self, filepath, sess=None):
+        load_and_assign_npz(self.weights, filepath, sess)
 
 
 if __name__ == '__main__':

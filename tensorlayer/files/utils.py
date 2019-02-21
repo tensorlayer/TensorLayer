@@ -1610,16 +1610,17 @@ def save_npz(save_list=None, name='model.npz', sess=None):
     if save_list is None:
         save_list = []
 
-    save_list_var = []
-    if sess:
-        save_list_var = sess.run(save_list)
-    else:
-        try:
-            save_list_var.extend([v.eval() for v in save_list])
-        except Exception:
-            logging.info(
-                " Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_params, name='model.npz', sess=sess)"
-            )
+    save_list_var = tf_variables_to_numpy(save_list, sess)
+    # save_list_var = []
+    # if sess:
+    #     save_list_var = sess.run(save_list)
+    # else:
+    #     try:
+    #         save_list_var.extend([v.eval() for v in save_list])
+    #     except Exception:
+    #         logging.info(
+    #             " Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_params, name='model.npz', sess=sess)"
+    #         )
     np.savez(name, params=save_list_var)
     save_list_var = None
     del save_list_var
@@ -1694,17 +1695,13 @@ def assign_weights(weights, network, sess=None):
     return ops
 
 
-def load_and_assign_npz(sess=None, name=None, network=None):
+def load_and_assign_npz(assign_list=None, name='model.npz', sess=None):
+    # TODO: Documentation pending
     """Load model from npz and assign to a network.
 
     Parameters
     -------------
-    sess : Session
-        TensorFlow Session.
-    name : str
-        The name of the `.npz` file.
-    network : :class:`Layer`
-        The network to be assigned.
+
 
     Returns
     --------
@@ -1716,18 +1713,50 @@ def load_and_assign_npz(sess=None, name=None, network=None):
     - See ``tl.files.save_npz``
 
     """
-    if network is None:
-        raise ValueError("network is None.")
-    if sess is None:
-        raise ValueError("session is None.")
     if not os.path.exists(name):
         logging.error("file {} doesn't exist.".format(name))
         return
     else:
         weights = load_npz(name=name)
-        assign_weights(sess, weights, network)
+        for idx, param in enumerate(weights):
+            assign_tf_variable(assign_list[idx], param, sess)
         logging.info("[*] Load {} SUCCESS!".format(name))
-        return network
+
+
+# def load_and_assign_npz(sess=None, name=None, network=None):
+#     """Load model from npz and assign to a network.
+#
+#     Parameters
+#     -------------
+#     sess : Session
+#         TensorFlow Session.
+#     name : str
+#         The name of the `.npz` file.
+#     network : :class:`Layer`
+#         The network to be assigned.
+#
+#     Returns
+#     --------
+#     False or network
+#         Returns False, if the model is not exist.
+#
+#     Examples
+#     --------
+#     - See ``tl.files.save_npz``
+#
+#     """
+#     if network is None:
+#         raise ValueError("network is None.")
+#     if sess is None:
+#         raise ValueError("session is None.")
+#     if not os.path.exists(name):
+#         logging.error("file {} doesn't exist.".format(name))
+#         return
+#     else:
+#         weights = load_npz(name=name)
+#         assign_weights(sess, weights, network)
+#         logging.info("[*] Load {} SUCCESS!".format(name))
+#         return network
 
 
 def save_npz_dict(save_list=None, name='model.npz', sess=None):
@@ -2444,7 +2473,7 @@ def load_hdf5_to_weights_in_order(f, weights, sess=None):
 
     for idx, name in enumerate(weights_names):
         weights_val = np.asarray(f[name])
-        assign_tf_variable(weights[idx], weights_val, sess) # TODO: whether assign in a list way will be faster
+        assign_tf_variable(weights[idx], weights_val, sess) # FIXME: whether assign in a list way will be faster
 
 
 def load_hdf5_to_weights(f, weights, sess=None):
