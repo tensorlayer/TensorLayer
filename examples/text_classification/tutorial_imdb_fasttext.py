@@ -87,12 +87,12 @@ class FastTextClassifier(object):
         self.model = Model(inputs=net_in, outputs=net_out, name="fast_text_classifier")
 
         # Training operation
-        cost = tl.cost.cross_entropy(self.model(self.inputs, is_train=True).outputs, self.labels, name='cost')
+        cost = tl.cost.cross_entropy(self.model(self.inputs, is_train=True), self.labels, name='cost')
         self.train_op = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE).minimize(cost)
 
         # Predictions
-        self.prediction_probs = tf.nn.softmax(self.model(self.inputs, is_train=True).outputs)
-        self.predictions = tf.argmax(self.model(self.inputs, is_train=True).outputs, axis=1, output_type=tf.int32)
+        self.prediction_probs = tf.nn.softmax(self.model(self.inputs, is_train=True))
+        self.predictions = tf.argmax(self.model(self.inputs, is_train=True), axis=1, output_type=tf.int32)
 
         # Evaluation
         are_predictions_correct = tf.equal(self.predictions, self.labels)

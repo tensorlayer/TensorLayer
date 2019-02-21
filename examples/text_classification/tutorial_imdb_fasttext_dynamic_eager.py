@@ -87,7 +87,7 @@ class FastTextModel(Model):
         z = self.avg_embed(z)
         z = self.dense1(z)
         z = self.dense2(z)
-        return z
+        return z.outputs
 
 def augment_with_ngrams(unigrams, unigram_vocab_size, n_buckets, n=2):
     """Augment unigram features with hashed n-gram features."""
@@ -141,7 +141,7 @@ def train_test_and_save_model():
 
                 # forward and define the loss function
                 with tf.GradientTape() as tape:
-                    y_pred = model(tl.prepro.pad_sequences(X_batch)).outputs
+                    y_pred = model(tl.prepro.pad_sequences(X_batch))
                     cost = tl.cost.cross_entropy(y_pred, y_batch, name='cost')
 
                 # backward, calculate gradients and update the weights
@@ -165,7 +165,7 @@ def train_test_and_save_model():
     model.eval()
 
     # forward and calculate the accuracy
-    y_pred = model(tl.prepro.pad_sequences(X_test)).outputs
+    y_pred = model(tl.prepro.pad_sequences(X_test))
     predictions = tf.argmax(y_pred, axis=1, output_type=tf.int32)
     are_predictions_correct = tf.equal(predictions, y_test)
     test_accuracy = tf.reduce_mean(tf.cast(are_predictions_correct, tf.float32))
