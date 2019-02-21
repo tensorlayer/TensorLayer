@@ -84,8 +84,6 @@ class Word2vecEmbedding(Layer):
 
     Parameters
     ----------
-    # train_labels : placeholder
-    #     For word labels. integer index format
     vocabulary_size : int
         The size of vocabulary, number of words
     embedding_size : int
@@ -163,37 +161,24 @@ class Word2vecEmbedding(Layer):
 
     def __init__(
             self,
-            # inputs,
-            # train_labels=None,
             vocabulary_size=80000,
             embedding_size=200,
             num_sampled=64,
             nce_loss_args=None,
-            E_init=tf.compat.v1.initializers.random_uniform(minval=-1.0, maxval=1.0),
-            E_init_args=None,
-            nce_W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.03),
-            nce_W_init_args=None,
-            nce_b_init=tf.compat.v1.initializers.constant(value=0.0),
-            nce_b_init_args=None,
+            E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
+            nce_W_init=tl.initializers.truncated_normal(stddev=0.03),
+            nce_b_init=tl.initializers.constant(value=0.0),
             name=None,  #'word2vec',
     ):
 
-        # super(Word2vecEmbedding, self).__init__(
-        #     prev_layer=inputs, nce_loss_args=nce_loss_args, E_init_args=E_init_args, nce_W_init_args=nce_W_init_args,
-        #     nce_b_init_args=nce_b_init_args, name=name
-        # )
-        super().__init__(name)
-        # self.train_labels = train_labels
+        super(Word2vecEmbedding, self).__init__(name)
         self.vocabulary_size = vocabulary_size
         self.embedding_size = embedding_size
         self.num_sampled = num_sampled
         self.nce_loss_args = nce_loss_args
         self.E_init = E_init
-        self.E_init_args = E_init_args
         self.nce_W_init = nce_W_init
-        self.nce_W_init_args = nce_W_init_args
         self.nce_b_init = nce_b_init
-        self.nce_b_init_args = nce_b_init_args
         logging.info("Word2vecEmbedding %s: (%d, %d)" % (self.name, self.vocabulary_size, self.embedding_size))
 
     def build(self, inputs):
@@ -205,36 +190,22 @@ class Word2vecEmbedding(Layer):
         # embed is the outputs of the hidden layer (embedding layer), it is a
         # row vector with 'embedding_size' values.
 
-        # self.embeddings = tf.compat.v1.get_variable(
-        #     name=self.name + '/embeddings', shape=(self.vocabulary_size, self.embedding_size), initializer=self.E_init,
-        #     dtype=LayersConfig.tf_dtype, **self.E_init_args
-        # )
         self.embeddings = self._get_weights(
             "embeddings", shape=(self.vocabulary_size, self.embedding_size), init=self.E_init,
-            init_args=self.E_init_args
         )
 
         self.normalized_embeddings = tf.nn.l2_normalize(self.embeddings, 1)
 
         # Construct the variables for the NCE loss (i.e. negative sampling)
-        # self.nce_weights = tf.compat.v1.get_variable(
-        #     name=self.name + '/nce_weights', shape=(self.vocabulary_size, self.embedding_size),
-        #     initializer=self.nce_W_init, dtype=LayersConfig.tf_dtype, **self.nce_W_init_args
-        # )
         self.nce_weights = self._get_weights(
             "nce_weights", shape=(self.vocabulary_size, self.embedding_size), init=self.nce_W_init,
-            init_args=self.nce_W_init_args
         )
 
-        # self.nce_biases = tf.compat.v1.get_variable(
-        #     name=self.name + '/nce_biases', shape=(self.vocabulary_size), initializer=self.nce_b_init,
-        #     dtype=LayersConfig.tf_dtype, **self.nce_b_init_args
-        # )
         self.nce_biases = self._get_weights(
-            "nce_biases", shape=(self.vocabulary_size), init=self.nce_b_init, init_args=self.nce_b_init_args
+            "nce_biases", shape=(self.vocabulary_size,), init=self.nce_b_init,
         )
 
-    def forward(self, inputs, train_labels):
+    def forward(self, inputs):
         """
         Parameters
         ----------
@@ -245,20 +216,6 @@ class Word2vecEmbedding(Layer):
         """
         outputs = tf.nn.embedding_lookup(params=self.embeddings, ids=inputs)
 
-        # Compute the average NCE loss for the batch.
-        # tf.nce_loss automatically draws a new sample of the negative labels
-        # each time we evaluate the loss.
-        self.nce_cost = tf.reduce_mean(
-            input_tensor=tf.nn.nce_loss(
-                weights=self.nce_weights,
-                biases=self.nce_biases,
-                inputs=outputs,
-                labels=train_labels,  #self.train_labels,
-                num_sampled=self.num_sampled,
-                num_classes=self.vocabulary_size,
-                **self.nce_loss_args
-            )
-        )
         return outputs
 
 
@@ -369,8 +326,8 @@ class AverageEmbedding(Layer):
     >>> import tensorlayer as tl
     >>> batch_size = 8
     >>> length = 5
-    >>> x = tf.placeholder(tf.int32, shape=(batch_size, length))
-    >>> net = tl.layers.AverageEmbedding(x, vocabulary_size=1000, embedding_size=50, name='avg')
+    >>> net = tl.layers.Input([batch_size, length], dtype=tf.int32)
+    >>> net = tl.layers.AverageEmbedding(vocabulary_size=1000, embedding_size=50, name='avg')(net)
     (8, 50)
 
     """

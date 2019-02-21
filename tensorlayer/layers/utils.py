@@ -146,7 +146,6 @@ def get_layers_with_name(net, name="", verbose=False):
 
 def get_variable_with_initializer(scope_name, var_name, shape, init=tf.compat.v1.initializers.random_normal()):
     # FIXME: documentation needed
-    # TODO: more initializer needed, the initializer can be a numpy.random function
     # if tf.executing_eagerly():
     var_name = scope_name + "/" + var_name
     # if init_args is not None and len(init_args) != 0:

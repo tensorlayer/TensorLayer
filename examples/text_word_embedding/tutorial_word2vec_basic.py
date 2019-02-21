@@ -1,4 +1,4 @@
-# Copyright 2016 TensorLayer. All Rights Reserved.
+# Copyright 2019 TensorLayer. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+
 """Vector Representations of Words.
 
 This is the minimalistic reimplementation of
@@ -37,7 +38,9 @@ https://www.tensorflow.org/versions/r0.9/tutorials/word2vec/index.html#vector-re
 
 """
 
+import os
 import sys
+import wget
 import time
 import numpy as np
 import tensorflow as tf
@@ -90,7 +93,7 @@ def main_word2vec_basic():
         n_epoch = 20
         model_file_name = "model_word2vec_50k_128"
         # Eval 2084/15851 accuracy = 15.7%
-    if FLAGS.model == "two":
+    elif FLAGS.model == "two":
         # (tensorflow/models/embedding/word2vec.py)
         vocabulary_size = 80000
         batch_size = 20  # Note: small batch_size need more steps for a Epoch
@@ -102,7 +105,7 @@ def main_word2vec_basic():
         n_epoch = 15
         model_file_name = "model_word2vec_80k_200"
         # 7.9%
-    if FLAGS.model == "three":
+    elif FLAGS.model == "three":
         # (tensorflow/models/embedding/word2vec_optimized.py)
         vocabulary_size = 80000
         batch_size = 500
@@ -114,7 +117,7 @@ def main_word2vec_basic():
         n_epoch = 20
         model_file_name = "model_word2vec_80k_200_opt"
         # bad 0%
-    if FLAGS.model == "four":
+    elif FLAGS.model == "four":
         # see: Learning word embeddings efficiently with noise-contrastive estimation
         vocabulary_size = 80000
         batch_size = 100
@@ -126,6 +129,8 @@ def main_word2vec_basic():
         n_epoch = 200 * 10
         model_file_name = "model_word2vec_80k_600"
         # bad
+    else:
+        raise Exception("Invalid model: %s" % FLAGS.model)
 
     num_steps = int((data_size / batch_size) * n_epoch)  # total number of iteration
 
@@ -156,13 +161,13 @@ def main_word2vec_basic():
     # Step 3: Function to generate a training batch for the Skip-Gram model.
     print()
 
-    batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data, \
-        batch_size=8, num_skips=4, skip_window=2, data_index=0)
+    batch, labels, data_index = tl.nlp.generate_skip_gram_batch(
+        data=data, batch_size=8, num_skips=4, skip_window=2, data_index=0)
     for i in range(8):
         print(batch[i], reverse_dictionary[batch[i]], '->', labels[i, 0], reverse_dictionary[labels[i, 0]])
 
-    batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data, \
-        batch_size=8, num_skips=2, skip_window=1, data_index=0)
+    batch, labels, data_index = tl.nlp.generate_skip_gram_batch(
+        data=data, batch_size=8, num_skips=2, skip_window=1, data_index=0)
     for i in range(8):
         print(batch[i], reverse_dictionary[batch[i]], '->', labels[i, 0], reverse_dictionary[labels[i, 0]])
 
@@ -187,28 +192,41 @@ def main_word2vec_basic():
     valid_dataset = tf.constant(valid_examples, dtype=tf.int32)
 
     # Look up embeddings for inputs.
-    emb_net = tl.layers.Word2vecEmbeddingInputlayer(
-        inputs=train_inputs,
-        train_labels=train_labels,
+    net_in = tl.layers.Input([batch_size], dtype=tf.int32)
+    emb_net = tl.layers.Word2vecEmbedding(
         vocabulary_size=vocabulary_size,
         embedding_size=embedding_size,
         num_sampled=num_sampled,
         nce_loss_args={},
-        E_init=tf.random_uniform_initializer(minval=-1.0, maxval=1.0),
-        E_init_args={},
-        nce_W_init=tf.truncated_normal_initializer(stddev=float(1.0 / np.sqrt(embedding_size))),
-        nce_W_init_args={},
-        nce_b_init=tf.constant_initializer(value=0.0),
-        nce_b_init_args={},
+        E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
+        nce_W_init=tl.initializers.truncated_normal(stddev=float(1.0 / np.sqrt(embedding_size))),
+        nce_b_init=tl.initializers.constant(value=0.0),
         name='word2vec_layer',
+    )(net_in)
+
+    model = tl.models.Model(inputs=net_in, outputs=emb_net, name="word2vec_model")
+
+    # Compute the average NCE loss for the batch.
+    # tf.nce_loss automatically draws a new sample of the negative labels
+    # each time we evaluate the loss.
+    cost = tf.reduce_mean(
+        input_tensor=tf.nn.nce_loss(
+            weights=emb_net.nce_weights,
+            biases=emb_net.nce_biases,
+            inputs=model(train_inputs, is_train=True),
+            labels=train_labels,  #self.train_labels,
+            num_sampled=emb_net.num_sampled,
+            num_classes=emb_net.vocabulary_size,
+            **emb_net.nce_loss_args
+        )
     )
 
     # Construct the optimizer. Note: AdamOptimizer is very slow in this case
-    cost = emb_net.nce_cost
-    train_params = emb_net.all_params
+    train_params = model.weights
+
     # train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_params)
-    train_op = tf.train.AdagradOptimizer(learning_rate, initial_accumulator_value=0.1,
-                                         use_locking=False).minimize(cost, var_list=train_params)
+    train_op = tf.train.AdagradOptimizer(
+        learning_rate, initial_accumulator_value=0.1, use_locking=False).minimize(cost, var_list=train_params)
 
     # Compute the cosine similarity between minibatch examples and all embeddings.
     # For simple visualization of validation set.
@@ -221,16 +239,10 @@ def main_word2vec_basic():
     # Step 5: Start training.
     print()
 
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.global_variables_initializer())
     if resume:
         print("Load existing model" + "!" * 10)
-        # Load from ckpt or npz file
-        # saver = tf.train.Saver()
-        # saver.restore(sess, model_file_name+'.ckpt')
-        tl.files.load_and_assign_npz_dict(name=model_file_name + '.npz', sess=sess)
-
-    emb_net.print_params(False)
-    emb_net.print_layers()
+        model.load_weights(filepath=model_file_name + '.hdf5', sess=sess)
 
     # save vocabulary to txt
     tl.nlp.save_vocab(count, name='vocab_text8.txt')
@@ -240,8 +252,9 @@ def main_word2vec_basic():
     print_freq = 2000
     while step < num_steps:
         start_time = time.time()
-        batch_inputs, batch_labels, data_index = tl.nlp.generate_skip_gram_batch(data=data, \
-            batch_size=batch_size, num_skips=num_skips, skip_window=skip_window, data_index=data_index)
+        batch_inputs, batch_labels, data_index = tl.nlp.generate_skip_gram_batch(
+            data=data, batch_size=batch_size, num_skips=num_skips,
+            skip_window=skip_window, data_index=data_index)
         feed_dict = {train_inputs: batch_inputs, train_labels: batch_labels}
         # We perform one update step by evaluating the train_op (including it
         # in the list of returned values for sess.run()
@@ -251,7 +264,7 @@ def main_word2vec_basic():
         if step % print_freq == 0:
             if step > 0:
                 average_loss /= print_freq
-            print("Average loss at step %d/%d. loss: %f took: %fs" % \
+            print("Average loss at step %d/%d. loss: %f took: %fs/per step" % \
                 (step, num_steps, average_loss, time.time() - start_time))
             average_loss = 0
         # Prints out nearby words given a list of words.
@@ -270,10 +283,7 @@ def main_word2vec_basic():
 
         if (step % (print_freq * 20) == 0) and (step != 0):
             print("Save model, data and dictionaries" + "!" * 10)
-            # Save to ckpt or npz file
-            # saver = tf.train.Saver()
-            # save_path = saver.save(sess, model_file_name+'.ckpt')
-            tl.files.save_npz_dict(emb_net.all_params, name=model_file_name + '.npz', sess=sess)
+            model.save_weights(filepath=model_file_name + ".hdf5", sess=sess)
             tl.files.save_any_to_npy(
                 save_dict={
                     'data': data,
@@ -302,6 +312,9 @@ def main_word2vec_basic():
     print()
 
     #  from tensorflow/models/embedding/word2vec.py
+    if not os.path.exists("questions-words.txt"):
+        print("Downloading file 'questions-words.txt'")
+        wget.download('http://download.tensorflow.org/data/questions-words.txt')
     analogy_questions = tl.nlp.read_analogies_file(eval_file='questions-words.txt', word2id=dictionary)
     # The eval feeds three vectors of word ids for a, b, c, each of
     # which is of size N, where N is the number of analogies we want to
