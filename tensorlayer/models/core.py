@@ -212,10 +212,10 @@ class Model():
         #     results.append(z)
 
         if not isinstance(self._outputs, list):
-            return memory[self._outputs.name]
+            return memory[self._outputs.name].outputs
             # return results[0]
         else:
-            return [memory[layer.name] for layer in self._outputs]
+            return [memory[layer.name].outputs for layer in self._outputs]
             # return results
 
     @property
