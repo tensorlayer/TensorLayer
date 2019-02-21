@@ -72,6 +72,11 @@ __all__ = [
     'save_ckpt',
     'save_npz',
     'save_npz_dict',
+    'tf_variables_to_numpy',
+    'assign_tf_variable',
+    'save_weights_to_hdf5',
+    'load_hdf5_to_weights_in_order',
+    'load_hdf5_to_weights',
     #'save_graph',
     #'load_graph',
     #'save_graph_and_params',
@@ -1653,26 +1658,27 @@ def assign_params(**kwargs):
     raise Exception("please change assign_params --> assign_weights")
 
 
-def assign_weights(sess, weights, network):
+def assign_weights(weights, network, sess=None):
     """Assign the given parameters to the TensorLayer network.
 
     Parameters
     ----------
-    sess : Session
-        TensorFlow Session.
     weights : list of array
         A list of model weights (array) in order.
     network : :class:`Layer`
         The network to be assigned.
+    sess : Session
+        TensorFlow Session. In eager mode, it should be none; In graph mode, it should be specified.
 
     Returns
     --------
-    list of operations
-        A list of tf ops in order that assign weights. Support sess.run(ops) manually.
+    1) list of operations if in graph mode
+            A list of tf ops in order that assign weights. Support sess.run(ops) manually.
+    2) list of tf variables if in eager mode
+            A list of tf variables (assigned weights) in order.
 
     Examples
     --------
-    - See ``tl.files.save_npz``
 
     References
     ----------
@@ -2438,7 +2444,7 @@ def load_hdf5_to_weights_in_order(f, weights, sess=None):
 
     for idx, name in enumerate(weights_names):
         weights_val = np.asarray(f[name])
-        assign_tf_variable(weights[idx], weights_val, sess)
+        assign_tf_variable(weights[idx], weights_val, sess) # TODO: whether assign in a list way will be faster
 
 
 def load_hdf5_to_weights(f, weights, sess=None):
