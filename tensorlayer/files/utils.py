@@ -1746,13 +1746,14 @@ def save_npz_dict(save_list=None, name='model.npz', sess=None):
         TensorFlow Session.
 
     """
-    if sess is None:
-        raise ValueError("session is None.")
+    # if sess is None:
+    #     raise ValueError("session is None.")
     if save_list is None:
         save_list = []
 
     save_list_names = [tensor.name for tensor in save_list]
-    save_list_var = sess.run(save_list)
+    # save_list_var = sess.run(save_list)
+    save_list_var = tf_variables_to_numpy(save_list, sess)
     save_var_dict = {save_list_names[idx]: val for idx, val in enumerate(save_list_var)}
     np.savez(name, **save_var_dict)
     save_list_var = None
@@ -1762,7 +1763,7 @@ def save_npz_dict(save_list=None, name='model.npz', sess=None):
     logging.info("[*] Model saved in npz_dict %s" % name)
 
 
-def load_and_assign_npz_dict(name='model.npz', sess=None):
+def load_and_assign_npz_dict(sess=None, name='model.npz', network=None):
     """Restore the parameters saved by ``tl.files.save_npz_dict()``.
 
     Parameters
@@ -1773,8 +1774,8 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
         TensorFlow Session.
 
     """
-    if sess is None:
-        raise ValueError("session is None.")
+    # if sess is None:
+    #     raise ValueError("session is None.")
 
     if not os.path.exists(name):
         logging.error("file {} doesn't exist.".format(name))
@@ -1783,23 +1784,31 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
     weights = np.load(name)
     if len(weights.keys()) != len(set(weights.keys())):
         raise Exception("Duplication in model npz_dict %s" % name)
-    ops = list()
+
+    net_weights_name = [w.name for w in network.weights]
+
     for key in weights.keys():
         try:
-            # tensor = tf.get_default_graph().get_tensor_by_name(key)
-            # varlist = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=key)
-            varlist = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.GLOBAL_VARIABLES, scope=key)
-            if len(varlist) > 1:
-                raise Exception("[!] Multiple candidate variables to be assigned for name %s" % key)
-            elif len(varlist) == 0:
-                raise KeyError
-            else:
-                ops.append(varlist[0].assign(weights[key]))
-                logging.info("[*] weights restored: %s" % key)
+            assign_tf_variable(network.weights[net_weights_name.index(key)], weights[key], sess)
         except KeyError:
             logging.info("[!] Warning: Tensor named %s not found in network." % key)
-
-    sess.run(ops)
+    # ops = list()
+    # for key in weights.keys():
+    #     try:
+    #         # tensor = tf.get_default_graph().get_tensor_by_name(key)
+    #         # varlist = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=key)
+    #         varlist = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.GLOBAL_VARIABLES, scope=key)
+    #         if len(varlist) > 1:
+    #             raise Exception("[!] Multiple candidate variables to be assigned for name %s" % key)
+    #         elif len(varlist) == 0:
+    #             raise KeyError
+    #         else:
+    #             ops.append(varlist[0].assign(weights[key]))
+    #             logging.info("[*] weights restored: %s" % key)
+    #     except KeyError:
+    #         logging.info("[!] Warning: Tensor named %s not found in network." % key)
+    #
+    # sess.run(ops)
     logging.info("[*] Model restored from npz_dict %s" % name)
 
 
@@ -2438,7 +2447,7 @@ def load_hdf5_to_weights_in_order(f, weights, sess=None):
                         "Please check whether this hdf5 file is saved from TL.")
 
     if len(weights) != len(weights_names):
-        logging.warning("Number of weights mismatch."
+        logging.warning("[!] Warning: Number of weights mismatch."
                      "Trying to load a weight file with " + str(len(weights)) +
                      " weights into a model with " + str(len(weights_names)) +
                      " weights.")
@@ -2458,15 +2467,16 @@ def load_hdf5_to_weights(f, weights, sess=None):
                         "Please check whether this hdf5 file is saved from TL.")
 
     if len(weights) != len(weights_names):
-        logging.warning("Number of weights mismatch."
+        logging.warning("[!] Warning: Number of weights mismatch."
                      "Trying to load a weight file with " + str(len(weights)) +
                      " weights into a model with " + str(len(weights_names)) +
                      " weights.")
 
-    for var in weights:
+    net_weights_name = [w.name for w in weights]
+
+    for name in weights_names:
         try:
-            weights_val = np.asarray(f[var.name])
-            assign_tf_variable(var, weights_val, sess)
-        except Exception:
-            raise NameError("Unable to load weights by name " + var.name +
-                            ". Maybe name mismatch? Try to load weights in order.")
+            weights_val = np.asarray(f[name])
+            assign_tf_variable(weights[net_weights_name.index(name)], weights_val, sess)
+        except KeyError:
+            logging.info("[!] Warning: Tensor named %s not found in network." % name)

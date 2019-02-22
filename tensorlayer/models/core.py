@@ -556,6 +556,46 @@ class Model():
             return
         utils.load_and_assign_npz(sess, filepath, self)
 
+    def save_weights_to_npz_dict(self, filepath, sess=None):
+        # TODO: Documentation pending
+        """
+        Parameters
+        ----------
+        filepath
+        sess
+
+        Examples
+        --------
+
+        Notes
+        -----
+        If you got session issues, you can change the value.eval() to value.eval(session=sess)
+
+        References
+        ----------
+        `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
+
+        """
+        utils.save_npz_dict(self.weights, filepath, sess)
+
+    def load_weights_from_npz_dict(self, filepath, sess=None):
+        # TODO: Documentation pending
+        """
+
+        Parameters
+        ----------
+        filepath
+        sess
+
+        Returns
+        -------
+
+        """
+        if not os.path.exists(filepath):
+            logging.error("file {} doesn't exist.".format(filepath))
+            return
+        utils.load_and_assign_npz_dict(sess, filepath, self)
+
 
 if __name__ == '__main__':
     import tensorlayer as tl
