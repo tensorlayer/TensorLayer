@@ -4,9 +4,8 @@ import tensorflow as tf
 from tensorlayer.layers import Layer, ModelLayer
 from tensorlayer import logging
 from queue import Queue
-from tensorlayer.files.utils import save_weights_to_hdf5, load_hdf5_to_weights, load_hdf5_to_weights_in_order
-from tensorlayer.files.utils import save_npz, load_and_assign_npz
-
+from tensorlayer.files import utils
+import os
 
 try:
     import h5py
@@ -16,6 +15,7 @@ except ImportError:
 __all__ = [
     'Model',
 ]
+
 
 def _addindent(s_, numSpaces):
     s = s_.split('\n')
@@ -27,6 +27,7 @@ def _addindent(s_, numSpaces):
     s = '\n'.join(s)
     s = first + '\n' + s
     return s
+
 
 class Model():
     """The :class:`Model` class represents a neural network.
@@ -129,7 +130,6 @@ class Model():
             #         )
             #
             #     self._stacked_layers.append(stacked_layers)
-
 
     def __call__(self, inputs, is_train=None, **kwargs):
         """
@@ -472,7 +472,6 @@ class Model():
         -------
 
         """
-        logging.info("[*] Saving TL weights into %s" % filepath)
         if h5py is None:
             raise ImportError('`save_weights` requires h5py.')
 
@@ -480,8 +479,10 @@ class Model():
             logging.warning("Model contains no weights or layers haven't been built, nothing saved")
             return
 
+        logging.info("[*] Saving TL weights into %s" % filepath)
+
         with h5py.File(filepath, 'w') as f:
-            save_weights_to_hdf5(f, self.weights, sess)
+            utils.save_weights_to_hdf5(f, self.weights, sess)
             f.flush()
 
         logging.info("[*] Saved")
@@ -503,13 +504,17 @@ class Model():
         if h5py is None:
             raise ImportError('`load_weights` requires h5py.')
 
+        if not os.path.exists(filepath):
+            logging.error("file {} doesn't exist.".format(filepath))
+            return
+
         with h5py.File(filepath, 'r') as f:
             if in_order == True:
-                load_hdf5_to_weights_in_order(f, self.weights, sess)
+                utils.load_hdf5_to_weights_in_order(f, self.weights, sess)
             else:
-                load_hdf5_to_weights(f, self.weights, sess)
+                utils.load_hdf5_to_weights(f, self.weights, sess)
 
-        logging.info("Successfully load weights from " + filepath)
+        logging.info("[*] Load {} SUCCESS!".format(filepath))
 
     def save_weights_to_npz(self, filepath, sess=None):
         # TODO: Documentation pending
@@ -531,10 +536,25 @@ class Model():
         `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
 
         """
-        save_npz(self.weights, filepath, sess)
+        utils.save_npz(self.weights, filepath, sess)
 
     def load_weights_from_npz(self, filepath, sess=None):
-        load_and_assign_npz(self.weights, filepath, sess)
+        # TODO: Documentation pending
+        """
+
+        Parameters
+        ----------
+        filepath
+        sess
+
+        Returns
+        -------
+
+        """
+        if not os.path.exists(filepath):
+            logging.error("file {} doesn't exist.".format(filepath))
+            return
+        utils.load_and_assign_npz(sess, filepath, self)
 
 
 if __name__ == '__main__':
