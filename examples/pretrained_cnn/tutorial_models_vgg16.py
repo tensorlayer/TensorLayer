@@ -3,7 +3,7 @@
 """VGG-16 for ImageNet using TL models."""
 
 # import sys
-# sys.path.append("D:\\tensorlayer2")
+# sys.path.append("D:\\GitHub\\tensorlayer2")
 # import ipdb
 
 import time
@@ -11,6 +11,8 @@ import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.models.imagenet_classes import class_names
+
+tf.enable_eager_execution()
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -20,9 +22,7 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 vgg = tl.models.VGG16()
 
 # restore pre-trained VGG parameters
-sess = tf.InteractiveSession()
-
-vgg.restore_weights(sess)
+vgg.restore_weights()
 
 img1 = tl.vis.read_image('data/tiger.jpeg')
 img1 = tl.prepro.imresize(img1, (224, 224))
@@ -35,7 +35,7 @@ if ((0 <= img1).all() and (img1 <= 1.0).all()) is False:
 start_time = time.time()
 vgg.eval()
 output = vgg(img1)
-probs = tf.nn.softmax(output.outputs).eval()[0]
+probs = tf.nn.softmax(output.outputs)[0]
 print("  End time : %.5ss" % (time.time() - start_time))
 preds = (np.argsort(probs)[::-1])[0:5]
 for p in preds:

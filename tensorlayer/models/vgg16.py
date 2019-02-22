@@ -164,7 +164,7 @@ class VGG16(Model):
     def restore_params(self, **kwargs):
         raise Exception("please change restore_params --> restore_weights")
 
-    def restore_weights(self, sess):
+    def restore_weights(self, sess=None):
         logging.info("Restore pre-trained weights")
         ## download weights
         maybe_download_and_extract(
@@ -180,7 +180,7 @@ class VGG16(Model):
                 break
         ## assign weight values
         print(self.weights)
-        assign_weights(sess, weights, self)
+        assign_weights(weights, self, sess)
         del weights
 
 
