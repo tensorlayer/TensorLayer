@@ -180,7 +180,7 @@ class VGG16(Model):
                 break
         ## assign weight values
         print(self.weights)
-        assign_weights(weights, self, sess)
+        assign_weights(sess, weights, self)
         del weights
 
 

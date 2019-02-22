@@ -35,7 +35,7 @@ if ((0 <= img1).all() and (img1 <= 1.0).all()) is False:
 start_time = time.time()
 vgg.eval()
 output = vgg(img1)
-probs = tf.nn.softmax(output.outputs)[0]
+probs = tf.nn.softmax(output.outputs)[0].numpy()
 print("  End time : %.5ss" % (time.time() - start_time))
 preds = (np.argsort(probs)[::-1])[0:5]
 for p in preds:
