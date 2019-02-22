@@ -60,7 +60,7 @@ class OneHot(Layer):
         if self.depth is None:
             raise RuntimeError(self.__class__.__name__ + ": depth == None the number of output units is undefined")
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         pass
 
     def forward(self, inputs):
@@ -114,7 +114,7 @@ class Word2vecEmbedding(Layer):
 
     Examples
     --------
-    With TensorLayer (Example in `examples/text_word_embedding/tutorial_word2vec_basic.py`)
+    Word2Vec With TensorLayer (Example in `examples/text_word_embedding/tutorial_word2vec_basic.py`)
 
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
@@ -181,11 +181,17 @@ class Word2vecEmbedding(Layer):
         self.nce_b_init = nce_b_init
         logging.info("Word2vecEmbedding %s: (%d, %d)" % (self.name, self.vocabulary_size, self.embedding_size))
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
+        """
+        Parameters
+        ----------
+        inputs_shape : tuple
+            the shape of inputs tensor
+        """
         # Look up embeddings for inputs.
         # Note: a row of 'embeddings' is the vector representation of a word.
         # for the sake of speed, it is better to slice the embedding matrix
-        # instead of transfering a word id to one-hot-format vector and then
+        # instead of transferring a word id to one-hot-format vector and then
         # multiply by the embedding matrix.
         # embed is the outputs of the hidden layer (embedding layer), it is a
         # row vector with 'embedding_size' values.
@@ -210,9 +216,7 @@ class Word2vecEmbedding(Layer):
         Parameters
         ----------
         inputs : input tensor
-            The input of a network. For word inputs, please use integer index format, 2D tensor : [batch_size, num_steps(num_words)]
-        train_labels : input tensor
-            For word labels. integer index format
+            The input of a network
         """
         outputs = tf.nn.embedding_lookup(params=self.embeddings, ids=inputs)
 
@@ -250,47 +254,45 @@ class Embedding(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> batch_size = 8
-    >>> x = tf.placeholder(tf.int32, shape=(batch_size, ))
-    >>> net = tl.layers.Embedding(inputs=x, vocabulary_size=1000, embedding_size=50, name='embed')
-    (8, 50)
+    >>> net = tl.layers.Input([batch_size, 100], dtype=tf.int32)
+    >>> net = tl.layers.Embedding(vocabulary_size=1000, embedding_size=50, name='embed')(net)
+    >>> print(net.outputs)
+    <tf.Tensor 'embedding_lookup/Identity:0' shape=(8, 100, 50) dtype=float32>
 
     """
 
     def __init__(
             self,
-            # inputs,
             vocabulary_size=80000,
             embedding_size=200,
-            E_init=tf.compat.v1.initializers.random_uniform(-0.1, 0.1),
-            E_init_args=None,
+            E_init=tl.initializers.random_uniform(-0.1, 0.1),
             name=None,  #'embedding',
     ):
-        # super(Embedding, self).__init__(prev_layer=inputs, E_init_args=E_init_args, name=name)
-        super().__init__(name)
+        super(Embedding, self).__init__(name)
         self.vocabulary_size = vocabulary_size
         self.embedding_size = embedding_size
         self.E_init = E_init
-        self.E_init_args = E_init_args
 
         logging.info("Embedding %s: (%d, %d)" % (self.name, self.vocabulary_size, self.embedding_size))
 
-    def build(self, inputs):
-        # self.embeddings = tf.compat.v1.get_variable(
-        #     name=self.name + '/embeddings', shape=(self.vocabulary_size, self.embedding_size), initializer=self.E_init,
-        #     dtype=LayersConfig.tf_dtype, **self.E_init_args
-        # )
+    def build(self, inputs_shape):
+        """
+        Parameters
+        ----------
+        inputs_shape : tuple
+            the shape of inputs tensor
+        """
+
         self.embeddings = self._get_weights(
             "embeddings", shape=(self.vocabulary_size, self.embedding_size), init=self.E_init,
-            init_args=self.E_init_args
         )
 
     def forward(self, inputs):
         """
         Parameters
         ----------
-        inputs : placeholder
-            The input of a network. For word inputs.
-            Please use integer index format, 2D tensor : (batch_size, num_steps(num_words)).
+        inputs : Tensor
+            The input of a network.
         """
         outputs = tf.nn.embedding_lookup(params=self.embeddings, ids=inputs)
         return outputs
@@ -313,6 +315,11 @@ class AverageEmbedding(Layer):
     name : str
         A unique layer name.
 
+    Attributes
+    ----------
+    outputs : tensor
+        The embedding layer output is a 2D tensor in the shape: (batch_size, embedding_size).
+
     References
     ----------
     - [1] Iyyer, M., Manjunatha, V., Boyd-Graber, J., & Daum’e III, H. (2015). Deep Unordered Composition Rivals Syntactic Methods for Text Classification. In Association for Computational Linguistics.
@@ -326,7 +333,8 @@ class AverageEmbedding(Layer):
     >>> length = 5
     >>> net = tl.layers.Input([batch_size, length], dtype=tf.int32)
     >>> net = tl.layers.AverageEmbedding(vocabulary_size=1000, embedding_size=50, name='avg')(net)
-    (8, 50)
+    >>> print(net.outputs)
+    <tf.Tensor 'sentence_embeddings:0' shape=(8, 50) dtype=float32>
 
     """
 
@@ -339,7 +347,6 @@ class AverageEmbedding(Layer):
             name=None,  # 'average_embedding',
     ):
 
-        # super(AverageEmbedding, self).__init__(prev_layer=inputs, embeddings_kwargs=embeddings_kwargs, name=name)
         super(AverageEmbedding, self).__init__(name)
         self.vocabulary_size = vocabulary_size
         self.embedding_size = embedding_size
@@ -347,17 +354,16 @@ class AverageEmbedding(Layer):
         self.E_init = E_init
         logging.info("AverageEmbedding %s: (%d, %d)" % (self.name, self.vocabulary_size, self.embedding_size))
 
-        # if embeddings_kwargs is None:
-        #     embeddings_kwargs = {}
-
     def build(self, inputs_shape):
+        """
+        Parameters
+        ----------
+        inputs_shape : tuple
+            the shape of inputs tensor.
+        """
         if len(inputs_shape) != 2:
-            raise ValueError('inputs must be of size batch_size * batch_sentence_length')
+            raise ValueError('inputs must be of size (batch_size, sentence_length)')
 
-        # self.embeddings = tf.compat.v1.get_variable(
-        #     name=self.name + '/embeddings', shape=(self.vocabulary_size, self.embedding_size),
-        #     initializer=self.E_init, dtype=LayersConfig.tf_dtype, **self.E_init_argst
-        # )
         self.embeddings = self._get_weights(
             "embeddings", shape=(self.vocabulary_size, self.embedding_size), init=self.E_init,
         )
@@ -366,9 +372,9 @@ class AverageEmbedding(Layer):
         """
         Parameters
         ----------
-        inputs : input tensor
+        inputs : tensor
             The network input.
-            For word inputs, please use integer index format, 2D tensor: (batch_size, num_steps(num_words)).
+            For word inputs, please use integer index format, 2D tensor: (batch_size, sentence_length).
         """
         word_embeddings = tf.nn.embedding_lookup(
             params=self.embeddings,
