@@ -94,64 +94,64 @@ class Word2vecEmbedding(Layer):
         The arguments for tf.nn.nce_loss()
     E_init : initializer
         The initializer for initializing the embedding matrix
-    E_init_args : dictionary
-        The arguments for embedding initializer
     nce_W_init : initializer
         The initializer for initializing the nce decoder weight matrix
-    nce_W_init_args : dictionary
-        The arguments for initializing the nce decoder weight matrix
     nce_b_init : initializer
         The initializer for initializing of the nce decoder bias vector
-    nce_b_init_args : dictionary
-        The arguments for initializing the nce decoder bias vector
     name : str
         A unique layer name
 
     Attributes
     ----------
-    nce_cost : Tensor
-        The NCE loss.
     outputs : Tensor
         The embedding layer outputs.
     normalized_embeddings : Tensor
         Normalized embedding matrix.
+    nce_weights : Tensor
+        The NCE weights
+    nce_biases: Tensor
+        The NCE biases
 
     Examples
     --------
-    With TensorLayer
+    With TensorLayer (Example in `examples/text_word_embedding/tutorial_word2vec_basic.py`)
 
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> batch_size = 8
-    >>> train_inputs = tf.placeholder(tf.int32, shape=(batch_size))
-    >>> train_labels = tf.placeholder(tf.int32, shape=(batch_size, 1))
-    >>> net = tl.layers.Word2vecEmbedding(inputs=train_inputs,
-    ...     train_labels=train_labels, vocabulary_size=1000, embedding_size=200,
-    ...     num_sampled=64, name='word2vec')
-    (8, 200)
-    >>> cost = net.nce_cost
-    >>> train_params = net.all_params
-    >>> cost = net.nce_cost
-    >>> train_params = net.all_params
-    >>> train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_params)
-    >>> normalized_embeddings = net.normalized_embeddings
+    >>> train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
+    >>> train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
 
-    Without TensorLayer
+    >>> net_in = tl.layers.Input([batch_size], dtype=tf.int32)
+    >>> emb_net = tl.layers.Word2vecEmbedding(
+    >>>       vocabulary_size=vocabulary_size,
+    >>>       embedding_size=embedding_size,
+    >>>       num_sampled=num_sampled,
+    >>>       nce_loss_args={},
+    >>>       E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
+    >>>       nce_W_init=tl.initializers.truncated_normal(stddev=float(1.0 / np.sqrt(embedding_size))),
+    >>>       nce_b_init=tl.initializers.constant(value=0.0),
+    >>>       name='word2vec_layer',
+    >>> )(net_in)
 
-    >>> train_inputs = tf.placeholder(tf.int32, shape=(batch_size))
-    >>> train_labels = tf.placeholder(tf.int32, shape=(batch_size, 1))
-    >>> embeddings = tf.Variable(
-    ...     tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
-    >>> embed = tf.nn.embedding_lookup(embeddings, train_inputs)
-    >>> nce_weights = tf.Variable(
-    ...     tf.truncated_normal([vocabulary_size, embedding_size],
-    ...                    stddev=1.0 / math.sqrt(embedding_size)))
-    >>> nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
-    >>> cost = tf.reduce_mean(
-    ...    tf.nn.nce_loss(weights=nce_weights, biases=nce_biases,
-    ...               inputs=embed, labels=train_labels,
-    ...               num_sampled=num_sampled, num_classes=vocabulary_size,
-    ...               num_true=1))
+    >>> model = tl.models.Model(inputs=net_in, outputs=emb_net, name="word2vec_model")
+
+    >>> nce_cost = tf.reduce_mean(
+    >>>     input_tensor=tf.nn.nce_loss(
+    >>>         weights=emb_net.nce_weights,
+    >>>         biases=emb_net.nce_biases,
+    >>>         inputs=model(train_inputs, is_train=True),
+    >>>         labels=train_labels,  #self.train_labels,
+    >>>         num_sampled=emb_net.num_sampled,
+    >>>         num_classes=emb_net.vocabulary_size,
+    >>>         **emb_net.nce_loss_args
+    >>>    )
+    >>> )
+
+    >>> train_params = model.weights
+    >>> train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(nce_cost, var_list=train_params)
+
+    >>> normalized_embeddings = emb_net.normalized_embeddings
 
     References
     ----------
@@ -310,8 +310,6 @@ class AverageEmbedding(Layer):
         The scalar padding value used in inputs, 0 as default.
     E_init : initializer
         The initializer of the embedding matrix.
-    E_init_args : None or dictionary
-        The arguments to get embedding matrix variable.
     name : str
         A unique layer name.
 
