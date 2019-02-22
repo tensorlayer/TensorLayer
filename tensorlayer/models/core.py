@@ -596,6 +596,19 @@ class Model():
             return
         utils.load_and_assign_npz_dict(sess, filepath, self)
 
+    def save_ckpt(self, sess=None, mode_name='model.ckpt', save_dir='checkpoint', global_step=None, printable=False):
+        # TODO: Documentation pending
+        """"""
+        if not os.path.exists(save_dir):
+            logging.error("directory {} doesn't exist.".format(save_dir))
+            return
+        utils.save_ckpt(sess, mode_name, save_dir, self.weights, global_step, printable)
+
+    def load_ckpt(self, sess=None, mode_name='model.ckpt', save_dir='checkpoint', is_latest=True, printable=False):
+        # TODO: Documentation pending
+        """"""
+        utils.load_ckpt(sess, mode_name, save_dir, self.weights, is_latest, printable)
+
 
 if __name__ == '__main__':
     import tensorlayer as tl

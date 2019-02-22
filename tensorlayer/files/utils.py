@@ -41,6 +41,8 @@ import numpy as np
 
 import tensorflow as tf
 from tensorflow.python.platform import gfile
+# import tensorflow.contrib.eager.python.saver as tfes
+# TODO: tf2.0 not stable, cannot import tensorflow.contrib.eager.python.saver
 
 import tensorlayer as tl
 from tensorlayer import logging
@@ -1837,14 +1839,18 @@ def save_ckpt(
     load_ckpt
 
     """
-    if sess is None:
-        raise ValueError("session is None.")
+    # if sess is None:
+    #     raise ValueError("session is None.")
     if var_list is None:
+        if sess is None:
+            # FIXME: not sure whether global variables can be accessed in eager mode
+            raise ValueError("If var_list is None, sess must be specified. "
+                             "In eager mode, can not access global variables easily. ")
         var_list = []
 
     ckpt_file = os.path.join(save_dir, mode_name)
     if var_list == []:
-        var_list = tf.compat.v1.global_variables()
+        var_list = tf.global_variables()
 
     logging.info("[*] save %s n_weights: %d" % (ckpt_file, len(var_list)))
 
@@ -1852,8 +1858,16 @@ def save_ckpt(
         for idx, v in enumerate(var_list):
             logging.info("  param {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
 
-    saver = tf.compat.v1.train.Saver(var_list)
-    saver.save(sess, ckpt_file, global_step=global_step)
+    if sess:
+        # graph mode
+        saver = tf.train.Saver(var_list)
+        saver.save(sess, ckpt_file, global_step=global_step)
+    else:
+        # eager mode
+        # saver = tfes.Saver(var_list)
+        # saver.save(ckpt_file, global_step=global_step)
+        # TODO: tf2.0 not stable, cannot import tensorflow.contrib.eager.python.saver
+        pass
 
 
 def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=None, is_latest=True, printable=False):
@@ -1893,9 +1907,13 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
     >>> tl.files.load_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_params, save_dir='model', is_latest=False, printable=True)
 
     """
-    if sess is None:
-        raise ValueError("session is None.")
+    # if sess is None:
+    #     raise ValueError("session is None.")
     if var_list is None:
+        if sess is None:
+            # FIXME: not sure whether global variables can be accessed in eager mode
+            raise ValueError("If var_list is None, sess must be specified. "
+                             "In eager mode, can not access global variables easily. ")
         var_list = []
 
     if is_latest:
@@ -1904,7 +1922,7 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
         ckpt_file = os.path.join(save_dir, mode_name)
 
     if not var_list:
-        var_list = tf.compat.v1.global_variables()
+        var_list = tf.global_variables()
 
     logging.info("[*] load %s n_weights: %d" % (ckpt_file, len(var_list)))
 
@@ -1913,8 +1931,17 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
             logging.info("  weights {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
 
     try:
-        saver = tf.compat.v1.train.Saver(var_list)
-        saver.restore(sess, ckpt_file)
+        if sess:
+            # graph mode
+            saver = tf.train.Saver(var_list)
+            saver.restore(sess, ckpt_file)
+        else:
+            # eager mode
+            # saver = tfes.Saver(var_list)
+            # saver.restore(ckpt_file)
+            # TODO: tf2.0 not stable, cannot import tensorflow.contrib.eager.python.saver
+            pass
+
     except Exception as e:
         logging.info(e)
         logging.info("[*] load ckpt fail ...")
@@ -2479,4 +2506,5 @@ def load_hdf5_to_weights(f, weights, sess=None):
             weights_val = np.asarray(f[name])
             assign_tf_variable(weights[net_weights_name.index(name)], weights_val, sess)
         except KeyError:
+            # FIXME： might be wrong judgement, add skip argument?
             logging.info("[!] Warning: Tensor named %s not found in network." % name)
