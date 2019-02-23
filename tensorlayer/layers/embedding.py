@@ -20,6 +20,7 @@ __all__ = [
 class OneHot(Layer):
     """
     The :class:`OneHot` class is the starting layer of a neural network, see ``tf.one_hot``.
+    Useful link: `https://www.tensorflow.org/api_docs/python/tf/one_hot`.
 
     Parameters
     ----------
@@ -40,22 +41,22 @@ class OneHot(Layer):
     ---------
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
-    >>> x = tf.placeholder(tf.int32, shape=[None])
-    >>> net = tl.layers.OneHot(x, depth=8)
-    (?, 8)
+    >>> net = tl.layers.Input([32], dtype=tf.int32)
+    >>> net = tl.layers.OneHot(depth=8)(net)
+    >>> print(net.outputs)
+    <tf.Tensor 'one_hot:0' shape=(32, 8) dtype=float32>
 
     """
 
     def __init__(self, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name=None):  #'input'):
 
-        # super(OneHotInput, self).__init__(prev_layer=inputs, name=name)
-        super().__init__(name)
+        super(OneHot, self).__init__(name)
         self.depth = depth
         self.on_value = on_value
         self.off_value = off_value
         self.axis = axis
         self.dtype = dtype
-        logging.info("OneHotInput  %s: %s" % (self.name, str(inputs.shape.as_list())))
+        logging.info("OneHotInput  %s" % (self.name))
 
         if self.depth is None:
             raise RuntimeError(self.__class__.__name__ + ": depth == None the number of output units is undefined")
@@ -68,7 +69,7 @@ class OneHot(Layer):
         Parameters
         ----------
         inputs : input tensor
-            The input of a network.
+            The inputs are indices. The locations represented by indices in indices take value on_value, while all other locations take value off_value.
         """
         outputs = tf.one_hot(
             inputs, self.depth, on_value=self.on_value, off_value=self.off_value, axis=self.axis, dtype=self.dtype
