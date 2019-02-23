@@ -33,6 +33,7 @@ class Input(Layer):
         super(Input, self).__init__(name)
 
         logging.info("Input  %s: %s" % (self.name, str(shape)))
+        self.shape = shape # shape is needed in __repr__
 
         shape_without_none = [_ if _ is not None else 1 for _ in shape]
         # self.outputs = self.forward(tl.initializers.random_normal()(shape_without_none))
