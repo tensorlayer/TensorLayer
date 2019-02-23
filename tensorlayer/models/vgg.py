@@ -26,8 +26,6 @@ feeding images of multiple sizes is by doing center cropping.
 """
 
 import sys
-sys.path.append("D:\\GitHub\\tensorlayer2")
-import ipdb
 
 import os
 import numpy as np
