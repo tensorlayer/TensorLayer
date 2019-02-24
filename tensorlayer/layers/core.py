@@ -551,6 +551,7 @@ class ModelLayer(Layer):
         return self.model.forward(inputs)
 
 
+'''
 class SequentialLayer(Layer):
 
 
@@ -591,7 +592,9 @@ class SequentialLayer(Layer):
         z = inputs
         for layer in self.following_layer:
             z = layer.forward(z)
-        return z
+
+       return z
+'''
 
 
 class LayerList(Layer):
