@@ -40,7 +40,6 @@ def get_model(inputs_shape):
 MLP = get_model([None, 784])
 # MLP.print_layers()
 # MLP.print_weights()
-# print(MLP.outputs.outputs)
 
 ## start training
 n_epoch = 500
@@ -60,7 +59,7 @@ for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
 
         with tf.GradientTape() as tape:
             ## compute outputs
-            _logits = MLP(X_batch).outputs  # alternatively, you can use MLP(x, is_train=True) and remove MLP.train()
+            _logits = MLP(X_batch)  # alternatively, you can use MLP(x, is_train=True) and remove MLP.train()
             ## compute loss and update model
             _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
 
@@ -77,7 +76,7 @@ for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
         train_loss, train_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=False):
 
-            _logits = MLP(X_batch).outputs  # alternatively, you can use MLP(x, is_train=False) and remove MLP.eval()
+            _logits = MLP(X_batch)  # alternatively, you can use MLP(x, is_train=False) and remove MLP.eval()
             train_loss += tl.cost.cross_entropy(_logits, y_batch, name='eval_loss')
             train_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
             n_iter += 1
@@ -86,7 +85,7 @@ for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
 
         val_loss, val_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=False):
-            _logits = MLP(X_batch).outputs  # is_train=False, disable dropout
+            _logits = MLP(X_batch)  # is_train=False, disable dropout
             val_loss += tl.cost.cross_entropy(_logits, y_batch, name='eval_loss')
             val_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
             n_iter += 1
@@ -97,7 +96,7 @@ for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
 MLP.eval()
 test_loss, test_acc, n_iter = 0, 0, 0
 for X_batch, y_batch in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=False):
-    _logits = MLP(X_batch).outputs
+    _logits = MLP(X_batch)
     test_loss += tl.cost.cross_entropy(_logits, y_batch, name='test_loss')
     test_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
     n_iter += 1

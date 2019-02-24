@@ -168,7 +168,7 @@ for epoch in range(n_epoch):
 
         with tf.GradientTape() as tape:
             # compute outputs
-            _logits = net(X_batch).outputs
+            _logits = net(X_batch)
             # compute loss and update model
             _loss_ce = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
             _loss_L2 = 0
@@ -195,7 +195,7 @@ for epoch in range(n_epoch):
 
         val_loss, val_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in test_ds:
-            _logits = net(X_batch).outputs  # is_train=False, disable dropout
+            _logits = net(X_batch)  # is_train=False, disable dropout
             val_loss += tl.cost.cross_entropy(_logits, y_batch, name='eval_loss')
             val_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
             n_iter += 1
@@ -210,7 +210,7 @@ for epoch in range(n_epoch):
 net.eval()
 test_loss, test_acc, n_iter = 0, 0, 0
 for X_batch, y_batch in test_ds:
-    _logits = net(X_batch).outputs
+    _logits = net(X_batch)
     test_loss += tl.cost.cross_entropy(_logits, y_batch, name='test_loss')
     test_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
     n_iter += 1

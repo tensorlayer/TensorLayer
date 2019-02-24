@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-sys.path.append("/home/haodong2/Rundi/code/tensorlayer2")
 import time
 import multiprocessing
 import tensorflow as tf
@@ -63,7 +62,7 @@ net = get_model([None, 24, 24, 3])
 
 
 def get_cost_acc(model, x, y_, is_train):
-    y = model(x, is_train=is_train).outputs
+    y = model(x, is_train=is_train)
 
     ce = tl.cost.cross_entropy(y, y_, name='cost')
 

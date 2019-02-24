@@ -526,7 +526,7 @@ class ModelLayer(Layer):
         # FIXME: model.inputs can be a list
         self.inputs = model.inputs.outputs
         # FIXME: model.outputs can be a list
-        self.outputs = model.forward(self.inputs).outputs
+        self.outputs = model.forward(self.inputs)
 
         self._input_layer = model.inputs
 
@@ -548,7 +548,7 @@ class ModelLayer(Layer):
         pass
 
     def forward(self, inputs):
-        return self.model.forward(inputs).outputs
+        return self.model.forward(inputs)
 
 
 class SequentialLayer(Layer):

@@ -5,7 +5,7 @@ tf.enable_eager_execution()
 import time
 import numpy as np
 import tensorlayer as tl
-from tensorlayer.layers import Input, Dense, Dropout, SequentialLayer
+from tensorlayer.layers import Input, Dense, Dropout, LayerList
 from tensorlayer.models import Model
 import tensorflow.contrib.eager as tfe
 
@@ -25,8 +25,7 @@ class CustomModelHidden(Model):
         self.innet = Input([None, 784])
         self.dropout1 = Dropout(keep=0.8)#(self.innet)
 
-        self.seq = SequentialLayer(
-            self.dropout1,
+        self.seq = LayerList(
             [
                 Dense(n_units=800, act=tf.nn.relu, in_channels=784),
                 Dropout(keep=0.8),
@@ -41,7 +40,7 @@ class CustomModelHidden(Model):
         z = self.dropout1(z)
         z = self.seq(z)
         z = self.dropout3(z)
-        return z
+        return z.outputs
 
 class CustomModelOut(Model):
 
@@ -59,7 +58,7 @@ class CustomModelOut(Model):
         else:
             out = self.dense4(z)
             out.outputs = tf.nn.relu(out.outputs)
-        return out
+        return out.outputs
 
 
 # NOTE: using previous defined model is different in dynamic network
@@ -70,7 +69,7 @@ MLP1 = CustomModelHidden()
 MLP2 = CustomModelOut()
 # MLP.print_layers()
 # MLP.print_weights()
-# print(MLP.outputs.outputs)
+# print(MLP)
 
 ## start training
 n_epoch = 500
@@ -91,8 +90,8 @@ for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
 
         with tf.GradientTape() as tape:
             ## compute outputs
-            _hidden = MLP1(X_batch).outputs
-            _logits = MLP2(_hidden, foo=1).outputs
+            _hidden = MLP1(X_batch)
+            _logits = MLP2(_hidden, foo=1)
             ## compute loss and update model
             _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
 
@@ -109,8 +108,8 @@ for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
 
         train_loss, train_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=False):
-            _hidden = MLP1(X_batch).outputs
-            _logits = MLP2(_hidden, foo=1).outputs
+            _hidden = MLP1(X_batch)
+            _logits = MLP2(_hidden, foo=1)
             train_loss += tl.cost.cross_entropy(_logits, y_batch, name='eval_loss')
             train_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
             n_iter += 1
@@ -119,8 +118,8 @@ for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
 
         val_loss, val_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=False):
-            _hidden = MLP1(X_batch).outputs
-            _logits = MLP2(_hidden, foo=1).outputs
+            _hidden = MLP1(X_batch)
+            _logits = MLP2(_hidden, foo=1)
             val_loss += tl.cost.cross_entropy(_logits, y_batch, name='eval_loss')
             val_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
             n_iter += 1
@@ -129,8 +128,8 @@ for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
 
         val_loss, val_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=False):
-            _hidden = MLP1(X_batch).outputs
-            _logits = MLP2(_hidden, foo=0).outputs
+            _hidden = MLP1(X_batch)
+            _logits = MLP2(_hidden, foo=0)
             val_loss += tl.cost.cross_entropy(_logits, y_batch, name='eval_loss')
             val_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
             n_iter += 1
@@ -142,8 +141,8 @@ MLP1.eval()
 MLP2.eval()
 test_loss, test_acc, n_iter = 0, 0, 0
 for X_batch, y_batch in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=False):
-    _hidden = MLP1(X_batch).outputs
-    _logits = MLP2(_hidden, foo=0).outputs
+    _hidden = MLP1(X_batch)
+    _logits = MLP2(_hidden, foo=0)
     test_loss += tl.cost.cross_entropy(_logits, y_batch, name='test_loss')
     test_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
     n_iter += 1
