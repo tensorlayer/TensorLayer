@@ -7,11 +7,6 @@ from queue import Queue
 from tensorlayer.files import utils
 import os
 
-try:
-    import h5py
-except ImportError:
-    h5py = None
-
 __all__ = [
     'Model',
 ]
@@ -459,7 +454,7 @@ class Model():
 
         return layer_dict, edges, layer_by_depth
 
-    def save_weights(self, filepath, sess=None):
+    def save_weights(self, filepath, sess=None, format='hdf5'):
         # TODO: Documentation pending
         """
 
@@ -467,27 +462,31 @@ class Model():
         ----------
         filepath
         sess
+        format
 
         Returns
         -------
 
         """
-        if h5py is None:
-            raise ImportError('`save_weights` requires h5py.')
 
         if self.weights is None:
-            logging.warning("Model contains no weights or layers haven't been built, nothing saved")
+            logging.warning("Model contains no weights or layers haven't been built, nothing will be saved")
             return
 
-        logging.info("[*] Saving TL weights into %s" % filepath)
+        if format == 'hdf5':
+            utils.save_weights_to_hdf5(filepath, self.weights, sess)
+        elif format == 'npz':
+            utils.save_npz(self.weights, filepath, sess)
+        elif format == 'npz_dict':
+            utils.save_npz_dict(self.weights, filepath, sess)
+        elif format == 'ckpt':
+            # TODO: enable this when tf save ckpt is enabled
+            raise NotImplementedError("ckpt load/save is not supported now.")
+        else:
+            raise ValueError("Save format must be 'hdf5', 'npz', 'npz_dict' or 'ckpt'."
+                             "Other format is not supported now.")
 
-        with h5py.File(filepath, 'w') as f:
-            utils.save_weights_to_hdf5(f, self.weights, sess)
-            f.flush()
-
-        logging.info("[*] Saved")
-
-    def load_weights(self, filepath, sess=None, in_order=True, skip=False):
+    def load_weights(self, filepath, sess=None, format='hdf5', in_order=True, skip=False):
         # TODO: Documentation pending
         """
 
@@ -495,113 +494,40 @@ class Model():
         ----------
         filepath
         sess
+        format
         in_order
+        skip
 
         Returns
         -------
 
         """
-        if h5py is None:
-            raise ImportError('`load_weights` requires h5py.')
-
         if not os.path.exists(filepath):
-            logging.error("file {} doesn't exist.".format(filepath))
-            return
+            raise FileNotFoundError("file {} doesn't exist.".format(filepath))
 
-        with h5py.File(filepath, 'r') as f:
+        if format == 'hdf5':
             if in_order == True:
-                utils.load_hdf5_to_weights_in_order(f, self.weights, sess)
+                # load in order
+                utils.load_hdf5_to_weights_in_order(filepath, self.weights, sess)
             else:
-                utils.load_hdf5_to_weights(f, self.weights, sess, skip)
-
-        logging.info("[*] Load {} SUCCESS!".format(filepath))
-
-    def save_weights_to_npz(self, filepath, sess=None):
-        # TODO: Documentation pending
-        """
-        Parameters
-        ----------
-        filepath
-        sess
-
-        Examples
-        --------
-
-        Notes
-        -----
-        If you got session issues, you can change the value.eval() to value.eval(session=sess)
-
-        References
-        ----------
-        `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
-
-        """
-        utils.save_npz(self.weights, filepath, sess)
-
-    def load_weights_from_npz(self, filepath, sess=None):
-        # TODO: Documentation pending
-        """
-
-        Parameters
-        ----------
-        filepath
-        sess
-
-        Returns
-        -------
-
-        """
-        if not os.path.exists(filepath):
-            logging.error("file {} doesn't exist.".format(filepath))
-            return
-        utils.load_and_assign_npz(sess, filepath, self)
-
-    def save_weights_to_npz_dict(self, filepath, sess=None):
-        # TODO: Documentation pending
-        """
-        Parameters
-        ----------
-        filepath
-        sess
-
-        Examples
-        --------
-
-        Notes
-        -----
-        If you got session issues, you can change the value.eval() to value.eval(session=sess)
-
-        References
-        ----------
-        `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
-
-        """
-        utils.save_npz_dict(self.weights, filepath, sess)
-
-    def load_weights_from_npz_dict(self, filepath, sess=None):
-        # TODO: Documentation pending
-        """
-
-        Parameters
-        ----------
-        filepath
-        sess
-
-        Returns
-        -------
-
-        """
-        if not os.path.exists(filepath):
-            logging.error("file {} doesn't exist.".format(filepath))
-            return
-        utils.load_and_assign_npz_dict(sess, filepath, self)
+                # load by weights name
+                utils.load_hdf5_to_weights(filepath, self.weights, sess, skip)
+        elif format == 'npz':
+            utils.load_and_assign_npz(sess, filepath, self)
+        elif format == 'npz_dict':
+            utils.load_and_assign_npz_dict(sess, filepath, self, skip)
+        elif format == 'ckpt':
+            # TODO: enable this when tf save ckpt is enabled
+            raise NotImplementedError("ckpt load/save is not supported now.")
+        else:
+            raise ValueError("File format must be 'hdf5', 'npz', 'npz_dict' or 'ckpt'. "
+                             "Other format is not supported now.")
 
     def save_ckpt(self, sess=None, mode_name='model.ckpt', save_dir='checkpoint', global_step=None, printable=False):
         # TODO: Documentation pending
         """"""
         if not os.path.exists(save_dir):
-            logging.error("directory {} doesn't exist.".format(save_dir))
-            return
+            raise FileNotFoundError("Save directory {} doesn't exist.".format(save_dir))
         utils.save_ckpt(sess, mode_name, save_dir, self.weights, global_step, printable)
 
     def load_ckpt(self, sess=None, mode_name='model.ckpt', save_dir='checkpoint', is_latest=True, printable=False):

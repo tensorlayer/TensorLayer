@@ -15,6 +15,7 @@ import tarfile
 import time
 import zipfile
 import importlib
+import h5py
 from tqdm import tqdm
 
 from six.moves import cPickle
@@ -1765,7 +1766,8 @@ def save_npz_dict(save_list=None, name='model.npz', sess=None):
     logging.info("[*] Model saved in npz_dict %s" % name)
 
 
-def load_and_assign_npz_dict(sess=None, name='model.npz', network=None):
+def load_and_assign_npz_dict(sess=None, name='model.npz', network=None, skip=False):
+    # TODO: Documentation pending
     """Restore the parameters saved by ``tl.files.save_npz_dict()``.
 
     Parameters
@@ -1790,10 +1792,19 @@ def load_and_assign_npz_dict(sess=None, name='model.npz', network=None):
     net_weights_name = [w.name for w in network.weights]
 
     for key in weights.keys():
-        try:
+        if key not in net_weights_name:
+            if skip:
+                logging.warning("Weights named '%s' not found in network. Skip it." % key)
+            else:
+                raise RuntimeError("Weights named '%s' not found in network. Hint: set argument skip=Ture "
+                                   "if you want to skip redundant or mismatch weights." % key)
+        else:
             assign_tf_variable(network.weights[net_weights_name.index(key)], weights[key], sess)
-        except KeyError:
-            logging.info("[!] Warning: Tensor named %s not found in network." % key)
+
+        # try:
+        #     assign_tf_variable(network.weights[net_weights_name.index(key)], weights[key], sess)
+        # except KeyError:
+        #     logging.info("[!] Warning: Tensor named %s not found in network." % key)
     # ops = list()
     # for key in weights.keys():
     #     try:
@@ -2445,9 +2456,13 @@ def assign_tf_variable(variable, value, sess=None):
             )
 
 
-def save_weights_to_hdf5(f, weights, sess=None):
+def save_weights_to_hdf5(filepath, weights, sess=None):
     # TODO : Documentation pending
     """"""
+    logging.info("[*] Saving TL weights into %s" % filepath)
+
+    f = h5py.File(filepath, 'w')
+
     weights_names = [w.name for w in weights]
     f.attrs['weights_names'] = weights_names  # 'layer_name/weight_name'
 
@@ -2463,10 +2478,16 @@ def save_weights_to_hdf5(f, weights, sess=None):
         else:
             val_dataset[:] = val
 
+    f.flush()
+    f.close()
 
-def load_hdf5_to_weights_in_order(f, weights, sess=None):
+    logging.info("[*] Saved")
+
+
+def load_hdf5_to_weights_in_order(filepath, weights, sess=None):
     # TODO : Documentation pending
     """"""
+    f = h5py.File(filepath, 'r')
     try:
         weights_names = list(f.attrs['weights_names'])
     except Exception:
@@ -2483,10 +2504,14 @@ def load_hdf5_to_weights_in_order(f, weights, sess=None):
         weights_val = np.asarray(f[name])
         assign_tf_variable(weights[idx], weights_val, sess) # FIXME: whether assign in a list way will be faster
 
+    f.close()
+    logging.info("[*] Load %s SUCCESS!" % filepath)
 
-def load_hdf5_to_weights(f, weights, sess=None, skip=False):
+
+def load_hdf5_to_weights(filepath, weights, sess=None, skip=False):
     # TODO : Documentation pending
     """"""
+    f = h5py.File(filepath, 'r')
     try:
         weights_names = list(f.attrs['weights_names'])
     except Exception:
@@ -2515,3 +2540,6 @@ def load_hdf5_to_weights(f, weights, sess=None, skip=False):
         else:
             weights_val = np.asarray(f[name])
             assign_tf_variable(weights[net_weights_name.index(name)], weights_val, sess)
+
+    f.close()
+    logging.info("[*] Load %s SUCCESS!" % filepath)
