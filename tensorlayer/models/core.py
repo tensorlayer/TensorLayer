@@ -487,7 +487,7 @@ class Model():
 
         logging.info("[*] Saved")
 
-    def load_weights(self, filepath, sess=None, in_order=True):
+    def load_weights(self, filepath, sess=None, in_order=True, skip=False):
         # TODO: Documentation pending
         """
 
@@ -512,7 +512,7 @@ class Model():
             if in_order == True:
                 utils.load_hdf5_to_weights_in_order(f, self.weights, sess)
             else:
-                utils.load_hdf5_to_weights(f, self.weights, sess)
+                utils.load_hdf5_to_weights(f, self.weights, sess, skip)
 
         logging.info("[*] Load {} SUCCESS!".format(filepath))
 

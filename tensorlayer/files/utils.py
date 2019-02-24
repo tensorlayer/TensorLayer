@@ -2474,7 +2474,7 @@ def load_hdf5_to_weights_in_order(f, weights, sess=None):
                         "Please check whether this hdf5 file is saved from TL.")
 
     if len(weights) != len(weights_names):
-        logging.warning("[!] Warning: Number of weights mismatch."
+        logging.warning("Number of weights mismatch."
                      "Trying to load a weight file with " + str(len(weights)) +
                      " weights into a model with " + str(len(weights_names)) +
                      " weights.")
@@ -2484,7 +2484,7 @@ def load_hdf5_to_weights_in_order(f, weights, sess=None):
         assign_tf_variable(weights[idx], weights_val, sess) # FIXME: whether assign in a list way will be faster
 
 
-def load_hdf5_to_weights(f, weights, sess=None):
+def load_hdf5_to_weights(f, weights, sess=None, skip=False):
     # TODO : Documentation pending
     """"""
     try:
@@ -2494,17 +2494,24 @@ def load_hdf5_to_weights(f, weights, sess=None):
                         "Please check whether this hdf5 file is saved from TL.")
 
     if len(weights) != len(weights_names):
-        logging.warning("[!] Warning: Number of weights mismatch."
-                     "Trying to load a weight file with " + str(len(weights)) +
-                     " weights into a model with " + str(len(weights_names)) +
-                     " weights.")
+        logging.warning("Number of weights mismatch. Trying to load a hdf5 file with {} weights elements"
+                        " into a model with {} weights elements.".format(len(weights_names), len(weights)))
 
     net_weights_name = [w.name for w in weights]
 
+    # check mismatch form network weights to hdf5
+    for name in net_weights_name:
+        if name not in weights_names:
+            logging.warning("Network weights named '%s' not found in loaded hdf5 file. It will be skipped." % name)
+
+    # load weights from hdf5 to network
     for name in weights_names:
-        try:
+        if name not in net_weights_name:
+            if skip:
+                logging.warning("Weights named '%s' not found in network. Skip it." % name)
+            else:
+                raise RuntimeError("Weights named '%s' not found in network. Hint: set argument skip=Ture "
+                                   "if you want to skip redundant or mismatch weights." % name)
+        else:
             weights_val = np.asarray(f[name])
             assign_tf_variable(weights[net_weights_name.index(name)], weights_val, sess)
-        except KeyError:
-            # FIXME： might be wrong judgement, add skip argument?
-            logging.info("[!] Warning: Tensor named %s not found in network." % name)
