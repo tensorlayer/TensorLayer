@@ -192,13 +192,13 @@ class VGG(Model):
         outputs = outputs - mean
         # outputs = inputs
 
-        outputs = self.innet(outputs)
-        outputs = self.layers(outputs)
+        out = self.innet(outputs)
+        out = self.layers(out)
         # for layer in self.layers:
         #     outputs = layer(outputs)
         #     if layer.name == self.end_with:
         #         break
-        return outputs
+        return out.outputs
 
     def restore_params(self, **kwargs):
         raise Exception("please change restore_params --> restore_weights")

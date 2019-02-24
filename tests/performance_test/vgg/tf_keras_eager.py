@@ -42,7 +42,6 @@ for idx, data in enumerate(gen):
     start_time = time.time()
 
     # forward + backward
-    # forward + backward
     with tf.GradientTape() as tape:
     ## compute outputs
         _logits = vgg(x_batch, training=True)

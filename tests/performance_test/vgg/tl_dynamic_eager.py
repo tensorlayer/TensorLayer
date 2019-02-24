@@ -10,13 +10,15 @@ from exp_config import random_input_generator, MONITOR_INTERVAL, NUM_ITERS, BATC
 # FIXME: enable this to see the GPU memory it consumes, not sure whether it affects performance
 config = tf.ConfigProto()
 config.gpu_options.allow_growth=True
+config.log_device_placement = True
 tf.enable_eager_execution(config=config)
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 # get the whole model
-vgg = tl.models.VGG16()
+# vgg = tl.models.VGG16()
+vgg = tl.models.vgg.vgg16()
 
 # system monitor
 info = psutil.virtual_memory()
@@ -39,20 +41,28 @@ gen = random_input_generator(num_iter, batch_size)
 vgg.train()
 
 for idx, data in enumerate(gen):
-    x_batch = tf.convert_to_tensor(data[0])
-    y_batch = tf.convert_to_tensor(data[1])
+    x_batch = data[0]
+    y_batch = data[1]
 
     start_time = time.time()
+
+    print("sleep before", idx)
+    time.sleep(10)
 
     # forward + backward
     with tf.GradientTape() as tape:
         ## compute outputs
-        _logits = vgg(x_batch).outputs
+        _logits = vgg(x_batch)
         ## compute loss and update model
         _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
+        print("sleep", idx)
+        time.sleep(10)
 
     grad = tape.gradient(_loss, train_weights)
     optimizer.apply_gradients(zip(grad, train_weights))
+
+    print("sleep after", idx)
+    time.sleep(10)
 
     end_time = time.time()
     consume_time = end_time - start_time

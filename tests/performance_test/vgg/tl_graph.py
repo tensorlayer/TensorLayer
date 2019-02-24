@@ -91,7 +91,7 @@ train_op = tf.train.AdamOptimizer(learning_rate=LERANING_RATE).minimize(cost, va
 # FIXME: enable this to see the GPU memory it consumes, not sure whether it affects performance
 config = tf.ConfigProto()
 config.gpu_options.allow_growth=True
-sess = tf.Session()
+sess = tf.Session(config=config)
 sess.run(tf.global_variables_initializer())
 
 # data generator

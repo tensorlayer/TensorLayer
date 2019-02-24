@@ -1,19 +1,13 @@
-import torch
-import torch.nn.functional as F
-import torch.optim as optim
-from torchvision.models import vgg16
 import time
 import os
 import psutil
 import numpy as np
+from tensorflow.python.keras.applications import VGG16
+import tensorflow as tf
 from exp_config import random_input_generator, MONITOR_INTERVAL, NUM_ITERS, BATCH_SIZE, LERANING_RATE
 
-# set gpu_id 0
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
 # get the whole model
-vgg = vgg16()
-vgg = vgg.to(device)
+vgg = VGG16(weights=None)
 
 # system monitor
 info = psutil.virtual_memory()
@@ -26,26 +20,36 @@ total_time = 0
 # training setting
 num_iter = NUM_ITERS
 batch_size = BATCH_SIZE
-optimizer = optim.Adam(vgg.parameters(), lr=LERANING_RATE)
+
+x = tf.placeholder(tf.float32, shape=[None, 224, 224, 3], name='inputs')
+y_ = tf.placeholder(tf.int64, shape=[None], name='targets')
+y = vgg(x, training=True)
+cost = tf.losses.sparse_softmax_cross_entropy(y_, y)
+train_weights = vgg.trainable_variables
+train_op = tf.train.AdamOptimizer(learning_rate=LERANING_RATE).minimize(cost, var_list=train_weights)
+
+# forbid tensorflow taking up all the GPU memory
+# FIXME: enable this to see the GPU memory it consumes, not sure whether it affects performance
+config = tf.ConfigProto()
+config.gpu_options.allow_growth=True
+sess = tf.Session(config=config)
+sess.run(tf.global_variables_initializer())
 
 # data generator
-gen = random_input_generator(num_iter, batch_size, format='NCHW')
+gen = random_input_generator(num_iter, batch_size)
 
 # begin training
 
 for idx, data in enumerate(gen):
-    x_batch = torch.Tensor(data[0])
-    y_batch = torch.Tensor(data[1]).long()
-    x_batch = x_batch.to(device)
-    y_batch = y_batch.to(device)
+    x_batch = data[0]
+    y_batch = data[1]
+    # x_batch = tf.convert_to_tensor(data[0])
+    # y_batch = tf.convert_to_tensor(data[1])
 
     start_time = time.time()
 
     # forward + backward
-    outputs = vgg(x_batch)
-    loss = F.cross_entropy(outputs, y_batch)
-    loss.backward()
-    optimizer.step()
+    sess.run(train_op, feed_dict={x: x_batch, y_: y_batch})
 
     end_time = time.time()
     consume_time = end_time - start_time
