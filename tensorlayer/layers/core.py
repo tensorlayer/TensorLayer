@@ -24,7 +24,7 @@ __all__ = [
     # 'TF_GRAPHKEYS_VARIABLES',  # TODO : remove this??
     'Layer',
     'ModelLayer',
-    'SequentialLayer',
+    # 'SequentialLayer',
     'LayerList'
 ]
 
