@@ -333,6 +333,8 @@ class Model():
         tmpstr = self.__class__.__name__ + '(\n'
         attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
         attr_list.remove("weights")
+        attr_list.remove("_inputs")
+        attr_list.remove("_outputs")
         for idx, attr in enumerate(attr_list):
             try:
                 if isinstance(getattr(self, attr), Layer) or isinstance(getattr(self, attr), Model):
@@ -466,19 +468,38 @@ class Model():
 
     def save_weights(self, filepath, sess=None, format='hdf5'):
         # TODO: Documentation pending
-        """
+        """Input filepath and the session(optional), save model weights into a file of given format.
+            Use self.load_weights() to restore.
 
         Parameters
         ----------
-        filepath
-        sess
-        format
+        filepath : str
+            Filename to which the model weights will be saved.
+        sess : None or a tensorflow session
+            In eager mode, this should be left as None. In graph mode, must specify it with a tensorflow session.
+        format : Save file format
+            Value should be 'hdf5', 'npz', 'npz_dict' or 'ckpt'. Other format is not supported now.
+            'hdf5' will save model weights name in a list and each layer has its weights stored in a group of
+            the hdf5 file.
+            'npz' will save model weights sequentially into a npz file.
+            'npz_dict' will save model weights along with its name as a dict into a npz file.
+            'ckpt' will save model weights into a tensorflow ckpt file.
+
+        Examples
+        --------
+        1) Save model to hdf5 in eager mode
+        >>> net = tl.models.vgg.vgg16()
+        >>> net.save_weights('./model.h5')
+
+        2) Save model to npz in graph mode
+        >>> sess = tf.Session()
+        >>> sess.run(tf.global_variables_initializer())
+        >>> net.save_weights('./model.npz', sess=sess, format='npz')
 
         Returns
         -------
 
         """
-
         if self.weights is None:
             logging.warning("Model contains no weights or layers haven't been built, nothing will be saved")
             return
@@ -498,15 +519,51 @@ class Model():
 
     def load_weights(self, filepath, sess=None, format='hdf5', in_order=True, skip=False):
         # TODO: Documentation pending
-        """
+        """Load model weights from a given file, which should be previously saved by self.save_weights().
 
         Parameters
         ----------
-        filepath
-        sess
-        format
-        in_order
-        skip
+        filepath : str
+            Filename from which the model weights will be loaded.
+        sess : None or a tensorflow session
+            In eager mode, this should be left as None. In graph mode, must specify it with a tensorflow session.
+            Default is 'None'.
+        format : Loaded file format
+            Value should be 'hdf5', 'npz', 'npz_dict' or 'ckpt'. Other format is not supported now.
+            In addition, it should be the same format when you saved the file using self.save_weights().
+            Default is 'hdf5'.
+        in_order : bool
+            Allow loading weights into model in a sequential way or by name. Only useful when 'format' is 'hdf5'.
+            If 'in_order' is True, weights from the file will be loaded into model in a sequential way.
+            If 'in_order' is False, weights from the file will be loaded into model by matching the name
+            with the weights of the model, particularly useful when trying to restore model in eager(graph) mode from
+            a weights file which is saved in graph(eager) mode.
+            Default is True.
+        skip : bool
+            Allow skipping weights whose name is mismatched between the file and model. Only useful when 'format' is
+            'hdf5' or 'npz_dict'. If 'skip' is True, 'in_order' argument will be ignored and those loaded weights
+            whose name is not found in model weights (self.weights) will be skipped. If 'skip' is False, error will
+            occur when mismatch is found.
+            Default is False.
+
+        Examples
+        --------
+        1) load model from a hdf5 file in eager mode.
+        >>> net = tl.models.vgg.vgg16()
+        >>> net.load_weights('./model_graph.h5', in_order=False, skip=True) # load weights by name, skipping mismatch
+        >>> net.load_weights('./model_eager.h5') # load sequentially
+
+        2) load model from a npz file in graph mode
+        >>> sess = tf.Session()
+        >>> sess.run(tf.global_variables_initializer())
+        >>> net.load_weights('./model.npz', sess=sess, format='npz')
+
+        Notes
+        -------
+        1) 'in_order' is only useful when 'format' is 'hdf5'. If you are trying to load a weights file which is
+           saved in a different mode, it is recommended to set 'in_order' be True.
+        2) 'skip' is useful when 'format' is 'hdf5' or 'npz_dict'. If 'skip' is True,
+           'in_order' argument will be ignored.
 
         Returns
         -------
@@ -516,12 +573,12 @@ class Model():
             raise FileNotFoundError("file {} doesn't exist.".format(filepath))
 
         if format == 'hdf5':
-            if in_order == True:
-                # load in order
-                utils.load_hdf5_to_weights_in_order(filepath, self.weights, sess)
-            else:
+            if skip == True or in_order == False:
                 # load by weights name
                 utils.load_hdf5_to_weights(filepath, self.weights, sess, skip)
+            else:
+                # load in order
+                utils.load_hdf5_to_weights_in_order(filepath, self.weights, sess)
         elif format == 'npz':
             utils.load_and_assign_npz(sess, filepath, self)
         elif format == 'npz_dict':
