@@ -33,4 +33,30 @@ Experiment Settings
 |       | tf.keras    | 8703 | 2019 | 1983 | 103 |
 |       | PyTorch     | 8911 | 2178 | 2175 | 79  |
 
-Without GPU
+
+
+### Without GPU
+
+Hardware: 
+
+- CPU: Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz 12 core
+
+Experiment Settings:
+
+- Model: [VGG16](http://www.robots.ox.ac.uk/~vgg/research/very_deep/)
+
+| Batch size | Num of Iter |
+| :--------: | :---------: |
+|     1      |     300     |
+
+Results:
+
+| Mode  |     Lib     | Max CPU Memory (MB) | Avg CPU Memory (MB) | Runtime (sec) |
+| :---: | :---------: | :-----------------: | :-----------------: | :-----------: |
+| Graph | TensorLayer |        3223         |        3096         |      192      |
+|       |  tf.keras   |        3193         |        3073         |      193      |
+|       |    Keras    |        3074         |        3009         |      410      |
+| Eager | TensorLayer |        2731         |        2608         |      223      |
+|       |  tf.keras   |        2676         |        2581         |      236      |
+|       |   PyTorch   |        2732         |        2674         |      267      |
+
