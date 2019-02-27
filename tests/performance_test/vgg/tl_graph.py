@@ -13,60 +13,7 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 
 
 # get the whole model
-def get_vgg16(inputs_shape):
-    ni = Input(inputs_shape)
-    nn = LayerList([
-                    # conv1
-                    Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                           name='conv1_1'),
-                    Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                           name='conv1_2'),
-                    MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1'),
-
-                    # conv2
-                    Conv2d(n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                           name='conv2_1'),
-                    Conv2d(n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                           name='conv2_2'),
-                    MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2'),
-
-                    # conv3
-                    Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                           name='conv3_1'),
-                    Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                           name='conv3_2'),
-                    Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                           name='conv3_3'),
-                    MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool3'),
-
-                    # conv4
-                    Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                           name='conv4_1'),
-                    Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                           name='conv4_2'),
-                    Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                           name='conv4_3'),
-                    MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool4'),
-
-                    # conv5
-                    Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                           name='conv5_1'),
-                    Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                           name='conv5_2'),
-                    Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
-                           name='conv5_3'),
-                    MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5'),
-                    Flatten(name='flatten'),
-                    Dense(n_units=4096, act=tf.nn.relu, name='fc1_relu'),
-                    Dense(n_units=4096, act=tf.nn.relu, name='fc2_relu'),
-                    Dense(n_units=1000, name='outputs'),
-                ])(ni)
-
-    M = Model(inputs=ni, outputs=nn, name='vgg16')
-    return M
-
-
-vgg = get_vgg16((None, 224, 224, 3))
+vgg = tl.models.vgg.vgg16()
 
 # system monitor
 info = psutil.virtual_memory()

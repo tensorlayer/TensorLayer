@@ -6,6 +6,7 @@ from tensorflow.python.keras.applications import VGG16
 import tensorflow as tf
 from exp_config import random_input_generator, MONITOR_INTERVAL, NUM_ITERS, BATCH_SIZE, LERANING_RATE
 
+
 # forbid tensorflow taking up all the GPU memory
 # FIXME: enable this to see the GPU memory it consumes, not sure whether it affects performance
 config = tf.ConfigProto()
@@ -29,6 +30,11 @@ num_iter = NUM_ITERS
 batch_size = BATCH_SIZE
 train_weights = vgg.trainable_variables
 optimizer = tf.train.AdamOptimizer(learning_rate=LERANING_RATE)
+
+print(len(train_weights))
+for w in train_weights:
+    print(w.shape)
+exit()
 
 # data generator
 gen = random_input_generator(num_iter, batch_size)

@@ -6,6 +6,7 @@ import tensorflow as tf
 import tensorlayer as tl
 from exp_config import random_input_generator, MONITOR_INTERVAL, NUM_ITERS, BATCH_SIZE, LERANING_RATE
 
+
 # forbid tensorflow taking up all the GPU memory
 # FIXME: enable this to see the GPU memory it consumes, not sure whether it affects performance
 config = tf.ConfigProto()
@@ -46,23 +47,19 @@ for idx, data in enumerate(gen):
 
     start_time = time.time()
 
-    print("sleep before", idx)
-    time.sleep(10)
-
     # forward + backward
     with tf.GradientTape() as tape:
         ## compute outputs
         _logits = vgg(x_batch)
         ## compute loss and update model
         _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
-        print("sleep", idx)
-        time.sleep(10)
+        ## release unnecessary objects (layer.inputs, layer.outputs)
+        ## this function should be called with great caution
+        ## within the scope of tf.GradientTape(), using this function should be fine
+        vgg.release_memory()
 
     grad = tape.gradient(_loss, train_weights)
     optimizer.apply_gradients(zip(grad, train_weights))
-
-    print("sleep after", idx)
-    time.sleep(10)
 
     end_time = time.time()
     consume_time = end_time - start_time

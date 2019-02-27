@@ -304,27 +304,14 @@ class Model():
         if self._outputs is not None:
             for depth_layers in self.layer_by_depth:
                 for layer in depth_layers:
-                    layer.is_train = is_train
-                    # TODO: test THIS
-                    if isinstance(layer, ModelLayer):
-                        layer.model._set_mode_for_layers(is_train)
-            # for stacked_layers in self._stacked_layers:
-            #     for layer in stacked_layers:
-            #         layer.is_train = is_train
-            #         # TODO: test THIS
-            #         if isinstance(layer, ModelLayer):
-            #             layer.model._set_mode_for_layers(is_train)
+                    layer._set_mode_for_layers(is_train)
         else:
             attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
             attr_list.remove("weights")
             for idx, attr in enumerate(attr_list):
                 try:
-                    if isinstance(getattr(self, attr), ModelLayer):
-                        # FIXME: dynamic network cannot be converted to Layer, so this condition never triggered
-                        getattr(self, attr).is_train = is_train
-                        getattr(self, attr).model._set_mode_for_layers(is_train)
-                    elif isinstance(getattr(self, attr), Layer):
-                        getattr(self, attr).is_train = is_train
+                    if isinstance(getattr(self, attr), Layer):
+                        getattr(self, attr)._set_mode_for_layers(is_train)
                 except Exception:
                     pass
 
@@ -453,6 +440,29 @@ class Model():
             next_depth = []
 
         return layer_dict, edges, layer_by_depth
+
+    def release_memory(self):
+        '''
+        WARNING: This function should be called with great caution.
+
+        Release objects that MAY NOT be necessary such as layer.outputs (if in a tf.GradientTape() scope).
+        For each layer in the model, layer.inputs and layer.outputs will be set as None but not deleted.
+
+        A void function.
+        '''
+        if self._outputs is not None:
+            for depth_layers in self.layer_by_depth:
+                for layer in depth_layers:
+                    layer._release_memory()
+        else:
+            attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
+            attr_list.remove("release_memory")
+            for idx, attr in enumerate(attr_list):
+                try:
+                    if isinstance(getattr(self, attr), Layer):
+                        getattr(self, attr)._release_memory()
+                except Exception:
+                    pass
 
     def save_weights(self, filepath, sess=None, format='hdf5'):
         # TODO: Documentation pending

@@ -8,6 +8,8 @@ This test compares performance of the following libraries:
 3. [Keras](https://keras.io) v. 2.2.4
 4. [PyTorch](https://pytorch.org) v. 1.0.1
 
+### With GPU
+
 Hardware: 
 - CPU: Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz 12 core
 - GPU: NVIDIA Corporation GP102 TITAN X 1 core
@@ -21,15 +23,14 @@ Experiment Settings
 | 32 | 300 |
 
 
-### Results
-
+Results
 
 | Mode | Lib | Max GPU Memory (MB) | Max CPU Memory (MB) | Avg CPU Memory (MB) | Runtime (sec) |
 | :----: | :----: | :---------:| :--------: | :------: |  :------: |
-| Graph | TensorLayer | 8659 | 2719 | 2711 | 78 |
+| Graph | TensorLayer | 8657 | 2631 | 2625 | 78 |
 |       | tf.keras    | 8659 | 2668 | 2665 | 77 |
 |       | Keras       | 8661 | 2685 | 2682 | 97 |
-| Eager | TensorLayer | | | ||
+| Eager | TensorLayer | 8703 | 2024 | 2006 | 104 |
 |       | tf.keras    | 8703 | 2019 | 1983 | 103 |
 |       | PyTorch     | 8911 | 2178 | 2175 | 79  |
 

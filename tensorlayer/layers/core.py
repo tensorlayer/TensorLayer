@@ -156,6 +156,8 @@ class Layer(object):
         # TODO: note that in dynamic network, inputs and outputs can be both None, may cause problem, test needed
         self.inputs = None
         self.outputs = None
+        self._inputs_shape_mem = None
+        self._outputs_shape_mem = None
 
         # self._inputs_shape = None
         # self._outputs_shape = None
@@ -178,15 +180,32 @@ class Layer(object):
 
     @property
     def _inputs_shape(self):  # TODO, if self.outputs is a list ???
-        return self.inputs.get_shape().as_list()
+        if self._inputs_shape_mem is None:
+            self._inputs_shape_mem = self.inputs.get_shape().as_list()
+        return self._inputs_shape_mem
 
     @property
     def _outputs_shape(self):  # TODO, if self.outputs is a list ???
-        return self.outputs.get_shape().as_list()
+        if self._outputs_shape_mem is None:
+            self._outputs_shape_mem = self.outputs.get_shape().as_list()
+        return self._outputs_shape_mem
 
     @property
     def weights(self):
         return self._weights
+
+    def _release_memory(self):
+        '''
+        WARINING: This function should be called with great caution.
+
+        self.inputs and self.outputs will be set as None but not deleted.
+
+        '''
+        self.inputs = None
+        self.outputs = None
+
+    def _set_mode_for_layers(self, is_train):
+        self.is_train = is_train
 
     def __call__(self, prev_layer):
 
@@ -550,6 +569,20 @@ class ModelLayer(Layer):
     def forward(self, inputs):
         return self.model.forward(inputs)
 
+    def _set_mode_for_layers(self, is_train):
+        self.is_train = is_train
+        return self.model._set_mode_for_layers(is_train)
+
+    def _release_memory(self):
+        '''
+        WARINING: This function should be called with great caution.
+
+        self.inputs and self.outputs will be set as None but not deleted.
+
+        '''
+        self.inputs = None
+        self.outputs = None
+        self.model.release_memory()
 
 '''
 class SequentialLayer(Layer):
@@ -655,6 +688,29 @@ class LayerList(Layer):
         for layer in self.layers:
             z = layer.forward(z)
         return z
+
+    def _set_mode_for_layers(self, is_train):
+        self.is_train = is_train
+        for layer in self.layers:
+            if isinstance(layer, ModelLayer):
+                layer._set_mode_for_layers(is_train)
+            elif isinstance(layer, LayerList):
+                layer._set_mode_for_layers(is_train)
+            else:
+                layer.is_train = is_train
+
+    def _release_memory(self):
+        '''
+        WARINING: This function should be called with great caution.
+
+        self.inputs and self.outputs will be set as None but not deleted.
+
+        '''
+        self.inputs = None
+        self.outputs = None
+        for layer in self.layers:
+            layer._release_memory()
+
 
 
 # if __name__ == '__main__':
