@@ -346,6 +346,8 @@ class Model():
         tmpstr = self.__class__.__name__ + '(\n'
         attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
         attr_list.remove("weights")
+        attr_list.remove("_inputs")
+        attr_list.remove("_outputs")
         for idx, attr in enumerate(attr_list):
             try:
                 if isinstance(getattr(self, attr), Layer) or isinstance(getattr(self, attr), Model):
