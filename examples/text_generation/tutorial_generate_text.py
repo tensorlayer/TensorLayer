@@ -1,6 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright 2018 TensorLayer. All Rights Reserved.
+# Copyright 2019 TensorLayer. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ Data: https://github.com/tensorlayer/tensorlayer/tree/master/example/data/
 
 """
 
+import os
 import re
 import time
 import nltk
@@ -33,7 +34,7 @@ from tensorlayer.layers import *
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
-# # _UNK = "_UNK"
+_UNK = "_UNK"
 
 
 def basic_clean_str(string):
@@ -139,6 +140,11 @@ def main_restore_embedding_layer():
     model_file_name = "model_word2vec_50k_128"
     batch_size = None
 
+    if not os.path.exists(model_file_name + ".npy"):
+        raise Exception("Pretrained embedding matrix not found. "
+              "Hint: Please pre-train the default model in "
+              "`examples/text_word_embedding/tutorial_word2vec_basic.py`.")
+
     print("Load existing embedding matrix and dictionaries")
     all_var = tl.files.load_npy_to_any(name=model_file_name + '.npy')
     data = all_var['data']
@@ -150,26 +156,24 @@ def main_restore_embedding_layer():
 
     del all_var, data, count
 
-    load_params = tl.files.load_npz(name=model_file_name + '.npz')
-
     x = tf.placeholder(tf.int32, shape=[batch_size])
 
-    emb_net = tl.layers.EmbeddingInputlayer(x, vocabulary_size, embedding_size, name='emb')
+    net_in = tl.layers.Input([batch_size], dtype=tf.int32)
+    emb_net = tl.layers.Embedding(vocabulary_size, embedding_size, name='emb')(net_in)
 
-    # sess.run(tf.global_variables_initializer())
-    tl.layers.initialize_global_variables(sess)
+    model = tl.models.Model(inputs=net_in, outputs=emb_net, name="model")
 
-    tl.files.assign_params(sess, [load_params[0]], emb_net)
+    sess.run(tf.global_variables_initializer())
 
-    emb_net.print_params()
-    emb_net.print_layers()
+    # TODO: assign certain parameters to model
+    model.load_weights(model_file_name + ".hdf5", sess=sess, skip=True, in_order=False)
 
     # Step 2: Input word(s), output the word vector(s).
-    word = b'hello'
+    word = 'hello'
     word_id = dictionary[word]
     print('word_id:', word_id)
 
-    words = [b'i', b'am', b'tensor', b'layer']
+    words = ['i', 'am', 'tensor', 'layer']
     word_ids = tl.nlp.words_to_word_ids(words, dictionary, _UNK)
     context = tl.nlp.word_ids_to_words(word_ids, reverse_dictionary)
     print('word_ids:', word_ids)
@@ -177,9 +181,11 @@ def main_restore_embedding_layer():
 
     vector = sess.run(emb_net.outputs, feed_dict={x: [word_id]})
     print('vector:', vector.shape)
+    print(vector)
 
     vectors = sess.run(emb_net.outputs, feed_dict={x: word_ids})
     print('vectors:', vectors.shape)
+    print(vectors)
 
 
 def main_lstm_generate_text():
@@ -198,7 +204,7 @@ def main_lstm_generate_text():
     top_k_list = [1, 3, 5, 10]
     print_length = 30
 
-    model_file_name = "model_generate_text.npz"
+    model_file_name = "model_generate_text.hdf5"
 
     # ===== Prepare Data
     words = customized_read_words(input_fpath="data/trump/trump_text.txt")
@@ -229,8 +235,8 @@ def main_lstm_generate_text():
         print("\nsequence_length: %d, is_train: %s, reuse: %s" % (sequence_length, is_train, reuse))
         rnn_init = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
-            network = EmbeddingInputlayer(x, vocab_size, hidden_size, rnn_init, name='embedding')
-            network = RNNLayer(
+            network = Embedding(vocab_size, hidden_size, rnn_init, name='embedding')
+            network = RNN(
                 network, cell_fn=tf.contrib.rnn.BasicLSTMCell, cell_init_args={
                     'forget_bias': 0.0,
                     'state_is_tuple': True
@@ -365,7 +371,7 @@ def main_lstm_generate_text():
 if __name__ == '__main__':
     sess = tf.InteractiveSession()
     # Restore a pretrained embedding matrix
-    # main_restore_embedding_layer()
+    main_restore_embedding_layer()
 
     # How to generate text from a given context
-    main_lstm_generate_text()
+    # main_lstm_generate_text()
