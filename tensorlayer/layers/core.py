@@ -180,32 +180,19 @@ class Layer(object):
 
     @property
     def _inputs_shape(self):  # TODO, if self.outputs is a list ???
-        if self._inputs_shape_mem is None:
+        if self.inputs is not None:
             self._inputs_shape_mem = self.inputs.get_shape().as_list()
         return self._inputs_shape_mem
 
     @property
     def _outputs_shape(self):  # TODO, if self.outputs is a list ???
-        if self._outputs_shape_mem is None:
+        if self.outputs is not None:
             self._outputs_shape_mem = self.outputs.get_shape().as_list()
         return self._outputs_shape_mem
 
     @property
     def weights(self):
         return self._weights
-
-    def _release_memory(self):
-        '''
-        WARINING: This function should be called with great caution.
-
-        self.inputs and self.outputs will be set as None but not deleted.
-
-        '''
-        self.inputs = None
-        self.outputs = None
-
-    def _set_mode_for_layers(self, is_train):
-        self.is_train = is_train
 
     def __call__(self, prev_layer):
 
@@ -273,6 +260,21 @@ class Layer(object):
             #         self.inputs = prev_layer.outputs
 
         return self
+
+    def _release_memory(self):
+        '''
+        WARINING: This function should be called with great caution.
+
+        self.inputs and self.outputs will be set as None but not deleted.
+
+        '''
+        _ = self._inputs_shape # save input shape before inputs become None
+        _ = self._outputs_shape # save outputs shape before outputs become None
+        self.inputs = None
+        self.outputs = None
+
+    def _set_mode_for_layers(self, is_train):
+        self.is_train = is_train
 
     def _get_weights(self, var_name, shape, init=tl.initializers.random_normal()):
         weight = get_variable_with_initializer(
@@ -580,8 +582,7 @@ class ModelLayer(Layer):
         self.inputs and self.outputs will be set as None but not deleted.
 
         '''
-        self.inputs = None
-        self.outputs = None
+        super(ModelLayer, self)._release_memory()
         self.model.release_memory()
 
 '''
@@ -706,8 +707,7 @@ class LayerList(Layer):
         self.inputs and self.outputs will be set as None but not deleted.
 
         '''
-        self.inputs = None
-        self.outputs = None
+        super(LayerList, self)._release_memory()
         for layer in self.layers:
             layer._release_memory()
 
