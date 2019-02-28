@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """VGG-16 for ImageNet using TL models."""
 
-# import sys
-# sys.path.append("D:\\GitHub\\tensorlayer2")
+import sys
+sys.path.append("/home/wurundi/PycharmProjects/tensorlayer2")
 # import ipdb
 
 import time
@@ -19,7 +19,7 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 
 
 # get the whole model
-vgg = tl.models.VGG16()
+vgg = tl.models.vgg16(pretrained=True)
 
 # restore pre-trained VGG parameters
 vgg.restore_weights()
@@ -35,7 +35,7 @@ if ((0 <= img1).all() and (img1 <= 1.0).all()) is False:
 start_time = time.time()
 vgg.eval()
 output = vgg(img1)
-probs = tf.nn.softmax(output.outputs)[0].numpy()
+probs = tf.nn.softmax(output)[0].numpy()
 print("  End time : %.5ss" % (time.time() - start_time))
 preds = (np.argsort(probs)[::-1])[0:5]
 for p in preds:

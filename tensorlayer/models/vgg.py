@@ -225,7 +225,6 @@ class VGG(Model):
             if len(self.weights) == len(weights):
                 break
         ## assign weight values
-        print(self.weights)
         assign_weights(sess, weights, self)
         del weights
 
