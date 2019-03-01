@@ -199,14 +199,14 @@ def main_lstm_generate_text():
     max_epoch = 4
     max_max_epoch = 100
     lr_decay = 0.9
-    batch_size = 20
+    batch_size = 16
 
     top_k_list = [1, 3, 5, 10]
     print_length = 30
 
     model_file_name = "model_generate_text.hdf5"
 
-    # ===== Prepare Data
+    #  ===== Prepare Data
     words = customized_read_words(input_fpath="data/trump/trump_text.txt")
 
     vocab = tl.nlp.create_vocab([words], word_counts_output_file='vocab.txt', min_word_count=1)
@@ -228,30 +228,32 @@ def main_lstm_generate_text():
     # Testing (Evaluation), for generate text
     input_data_test = tf.placeholder(tf.int32, [1, 1])
 
-    def inference(x, is_train, sequence_length, reuse=None):
-        """If reuse is True, the inferences use the existing parameters,
-        then different inferences share the same parameters.
-        """
-        print("\nsequence_length: %d, is_train: %s, reuse: %s" % (sequence_length, is_train, reuse))
-        rnn_init = tf.random_uniform_initializer(-init_scale, init_scale)
-        with tf.variable_scope("model", reuse=reuse):
-            network = Embedding(vocab_size, hidden_size, rnn_init, name='embedding')
-            network = RNN(
-                network, cell_fn=tf.contrib.rnn.BasicLSTMCell, cell_init_args={
-                    'forget_bias': 0.0,
-                    'state_is_tuple': True
-                }, n_hidden=hidden_size, initializer=rnn_init, n_steps=sequence_length, return_last=False,
-                return_seq_2d=True, name='lstm1'
-            )
-            lstm1 = network
-            network = DenseLayer(network, vocab_size, W_init=rnn_init, b_init=rnn_init, act=None, name='output')
-        return network, lstm1
+    rnn_init = tl.initializers.random_uniform(-init_scale, init_scale)
+
+    net_in = tl.layers.Input([None, None], dtype=tf.int32)
+    print(net_in.outputs)
+    net = Embedding(vocab_size, hidden_size, rnn_init, name='embedding')(net_in)
+    print(net.outputs)
+    lstm = RNN(
+        cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+        cell_init_args={
+            'forget_bias': 0.0,
+            'state_is_tuple': True
+        },
+        n_hidden=hidden_size, initializer=rnn_init, n_steps=None,
+        return_last=False, return_seq_2d=True, name='lstm1'
+    )(net)
+    net_out = Dense(vocab_size, W_init=rnn_init, b_init=rnn_init, act=None, name='output')(lstm)
+    rnn_model = tl.models.Model(
+        inputs=net_in,
+        outputs=[net_out, lstm]
+    )
 
     # Inference for Training
-    network, lstm1 = inference(input_data, is_train=True, sequence_length=sequence_length, reuse=None)
+    network, lstm1 = rnn_model(input_data, is_train=True)
     # Inference for generate text, sequence_length=1
-    network_test, lstm1_test = inference(input_data_test, is_train=False, sequence_length=1, reuse=True)
-    y_linear = network_test.outputs
+    network_test, lstm1_test = rnn_model(input_data_test, is_train=False)
+    y_linear = network_test
     y_soft = tf.nn.softmax(y_linear)
 
     # y_id = tf.argmax(tf.nn.softmax(y), 1)
@@ -265,14 +267,16 @@ def main_lstm_generate_text():
         # n_examples = batch_size * sequence_length
         # so
         # cost is the averaged cost of each mini-batch (concurrent process).
-        loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example(
-            [outputs], [tf.reshape(targets, [-1])], [tf.ones([batch_size * sequence_length])]
-        )
+        # loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example(
+        #     [outputs], [tf.reshape(targets, [-1])], [tf.ones([batch_size * sequence_length])]
+        # )
+        # TODO: loss function
+        loss = tl.cost.cross_entropy([outputs], [tf.reshape(targets, [-1])], name="cross_entropy")
         cost = tf.reduce_sum(loss) / batch_size
         return cost
 
     # Cost for Training
-    cost = loss_fn(network.outputs, targets, batch_size, sequence_length)
+    cost = loss_fn(network, targets, batch_size, sequence_length)
 
     # Truncated Backpropagation for training
     with tf.variable_scope('learning_rate'):
@@ -283,13 +287,19 @@ def main_lstm_generate_text():
     #  tvars = network.all_params      $ all parameters
     #  tvars = network.all_params[1:]  $ parameters except embedding matrix
     # Train the whole network.
-    tvars = network.all_params
-    grads, _ = tf.clip_by_global_norm(tf.gradients(cost, tvars), max_grad_norm)
-    optimizer = tf.train.GradientDescentOptimizer(lr)
-    train_op = optimizer.apply_gradients(zip(grads, tvars))
+    tvars = rnn_model.weights
+    # grads, _ = tf.clip_by_global_norm(tf.gradients(cost, tvars), max_grad_norm)
+    # optimizer = tf.train.GradientDescentOptimizer(lr)
+    train_op = tf.train.GradientDescentOptimizer(lr).minimize(cost, var_list=tvars)
+    # grads = tf.gradients(cost, tvars)
+    # grads[0] = tf.convert_to_tensor(grads[0].values)
+    # grads = optimizer.compute_gradients(cost, tvars)
+    # grads[0][0] = tf.convert_to_tensor(grads[0][0].values)
+    # grads, _ = tf.clip_by_global_norm(grads, max_grad_norm)
+    # train_op = optimizer.apply_gradients(zip(grads, tvars))
 
     # ===== Training
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.global_variables_initializer())
 
     print("\nStart learning a model to generate text")
     for i in range(max_max_epoch):
@@ -365,13 +375,13 @@ def main_lstm_generate_text():
             print(top_k, ':', sentence)
 
     print("Save model")
-    tl.files.save_npz(network_test.all_params, name=model_file_name)
+    rnn_model.save_weights(model_file_name, sess=sess)
 
 
 if __name__ == '__main__':
     sess = tf.InteractiveSession()
     # Restore a pretrained embedding matrix
-    main_restore_embedding_layer()
+    # main_restore_embedding_layer()
 
     # How to generate text from a given context
-    # main_lstm_generate_text()
+    main_lstm_generate_text()

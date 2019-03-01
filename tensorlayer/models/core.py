@@ -333,6 +333,8 @@ class Model():
         tmpstr = self.__class__.__name__ + '(\n'
         attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
         attr_list.remove("weights")
+        attr_list.remove("_set_mode_for_layers")
+        attr_list.remove("release_memory")
         attr_list.remove("_inputs")
         attr_list.remove("_outputs")
         for idx, attr in enumerate(attr_list):
@@ -342,6 +344,12 @@ class Model():
                     modstr = nowlayer.__repr__()
                     modstr = _addindent(modstr, 2)
                     tmpstr = tmpstr + '  (' + attr + '): ' + modstr + '\n'
+                elif isinstance(getattr(self, attr), list) and (isinstance(getattr(self, attr)[0], Layer) or
+                                                                isinstance(getattr(self, attr)[0], Model)):
+                    for idx, element in enumerate(getattr(self, attr)):
+                        modstr = element.__repr__()
+                        modstr = _addindent(modstr, 2)
+                        tmpstr = tmpstr + '  (' + attr + '[%d]): ' % idx + modstr + '\n'
 
             except Exception:
                 pass
@@ -452,6 +460,7 @@ class Model():
 
         A void function.
         '''
+
         if self._outputs is not None:
             for depth_layers in self.layer_by_depth:
                 for layer in depth_layers:

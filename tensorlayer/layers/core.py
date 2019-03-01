@@ -194,7 +194,7 @@ class Layer(object):
     def weights(self):
         return self._weights
 
-    def __call__(self, prev_layer):
+    def __call__(self, prev_layer, **kwargs):
 
         if self.__class__.__name__ in tl.layers.inputs.__all__:
             # 1. for input layers
@@ -207,7 +207,7 @@ class Layer(object):
             self._input_layer = None
             self._built = True
             self.build(self._inputs_shape)
-            self.outputs = self.forward(self.inputs)
+            self.outputs = self.forward(self.inputs, **kwargs)
 
         elif isinstance(prev_layer, Layer):
             # 2. for normal layer have only 1 input i.e. DenseLayer
@@ -221,7 +221,7 @@ class Layer(object):
                 self.build(self._inputs_shape)
                 self._built = True
 
-            self.outputs = self.forward(self.inputs)
+            self.outputs = self.forward(self.inputs, **kwargs)
             # self._outputs_shape = self.outputs.get_shape().as_list()
 
             # TODO: need update
@@ -240,7 +240,7 @@ class Layer(object):
             if not self._built:
                 self._built = True
 
-            self.outputs = self.forward(self.inputs)
+            self.outputs = self.forward(self.inputs, **kwargs)
 
             # TODO: need update
             # self._add_layers(sum([l.all_layers for l in prev_layer], []))

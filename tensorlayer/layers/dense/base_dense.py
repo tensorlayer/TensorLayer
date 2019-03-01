@@ -78,7 +78,7 @@ class Dense(Layer):
 
         # super(Dense, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
-        super().__init__(name)
+        super(Dense, self).__init__(name)
 
         self.n_units = n_units
         self.act = act

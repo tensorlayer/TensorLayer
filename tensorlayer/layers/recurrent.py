@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+import tensorlayer as tl
 
-from tensorflow.python.ops import array_ops
-from tensorflow.python.util.tf_inspect import getfullargspec
-from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
-from tensorflow.python.ops.rnn_cell import LSTMStateTuple
+# from tensorflow.python.ops import array_ops
+# from tensorflow.python.util.tf_inspect import getfullargspec
+# from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
+# from tensorflow.python.ops.rnn_cell import LSTMStateTuple
 
 from tensorlayer.layers.core import Layer
 # from tensorlayer.layers.core import LayersConfig
@@ -16,32 +17,32 @@ from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 
+# TODO: uncomment
 __all__ = [
     'RNN',
-    'BiRNN',
-    'ConvRNNCell',
-    'BasicConvLSTMCell',
-    'ConvLSTM',
-    'advanced_indexing_op',
-    'retrieve_seq_length_op',
-    'retrieve_seq_length_op2',
-    'retrieve_seq_length_op3',
-    'target_mask_op',
-    'DynamicRNN',
-    'BiDynamicRNN',
-    'Seq2Seq',
+    # 'BiRNN',
+    # 'ConvRNNCell',
+    # 'BasicConvLSTMCell',
+    # 'ConvLSTM',
+    # 'advanced_indexing_op',
+    # 'retrieve_seq_length_op',
+    # 'retrieve_seq_length_op2',
+    # 'retrieve_seq_length_op3',
+    # 'target_mask_op',
+    # 'DynamicRNN',
+    # 'BiDynamicRNN',
+    # 'Seq2Seq',
 ]
 
 
 class RNN(Layer):
+    # TODO: documents
     """
     The :class:`RNN` class is a fixed length recurrent layer for implementing vanilla RNN,
     LSTM, GRU and etc.
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
             - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
@@ -52,19 +53,23 @@ class RNN(Layer):
         The number of hidden units in the layer.
     initializer : initializer
         The initializer for initializing the model parameters.
-    n_steps : int
-        The fixed sequence length.
+    n_steps : int or None
+        The fixed sequence length. If None, `n_steps` is automatically decided by inputs.
+        In dynamic eager mode, `n_steps` can be updated when it is called in customised forward().
     initial_state : None or RNN State
         If None, `initial_state` is zero state.
+        In dynamic eager mode, `initial_state` can be updated when it is called in customised forward().
     return_last : boolean
         Whether return last output or all outputs in each step.
             - If True, return the last output, "Sequence input and single output"
             - If False, return all outputs, "Synced sequence input and output"
             - In other word, if you want to stack more RNNs on this layer, set to False.
+        In dynamic eager mode, `return_last` can be updated when it is called in customised forward().
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
             - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+        In dynamic eager mode, `return_seq_2d` can be updated when it is called in customised forward().
     name : str
         A unique layer name.
 
@@ -141,25 +146,32 @@ class RNN(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             cell_fn,
             cell_init_args=None,
             n_hidden=100,
-            initializer=tf.compat.v1.initializers.random_uniform(-0.1, 0.1),
-            n_steps=5,
+            initializer=tl.initializers.random_uniform(-0.1, 0.1),
+            n_steps=None,
             initial_state=None,
             return_last=False,
             return_seq_2d=False,
-            name='rnn',
+            name=None, # 'rnn'
     ):
 
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
 
-        super(RNNLayer, self).__init__(prev_layer=prev_layer, cell_init_args=cell_init_args, name=name)
+        super(RNN, self).__init__(name=name)
+
+        self.cell_fn = cell_fn
+        self.cell_init_args = cell_init_args
+        self.n_hidden = n_hidden
+        self.initializer = initializer
+        self.n_steps = n_steps
+        self.initial_state = initial_state
+        self.return_last = return_last
+        self.return_seq_2d = return_seq_2d
 
         if 'GRU' in cell_fn.__name__:
             try:
@@ -168,28 +180,11 @@ class RNN(Layer):
                 logging.warning('pop state_is_tuple fails.')
 
         logging.info(
-            "RNN %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s " %
-            (self.name, n_hidden, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__)
+            "RNN %s: n_hidden: %d, n_steps: %s, cell_fn: %s " %
+            (self.name, n_hidden, n_steps if n_steps is not None else 'not_specified', cell_fn.__name__)
         )
 
-        # You can get the dimension by .get_shape() or ._shape, and check the
-        # dimension by .with_rank() as follow.
-        # self.inputs.get_shape().with_rank(2)
-        # self.inputs.get_shape().with_rank(3)
-
-        # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
-        try:
-            self.inputs.get_shape().with_rank(3)
-        except Exception:
-            raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps, n_features]")
-
-        # is_reshape : boolean (deprecate)
-        #     Reshape the inputs to 3 dimension tensor.\n
-        #     If input is［batch_size, n_steps, n_features], we do not need to reshape it.\n
-        #     If input is [batch_size * n_steps, n_features], we need to reshape it.
-        # if is_reshape:
-        #     self.inputs = tf.reshape(self.inputs, shape=[-1, n_steps, int(self.inputs._shape[-1])])
-
+        '''
         fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
 
         if fixed_batch_size.value:
@@ -200,7 +195,7 @@ class RNN(Layer):
             batch_size = array_ops.shape(self.inputs)[0]
             logging.info("       non specified batch_size, uses a tensor instead.")
 
-        self.batch_size = batch_size
+        '''
 
         # Simplified version of tensorflow.models.rnn.rnn.py's rnn().
         # This builds an unrolled LSTM for tutorial purposes only.
@@ -212,20 +207,83 @@ class RNN(Layer):
         # inputs = [tf.squeeze(input_, [1])
         #           for input_ in tf.split(1, num_steps, inputs)]
         # outputs, state = rnn.rnn(cell, inputs, initial_state=self._initial_state)
-        outputs = []
 
-        if 'reuse' in getfullargspec(cell_fn.__init__).args:
-            self.cell = cell = cell_fn(
-                num_units=n_hidden, reuse=tf.compat.v1.get_variable_scope().reuse, **self.cell_init_args
-            )
+    def __repr__(self):
+        s = ('{classname}(cell={cellname},n_hidden={n_hidden},n_steps={n_steps}')
+        if self.name is not None:
+            s += ', name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, cellname=self.cell_fn.__name__, **self.__dict__)
+
+    def build(self, inputs_shape):
+        """
+        Parameters
+        ----------
+        inputs_shape : tuple
+            the shape of inputs tensor
+        """
+        # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
+        if len(inputs_shape) != 3:
+            raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps, n_features]")
+
+        # if 'reuse' in getfullargspec(self.cell_fn.__init__).args:
+        #     self.cell = self.cell_fn(
+        #         num_units=self.n_hidden, reuse=tf.compat.v1.get_variable_scope().reuse, **self.cell_init_args
+        #     )
+        # else:
+        self.cell = self.cell_fn(num_units=self.n_hidden, **self.cell_init_args)
+
+        if self._weights is None:
+            self._weights = list()
+        self._weights.append(self.cell.weights)
+
+    def forward(self, inputs, **kwargs):
+        """
+        Parameters
+        ----------
+        inputs : input tensor
+            The input of a network
+        **kwargs: dict
+            Some attributes can be updated during forwarding
+            such as `initial_state`, `n_steps`, `return_last`, `return_seq_2d`.
+        """
+
+        if kwargs:
+            for attr in kwargs:
+                setattr(self, attr, kwargs[attr])
+
+        if self.return_last:
+            outputs = [-1]
         else:
-            self.cell = cell = cell_fn(num_units=n_hidden, **self.cell_init_args)
+            outputs = list()
 
-        if initial_state is None:
-            self.initial_state = cell.zero_state(batch_size, dtype=LayersConfig.tf_dtype)  #dtype=tf.float32)  # 1.2.3
+        state = self.cell.zero_state(self._inputs_shape[0], dtype=tf.float32) if self.initial_state is None \
+            else self.initial_state
 
-        state = self.initial_state
+        total_steps = self.n_steps if self.n_steps is not None else self._inputs_shape[1]
 
+        for time_step in range(total_steps):
+            (cell_output, state) = self.cell(self.inputs[:, time_step, :], state)
+            if self.return_last:
+                outputs[-1] = cell_output
+            else:
+                outputs.append(cell_output)
+
+        if self.return_last:
+            outputs = outputs[-1]
+        else:
+            if self.return_seq_2d:
+                # PTB tutorial: stack dense layer after that, or compute the cost from the output
+                # 2D Tensor [batch_size * n_steps, n_hidden]
+                outputs = tf.reshape(tf.concat(outputs, 1), [-1, self.n_hidden])
+            else:
+                # <akara>: stack more RNN layer after that
+                # 3D Tensor [batch_size, n_steps, n_hidden]
+                outputs = tf.reshape(tf.concat(outputs, 1), [-1, self.n_steps, self.n_hidden])
+
+        self.final_state = state
+
+        '''
         with tf.compat.v1.variable_scope(name, initializer=initializer) as vs:
             for time_step in range(n_steps):
                 if time_step > 0: tf.compat.v1.get_variable_scope().reuse_variables()
@@ -255,9 +313,9 @@ class RNN(Layer):
                     self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_steps, n_hidden])
 
         self.final_state = state
+        '''
+        return outputs
 
-        self._add_layers(self.outputs)
-        self._add_params(rnn_variables)
 
 
 class BiRNN(Layer):
