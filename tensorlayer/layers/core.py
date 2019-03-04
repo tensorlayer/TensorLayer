@@ -179,15 +179,21 @@ class Layer(object):
         self.is_train = True
 
     @property
-    def _inputs_shape(self):  # TODO, if self.outputs is a list ???
+    def _inputs_shape(self):
         if self.inputs is not None:
-            self._inputs_shape_mem = self.inputs.get_shape().as_list()
+            if isinstance(self.inputs, list):
+                self._inputs_shape_mem = [t.get_shape().as_list() for t in self.inputs]
+            else:
+                self._inputs_shape_mem = self.inputs.get_shape().as_list()
         return self._inputs_shape_mem
 
     @property
-    def _outputs_shape(self):  # TODO, if self.outputs is a list ???
+    def _outputs_shape(self):
         if self.outputs is not None:
-            self._outputs_shape_mem = self.outputs.get_shape().as_list()
+            if isinstance(self.outputs, list):
+                self._outputs_shape_mem = [t.get_shape().as_list() for t in self.outputs]
+            else:
+                self._outputs_shape_mem = self.outputs.get_shape().as_list()
         return self._outputs_shape_mem
 
     @property
