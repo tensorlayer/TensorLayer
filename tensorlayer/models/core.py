@@ -245,6 +245,10 @@ class Model():
                 try:
                     if isinstance(getattr(self, attr), Layer):
                         nowlayer = getattr(self, attr)
+                        if not nowlayer._built:
+                            raise AttributeError(
+                                "Layer %s not built yet." % repr(nowlayer)
+                            )
                         if (nowlayer.weights != None):
                             self._weights.extend(getattr(self, attr).weights)
                     # if isinstance(getattr(self, attr), list):
