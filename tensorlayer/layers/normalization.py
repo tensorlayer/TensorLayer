@@ -18,7 +18,10 @@ from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'LocalResponseNorm',
-    'BatchNorm',
+    'BatchNorm', # FIXME: wthether to keep BatchNorm
+    'BatchNorm1d',
+    'BatchNorm2d',
+    'BatchNorm3d',
     'InstanceNorm',
     'LayerNorm',
     'GroupNorm',
@@ -154,7 +157,7 @@ class BatchNorm(Layer):
         The initializer for initializing moving var, if None, skip moving var.
     num_features: int
         Number of features for input tensor. Useful to build layer if using BatchNorm1d, BatchNorm2d or BatchNorm3d,
-        but should be left as None if using BatchNorm. 
+        but should be left as None if using BatchNorm.
     data_format : str
         channels_last 'channel_last' (default) or channels_first.
     name : None or str
@@ -197,9 +200,6 @@ class BatchNorm(Layer):
         self.num_features = num_features
 
         if num_features is not None:
-            if not isinstance(self, BatchNorm1d) or not isinstance(self, BatchNorm2d) or not isinstance(self, BatchNorm3d):
-                raise ValueError("Please use BatchNorm1d or BatchNorm2d or BatchNorm3d rather than BatchNorm"
-                                 "if you want to specify 'num_features'.")
             self.build(None)
             self._built = True
 
@@ -207,6 +207,16 @@ class BatchNorm(Layer):
             "BatchNorm %s: decay: %f epsilon: %f act: %s is_train: %s" %
             (self.name, decay, epsilon, self.act.__name__ if self.act is not None else 'No Activation', is_train)
         )
+
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(num_features={num_features}, decay={decay}'
+             ', epsilon={epsilon}')
+        s += (', ' + actstr)
+        if self.name is not None:
+            s += ', name={"name"}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def _get_param_shape(self, inputs_shape):
         if self.data_format == 'channels_last':
