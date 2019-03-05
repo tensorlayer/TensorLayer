@@ -301,7 +301,7 @@ class Layer(object):
         :param inputs_shape: tuple
         :return: void
         """
-        raise Exception("The build_weights method must be implemented by inherited class")
+        raise Exception("The build(self, inputs_shape) method must be implemented by inherited class")
 
     @abstractmethod
     def forward(self, inputs):
