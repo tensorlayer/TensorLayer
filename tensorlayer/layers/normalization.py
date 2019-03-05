@@ -152,6 +152,9 @@ class BatchNorm(Layer):
         The initializer for initializing moving mean, if None, skip moving mean.
     moving_var_init : initializer or None
         The initializer for initializing moving var, if None, skip moving var.
+    num_features: int
+        Number of features for input tensor. Useful to build layer if using BatchNorm1d, BatchNorm2d or BatchNorm3d,
+        but should be left as None if using BatchNorm. 
     data_format : str
         channels_last 'channel_last' (default) or channels_first.
     name : None or str
@@ -178,6 +181,7 @@ class BatchNorm(Layer):
             # gamma_init=tf.compat.v1.initializers.random_normal(mean=1.0, stddev=0.002),
             # moving_mean_init=tf.compat.v1.initializers.zeros(),
             # moving_var_init=tf.compat.v1.initializers.zeros(),
+            num_features=None,
             data_format='channels_last',
             name='batchnorm',
     ):
@@ -190,30 +194,55 @@ class BatchNorm(Layer):
         self.gamma_init = gamma_init
         self.moving_mean_init = moving_mean_init
         self.moving_var_init = moving_var_init
+        self.num_features = num_features
+
+        if num_features is not None:
+            if not isinstance(self, BatchNorm1d) or not isinstance(self, BatchNorm2d) or not isinstance(self, BatchNorm3d):
+                raise ValueError("Please use BatchNorm1d or BatchNorm2d or BatchNorm3d rather than BatchNorm"
+                                 "if you want to specify 'num_features'.")
+            self.build(None)
+            self._built = True
 
         logging.info(
             "BatchNorm %s: decay: %f epsilon: %f act: %s is_train: %s" %
             (self.name, decay, epsilon, self.act.__name__ if self.act is not None else 'No Activation', is_train)
         )
 
+    def _get_param_shape(self, inputs_shape):
+        if self.data_format == 'channels_last':
+            axis = len(inputs_shape) - 1
+        elif self.data_format == 'channels_first':
+            axis = 1
+        else:
+            raise ValueError('data_format should be either %s or %s' % ('channels_last', 'channels_first'))
+
+        channels = inputs_shape[axis]
+        params_shape = [1] * len(inputs_shape)
+        params_shape[axis] = channels
+
+        axes = [i for i in range(len(inputs_shape)) if i != axis]
+        return params_shape, axes
+
     def build(self, inputs_shape):
         if self.decay < 0 or 1 < self.decay:
             raise Exception("decay should be between 0 to 1")
 
         # x_shape = self.inputs.get_shape()
-        if self.data_format == 'channels_last':
-            axis = len(inputs_shape) - 1
-            channels = inputs_shape[-1]
-            params_shape = [1] * (len(inputs_shape) - 1) + [channels]
-        elif self.data_format == 'channels_first':
-            axis = 1
-            channels = inputs_shape[1]
-            params_shape = [1, channels] + [1] * (len(inputs_shape) - 2)
-        else:
-            raise ValueError('data_format should be either %s or %s' % ('channels_last', 'channels_first'))
+        # if self.data_format == 'channels_last':
+        #     axis = len(inputs_shape) - 1
+        #     channels = inputs_shape[-1]
+        #     params_shape = [1] * (len(inputs_shape) - 1) + [channels]
+        # elif self.data_format == 'channels_first':
+        #     axis = 1
+        #     channels = inputs_shape[1]
+        #     params_shape = [1, channels] + [1] * (len(inputs_shape) - 2)
+        # else:
+        #     raise ValueError('data_format should be either %s or %s' % ('channels_last', 'channels_first'))
+        #
+        # # params_shape = inputs_shape[axis]
+        # self.axes = [i for i in range(len(inputs_shape)) if i != axis]
 
-        # params_shape = inputs_shape[axis]
-        self.axes = [i for i in range(len(inputs_shape)) if i != axis]
+        params_shape, self.axes = self._get_param_shape(inputs_shape)
 
         self.beta, self.gamma = None, None
         if self.beta_init:
@@ -309,6 +338,69 @@ class BatchNorm(Layer):
         #
         # self._add_layers(self.outputs)
         # self._add_params(variables)
+
+
+class BatchNorm1d(BatchNorm):
+    # TODO: documentation pending, need test
+    def _get_param_shape(self, inputs_shape):
+        if self.data_format == 'channels_last':
+            axis = 2
+        elif self.data_format == 'channels_first':
+            axis = 1
+        else:
+            raise ValueError('data_format should be either %s or %s' % ('channels_last', 'channels_first'))
+
+        if self.num_features is None:
+            channels = inputs_shape[axis]
+        else:
+            channels = self.num_features
+        params_shape = [1] * 3
+        params_shape[axis] = channels
+
+        axes = [i for i in range(3) if i != axis]
+        return params_shape, axes
+
+
+class BatchNorm2d(BatchNorm):
+    # TODO: documentation pending
+    def _get_param_shape(self, inputs_shape):
+        if self.data_format == 'channels_last':
+            axis = 3
+        elif self.data_format == 'channels_first':
+            axis = 1
+        else:
+            raise ValueError('data_format should be either %s or %s' % ('channels_last', 'channels_first'))
+
+        if self.num_features is None:
+            channels = inputs_shape[axis]
+        else:
+            channels = self.num_features
+        params_shape = [1] * 4
+        params_shape[axis] = channels
+
+        axes = [i for i in range(4) if i != axis]
+        return params_shape, axes
+
+
+class BatchNorm3d(BatchNorm):
+    # TODO: documentation pending, need test
+    def _get_param_shape(self, inputs_shape):
+        if self.data_format == 'channels_last':
+            axis = 4
+        elif self.data_format == 'channels_first':
+            axis = 1
+        else:
+            raise ValueError('data_format should be either %s or %s' % ('channels_last', 'channels_first'))
+
+        if self.num_features is None:
+            channels = inputs_shape[axis]
+        else:
+            channels = self.num_features
+        params_shape = [1] * 5
+        params_shape[axis] = channels
+
+        axes = [i for i in range(5) if i != axis]
+        return params_shape, axes
 
 
 class InstanceNorm(Layer):
