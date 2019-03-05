@@ -381,16 +381,17 @@ class Layer(object):
         reprstr = "Layer"
         return reprstr
 
-    def __str__(self):
-
-        if self.outputs is not None:
-            _outputs_shape = self._outputs_shape
-            if _outputs_shape[0] == 1:
-                _outputs_shape[0] = "batch_size"
-        else:
-            _outputs_shape = "unknown for unbuilt layer"
-        return "  {} ({}) outputs_shape: {}".format(self.__class__.__name__, self.name, _outputs_shape)
-        # self._outputs_shape)#outputs.get_shape().as_list())
+    # FIXME : No need for __str__ given that we have __repr__
+    # def __str__(self):
+    #
+    #     if self.outputs is not None:
+    #         _outputs_shape = self._outputs_shape
+    #         if _outputs_shape[0] == 1:
+    #             _outputs_shape[0] = "batch_size"
+    #     else:
+    #         _outputs_shape = "unknown for unbuilt layer"
+    #     return "  {} ({}) outputs_shape: {}".format(self.__class__.__name__, self.name, _outputs_shape)
+    #     # self._outputs_shape)#outputs.get_shape().as_list())
 
     # def __getitem__(self, key):
     #

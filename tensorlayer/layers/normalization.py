@@ -200,6 +200,9 @@ class BatchNorm(Layer):
         self.num_features = num_features
 
         if num_features is not None:
+            if not isinstance(self, BatchNorm1d) and not isinstance(self, BatchNorm2d) and not isinstance(self, BatchNorm3d):
+                raise ValueError("Please use BatchNorm1d or BatchNorm2d or BatchNorm3d instead of BatchNorm "
+                                 "if you want to specify 'num_features'.")
             self.build(None)
             self._built = True
 
@@ -214,7 +217,7 @@ class BatchNorm(Layer):
              ', epsilon={epsilon}')
         s += (', ' + actstr)
         if self.name is not None:
-            s += ', name={"name"}'
+            s += ', name="{name}"'
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
