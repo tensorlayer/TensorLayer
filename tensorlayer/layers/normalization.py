@@ -186,7 +186,7 @@ class BatchNorm(Layer):
             # moving_var_init=tf.compat.v1.initializers.zeros(),
             num_features=None,
             data_format='channels_last',
-            name='batchnorm',
+            name=None,
     ):
         super(BatchNorm, self).__init__(name=name)
         self.act = act
@@ -525,7 +525,7 @@ class LayerNorm(Layer):
             beta_init=tl.initializers.zeros(),
             gamma_init=tl.initializers.ones(),
             data_format='channels_last',
-            name='layernorm'
+            name=None,
     ):
 
         # super(LayerNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
