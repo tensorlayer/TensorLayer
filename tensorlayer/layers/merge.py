@@ -59,7 +59,11 @@ class Concat(Layer):
 
         super(Concat, self).__init__(name)
         self.concat_dim = concat_dim
-        logging.info("Concat %s: axis: %d" % (self.name, concat_dim))
+
+        self.build(None)
+        self._built = True
+
+        logging.info("Concat %s: concat_dim: %d" % (self.name, concat_dim))
 
     def __repr__(self):
         s = ('{classname}(concat_dim={concat_dim})')
@@ -124,10 +128,21 @@ class Elementwise(Layer):
         super().__init__(name)
         self.combine_fn = combine_fn
 
+        self.build(None)
+        self._built = True
+
         logging.info(
             "Elementwise %s: fn: %s act: %s" %
             (self.name, combine_fn.__name__, ('No Activation' if self.act is None else self.act.__name__))
         )
+
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(combine_fn={combine_fn}, ' + actstr)
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs):
         pass
