@@ -28,22 +28,23 @@ class Layer_Core_Test(CustomTestCase):
 
         # ============== DenseLayer ==============
 
-        inputs_shape = [None, 784]
-        cls.innet = Input(inputs_shape)
+        cls.inputs_shape = [None, 784]
+        cls.innet = Input(cls.inputs_shape)
         cls.dense1 = Dense(n_units=800, act=tf.nn.relu, in_channels=784)(cls.innet)
         cls.dropout1 = Dropout(keep=0.8)(cls.dense1)
         cls.dense2 = Dense(n_units=10, act=tf.nn.relu, b_init=None)(cls.dropout1)
         cls.dense3 = Dense(n_units=10, act=tf.nn.relu, b_init=None)
+        cls.concat = Concat(concat_dim=-1)([cls.dense2, cls.dropout1])
 
         print(cls.innet)
         print(cls.dense1)
         print(cls.dropout1)
         print(cls.dense2)
         print(cls.dense3)
+        print(cls.concat)
 
         cls.model = Model(inputs=cls.innet, outputs=cls.dense2)
-        cls.results_train = cls.model(np.ones(shape=(cls.batch_size, 784)).astype(np.float32), is_train=True)
-        cls.results_test = cls.model(np.ones(shape=(cls.batch_size, 784)).astype(np.float32), is_train=False)
+
 
 
     @classmethod
@@ -91,6 +92,9 @@ class Layer_Core_Test(CustomTestCase):
 
         self.assertEqual(len(self.model.weights), 3)
 
+        # a special case
+        self.model.release_memory()
+
         # test input output
         self.assertEqual(self.innet._inputs_shape, [self.batch_size, 784])
         self.assertEqual(self.innet._outputs_shape, [self.batch_size, 784])
@@ -99,8 +103,8 @@ class Layer_Core_Test(CustomTestCase):
         self.assertEqual(self.dense2._inputs_shape, [self.batch_size, 800])
         self.assertEqual(self.dense2._outputs_shape, [self.batch_size, 10])
 
-        self.assertEqual(self.results_train.get_shape().as_list(), [self.batch_size, 10])
-        self.assertEqual(self.results_test.get_shape().as_list(), [self.batch_size, 10])
+        # self.assertEqual(self.results_train.get_shape().as_list(), [self.batch_size, 10])
+        # self.assertEqual(self.results_test.get_shape().as_list(), [self.batch_size, 10])
 
         # test printing
         print(self.innet)
@@ -108,6 +112,72 @@ class Layer_Core_Test(CustomTestCase):
         print(self.dropout1)
         print(self.dense2)
         print(self.dense3)
+
+    def test_special_cases(self):
+        try:
+            innet = Input([121])
+            dense1 = Dense(n_units=800, act=tf.nn.relu)(innet)
+        except Exception as e:
+            print(e)
+
+    def test_modellayer(self):
+
+        data = tf.placeholder(tf.float32, shape=[self.batch_size, self.inputs_shape[1]])
+        fake_data = np.random.normal(size=[self.batch_size, self.inputs_shape[1]]).astype(np.float32)
+
+        origin_results_train = self.model(data, is_train=True)
+        origin_results_test = self.model(data, is_train=False)
+
+        new_innet = Input(self.inputs_shape)
+        new_mlayer = ModelLayer(self.model)(new_innet)
+
+        new_mlayer.build(inputs_shape=None) # do nothing
+
+        newmodel = Model(inputs=new_innet, outputs=new_mlayer)
+
+        new_results_train = newmodel(data, is_train=True)
+        new_results_test = newmodel(data, is_train=False)
+
+        with tf.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+            train_origin, train_new, test_origin, test_new = sess.run([
+                origin_results_train, new_results_train,
+                origin_results_test, new_results_test
+            ], feed_dict={
+                data: fake_data,
+            })
+            self.assertEqual(train_origin.shape, train_new.shape)
+            self.assertTrue(np.array_equal(test_origin, test_new))
+
+        newmodel.release_memory()
+
+    def test_layerlist(self):
+        innet = Input(self.inputs_shape)
+        hlayer = LayerList([
+            ModelLayer(
+                self.model
+            ),
+            LayerList([
+                Dense(n_units=100),
+                Dense(n_units=10)
+            ]),
+            Dense(n_units=5),
+            Dense(n_units=4)
+        ])(innet)
+        model = Model(inputs=innet, outputs=hlayer)
+
+        data = tf.placeholder(tf.float32, shape=[self.batch_size, self.inputs_shape[1]])
+        pred = model(data, is_train=False)
+        self.assertEqual(pred.get_shape().as_list(), [self.batch_size, 4])
+
+        print(model)
+        print(len(hlayer))
+        print(hlayer[0])
+        print(hlayer[slice(2)])
+        print(model.weights)
+
+        model.release_memory()
+
 
 if __name__ == '__main__':
 

@@ -572,6 +572,15 @@ class ModelLayer(Layer):
             (self.name, self.model.name)
         )
 
+    def __repr__(self):
+        tmpstr = 'ModelLayer' + '(\n'
+
+        modstr = self.model.__repr__()
+        modstr = _addindent(modstr, 2)
+
+        tmpstr += modstr + ')'
+        return tmpstr
+
     def build(self, inputs_shape):
         pass
 

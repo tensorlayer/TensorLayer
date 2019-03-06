@@ -57,10 +57,13 @@ class Concat(Layer):
             name=None,  #'concat',
     ):
 
-        # super(ConcatLayer, self).__init__(prev_layer=prev_layer, name=name)
-        super().__init__(name)
+        super(Concat, self).__init__(name)
         self.concat_dim = concat_dim
         logging.info("Concat %s: axis: %d" % (self.name, concat_dim))
+
+    def __repr__(self):
+        s = ('{classname}(concat_dim={concat_dim})')
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs):
         pass
