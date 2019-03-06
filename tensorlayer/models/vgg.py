@@ -13,6 +13,7 @@ which is a dataset of over 14 million images belonging to 1000 classes.
 Download Pre-trained Model
 ----------------------------
 - Model weights in this example - vgg16_weights.npz : http://www.cs.toronto.edu/~frossard/post/vgg16/
+- Model weights in this example - vgg19.npy : https://media.githubusercontent.com/media/tensorlayer/pretrained-models/master/models/
 - Caffe VGG 16 model : https://gist.github.com/ksimonyan/211839e770f7b538e2d8#file-readme-md
 - Tool to convert the Caffe models to TensorFlow's : https://github.com/ethereon/caffe-tensorflow
 
@@ -46,9 +47,11 @@ from tensorlayer.models import Model
 from tensorlayer.files import maybe_download_and_extract
 from tensorlayer.files import assign_weights
 
+
 __all__ = [
-    'VGG', 'vgg11', 'vgg11_bn', 'vgg13', 'vgg13_bn', 'vgg16', 'vgg16_bn',
-    'vgg19_bn', 'vgg19',
+    'VGG', 'vgg16', 'vgg19',
+#    'vgg11', 'vgg11_bn', 'vgg13', 'vgg13_bn', 'vgg16', 'vgg16_bn',
+#    'vgg19_bn', 'vgg19',
 ]
 
 layer_names = [
@@ -81,6 +84,12 @@ mapped_cfg = {
 
 model_urls = {
     'vgg16': 'http://www.cs.toronto.edu/~frossard/vgg16/',
+    'vgg19': 'https://media.githubusercontent.com/media/tensorlayer/pretrained-models/master/models/'
+}
+
+model_saved_name = {
+    'vgg16': 'vgg16_weights.npz',
+    'vgg19': 'vgg19.npy'
 }
 
 class VGG(Model):
@@ -126,7 +135,6 @@ class VGG(Model):
     """
 
     def __init__(self, layer_type, batch_norm=False, end_with='outputs', name=None):
-        # FIXME: BN should support dynamic eager mode
         super(VGG, self).__init__()
         self.end_with = end_with
 
@@ -134,59 +142,6 @@ class VGG(Model):
 
         config = cfg[mapped_cfg[layer_type]]
         self.layers = make_layers(config, batch_norm, end_with)
-        # layer_list = []
-        # config = cfg[mapped_cfg[layer_type]]
-        # is_end = False
-        # for layer_group_idx, layer_group in enumerate(config):
-        #     if isinstance(layer_group, list):
-        #         for idx, layer in enumerate(layer_group):
-        #             layer_name = layer_names[layer_group_idx][idx]
-        #             n_filter = layer
-        #             if idx == 0:
-        #                 if layer_group_idx > 0:
-        #                     in_channels = config[layer_group_idx-2][-1]
-        #                 else:
-        #                     in_channels = 3
-        #             else:
-        #                 in_channels = layer
-        #             #ipdb.set_trace()
-        #             layer_list.append(Conv2d(n_filter=n_filter, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu,
-        #                                      padding='SAME', in_channels=in_channels, name=layer_name))
-        #             if batch_norm:
-        #                 layer_list.append(BatchNorm())
-        #             if layer_name == end_with:
-        #                 is_end = True
-        #                 break
-        #     else:
-        #         layer_name = layer_names[layer_group_idx]
-        #         if layer_group == 'M':
-        #             layer_list.append(MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name=layer_name))
-        #         elif layer_group == 'O':
-        #             layer_list.append(Dense(n_units=1000, in_channels=4096, name=layer_name))
-        #         elif layer_group == 'F':
-        #             layer_list.append(Flatten(name='flatten'))
-        #         elif layer_group == 'fc1':
-        #             layer_list.append(Dense(n_units=4096, act=tf.nn.relu, in_channels=512*7*7, name=layer_name))
-        #         elif layer_group == 'fc2':
-        #             layer_list.append(Dense(n_units=4096, act=tf.nn.relu, in_channels=4096, name=layer_name))
-        #         if layer_name == end_with:
-        #             is_end = True
-        #     if is_end:
-        #         break
-        # if not is_end:
-        #     for idx in range(4):
-        #         layer_name = layer_names[idx+10]
-        #         if layer_name == 'flatten':
-        #             layer_list.append(Flatten(name='flatten'))
-        #         elif layer_name == 'fc1_relu':
-        #             layer_list.append(Dense(n_units=4096, act=tf.nn.relu, in_channels=512*7*7, name=layer_name))
-        #         elif layer_name == 'fc2_relu':
-        #             layer_list.append(Dense(n_units=4096, act=tf.nn.relu, in_channels=4096, name=layer_name))
-        #         else:
-        #             layer_list.append(Dense(n_units=1000, in_channels=4096, name=layer_name))
-        #         if layer_name == end_with:
-        #             break
-        # self.layers = LayerList(layer_list)
 
     def forward(self, inputs):
         """
@@ -196,37 +151,10 @@ class VGG(Model):
         outputs = inputs * 255.0
         mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
         outputs = outputs - mean
-        # outputs = inputs
 
         out = self.innet(outputs)
         out = self.layers(out)
-        # for layer in self.layers:
-        #     outputs = layer(outputs)
-        #     if layer.name == self.end_with:
-        #         break
         return out.outputs
-
-    def restore_params(self, **kwargs):
-        raise Exception("please change restore_params --> restore_weights")
-
-    def restore_weights(self, sess=None):
-        # FIXME: Now only support vgg16 as we do not have pretrained models
-        logging.info("Restore pre-trained weights")
-        ## download weights
-        maybe_download_and_extract(
-            'vgg16_weights.npz', 'models', 'http://www.cs.toronto.edu/~frossard/vgg16/', expected_bytes=553436134
-        )
-        npz = np.load(os.path.join('models', 'vgg16_weights.npz'))
-        ## get weight list
-        weights = []
-        for val in sorted(npz.items()):
-            logging.info("  Loading weights %s in %s" % (str(val[1].shape), val[0]))
-            weights.append(val[1])
-            if len(self.weights) == len(weights):
-                break
-        ## assign weight values
-        assign_weights(sess, weights, self)
-        del weights
 
 
 def make_layers(config, batch_norm=False, end_with='outputs'):
@@ -244,7 +172,6 @@ def make_layers(config, batch_norm=False, end_with='outputs'):
                         in_channels = 3
                 else:
                     in_channels = layer
-                # ipdb.set_trace()
                 layer_list.append(Conv2d(n_filter=n_filter, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu,
                                          padding='SAME', in_channels=in_channels, name=layer_name))
                 if batch_norm:
@@ -273,20 +200,29 @@ def make_layers(config, batch_norm=False, end_with='outputs'):
 
 def restore_model(model, layer_type, sess=None):
     logging.info("Restore pre-trained weights")
-    ## download weights
-    # FIXME : remove expected_bytes if possible
+    # download weights
     maybe_download_and_extract(
-        '%s_weights.npz' % layer_type, 'models', model_urls[layer_type], expected_bytes=553436134
+        model_saved_name[layer_type], 'models', model_urls[layer_type]
     )
-    npz = np.load(os.path.join('models', '%s_weights.npz' % layer_type))
-    ## get weight list
     weights = []
-    for val in sorted(npz.items()):
-        logging.info("  Loading weights %s in %s" % (str(val[1].shape), val[0]))
-        weights.append(val[1])
-        if len(model.weights) == len(weights):
-            break
-    ## assign weight values
+    if layer_type == 'vgg16':
+        npz = np.load(os.path.join('models', model_saved_name[layer_type]))
+        # get weight list
+        for val in sorted(npz.items()):
+            logging.info("  Loading weights %s in %s" % (str(val[1].shape), val[0]))
+            weights.append(val[1])
+            if len(model.weights) == len(weights):
+                break
+    elif layer_type == 'vgg19':
+        npz = np.load(os.path.join('models', model_saved_name[layer_type]), encoding='latin1').item()
+        # get weight list
+        for val in sorted(npz.items()):
+            logging.info("  Loading %s in %s" % (str(val[1][0].shape), val[0]))
+            logging.info("  Loading %s in %s" % (str(val[1][1].shape), val[0]))
+            weights.extend(val[1])
+            if len(model.weights) == len(weights):
+                break
+    # assign weight values
     assign_weights(sess, weights, model)
     del weights
 
@@ -303,7 +239,29 @@ def VGG_static(layer_type, batch_norm=False, end_with='outputs', name=None):
     return M
 
 
-def vgg11(pretrained=False, end_with='outputs'):
+def vgg16(pretrained=False, end_with='outputs', sess=None):
+    if context.default_execution_mode == context.EAGER_MODE:
+        model = VGG(layer_type='vgg16', batch_norm=False, end_with=end_with)
+    else:
+        model = VGG_static(layer_type='vgg16', batch_norm=False, end_with=end_with)
+    if pretrained:
+        # model.restore_weights()
+        restore_model(model, layer_type='vgg16', sess=sess)
+    return model
+
+
+def vgg19(pretrained=False, end_with='outputs', sess=None):
+    if context.default_execution_mode == context.EAGER_MODE:
+        model = VGG(layer_type='vgg19', batch_norm=False, end_with=end_with)
+    else:
+        model = VGG_static(layer_type='vgg19', batch_norm=False, end_with=end_with)
+    if pretrained:
+        # model.restore_weights()
+        restore_model(model, layer_type='vgg19', sess=sess)
+    return model
+
+# models without pretrained parameters
+'''def vgg11(pretrained=False, end_with='outputs'):
     model = VGG(layer_type='vgg11', batch_norm=False, end_with=end_with)
     if pretrained:
         model.restore_weights()
@@ -331,26 +289,8 @@ def vgg13_bn(pretrained=False, end_with='outputs'):
     return model
 
 
-def vgg16(pretrained=False, end_with='outputs', sess=None):
-    if context.default_execution_mode == context.EAGER_MODE:
-        model = VGG(layer_type='vgg16', batch_norm=False, end_with=end_with)
-    else:
-        model = VGG_static(layer_type='vgg16', batch_norm=False, end_with=end_with)
-    if pretrained:
-        # model.restore_weights()
-        restore_model(model, layer_type='vgg16', sess=sess)
-    return model
-
-
 def vgg16_bn(pretrained=False, end_with='outputs'):
     model = VGG(layer_type='vgg16_bn', batch_norm=True, end_with=end_with)
-    if pretrained:
-        model.restore_weights()
-    return model
-
-
-def vgg19(pretrained=False, end_with='outputs'):
-    model = VGG(layer_type='vgg19', batch_norm=False, end_with=end_with)
     if pretrained:
         model.restore_weights()
     return model
@@ -361,4 +301,5 @@ def vgg19_bn(pretrained=False, end_with='outputs'):
     if pretrained:
         model.restore_weights()
     return model
+'''
 

@@ -1692,7 +1692,6 @@ def assign_weights(sess, weights, network):
     """
     ops = []
     for idx, param in enumerate(weights):
-        # ops.append(network.all_params[idx].assign(param))
         ops.append(network.weights[idx].assign(param))
     if sess is not None:
         sess.run(ops)

@@ -301,7 +301,7 @@ class Layer(object):
         :param inputs_shape: tuple
         :return: void
         """
-        raise Exception("The build_weights method must be implemented by inherited class")
+        raise Exception("The build(self, inputs_shape) method must be implemented by inherited class")
 
     @abstractmethod
     def forward(self, inputs):
@@ -381,16 +381,17 @@ class Layer(object):
         reprstr = "Layer"
         return reprstr
 
-    def __str__(self):
-
-        if self.outputs is not None:
-            _outputs_shape = self._outputs_shape
-            if _outputs_shape[0] == 1:
-                _outputs_shape[0] = "batch_size"
-        else:
-            _outputs_shape = "unknown for unbuilt layer"
-        return "  {} ({}) outputs_shape: {}".format(self.__class__.__name__, self.name, _outputs_shape)
-        # self._outputs_shape)#outputs.get_shape().as_list())
+    # FIXME : No need for __str__ given that we have __repr__
+    # def __str__(self):
+    #
+    #     if self.outputs is not None:
+    #         _outputs_shape = self._outputs_shape
+    #         if _outputs_shape[0] == 1:
+    #             _outputs_shape[0] = "batch_size"
+    #     else:
+    #         _outputs_shape = "unknown for unbuilt layer"
+    #     return "  {} ({}) outputs_shape: {}".format(self.__class__.__name__, self.name, _outputs_shape)
+    #     # self._outputs_shape)#outputs.get_shape().as_list())
 
     # def __getitem__(self, key):
     #
@@ -646,13 +647,18 @@ class LayerList(Layer):
         super(LayerList, self).__init__(name=name)
         self.layers = layers
 
+        is_built = True
         for layer in self.layers:
+            if layer._built == False:
+                is_built = False
             if layer._built == True and layer.weights is not None:
                 # some layers in the list passed in have already been built
                 # e.g. using input shape to construct layers in dynamic eager
                 if self._weights == None:
                     self._weights = list()
                 self._weights.extend(layer.weights)
+        if is_built == True:
+            self._built = True
 
         logging.info(
             "LayerList %s including layers [%s]" %

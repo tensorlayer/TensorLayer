@@ -105,7 +105,7 @@ class Dense(Layer):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
         s = ('{classname}(n_units={n_units}, ' + actstr)
         if self.name is not None:
-            s += ', name={name}'
+            s += ', name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
@@ -129,8 +129,6 @@ class Dense(Layer):
     '''
 
     def build(self, inputs_shape):
-        # import ipdb
-        # ipdb.set_trace()
         if self.in_channels is None and len(inputs_shape) != 2:
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
         if self.in_channels:

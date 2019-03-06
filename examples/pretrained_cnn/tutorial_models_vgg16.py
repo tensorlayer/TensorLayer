@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 """VGG-16 for ImageNet using TL models."""
 
-import sys
-sys.path.append("/home/wurundi/PycharmProjects/tensorlayer2")
-# import ipdb
 
 import time
 import numpy as np
@@ -20,9 +17,6 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 
 # get the whole model
 vgg = tl.models.vgg16(pretrained=True)
-
-# restore pre-trained VGG parameters
-vgg.restore_weights()
 
 img1 = tl.vis.read_image('data/tiger.jpeg')
 img1 = tl.prepro.imresize(img1, (224, 224))

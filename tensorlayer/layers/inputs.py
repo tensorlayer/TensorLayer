@@ -42,7 +42,7 @@ class Input(Layer):
     def __repr__(self):
         s = 'Input(shape=%s' % str(self.shape)
         if self.name is not None:
-            s += (', name=%s' % self.name)
+            s += (', name=\'%s\'' % self.name)
         s += ')'
         return s
 
