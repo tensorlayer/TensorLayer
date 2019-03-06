@@ -60,7 +60,7 @@ class RNN(Layer):
         If None, `initial_state` is zero state.
         In dynamic eager mode, `initial_state` can be updated when it is called in customised forward().
     return_last : boolean
-        Whether return last output or all outputs in each step.
+        Whether return last output or all outputs in a sequence.
             - If True, return the last output, "Sequence input and single output"
             - If False, return all outputs, "Synced sequence input and output"
             - In other word, if you want to stack more RNNs on this layer, set to False.
@@ -70,6 +70,9 @@ class RNN(Layer):
             - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
         In dynamic eager mode, `return_seq_2d` can be updated when it is called in customised forward().
+    return_state: boolean
+        Whether to return the last state of the RNN cell.
+        In dynamic eager mode, `return_state` can be updated when it is called in customised forward().
     name : str
         A unique layer name.
 
@@ -156,6 +159,7 @@ class RNN(Layer):
             initial_state=None,
             return_last=False,
             return_seq_2d=False,
+            return_state=False,
             name=None, # 'rnn'
     ):
 
@@ -165,13 +169,14 @@ class RNN(Layer):
         super(RNN, self).__init__(name=name)
 
         self.cell_fn = cell_fn
-        self.cell_init_args = cell_init_args
+        self.cell_init_args = cell_init_args if cell_init_args is not None else {}
         self.n_hidden = n_hidden
         self.initializer = initializer
         self.n_steps = n_steps
         self.initial_state = initial_state
         self.return_last = return_last
         self.return_seq_2d = return_seq_2d
+        self.return_state = return_state
 
         if 'GRU' in cell_fn.__name__:
             try:
@@ -281,8 +286,6 @@ class RNN(Layer):
                 # 3D Tensor [batch_size, n_steps, n_hidden]
                 outputs = tf.reshape(tf.concat(outputs, 1), [-1, self.n_steps, self.n_hidden])
 
-        self.final_state = state
-
         '''
         with tf.compat.v1.variable_scope(name, initializer=initializer) as vs:
             for time_step in range(n_steps):
@@ -314,7 +317,11 @@ class RNN(Layer):
 
         self.final_state = state
         '''
-        return outputs
+
+        if self.return_state:
+            return outputs, state
+        else:
+            return outputs
 
 
 

@@ -99,8 +99,8 @@ class Layer_Core_Test(CustomTestCase):
         self.assertEqual(self.dense2._inputs_shape, [self.batch_size, 800])
         self.assertEqual(self.dense2._outputs_shape, [self.batch_size, 10])
 
-        self.assertEqual(self.results_train._outputs_shape, [self.batch_size, 10])
-        self.assertEqual(self.results_test._outputs_shape, [self.batch_size, 10])
+        self.assertEqual(self.results_train.get_shape().as_list(), [self.batch_size, 10])
+        self.assertEqual(self.results_test.get_shape().as_list(), [self.batch_size, 10])
 
         # test printing
         print(self.innet)

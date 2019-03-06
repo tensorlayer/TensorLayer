@@ -12,63 +12,49 @@ import tensorlayer as tl
 from tests.utils import CustomTestCase
 
 
-class Layer_Recurrent_Test(CustomTestCase):
+class Layer_RNN_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
 
-        cls.net1_batch_size = 32
-        cls.net2_batch_size = 10
-        cls.net3_batch_size = 10
-        cls.net5_batch_size = 32
-        cls.net11_batch_size = 32
+        cls.batch_size = 2
 
-        cls.vocab_size = 30
-        cls.hidden_size = 20
-        cls.image_size = 100
-        cls.embedding_size = 20
+        cls.vocab_size = 20
+        cls.embedding_size = 4
 
-        cls.num_steps = 5
-
-        cls.keep_prob = 0.8
-        cls.is_train = True
+        cls.hidden_size = 3
+        cls.num_steps = 6
 
         # =============================== RNN encoder ===============================
 
-        input_data = tf.placeholder(tf.int32, [cls.net1_batch_size, cls.num_steps])
+        cls.net_in = tl.layers.Input([cls.batch_size, cls.num_steps, cls.embedding_size])
+        cls.net_out = tl.layers.RNN(
+            cell_fn=tf.nn.rnn_cell.BasicRNNCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps,
+            return_last=False, return_seq_2d=False, return_state=True, name='lstm'
+        )(cls.net_in)
+        cls.net_out.cell._kernel = tf.constant(value=0.1, shape=cls.net_out.cell._kernel.get_shape())
+        cls.net_out.cell._bias = tf.zeros(shape=cls.net_out.cell._bias.get_shape())
+        cls.rnn_model = tl.models.Model(inputs=cls.net_in, outputs=cls.net_out, name='rnn')
+        print(cls.rnn_model)
 
-        net1 = tl.layers.EmbeddingInputlayer(
-            inputs=input_data, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='embedding'
-        )
-        net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop1')
-        net1 = tl.layers.RNNLayer(
-            net1, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps,
-            return_last=False, name='lstm1'
-        )
 
-        # lstm1 = net1
+        cls.keras_net_in = tf.keras.Input(shape=[cls.num_steps, cls.embedding_size], batch_size=cls.batch_size)
+        cls.keras_net_rnn = tf.keras.layers.SimpleRNN(
+            cls.hidden_size, return_sequences=True, return_state=True,
+            kernel_initializer=tf.keras.initializers.Constant(value=0.1),
+            recurrent_initializer=tf.keras.initializers.Identity(),
+            use_bias=False,
+            bias_initializer=None,
+        )(cls.keras_net_in)
+        cls.keras_rnn_model = tf.keras.Model(inputs=cls.keras_net_in, outputs=cls.keras_net_rnn)
+        cls.keras_rnn_model.compile(optimizer='adam',
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
 
-        net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop2')
-        net1 = tl.layers.RNNLayer(
-            net1, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps,
-            return_last=True, name='lstm2'
-        )
 
-        # lstm2 = net1
-
-        net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop3')
-        net1 = tl.layers.DenseLayer(net1, n_units=cls.vocab_size, name='output')
-
-        net1.print_layers()
-        net1.print_params(False)
-
-        cls.net1_shape = net1.outputs.get_shape().as_list()
-        cls.net1_layers = net1.all_layers
-        cls.net1_params = net1.all_params
-        cls.net1_n_params = net1.count_params()
-
+        '''
         # =============================== CNN+RNN encoder ===============================
-
+        
         x2 = tf.placeholder(tf.float32, shape=[cls.net2_batch_size, cls.image_size, cls.image_size, 1])
         net2 = tl.layers.InputLayer(x2, name='in')
 
@@ -305,11 +291,56 @@ class Layer_Recurrent_Test(CustomTestCase):
         cls.net11_layers = net11.all_layers
         cls.net11_params = net11.all_params
         cls.net11_n_params = net11.count_params()
+        '''
 
     @classmethod
     def tearDownClass(cls):
         tf.reset_default_graph()
 
+    def test_shape(self):
+        self.assertEqual(self.net_out.outputs[0].get_shape().as_list(), [self.batch_size, self.num_steps, self.hidden_size])
+        self.assertEqual(self.net_out.outputs[1].get_shape().as_list(), [self.batch_size, self.hidden_size])
+
+    def test_value(self):
+        import numpy as np
+
+        data = tf.placeholder(tf.float32, shape=[self.batch_size, self.num_steps, self.embedding_size])
+        fake_data = np.random.normal(size=[self.batch_size, self.num_steps, self.embedding_size])
+
+        out, state = self.rnn_model(data, is_train=True)
+
+        with tf.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+            tl_out, tl_state = sess.run([out, state], feed_dict={data: fake_data})
+
+        kr_out, kr_state = self.keras_rnn_model.predict(fake_data)
+        self.assertEqual(kr_out.shape, tl_out.shape)
+        self.assertEqual(kr_state.shape, tl_state.shape)
+        # self.assertTrue(np.array_equal(kr_out[:,0,:], tl_out[:,0,:]))
+
+    def test_special_cases(self):
+        try:
+            self.net_out = tl.layers.RNN(cell_fn=None)
+        except Exception as e:
+            print(e)
+
+
+    def test_branches(self):
+        net_in = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
+        net_out_1 = tl.layers.RNN(
+            cell_fn=tf.nn.rnn_cell.BasicRNNCell, n_hidden=self.hidden_size, n_steps=self.num_steps,
+            return_last=False, return_seq_2d=False, return_state=True, name='lstm1'
+        )(net_in, return_last=True)
+        net_out_2 = tl.layers.RNN(
+            cell_fn=tf.nn.rnn_cell.BasicRNNCell, n_hidden=self.hidden_size, n_steps=self.num_steps,
+            return_last=False, return_seq_2d=True, return_state=False, name='lstm2'
+        )(net_in)
+
+        rnn_model = tl.models.Model(inputs=net_in, outputs=[net_out_1, net_out_2], name='rnn2')
+        print(rnn_model)
+
+
+    '''
     def test_net1(self):
         self.assertEqual(self.net1_shape, [self.net1_batch_size, self.vocab_size])
         self.assertEqual(len(self.net1_layers), 7)
@@ -370,6 +401,7 @@ class Layer_Recurrent_Test(CustomTestCase):
         self.assertEqual(len(self.net11_layers), 5)
         self.assertEqual(len(self.net11_params), 11)
         self.assertEqual(self.net11_n_params, 5293200)
+    '''
 
 
 if __name__ == '__main__':
