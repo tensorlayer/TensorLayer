@@ -77,7 +77,7 @@ class PoolLayer(Layer):
     def __repr__(self):
         s = '{classname}(pool={poolname}, ksize={strides}, padding={padding}'
         if self.name is not None:
-            s += ', name={name}'
+            s += ', name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, poolname=self.pool.__name__, **self.__dict__)
 
@@ -131,7 +131,7 @@ class MaxPool1d(Layer):
         s = ('{classname}(filter_size={filter_size}'
              ', strides={strides}, padding={padding}')
         if self.name is not None:
-            s += ', name={name}'
+            s += ', name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
@@ -226,7 +226,7 @@ class MeanPool1d(Layer):
         s = ('{classname}(filter_size={filter_size}'
              ', strides={strides}, padding={padding}')
         if self.name is not None:
-            s += ', name={name}'
+            s += ', name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
@@ -300,7 +300,7 @@ class MaxPool2d(Layer):
         s = ('{classname}(filter_size={filter_size}'
              ', strides={strides}, padding={padding}')
         if self.name is not None:
-            s += ', name={name}'
+            s += ', name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
@@ -377,7 +377,7 @@ class MeanPool2d(Layer):
         s = ('{classname}(filter_size={filter_size}'
              ', strides={strides}, padding={padding}')
         if self.name is not None:
-            s += ', name={name}'
+            s += ', name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
@@ -452,7 +452,7 @@ class MaxPool3d(Layer):
         s = ('{classname}(filter_size={filter_size}'
              ', strides={strides}, padding={padding}')
         if self.name is not None:
-            s += ', name={name}'
+            s += ', name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
@@ -535,7 +535,7 @@ class MeanPool3d(Layer):
         s = ('{classname}(filter_size={filter_size}'
              ', strides={strides}, padding={padding}')
         if self.name is not None:
-            s += ', name={name}'
+            s += ', name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
@@ -594,7 +594,7 @@ class GlobalMaxPool1d(Layer):
     def __repr__(self):
         s = '{classname}('
         if self.name is not None:
-            s += 'name={name}'
+            s += 'name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
@@ -646,7 +646,7 @@ class GlobalMeanPool1d(Layer):
     def __repr__(self):
         s = '{classname}('
         if self.name is not None:
-            s += 'name={name}'
+            s += 'name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
@@ -698,7 +698,7 @@ class GlobalMaxPool2d(Layer):
     def __repr__(self):
         s = '{classname}('
         if self.name is not None:
-            s += 'name={name}'
+            s += 'name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
@@ -749,7 +749,7 @@ class GlobalMeanPool2d(Layer):
     def __repr__(self):
         s = '{classname}('
         if self.name is not None:
-            s += 'name={name}'
+            s += 'name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
@@ -801,7 +801,7 @@ class GlobalMaxPool3d(Layer):
     def __repr__(self):
         s = '{classname}('
         if self.name is not None:
-            s += ', name={name}'
+            s += ', name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
@@ -853,7 +853,7 @@ class GlobalMeanPool3d(Layer):
     def __repr__(self):
         s = '{classname}('
         if self.name is not None:
-            s += 'name={name}'
+            s += 'name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 

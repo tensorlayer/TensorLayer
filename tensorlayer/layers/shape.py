@@ -47,7 +47,7 @@ class Flatten(Layer):
     def __repr__(self):
         s = '{classname}('
         if self.name is not None:
-            s += 'name={name}'
+            s += 'name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 

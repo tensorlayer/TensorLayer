@@ -105,7 +105,7 @@ class Dense(Layer):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
         s = ('{classname}(n_units={n_units}, ' + actstr)
         if self.name is not None:
-            s += ', name={name}'
+            s += ', name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
