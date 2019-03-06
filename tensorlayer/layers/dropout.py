@@ -36,6 +36,10 @@ class Dropout(Layer):
         super(Dropout, self).__init__(name)
         self.keep = keep
         self.seed = seed
+
+        self.build()
+        self._built = True
+
         logging.info("Dropout %s: keep: %f " % (self.name, self.keep))
 
     '''
@@ -50,7 +54,7 @@ class Dropout(Layer):
         return outputs
     '''
 
-    def build(self, inputs_shape):
+    def build(self, inputs_shape=None):
         # return inputs_shape
         pass
 

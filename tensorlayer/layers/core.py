@@ -647,13 +647,18 @@ class LayerList(Layer):
         super(LayerList, self).__init__(name=name)
         self.layers = layers
 
+        is_built = True
         for layer in self.layers:
+            if layer._built == False:
+                is_built = False
             if layer._built == True and layer.weights is not None:
                 # some layers in the list passed in have already been built
                 # e.g. using input shape to construct layers in dynamic eager
                 if self._weights == None:
                     self._weights = list()
                 self._weights.extend(layer.weights)
+        if is_built == True:
+            self._built = True
 
         logging.info(
             "LayerList %s including layers [%s]" %

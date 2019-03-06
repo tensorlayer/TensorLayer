@@ -129,8 +129,6 @@ class Dense(Layer):
     '''
 
     def build(self, inputs_shape):
-        # import ipdb
-        # ipdb.set_trace()
         if self.in_channels is None and len(inputs_shape) != 2:
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
         if self.in_channels:

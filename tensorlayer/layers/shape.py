@@ -42,6 +42,10 @@ class Flatten(Layer):
     def __init__(self, name=None):  #'flatten'):
         # super(Flatten, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
+
+        self.build()
+        self._built = True
+
         logging.info("Flatten %s:" % (self.name))
 
     def __repr__(self):
@@ -51,7 +55,7 @@ class Flatten(Layer):
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
-    def build(self, inputs_shape):
+    def build(self, inputs_shape=None):
         pass
 
     def forward(self, inputs):
@@ -89,7 +93,10 @@ class Reshape(Layer):
         if not self.shape:
             raise ValueError("Shape list can not be empty")
 
-    def build(self, inputs_shape):
+        self.build()
+        self._built = True
+
+    def build(self, inputs_shape=None):
         pass
 
     def forward(self, inputs):
@@ -129,7 +136,10 @@ class Transpose(Layer):
         if self.perm is None:
             raise AssertionError("The `perm` argument cannot be None")
 
-    def build(self, inputs_shape):
+        self.build()
+        self._built = None
+
+    def build(self, inputs_shape=None):
         pass
 
     def forward(self, inputs):
