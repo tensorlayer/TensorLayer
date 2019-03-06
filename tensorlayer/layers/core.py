@@ -39,8 +39,8 @@ def _addindent(s_, numSpaces):
     s = first + '\n' + s
     return s
 
+
 class Layer(object):
-    #FIXME: documentation update needed
     """The basic :class:`Layer` class represents a single layer of a neural network.
 
     It should be subclassed when implementing new types of layers.
@@ -221,7 +221,6 @@ class Layer(object):
 
     @abstractmethod
     def forward(self, inputs):
-        # FIXME: documentation needed
         """
         An abstract method which should be overwritten in derived classes
         to define forward feeding operations of the layer.
@@ -253,20 +252,49 @@ class Layer(object):
 
 
 class ModelLayer(Layer):
-    # TODO: documentation
-    '''
-    Documentation pending
-    '''
+    """
+    The class :class:`ModelLayer` converts a :class:`Model` to a :class:`Layer` instance.
 
-    def __init__(self, model):
-        super(ModelLayer, self).__init__(name="%s_layer" % model.name)
+    Note that only a :class:`Model` with specified inputs and outputs can be converted to a :class:`ModelLayer`.
+    For example, a customized model in dynamic eager mode normally does NOT have specified inputs and outputs so the
+    customized model in dynamic eager mode can NOT be converted to a :class:`ModelLayer`.
+
+    Parameters
+    ----------
+    model: tl.models.Model
+        A model.
+    name : str or None
+        A unique layer name. If None, a unique name will be automatically assigned.
+
+    Methods
+    ---------
+    __init__()
+        Initializing the ModelLayer.
+    weights()
+        Same as the weights of the given model.
+    build()
+        Do nothing because the given model has already been built.
+    forward()
+        Forward the computation. Simply call the forward() of the given model.
+
+    """
+
+    def __init__(self, model, name=None):
+        """
+        Initializing the ModelLayer given a instance of Model.
+
+        :param model:  tl.models.Model
+        """
+        super(ModelLayer, self).__init__(name=name)
 
         self.model = model
 
         # Layer input outputs
-        # FIXME: model.inputs can be a list
-        self.inputs = model.inputs.outputs
-        # FIXME: model.outputs can be a list
+        if isinstance(model.inputs, list):
+            self.inputs = [t.outputs for t in model.inputs]
+        else:
+            self.inputs = model.inputs.outputs
+
         self.outputs = model.forward(self.inputs)
 
         self._input_layer = model.inputs
@@ -301,71 +329,55 @@ class ModelLayer(Layer):
         return self.model.forward(inputs)
 
     def _set_mode_for_layers(self, is_train):
+        """ Set training/evaluation mode for the ModelLayer."""
         self.is_train = is_train
         return self.model._set_mode_for_layers(is_train)
 
     def _release_memory(self):
-        '''
+        """
         WARINING: This function should be called with great caution.
 
-        self.inputs and self.outputs will be set as None but not deleted.
+        self.inputs and self.outputs will be set as None but not deleted in order to release memory.
+        """
 
-        '''
         super(ModelLayer, self)._release_memory()
         self.model.release_memory()
 
-'''
-class SequentialLayer(Layer):
-
-
-    def __init__(self, prev_layer, following_layers, name=None):
-
-        super(SequentialLayer, self).__init__(name=name)
-
-        # Layer input outputs
-        self.inputs = prev_layer.outputs
-        self._input_layer = prev_layer
-
-        # Layer weight state
-        self._weights = list()
-
-        # TODO: check type of following layers
-        self.following_layer = list()
-        in_layer = prev_layer
-        for layer in following_layers:
-            nlayer = layer(in_layer)
-            self.following_layer.append(nlayer)
-            self._weights.extend(nlayer.weights)
-            in_layer = nlayer
-
-        self.outputs = self.forward(self.inputs)
-
-        # Layer building state
-        self._built = True
-
-        logging.info(
-            "SequentialLayer %s including layers [%s]" %
-            (self.name, ', '.join([layer.name for layer in self.following_layer]))
-        )
-
-    def build(self, inputs_shape):
-        pass
-
-    def forward(self, inputs):
-        z = inputs
-        for layer in self.following_layer:
-            z = layer.forward(z)
-
-       return z
-'''
-
 
 class LayerList(Layer):
-    # TODO: documentation
-    '''
-    Documentation pending
-    '''
+    """
+    The class :class:`LayerList` is a linear stack of layers.
+
+    The :class:`LayerList` can be created by passing a list of layer instances.
+    The given layer instances will be automatically connected one by one.
+
+    Parameters
+    ----------
+    layers: list of Layer
+        A list of layers.
+    name : str or None
+        A unique layer name. If None, a unique name will be automatically assigned.
+
+    Methods
+    ---------
+    __init__()
+        Initializing the LayerList.
+    weights()
+        A collection of weights of all the layer instances.
+    build()
+        Build the LayerList. The layer instances will be connected automatically one by one.
+    forward()
+        Forward the computation. The computation will go through all layer instances.
+    """
+
     def __init__(self, layers:list, name=None):
+        """
+        Initializing the LayerList given a list of Layer.
+
+        :param layers: list of Layer
+        :param name: str or None
+        """
+
         super(LayerList, self).__init__(name=name)
         self.layers = layers
 
@@ -407,6 +419,9 @@ class LayerList(Layer):
         return tmpstr
 
     def build(self, inputs_shape):
+        """
+        Build the LayerList. The layer instances will be connected automatically one by one.
+        """
         in_layer = self._input_layer
         for layer in self.layers:
             is_build = layer._built
@@ -419,12 +434,16 @@ class LayerList(Layer):
             in_layer = nlayer
 
     def forward(self, inputs):
+        """
+        Forward the computation. The computation will go through all layer instances.
+        """
         z = inputs
         for layer in self.layers:
             z = layer.forward(z)
         return z
 
     def _set_mode_for_layers(self, is_train):
+        """Set training/evaluation mode for all layer instances."""
         self.is_train = is_train
         for layer in self.layers:
             if isinstance(layer, ModelLayer):
@@ -435,55 +454,12 @@ class LayerList(Layer):
                 layer.is_train = is_train
 
     def _release_memory(self):
-        '''
+        """
         WARINING: This function should be called with great caution.
 
         self.inputs and self.outputs will be set as None but not deleted.
-
-        '''
+        """
         super(LayerList, self)._release_memory()
         for layer in self.layers:
             layer._release_memory()
 
-
-
-# if __name__ == '__main__':
-#
-#     from tensorlayer.layers import Input, Dense, Dropout, LayerList
-#     from tensorlayer.models import Model
-#
-#     class mynet(Model):
-#
-#         def __init__(self):
-#             super(mynet, self).__init__()
-#
-#             self.layers = LayerList([
-#                 Input([None, 784]),
-#                 Dropout(keep=0.8),
-#                 Dense(n_units=800, act=tf.nn.relu, in_channels=784),
-#                 Dense(n_units=800, act=tf.nn.relu, in_channels=800)
-#             ])
-#
-#         def forward(self, x):
-#             z = x
-#             for i in range(3):
-#                 z = self.layers[i](z)
-#             return z
-#
-#     def get_model(inputs_shape):
-#         ni = Input(inputs_shape)
-#         nn = LayerList([
-#             Dropout(keep=0.8),
-#             Dense(n_units=800, act=tf.nn.relu),
-#             Dropout(keep=0.8),
-#             Dense(n_units=800, act=tf.nn.relu)
-#         ])(ni)
-#
-#         M = Model(inputs=ni, outputs=nn)
-#
-#         return M
-#
-#     #net = mynet()
-#     net = get_model([None, 784])
-#     print(net.weights)
-#     print(net.layer_dict['layerlist']._built)
