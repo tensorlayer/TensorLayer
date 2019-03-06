@@ -172,6 +172,10 @@ class Layer(object):
         # Layer building state
         self._built = False
 
+        # Layer nodes state
+        self._nodes = []
+        self._nodes_fixed = False
+
         # Layer weight state
         self._weights = None
 
@@ -200,72 +204,104 @@ class Layer(object):
     def weights(self):
         return self._weights
 
-    def __call__(self, prev_layer, **kwargs):
-
+    def __call__(self, inputs, **kwargs):
         if self.__class__.__name__ in tl.layers.inputs.__all__:
-            # 1. for input layers
-            # Input layers should use tf.convert_to_tensor to make sure the inputs is converted into tf.Tensor
-
-            # code in tl 1.0
-            # raise RuntimeError("Please use layers in `tl.layers.inputs` to convert Variable/Tensor/Placeholder/Numpy arrays to a TL layer")
-            # FIXME: not sure convert_to_tensor here or ask user to do it
-            self.inputs = tf.convert_to_tensor(prev_layer)
-            self._input_layer = None
-            self._built = True
-            self.build(self._inputs_shape)
-            self.outputs = self.forward(self.inputs, **kwargs)
-
-        elif isinstance(prev_layer, Layer):
-            # 2. for normal layer have only 1 input i.e. DenseLayer
-            # Hint : list(), dict() is pass by value (shallow), without them,
-            # it is pass by reference.
-
-            self.inputs = prev_layer.outputs
-            self._input_layer = prev_layer
-
-            if not self._built:
-                self.build(self._inputs_shape)
-                self._built = True
-
-            self.outputs = self.forward(self.inputs, **kwargs)
-            # self._outputs_shape = self.outputs.get_shape().as_list()
-
-            # TODO: need update
-            # self._add_layers(prev_layer.all_layers)
-            # self._add_weights(self._weights)
-            # self._add_weights(prev_layer.all_weights)
-            # self._add_dropout_layers(prev_layer.all_drop)
-
-        elif isinstance(prev_layer, list):
-            # 3. for layer have multiply inputs i.e. ConcatLayer
-
-            self.inputs = [layer.outputs for layer in prev_layer]
-            self._input_layer = prev_layer # FIXME: not sure how to deal with it
-
-            # FIXME: only support concat/elementwise, where build does nothing
-            if not self._built:
-                self._built = True
-
-            self.outputs = self.forward(self.inputs, **kwargs)
-
-            # TODO: need update
-            # self._add_layers(sum([l.all_layers for l in prev_layer], []))
-            # self._add_weights(sum([l.all_weights for l in prev_layer], []))
-            # self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
-
+            self.inputs = tf.convert_to_tensor(inputs)
         else:
-            # FIXME: not sure if there is other cases
-            pass
-            # elif prev_layer is not None:
-            #     # 4. tl.models
-            #     self._add_layers(prev_layer.all_layers)
-            #     self._add_weights(prev_layer.all_weights)
-            #     self._add_dropout_layers(prev_layer.all_drop)
-            #
-            #     if hasattr(prev_layer, "outputs"):
-            #         self.inputs = prev_layer.outputs
+            self.inputs = inputs
 
-        return self
+        if not self._built:
+            self.build(self._inputs_shape)
+            self._built = True
+
+        outputs = self.forward(self.inputs, **kwargs)
+
+        if not self._nodes_fixed:
+            self._add_node(self.inputs, outputs)
+        return outputs
+
+    def _add_node(self, input_tensors, output_tensors):
+        inputs_list = input_tensors if isinstance(input_tensors, list) else [input_tensors]
+        outputs_list = output_tensors if isinstance(output_tensors, list) else [output_tensors]
+
+        if not hasattr(input_tensors, '_info'):
+            # this should be the tensor for Input Layer
+            in_nodes = []
+        else:
+            in_nodes = [tensor._info[0] for tensor in inputs_list]
+        node_index = len(self._nodes)
+
+        new_node = LayerNode(self, node_index, in_nodes, inputs_list, outputs_list)
+        self._nodes.append(new_node)
+        for idx, tensor in enumerate(outputs_list):
+            tensor._info = (new_node, idx)
+
+    # def __call__(self, prev_layer, **kwargs):
+    #
+    #     if self.__class__.__name__ in tl.layers.inputs.__all__:
+    #         # 1. for input layers
+    #         # Input layers should use tf.convert_to_tensor to make sure the inputs is converted into tf.Tensor
+    #
+    #         # code in tl 1.0
+    #         # raise RuntimeError("Please use layers in `tl.layers.inputs` to convert Variable/Tensor/Placeholder/Numpy arrays to a TL layer")
+    #         # FIXME: not sure convert_to_tensor here or ask user to do it
+    #         self.inputs = tf.convert_to_tensor(prev_layer)
+    #         self._input_layer = None
+    #         self._built = True
+    #         self.build(self._inputs_shape)
+    #         self.outputs = self.forward(self.inputs, **kwargs)
+    #
+    #     elif isinstance(prev_layer, Layer):
+    #         # 2. for normal layer have only 1 input i.e. DenseLayer
+    #         # Hint : list(), dict() is pass by value (shallow), without them,
+    #         # it is pass by reference.
+    #
+    #         self.inputs = prev_layer.outputs
+    #         self._input_layer = prev_layer
+    #
+    #         if not self._built:
+    #             self.build(self._inputs_shape)
+    #             self._ built = True
+    #
+    #         self.outputs = self.forward(self.inputs, **kwargs)
+    #         # self._outputs_shape = self.outputs.get_shape().as_list()
+    #
+    #         # TODO: need update
+    #         # self._add_layers(prev_layer.all_layers)
+    #         # self._add_weights(self._weights)
+    #         # self._add_weights(prev_layer.all_weights)
+    #         # self._add_dropout_layers(prev_layer.all_drop)
+    #
+    #     elif isinstance(prev_layer, list):
+    #         # 3. for layer have multiply inputs i.e. ConcatLayer
+    #
+    #         self.inputs = [layer.outputs for layer in prev_layer]
+    #         self._input_layer = prev_layer # FIXME: not sure how to deal with it
+    #
+    #         # FIXME: only support concat/elementwise, where build does nothing
+    #         if not self._built:
+    #             self._built = True
+    #
+    #         self.outputs = self.forward(self.inputs, **kwargs)
+    #
+    #         # TODO: need update
+    #         # self._add_layers(sum([l.all_layers for l in prev_layer], []))
+    #         # self._add_weights(sum([l.all_weights for l in prev_layer], []))
+    #         # self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
+    #
+    #     else:
+    #         # FIXME: not sure if there is other cases
+    #         pass
+    #         # elif prev_layer is not None:
+    #         #     # 4. tl.models
+    #         #     self._add_layers(prev_layer.all_layers)
+    #         #     self._add_weights(prev_layer.all_weights)
+    #         #     self._add_dropout_layers(prev_layer.all_drop)
+    #         #
+    #         #     if hasattr(prev_layer, "outputs"):
+    #         #         self.inputs = prev_layer.outputs
+    #
+    #     return self
 
     def _release_memory(self):
         '''
@@ -539,6 +575,20 @@ class Layer(object):
     '''
 
 
+class LayerNode(object):
+    def __init__(self, layer, node_index, in_nodes, in_tensors, out_tensors):
+        self.layer = layer
+        self.node_index = node_index
+        self.in_nodes = in_nodes
+        self.out_nodes = []
+        self.in_tensors = in_tensors
+        self.out_tensors = out_tensors
+        self.name = layer.name + "_node_{}".format(node_index)
+
+        for node in self.in_nodes:
+            node.out_nodes.append(self)
+
+
 class ModelLayer(Layer):
     # TODO: documentation
     '''
@@ -732,45 +782,3 @@ class LayerList(Layer):
         for layer in self.layers:
             layer._release_memory()
 
-
-
-# if __name__ == '__main__':
-#
-#     from tensorlayer.layers import Input, Dense, Dropout, LayerList
-#     from tensorlayer.models import Model
-#
-#     class mynet(Model):
-#
-#         def __init__(self):
-#             super(mynet, self).__init__()
-#
-#             self.layers = LayerList([
-#                 Input([None, 784]),
-#                 Dropout(keep=0.8),
-#                 Dense(n_units=800, act=tf.nn.relu, in_channels=784),
-#                 Dense(n_units=800, act=tf.nn.relu, in_channels=800)
-#             ])
-#
-#         def forward(self, x):
-#             z = x
-#             for i in range(3):
-#                 z = self.layers[i](z)
-#             return z
-#
-#     def get_model(inputs_shape):
-#         ni = Input(inputs_shape)
-#         nn = LayerList([
-#             Dropout(keep=0.8),
-#             Dense(n_units=800, act=tf.nn.relu),
-#             Dropout(keep=0.8),
-#             Dense(n_units=800, act=tf.nn.relu)
-#         ])(ni)
-#
-#         M = Model(inputs=ni, outputs=nn)
-#
-#         return M
-#
-#     #net = mynet()
-#     net = get_model([None, 784])
-#     print(net.weights)
-#     print(net.layer_dict['layerlist']._built)
