@@ -224,8 +224,8 @@ class Layer(object):
         inputs_list = input_tensors if isinstance(input_tensors, list) else [input_tensors]
         outputs_list = output_tensors if isinstance(output_tensors, list) else [output_tensors]
 
-        if not hasattr(input_tensors, '_info'):
-            # this should be the tensor for Input Layer
+        if self.__class__.__name__ in tl.layers.inputs.__all__:
+            # for InputLayer, there should be no in_nodes
             in_nodes = []
         else:
             in_nodes = [tensor._info[0] for tensor in inputs_list]
@@ -585,8 +585,14 @@ class LayerNode(object):
         self.out_tensors = out_tensors
         self.name = layer.name + "_node_{}".format(node_index)
 
-        for node in self.in_nodes:
-            node.out_nodes.append(self)
+        # for node in self.in_nodes:
+        #     node.out_nodes.append(self)
+
+    def __call__(self, inputs, **kwargs):
+        outputs = self.layer.forward(inputs, **kwargs)
+        self.in_tensors = inputs if isinstance(inputs, list) else [inputs]
+        self.out_tensors = outputs if isinstance(outputs, list) else [outputs]
+        return outputs
 
 
 class ModelLayer(Layer):
