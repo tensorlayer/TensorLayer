@@ -38,11 +38,11 @@ class InputLayer(Layer):
 
         shape_without_none = [_ if _ is not None else 1 for _ in shape]
         # self.outputs = self.forward(tl.initializers.random_normal()(shape_without_none))
-        self.outputs = self.forward(tl.initializers.ones()(shape_without_none, dtype=dtype))
+        outputs = self.forward(tl.initializers.ones()(shape_without_none, dtype=dtype))
 
         self._built = True
 
-        self._add_node(self.outputs, self.outputs)
+        self._add_node(outputs, outputs)
 
     def __repr__(self):
         s = 'Input(shape=%s' % str(self.shape)
@@ -52,7 +52,7 @@ class InputLayer(Layer):
         return s
 
     def __call__(self, inputs):
-        return super(InputLayer, self).__call__(prev_layer=inputs)
+        return super(InputLayer, self).__call__(inputs)
 
     def build(self, inputs_shape):
         # FIXME: documentation need double check
