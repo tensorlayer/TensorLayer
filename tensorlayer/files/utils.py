@@ -51,6 +51,7 @@ from tensorlayer import nlp
 from tensorlayer import utils
 from tensorlayer import visualize
 
+
 __all__ = [
     'assign_weights',
     'del_file',
@@ -86,6 +87,150 @@ __all__ = [
     #'load_graph_and_params',
 ]
 
+
+def save_graph(network=None, name='graph.pkl'):
+    """Save the architecture of TL model into a pickle file. No parameters be saved.
+
+    Parameters
+    -----------
+    network : TensorLayer layer
+        The network to save.
+    name : str
+        The name of graph file.
+
+    Examples
+    --------
+    Save the architecture
+    >>> tl.files.save_graph(net_test, 'graph.pkl')
+
+    Load the architecture in another script (no parameters restore)
+    >>> net = tl.files.load_graph('graph.pkl')
+    """
+    if network.outputs is None:
+        raise AssertionError(
+            "save_graph not support dynamic mode yet"
+        )
+
+    logging.info("[*] Saving TL graph into {}".format(name))
+    saved_file = dict()
+    saved_file.update({"inputs": network.inputs.all_graphs})
+    saved_file.update({"outputs": network.outputs.all_graphs})
+    saved_file.update({"name": network.name})
+    with open(name, 'wb') as file:
+        # pickle.dumps(graphs, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(saved_file, file, protocol=pickle.HIGHEST_PROTOCOL)
+    logging.info("[*] Saved graph")
+
+
+def _graph2net(graphs):
+    """Inputs graphs, returns network."""
+    input_list = list()
+    layer_dict = dict()
+    # prev_layer_dict = dict()
+    # loop every layers
+    for graph in graphs:
+        # get current layer class
+        name, layer_kwargs = graph
+        layer_kwargs = dict(
+            layer_kwargs
+        )  # when InputLayer is used for twice, if we "pop" elements, the second time to use it will have error.
+
+        layer_class = layer_kwargs.pop('class')  # class of current layer
+        prev_layer = layer_kwargs.pop(
+            'prev_layer'
+        )  # name of previous layer : str =one layer   list of str = multiple layers
+        # prev_layer_dict.update({name: prev_layer})
+
+        # convert function dictionary into real function
+        for key in layer_kwargs:  # set input placeholder into the lastest layer
+            fn_dict = layer_kwargs[key]
+            if key in ['act']:
+                module_path = fn_dict['module_path']
+                func_name = fn_dict['func_name']
+                lib = importlib.import_module(module_path)
+                fn = getattr(lib, func_name)
+                layer_kwargs[key] = fn
+                # print(key, layer_kwargs[key])
+        # print(name, prev_layer, layer_class, layer_kwargs)
+
+        # if layer_class == 'placeholder':  # create placeholder
+        #     if name not in input_list:  # if placeholder is not exist
+        #         dtype = layer_kwargs.pop('dtype')
+        #         shape = layer_kwargs.pop('shape')
+        #         _placeholder = tf.placeholder(eval('tf.' + dtype), shape,
+        #                                       name=name.split(':')[0])  # globals()['tf.'+dtype]
+        #         # _placeholder = tf.placeholder(ast.literal_eval('tf.' + dtype), shape, name=name.split(':')[0])
+        #         # input_dict.update({name: _placeholder})
+        #         input_list.append((name, _placeholder))
+        # else:  # create networkz
+        if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
+            raise NotImplementedError("TL graph does not support this layer at the moment: %s" % (layer_class))
+        else:  # normal layers e.g. Conv2d
+            # try:  # if previous layer is layer
+            #     net = layer_dict[prev_layer]
+            #     layer_kwargs.update({'prev_layer': net})
+            # except Exception:  # if previous layer is input placeholder
+            #     for n, t in input_list:
+            #         if n == prev_layer:
+            #             _placeholder = t
+            #     layer_kwargs.update({'inputs': _placeholder})
+            layer_kwargs.update({'name': name})
+            net = eval('tl.layers.' + layer_class)(**layer_kwargs)
+            if prev_layer is not None:
+                net(layer_dict[prev_layer])
+            else:
+                net._input_layer = None
+            layer_dict.update({name: net})
+
+    # rename placeholder e.g. x:0 --> x
+    # for i, (n, t) in enumerate(input_list):
+    #     n_new = n.replace(':', '')
+    #     if n_new[-1] == '0':
+    #         n_new = n_new[:-1]
+    #     input_list[i] = (n_new, t)
+    #     # print(n_new, t)
+
+    # put placeholder into network attributes
+    # for n, t in input_list:
+    #     # print(name, n, t)
+    #     layer_dict[name].__dict__.update({n: t})
+    #     logging.info("[*] attributes: {} {} {}".format(n, t.get_shape().as_list(), t.dtype.name))
+    # for key in input_dict: # set input placeholder into the lastest layer
+    #     layer_dict[name].globals()[key] = input_dict[key]
+    #     logging.info("  attributes: {:3} {:15} {:15}".format(n, input_dict[key].get_shape().as_list(), input_dict[key].dtype.name))
+    logging.info("[*] Load graph finished")
+    # return the lastest layer as network
+
+    return layer_dict[name]
+
+
+def load_graph(name='graph.pkl'):
+    """Restore TL model archtecture from a a pickle file. No parameters be restored.
+
+    Parameters
+    -----------
+    name : str
+        The name of graph file.
+
+    Returns
+    --------
+    network : TensorLayer layer
+        The input placeholder will become the attributes of the returned TL layer object.
+
+    Examples
+    --------
+    - see ``tl.files.save_graph``
+    """
+    logging.info("[*] Loading TL graph from {}".format(name))
+    with open(name, 'rb') as file:
+        saved_file = pickle.load(file)
+
+    inputs = _graph2net(saved_file["inputs"])
+    outputs = _graph2net(saved_file["outputs"])
+    model_name = saved_file["name"]
+    from tensorlayer.models import Model
+    M = Model(inputs=inputs, outputs=outputs, name=model_name)
+    return M
 
 # Load dataset functions
 def load_mnist_dataset(shape=(-1, 784), path='data'):

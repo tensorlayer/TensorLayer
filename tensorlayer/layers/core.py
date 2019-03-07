@@ -108,6 +108,17 @@ class Layer(object):
         # Layer training state
         self.is_train = True
 
+        self.add_prev = False
+        self.graph = {}
+        self.graph.update({'class': self.__class__.__name__.split('.')[-1]})
+        self.all_graphs = list()
+        self.layer_args = self._get_init_args(skip=3)
+        self.graph.update(self.layer_args)
+        if self.__class__.__name__ in tl.layers.inputs.__all__:
+            self.graph.update({'prev_layer': None})
+            self._add_graphs((self.name, self.graph))
+            self.add_prev = True
+
     @property
     def _inputs_shape(self):
         if self.inputs is not None:
@@ -162,6 +173,12 @@ class Layer(object):
                 self.build(self._inputs_shape)
                 self._built = True
 
+            if self.add_prev == False:
+                self.graph.update({'prev_layer': prev_layer.name})
+                self._add_graphs(prev_layer.all_graphs)
+                self._add_graphs((self.name, self.graph))
+                self.add_prev = True
+
             self.outputs = self.forward(self.inputs, **kwargs)
 
         elif isinstance(prev_layer, list):
@@ -173,6 +190,15 @@ class Layer(object):
             # FIXME: only support concat/elementwise, where build does nothing
             if not self._built:
                 self._built = True
+
+            if self.add_prev == False:
+                _list = []
+                for layer in prev_layer:
+                    _list.append(layer.name)
+                self.graph.update({'prev_layer': _list})
+                self._add_graphs(sum([l.all_graphs for l in prev_layer], []))
+                self._add_graphs((self.name, self.graph))
+                self.add_prev = True
 
             self.outputs = self.forward(self.inputs, **kwargs)
 
@@ -230,6 +256,7 @@ class Layer(object):
         """
         raise Exception("The forward method must be implemented by inherited class")
 
+    @abstractmethod
     def __repr__(self):
         reprstr = "Layer"
         return reprstr
@@ -239,6 +266,44 @@ class Layer(object):
 
     def __delitem__(self, key):
         raise TypeError("The Layer API does not allow to use the method: `__delitem__`")
+
+    @protected_method
+    def _get_init_args(self, skip=3):
+        """Get all arguments of current layer for saving the graph."""
+        stack = inspect.stack()
+
+        if len(stack) < skip + 1:
+            raise ValueError("The length of the inspection stack is shorter than the requested start position.")
+
+        args, _, _, values = inspect.getargvalues(stack[skip][0])
+
+        params = {}
+
+        for arg in args:
+
+            # some args dont need to be saved into the graph. e.g. the input placeholder
+            if values[arg] is not None and arg not in ['self', 'prev_layer', 'inputs']:
+
+                val = values[arg]
+
+                # change function (e.g. act) into dictionary of module path and function name
+                if inspect.isfunction(val):
+                    params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
+                # ignore more args e.g. TF class
+                elif arg.endswith('init'):
+                    continue
+                # for other data type, save them directly
+                else:
+                    params[arg] = val
+
+        return params
+
+    @protected_method
+    def _add_graphs(self, graphs):
+        if isinstance(graphs, list):
+            self.all_graphs.extend(list(graphs))
+        else:
+            self.all_graphs.append(graphs)
 
     @private_method
     def _argument_dict_checkup(self, args):
