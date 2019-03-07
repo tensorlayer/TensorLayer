@@ -5,6 +5,7 @@ from tensorlayer.layers import Layer, ModelLayer
 from tensorlayer import logging
 from queue import Queue
 from tensorlayer.files import utils
+from tensorlayer.files.utils import save_graph, load_graph
 import os
 
 __all__ = [
@@ -478,6 +479,18 @@ class Model():
                         getattr(self, attr)._release_memory()
                 except Exception:
                     pass
+
+    def save(self, filepath):
+        if self.outputs is None:
+            raise AssertionError(
+                "save_graph not support dynamic mode yet"
+            )
+        save_graph(network=self, name=filepath)
+
+
+    def load(filepath):
+        return load_graph(name=filepath)
+
 
     def save_weights(self, filepath, sess=None, format='hdf5'):
         # TODO: Documentation pending

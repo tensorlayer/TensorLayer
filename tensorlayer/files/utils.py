@@ -81,8 +81,8 @@ __all__ = [
     'save_weights_to_hdf5',
     'load_hdf5_to_weights_in_order',
     'load_hdf5_to_weights',
-    #'save_graph',
-    #'load_graph',
+    'save_graph',
+    'load_graph',
     #'save_graph_and_params',
     #'load_graph_and_params',
 ]
