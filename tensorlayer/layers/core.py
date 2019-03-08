@@ -154,15 +154,18 @@ class Layer(object):
 
         # Layer input outputs
         # TODO: note that in dynamic network, inputs and outputs can be both None, may cause problem, test needed
-        self.inputs = None
-        self.outputs = None
-        self._inputs_shape_mem = None
-        self._outputs_shape_mem = None
+        # FIXME : remove self.inputs & self.outputs in Layer Core, correct?
+        # self.inputs = None
+        # self.outputs = None
+        # self._inputs_shape_mem = None
+        # self._outputs_shape_mem = None
 
         # self._inputs_shape = None
         # self._outputs_shape = None
 
-        self._input_layer = None
+        # FIXME : remove _input_layer, correct?
+        # TODO : need modification in ModelLayer, discussion needed @jingqing
+        # self._input_layer = None
 
         # TODO: need to update
         # self.all_layers = list()  # we change layers --> outputs ?
@@ -182,23 +185,32 @@ class Layer(object):
         # Layer training state
         self.is_train = True
 
-    @property
-    def _inputs_shape(self):
-        if self.inputs is not None:
-            if isinstance(self.inputs, list):
-                self._inputs_shape_mem = [t.get_shape().as_list() for t in self.inputs]
-            else:
-                self._inputs_shape_mem = self.inputs.get_shape().as_list()
-        return self._inputs_shape_mem
+    # FIXME : remove self.inputs & self.outputs in Layer Core, correct?
+    # @property
+    # def _inputs_shape(self):
+    #     if self.inputs is not None:
+    #         if isinstance(self.inputs, list):
+    #             self._inputs_shape_mem = [t.get_shape().as_list() for t in self.inputs]
+    #         else:
+    #             self._inputs_shape_mem = self.inputs.get_shape().as_list()
+    #     return self._inputs_shape_mem
+    #
+    # @property
+    # def _outputs_shape(self):
+    #     if self.outputs is not None:
+    #         if isinstance(self.outputs, list):
+    #             self._outputs_shape_mem = [t.get_shape().as_list() for t in self.outputs]
+    #         else:
+    #             self._outputs_shape_mem = self.outputs.get_shape().as_list()
+    #     return self._outputs_shape_mem
 
-    @property
-    def _outputs_shape(self):
-        if self.outputs is not None:
-            if isinstance(self.outputs, list):
-                self._outputs_shape_mem = [t.get_shape().as_list() for t in self.outputs]
-            else:
-                self._outputs_shape_mem = self.outputs.get_shape().as_list()
-        return self._outputs_shape_mem
+    @staticmethod
+    def _compute_shape(tensors):
+        if isinstance(tensors, list):
+            shape_mem = [t.get_shape().as_list() for t in tensors]
+        else:
+            shape_mem = tensors.get_shape().as_list()
+        return shape_mem
 
     @property
     def weights(self):
@@ -206,18 +218,24 @@ class Layer(object):
 
     def __call__(self, inputs, **kwargs):
         if self.__class__.__name__ in tl.layers.inputs.__all__:
-            self.inputs = tf.convert_to_tensor(inputs)
+            input_tensors = tf.convert_to_tensor(inputs)
+            # self.inputs = tf.convert_to_tensor(inputs)
         else:
-            self.inputs = inputs
+            input_tensors = inputs
+            # self.inputs = inputs
 
         if not self._built:
-            self.build(self._inputs_shape)
+            if isinstance(self, LayerList):
+                self._input_tensors = input_tensors
+            inputs_shape = self._compute_shape(input_tensors)
+            self.build(inputs_shape)
+            # self.build(self._inputs_shape)
             self._built = True
 
-        outputs = self.forward(self.inputs, **kwargs)
+        outputs = self.forward(input_tensors, **kwargs)
 
         if not self._nodes_fixed:
-            self._add_node(self.inputs, outputs)
+            self._add_node(input_tensors, outputs)
         return outputs
 
     def _add_node(self, input_tensors, output_tensors):
@@ -310,10 +328,12 @@ class Layer(object):
         self.inputs and self.outputs will be set as None but not deleted.
 
         '''
-        _ = self._inputs_shape # save input shape before inputs become None
-        _ = self._outputs_shape # save outputs shape before outputs become None
-        self.inputs = None
-        self.outputs = None
+        # FIXME : not sure whether to remove this and how to release_memory now.
+        # FIXME : Set LayerNode's input/output_tensor = None?
+        # _ = self._inputs_shape # save input shape before inputs become None
+        # _ = self._outputs_shape # save outputs shape before outputs become None
+        # self.inputs = None
+        # self.outputs = None
 
     def _set_mode_for_layers(self, is_train):
         self.is_train = is_train
@@ -750,16 +770,19 @@ class LayerList(Layer):
         return tmpstr
 
     def build(self, inputs_shape):
-        in_layer = self._input_layer
+        in_tensor = self._input_tensors
+        # in_layer = self._input_layer
         for layer in self.layers:
             is_build = layer._built
-            nlayer = layer(in_layer)
+            out_tensor = layer(in_tensor)
+            # nlayer = layer(in_layer)
             if is_build == False and layer.weights is not None:
                 if self._weights == None:
                     self._weights = list()
                 self._weights.extend(layer.weights)
             layer._built = True
-            in_layer = nlayer
+            in_tensor = out_tensor
+            # in_layer = nlayer
 
     def forward(self, inputs):
         z = inputs
