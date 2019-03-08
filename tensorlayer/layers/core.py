@@ -275,10 +275,10 @@ class Layer(object):
 
         self.inputs and self.outputs will be set as None but not deleted in order to release memory.
         """
-
-
-        # FIXME : not sure whether to remove this and how to release_memory now.
-        # FIXME : Set LayerNode's input/output_tensor = None?
+        # FIXME : not understand why saving inputs/outputs shape
+        for node in self._nodes:
+            node.in_tensors = None
+            node.out_tensors = None
         # _ = self._inputs_shape # save input shape before inputs become None
         # _ = self._outputs_shape # save outputs shape before outputs become None
         # self.inputs = None
@@ -439,14 +439,14 @@ class ModelLayer(Layer):
         self.model = model
 
         # Layer input outputs
-        if isinstance(model.inputs, list):
-            self.inputs = [t.outputs for t in model.inputs]
-        else:
-            self.inputs = model.inputs.outputs
+        # if isinstance(model.inputs, list):
+        #     self.inputs = [t.outputs for t in model.inputs]
+        # else:
+        #     self.inputs = model.inputs.outputs
+        #
+        # self.outputs = model.forward(self.inputs)
 
-        self.outputs = model.forward(self.inputs)
-
-        self._input_layer = model.inputs
+        # self._input_layer = model.inputs
 
         # Layer building state
         self._built = True

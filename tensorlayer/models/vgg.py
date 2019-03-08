@@ -138,8 +138,6 @@ class VGG(Model):
         super(VGG, self).__init__()
         self.end_with = end_with
 
-        self.innet = Input([None, 224, 224, 3])
-
         config = cfg[mapped_cfg[layer_type]]
         self.layers = make_layers(config, batch_norm, end_with)
 
@@ -149,9 +147,8 @@ class VGG(Model):
             Shape [None, 224, 224, 3], value range [0, 1].
         """
 
-        out = self.innet(inputs)
-        out = self.layers(out)
-        return out.outputs
+        out = self.layers(inputs)
+        return out
 
 
 def make_layers(config, batch_norm=False, end_with='outputs'):

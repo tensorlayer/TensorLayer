@@ -1,4 +1,3 @@
-
 import tensorflow as tf
 
 ## enable eager mode
@@ -30,10 +29,10 @@ def get_model(inputs_shape):
     nn = Dropout(keep=0.8)(nn)
     nn = Dense(n_units=800, act=tf.nn.relu)(nn)
 
-    # FIXME: currently assume the inputs and outputs are both Layer. They can be lists.
-    M_hidden = Model(inputs=ni, outputs=nn, name="mlp_hidden")
+    M_hidden = Model(inputs=ni, outputs=nn, name="mlp_hidden").as_layer()
 
-    nn = Dropout(keep=0.8)(M_hidden.as_layer())
+    nn = M_hidden(ni)
+    nn = Dropout(keep=0.8)(nn)
     nn = Dense(n_units=10, act=tf.nn.relu)(nn)
     return Model(inputs=ni, outputs=nn, name="mlp")
 
