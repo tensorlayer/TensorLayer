@@ -22,7 +22,6 @@ class CustomModel(Model):
     def __init__(self):
         super(CustomModel, self).__init__()
 
-        self.innet = Input([None, 784])
         self.dropout1 = Dropout(keep=0.8)#(self.innet)
         self.dense1 = Dense(n_units=800, act=tf.nn.relu, in_channels=784)#(self.dropout1)
         self.dropout2 = Dropout(keep=0.8)#(self.dense1)
@@ -32,8 +31,7 @@ class CustomModel(Model):
         self.dense4 = Dense(n_units=10, in_channels=800)#(self.dropout3)
 
     def forward(self, x, foo=0):
-        z = self.innet(x)
-        z = self.dropout1(z)
+        z = self.dropout1(x)
         z = self.dense1(z)
         z = self.dropout2(z)
         z = self.dense2(z)
@@ -42,8 +40,8 @@ class CustomModel(Model):
             out = self.dense3(z)
         else:
             out = self.dense4(z)
-            out.outputs = tf.nn.relu(out.outputs)
-        return out.outputs
+            out = tf.nn.relu(out)
+        return out
 
 MLP = CustomModel()
 # MLP.print_layers()
