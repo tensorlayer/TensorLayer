@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """VGG-16 for ImageNet using TL models."""
 
-
 import time
 import numpy as np
 import tensorflow as tf
@@ -21,10 +20,8 @@ vgg = tl.models.vgg16(pretrained=True)
 img1 = tl.vis.read_image('data/tiger.jpeg')
 img1 = tl.prepro.imresize(img1, (224, 224))
 img1 = img1.astype(np.float32)
-# rescale pixels values in the range of 0-1
-img1 = img1 / 255.0
-if ((0 <= img1).all() and (img1 <= 1.0).all()) is False:
-    raise Exception("image value should be [0, 1]")
+mean = np.array([123.68, 116.779, 103.939], dtype=np.float32).reshape([1, 1, 1, 3])
+img1 = img1 - mean
 
 start_time = time.time()
 vgg.eval()

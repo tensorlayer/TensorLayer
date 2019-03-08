@@ -148,11 +148,8 @@ class VGG(Model):
         inputs : tensor
             Shape [None, 224, 224, 3], value range [0, 1].
         """
-        outputs = inputs * 255.0
-        mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
-        outputs = outputs - mean
 
-        out = self.innet(outputs)
+        out = self.innet(inputs)
         out = self.layers(out)
         return out.outputs
 

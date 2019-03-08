@@ -25,6 +25,8 @@ __all__ = [
 def ramp(x, v_min=0, v_max=1, name=None):
     """Ramp activation function.
 
+    Reference: [tf.clip_by_value]<https://www.tensorflow.org/api_docs/python/tf/clip_by_value>
+
     Parameters
     ----------
     x : Tensor
@@ -68,7 +70,8 @@ def leaky_relu(x, alpha=0.2, name="leaky_relu"):
     Examples
     --------
     >>> import tensorlayer as tl
-    >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')
+    >>> net = tl.layers.Input([10, 200])
+    >>> net = tl.layers.Dense(n_units=100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')(net)
 
     Returns
     -------
@@ -114,7 +117,8 @@ def leaky_relu6(x, alpha=0.2, name="leaky_relu6"):
     Examples
     --------
     >>> import tensorlayer as tl
-    >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.leaky_relu6(x, 0.2), name='dense')
+    >>> net = tl.layers.Input([10, 200])
+    >>> net = tl.layers.Dense(n_units=100, act=lambda x : tl.act.leaky_relu6(x, 0.2), name='dense')(net)
 
     Returns
     -------
@@ -164,7 +168,8 @@ def leaky_twice_relu6(x, alpha_low=0.2, alpha_high=0.2, name="leaky_relu6"):
     Examples
     --------
     >>> import tensorlayer as tl
-    >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.leaky_twice_relu6(x, 0.2, 0.2), name='dense')
+    >>> net = tl.layers.Input([10, 200])
+    >>> net = tl.layers.Dense(n_units=100, act=lambda x : tl.act.leaky_twice_relu6(x, 0.2, 0.2), name='dense')(net)
 
     Returns
     -------
@@ -210,6 +215,7 @@ def swish(x, name='swish'):
         A ``Tensor`` in the same type as ``x``.
 
     """
+    # TODO: in this case, the beta = 1, but the beta can either be a constant or a trainable parameter
     with tf.name_scope(name):
         x = tf.nn.sigmoid(x) * x
     return x
@@ -230,10 +236,6 @@ def sign(x):
     ----------
     x : Tensor
         input.
-
-    Examples
-    --------
-    >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')
 
     Returns
     -------
