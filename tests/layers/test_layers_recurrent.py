@@ -32,8 +32,8 @@ class Layer_RNN_Test(CustomTestCase):
             cell_fn=tf.nn.rnn_cell.BasicRNNCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps,
             return_last=False, return_seq_2d=False, return_state=True, name='lstm'
         )(cls.net_in)
-        cls.net_out.cell._kernel = tf.constant(value=0.1, shape=cls.net_out.cell._kernel.get_shape())
-        cls.net_out.cell._bias = tf.zeros(shape=cls.net_out.cell._bias.get_shape())
+        # cls.net_out._info[0].layer.cell._kernel = tf.constant(value=0.1, shape=cls.net_out.cell._kernel.get_shape())
+        # cls.net_out._info[0].layer.cell._bias = tf.zeros(shape=cls.net_out.cell._bias.get_shape())
         cls.rnn_model = tl.models.Model(inputs=cls.net_in, outputs=cls.net_out, name='rnn')
         print(cls.rnn_model)
 
@@ -298,22 +298,17 @@ class Layer_RNN_Test(CustomTestCase):
         tf.reset_default_graph()
 
     def test_shape(self):
-        self.assertEqual(self.net_out.outputs[0].get_shape().as_list(), [self.batch_size, self.num_steps, self.hidden_size])
-        self.assertEqual(self.net_out.outputs[1].get_shape().as_list(), [self.batch_size, self.hidden_size])
+        self.assertEqual(self.net_out._info[0].outputs[0].get_shape().as_list(), [self.batch_size, self.num_steps, self.hidden_size])
+        self.assertEqual(self.net_out._info[0].outputs[1].get_shape().as_list(), [self.batch_size, self.hidden_size])
 
     def test_value(self):
         import numpy as np
 
-        data = tf.placeholder(tf.float32, shape=[self.batch_size, self.num_steps, self.embedding_size])
-        fake_data = np.random.normal(size=[self.batch_size, self.num_steps, self.embedding_size])
+        data = np.random.normal(size=[self.batch_size, self.num_steps, self.embedding_size])
 
-        out, state = self.rnn_model(data, is_train=True)
+        tl_out, tl_state = self.rnn_model(data, is_train=True)
 
-        with tf.Session() as sess:
-            sess.run(tf.global_variables_initializer())
-            tl_out, tl_state = sess.run([out, state], feed_dict={data: fake_data})
-
-        kr_out, kr_state = self.keras_rnn_model.predict(fake_data)
+        kr_out, kr_state = self.keras_rnn_model.predict(data)
         self.assertEqual(kr_out.shape, tl_out.shape)
         self.assertEqual(kr_state.shape, tl_state.shape)
         # self.assertTrue(np.array_equal(kr_out[:,0,:], tl_out[:,0,:]))
@@ -405,8 +400,5 @@ class Layer_RNN_Test(CustomTestCase):
 
 
 if __name__ == '__main__':
-
-    tf.logging.set_verbosity(tf.logging.DEBUG)
-    tl.logging.set_verbosity(tl.logging.DEBUG)
 
     unittest.main()
