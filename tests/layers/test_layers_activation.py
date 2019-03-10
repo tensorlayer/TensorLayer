@@ -17,21 +17,14 @@ class PReLU_Layer_Test(CustomTestCase):
     @classmethod
     def setUpClass(cls):
 
-        x = tf.placeholder(tf.float32, shape=[None, 30])
+        data = tf.placeholder(tf.float32, shape=[None, 30])
+        batch_size = 10
+        input_shape = [None, 30]
 
-        in_layer = tl.layers.InputLayer(x, name='input')
+        in_layer = tl.layers.Input(input_shape, name='input')
 
-        net = tl.layers.DenseLayer(in_layer, n_units=10, name='dense_1')
-        cls.net1 = tl.layers.PReluLayer(net, name='prelu_1')
+        prelu = tl.layers.PRelu(name='prelu_1')(in_layer)
 
-        cls.net1.print_layers()
-        cls.net1.print_params(False)
-
-        net2 = tl.layers.DenseLayer(cls.net1, n_units=30, name='dense_2')
-        cls.net2 = tl.layers.PReluLayer(net2, channel_shared=True, name='prelu_2')
-
-        cls.net2.print_layers()
-        cls.net2.print_params(False)
 
     @classmethod
     def tearDownClass(cls):

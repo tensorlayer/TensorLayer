@@ -27,10 +27,10 @@ Results
 
 | Mode | Lib | Max GPU Memory (MB) | Max CPU Memory (MB) | Avg CPU Memory (MB) | Runtime (sec) |
 | :----: | :----: | :---------:| :--------: | :------: |  :------: |
-| Graph | TensorLayer | 8657 | 2631 | 2625 | 78 |
+| Graph | TensorLayer | 8657 | 2652 | 2645 | 77 |
 |       | tf.keras    | 8659 | 2668 | 2665 | 77 |
 |       | Keras       | 8661 | 2685 | 2682 | 97 |
-| Eager | TensorLayer | 8703 | 2024 | 2006 | 104 |
+| Eager | TensorLayer | 8703 | 2022 | 2016 | 109 |
 |       | tf.keras    | 8703 | 2019 | 1983 | 103 |
 |       | PyTorch     | 8911 | 2178 | 2175 | 79  |
 

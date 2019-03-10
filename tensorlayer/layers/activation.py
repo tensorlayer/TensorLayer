@@ -4,6 +4,7 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
+from tensorlayer.initializers import truncated_normal
 # from tensorlayer.layers.core import LayersConfig
 
 from tensorlayer.activation import leaky_relu6
@@ -45,13 +46,13 @@ class PRelu(Layer):
     def __init__(
             self,
             channel_shared=False,
-            a_init=tf.compat.v1.initializers.truncated_normal(mean=0.0, stddev=0.1),
+            a_init=truncated_normal(mean=0.0, stddev=0.1),
             a_init_args=None,
             name=None  # "prelu"
     ):
 
         # super(PRelu, self).__init__(prev_layer=prev_layer, act=tf.nn.leaky_relu, a_init_args=a_init_args, name=name)
-        super().__init__(name)
+        super(PRelu, self).__init__(name)
         self.channel_shared = channel_shared
         self.a_init = a_init
         self.a_init_args = a_init_args
@@ -63,7 +64,7 @@ class PRelu(Layer):
             w_shape = (1, )
         else:
             w_shape = inputs_shape[-1]
-        self.alpha_var = self._get_weights("alpha", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
+        self.alpha_var = self._get_weights("alpha", shape=w_shape, init=self.a_init)
         # self.alpha_var = tf.compat.v1.get_variable(
         #     name=self.name + '/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
         #     **self.a_init_args
@@ -72,7 +73,11 @@ class PRelu(Layer):
         # self.add_weights(self.alpha_var)
 
     def forward(self, inputs):
-        outputs = self._apply_activation(inputs, **{'alpha': self.alpha_var_constrained, 'name': "prelu_activation"})
+
+        pos = tf.nn.relu(inputs)
+        neg = -self.alpha_var_constrained * tf.nn.relu(-inputs)
+
+        return pos + neg
 
 
 class PRelu6(Layer):
@@ -122,7 +127,7 @@ class PRelu6(Layer):
     ):
 
         # super(PRelu6, self).__init__(prev_layer=prev_layer, act=leaky_relu6, a_init_args=a_init_args, name=name)
-        super().__init__(name)
+        super(PRelu6, self).__init__(name)
         self.channel_shared = channel_shared
         self.a_init = a_init
         self.a_init_args = a_init_args
@@ -134,7 +139,7 @@ class PRelu6(Layer):
             w_shape = (1, )
         else:
             w_shape = inputs_shape[-1]
-        self.alpha_var = self._get_weights("alpha", shape=w_shape, init=self.a_init, init_args=self.a_init_args)
+        self.alpha_var = self._get_weights("alpha", shape=w_shape, init=self.a_init)
         # self.alpha_var = tf.compat.v1.get_variable(
         #     name=self.name + '/alpha', shape=w_shape, initializer=self.a_init, dtype=LayersConfig.tf_dtype,
         #     **self.a_init_args
