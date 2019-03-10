@@ -74,6 +74,9 @@ class Model():
         # Layer Node status
         self._layer_node_fixed = False
 
+        # Model layers
+        self._all_layers = None
+
         if inputs is None and outputs is None:
             pass
 
@@ -107,32 +110,6 @@ class Model():
             self._node_by_depth, self._all_layers = self._construct_graph()
 
             self._fix_nodes_for_layers()
-
-            # automatically connecting layers
-            # outputs_list = self._outputs if isinstance(self._outputs, list) else [self._outputs]
-            # self._stacked_layers = list()
-            #
-            # for out in outputs_list:
-            #     stacked_layers = list()
-            #     current = out
-            #     while current is not None:
-            #         stacked_layers.append(current)
-            #         # FIXME: assume each layer has only one prev layer
-            #         current = current._input_layer
-            #
-            #     if isinstance(self._inputs, list):
-            #         # check if the input_layer is in self._inputs
-            #         idx_of_input = self._find_idx_of_inputs(stacked_layers[-1])
-            #         flag_input_not_found = True if idx_of_input == -1 else False
-            #     else:
-            #         flag_input_not_found = True if self._inputs is not stacked_layers[-1] else False
-            #     if flag_input_not_found:
-            #         raise ValueError(
-            #             "The layer named `%s` not found in the inputs of the model. " % stacked_layers[-1].name +
-            #             "Please check the argument `inputs` when the model is created."
-            #         )
-            #
-            #     self._stacked_layers.append(stacked_layers)
 
     def __call__(self, inputs, is_train=None, **kwargs):
         """
@@ -197,41 +174,26 @@ class Model():
                     else:
                         node_input = [memory[inode.name] for inode in in_nodes]
                     memory[node.name] = node(node_input)
-        # for depth, layers in enumerate(self.layer_by_depth):
-        #     if depth == 0:
-        #         # the first level of layers should contains all Input layers
-        #         if isinstance(self._inputs, list):
-        #             assert len(inputs[0]) == len(layers)
-        #             for idx, layer in enumerate(layers):
-        #                 memory[layer.name] = layer(inputs[0][idx])
-        #         else:
-        #             memory[layers[0].name] = layers[0](inputs[0])
-        #     else:
-        #         for layer in layers:
-        #             prev_layer = layer._input_layer
-        #             if isinstance(prev_layer, list):
-        #                 layer_input = [memory[player.name] for player in prev_layer]
-        #             else:
-        #                 layer_input = memory[prev_layer.name]
-        #             memory[layer.name] = layer(layer_input)
 
         if not isinstance(self._outputs, list):
             return memory[self._outputs._info[0].name]
-            # return results[0]
         else:
             return [memory[tensor._info[0].name] for tensor in self._outputs]
-            # return results
 
     @property
     def all_layers(self):
+        if self._all_layers is not None:
+            return self._all_layers
+
         if self._inputs is not None and self._outputs is not None:
             # static model
             return self._all_layers
         else:
             # dynamic model
-            _all_layers = list()
+            self._all_layers = list()
             attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
             attr_list.remove("weights")
+            attr_list.remove("all_layers")
             for idx, attr in enumerate(attr_list):
                 try:
                     if isinstance(getattr(self, attr), Layer):
@@ -240,10 +202,10 @@ class Model():
                             raise AttributeError(
                                 "Layer %s not built yet." % repr(nowlayer)
                             )
-                        _all_layers.append(nowlayer)
+                        self._all_layers.append(nowlayer)
                 except Exception:
                     pass
-            return _all_layers
+            return self._all_layers
 
     @property
     def weights(self):
@@ -256,30 +218,6 @@ class Model():
             for layer in self.all_layers:
                 if layer.weights is not None:
                     self._weights.extend(layer.weights)
-        # elif self._outputs is not None:
-            # self._inputs and self._outputs are defined when self is created
-            # self._weights = list()
-            # for depth_layers in self.layer_by_depth:
-            #     for layer in depth_layers:
-            #         if layer.weights is not None:
-            #             self._weights.extend(layer.weights)
-        # else:
-            # self._inputs and self._outputs are NOT defined when self is created (eager mode)
-            # self._weights = list()
-            # attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
-            # attr_list.remove("weights")
-            # for idx, attr in enumerate(attr_list):
-            #     try:
-            #         if isinstance(getattr(self, attr), Layer):
-            #             nowlayer = getattr(self, attr)
-            #             if not nowlayer._built:
-            #                 raise AttributeError(
-            #                     "Layer %s not built yet." % repr(nowlayer)
-            #                 )
-            #             if (nowlayer.weights != None):
-            #                 self._weights.extend(getattr(self, attr).weights)
-            #     except Exception:
-            #         pass
 
         return self._weights
 
@@ -390,11 +328,6 @@ class Model():
         tmpstr = tmpstr + ')'
         return tmpstr
 
-    # def __str__(self):
-    #     return "  {} ({}) outputs_shape: {}".format(
-    #         self.__class__.__name__, self.name, [tuple(['batch_size'] + o._outputs_shape[1:]) for o in self.outputs]
-    #     )  #_outputs_shape)#outputs.get_shape().as_list())
-
     def print_all_layers(self):
         # TODO : need update by @Ruihai
         nowoutputs = self._outputs
@@ -481,68 +414,6 @@ class Model():
 
         return node_by_depth, all_layers
 
-    # def _construct_graph(self):
-    #     layer_dict = {}      # {'layer_name': layer, ...}
-    #     edges = {}           # {'father_layer_name': 'child_layer_name', ...}
-    #     layer_by_depth = []  # [ [layer0, layer1, ...], [layer2, layer3, ...], ... ]
-    #
-    #     queue_layer = Queue()
-    #     indegrees = {}
-    #
-    #     # BFS to visit all layers
-    #     outputs_list = self.outputs if isinstance(self.outputs, list) else [self.outputs]
-    #     for output_layer in outputs_list:
-    #         queue_layer.put(output_layer)
-    #
-    #         while not queue_layer.empty():
-    #             cur_layer = queue_layer.get()
-    #
-    #             prev_layers = cur_layer._input_layer
-    #
-    #             if not cur_layer.name in layer_dict.keys():
-    #                 layer_dict[cur_layer.name] = cur_layer
-    #
-    #             if prev_layers is None:
-    #                 # find input layer
-    #                 indegrees[cur_layer.name] = 0
-    #                 continue
-    #
-    #             if not isinstance(prev_layers, list):
-    #                 prev_layers = [prev_layers]
-    #
-    #             indegrees[cur_layer.name] = len(prev_layers)
-    #
-    #             for layer in prev_layers:
-    #                 if layer.name not in edges.keys():
-    #                     queue_layer.put(layer)
-    #                     edges[layer.name] = [cur_layer.name]
-    #                 else:
-    #                     edges[layer.name].append(cur_layer.name)
-    #
-    #     cur_depth = []
-    #     next_depth = []
-    #
-    #     # find input layers, whose indegrees should be zero
-    #     # TODO : judge whether they are input layers
-    #     for k, v in indegrees.items():
-    #         if v == 0:
-    #             cur_depth.append(layer_dict[k])
-    #
-    #     # top-sort style to decide each layer's depth
-    #     while not len(cur_depth) == 0:
-    #         layer_by_depth.append(cur_depth)
-    #         for layer in cur_depth:
-    #             if layer.name in edges.keys():
-    #                 for child_layer_name in edges[layer.name]:
-    #                     indegrees[child_layer_name] -= 1
-    #                     if indegrees[child_layer_name] == 0:
-    #                         next_depth.append(layer_dict[child_layer_name])
-    #
-    #         cur_depth = next_depth
-    #         next_depth = []
-    #
-    #     return layer_dict, edges, layer_by_depth
-
     def release_memory(self):
         '''
         WARNING: This function should be called with great caution.
@@ -554,19 +425,6 @@ class Model():
         '''
         for layer in self.all_layers:
             layer._release_memory()
-        # if self._outputs is not None:
-        #     for depth_layers in self.layer_by_depth:
-        #         for layer in depth_layers:
-        #             layer._release_memory()
-        # else:
-        #     attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
-        #     attr_list.remove("release_memory")
-        #     for idx, attr in enumerate(attr_list):
-        #         try:
-        #             if isinstance(getattr(self, attr), Layer):
-        #                 getattr(self, attr)._release_memory()
-        #         except Exception:
-        #             pass
 
     # FIXME : Model save part @runhai
     # def save(self, filepath):

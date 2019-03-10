@@ -90,21 +90,6 @@ class Layer(object):
 
         self.name = name
 
-        # Layer input outputs
-        # TODO: note that in dynamic network, inputs and outputs can be both None, may cause problem, test needed
-        # FIXME : remove self.inputs & self.outputs in Layer Core, correct?
-        # self.inputs = None
-        # self.outputs = None
-        # self._inputs_shape_mem = None
-        # self._outputs_shape_mem = None
-
-        # self._inputs_shape = None
-        # self._outputs_shape = None
-
-        # FIXME : remove _input_layer, correct?
-        # TODO : need modification in ModelLayer, discussion needed @jingqing
-        # self._input_layer = None
-
         # Layer building state
         self._built = False
 
@@ -130,25 +115,6 @@ class Layer(object):
         #     self._add_graphs((self.name, self.graph))
         #     self.add_prev = True
 
-    # FIXME : remove self.inputs & self.outputs in Layer Core, correct?
-    # @property
-    # def _inputs_shape(self):
-    #     if self.inputs is not None:
-    #         if isinstance(self.inputs, list):
-    #             self._inputs_shape_mem = [t.get_shape().as_list() for t in self.inputs]
-    #         else:
-    #             self._inputs_shape_mem = self.inputs.get_shape().as_list()
-    #     return self._inputs_shape_mem
-    #
-    # @property
-    # def _outputs_shape(self):
-    #     if self.outputs is not None:
-    #         if isinstance(self.outputs, list):
-    #             self._outputs_shape_mem = [t.get_shape().as_list() for t in self.outputs]
-    #         else:
-    #             self._outputs_shape_mem = self.outputs.get_shape().as_list()
-    #     return self._outputs_shape_mem
-
     @staticmethod
     def _compute_shape(tensors):
         if isinstance(tensors, list):
@@ -173,17 +139,14 @@ class Layer(object):
         """
         if self.__class__.__name__ in tl.layers.inputs.__all__:
             input_tensors = tf.convert_to_tensor(inputs)
-            # self.inputs = tf.convert_to_tensor(inputs)
         else:
             input_tensors = inputs
-            # self.inputs = inputs
 
         if not self._built:
             if isinstance(self, LayerList):
                 self._input_tensors = input_tensors
             inputs_shape = self._compute_shape(input_tensors)
             self.build(inputs_shape)
-            # self.build(self._inputs_shape)
             self._built = True
 
         outputs = self.forward(input_tensors, **kwargs)
@@ -206,68 +169,7 @@ class Layer(object):
         new_node = LayerNode(self, node_index, in_nodes, inputs_list, outputs_list)
         self._nodes.append(new_node)
         for idx, tensor in enumerate(outputs_list):
-            tensor._info = (new_node, idx)
-
-    # def __call__(self, prev_layer, **kwargs):
-    #     """
-    #     (1) Build the Layer if necessary.
-    #     (2) Forward the computation and return results.
-    #
-    #     :param prev_layer: np.ndarray, Tensor, Layer, list of Layers
-    #     :param kwargs:
-    #     :return: Layer
-    #     """
-    #
-    #     if self.__class__.__name__ in tl.layers.inputs.__all__:
-    #         # 1. for input layers
-    #         # Input layers should use tf.convert_to_tensor to make sure the inputs is converted into tf.Tensor
-    #
-    #         self.inputs = tf.convert_to_tensor(prev_layer)
-    #         self._input_layer = None
-    #         self._built = True
-    #         self.build(self._inputs_shape)
-    #         self.outputs = self.forward(self.inputs, **kwargs)
-    #
-    #     elif isinstance(prev_layer, Layer):
-    #         # 2. for normal layer have only one input i.e. Dense
-    #         # Hint : list(), dict() is pass by value (shallow), without them,
-    #         # it is pass by reference.
-    #
-    #         self.inputs = prev_layer.outputs
-    #         self._input_layer = prev_layer
-    #         if self.add_prev == False:
-    #             self.graph.update({'prev_layer': prev_layer.name})
-    #             self._add_graphs(prev_layer.all_graphs)
-    #             self._add_graphs((self.name, self.graph))
-    #             self.add_prev = True
-    #
-    #         self.outputs = self.forward(self.inputs, **kwargs)
-    #
-    #     elif isinstance(prev_layer, list):
-    #         # 3. for layer have multiply inputs i.e. Concat
-    #
-    #         self.inputs = [layer.outputs for layer in prev_layer]
-    #         self._input_layer = prev_layer # FIXME: not sure how to deal with it
-    #
-    #         # FIXME: only support concat/elementwise, where build does nothing
-    #         if not self._built:
-    #             self._built = True
-    #
-    #         if self.add_prev == False:
-    #             _list = []
-    #             for layer in prev_layer:
-    #                 _list.append(layer.name)
-    #             self.graph.update({'prev_layer': _list})
-    #             self._add_graphs(sum([l.all_graphs for l in prev_layer], []))
-    #             self._add_graphs((self.name, self.graph))
-    #             self.add_prev = True
-    #
-    #         self.outputs = self.forward(self.inputs, **kwargs)
-    #
-    #     else:
-    #         raise AssertionError("Invalid input type: %s" % type(prev_layer))
-    #
-    #     return self
+            tensor._info = (new_node, idx) # FIXME : modify tensor outside layers? how to deal?
 
     def _release_memory(self):
         """
@@ -279,10 +181,6 @@ class Layer(object):
         for node in self._nodes:
             node.in_tensors = None
             node.out_tensors = None
-        # _ = self._inputs_shape # save input shape before inputs become None
-        # _ = self._outputs_shape # save outputs shape before outputs become None
-        # self.inputs = None
-        # self.outputs = None
 
     def _set_mode_for_layers(self, is_train):
         """ Set training/evaluation mode for the Layer"""
@@ -390,9 +288,6 @@ class LayerNode(object):
         self.in_tensors = in_tensors
         self.out_tensors = out_tensors
         self.name = layer.name + "_node_{}".format(node_index)
-
-        # for node in self.in_nodes:
-        #     node.out_nodes.append(self)
 
     def __call__(self, inputs, **kwargs):
         outputs = self.layer.forward(inputs, **kwargs)

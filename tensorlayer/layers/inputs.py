@@ -12,11 +12,11 @@ from tensorlayer import logging
 
 __all__ = [
     'Input',
-    'InputLayer'
+    '_InputLayer'
 ]
 
 
-class InputLayer(Layer):
+class _InputLayer(Layer):
     """
     The :class:`Input` class is the starting layer of a neural network.
 
@@ -31,7 +31,7 @@ class InputLayer(Layer):
 
     def __init__(self, shape, dtype=tf.float32, name=None):  #'input'):
         # super(InputLayer, self).__init__(prev_layer=inputs, name=name)
-        super(InputLayer, self).__init__(name)
+        super(_InputLayer, self).__init__(name)
 
         logging.info("Input  %s: %s" % (self.name, str(shape)))
         self.shape = shape # shape is needed in __repr__
@@ -52,7 +52,7 @@ class InputLayer(Layer):
         return s
 
     def __call__(self, inputs):
-        return super(InputLayer, self).__call__(inputs)
+        return super(_InputLayer, self).__call__(inputs)
 
     def build(self, inputs_shape):
         # FIXME: documentation need double check
@@ -75,6 +75,6 @@ class InputLayer(Layer):
 
 
 def Input(shape, dtype=tf.float32, name=None):
-    input_layer = InputLayer(shape, dtype=dtype, name=name)
+    input_layer = _InputLayer(shape, dtype=dtype, name=name)
     outputs = input_layer._nodes[0].out_tensors[0]
     return outputs

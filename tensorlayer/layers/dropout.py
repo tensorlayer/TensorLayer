@@ -42,6 +42,14 @@ class Dropout(Layer):
 
         logging.info("Dropout %s: keep: %f " % (self.name, self.keep))
 
+
+    def __repr__(self):
+        s = ('{classname}(keep={keep}')
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
     '''
     def build(self, inputs):
         pass
