@@ -255,45 +255,45 @@ def vgg19(pretrained=False, end_with='outputs', sess=None):
     return model
 
 # models without pretrained parameters
-'''def vgg11(pretrained=False, end_with='outputs'):
-    model = VGG(layer_type='vgg11', batch_norm=False, end_with=end_with)
-    if pretrained:
-        model.restore_weights()
-    return model
+# def vgg11(pretrained=False, end_with='outputs'):
+#     model = VGG(layer_type='vgg11', batch_norm=False, end_with=end_with)
+#     if pretrained:
+#         model.restore_weights()
+#     return model
+#
+#
+# def vgg11_bn(pretrained=False, end_with='outputs'):
+#     model = VGG(layer_type='vgg11_bn', batch_norm=True, end_with=end_with)
+#     if pretrained:
+#         model.restore_weights()
+#     return model
+#
+#
+# def vgg13(pretrained=False, end_with='outputs'):
+#     model = VGG(layer_type='vgg13', batch_norm=False, end_with=end_with)
+#     if pretrained:
+#         model.restore_weights()
+#     return model
+#
+#
+# def vgg13_bn(pretrained=False, end_with='outputs'):
+#     model = VGG(layer_type='vgg13_bn', batch_norm=True, end_with=end_with)
+#     if pretrained:
+#         model.restore_weights()
+#     return model
+#
+#
+# def vgg16_bn(pretrained=False, end_with='outputs'):
+#     model = VGG(layer_type='vgg16_bn', batch_norm=True, end_with=end_with)
+#     if pretrained:
+#         model.restore_weights()
+#     return model
+#
+#
+# def vgg19_bn(pretrained=False, end_with='outputs'):
+#     model = VGG(layer_type='vgg19_bn', batch_norm=True, end_with=end_with)
+#     if pretrained:
+#         model.restore_weights()
+#     return model
 
-
-def vgg11_bn(pretrained=False, end_with='outputs'):
-    model = VGG(layer_type='vgg11_bn', batch_norm=True, end_with=end_with)
-    if pretrained:
-        model.restore_weights()
-    return model
-
-
-def vgg13(pretrained=False, end_with='outputs'):
-    model = VGG(layer_type='vgg13', batch_norm=False, end_with=end_with)
-    if pretrained:
-        model.restore_weights()
-    return model
-
-
-def vgg13_bn(pretrained=False, end_with='outputs'):
-    model = VGG(layer_type='vgg13_bn', batch_norm=True, end_with=end_with)
-    if pretrained:
-        model.restore_weights()
-    return model
-
-
-def vgg16_bn(pretrained=False, end_with='outputs'):
-    model = VGG(layer_type='vgg16_bn', batch_norm=True, end_with=end_with)
-    if pretrained:
-        model.restore_weights()
-    return model
-
-
-def vgg19_bn(pretrained=False, end_with='outputs'):
-    model = VGG(layer_type='vgg19_bn', batch_norm=True, end_with=end_with)
-    if pretrained:
-        model.restore_weights()
-    return model
-'''
 

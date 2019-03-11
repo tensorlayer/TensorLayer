@@ -302,31 +302,40 @@ class Model():
     def __repr__(self):
         # TODO : need to support static network
         # TODO : need update by @Ruihai
-        tmpstr = self.__class__.__name__ + '(\n'
-        attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
-        attr_list.remove("weights")
-        attr_list.remove("_set_mode_for_layers")
-        attr_list.remove("release_memory")
-        attr_list.remove("_inputs")
-        attr_list.remove("_outputs")
-        for idx, attr in enumerate(attr_list):
-            try:
-                if isinstance(getattr(self, attr), Layer) or isinstance(getattr(self, attr), Model):
-                    nowlayer = getattr(self, attr)
-                    modstr = nowlayer.__repr__()
-                    modstr = _addindent(modstr, 2)
-                    tmpstr = tmpstr + '  (' + attr + '): ' + modstr + '\n'
-                elif isinstance(getattr(self, attr), list) and (isinstance(getattr(self, attr)[0], Layer) or
-                                                                isinstance(getattr(self, attr)[0], Model)):
-                    for idx, element in enumerate(getattr(self, attr)):
-                        modstr = element.__repr__()
+        if self.inputs is None and self.outputs is None:
+            tmpstr = self.__class__.__name__ + '(\n'
+            attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
+            attr_list.remove("weights")
+            attr_list.remove("_set_mode_for_layers")
+            attr_list.remove("release_memory")
+            attr_list.remove("_inputs")
+            attr_list.remove("_outputs")
+            attr_list.remove("all_layers")
+            attr_list.remove("_all_layers")
+            for idx, attr in enumerate(attr_list):
+                try:
+                    if isinstance(getattr(self, attr), Layer) or isinstance(getattr(self, attr), Model):
+                        nowlayer = getattr(self, attr)
+                        modstr = nowlayer.__repr__()
                         modstr = _addindent(modstr, 2)
-                        tmpstr = tmpstr + '  (' + attr + '[%d]): ' % idx + modstr + '\n'
+                        tmpstr = tmpstr + '  (' + attr + '): ' + modstr + '\n'
+                    elif isinstance(getattr(self, attr), list) and (isinstance(getattr(self, attr)[0], Layer) or
+                                                                    isinstance(getattr(self, attr)[0], Model)):
+                        for idx, element in enumerate(getattr(self, attr)):
+                            modstr = element.__repr__()
+                            modstr = _addindent(modstr, 2)
+                            tmpstr = tmpstr + '  (' + attr + '[%d]): ' % idx + modstr + '\n'
 
-            except Exception:
-                pass
-        tmpstr = tmpstr + ')'
-        return tmpstr
+                except Exception:
+                    pass
+            tmpstr = tmpstr + ')'
+            return tmpstr
+        else:
+            tmpstr = self.__class__.__name__ + '(\n'
+            for idx, layer in enumerate(self.all_layers):
+                tmpstr = tmpstr + '  (' + str(idx) + '): ' + _addindent(layer.__repr__(), 2) + '\n'
+            tmpstr = tmpstr + ')'
+            return tmpstr
 
     def print_all_layers(self):
         # TODO : need update by @Ruihai
