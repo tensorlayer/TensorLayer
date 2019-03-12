@@ -38,13 +38,6 @@ from tensorlayer import nlp
 from tensorlayer import utils
 from tensorlayer import visualize
 
-from tensorlayer.lazy_imports import  LazyImport
-tqdm = LazyImport("tqdm.tqdm")
-requests = LazyImport("requests")
-etree = LazyImport("lxml.etree")
-ET = LazyImport("xml.etree.ElementTree as ET")
-
-
 __all__ = [
     'assign_weights',
     'del_file',
@@ -1099,6 +1092,17 @@ def download_file_from_google_drive(ID, destination):
         The destination for save file.
 
     """
+    try:
+        from tqdm import tqdm
+    except ImportError as e:
+        print(e)
+        raise ImportError("Module tqdm not found. Please install tqdm via pip or other package managers.")
+
+    try:
+        import requests
+    except ImportError as e:
+        print(e)
+        raise ImportError("Module requests not found. Please install requests via pip or other package managers.")
 
     def save_response_content(response, destination, chunk_size=32 * 1024):
 
@@ -1232,6 +1236,14 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     - `Pascal VOC2007 Website <http://host.robots.ox.ac.uk/pascal/VOC/voc2007/>`__.
 
     """
+
+    import xml.etree.ElementTree as ET
+
+    try:
+        import lxml.etree as etree
+    except ImportError as e:
+        print(e)
+        raise ImportError("Module lxml not found. Please install lxml via pip or other package managers.")
 
     path = os.path.join(path, 'VOC')
 

@@ -3,9 +3,6 @@
 
 import os
 
-from tensorlayer.lazy_imports import  LazyImport
-etree = LazyImport("lxml.etree")
-
 import tensorflow as tf
 
 from tensorlayer import logging
@@ -93,6 +90,12 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     - `Pascal VOC2007 Website <https://pjreddie.com/projects/pascal-voc-dataset-mirror/>`__.
 
     """
+    try:
+        import lxml.etree as etree
+    except ImportError as e:
+        print(e)
+        raise ImportError("Module lxml not found. Please install lxml via pip or other package managers.")
+
     path = os.path.join(path, 'VOC')
 
     def _recursive_parse_xml_to_dict(xml):
