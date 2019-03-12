@@ -3,7 +3,8 @@
 
 import os
 
-from lxml import etree
+from tensorlayer.lazy_imports import  LazyImport
+etree = LazyImport("lxml.etree")
 
 import tensorflow as tf
 

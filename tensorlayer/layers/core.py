@@ -1,12 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import inspect
-import six
-
-from abc import ABCMeta, abstractmethod
-
-import numpy as np
+from abc import abstractmethod
 
 import tensorflow as tf
 import tensorlayer as tl

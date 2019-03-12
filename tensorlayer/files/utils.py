@@ -9,33 +9,20 @@ import math
 import pickle
 import progressbar
 import re
-import requests
 import shutil
 import tarfile
 import time
 import zipfile
 import importlib
 import h5py
-from tqdm import tqdm
 
 from six.moves import cPickle
 # from six.moves import zip
-
-from lxml import etree
-import xml.etree.ElementTree as ET
 
 if sys.version_info[0] == 2:
     from urllib import urlretrieve
 else:
     from urllib.request import urlretrieve
-
-# Fix error on OSX, as suggested by: https://stackoverflow.com/a/48374671
-# See: https://docs.python.org/3/library/sys.html#sys.platform
-if sys.platform.startswith('darwin'):
-    import matplotlib
-    matplotlib.use('TkAgg')
-
-import matplotlib.pyplot as plt
 
 import scipy.io as sio
 import numpy as np
@@ -50,6 +37,12 @@ from tensorlayer import logging
 from tensorlayer import nlp
 from tensorlayer import utils
 from tensorlayer import visualize
+
+from tensorlayer.lazy_imports import  LazyImport
+tqdm = LazyImport("tqdm.tqdm")
+requests = LazyImport("requests")
+etree = LazyImport("lxml.etree")
+ET = LazyImport("xml.etree.ElementTree as ET")
 
 
 __all__ = [
@@ -428,6 +421,12 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
     y_train = np.array(y_train)
 
     if plotable:
+
+        if sys.platform.startswith('darwin'):
+            import matplotlib
+            matplotlib.use('TkAgg')
+        import matplotlib.pyplot as plt
+
         logging.info('\nCIFAR-10')
         fig = plt.figure(1)
 
@@ -1102,6 +1101,7 @@ def download_file_from_google_drive(ID, destination):
     """
 
     def save_response_content(response, destination, chunk_size=32 * 1024):
+
         total_size = int(response.headers.get('content-length', 0))
         with open(destination, "wb") as f:
             for chunk in tqdm(response.iter_content(chunk_size), total=total_size, unit='B', unit_scale=True,
@@ -1232,6 +1232,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     - `Pascal VOC2007 Website <http://host.robots.ox.ac.uk/pascal/VOC/voc2007/>`__.
 
     """
+
     path = os.path.join(path, 'VOC')
 
     def _recursive_parse_xml_to_dict(xml):

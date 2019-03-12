@@ -9,6 +9,8 @@ layers that allow user to apply ``tf.nn.lrn`` on ``network.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`__.
 """
 
+from tensorlayer.lazy_imports import LazyImport
+
 from .dataset_loaders.celebA_dataset import *
 from .dataset_loaders.cifar10_dataset import *
 from .dataset_loaders.cyclegan_dataset import *

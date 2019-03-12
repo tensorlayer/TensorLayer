@@ -7,7 +7,7 @@ import tensorflow as tf
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import standard_ops
 
-import tensorlayer as tl
+from tensorlayer import logging
 
 __all__ = [
     'cross_entropy',
@@ -45,6 +45,7 @@ def cross_entropy(output, target, name=None):
 
     Examples
     --------
+    >>> import tensorlayer as tl
     >>> ce = tl.cost.cross_entropy(y_logits, y_target_logits, 'my_loss')
 
     References
@@ -233,6 +234,7 @@ def dice_coe(output, target, loss_type='jaccard', axis=(1, 2, 3), smooth=1e-5):
 
     Examples
     ---------
+    >>> import tensorlayer as tl
     >>> outputs = tl.act.pixel_wise_softmax(network.outputs)
     >>> dice_loss = 1 - tl.cost.dice_coe(outputs, y_)
 
@@ -387,6 +389,7 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):  # , batch_size=1, 
 
     Examples
     --------
+    >>> import tensorlayer as tl
     >>> see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__.for more details
     >>> input_data = tf.placeholder(tf.int32, [batch_size, n_steps])
     >>> targets = tf.placeholder(tf.int32, [batch_size, n_steps])
@@ -428,6 +431,7 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
 
     Examples
     --------
+    >>> import tensorlayer as tl
     >>> batch_size = 64
     >>> vocab_size = 10000
     >>> embedding_size = 256
@@ -520,7 +524,7 @@ def li_regularizer(scale, scope=None):
         if scale >= 1.:
             raise ValueError('Setting a scale greater than 1 on a regularizer: %g' % scale)
         if scale == 0.:
-            tl.logging.info('Scale of 0 disables regularizer.')
+            logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
     def li(weights):
@@ -567,7 +571,7 @@ def lo_regularizer(scale):
         if scale >= 1.:
             raise ValueError('Setting a scale greater than 1 on a regularizer: %g' % scale)
         if scale == 0.:
-            tl.logging.info('Scale of 0 disables regularizer.')
+            logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
     def lo(weights, name='lo_regularizer'):
@@ -616,7 +620,7 @@ def maxnorm_regularizer(scale=1.0):
         #   raise ValueError('Setting a scale greater than 1 on a regularizer: %g' %
         #                    scale)
         if scale == 0.:
-            tl.logging.info('Scale of 0 disables regularizer.')
+            logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
     def mn(weights, name='max_regularizer'):
@@ -661,7 +665,7 @@ def maxnorm_o_regularizer(scale):
         #   raise ValueError('Setting a scale greater than 1 on a regularizer: %g' %
         #                    scale)
         if scale == 0.:
-            tl.logging.info('Scale of 0 disables regularizer.')
+            logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
     def mn_o(weights, name='maxnorm_o_regularizer'):
@@ -708,7 +712,7 @@ def maxnorm_i_regularizer(scale):
         #   raise ValueError('Setting a scale greater than 1 on a regularizer: %g' %
         #                    scale)
         if scale == 0.:
-            tl.logging.info('Scale of 0 disables regularizer.')
+            logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
     def mn_i(weights, name='maxnorm_i_regularizer'):
