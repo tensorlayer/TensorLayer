@@ -32,15 +32,9 @@ import time
 import numpy as np
 import tensorflow as tf
 
-## enable eager mode
-tf.enable_eager_execution()
-
 import tensorlayer as tl
 from tensorlayer.layers import *
 from tensorlayer.models import *
-
-tf.logging.set_verbosity(tf.logging.DEBUG)
-tl.logging.set_verbosity(tl.logging.DEBUG)
 
 # Hashed n-grams with 1 < n <= N_GRAM are included as features
 # in addition to unigrams.
@@ -77,17 +71,15 @@ class FastTextModel(Model):
     def __init__(self, vocab_size, embedding_size, n_labels, name='fasttext'):
         super(FastTextModel, self).__init__(name=name)
 
-        self.innet = Input([None, None], dtype=tf.int32)
-        self.avg_embed = AverageEmbedding(vocab_size, embedding_size)(self.innet)
-        self.dense1 = Dense(n_units=10)(self.avg_embed)
-        self.dense2 = Dense(n_units=n_labels)(self.dense1)
+        self.avg_embed = AverageEmbedding(vocab_size, embedding_size)
+        self.dense1 = Dense(n_units=10, in_channels=embedding_size)
+        self.dense2 = Dense(n_units=n_labels, in_channels=10)
 
     def forward(self, x):
-        z = self.innet(x)
-        z = self.avg_embed(z)
+        z = self.avg_embed(x)
         z = self.dense1(z)
         z = self.dense2(z)
-        return z.outputs
+        return z
 
 def augment_with_ngrams(unigrams, unigram_vocab_size, n_buckets, n=2):
     """Augment unigram features with hashed n-gram features."""
@@ -123,7 +115,7 @@ def train_test_and_save_model():
         embedding_size=EMBEDDING_SIZE,
         n_labels=2,
     )
-    optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE)
+    optimizer = tf.optimizers.Adam(learning_rate=LEARNING_RATE)
 
     if os.path.exists(MODEL_FILE_PATH):
         # loading pre-trained model if applicable
