@@ -3743,69 +3743,30 @@ def keypoint_resize_random_crop(image, annos, mask=None, size=(368, 368)):
 
     _target_height = size[0]
     _target_width = size[1]
+    _target_ratio = _target_width / _target_height
+
     if len(np.shape(image)) == 2:
         image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-    height, width, _ = np.shape(image)
-    # print("the size of original img is:", height, width)
-    if height <= width:
-        ratio = _target_height / height
-        new_width = int(ratio * width)
-        if height == width:
-            new_width = _target_height
+    input_height, input_width, _ = np.shape(image)
+    input_ratio = input_width / input_height
 
-        image, annos, mask = resize_image(image, annos, mask, new_width, _target_height)
+    vertical_ratio = _target_height / input_height
+    horizontal_ratio = _target_width / input_width
 
-        # for i in annos:
-        #     if len(i) is not 19:
-        #         print('Joints of person is not 19 ERROR FROM RESIZE')
+    rescale_ratio = max(vertical_ratio, horizontal_ratio)
 
-        if new_width > _target_width:
-            crop_range_x = np.random.randint(0, new_width - _target_width)
-        else:
-            crop_range_x = 0
-        image = image[:, crop_range_x:crop_range_x + _target_width, :]
+    image, annos, mask = resize_image(image, annos, mask, int(input_width * rescale_ratio),
+                                      int(input_height * rescale_ratio))
+
+    # At this point we should have input image which matches at least target
+    # height or target width, while the other dimensions larger than target.
+    new_height, new_width, _ = np.shape(image)
+
+    if new_height > _target_height:
+        crop_range_y = np.random.randint(0, new_height - _target_height)
+        image = image[crop_range_y:crop_range_y + _target_height, :, :]
         if mask is not None:
-            mask = mask[:, crop_range_x:crop_range_x + _target_width]
-        # joint_list= []
-        new_joints = []
-        #annos-pepople-joints (must be 19 or [])
-        for people in annos:
-            # print("number of keypoints is", np.shape(people))
-            new_keypoints = []
-            for keypoints in people:
-                if keypoints[0] < -10 or keypoints[1] < -10:
-                    new_keypoints.append((-1000, -1000))
-                    continue
-                top = crop_range_x + _target_width - 1
-                if keypoints[0] >= crop_range_x and keypoints[0] <= top:
-                    # pts = (keypoints[0]-crop_range_x, keypoints[1])
-                    pts = (int(keypoints[0] - crop_range_x), int(keypoints[1]))
-                else:
-                    pts = (-1000, -1000)
-                new_keypoints.append(pts)
-
-            new_joints.append(new_keypoints)
-            # if len(new_keypoints) != 19:
-            #     print('1:The Length of joints list should be 0 or 19 but actually:', len(new_keypoints))
-        annos = new_joints
-
-    if height > width:
-        ratio = _target_width / width
-        new_height = int(ratio * height)
-        image, annos, mask = resize_image(image, annos, mask, _target_width, new_height)
-
-        # for i in annos:
-        #     if len(i) is not 19:
-        #         print('Joints of person is not 19 ERROR')
-
-        if new_height > _target_height:
-            crop_range_y = np.random.randint(0, new_height - _target_height)
-
-        else:
-            crop_range_y = 0
-        image = image[crop_range_y:crop_range_y + _target_width, :, :]
-        if mask is not None:
-            mask = mask[crop_range_y:crop_range_y + _target_width, :]
+            mask = mask[crop_range_y:crop_range_y + _target_height, :]
         new_joints = []
 
         for people in annos:  # TODO : speed up with affine transform
@@ -3813,28 +3774,36 @@ def keypoint_resize_random_crop(image, annos, mask=None, size=(368, 368)):
             for keypoints in people:
 
                 # case orginal points are not usable
-                if keypoints[0] < 0 or keypoints[1] < 0:
-                    new_keypoints.append((-1000, -1000))
-                    continue
-                # y axis coordinate change
-                bot = crop_range_y + _target_height - 1
-                if keypoints[1] >= crop_range_y and keypoints[1] <= bot:
-                    # pts = (keypoints[0], keypoints[1]-crop_range_y)
+                if keypoints[1] >= crop_range_y and keypoints[1] <= crop_range_y + _target_height - 1:
                     pts = (int(keypoints[0]), int(keypoints[1] - crop_range_y))
-                    # if pts[0]>367 or pts[1]>367:
-                    #     print('Error2')
                 else:
                     pts = (-1000, -1000)
-
                 new_keypoints.append(pts)
 
             new_joints.append(new_keypoints)
-            # if len(new_keypoints) != 19:
-            #     print('2:The Length of joints list should be 0 or 19 but actually:', len(new_keypoints))
-
         annos = new_joints
 
-    # mask = cv2.resize(mask, (46, 46), interpolation=cv2.INTER_AREA)
+    elif new_width > _target_width:
+        crop_range_x = np.random.randint(0, new_width - _target_width)
+        image = image[:, crop_range_x:crop_range_x + _target_width, :]
+        if mask is not None:
+            mask = mask[:, crop_range_x:crop_range_x + _target_width]
+        new_joints = []
+
+        for people in annos:
+            new_keypoints = []
+            for keypoints in people:
+
+                # case orginal points are not usable
+                if keypoints[0] >= crop_range_x and keypoints[0] <= crop_range_x + _target_width - 1:
+                    pts = (int(keypoints[0] - crop_range_x), int(keypoints[1]))
+                else:
+                    pts = (-1000, -1000)
+                new_keypoints.append(pts)
+
+            new_joints.append(new_keypoints)
+        annos = new_joints
+
     if mask is not None:
         return image, annos, mask
     else:
