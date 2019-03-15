@@ -42,30 +42,24 @@ import os
 import sys
 import wget
 import time
+import argparse
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from six.moves import xrange  # pylint: disable=redefined-builtin
 
-flags = tf.app.flags
+parser = argparse.ArgumentParser()
 
-flags.DEFINE_string("model", 'one', "The type of model that will be used.")
+parser.add_argument("--model",
+                    default='one',
+                    type=str,
+                    required=False,
+                    help="The model name. It can be 'one', 'two', 'three', 'four'.")
 
-if (tf.VERSION >= '1.5'):
-    # parse flags
-    flags.FLAGS(sys.argv, known_only=True)
-    flags.ArgumentParser()
-
-FLAGS = flags.FLAGS
-
-tf.logging.set_verbosity(tf.logging.DEBUG)
+FLAGS = parser.parse_args()
 
 
 def main_word2vec_basic():
-    tf.logging.set_verbosity(tf.logging.DEBUG)
-    tl.logging.set_verbosity(tl.logging.DEBUG)
-    # sess = tf.InteractiveSession()
-    sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
 
     # Step 1: Download the data, read the context into a list of strings.
     # Set hyperparameters.
@@ -187,62 +181,48 @@ def main_word2vec_basic():
     # train_inputs is a row vector, a input is an integer id of single word.
     # train_labels is a column vector, a label is an integer id of single word.
     # valid_dataset is a column vector, a valid set is an integer id of single word.
-    train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
-    train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
     valid_dataset = tf.constant(valid_examples, dtype=tf.int32)
 
     # Look up embeddings for inputs.
-    net_in = tl.layers.Input([batch_size], dtype=tf.int32)
+    inputs = tl.layers.Input([batch_size], dtype=tf.int32)
+    labels = tl.layers.Input([batch_size, 1], dtype=tf.int32)
+
     emb_net = tl.layers.Word2vecEmbedding(
         vocabulary_size=vocabulary_size,
         embedding_size=embedding_size,
         num_sampled=num_sampled,
+        activate_nce_loss=True, # nce loss is activated
         nce_loss_args={},
         E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
         nce_W_init=tl.initializers.truncated_normal(stddev=float(1.0 / np.sqrt(embedding_size))),
         nce_b_init=tl.initializers.constant(value=0.0),
         name='word2vec_layer',
-    )(net_in)
+    )
+    emb, nce = emb_net([inputs, labels])
 
-    model = tl.models.Model(inputs=net_in, outputs=emb_net, name="word2vec_model")
+    model = tl.models.Model(inputs=[inputs, labels], outputs=[emb, nce], name="word2vec_model")
 
     # Compute the average NCE loss for the batch.
     # tf.nce_loss automatically draws a new sample of the negative labels
     # each time we evaluate the loss.
-    cost = tf.reduce_mean(
-        input_tensor=tf.nn.nce_loss(
-            weights=emb_net.nce_weights,
-            biases=emb_net.nce_biases,
-            inputs=model(train_inputs, is_train=True),
-            labels=train_labels,  #self.train_labels,
-            num_sampled=emb_net.num_sampled,
-            num_classes=emb_net.vocabulary_size,
-            **emb_net.nce_loss_args
-        )
-    )
 
     # Construct the optimizer. Note: AdamOptimizer is very slow in this case
-    train_params = model.weights
+    optimizer = tf.optimizers.Adagrad(learning_rate, initial_accumulator_value=0.1)
 
-    # train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_params)
-    train_op = tf.train.AdagradOptimizer(
-        learning_rate, initial_accumulator_value=0.1, use_locking=False).minimize(cost, var_list=train_params)
-
-    # Compute the cosine similarity between minibatch examples and all embeddings.
-    # For simple visualization of validation set.
+    # normalized embedding
     normalized_embeddings = emb_net.normalized_embeddings
-    valid_embed = tf.nn.embedding_lookup(normalized_embeddings, valid_dataset)
-    similarity = tf.matmul(valid_embed, normalized_embeddings, transpose_b=True)
-    # multiply all valid word vector with all word vector.
-    # transpose_b=True, normalized_embeddings is transposed before multiplication.
 
     # Step 5: Start training.
     print()
+    model.train()
 
-    sess.run(tf.global_variables_initializer())
+    # FIXME: multiple return
+    print(model([inputs, labels]))
+    exit()
+
     if resume:
         print("Load existing model" + "!" * 10)
-        model.load_weights(filepath=model_file_name + '.hdf5', sess=sess)
+        model.load_weights(filepath=model_file_name + '.hdf5')
 
     # save vocabulary to txt
     tl.nlp.save_vocab(count, name='vocab_text8.txt')
@@ -255,11 +235,18 @@ def main_word2vec_basic():
         batch_inputs, batch_labels, data_index = tl.nlp.generate_skip_gram_batch(
             data=data, batch_size=batch_size, num_skips=num_skips,
             skip_window=skip_window, data_index=data_index)
-        feed_dict = {train_inputs: batch_inputs, train_labels: batch_labels}
+
+
         # We perform one update step by evaluating the train_op (including it
         # in the list of returned values for sess.run()
-        _, loss_val = sess.run([train_op, cost], feed_dict=feed_dict)
-        average_loss += loss_val
+
+        with tf.GradientTape() as tape:
+            outputs, nce_cost = model([batch_inputs, batch_labels])
+
+        grad = tape.gradient(nce_cost, model.weights)
+        optimizer.apply_gradients(zip(grad, model.weights))
+
+        average_loss += nce_cost
 
         if step % print_freq == 0:
             if step > 0:
@@ -267,10 +254,18 @@ def main_word2vec_basic():
             print("Average loss at step %d/%d. loss: %f took: %fs/per step" % \
                 (step, num_steps, average_loss, time.time() - start_time))
             average_loss = 0
+
         # Prints out nearby words given a list of words.
         # Note that this is expensive (~20% slowdown if computed every 500 steps)
         if step % (print_freq * 5) == 0:
-            sim = similarity.eval(session=sess)
+
+            # Compute the cosine similarity between minibatch examples and all embeddings.
+            # For simple visualization of validation set.
+            valid_embed = tf.nn.embedding_lookup(normalized_embeddings, valid_dataset)
+            sim = tf.matmul(valid_embed, normalized_embeddings, transpose_b=True)
+            # multiply all valid word vector with all word vector.
+            # transpose_b=True, normalized_embeddings is transposed before multiplication.
+
             for i in xrange(valid_size):
                 valid_word = reverse_dictionary[valid_examples[i]]
                 top_k = 8  # number of nearest neighbors to print
@@ -283,7 +278,7 @@ def main_word2vec_basic():
 
         if (step % (print_freq * 20) == 0) and (step != 0):
             print("Save model, data and dictionaries" + "!" * 10)
-            model.save_weights(filepath=model_file_name + ".hdf5", sess=sess)
+            model.save_weights(filepath=model_file_name + ".hdf5")
             tl.files.save_any_to_npy(
                 save_dict={
                     'data': data,
@@ -304,46 +299,49 @@ def main_word2vec_basic():
     # Step 6: Visualize the normalized embedding matrix by t-SNE.
     print()
 
-    final_embeddings = sess.run(normalized_embeddings)  #.eval()
+    final_embeddings = normalized_embeddings  #.eval()
     tl.visualize.tsne_embedding(final_embeddings, reverse_dictionary, plot_only=500, \
         second=5, saveable=False, name='word2vec_basic')
 
     # Step 7: Evaluate by analogy questions. see tensorflow/models/embedding/word2vec_optimized.py
     print()
+    model.eval()
 
     #  from tensorflow/models/embedding/word2vec.py
     if not os.path.exists("questions-words.txt"):
         print("Downloading file 'questions-words.txt'")
         wget.download('http://download.tensorflow.org/data/questions-words.txt')
+
     analogy_questions = tl.nlp.read_analogies_file(eval_file='questions-words.txt', word2id=dictionary)
-    # The eval feeds three vectors of word ids for a, b, c, each of
-    # which is of size N, where N is the number of analogies we want to
-    # evaluate in one batch.
-    analogy_a = tf.placeholder(dtype=tf.int32)  # [N]
-    analogy_b = tf.placeholder(dtype=tf.int32)  # [N]
-    analogy_c = tf.placeholder(dtype=tf.int32)  # [N]
-    # Each row of a_emb, b_emb, c_emb is a word's embedding vector.
-    # They all have the shape [N, emb_dim]
-    a_emb = tf.gather(normalized_embeddings, analogy_a)  # a's embs
-    b_emb = tf.gather(normalized_embeddings, analogy_b)  # b's embs
-    c_emb = tf.gather(normalized_embeddings, analogy_c)  # c's embs
-    # We expect that d's embedding vectors on the unit hyper-sphere is
-    # near: c_emb + (b_emb - a_emb), which has the shape [N, emb_dim].
-    #   Bangkok Thailand Tokyo Japan -> Thailand - Bangkok = Japan - Tokyo
-    #   Japan = Tokyo + (Thailand - Bangkok)
-    #   d = c + (b - a)
-    target = c_emb + (b_emb - a_emb)
-    # Compute cosine distance between each pair of target and vocab.
-    # dist has shape [N, vocab_size].
-    dist = tf.matmul(target, normalized_embeddings, transpose_b=True)
     # For each question (row in dist), find the top 'n_answer' words.
     n_answer = 4
-    _, pred_idx = tf.nn.top_k(dist, n_answer)
 
     def predict(analogy):
+        # The eval feeds three vectors of word ids for a, b, c, each of
+        # which is of size N, where N is the number of analogies we want to
+        # evaluate in one batch.
+        analogy_a = analogy[:, 0]  # [N]
+        analogy_b = analogy[:, 1]  # [N]
+        analogy_c = analogy[:, 2]  # [N]
+        # Each row of a_emb, b_emb, c_emb is a word's embedding vector.
+        # They all have the shape [N, emb_dim]
+        a_emb = tf.gather(normalized_embeddings, analogy_a)  # a's embs
+        b_emb = tf.gather(normalized_embeddings, analogy_b)  # b's embs
+        c_emb = tf.gather(normalized_embeddings, analogy_c)  # c's embs
+        # We expect that d's embedding vectors on the unit hyper-sphere is
+        # near: c_emb + (b_emb - a_emb), which has the shape [N, emb_dim].
+        #   Bangkok Thailand Tokyo Japan -> Thailand - Bangkok = Japan - Tokyo
+        #   Japan = Tokyo + (Thailand - Bangkok)
+        #   d = c + (b - a)
+        target = c_emb + (b_emb - a_emb)
+        # Compute cosine distance between each pair of target and vocab.
+        # dist has shape [N, vocab_size].
+        dist = tf.matmul(target, normalized_embeddings, transpose_b=True)
+
         """Predict the top 4 answers for analogy questions."""
-        idx, = sess.run([pred_idx], {analogy_a: analogy[:, 0], analogy_b: analogy[:, 1], analogy_c: analogy[:, 2]})
-        return idx
+        _, pred_idx = tf.nn.top_k(dist, n_answer)
+
+        return pred_idx
 
     # Evaluate analogy questions and reports accuracy.
     #  i.e. How many questions we get right at precision@1.

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """
-This demo implements FastText[1] for sentence classification. This demo should be run in graph mode.
+This demo implements FastText[1] for sentence classification. This demo should be run in eager mode and
+can be slower than the corresponding demo in graph mode.
 
 FastText is a simple model for text classification with performance often close
 to state-of-the-art, and is useful as a solid baseline.
@@ -24,20 +25,16 @@ After 5 epochs, you should get test accuracy around 90.3%.
 [3] https://www.tensorflow.org/api_guides/python/nn#Candidate_Sampling
 
 """
-
 import os
 import array
 import hashlib
 import time
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import *
 from tensorlayer.models import *
-
-
-tf.logging.set_verbosity(tf.logging.DEBUG)
-tl.logging.set_verbosity(tl.logging.DEBUG)
 
 # Hashed n-grams with 1 < n <= N_GRAM are included as features
 # in addition to unigrams.
@@ -65,45 +62,24 @@ BATCH_SIZE = 32
 LEARNING_RATE = 0.01
 
 # Path to which to save the trained model
-MODEL_FILE_PATH = 'model_static.hdf5'
+MODEL_FILE_PATH = 'model_dynamic.hdf5'
 
 
-class FastTextClassifier(object):
-    """Simple wrapper class for creating the graph of FastText classifier."""
+class FastTextModel(Model):
+    """  Model structure and forwarding of FastText """
 
-    def __init__(self, vocab_size, embedding_size, n_labels):
-        self.vocab_size = vocab_size
-        self.embedding_size = embedding_size
-        self.n_labels = n_labels
+    def __init__(self, vocab_size, embedding_size, n_labels, name='fasttext'):
+        super(FastTextModel, self).__init__(name=name)
 
-        self.inputs = tf.placeholder(tf.int32, shape=[None, None], name='inputs')
-        self.labels = tf.placeholder(tf.int32, shape=[None], name='labels')
+        self.avg_embed = AverageEmbedding(vocab_size, embedding_size)
+        self.dense1 = Dense(n_units=10, in_channels=embedding_size)
+        self.dense2 = Dense(n_units=n_labels, in_channels=10)
 
-        # Model structure
-        net_in = Input([None, None], dtype=tf.int32)
-        net = AverageEmbedding(self.vocab_size, self.embedding_size)(net_in)
-        net = Dense(n_units=10)(net)
-        net_out = Dense(n_units=self.n_labels)(net)
-        self.model = Model(inputs=net_in, outputs=net_out, name="fast_text_classifier")
-
-        # Training operation
-        cost = tl.cost.cross_entropy(self.model(self.inputs, is_train=True), self.labels, name='cost')
-        self.train_op = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE).minimize(cost)
-
-        # Predictions
-        self.prediction_probs = tf.nn.softmax(self.model(self.inputs, is_train=True))
-        self.predictions = tf.argmax(self.model(self.inputs, is_train=True), axis=1, output_type=tf.int32)
-
-        # Evaluation
-        are_predictions_correct = tf.equal(self.predictions, self.labels)
-        self.accuracy = tf.reduce_mean(tf.cast(are_predictions_correct, tf.float32))
-
-    def save(self, sess, filename):
-        self.model.save_weights(filename, sess=sess)
-
-    def load(self, sess, filename):
-        self.model.load_weights(filename, sess=sess, in_order=False)
-
+    def forward(self, x):
+        z = self.avg_embed(x)
+        z = self.dense1(z)
+        z = self.dense2(z)
+        return z
 
 def augment_with_ngrams(unigrams, unigram_vocab_size, n_buckets, n=2):
     """Augment unigram features with hashed n-gram features."""
@@ -134,50 +110,66 @@ def load_and_preprocess_imdb_data(n_gram=None):
 
 def train_test_and_save_model():
     X_train, y_train, X_test, y_test = load_and_preprocess_imdb_data(N_GRAM)
-    classifier = FastTextClassifier(
+    model = FastTextModel(
         vocab_size=VOCAB_SIZE + N_BUCKETS,
         embedding_size=EMBEDDING_SIZE,
         n_labels=2,
     )
+    optimizer = tf.optimizers.Adam(learning_rate=LEARNING_RATE)
 
-    with tf.Session() as sess:
-        sess.run(tf.global_variables_initializer())
+    if os.path.exists(MODEL_FILE_PATH):
+        # loading pre-trained model if applicable
+        model.load_weights(MODEL_FILE_PATH)
 
-        if os.path.exists(MODEL_FILE_PATH):
-            # loading pre-trained model if applicable
-            classifier.load(sess, MODEL_FILE_PATH)
+    else:
+        # training
+        model.train()
 
-        else:
+        for epoch in range(N_EPOCH):
+            start_time = time.time()
+            print('Epoch %d/%d' % (epoch + 1, N_EPOCH))
+            train_accuracy = list()
+            for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size=BATCH_SIZE, shuffle=True):
 
-            for epoch in range(N_EPOCH):
-                start_time = time.time()
-                print('Epoch %d/%d' % (epoch + 1, N_EPOCH))
-                train_accuracy = list()
-                for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size=BATCH_SIZE, shuffle=True):
-                    accuracy, _ = sess.run(
-                        [classifier.accuracy, classifier.train_op], feed_dict={
-                            classifier.inputs: tl.prepro.pad_sequences(X_batch),
-                            classifier.labels: y_batch,
-                        }
-                    )
-                    train_accuracy.append(accuracy)
-                    if len(train_accuracy) % N_STEPS_TO_PRINT == 0:
-                        print("\t[%d/%d][%d]accuracy " % (epoch + 1, N_EPOCH, len(train_accuracy)),
-                              np.mean(train_accuracy[-N_STEPS_TO_PRINT:]))
+                # forward and define the loss function
+                # TODO: use tf.function to speed up
+                with tf.GradientTape() as tape:
+                    y_pred = model(tl.prepro.pad_sequences(X_batch))
+                    cost = tl.cost.cross_entropy(y_pred, y_batch, name='cost')
 
-                print("\tSummary: time %.5fs, overall accuracy" % (time.time() - start_time),
-                      np.mean(train_accuracy))
+                # backward, calculate gradients and update the weights
+                grad = tape.gradient(cost, model.weights)
+                optimizer.apply_gradients(zip(grad, model.weights))
 
-        test_accuracy = sess.run(
-            classifier.accuracy, feed_dict={
-                classifier.inputs: tl.prepro.pad_sequences(X_test),
-                classifier.labels: y_test,
-            }
-        )
-        print('Test accuracy: %.5f' % test_accuracy)
+                # calculate the accuracy
+                predictions = tf.argmax(y_pred, axis=1, output_type=tf.int32)
+                are_predictions_correct = tf.equal(predictions, y_batch)
+                accuracy = tf.reduce_mean(tf.cast(are_predictions_correct, tf.float32))
 
-        # saving the model
-        classifier.save(sess, MODEL_FILE_PATH)
+                train_accuracy.append(accuracy)
+                if len(train_accuracy) % N_STEPS_TO_PRINT == 0:
+                    print("\t[%d/%d][%d]accuracy " % (epoch + 1, N_EPOCH, len(train_accuracy)),
+                          np.mean(train_accuracy[-N_STEPS_TO_PRINT:]))
+
+            print("\tSummary: time %.5fs, overall accuracy" % (time.time() - start_time),
+                  np.mean(train_accuracy))
+
+    # evaluation and testing
+    model.eval()
+
+    # forward and calculate the accuracy
+    y_pred = model(tl.prepro.pad_sequences(X_test))
+    predictions = tf.argmax(y_pred, axis=1, output_type=tf.int32)
+    are_predictions_correct = tf.equal(predictions, y_test)
+    test_accuracy = tf.reduce_mean(tf.cast(are_predictions_correct, tf.float32))
+
+    print('Test accuracy: %.5f' % test_accuracy)
+
+    # saving the model
+    model.save_weights(MODEL_FILE_PATH)
+
 
 if __name__ == '__main__':
     train_test_and_save_model()
+
+

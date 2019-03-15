@@ -122,7 +122,7 @@ class Layer(object):
     def weights(self):
         return self._weights
 
-    def __call__(self, inputs, **kwargs):
+    def __call__(self, inputs, *args, **kwargs):
         """
         (1) Build the Layer if necessary.
         (2) Forward the computation and return results.
@@ -144,10 +144,15 @@ class Layer(object):
             self.build(inputs_shape)
             self._built = True
 
-        outputs = self.forward(input_tensors, **kwargs)
+        outputs = self.forward(input_tensors, *args, **kwargs)
 
         if not self._nodes_fixed:
-            self._add_node(input_tensors, outputs)
+            # FIXME: fix this
+            if isinstance(outputs, tuple):
+                for out in outputs:
+                    self._add_node(input_tensors, out)
+            else:
+                self._add_node(input_tensors, outputs)
         return outputs
 
     def _add_node(self, input_tensors, output_tensors):

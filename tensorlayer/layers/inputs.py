@@ -24,6 +24,8 @@ class _InputLayer(Layer):
     ----------
     shape : tuple (int)
         Including batch size.
+    dtype: dtype
+        The type of input values. By default, tf.float32.
     name : None or str
         A unique layer name.
 
@@ -55,26 +57,24 @@ class _InputLayer(Layer):
         return super(_InputLayer, self).__call__(inputs)
 
     def build(self, inputs_shape):
-        # FIXME: documentation need double check
-        """
-        no weights to define
-        """
         pass
 
     def forward(self, inputs):
-        # FIXME: documentation need double check
-        """
-        Parameters
-        ----------
-        inputs : input tensor
-            The input of a network.
-        is_train: bool
-            train (True) or test (False)
-        """
         return inputs
 
 
 def Input(shape, dtype=tf.float32, name=None):
+    """
+    The :class:`Input` class is the starting layer of a neural network.
+
+    Parameters
+    ----------
+    shape : tuple (int)
+        Including batch size.
+    name : None or str
+        A unique layer name.
+
+    """
     input_layer = _InputLayer(shape, dtype=dtype, name=name)
     outputs = input_layer._nodes[0].out_tensors[0]
     return outputs

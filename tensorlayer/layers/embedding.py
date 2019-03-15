@@ -61,6 +61,10 @@ class OneHot(Layer):
         self.dtype = dtype
         logging.info("OneHotInput  %s" % (self.name))
 
+        if not self._built:
+            self.build(tuple())
+            self._built = True
+
         if self.depth is None:
             raise RuntimeError(self.__class__.__name__ + ": depth == None the number of output units is undefined")
 
@@ -94,12 +98,18 @@ class OneHot(Layer):
         return outputs
 
 
-# FIXME: not finshed
+# TODO: how to handle the multiple output in forward
 class Word2vecEmbedding(Layer):
     """
     The :class:`Word2vecEmbedding` class is a fully connected layer.
     For Word Embedding, words are input as integer index.
     The output is the embedded word vector.
+
+    The layer integrates NCE loss by default (activate_nce_loss=True).
+    If the NCE loss is activated, in a dynamic model,
+    the computation of nce loss can be turned off in forward feeding
+    by setting use_nce_loss=False when the layer is called.
+    The NCE loss can be deactivated by setting activate_nce_loss=False.
 
     Parameters
     ----------
@@ -109,6 +119,12 @@ class Word2vecEmbedding(Layer):
         The number of embedding dimensions
     num_sampled : int
         The mumber of negative examples for NCE loss
+    activate_nce_loss : boolean
+        Whether activate nce loss or not. By default, True
+        If True, the layer will return both outputs of embedding and nce_cost in forward feeding.
+        In a dynamic model, the computation of nce loss can be turned off in forward feeding
+        by setting use_nce_loss=False when the layer is called.
+        If False, the layer will only return outputs of embedding.
     nce_loss_args : dictionary
         The arguments for tf.nn.nce_loss()
     E_init : initializer
@@ -127,9 +143,9 @@ class Word2vecEmbedding(Layer):
     normalized_embeddings : Tensor
         Normalized embedding matrix.
     nce_weights : Tensor
-        The NCE weights
+        The NCE weights only when activate_nce_loss is True.
     nce_biases: Tensor
-        The NCE biases
+        The NCE biases only when activate_nce_loss is True.
 
     Examples
     --------
@@ -138,41 +154,28 @@ class Word2vecEmbedding(Layer):
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> batch_size = 8
-
-    >>> net_in = tl.layers.Input([batch_size], dtype=tf.int32)
+    >>> embedding_size = 50
+    >>> inputs = tl.layers.Input([batch_size], dtype=tf.int32)
+    >>> labels = tl.layers.Input([batch_size, 1], dtype=tf.int32)
     >>> emb_net = tl.layers.Word2vecEmbedding(
-    >>>       vocabulary_size=vocabulary_size,
-    >>>       embedding_size=embedding_size,
-    >>>       num_sampled=num_sampled,
-    >>>       nce_loss_args={},
-    >>>       E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
-    >>>       nce_W_init=tl.initializers.truncated_normal(stddev=float(1.0 / np.sqrt(embedding_size))),
-    >>>       nce_b_init=tl.initializers.constant(value=0.0),
-    >>>       name='word2vec_layer',
-    >>> )(net_in)
-
-    >>> model = tl.models.Model(inputs=net_in, outputs=emb_net, name="word2vec_model")
-
-    >>> nce_cost = tf.reduce_mean(
-    >>>     input_tensor=tf.nn.nce_loss(
-    >>>         weights=emb_net.nce_weights,
-    >>>         biases=emb_net.nce_biases,
-    >>>         inputs=model(train_inputs, is_train=True),
-    >>>         labels=train_labels,
-    >>>         num_sampled=emb_net.num_sampled,
-    >>>         num_classes=emb_net.vocabulary_size,
-    >>>         **emb_net.nce_loss_args
-    >>>    )
+    >>>     vocabulary_size=10000,
+    >>>     embedding_size=embedding_size,
+    >>>     num_sampled=100,
+    >>>     activate_nce_loss=True, # the nce loss is activated
+    >>>     nce_loss_args={},
+    >>>     E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
+    >>>     nce_W_init=tl.initializers.truncated_normal(stddev=float(1.0 / np.sqrt(embedding_size))),
+    >>>     nce_b_init=tl.initializers.constant(value=0.0),
+    >>>     name='word2vec_layer',
     >>> )
-
-    >>> train_params = model.weights
-    >>> train_op = tf.optimizers.SGD(learning_rate).minimize(nce_cost, var_list=train_params)
-
-    >>> normalized_embeddings = emb_net.normalized_embeddings
+    >>> print(emb_net)
+    Word2vecEmbedding(vocabulary_size=10000, embedding_size=50, num_sampled=100, activate_nce_loss=True, nce_loss_args={})
+    >>> embed_tensor, embed_nce_loss = emb_net([inputs, labels]) # the nce loss is calculate
+    >>> embed_tensor = emb_net([inputs, labels], use_nce_loss=False) # the nce loss is turned off and the labels will be ignored
 
     References
     ----------
-    `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`__
+    `https://www.tensorflow.org/tutorials/representation/word2vec`
 
     """
 
@@ -181,6 +184,7 @@ class Word2vecEmbedding(Layer):
             vocabulary_size=80000,
             embedding_size=200,
             num_sampled=64,
+            activate_nce_loss = True,
             nce_loss_args=None,
             E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
             nce_W_init=tl.initializers.truncated_normal(stddev=0.03),
@@ -192,11 +196,30 @@ class Word2vecEmbedding(Layer):
         self.vocabulary_size = vocabulary_size
         self.embedding_size = embedding_size
         self.num_sampled = num_sampled
-        self.nce_loss_args = nce_loss_args
         self.E_init = E_init
-        self.nce_W_init = nce_W_init
-        self.nce_b_init = nce_b_init
+        self.activate_nce_loss = activate_nce_loss
+
+        if self.activate_nce_loss:
+            self.nce_loss_args = nce_loss_args
+            self.nce_W_init = nce_W_init
+            self.nce_b_init = nce_b_init
+
+        if not self._built:
+            self.build(tuple())
+            self._built = True
+
         logging.info("Word2vecEmbedding %s: (%d, %d)" % (self.name, self.vocabulary_size, self.embedding_size))
+
+    def __repr__(self):
+        s = ('{classname}(')
+        s += 'vocabulary_size={vocabulary_size}'
+        s += ', embedding_size={embedding_size}'
+        s += ', num_sampled={num_sampled}'
+        s += ', activate_nce_loss={activate_nce_loss}'
+        if self.activate_nce_loss:
+            s += ', nce_loss_args={nce_loss_args}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
         """
@@ -219,24 +242,61 @@ class Word2vecEmbedding(Layer):
 
         self.normalized_embeddings = tf.nn.l2_normalize(self.embeddings, 1)
 
-        # Construct the variables for the NCE loss (i.e. negative sampling)
-        self.nce_weights = self._get_weights(
-            "nce_weights", shape=(self.vocabulary_size, self.embedding_size), init=self.nce_W_init,
-        )
+        if self.activate_nce_loss:
+            # Construct the variables for the NCE loss (i.e. negative sampling)
+            self.nce_weights = self._get_weights(
+                "nce_weights", shape=(self.vocabulary_size, self.embedding_size), init=self.nce_W_init,
+            )
 
-        self.nce_biases = self._get_weights(
-            "nce_biases", shape=(self.vocabulary_size,), init=self.nce_b_init,
-        )
+            self.nce_biases = self._get_weights(
+                "nce_biases", shape=(self.vocabulary_size,), init=self.nce_b_init,
+            )
 
     @tf.function
-    def forward(self, inputs):
+    def forward(self, inputs, use_nce_loss=None):
         """
         Parameters
         ----------
-        inputs : input tensor
-            The input of a network
+        inputs : tensor or list
+            If the nce loss is activated and is used, the argument should be a list of two tensors [inputs, labels].
+            Otherwise, the argument should be a single tensor which is inputs.
+        use_nce_loss: boolean
+            Whether use NCE loss in this run.
+            If the nce loss is used, the activate_nce_loss should be True when the layer is initialized.
+            By default, same as activate_nce_loss.
+
+        Outputs:
+        ----------
+        outputs: tensor
+        nce_cost: tensor
+            The nce_cost is returned only if the nce_loss is used.
         """
-        outputs = tf.nn.embedding_lookup(params=self.embeddings, ids=inputs)
+
+        if isinstance(inputs, list):
+            outputs = tf.nn.embedding_lookup(params=self.embeddings, ids=inputs[0])
+        else:
+            outputs = tf.nn.embedding_lookup(params=self.embeddings, ids=inputs)
+
+        if use_nce_loss is True and not self.activate_nce_loss:
+            raise AttributeError("The nce loss is not activated when the %s is initialized. Please set activate_nce_loss=True."
+                                 % self.__class__.__name__ )
+
+        if self.activate_nce_loss and (use_nce_loss is True or use_nce_loss is None):
+            if not isinstance(inputs, list):
+                raise ValueError("If nce loss is used, the labels of inputs must be provided.")
+
+            nce_cost = tf.reduce_mean(
+                input_tensor=tf.nn.nce_loss(
+                    weights=self.nce_weights,
+                    biases=self.nce_biases,
+                    inputs=outputs,
+                    labels=inputs[1],
+                    num_sampled=self.num_sampled,
+                    num_classes=self.vocabulary_size,
+                    **self.nce_loss_args
+            ))
+
+            return outputs, nce_cost
 
         return outputs
 
