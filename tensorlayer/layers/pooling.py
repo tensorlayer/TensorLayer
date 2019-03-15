@@ -314,7 +314,7 @@ class MaxPool2d(Layer):
         # super(MaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.filter_size = filter_size
-        self.strides = strides
+        self.strides = self._strides = strides
         self.padding = padding
         self.data_format = data_format
 
@@ -335,7 +335,7 @@ class MaxPool2d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        self.strides = [1, self.strides[0], self.strides[1], 1]
+        self._strides = [1, self.strides[0], self.strides[1], 1]
         if self.data_format == 'channels_last':
             self.data_format = 'NHWC'
         elif self.data_format == 'channels_first':
@@ -354,7 +354,7 @@ class MaxPool2d(Layer):
         outputs = tf.nn.max_pool(
             input=inputs,
             ksize=self.filter_size,
-            strides=self.strides,
+            strides=self._strides,
             padding=self.padding,
             name=self.name
         )
@@ -400,7 +400,7 @@ class MeanPool2d(Layer):
         # super(MeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.filter_size = filter_size
-        self.strides = strides
+        self.strides = self._strides = strides
         self.padding = padding
         self.data_format = data_format
 
@@ -421,7 +421,7 @@ class MeanPool2d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        self.strides = [1, self.strides[0], self.strides[1], 1]
+        self._strides = [1, self.strides[0], self.strides[1], 1]
         if self.data_format == 'channels_last':
             self.data_format = 'NHWC'
         elif self.data_format == 'channels_first':
@@ -441,7 +441,7 @@ class MeanPool2d(Layer):
         outputs = tf.nn.avg_pool(
             input=inputs,
             ksize=self.filter_size,
-            strides=self.strides,
+            strides=self._strides,
             padding=self.padding,
             name=self.name
         )
@@ -477,14 +477,14 @@ class MaxPool3d(Layer):
             self,  #prev_layer,
             filter_size=(3, 3, 3),
             strides=(2, 2, 2),
-            padding='valid',
+            padding='VALID',
             data_format='channels_last',
             name=None,  #'maxpool3d'
     ):
         # super(MaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.filter_size = filter_size
-        self.strides = strides
+        self.strides = self._strides = strides
         self.padding = padding
         self.data_format = data_format
 
@@ -505,7 +505,7 @@ class MaxPool3d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        self.strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
+        self._strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
         if self.data_format == 'channels_last':
             self.data_format = 'NDHWC'
         elif self.data_format == 'channels_first':
@@ -525,8 +525,8 @@ class MaxPool3d(Layer):
         outputs = tf.nn.max_pool3d(
             input=inputs,
             ksize=self.filter_size,
-            strides=self.strides,
-            padding=self.filter_size,
+            strides=self._strides,
+            padding=self.padding,
             data_format=self.data_format,
             name=self.name,
         )
@@ -570,7 +570,7 @@ class MeanPool3d(Layer):
         # super(MeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.filter_size = filter_size
-        self.strides = strides
+        self.strides = self._strides = strides
         self.padding = padding
         self.data_format = data_format
 
@@ -591,7 +591,7 @@ class MeanPool3d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        self.strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
+        self._strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
         if self.data_format == 'channels_last':
             self.data_format = 'NDHWC'
         elif self.data_format == 'channels_first':
@@ -611,8 +611,8 @@ class MeanPool3d(Layer):
         outputs = tf.nn.avg_pool3d(
             input=inputs,
             ksize=self.filter_size,
-            strides=self.strides,
-            padding=self.filter_size,
+            strides=self._strides,
+            padding=self.padding,
             data_format=self.data_format,
             name=self.name,
         )
@@ -641,7 +641,7 @@ class GlobalMaxPool1d(Layer):
         # super(GlobalMaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
 
-        self.data_format= data_format
+        self.data_format = data_format
         self.name = name
 
         self.build()
