@@ -3743,20 +3743,18 @@ def keypoint_resize_random_crop(image, annos, mask=None, size=(368, 368)):
 
     _target_height = size[0]
     _target_width = size[1]
-    _target_ratio = _target_width / _target_height
 
     if len(np.shape(image)) == 2:
         image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
     input_height, input_width, _ = np.shape(image)
-    input_ratio = input_width / input_height
 
     vertical_ratio = _target_height / input_height
     horizontal_ratio = _target_width / input_width
 
     rescale_ratio = max(vertical_ratio, horizontal_ratio)
 
-    image, annos, mask = resize_image(image, annos, mask, int(input_width * rescale_ratio),
-                                      int(input_height * rescale_ratio))
+    image, annos, mask = resize_image(image, annos, mask, round(input_width * rescale_ratio),
+                                      round(input_height * rescale_ratio))
 
     # At this point we should have input image which matches at least target
     # height or target width, while the other dimensions larger than target.
