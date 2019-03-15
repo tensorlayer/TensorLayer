@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer.layers.core import Layer
 # from tensorlayer.layers.core import LayersConfig
@@ -98,10 +99,13 @@ class DeConv2dLayer(Layer):
             outputs_shape=(1, 256, 256, 128),
             strides=(1, 2, 2, 1),
             padding='SAME',
-            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            b_init=tf.compat.v1.initializers.constant(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
+            dilation_rate=[1, 1],
+            W_init=tl.initializers.truncated_normal(stddev=0.02),
+            b_init=tl.initializers.constant(value=0.0),
+            # W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+            # b_init=tf.compat.v1.initializers.constant(value=0.0),
+            # W_init_args=None,
+            # b_init_args=None,
             name=None,  #'decnn2d_layer',
     ):
         # super(DeConv2dLayer, self
@@ -112,10 +116,9 @@ class DeConv2dLayer(Layer):
         self.outputs_shape = outputs_shape
         self.strides = strides
         self.padding = padding
+        self.dilation_rate = dilation_rate
         self.W_init = W_init
         self.b_init = b_init
-        self.W_init_args = W_init_args
-        self.b_init_args = b_init_args
         logging.info(
             "DeConv2dLayer %s: shape: %s out_shape: %s strides: %s pad: %s act: %s" % (
                 self.name, str(shape), str(outputs_shape), str(strides), padding,
@@ -123,14 +126,28 @@ class DeConv2dLayer(Layer):
             )
         )
 
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(in_channels={pre_channel}, out_channels={n_filter}, kernel_size={filter_size}'
+             ', strides={strides}, padding={padding}')
+        if self.dilation_rate != [1,] * len(self.dilation_rate):
+            s += ', dilation={dilation_rate}'
+        if self.b_init is None:
+            s += ', bias=False'
+        s += (', ' + actstr)
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, n_filter=self.shape[-2], filter_size=(self.shape[0], self.shape[1]), pre_channel=self.shape[-1], **self.__dict__)
+
     def build(self, inputs):
         # self.W = tf.compat.v1.get_variable(
         #     name=self.name + '\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
         #     **self.W_init_args
         # )
-        self.W = self._get_weights("filters", shape=self.shape, init=self.W_init, init_args=self.W_init_args)
+        self.W = self._get_weights("filters", shape=self.shape, init=self.W_init)
         if self.b_init:
-            self.b = self._get_weights("biases", shape=(self.shape[-2]), init=self.b_init, init_args=self.b_init_args)
+            self.b = self._get_weights("biases", shape=(self.shape[-2]), init=self.b_init)
         # if self.b_init:
         #     self.b = tf.compat.v1.get_variable(
         #         name=self.name + '\bias', shape=(self.shape[-2]), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
@@ -142,7 +159,13 @@ class DeConv2dLayer(Layer):
 
     def forward(self, inputs):
         outputs = tf.nn.conv2d_transpose(
-            inputs, self.W, outputs_shape=self.outputs_shape, strides=self.strides, padding=self.padding
+            input=inputs,
+            filters=self.W,
+            output_shape=self.outputs_shape,
+            strides=self.strides,
+            padding=self.padding,
+            dilations=self.dilation_rate,
+            name=self.name,
         )
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
@@ -187,10 +210,13 @@ class DeConv3dLayer(Layer):
             outputs_shape=(1, 12, 32, 32, 128),
             strides=(1, 2, 2, 2, 1),
             padding='SAME',
-            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            b_init=tf.compat.v1.initializers.constant(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
+            dilation_rate=[1, 1, 1],
+            W_init=tl.initializers.truncated_normal(stddev=0.02),
+            b_init=tl.initializers.constant(value=0.0),
+            # W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+            # b_init=tf.compat.v1.initializers.constant(value=0.0),
+            # W_init_args=None,
+            # b_init_args=None,
             name=None,  #'decnn3d_layer',
     ):
         # super(DeConv3dLayer, self
@@ -201,10 +227,9 @@ class DeConv3dLayer(Layer):
         self.outputs_shape = outputs_shape
         self.strides = strides
         self.padding = padding
+        self.dilation_rate = dilation_rate
         self.W_init = W_init
         self.b_init = b_init
-        self.W_init_args = W_init_args
-        self.b_init_args = b_init_args
         logging.info(
             "DeConv3dLayer %s: shape: %s out_shape: %s strides: %s pad: %s act: %s" % (
                 self.name, str(shape), str(outputs_shape), str(strides), padding,
@@ -212,14 +237,28 @@ class DeConv3dLayer(Layer):
             )
         )
 
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(in_channels={pre_channel}, out_channels={n_filter}, kernel_size={filter_size}'
+             ', strides={strides}, padding={padding}')
+        if self.dilation_rate != [1,] * len(self.dilation_rate):
+            s += ', dilation={dilation_rate}'
+        if self.b_init is None:
+            s += ', bias=False'
+        s += (', ' + actstr)
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, n_filter=self.shape[-2], filter_size=(self.shape[0], self.shape[1], self.shape[2]), pre_channel=self.shape[-1], **self.__dict__)
+
     def build(self, inputs):
         # self.W = tf.compat.v1.get_variable(
         #     name=self.name + '\kernel', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
         #     **self.W_init_args
         # )
-        self.W = self._get_weights("filters", shape=self.shape, init=self.W_init, init_args=self.W_init_args)
+        self.W = self._get_weights("filters", shape=self.shape, init=self.W_init)
         if self.b_init:
-            self.b = self._get_weights("biases", shape=(self.shape[-2]), init=self.b_init, init_args=self.b_init_args)
+            self.b = self._get_weights("biases", shape=(self.shape[-2]), init=self.b_init)
         # if self.b_init:
         #     self.b = tf.compat.v1.get_variable(
         #         name=self.name + '\kernel', shape=(self.shape[-2]), initializer=self.b_init,
@@ -228,7 +267,12 @@ class DeConv3dLayer(Layer):
 
     def forward(self, inputs):
         outputs = tf.nn.conv3d_transpose(
-            inputs, self.W, outputs_shape=self.outputs_shape, strides=self.strides, padding=self.padding
+            input=inputs,
+            filters=self.W,
+            output_shape=self.outputs_shape,
+            strides=self.strides,
+            padding=self.padding,
+            dilations=self.dilation_rate
         )
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')

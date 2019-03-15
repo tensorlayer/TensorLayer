@@ -82,11 +82,6 @@ class Conv1d(Layer):
             data_format="channels_last",
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
-            # W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            # b_init=tf.compat.v1.initializers.constant(value=0.0),
-            # W_init_args=None,
-            # b_init_args=None,
-            use_cudnn_on_gpu=None,
             in_channels=None,
             name=None,  #'conv1d'
     ):
@@ -98,6 +93,7 @@ class Conv1d(Layer):
         self.stride = stride
         self.act = act
         self.padding = padding
+        self.data_format = data_format
         self.dilation_rate = dilation_rate
         self.W_init = W_init
         self.b_init = b_init
@@ -109,12 +105,11 @@ class Conv1d(Layer):
 
         # self.W_init_args = W_init_args
         # self.b_init_args = b_init_args
-        # FIXME: Don't know the use of use_cudnn_on_gpu
-        self.use_cudnn_on_gpu = use_cudnn_on_gpu
+        # self.use_cudnn_on_gpu = use_cudnn_on_gpu
         logging.info(
-            "Conv1d %s: n_filter: %d filter_size: %s stride: %d pad: %s act: %s dilation_rate: %d" % (
+            "Conv1d %s: n_filter: %d filter_size: %s stride: %d pad: %s act: %s" % (
                 self.name, n_filter, filter_size, stride, padding,
-                self.act.__name__ if self.act is not None else 'No Activation', dilation_rate
+                self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
 
@@ -134,14 +129,14 @@ class Conv1d(Layer):
 
     def build(self, inputs_shape):
         if self.data_format == 'channels_last':
-            self.data_format == 'HWC'
+            self.data_format = 'NWC'
             if self.in_channels:
                 self.pre_channel = self.in_channels
             else:
                 self.pre_channel = inputs_shape[-1]
                 self.in_channels = self.pre_channel
         elif self.data_format == 'channels_first':
-            self.data_format == 'HCW'
+            self.data_format = 'NCW'
             if self.in_channels:
                 self.pre_channel = self.in_channels
             else:
@@ -150,26 +145,43 @@ class Conv1d(Layer):
         else:
             raise Exception("data_format should be either channels_last or channels_first")
 
-        self.filter_size = (self.filter_size, self.pre_channel, self.n_filter)
+        self.filter_shape = (
+            self.filter_size, self.pre_channel, self.n_filter
+        )
 
         # TODO : check
-        self.W = self._get_weights("filters", shape=self.filter_size, init=self.W_init, init_args=self.W_init_args)
+        self.W = self._get_weights(
+            "filters", shape=self.filter_shape, init=self.W_init
+        )
+
         if self.b_init:
-            self.b = self._get_weights("biases", shape=(self.n_filter), init=self.b_init, init_args=self.b_init_args)
+            self.b = self._get_weights(
+                "biases", shape=(self.n_filter), init=self.b_init
+            )
 
     def forward(self, inputs):
+        # outputs = tf.nn.conv1d(
+        #     value=inputs,
+        #     filters=self.W,
+        #     stride=self.stride,
+        #     padding=self.padding,
+        #     use_cudnn_on_gpu=None,
+        #     data_format=self.data_format,
+        #     name=self.name,
+        # )
         outputs = tf.nn.conv1d(
-            value=inputs,
+            input=inputs,
             filters=self.W,
             stride=self.stride,
             padding=self.padding,
-            use_cudnn_on_gpu=None,
             data_format=self.data_format,
+            dilations=self.dilation_rate,
             name=self.name,
         )
         if self.b_init:
-            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
-        outputs = self.act(outputs)
+            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
+        if self.act:
+            outputs = self.act(outputs)
         return outputs
         # _conv1d = tf.compat.v1.layers.Conv1D(
         #     filters=n_filter, kernel_size=filter_size, strides=stride, padding=padding, data_format=data_format,
@@ -251,7 +263,7 @@ class Conv2d(Layer):
             # b_init=tf.compat.v1.initializers.constant(value=0.0),
             # W_init_args=None,
             # b_init_args=None,
-            use_cudnn_on_gpu=None,
+            # use_cudnn_on_gpu=None,
             in_channels=None,
             name=None,  #'conv2d',
     ):
@@ -279,7 +291,7 @@ class Conv2d(Layer):
         self.b_init = b_init
         # self.W_init_args = W_init_args
         # self.b_init_args = b_init_args
-        self.use_cudnn_on_gpu = use_cudnn_on_gpu
+        # self.use_cudnn_on_gpu = use_cudnn_on_gpu
         self.in_channels = in_channels
 
         if self.in_channels:
@@ -329,26 +341,41 @@ class Conv2d(Layer):
         else:
             raise Exception("data_format should be either channels_last or channels_first")
 
-        self.filter_shape = (self.filter_size[0], self.filter_size[1], self.pre_channel, self.n_filter)
+        self.filter_shape = (
+            self.filter_size[0], self.filter_size[1], self.pre_channel, self.n_filter
+        )
 
-        self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init)
+        self.W = self._get_weights(
+            "filters", shape=self.filter_shape, init=self.W_init
+        )
 
         if self.b_init:
-            self.b = self._get_weights("biases", shape=(self.n_filter,), init=self.b_init)
+            self.b = self._get_weights(
+                "biases", shape=(self.n_filter,), init=self.b_init
+            )
 
     def forward(self, inputs):
+        # outputs = tf.nn.conv2d(
+        #     input=inputs,
+        #     filter=self.W,
+        #     strides=self._strides,
+        #     padding=self.padding,
+        #     use_cudnn_on_gpu=self.use_cudnn_on_gpu,  #True,
+        #     data_format=self.data_format,  #'NHWC',
+        #     dilations=self._dilation_rate,  #[1, 1, 1, 1],
+        #     name=self.name,
+        # )
         outputs = tf.nn.conv2d(
             input=inputs,
-            filter=self.W,
+            filters=self.W,
             strides=self._strides,
             padding=self.padding,
-            use_cudnn_on_gpu=self.use_cudnn_on_gpu,  #True,
             data_format=self.data_format,  #'NHWC',
             dilations=self._dilation_rate,  #[1, 1, 1, 1],
             name=self.name,
         )
         if self.b_init:
-            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
         if self.act:
             outputs = self.act(outputs)
         return outputs
@@ -488,16 +515,16 @@ class Conv3d(Layer):
 
     def build(self, inputs_shape):
         if self.data_format == 'channels_last':
-            self.data_format == 'NDHWC'
+            self.data_format = 'NDHWC'
             if self.in_channels:
                 self.pre_channel = self.in_channels
             else:
                 self.pre_channel = inputs_shape[-1]
                 self.in_channels = self.pre_channel
             self._strides = [1, self._strides[0], self._strides[1], self._strides[2], 1]
-            self.dilation_rate = [1, self.dilation_rate[0], self.dilation_rate[1], self.dilation_rate[2], 1]
+            self._dilation_rate = [1, self.dilation_rate[0], self.dilation_rate[1], self.dilation_rate[2], 1]
         elif self.data_format == 'channels_first':
-            self.data_format == 'NCDHW'
+            self.data_format = 'NCDHW'
             if self.in_channels:
                 self.pre_channel = self.in_channels
             else:
@@ -512,24 +539,27 @@ class Conv3d(Layer):
             self.filter_size[0], self.filter_size[1], self.filter_size[2], self.pre_channel, self.n_filter
         )
 
-        self.W = self._get_weights("filters", shape=self.filter_size, init=self.W_init, init_args=self.W_init_args)
+        self.W = self._get_weights(
+            "filters", shape=self.filter_shape, init=self.W_init
+        )
+
         if self.b_init:
             self.b = self._get_weights(
-                "biases", shape=(self.n_filter,), init=self.b_init, init_args=self.b_init_args
+                "biases", shape=(self.n_filter,), init=self.b_init
             )
 
     def forward(self, inputs):
         outputs = tf.nn.conv3d(
             input=inputs,
-            filter=self.W,
+            filters=self.W,
             strides=self._strides,
             padding=self.padding,
-            # use_cudnn_on_gpu=self.use_cudnn_on_gpu, #True,
             data_format=self.data_format,  #'NDHWC',
             dilations=self._dilation_rate,  #[1, 1, 1, 1, 1],
             name=self.name,
         )
         if self.b_init:
-            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
-        outputs = self.act(outputs)
+            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
+        if self.act:
+            outputs = self.act(outputs)
         return outputs
