@@ -4,6 +4,7 @@
 import numpy as np
 
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer.layers.core import Layer
 
@@ -65,10 +66,12 @@ class DeConv2d(Layer):
             padding='SAME',
             dilation_rate=(1, 1),
             data_format='channels_last',
-            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            b_init=tf.compat.v1.initializers.constant(value=0.0),
-            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
+            W_init=tl.initializers.truncated_normal(stddev=0.02),
+            b_init=tl.initializers.constant(value=0.0),
+            # W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+            # b_init=tf.compat.v1.initializers.constant(value=0.0),
+            # W_init_args=None,  # TODO: Remove when TF <1.3 not supported
+            # b_init_args=None,  # TODO: Remove when TF <1.3 not supported
             name=None,  #'decnn2d'
     ):
         # super(DeConv2d, self
@@ -83,8 +86,6 @@ class DeConv2d(Layer):
         self.dilation_rate = dilation_rate
         self.W_init = W_init
         self.b_init = b_init
-        self.W_init_args = W_init_args  # TODO: Remove when TF <1.3 not supported
-        self.b_init_args = b_init_args  # TODO: Remove when TF <1.3 not supported
 
         logging.info(
             "DeConv2d {}: n_filters: {} strides: {} padding: {} act: {} dilation: {}".format(
@@ -96,6 +97,20 @@ class DeConv2d(Layer):
 
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2, DeConv2d and DeConv2dLayer are different.")
+
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
+             ', strides={strides}, padding={padding}')
+        if self.dilation_rate != (1,) * len(self.dilation_rate):
+            s += ', dilation={dilation_rate}'
+        if self.b_init is None:
+            s += ', bias=False'
+        s += (', ' + actstr)
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
         self.layer = tf.keras.layers.Conv2DTranspose(
@@ -115,6 +130,10 @@ class DeConv2d(Layer):
         # print(inputs_shape)
         # print(np.random.uniform(size=inputs_shape).shape)
         # exit()
+        if self.data_format == "channels_first":
+            self.in_channels = inputs_shape[1]
+        else:
+            self.in_channels = inputs_shape[-1]
         _out = self.layer(tf.convert_to_tensor(np.random.uniform(size=inputs_shape), dtype=np.float32))#np.random.uniform([1] + list(inputs_shape)))  # initialize weights
         outputs_shape = _out.shape
         self._weights = self.layer.weights
@@ -172,10 +191,8 @@ class DeConv3d(Layer):
             padding='SAME',
             act=None,
             data_format='channels_last',
-            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            b_init=tf.compat.v1.initializers.constant(value=0.0),
-            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
+            W_init=tl.initializers.truncated_normal(stddev=0.02),
+            b_init=tl.initializers.constant(value=0.0),
             name=None,  #'decnn3d'
     ):
         # super(DeConv3d, self
@@ -189,8 +206,6 @@ class DeConv3d(Layer):
         self.data_format = data_format
         self.W_init = W_init
         self.b_init = b_init
-        self.W_init_args = W_init_args  # TODO: Remove when TF <1.3 not supported
-        self.b_init_args = b_init_args  # TODO: Remove when TF <1.3 not supported
 
         logging.info(
             "DeConv3d %s: n_filters: %s strides: %s pad: %s act: %s" % (
@@ -198,6 +213,20 @@ class DeConv3d(Layer):
                 self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
+
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
+             ', strides={strides}, padding={padding}')
+        # if self.dilation_rate != (1,) * len(self.dilation_rate):
+        #     s += ', dilation={dilation_rate}'
+        if self.b_init is None:
+            s += ', bias=False'
+        s += (', ' + actstr)
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
         # with tf.variable_scope(name) as vs:
@@ -213,6 +242,10 @@ class DeConv3d(Layer):
             bias_initializer=self.b_init,
             name=self.name,
         )
+        if self.data_format == "channels_first":
+            self.in_channels = inputs_shape[1]
+        else:
+            self.in_channels = inputs_shape[-1]
 
         _out = self.layer(tf.convert_to_tensor(np.random.uniform(size=inputs_shape), dtype=np.float32)) #self.layer(np.random.uniform([1] + list(inputs_shape)))  # initialize weights
         outputs_shape = _out.shape
