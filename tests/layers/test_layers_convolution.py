@@ -21,12 +21,22 @@ class Layer_Convolution_1D_Test(CustomTestCase):
         print("\n#################################")
 
         cls.batch_size = 8
-        cls.inputs_shape = [None, 100, 1]
+        cls.inputs_shape = [cls.batch_size, 100, 1]
         cls.input_layer = Input(cls.inputs_shape, name='input_layer')
 
-        cls.n1 = tl.layers.Conv1dLayer(shape=(5, 1, 32), stride=2)(cls.input_layer)
-        cls.n2 = tl.layers.Conv1d(n_filter=32, filter_size=5, stride=2)(cls.n1)
-        cls.model = Model(inputs=cls.input_layer, outputs=cls.n2)
+        cls.n1 = tl.layers.Conv1dLayer(
+            shape=(5, 1, 32), stride=2
+        )(cls.input_layer)
+
+        cls.n2 = tl.layers.Conv1d(
+            n_filter=32, filter_size=5, stride=2
+        )(cls.n1)
+
+        cls.n3 = tl.layers.DeConv1dLayer(
+            shape=(5, 64, 32), outputs_shape=(cls.batch_size, 50, 64), strides=(1, 2, 1), name='deconv2dlayer'
+        )(cls.n2)
+
+        cls.model = Model(inputs=cls.input_layer, outputs=cls.n3)
         print("Testing Conv1d model: \n", cls.model)
 
         # cls.n3 = tl.layers.SeparableConv1d(
@@ -53,6 +63,14 @@ class Layer_Convolution_1D_Test(CustomTestCase):
         # self.assertEqual(self.n2.count_params(), 5344)
         self.assertEqual(len(self.n2._info[0].layer.weights), 2)
         self.assertEqual(self.n2.get_shape().as_list()[1:], [25, 32])
+
+    def test_layer_n3(self):
+
+        # self.assertEqual(len(self.n2.all_layers), 3)
+        # self.assertEqual(len(self.n2.all_params), 4)
+        # self.assertEqual(self.n2.count_params(), 5344)
+        self.assertEqual(len(self.n3._info[0].layer.weights), 2)
+        self.assertEqual(self.n3.get_shape().as_list()[1:], [50, 64])
 
     # def test_layer_n3(self):
     #

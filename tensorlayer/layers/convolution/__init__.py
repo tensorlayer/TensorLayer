@@ -42,6 +42,7 @@ __all__ = [
     'Conv3dLayer',
 
     # expert conv
+    'DeConv1dLayer',
     'DeConv2dLayer',
     'DeConv3dLayer',
 

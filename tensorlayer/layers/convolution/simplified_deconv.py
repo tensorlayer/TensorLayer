@@ -26,14 +26,10 @@ class DeConv2d(Layer):
 
     Parameters
     ----------
-    # prev_layer : :class:`Layer`
-    #     Previous layer.
     n_filter : int
         The number of filters.
     filter_size : tuple of int
         The filter size (height, width).
-    out_size : tuple of int
-        Require if TF version < 1.3, (height, width) of output.
     strides : tuple of int
         The stride step (height, width).
     padding : str
@@ -48,10 +44,6 @@ class DeConv2d(Layer):
         The initializer for the weight matrix.
     b_init : initializer or None
         The initializer for the bias vector. If None, skip biases.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer (For TF < 1.3).
-    b_init_args : dictionary
-        The arguments for the bias vector initializer (For TF < 1.3).
     name : None or str
         A unique layer name.
 
@@ -68,14 +60,8 @@ class DeConv2d(Layer):
             data_format='channels_last',
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
-            # W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            # b_init=tf.compat.v1.initializers.constant(value=0.0),
-            # W_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            # b_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            name=None,  #'decnn2d'
+            name='decnn2d'
     ):
-        # super(DeConv2d, self
-        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
         self.n_filter = n_filter
         self.filter_size = filter_size
@@ -86,6 +72,7 @@ class DeConv2d(Layer):
         self.dilation_rate = dilation_rate
         self.W_init = W_init
         self.b_init = b_init
+        self.name = name
 
         logging.info(
             "DeConv2d {}: n_filters: {} strides: {} padding: {} act: {} dilation: {}".format(
@@ -155,13 +142,11 @@ class DeConv3d(Layer):
 
     Parameters
     ----------
-    # prev_layer : :class:`Layer`
-    #     Previous layer.
     n_filter : int
         The number of filters.
     filter_size : tuple of int
         The filter size (depth, height, width).
-    stride : tuple of int
+    strides : tuple of int
         The stride step (depth, height, width).
     padding : str
         The padding algorithm type: "SAME" or "VALID".
@@ -173,10 +158,6 @@ class DeConv3d(Layer):
         The initializer for the weight matrix.
     b_init : initializer or None
         The initializer for the bias vector. If None, skip bias.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer (For TF < 1.3).
-    b_init_args : dictionary
-        The arguments for the bias vector initializer (For TF < 1.3).
     name : None or str
         A unique layer name.
 
@@ -184,7 +165,6 @@ class DeConv3d(Layer):
 
     def __init__(
             self,
-            # prev_layer,
             n_filter=32,
             filter_size=(3, 3, 3),
             strides=(2, 2, 2),
@@ -193,10 +173,8 @@ class DeConv3d(Layer):
             data_format='channels_last',
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
-            name=None,  #'decnn3d'
+            name='decnn3d'
     ):
-        # super(DeConv3d, self
-        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
         self.n_filter = n_filter
         self.filter_size = filter_size
@@ -206,6 +184,7 @@ class DeConv3d(Layer):
         self.data_format = data_format
         self.W_init = W_init
         self.b_init = b_init
+        self.name = name
 
         logging.info(
             "DeConv3d %s: n_filters: %s strides: %s pad: %s act: %s" % (
@@ -229,15 +208,14 @@ class DeConv3d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        # with tf.variable_scope(name) as vs:
         self.layer = tf.keras.layers.Conv3DTranspose(
             filters=self.n_filter,
             kernel_size=self.filter_size,
             strides=self.strides,
             padding=self.padding,
+            data_format=self.data_format,
             activation=self.act,
             use_bias=(True if self.b_init is not None else False),
-            data_format=self.data_format,
             kernel_initializer=self.W_init,
             bias_initializer=self.b_init,
             name=self.name,

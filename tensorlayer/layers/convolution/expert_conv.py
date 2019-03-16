@@ -20,7 +20,7 @@ __all__ = [
 
 class Conv1dLayer(Layer):
     """
-    The :class:`Conv1dLayer` class is a 1D CNN layer, see `tf.nn.convolution <https://www.tensorflow.org/api_docs/python/tf/nn/convolution>`__.
+    The :class:`Conv1dLayer` class is a 1D CNN layer, see `tf.nn.conv1d <https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/conv1d>`__.
 
     Parameters
     ----------
@@ -33,17 +33,13 @@ class Conv1dLayer(Layer):
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     data_format : str
-        Default is 'NWC' as it is a 1D CNN.
+        'NWC' or 'NCW', Default is 'NWC' as it is a 1D CNN.
     dilation_rate : int
         Filter up-sampling/input down-sampling rate.
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
         The initializer for the bias vector. If None, skip biases.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer.
-    b_init_args : dictionary
-        The arguments for the bias vector initializer.
     name : None or str
         A unique layer name
 
@@ -59,10 +55,8 @@ class Conv1dLayer(Layer):
             dilation_rate=1,
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
-            name=None,  #'cnn1d',
+            name='cnn1d_layer',
     ):
-        # super(Conv1dLayer, self
-        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
         self.act = act
         self.n_filter = shape[-1]
@@ -75,8 +69,7 @@ class Conv1dLayer(Layer):
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = shape[-2]
-        # self.W_init_args = W_init_args
-        # self.b_init_args = b_init_args
+        self.name = name
 
         logging.info(
             "Conv1dLayer %s: shape: %s stride: %s pad: %s act: %s" % (
@@ -100,24 +93,15 @@ class Conv1dLayer(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        # self.W = tf.compat.v1.get_variable(
-        #     name=self.name + '\W_conv1d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
-        #     **self.W_init_args
-        # )
-        self.W = self._get_weights("filters", shape=self.shape, init=self.W_init)
+        self.W = self._get_weights(
+            "filters", shape=self.shape, init=self.W_init
+        )
         if self.b_init:
             self.b = self._get_weights(
                 "biases",
                 shape=(self.n_filter),  #self.shape[-1]),
                 init=self.b_init
             )
-        #     self.b = tf.compat.v1.get_variable(
-        #         name=self.name + '\b_conv1d', shape=(self.shape[-1]), initializer=self.b_init,
-        #         dtype=LayersConfig.tf_dtype, **self.b_init_args
-        #     )
-        #     self.add_weights([self.W, self.b])
-        # else:
-        #     self.add_weights(self.W)
 
     def forward(self, inputs):
 
@@ -132,7 +116,7 @@ class Conv1dLayer(Layer):
         )
 
         if self.b_init:
-            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
         if self.act:
             outputs = self.act(outputs)
         return outputs
@@ -140,7 +124,7 @@ class Conv1dLayer(Layer):
 
 class Conv2dLayer(Layer):
     """
-    The :class:`Conv2dLayer` class is a 2D CNN layer, see `tf.nn.conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d>`__.
+    The :class:`Conv2dLayer` class is a 2D CNN layer, see `tf.nn.conv2d <https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/conv2d>`__.
 
     Parameters
     ----------
@@ -155,18 +139,12 @@ class Conv2dLayer(Layer):
         The padding algorithm type: "SAME" or "VALID".
     data_format : str
         "NHWC" or "NCHW", default is "NHWC".
-    dilation_rate : int
+    dilation_rate : list of int
         Filter up-sampling/input down-sampling rate.
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
         The initializer for the bias vector. If None, skip biases.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer.
-    b_init_args : dictionary
-        The arguments for the bias vector initializer.
-    use_cudnn_on_gpu : bool
-        Default is False.
     name : None or str
         A unique layer name.
 
@@ -216,14 +194,8 @@ class Conv2dLayer(Layer):
             dilation_rate=[1, 1, 1, 1],
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
-            # W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            # b_init=tf.compat.v1.initializers.constant(value=0.0),
-            # W_init_args=None,
-            # b_init_args=None,
-            name=None,  #'cnn_layer',
+            name='cnn2d_layer',
     ):
-        # super(Conv2dLayer, self
-        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
         self.act = act
         self.n_filter = shape[-1]
@@ -236,8 +208,7 @@ class Conv2dLayer(Layer):
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = shape[-2]
-        # self.W_init_args = W_init_args
-        # self.b_init_args = b_init_args
+        self.name = name
 
         logging.info(
             "Conv2dLayer %s: shape: %s strides: %s pad: %s act: %s" % (
@@ -261,22 +232,13 @@ class Conv2dLayer(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs):
-        self.W = self._get_weights("filters", shape=self.shape, init=self.W_init)
+        self.W = self._get_weights(
+            "filters", shape=self.shape, init=self.W_init
+        )
         if self.b_init:
-            self.b = self._get_weights("biases", shape=(self.n_filter), init=self.b_init)
-
-        # self.W = tf.compat.v1.get_variable(
-        #     name=self.name + '\W_conv2d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
-        #     **self.W_init_args
-        # )
-        # if self.b_init:
-        #     self.b = tf.compat.v1.get_variable(
-        #         name=self.name + '\b_conv2d', shape=(self.shape[-1]), initializer=self.b_init,
-        #         dtype=LayersConfig.tf_dtype, **self.b_init_args
-        #     )
-        #     self.add_weights([self.W, self.b])
-        # else:
-        #     self.add_weights(self.W)
+            self.b = self._get_weights(
+                "biases", shape=(self.n_filter), init=self.b_init
+            )
 
     def forward(self, inputs):
         outputs = tf.nn.conv2d(
@@ -290,7 +252,7 @@ class Conv2dLayer(Layer):
         )
 
         if self.b_init:
-            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
         if self.act:
             outputs = self.act(outputs)
         return outputs
@@ -298,7 +260,7 @@ class Conv2dLayer(Layer):
 
 class Conv3dLayer(Layer):
     """
-    The :class:`Conv3dLayer` class is a 3D CNN layer, see `tf.nn.conv3d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d>`__.
+    The :class:`Conv3dLayer` class is a 3D CNN layer, see `tf.nn.conv3d <https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/conv3d>`__.
 
     Parameters
     ----------
@@ -312,17 +274,13 @@ class Conv3dLayer(Layer):
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     data_format : str
-        "NHWC" or "NCDHW", default is "NDHWC".
-    dilation_rate : int
+        "NDHWC" or "NCDHW", default is "NDHWC".
+    dilation_rate : list of int
         Filter up-sampling/input down-sampling rate.
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
         The initializer for the bias vector. If None, skip biases.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer.
-    b_init_args : dictionary
-        The arguments for the bias vector initializer.
     name : None or str
         A unique layer name.
 
@@ -344,12 +302,8 @@ class Conv3dLayer(Layer):
             dilation_rate=[1, 1, 1, 1, 1],
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
-            # W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            # b_init=tf.compat.v1.initializers.constant(value=0.0),
-            name=None,  #'cnn3d_layer',
+            name='cnn3d_layer'
     ):
-        # super(Conv3dLayer, self
-        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
         self.act = act
         self.n_filter = shape[-1]
@@ -362,6 +316,7 @@ class Conv3dLayer(Layer):
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = shape[-2]
+        self.name = name
 
         logging.info(
             "Conv3dLayer %s: shape: %s strides: %s pad: %s act: %s" % (
@@ -386,23 +341,13 @@ class Conv3dLayer(Layer):
 
     def build(self, inputs):
 
-        self.W = self._get_weights("filters", shape=self.shape, init=self.W_init)
+        self.W = self._get_weights(
+            "filters", shape=self.shape, init=self.W_init
+        )
         if self.b_init:
-            self.b = self._get_weights("biases", shape=(self.n_filter), init=self.b_init)
-
-        # self.W = tf.compat.v1.get_variable(
-        #     name=self.name + '\W_conv3d', shape=self.shape, initializer=self.W_init, dtype=LayersConfig.tf_dtype,
-        #     **self.W_init_args
-        # )
-        #
-        # if self.b_init:
-        #     self.b = tf.compat.v1.get_variable(
-        #         name=self.name + '\b_conv3d', shape=(self.shape[-1]), initializer=self.b_init,
-        #         dtype=LayersConfig.tf_dtype, **self.b_init_args
-        #     )
-        #     self.add_weights([self.W, self.b])
-        # else:
-        #     self.add_weights(self.W)
+            self.b = self._get_weights(
+                "biases", shape=(self.n_filter), init=self.b_init
+            )
 
     def forward(self, inputs):
         outputs = tf.nn.conv3d(
@@ -416,7 +361,7 @@ class Conv3dLayer(Layer):
         )
 
         if self.b_init:
-            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
         if self.act:
             outputs = self.act(outputs)
         return outputs

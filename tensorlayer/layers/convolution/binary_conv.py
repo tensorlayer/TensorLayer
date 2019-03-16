@@ -178,7 +178,7 @@ class BinaryConv2d(Layer):
             name=self.name
         )
         if self.b_init:
-            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
         if self.act:
             outputs = self.act(outputs)
         return outputs
