@@ -23,8 +23,6 @@ class Conv1d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer
     n_filter : int
         The number of filters
     filter_size : int
@@ -38,17 +36,13 @@ class Conv1d(Layer):
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     data_format : str
-        channels_last 'channel_last' (default) or channels_first.
+        "channel_last" (NWC, default) or "channels_first" (NCW).
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
         The initializer for the bias vector. If None, skip biases.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer (deprecated).
-    b_init_args : dictionary
-        The arguments for the bias vector initializer (deprecated).
-    use_cudnn_on_gpu : bool
-        Default is False.
+    in_channels : int
+        The number of in channels.
     name : None or str
         A unique layer name
 
@@ -72,7 +66,7 @@ class Conv1d(Layer):
     """
 
     def __init__(
-            self,  #prev_layer,
+            self,
             n_filter=32,
             filter_size=5,
             stride=1,
@@ -85,8 +79,6 @@ class Conv1d(Layer):
             in_channels=None,
             name=None,  #'conv1d'
     ):
-        # super(Conv1d, self
-        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
         self.n_filter = n_filter
         self.filter_size = filter_size
@@ -103,9 +95,6 @@ class Conv1d(Layer):
             self.build(None)
             self._built = True
 
-        # self.W_init_args = W_init_args
-        # self.b_init_args = b_init_args
-        # self.use_cudnn_on_gpu = use_cudnn_on_gpu
         logging.info(
             "Conv1d %s: n_filter: %d filter_size: %s stride: %d pad: %s act: %s" % (
                 self.name, n_filter, filter_size, stride, padding,
@@ -160,15 +149,6 @@ class Conv1d(Layer):
             )
 
     def forward(self, inputs):
-        # outputs = tf.nn.conv1d(
-        #     value=inputs,
-        #     filters=self.W,
-        #     stride=self.stride,
-        #     padding=self.padding,
-        #     use_cudnn_on_gpu=None,
-        #     data_format=self.data_format,
-        #     name=self.name,
-        # )
         outputs = tf.nn.conv1d(
             input=inputs,
             filters=self.W,
@@ -204,8 +184,6 @@ class Conv2d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_filter : int
         The number of filters.
     filter_size : tuple of int
@@ -213,6 +191,8 @@ class Conv2d(Layer):
     strides : tuple of int
         The sliding window strides of corresponding input dimensions.
         It must be in the same order as the ``shape`` parameter.
+    dilation_rate : tuple of int
+        Specifying the dilation rate to use for dilated convolution.
     act : activation function
         The activation function of this layer.
     padding : str
@@ -223,12 +203,8 @@ class Conv2d(Layer):
         The initializer for the the weight matrix.
     b_init : initializer or None
         The initializer for the the bias vector. If None, skip biases.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer (for TF < 1.5).
-    b_init_args : dictionary
-        The arguments for the bias vector initializer (for TF < 1.5).
-    use_cudnn_on_gpu : bool
-        Default is False.
+    in_channels : int
+        The number of in channels.
     name : None or str
         A unique layer name.
 
@@ -247,7 +223,6 @@ class Conv2d(Layer):
 
     def __init__(
             self,
-            # prev_layer,
             n_filter=32,
             filter_size=(3, 3),
             strides=(1, 1),
@@ -257,13 +232,6 @@ class Conv2d(Layer):
             dilation_rate=(1, 1),
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
-            # W_init = tf.truncated_normal_initializer(stddev=0.02),
-            # b_init = tf.constant(value=0.0),
-            # W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            # b_init=tf.compat.v1.initializers.constant(value=0.0),
-            # W_init_args=None,
-            # b_init_args=None,
-            # use_cudnn_on_gpu=None,
             in_channels=None,
             name=None,  #'conv2d',
     ):
@@ -277,8 +245,7 @@ class Conv2d(Layer):
         #     pre_channel = 1
         #     logging.info("[warnings] unknow input channels, set to 1")
 
-        # super(Conv2d, self
-        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+
         super().__init__(name)
         self.n_filter = n_filter
         self.filter_size = filter_size
@@ -289,9 +256,6 @@ class Conv2d(Layer):
         self.data_format = data_format
         self.W_init = W_init
         self.b_init = b_init
-        # self.W_init_args = W_init_args
-        # self.b_init_args = b_init_args
-        # self.use_cudnn_on_gpu = use_cudnn_on_gpu
         self.in_channels = in_channels
 
         if self.in_channels:
@@ -355,16 +319,6 @@ class Conv2d(Layer):
             )
 
     def forward(self, inputs):
-        # outputs = tf.nn.conv2d(
-        #     input=inputs,
-        #     filter=self.W,
-        #     strides=self._strides,
-        #     padding=self.padding,
-        #     use_cudnn_on_gpu=self.use_cudnn_on_gpu,  #True,
-        #     data_format=self.data_format,  #'NHWC',
-        #     dilations=self._dilation_rate,  #[1, 1, 1, 1],
-        #     name=self.name,
-        # )
         outputs = tf.nn.conv2d(
             input=inputs,
             filters=self.W,
@@ -426,8 +380,6 @@ class Conv3d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_filter : int
         The number of filters.
     filter_size : tuple of int
@@ -435,6 +387,8 @@ class Conv3d(Layer):
     strides : tuple of int
         The sliding window strides of corresponding input dimensions.
         It must be in the same order as the ``shape`` parameter.
+    dilation_rate : tuple of int
+        Specifying the dilation rate to use for dilated convolution.
     act : activation function
         The activation function of this layer.
     padding : str
@@ -445,10 +399,8 @@ class Conv3d(Layer):
         The initializer for the the weight matrix.
     b_init : initializer or None
         The initializer for the the bias vector. If None, skip biases.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer (for TF < 1.5).
-    b_init_args : dictionary
-        The arguments for the bias vector initializer (for TF < 1.5).
+    in_channels : int
+        The number of in channels.
     name : None or str
         A unique layer name.
 
@@ -456,7 +408,6 @@ class Conv3d(Layer):
 
     def __init__(
             self,
-            # prev_layer,
             n_filter=32,
             filter_size=(3, 3, 3),
             strides=(1, 1, 1),
@@ -466,11 +417,6 @@ class Conv3d(Layer):
             dilation_rate=(1, 1, 1),
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
-            # W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            # b_init=tf.compat.v1.initializers.constant(value=0.0),
-            # W_init_args=None,
-            # b_init_args=None,
-            # use_cudnn_on_gpu=None,
             in_channels=None,
             name=None,  #'conv3d',
     ):
@@ -489,9 +435,6 @@ class Conv3d(Layer):
         if self.in_channels:
             self.build(None)
             self._built = True
-        # self.W_init_args = W_init_args
-        # self.b_init_args = b_init_args
-        # self.use_cudnn_on_gpu = use_cudnn_on_gpu
         logging.info(
             "Conv3d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
                 self.name, n_filter, str(filter_size), str(strides), padding,

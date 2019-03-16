@@ -162,7 +162,11 @@ class Layer_Convolution_2D_Test(CustomTestCase):
             n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, in_channels=64, name='conv2d2'
         )(cls.n6)
 
-        cls.model = Model(cls.input_layer, cls.n7)
+        cls.n8 = tl.layers.BinaryConv2d(
+            n_filter=64, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, in_channels=32, name='binaryconv2d'
+        )(cls.n7)
+
+        cls.model = Model(cls.input_layer, cls.n8)
         print("Testing Conv2d model: \n", cls.model)
 
         # cls.n8 = tl.layers.GroupConv2d(cls.n7, n_filter=32, filter_size=(3, 3), strides=(2, 2), name='group')
@@ -232,6 +236,13 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         # self.assertEqual(len(self.n7.all_params), 13)
         # self.assertEqual(self.n7.count_params(), 74880)
         self.assertEqual(self.n7.get_shape().as_list()[1:], [25, 25, 32])
+
+    def test_layer_n8(self):
+
+        # self.assertEqual(len(self.n7.all_layers), 8)
+        # self.assertEqual(len(self.n7.all_params), 13)
+        # self.assertEqual(self.n7.count_params(), 74880)
+        self.assertEqual(self.n8.get_shape().as_list()[1:], [13, 13, 64])
 
     # def test_layer_n8(self):
     #

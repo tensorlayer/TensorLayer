@@ -44,7 +44,7 @@ class PoolLayer(Layer):
         The padding algorithm type: "SAME" or "VALID".
     pool : pooling function
         One of ``tf.nn.max_pool``, ``tf.nn.avg_pool``, ``tf.nn.max_pool3d`` and ``f.nn.avg_pool3d``.
-        See `TensorFlow pooling APIs <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#pooling>`__
+        See `TensorFlow pooling APIs <https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/>`__
     name : None or str
         A unique layer name.
 
@@ -108,7 +108,7 @@ class MaxPool1d(Layer):
     strides : int
         Stride of the pooling operation.
     padding : str
-        The padding method: 'valid' or 'same'.
+        The padding method: 'VALID' or 'SAME'.
     data_format : str
         One of channels_last (default, [batch, length, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : None or str
@@ -148,7 +148,7 @@ class MaxPool1d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        # https://www.tensorflow.org/api_docs/python/tf/nn/pool
+        # https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/pool
         if self.data_format == 'channels_last':
             self.data_format = 'NWC'
         elif self.data_format == 'channels_first':
@@ -167,8 +167,7 @@ class MaxPool1d(Layer):
         # outputs = tf.layers.max_pooling1d(
         #     inputs, self.filter_size, self.strides, padding=self.padding, data_format=self.data_format, name=self.name
         # )
-        # https://www.tensorflow.org/api_docs/python/tf/nn/pool
-        # print(self.strides, self.data_format)
+        # https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/pool
         outputs = tf.nn.pool(
             input=inputs,
             window_shape=self._filter_size,
@@ -205,7 +204,7 @@ class MeanPool1d(Layer):
     strides : tuple of int
         Strides of the pooling operation.
     padding : str
-        The padding method: 'valid' or 'same'.
+        The padding method: 'VALID' or 'SAME'.
     data_format : str
         One of channels_last (default, [batch, length, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : None or str
@@ -253,7 +252,7 @@ class MeanPool1d(Layer):
 
     def build(self, inputs_shape=None):
         # pass
-        # https://www.tensorflow.org/api_docs/python/tf/nn/pool
+        # https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/pool
         if self.data_format == 'channels_last':
             self.data_format = 'NWC'
         elif self.data_format == 'channels_first':
@@ -268,7 +267,7 @@ class MeanPool1d(Layer):
         #     prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         # )
         # self._add_layers(self.outputs)
-        # https://www.tensorflow.org/api_docs/python/tf/nn/pool
+        # https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/pool
         outputs = tf.nn.pool(
             input=inputs,
             window_shape=self._filter_size,
@@ -292,7 +291,7 @@ class MaxPool2d(Layer):
     strides : tuple of int
         (height, width) for strides.
     padding : str
-        The padding method: 'valid' or 'same'.
+        The padding method: 'VALID' or 'SAME'.
     data_format : str
         One of channels_last (default, [batch, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : None or str
@@ -378,7 +377,7 @@ class MeanPool2d(Layer):
     strides : tuple of int
         (height, width) for strides.
     padding : str
-        The padding method: 'valid' or 'same'.
+        The padding method: 'VALID' or 'SAME'.
     data_format : str
         One of channels_last (default, [batch, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : None or str
@@ -460,7 +459,7 @@ class MaxPool3d(Layer):
     strides : tuple of int
         Strides of the pooling operation.
     padding : str
-        The padding method: 'valid' or 'same'.
+        The padding method: 'VALID' or 'SAME'.
     data_format : str
         One of channels_last (default, [batch, depth, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : None or str
@@ -545,7 +544,7 @@ class MeanPool3d(Layer):
     strides : tuple of int
         Strides of the pooling operation.
     padding : str
-        The padding method: 'valid' or 'same'.
+        The padding method: 'VALID' or 'SAME'.
     data_format : str
         One of channels_last (default, [batch, depth, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : None or str
@@ -562,7 +561,7 @@ class MeanPool3d(Layer):
             self,  #prev_layer,
             filter_size=(3, 3, 3),
             strides=(2, 2, 2),
-            padding='valid',
+            padding='VALID',
             data_format='channels_last',
             name=None,  #'meanpool3d'
     ):

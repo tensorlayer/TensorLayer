@@ -16,7 +16,7 @@ __all__ = [
 
 
 class DepthwiseConv2d(Layer):
-    """Separable/Depthwise Convolutional 2D layer, see `tf.nn.depthwise_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/tf/nn/depthwise_conv2d>`__.
+    """Separable/Depthwise Convolutional 2D layer, see `tf.nn.depthwise_conv2d <https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/depthwise_conv2d>`__.
 
     Input:
         4-D Tensor (batch, height, width, in_channels).
@@ -25,14 +25,16 @@ class DepthwiseConv2d(Layer):
 
     Parameters
     ------------
-    filter_size : tuple of int
+    filter_size : tuple of 2 int
         The filter size (height, width).
-    stride : tuple of int
+    strides : tuple of 2 int
         The stride step (height, width).
     act : activation function
         The activation function of this layer.
     padding : str
         The padding algorithm type: "SAME" or "VALID".
+    data_format : str
+        "channels_last" (NHWC, default) or "channels_first" (NCHW).
     dilation_rate: tuple of 2 int
         The dilation rate in which we sample input values across the height and width dimensions in atrous convolution. If it is greater than 1, then all values of strides must be 1.
     depth_multiplier : int
@@ -41,10 +43,8 @@ class DepthwiseConv2d(Layer):
         The initializer for the weight matrix.
     b_init : initializer or None
         The initializer for the bias vector. If None, skip bias.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer.
-    b_init_args : dictionary
-        The arguments for the bias vector initializer.
+    in_channels : int
+        The number of in channels.
     name : str
         A unique layer name.
 
@@ -78,26 +78,29 @@ class DepthwiseConv2d(Layer):
             strides=(1, 1),
             act=None,
             padding='SAME',
+            data_format='channels_last',
             dilation_rate=(1, 1),
             depth_multiplier=1,
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
-
-            # W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            # b_init=tf.compat.v1.initializers.constant(value=0.0),
-            name=None,  #'depthwise_conv2d',
+            in_channels=None,
+            name='depthwise_conv2d'
     ):
-        # super(DepthwiseConv2d, self
-        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
-        self.filter_size = self._filter_size = filter_size
+        self.filter_size = filter_size
         self.strides = self._strides = strides
         self.act = act
         self.padding = padding
-        self.dilation_rate = dilation_rate
+        self.dilation_rate = self._dilation_rate = dilation_rate
+        self.data_format = data_format
         self.depth_multiplier = depth_multiplier
         self.W_init = W_init
         self.b_init = b_init
+        self.in_channels = self.pre_channel = in_channels
+
+        if self.in_channels:
+            self.build(None)
+            self._built = True
 
         logging.info(
             "DepthwiseConv2d %s: filter_size: %s strides: %s pad: %s act: %s" % (
@@ -121,36 +124,50 @@ class DepthwiseConv2d(Layer):
         return s.format(classname=self.__class__.__name__, n_filter=self.pre_channel * self.depth_multiplier, **self.__dict__)
 
     def build(self, inputs_shape):
-        self.pre_channel = inputs_shape[-1]
-        if self.pre_channel is None:  # if pre_channel is ?, it happens when using Spatial Transformer Net
-            self.pre_channel = 1
-            logging.info("[warnings] unknown input channels, set to 1")
+        # self.pre_channel = inputs_shape[-1]
+        # if self.pre_channel is None:  # if pre_channel is ?, it happens when using Spatial Transformer Net
+        #     self.pre_channel = 1
+        #     logging.info("[warnings] unknown input channels, set to 1")
+        #
+        # if len(self.strides) == 2:
+        #     self._strides = [1, self.strides[0], self.strides[1], 1]
+        # elif len(self.strides) == 4:
+        #     self._strides = [self.strides[0], self.strides[1], self.strides[2], self.strides[3]]
+        # if len(self._strides) != 4:
+        #     raise AssertionError("len(_strides) should be 4.")
+        if self.data_format == 'channels_last':
+            self.data_format = 'NHWC'
+            if self.in_channels:
+                self.pre_channel = self.in_channels
+            else:
+                self.pre_channel = inputs_shape[-1]
+                self.in_channels = self.pre_channel
+            self._strides = [1, self._strides[0], self._strides[1], 1]
+            self._dilation_rate = [1, self._dilation_rate[0], self._dilation_rate[1], 1]
+        elif self.data_format == 'channels_first':
+            self.data_format = 'NCHW'
+            if self.in_channels:
+                self.pre_channel = self.in_channels
+            else:
+                self.pre_channel = inputs_shape[1]
+                self.in_channels = self.pre_channel
+            self._strides = [1, 1, self._strides[0], self._strides[1]]
+            self._dilation_rate = [1, 1, self._dilation_rate[0], self._dilation_rate[1]]
+        else:
+            raise Exception("data_format should be either channels_last or channels_first")
 
-        self._filter_size = [self.filter_size[0], self.filter_size[1], self.pre_channel, self.depth_multiplier]
+        self.filter_shape = (
+            self.filter_size[0], self.filter_size[1], self.pre_channel, self.depth_multiplier
+        )
 
-        if len(self.strides) == 2:
-            self._strides = [1, self.strides[0], self.strides[1], 1]
-        elif len(self.strides) == 4:
-            self._strides = [self.strides[0], self.strides[1], self.strides[2], self.strides[3]]
-        if len(self._strides) != 4:
-            raise AssertionError("len(_strides) should be 4.")
+        self.W = self._get_weights(
+            "filters", shape=self.filter_shape, init=self.W_init
+        )
 
-        # self.W = tf.compat.v1.get_variable(
-        #     name=self.name + '\W_depthwise2d', shape=self.filter_size, initializer=self.W_init,
-        #     dtype=LayersConfig.tf_dtype, **self.W_init_args
-        # )  # [filter_height, filter_width, in_channels, depth_multiplier]
-        self.W = self._get_weights("filters", shape=self._filter_size, init=self.W_init)
         if self.b_init:
             self.b = self._get_weights(
                 "biases", shape=(self.pre_channel * self.depth_multiplier), init=self.b_init
             )
-        #     self.b = tf.compat.v1.get_variable(
-        #         name=self.name + '\b_depthwise2d', shape=(self.pre_channel * self.depth_multiplier),
-        #         initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
-        #     )
-        #     self.add_weights([self.W, self.b])
-        # else:
-        #     self.add_weights(self.W)
 
     def forward(self, inputs):
         outputs = tf.nn.depthwise_conv2d(
@@ -158,6 +175,7 @@ class DepthwiseConv2d(Layer):
             filter=self.W,
             strides=self._strides,
             padding=self.padding,
+            data_format=self.data_format,
             dilations=self.dilation_rate,
             name=self.name,
         )
