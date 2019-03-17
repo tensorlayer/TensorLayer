@@ -75,6 +75,11 @@ class GroupConv2d(Layer):
         self.b_init = b_init
         self.in_channels = self.pre_channel = in_channels
         self.name = name
+
+        if self.in_channels:
+            self.build(None)
+            self._built = True
+
         logging.info(
             "GroupConv2d %s: n_filter: %d size: %s strides: %s n_group: %d pad: %s act: %s" % (
                 self.name, n_filter, str(filter_size), str(strides), n_group, padding,

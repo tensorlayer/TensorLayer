@@ -30,8 +30,6 @@ class BinaryConv2d(Layer):
     strides : tuple of int
         The sliding window strides of corresponding input dimensions.
         It must be in the same order as the ``shape`` parameter.
-    dilation_rate : tuple of int
-        Specifying the dilation rate to use for dilated convolution.
     act : activation function
         The activation function of this layer.
     padding : str
@@ -39,14 +37,14 @@ class BinaryConv2d(Layer):
     use_gemm : boolean
         If True, use gemm instead of ``tf.matmul`` for inference.
         TODO: support gemm
-    W_init : initializer
-        The initializer for the the weight matrix.
-    b_init : initializer or None
-        The initializer for the the bias vector. If None, skip biases.
     data_format : str
         "channels_last" (NHWC, default) or "channels_first" (NCHW).
     dilation_rate : tuple of int
         Specifying the dilation rate to use for dilated convolution.
+    W_init : initializer
+        The initializer for the the weight matrix.
+    b_init : initializer or None
+        The initializer for the the bias vector. If None, skip biases.
     in_channels : int
         The number of in channels.
     name : None or str
@@ -95,8 +93,8 @@ class BinaryConv2d(Layer):
         self._dilation_rate = self.dilation_rate = dilation_rate
         self.W_init = W_init
         self.b_init = b_init
-        self.data_format = data_format
         self.in_channels = in_channels
+        self.name = name
 
         if self.in_channels:
             self.build(None)
@@ -130,9 +128,7 @@ class BinaryConv2d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        # if inputs_shape[-1] is None:
-        #     logging.warning("unknown input channels, set to 1")
-        #     self.pre_channel = 1
+
         if self.data_format == 'channels_last':
             self.data_format = 'NHWC'
             if self.in_channels:
@@ -167,7 +163,9 @@ class BinaryConv2d(Layer):
             )
 
     def forward(self, inputs):
+
         _W = quantize(self.W)
+
         outputs = tf.nn.conv2d(
             input=inputs,
             filters=_W,
@@ -177,8 +175,10 @@ class BinaryConv2d(Layer):
             dilations=self._dilation_rate,
             name=self.name
         )
+
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
         if self.act:
             outputs = self.act(outputs)
+
         return outputs
