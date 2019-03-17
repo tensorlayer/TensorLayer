@@ -38,7 +38,7 @@ class DeConv1dLayer(Layer):
         The padding algorithm type: "SAME" or "VALID".
     data_format : str
         "NWC" or "NCW", default is "NWC".
-    dilation_rate : list of int
+    dilation_rate : int
         Filter up-sampling/input down-sampling rate.
     W_init : initializer
         The initializer for the weight matrix.
@@ -122,7 +122,7 @@ class DeConv1dLayer(Layer):
             strides=list(self.strides),
             padding=self.padding,
             data_format=self.data_format,
-            dilations=self.dilation_rate,
+            dilations=list(self.dilation_rate),
             name=self.name,
         )
         if self.b_init:
@@ -152,7 +152,7 @@ class DeConv2dLayer(Layer):
         The padding algorithm type: "SAME" or "VALID".
     data_format : str
         "NHHWC" or "NCW", default is "NHWC".
-    dilation_rate : list of int
+    dilation_rate : tuple of int
         Filter up-sampling/input down-sampling rate.
     W_init : initializer
         The initializer for the weight matrix.
@@ -269,7 +269,7 @@ class DeConv2dLayer(Layer):
             strides=self.strides,
             padding=self.padding,
             data_format=self.data_format,
-            dilations=self.dilation_rate,
+            dilations=list(self.dilation_rate),
             name=self.name,
         )
         if self.b_init:
@@ -297,7 +297,7 @@ class DeConv3dLayer(Layer):
         The padding algorithm type: "SAME" or "VALID".
     data_format : str
         "NDHWC" or "NCDHW", default is "NDHWC".
-    dilation_rate : list of int
+    dilation_rate : tuple of int
         Filter up-sampling/input down-sampling rate.
     W_init : initializer
         The initializer for the weight matrix.
@@ -316,7 +316,7 @@ class DeConv3dLayer(Layer):
             strides=(1, 2, 2, 2, 1),
             padding='SAME',
             data_format='NDHWC',
-            dilation_rate=[1, 1, 1, 1, 1],
+            dilation_rate=(1, 1, 1, 1, 1),
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
             name='decnn3d_layer',
@@ -370,7 +370,7 @@ class DeConv3dLayer(Layer):
             strides=self.strides,
             padding=self.padding,
             data_format=self.data_format,
-            dilations=self.dilation_rate,
+            dilations=list(self.dilation_rate),
             name=self.name
         )
         if self.b_init:

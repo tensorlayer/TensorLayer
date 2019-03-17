@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer.layers.core import Layer
-# from tensorlayer.layers.core import LayersConfig
 
 from tensorlayer import logging
 
@@ -22,8 +22,6 @@ class DeformableConv2d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     offset_layer : :class:`Layer`
         To predict the offset of convolution operations.
         The output shape is (batchsize, input height, input width, 2*(number of element in the convolution kernel))
@@ -38,10 +36,6 @@ class DeformableConv2d(Layer):
         The initializer for the weight matrix.
     b_init : initializer or None
         The initializer for the bias vector. If None, skip biases.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer.
-    b_init_args : dictionary
-        The arguments for the bias vector initializer.
     name : str
         A unique layer name.
 
@@ -64,24 +58,21 @@ class DeformableConv2d(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    # @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             offset_layer=None,
             # shape=(3, 3, 1, 100),
             n_filter=32,
             filter_size=(3, 3),
             act=None,
+            W_init=tl.initializers.truncated_normal(stddev=0.02),
+            b_init=tl.initializers.constant(value=0.0),
             name='deformable_conv_2d',
-            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            b_init=tf.compat.v1.initializers.constant(value=0.0),
-            W_init_args=None,
-            b_init_args=None
     ):
-
-        super(DeformableConv2d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        # super(DeformableConv2d, self
+        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super().__init__(name)
 
         logging.info(
             "DeformableConv2d %s: n_filter: %d, filter_size: %s act: %s" %

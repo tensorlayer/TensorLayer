@@ -47,21 +47,14 @@ class Conv1d(Layer):
         A unique layer name
 
     Examples
-    ---------
-    >>> x = tf.placeholder(tf.float32, (batch_size, width))
-    >>> y_ = tf.placeholder(tf.int64, shape=(batch_size,))
-    >>> n = InputLayer(x, name='in')
-    >>> n = ReshapeLayer(n, (-1, width, 1), name='rs')
-    >>> n = Conv1d(n, 64, 3, 1, act=tf.nn.relu, name='c1')
-    >>> n = MaxPool1d(n, 2, 2, padding='valid', name='m1')
-    >>> n = Conv1d(n, 128, 3, 1, act=tf.nn.relu, name='c2')
-    >>> n = MaxPool1d(n, 2, 2, padding='valid', name='m2')
-    >>> n = Conv1d(n, 128, 3, 1, act=tf.nn.relu, name='c3')
-    >>> n = MaxPool1d(n, 2, 2, padding='valid', name='m3')
-    >>> n = FlattenLayer(n, name='f')
-    >>> n = DenseLayer(n, 500, tf.nn.relu, name='d1')
-    >>> n = DenseLayer(n, 100, tf.nn.relu, name='d2')
-    >>> n = DenseLayer(n, 2, None, name='o')
+    --------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([8, 100, 1], name='input')
+    >>> conv1d = tl.layers.Conv1d(n_filter=32, filter_size=5, stride=2, b_init=None, in_channels=1, name='conv1d_1')
+    >>> print(conv1d)
+    >>> tensor = tl.layers.Conv1d(n_filter=32, filter_size=5, stride=2, act=tf.nn.relu, name='conv1d_2')(net)
+    >>> print(tensor)
 
     """
 
@@ -70,14 +63,14 @@ class Conv1d(Layer):
             n_filter=32,
             filter_size=5,
             stride=1,
-            dilation_rate=1,
             act=None,
             padding='SAME',
             data_format="channels_last",
+            dilation_rate=1,
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
-            name=None,  #'conv1d'
+            name='conv1d'
     ):
         super().__init__(name)
         self.n_filter = n_filter
@@ -163,20 +156,6 @@ class Conv1d(Layer):
         if self.act:
             outputs = self.act(outputs)
         return outputs
-        # _conv1d = tf.compat.v1.layers.Conv1D(
-        #     filters=n_filter, kernel_size=filter_size, strides=stride, padding=padding, data_format=data_format,
-        #     dilation_rate=dilation_rate, activation=self.act, use_bias=(True if b_init else False),
-        #     kernel_initializer=W_init, bias_initializer=b_init, name=name
-        # )
-
-        # _conv1d.dtype = LayersConfig.tf_dtype   # unsupport, it will use the same dtype of inputs
-        # self.outputs = _conv1d(self.inputs)
-        # # new_variables = _conv1d.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        # # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-        # new_variables = get_collection_trainable(self.name)
-        #
-        # self._add_layers(self.outputs)
-        # self._add_params(new_variables)
 
 
 class Conv2d(Layer):
@@ -210,14 +189,13 @@ class Conv2d(Layer):
 
     Examples
     --------
-    >>> x = tf.placeholder(tf.float32, shape=(None, 28, 28, 1))
-    >>> net = InputLayer(x, name='inputs')
-    >>> net = Conv2d(net, 64, (3, 3), act=tf.nn.relu, name='conv1_1')
-    >>> net = Conv2d(net, 64, (3, 3), act=tf.nn.relu, name='conv1_2')
-    >>> net = MaxPool2d(net, (2, 2), name='pool1')
-    >>> net = Conv2d(net, 128, (3, 3), act=tf.nn.relu, name='conv2_1')
-    >>> net = Conv2d(net, 128, (3, 3), act=tf.nn.relu, name='conv2_2')
-    >>> net = MaxPool2d(net, (2, 2), name='pool2')
+    With TensorLayer
+
+    >>> net = tl.layers.Input([8, 400, 400, 3], name='input')
+    >>> conv2d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), stride=(2, 2), b_init=None, in_channels=3, name='conv2d_1')
+    >>> print(conv2d)
+    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), stride=(2, 2), act=tf.nn.relu, name='conv2d_2')(net)
+    >>> print(tensor)
 
     """
 
@@ -233,19 +211,8 @@ class Conv2d(Layer):
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
-            name=None,  #'conv2d',
+            name='conv2d',
     ):
-        # if len(strides) != 2:
-        #     raise ValueError("len(strides) should be 2, Conv2d and Conv2dLayer are different.")
-
-        # try:
-        #     pre_channel = int(layer.outputs.get_shape()[-1])
-
-        # except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
-        #     pre_channel = 1
-        #     logging.info("[warnings] unknow input channels, set to 1")
-
-
         super().__init__(name)
         self.n_filter = n_filter
         self.filter_size = filter_size
@@ -334,46 +301,6 @@ class Conv2d(Layer):
             outputs = self.act(outputs)
         return outputs
 
-        # # with tf.variable_scope(name) as vs:
-        # conv2d = tf.compat.v1.layers.Conv2D(
-        #     # inputs=self.inputs,
-        #     filters=n_filter,
-        #     kernel_size=filter_size,
-        #     strides=strides,
-        #     padding=padding,
-        #     data_format=data_format,
-        #     dilation_rate=dilation_rate,
-        #     activation=self.act,
-        #     use_bias=(False if b_init is None else True),
-        #     kernel_initializer=W_init,  # None,
-        #     bias_initializer=b_init,  # f.zeros_initializer(),
-        #     kernel_regularizer=None,
-        #     bias_regularizer=None,
-        #     activity_regularizer=None,
-        #     kernel_constraint=None,
-        #     bias_constraint=None,
-        #     trainable=True,
-        #     name=name,
-        #     # reuse=None,
-        # )
-        # self.outputs = conv2d(self.inputs)  # must put before ``new_variables``
-        # # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-        # new_variables = get_collection_trainable(self.name)
-        # # new_variables = []
-        # # for p in tf.trainable_variables():
-        # #     # print(p.name.rpartition('/')[0], self.name)
-        # #     if p.name.rpartition('/')[0] == self.name:
-        # #         new_variables.append(p)
-        # # exit()
-        # # TF_GRAPHKEYS_VARIABLES  TF_GRAPHKEYS_VARIABLES
-        # # print(self.name, name)
-        # # print(tf.trainable_variables())#tf.GraphKeys.TRAINABLE_VARIABLES)
-        # # print(new_variables)
-        # # print(conv2d.weights)
-        #
-        # self._add_layers(self.outputs)
-        # self._add_params(new_variables)  # conv2d.weights)
-
 
 class Conv3d(Layer):
     """Simplified version of :class:`Conv2dLayer`.
@@ -404,6 +331,16 @@ class Conv3d(Layer):
     name : None or str
         A unique layer name.
 
+    Examples
+    --------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([8, 20, 20, 20, 3], name='input')
+    >>> conv3d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3, 3), stride=(2, 2, 2), b_init=None, in_channels=3, name='conv3d_1')
+    >>> print(conv3d)
+    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3, 3), stride=(2, 2, 2), act=tf.nn.relu, name='conv3d_2')(net)
+    >>> print(tensor)
+
     """
 
     def __init__(
@@ -418,7 +355,7 @@ class Conv3d(Layer):
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
-            name=None,  #'conv3d',
+            name='conv3d',
     ):
         super().__init__(name)
         self.n_filter = n_filter

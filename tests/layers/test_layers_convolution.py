@@ -150,19 +150,11 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         cls.inputs_shape = [cls.batch_size, 400, 400, 3]
         cls.input_layer = Input(cls.inputs_shape, name='input_layer')
 
-        # cls.n1 = tl.layers.Conv2dLayer(
-        #     cls.input_layer, act=tf.nn.relu, shape=(5, 5, 3, 32), strides=(1, 2, 2, 1), padding='SAME',
-        #     W_init=tf.truncated_normal_initializer(stddev=5e-2), b_init=tf.constant_initializer(value=0.0),
-        #     name='conv2dlayer'
-        # )
         cls.n1 = tl.layers.Conv2dLayer(
             act=tf.nn.relu, shape=(5, 5, 3, 32), strides=(1, 2, 2, 1), padding='SAME',
             b_init=tf.constant_initializer(value=0.0),
             name='conv2dlayer'
         )(cls.input_layer)
-
-        # print("input:", cls.input_layer.all_layers)
-        # print("input:", cls.n1.all_layers)
 
         cls.n2 = tl.layers.Conv2d(
             n_filter=32, filter_size=(3, 3), strides=(2, 2), act=None, name='conv2d'
@@ -208,7 +200,11 @@ class Layer_Convolution_2D_Test(CustomTestCase):
             n_filter=64, filter_size=(5, 5), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='ternaryconv2d'
         )(cls.n11)
 
-        cls.model = Model(cls.input_layer, cls.n12)
+        cls.n13 = tl.layers.TernaryConv2d(
+            n_filter=32, filter_size=(5, 5), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='quancnn2d'
+        )(cls.n12)
+
+        cls.model = Model(cls.input_layer, cls.n13)
         print("Testing Conv2d model: \n", cls.model)
 
         # cls.n12 = tl.layers.QuanConv2d(cls.n11, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='quancnn')
@@ -310,6 +306,13 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         # self.assertEqual(self.n7.count_params(), 74880)
         self.assertEqual(len(self.n12._info[0].layer.weights), 2)
         self.assertEqual(self.n12.get_shape().as_list()[1:], [12, 12, 64])
+
+    def test_layer_n13(self):
+        # self.assertEqual(len(self.n7.all_layers), 8)
+        # self.assertEqual(len(self.n7.all_params), 13)
+        # self.assertEqual(self.n7.count_params(), 74880)
+        self.assertEqual(len(self.n13._info[0].layer.weights), 2)
+        self.assertEqual(self.n13.get_shape().as_list()[1:], [12, 12, 32])
 
     # def test_layer_n8(self):
     #
@@ -419,21 +422,27 @@ class Layer_Convolution_3D_Test(CustomTestCase):
 #     @classmethod
 #     def setUpClass(cls):
 #
-#         x = tf.placeholder(tf.float32, [None, 299, 299, 3])
-#         net = tl.layers.InputLayer(x, name='input_layer')
+#         cls.batch_size = 5
+#         cls.inputs_shape = [cls.batch_size, 299, 299, 3]
+#         cls.input_layer = Input(cls.inputs_shape, name='input_layer')
 #
-#         print("input:", net.all_layers)
+#         offset1 = tl.layers.Conv2d(
+#             18, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='offset1'
+#         )(cls.input_layer)
+#         cls.net1 = tl.layers.DeformableConv2d(
+#             offset1, 32, (3, 3), act=tf.nn.relu, name='deformable1'
+#         )(cls.input_layer)
 #
-#         offset1 = tl.layers.Conv2d(net, 18, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='offset1')
-#         cls.net1 = tl.layers.DeformableConv2d(net, offset1, 32, (3, 3), act=tf.nn.relu, name='deformable1')
-#
-#         offset2 = tl.layers.Conv2d(cls.net1, 18, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='offset2')
-#         cls.net2 = tl.layers.DeformableConv2d(cls.net1, offset2, 64, (3, 3), act=tf.nn.relu, name='deformable2')
+#         offset2 = tl.layers.Conv2d(
+#             18, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='offset2'
+#         )(cls.net1)
+#         cls.net2 = tl.layers.DeformableConv2d(
+#             offset2, 64, (3, 3), act=tf.nn.relu, name='deformable2'
+#         )(cls.net1)
 #
 #     @classmethod
 #     def tearDownClass(cls):
 #         pass
-#         tf.reset_default_graph()
 #
 #     def test_layer_n1(self):
 #

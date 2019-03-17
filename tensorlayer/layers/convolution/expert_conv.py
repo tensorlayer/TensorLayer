@@ -43,6 +43,21 @@ class Conv1dLayer(Layer):
     name : None or str
         A unique layer name
 
+    Notes
+    -----
+    - shape = [w, the number of output channel of previous layer, the number of output channels]
+    - the number of output channel of a layer is its last dimension.
+
+    Examples
+    --------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([8, 100, 1], name='input')
+    >>> conv1d = tl.layers.Conv1dLayer(shape=(5, 1, 32), stride=2, b_init=None, name='conv1d_1')
+    >>> print(conv1d)
+    >>> tensor = tl.layers.Conv1dLayer(shape=(5, 1, 32), stride=2, act=tf.nn.relu, name='conv1d_2')(net)
+    >>> print(tensor)
+
     """
 
     def __init__(
@@ -71,6 +86,10 @@ class Conv1dLayer(Layer):
         self.in_channels = shape[-2]
         self.name = name
 
+        if self.in_channels:
+            self.build(None)
+            self._built = True
+
         logging.info(
             "Conv1dLayer %s: shape: %s stride: %s pad: %s act: %s" % (
                 self.name, str(shape), str(stride), padding,
@@ -98,9 +117,7 @@ class Conv1dLayer(Layer):
         )
         if self.b_init:
             self.b = self._get_weights(
-                "biases",
-                shape=(self.n_filter),  #self.shape[-1]),
-                init=self.b_init
+                "biases", shape=(self.n_filter), init=self.b_init
             )
 
     def forward(self, inputs):
@@ -110,7 +127,7 @@ class Conv1dLayer(Layer):
             filters=self.W,
             stride=self.stride,
             padding=self.padding,
-            dilations=(self.dilation_rate, ),
+            dilations=[self.dilation_rate, ],
             data_format=self.data_format,
             name=self.name,
         )
@@ -139,7 +156,7 @@ class Conv2dLayer(Layer):
         The padding algorithm type: "SAME" or "VALID".
     data_format : str
         "NHWC" or "NCHW", default is "NHWC".
-    dilation_rate : list of int
+    dilation_rate : tuple of int
         Filter up-sampling/input down-sampling rate.
     W_init : initializer
         The initializer for the weight matrix.
@@ -157,30 +174,11 @@ class Conv2dLayer(Layer):
     --------
     With TensorLayer
 
-    >>> x = tf.placeholder(tf.float32, shape=(None, 28, 28, 1))
-    >>> net = tl.layers.Input(x, name='input_layer')
-    >>> net = tl.layers.Conv2dLayer(net,
-    ...                   act = tf.nn.relu,
-    ...                   shape = (5, 5, 1, 32),  # 32 features for each 5x5 patch
-    ...                   strides = (1, 1, 1, 1),
-    ...                   padding='SAME',
-    ...                   W_init=tf.truncated_normal_initializer(stddev=5e-2),
-    ...                   b_init = tf.constant_initializer(value=0.0),
-    ...                   name ='cnn_layer1')     # output: (?, 28, 28, 32)
-    >>> net = tl.layers.Pool(net,
-    ...                   ksize=(1, 2, 2, 1),
-    ...                   strides=(1, 2, 2, 1),
-    ...                   padding='SAME',
-    ...                   pool = tf.nn.max_pool,
-    ...                   name ='pool_layer1',)   # output: (?, 14, 14, 32)
-
-    Without TensorLayer, you can implement 2D convolution as follow.
-
-    >>> W = tf.Variable(W_init(shape=[5, 5, 1, 32], ), name='W_conv')
-    >>> b = tf.Variable(b_init(shape=[32], ), name='b_conv')
-    >>> outputs = tf.nn.relu( tf.nn.conv2d(inputs, W,
-    ...                       strides=[1, 1, 1, 1],
-    ...                       padding='SAME') + b )
+    >>> net = tl.layers.Input([8, 28, 28, 1], name='input')
+    >>> conv2d = tl.layers.Conv2dLayer(shape=(5, 5, 1, 32), strides=(1, 1, 1, 1), b_init=None, name='conv2d_1')
+    >>> print(conv2d)
+    >>> tensor = tl.layers.Conv2dLayer(shape=(5, 5, 1, 32), strides=(1, 1, 1, 1), act=tf.nn.relu, name='conv2d_2')(net)
+    >>> print(tensor)
 
     """
 
@@ -190,8 +188,8 @@ class Conv2dLayer(Layer):
             shape=(5, 5, 1, 100),
             strides=(1, 1, 1, 1),
             padding='SAME',
-            data_format=None,
-            dilation_rate=[1, 1, 1, 1],
+            data_format='NHWC',
+            dilation_rate=(1, 1, 1, 1),
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
             name='cnn2d_layer',
@@ -209,6 +207,10 @@ class Conv2dLayer(Layer):
         self.b_init = b_init
         self.in_channels = shape[-2]
         self.name = name
+
+        if self.in_channels:
+            self.build(None)
+            self._built = True
 
         logging.info(
             "Conv2dLayer %s: shape: %s strides: %s pad: %s act: %s" % (
@@ -247,7 +249,7 @@ class Conv2dLayer(Layer):
             strides=self.strides,
             padding=self.padding,
             data_format=self.data_format,
-            dilations=self.dilation_rate,
+            dilations=list(self.dilation_rate),
             name=self.name,
         )
 
@@ -275,7 +277,7 @@ class Conv3dLayer(Layer):
         The padding algorithm type: "SAME" or "VALID".
     data_format : str
         "NDHWC" or "NCDHW", default is "NDHWC".
-    dilation_rate : list of int
+    dilation_rate : tuple of int
         Filter up-sampling/input down-sampling rate.
     W_init : initializer
         The initializer for the weight matrix.
@@ -284,12 +286,21 @@ class Conv3dLayer(Layer):
     name : None or str
         A unique layer name.
 
+    Notes
+    -----
+    - shape = [d, h, w, the number of output channel of previous layer, the number of output channels]
+    - the number of output channel of a layer is its last dimension.
+
     Examples
-    ---------
-    >>> x = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
-    >>> n = tl.layers.Input(x, name='in3')
-    >>> n = tl.layers.Conv3dLayer(n, shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1))
-    [None, 50, 50, 50, 32]
+    --------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([8, 100, 100, 100, 3], name='input')
+    >>> conv2d = tl.layers.Conv2dLayer(shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1), b_init=None, name='conv3d_1')
+    >>> print(conv2d)
+    >>> tensor = tl.layers.Conv2dLayer(shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1), act=tf.nn.relu, name='conv3d_2')(net)
+    >>> print(tensor)
+
     """
 
     def __init__(
@@ -299,7 +310,7 @@ class Conv3dLayer(Layer):
             strides=(1, 2, 2, 2, 1),
             padding='SAME',
             data_format='NDHWC',
-            dilation_rate=[1, 1, 1, 1, 1],
+            dilation_rate=(1, 1, 1, 1, 1),
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
             name='cnn3d_layer'
@@ -317,6 +328,10 @@ class Conv3dLayer(Layer):
         self.b_init = b_init
         self.in_channels = shape[-2]
         self.name = name
+
+        if self.in_channels:
+            self.build(None)
+            self._built = True
 
         logging.info(
             "Conv3dLayer %s: shape: %s strides: %s pad: %s act: %s" % (
@@ -356,7 +371,7 @@ class Conv3dLayer(Layer):
             strides=self.strides,
             padding=self.padding,
             data_format=self.data_format,  #'NDHWC',
-            dilations=self.dilation_rate,  #[1, 1, 1, 1, 1],
+            dilations=list(self.dilation_rate),  #[1, 1, 1, 1, 1],
             name=self.name,
         )
 
