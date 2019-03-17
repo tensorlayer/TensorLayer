@@ -75,8 +75,6 @@ class SeparableConv1d(Layer):
             # pointwise_constraint=None,
             # W_init=tf.truncated_normal_initializer(stddev=0.1),
             # b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
             in_channels=None,
             name='seperable1d',
     ):
@@ -92,8 +90,6 @@ class SeparableConv1d(Layer):
         self.depthwise_init = depthwise_init
         self.pointwise_init = pointwise_init
         self.b_init = b_init
-        self.W_init_args = W_init_args
-        self.b_init_args = b_init_args
         self.in_channels = in_channels
         self.name = name
 
@@ -222,18 +218,9 @@ class SeparableConv2d(Layer):
             # pointwise_constraint=None,
             # W_init=tf.truncated_normal_initializer(stddev=0.1),
             # b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
             in_channels=None,
             name='seperable2d',
     ):
-        # if W_init_args is None:
-        #     W_init_args = {}
-        # if b_init_args is None:
-        #     b_init_args = {}
-
-        # super(SeparableConv2d, self
-        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
         self.n_filter = n_filter
         self.filter_size = filter_size
@@ -246,8 +233,6 @@ class SeparableConv2d(Layer):
         self.depthwise_init = depthwise_init
         self.pointwise_init = pointwise_init
         self.b_init = b_init
-        self.W_init_args = W_init_args
-        self.b_init_args = b_init_args
         self.in_channels = in_channels
         self.name = name
 
@@ -303,7 +288,6 @@ class SeparableConv2d(Layer):
         # _out = self.layer(np.random.uniform([1] + list(inputs_shape)))  # initialize weights
         _out = self.layer(tf.convert_to_tensor(np.random.uniform(size=list(inputs_shape)), dtype=np.float))    # initialize weights
         outputs_shape = _out.shape
-        #self._add_weights(self.layer.weights)
         self._weights = self.layer.weights
 
     def forward(self, inputs):

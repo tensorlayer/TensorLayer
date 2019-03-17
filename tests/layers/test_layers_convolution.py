@@ -33,7 +33,7 @@ class Layer_Convolution_1D_Test(CustomTestCase):
         )(cls.n1)
 
         cls.n3 = tl.layers.DeConv1dLayer(
-            shape=(5, 64, 32), outputs_shape=(cls.batch_size, 50, 64), strides=(1, 2, 1), name='deconv2dlayer'
+            shape=(5, 64, 32), outputs_shape=(cls.batch_size, 50, 64), strides=(1, 2, 1), name='deconv1dlayer'
         )(cls.n2)
 
         cls.n4 = tl.layers.SeparableConv1d(

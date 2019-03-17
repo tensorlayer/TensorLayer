@@ -73,7 +73,7 @@ class GroupConv2d(Layer):
         self.dilation_rate = self._dilation_rate = dilation_rate
         self.W_init = W_init
         self.b_init = b_init
-        self.in_channels = self.pre_channel = in_channels
+        self.in_channels = in_channels
         self.name = name
 
         if self.in_channels:
@@ -102,22 +102,17 @@ class GroupConv2d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
+
         if self.data_format == 'channels_last':
             self.data_format = 'NHWC'
-            if self.in_channels:
-                self.pre_channel = self.in_channels
-            else:
-                self.pre_channel = inputs_shape[-1]
-                self.in_channels = self.pre_channel
+            if self.in_channels is None:
+                self.in_channels = inputs_shape[-1]
             self._strides = [1, self._strides[0], self._strides[1], 1]
             self._dilation_rate = [1, self._dilation_rate[0], self._dilation_rate[1], 1]
         elif self.data_format == 'channels_first':
             self.data_format = 'NCHW'
-            if self.in_channels:
-                self.pre_channel = self.in_channels
-            else:
-                self.pre_channel = inputs_shape[1]
-                self.in_channels = self.pre_channel
+            if self.in_channels is None:
+                self.in_channels = inputs_shape[1]
             self._strides = [1, 1, self._strides[0], self._strides[1]]
             self._dilation_rate = [1, 1, self._dilation_rate[0], self._dilation_rate[1]]
         else:
@@ -134,7 +129,7 @@ class GroupConv2d(Layer):
         )
 
         self.filter_shape = (
-            self.filter_size[0], self.filter_size[1], int(self.pre_channel / self.n_group), self.n_filter
+            self.filter_size[0], self.filter_size[1], int(self.in_channels / self.n_group), self.n_filter
         )
 
         self.We = self._get_weights(

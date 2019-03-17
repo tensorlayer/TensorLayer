@@ -96,7 +96,7 @@ class DepthwiseConv2d(Layer):
         self.depth_multiplier = depth_multiplier
         self.W_init = W_init
         self.b_init = b_init
-        self.in_channels = self.pre_channel = in_channels
+        self.in_channels = in_channels
 
         if self.in_channels:
             self.build(None)
@@ -111,7 +111,7 @@ class DepthwiseConv2d(Layer):
 
     def __repr__(self):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
-        s = ('{classname}(in_channels={pre_channel}, out_channels={n_filter}, kernel_size={filter_size}'
+        s = ('{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
              ', strides={strides}, padding={padding}')
         if self.dilation_rate != (1,) * len(self.dilation_rate):
             s += ', dilation={dilation_rate}'
@@ -121,43 +121,26 @@ class DepthwiseConv2d(Layer):
         if self.name is not None:
             s += ', name=\'{name}\''
         s += ')'
-        return s.format(classname=self.__class__.__name__, n_filter=self.pre_channel * self.depth_multiplier, **self.__dict__)
+        return s.format(classname=self.__class__.__name__, n_filter=self.in_channels * self.depth_multiplier, **self.__dict__)
 
     def build(self, inputs_shape):
-        # self.pre_channel = inputs_shape[-1]
-        # if self.pre_channel is None:  # if pre_channel is ?, it happens when using Spatial Transformer Net
-        #     self.pre_channel = 1
-        #     logging.info("[warnings] unknown input channels, set to 1")
-        #
-        # if len(self.strides) == 2:
-        #     self._strides = [1, self.strides[0], self.strides[1], 1]
-        # elif len(self.strides) == 4:
-        #     self._strides = [self.strides[0], self.strides[1], self.strides[2], self.strides[3]]
-        # if len(self._strides) != 4:
-        #     raise AssertionError("len(_strides) should be 4.")
         if self.data_format == 'channels_last':
             self.data_format = 'NHWC'
-            if self.in_channels:
-                self.pre_channel = self.in_channels
-            else:
-                self.pre_channel = inputs_shape[-1]
-                self.in_channels = self.pre_channel
+            if self.in_channels is None:
+                self.in_channels = inputs_shape[-1]
             self._strides = [1, self._strides[0], self._strides[1], 1]
             self._dilation_rate = [1, self._dilation_rate[0], self._dilation_rate[1], 1]
         elif self.data_format == 'channels_first':
             self.data_format = 'NCHW'
-            if self.in_channels:
-                self.pre_channel = self.in_channels
-            else:
-                self.pre_channel = inputs_shape[1]
-                self.in_channels = self.pre_channel
+            if self.in_channels is None:
+                self.in_channels = inputs_shape[1]
             self._strides = [1, 1, self._strides[0], self._strides[1]]
             self._dilation_rate = [1, 1, self._dilation_rate[0], self._dilation_rate[1]]
         else:
             raise Exception("data_format should be either channels_last or channels_first")
 
         self.filter_shape = (
-            self.filter_size[0], self.filter_size[1], self.pre_channel, self.depth_multiplier
+            self.filter_size[0], self.filter_size[1], self.in_channels, self.depth_multiplier
         )
 
         self.W = self._get_weights(
@@ -166,7 +149,7 @@ class DepthwiseConv2d(Layer):
 
         if self.b_init:
             self.b = self._get_weights(
-                "biases", shape=(self.pre_channel * self.depth_multiplier), init=self.b_init
+                "biases", shape=(self.in_channels * self.depth_multiplier), init=self.b_init
             )
 
     def forward(self, inputs):

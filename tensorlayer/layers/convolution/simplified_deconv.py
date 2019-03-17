@@ -22,7 +22,7 @@ __all__ = [
 
 
 class DeConv2d(Layer):
-    """Simplified version of :class:`DeConv2dLayer`.
+    """Simplified version of :class:`DeConv2dLayer`, see `tf.nn.conv3d_transpose <https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/conv2d_transpose>`__.
 
     Parameters
     ----------
@@ -44,8 +44,20 @@ class DeConv2d(Layer):
         The initializer for the weight matrix.
     b_init : initializer or None
         The initializer for the bias vector. If None, skip biases.
+    in_channels : int
+        The number of in channels.
     name : None or str
         A unique layer name.
+
+    Examples
+    --------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([5, 100, 100, 32], name='input')
+    >>> deconv2d = tl.layers.DeConv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), in_channels=32, name='DeConv2d_1')
+    >>> print(deconv2d)
+    >>> tensor = tl.layers.DeConv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), name='DeConv2d_2')(net)
+    >>> print(tensor)
 
     """
 
@@ -60,6 +72,7 @@ class DeConv2d(Layer):
             data_format='channels_last',
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
+            in_channels=None,
             name='decnn2d'
     ):
         super().__init__(name)
@@ -72,7 +85,13 @@ class DeConv2d(Layer):
         self.dilation_rate = dilation_rate
         self.W_init = W_init
         self.b_init = b_init
+        self.in_channels = in_channels
         self.name = name
+
+        # Attention: To build, we need not only the in_channels!
+        # if self.in_channels:
+        #     self.build(None)
+        #     self._built = True
 
         logging.info(
             "DeConv2d {}: n_filters: {} strides: {} padding: {} act: {} dilation: {}".format(
@@ -114,9 +133,6 @@ class DeConv2d(Layer):
             # dtype=tf.float32,
             name=self.name,
         )
-        # print(inputs_shape)
-        # print(np.random.uniform(size=inputs_shape).shape)
-        # exit()
         if self.data_format == "channels_first":
             self.in_channels = inputs_shape[1]
         else:
@@ -128,17 +144,10 @@ class DeConv2d(Layer):
     def forward(self, inputs):
         outputs = self.layer(inputs)
         return outputs
-        # self.outputs = conv2d_transpose(self.inputs)
-        # # new_variables = conv2d_transpose.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        # # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-        # new_variables = get_collection_trainable(self.name)
-        #
-        # self._add_layers(self.outputs)
-        # self._add_params(new_variables)
 
 
 class DeConv3d(Layer):
-    """Simplified version of The :class:`DeConv3dLayer`, see `tf.contrib.layers.conv3d_transpose <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/conv3d_transpose>`__.
+    """Simplified version of :class:`DeConv3dLayer`, see `tf.nn.conv3d_transpose <https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/conv3d_transpose>`__.
 
     Parameters
     ----------
@@ -158,8 +167,20 @@ class DeConv3d(Layer):
         The initializer for the weight matrix.
     b_init : initializer or None
         The initializer for the bias vector. If None, skip bias.
+    in_channels : int
+        The number of in channels.
     name : None or str
         A unique layer name.
+
+    Examples
+    --------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([5, 100, 100, 100, 32], name='input')
+    >>> deconv3d = tl.layers.DeConv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), in_channels=32, name='DeConv3d_1')
+    >>> print(deconv3d)
+    >>> tensor = tl.layers.DeConv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), name='DeConv3d_2')(net)
+    >>> print(tensor)
 
     """
 
@@ -173,6 +194,7 @@ class DeConv3d(Layer):
             data_format='channels_last',
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
+            in_channels=None,
             name='decnn3d'
     ):
         super().__init__(name)
@@ -184,7 +206,13 @@ class DeConv3d(Layer):
         self.data_format = data_format
         self.W_init = W_init
         self.b_init = b_init
+        self.in_channels = in_channels,
         self.name = name
+
+        # Attention: To build, we need not only the in_channels!
+        # if self.in_channels:
+        #     self.build(None)
+        #     self._built = True
 
         logging.info(
             "DeConv3d %s: n_filters: %s strides: %s pad: %s act: %s" % (
@@ -192,6 +220,9 @@ class DeConv3d(Layer):
                 self.act.__name__ if self.act is not None else 'No Activation'
             )
         )
+
+        if len(strides) != 3:
+            raise ValueError("len(strides) should be 3, DeConv3d and DeConv3dLayer are different.")
 
     def __repr__(self):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
@@ -233,10 +264,3 @@ class DeConv3d(Layer):
     def forward(self, inputs):
         outputs = self.layer(inputs)
         return outputs
-        # self.outputs = nn(self.inputs)
-        # # new_variables = nn.weights  # tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        # # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-        # new_variables = get_collection_trainable(self.name)
-        #
-        # self._add_layers(self.outputs)
-        # self._add_params(new_variables)

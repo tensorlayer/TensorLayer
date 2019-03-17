@@ -86,9 +86,8 @@ class Conv1dLayer(Layer):
         self.in_channels = shape[-2]
         self.name = name
 
-        if self.in_channels:
-            self.build(None)
-            self._built = True
+        self.build(None)
+        self._built = True
 
         logging.info(
             "Conv1dLayer %s: shape: %s stride: %s pad: %s act: %s" % (
@@ -208,9 +207,8 @@ class Conv2dLayer(Layer):
         self.in_channels = shape[-2]
         self.name = name
 
-        if self.in_channels:
-            self.build(None)
-            self._built = True
+        self.build(None)
+        self._built = True
 
         logging.info(
             "Conv2dLayer %s: shape: %s strides: %s pad: %s act: %s" % (
@@ -296,9 +294,9 @@ class Conv3dLayer(Layer):
     With TensorLayer
 
     >>> net = tl.layers.Input([8, 100, 100, 100, 3], name='input')
-    >>> conv2d = tl.layers.Conv2dLayer(shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1), b_init=None, name='conv3d_1')
-    >>> print(conv2d)
-    >>> tensor = tl.layers.Conv2dLayer(shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1), act=tf.nn.relu, name='conv3d_2')(net)
+    >>> conv3d = tl.layers.Conv3dLayer(shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1), b_init=None, name='conv3d_1')
+    >>> print(conv3d)
+    >>> tensor = tl.layers.Conv3dLayer(shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1), act=tf.nn.relu, name='conv3d_2')(net)
     >>> print(tensor)
 
     """
@@ -329,9 +327,8 @@ class Conv3dLayer(Layer):
         self.in_channels = shape[-2]
         self.name = name
 
-        if self.in_channels:
-            self.build(None)
-            self._built = True
+        self.build(None)
+        self._built = True
 
         logging.info(
             "Conv3dLayer %s: shape: %s strides: %s pad: %s act: %s" % (
