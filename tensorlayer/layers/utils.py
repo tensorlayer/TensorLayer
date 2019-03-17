@@ -52,7 +52,8 @@ def compute_alpha(x):
     )
     alpha_sum = tf.reduce_sum(input_tensor=alpha_array_abs)
     n = tf.reduce_sum(input_tensor=alpha_array_abs1)
-    alpha = tf.compat.v1.div(alpha_sum, n)
+    # alpha = tf.compat.v1.div(alpha_sum, n)
+    alpha = tf.math.divide(alpha_sum, n)
     return alpha
 
 
@@ -437,6 +438,7 @@ def _compute_threshold(x):
     Computing the threshold.
     """
     x_sum = tf.reduce_sum(input_tensor=tf.abs(x), axis=None, keepdims=False, name=None)
-    threshold = tf.compat.v1.div(x_sum, tf.cast(tf.size(input=x), tf.float32), name=None)
+    # threshold = tf.compat.v1.div(x_sum, tf.cast(tf.size(input=x), tf.float32), name=None)
+    threshold = tf.math.divide(x_sum, tf.cast(tf.size(input=x), tf.float32), name=None)
     threshold = tf.multiply(0.7, threshold, name=None)
     return threshold

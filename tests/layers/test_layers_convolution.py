@@ -200,11 +200,15 @@ class Layer_Convolution_2D_Test(CustomTestCase):
             n_filter=64, filter_size=(3, 3), strides=(2, 2), n_group=2, name='group'
         )(cls.n9)
 
-        cls.n11 = tl.layers.TernaryConv2d(
-            n_filter=32, filter_size=(5, 5), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='ternaryconv2d'
+        cls.n11 = tl.layers.DorefaConv2d(
+            n_filter=32, filter_size=(5, 5), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='dorefaconv2d'
         )(cls.n10)
 
-        cls.model = Model(cls.input_layer, cls.n11)
+        cls.n12 = tl.layers.TernaryConv2d(
+            n_filter=64, filter_size=(5, 5), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='ternaryconv2d'
+        )(cls.n11)
+
+        cls.model = Model(cls.input_layer, cls.n12)
         print("Testing Conv2d model: \n", cls.model)
 
         # cls.n12 = tl.layers.QuanConv2d(cls.n11, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='quancnn')
@@ -299,6 +303,13 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         # self.assertEqual(self.n7.count_params(), 74880)
         self.assertEqual(len(self.n11._info[0].layer.weights), 2)
         self.assertEqual(self.n11.get_shape().as_list()[1:], [12, 12, 32])
+
+    def test_layer_n12(self):
+        # self.assertEqual(len(self.n7.all_layers), 8)
+        # self.assertEqual(len(self.n7.all_params), 13)
+        # self.assertEqual(self.n7.count_params(), 74880)
+        self.assertEqual(len(self.n12._info[0].layer.weights), 2)
+        self.assertEqual(self.n12.get_shape().as_list()[1:], [12, 12, 64])
 
     # def test_layer_n8(self):
     #

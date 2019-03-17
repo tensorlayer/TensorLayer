@@ -171,12 +171,17 @@ class TernaryConv2d(Layer):
         W_ = tf.multiply(alpha, W_)
 
         outputs = tf.nn.conv2d(
-            inputs, W_, strides=self.strides, padding=self.padding,
-            data_format=self.data_format, dilations=self._dilation_rate
+            input=inputs,
+            filters=W_,
+            strides=self._strides,
+            padding=self.padding,
+            data_format=self.data_format,
+            dilations=self._dilation_rate,
+            name=self.name
         )
 
         if self.b_init:
-            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
         if self.act:
             outputs = self.act(outputs)
 
