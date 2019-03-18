@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer.layers.core import Layer
 
@@ -49,8 +50,12 @@ class PoolLayer(Layer):
         A unique layer name.
 
     Examples
-    --------
-    - see :class:`Conv2dLayer`.
+    ---------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 50, 50, 32], name='input')
+    >>> net = tl.layers.PoolLayer()(net)
+    >>> output shape : [None, 25, 25, 32]
 
     """
 
@@ -60,9 +65,8 @@ class PoolLayer(Layer):
             strides=(1, 2, 2, 1),
             padding='SAME',
             pool=tf.nn.max_pool,
-            name=None,  #'pool_pro',
+            name='pool_pro',
     ):
-        # super(PoolLayer, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.filter_size = filter_size
         self.strides = strides
@@ -122,9 +126,8 @@ class MaxPool1d(Layer):
             strides=2,
             padding='SAME',
             data_format='channels_last',
-            name=None,  #'maxpool1d'
+            name='maxpool1d'
     ):
-        # super(MaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.filter_size = self._filter_size = filter_size
         self.strides = self._strides = strides
@@ -159,15 +162,6 @@ class MaxPool1d(Layer):
         self._strides = [self.strides]
 
     def forward(self, inputs):
-        """
-        prev_layer : :class:`Layer`  # NO PREVIOUS LAYER NOW
-            The previous layer with a output rank as 3 [batch, length(width), channel].
-        """
-        ## TODO : tf.layers will be removed in TF 2.0
-        # outputs = tf.layers.max_pooling1d(
-        #     inputs, self.filter_size, self.strides, padding=self.padding, data_format=self.data_format, name=self.name
-        # )
-        # https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/pool
         outputs = tf.nn.pool(
             input=inputs,
             window_shape=self._filter_size,
@@ -181,24 +175,11 @@ class MaxPool1d(Layer):
         return outputs
 
 
-# x = tf.placeholder("float32", [None, 100, 3])
-# n = MaxPool1d(name='sasds')
-# print(type(n))
-# n.build(x)
-# print(n.strides, n.filter_size, n.data_format)
-# # exit()
-# y = n.forward(x)
-# print(type(y), y)#.outputs)
-# exit()
-
-
 class MeanPool1d(Layer):
     """Mean pooling for 1D signal.
 
     Parameters
     ------------
-    # prev_layer : :class:`Layer`
-    #     The previous layer with a output rank as 3.
     filter_size : tuple of int
         Pooling window size.
     strides : tuple of int
@@ -212,22 +193,14 @@ class MeanPool1d(Layer):
 
     """
 
-    # logging.info("MeanPool1d %s: filter_size: %s strides: %s padding: %s" % (self.name, str(filter_size), str(strides), str(padding)))
-    # outputs = tf.layers.average_pooling1d(prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
-    #
-    # net_new = copy.copy(prev_layer)
-    # net_new.outputs = outputs
-    # net_new.all_layers.extend([outputs])
-    # return net_new
     def __init__(
-            self,  #prev_layer,
+            self,
             filter_size=3,
             strides=2,
             padding='SAME',
             data_format='channels_last',
-            name=None,  #'meanpool1d'
+            name='meanpool1d'
     ):
-        # super(MeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.filter_size = self._filter_size = filter_size
         self.strides = self._strides = strides
@@ -263,11 +236,6 @@ class MeanPool1d(Layer):
         self._strides = [self.strides]
 
     def forward(self, inputs):
-        # self.outputs = tf.layers.average_pooling1d(
-        #     prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
-        # )
-        # self._add_layers(self.outputs)
-        # https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/pool
         outputs = tf.nn.pool(
             input=inputs,
             window_shape=self._filter_size,
@@ -305,14 +273,12 @@ class MaxPool2d(Layer):
             strides=(2, 2),
             padding='SAME',
             data_format='channels_last',
-            name=None,  #'maxpool2d'
+            name='maxpool2d'
     ):
-        if strides is None:
-            strides = filter_size
-
-        # super(MaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.filter_size = filter_size
+        if strides is None:
+            strides = filter_size
         self.strides = self._strides = strides
         self.padding = padding
         self.data_format = data_format
@@ -343,13 +309,6 @@ class MaxPool2d(Layer):
             raise Exception("unsupported data format")
 
     def forward(self, inputs):
-        """
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 4.
-        """
-        # outputs = tf.layers.max_pooling2d(
-        #     inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
-        # )
         outputs = tf.nn.max_pool(
             input=inputs,
             ksize=self.filter_size,
@@ -357,11 +316,6 @@ class MaxPool2d(Layer):
             padding=self.padding,
             name=self.name
         )
-        # net = PoolLayer(net, ksize=[1, filter_size[0], filter_size[1], 1],
-        #         strides=[1, strides[0], strides[1], 1],
-        #         padding=padding,
-        #         pool = tf.nn.max_pool,
-        #         name = name)
         return outputs
 
 
@@ -370,8 +324,6 @@ class MeanPool2d(Layer):
 
     Parameters
     -----------
-    # prev_layer : :class:`Layer`
-    #     The previous layer with a output rank as 4 [batch, height, width, channel].
     filter_size : tuple of int
         (height, width) for filter size.
     strides : tuple of int
@@ -386,19 +338,17 @@ class MeanPool2d(Layer):
     """
 
     def __init__(
-            self,  #prev_layer,
+            self,
             filter_size=(3, 3),
             strides=(2, 2),
             padding='SAME',
             data_format='channels_last',
-            name=None,  #'meanpool2d'
+            name='meanpool2d'
     ):
-        if strides is None:
-            strides = filter_size
-
-        # super(MeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.filter_size = filter_size
+        if strides is None:
+            strides = filter_size
         self.strides = self._strides = strides
         self.padding = padding
         self.data_format = data_format
@@ -429,14 +379,6 @@ class MeanPool2d(Layer):
             raise Exception("unsupported data format")
 
     def forward(self, inputs):
-        """
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 4.
-        """
-        # self.outputs = tf.layers.average_pooling2d(
-        #     self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
-        # )
-        # self._add_layers(self.outputs)
         outputs = tf.nn.avg_pool(
             input=inputs,
             ksize=self.filter_size,
@@ -452,8 +394,6 @@ class MaxPool3d(Layer):
 
     Parameters
     ------------
-    # prev_layer : :class:`Layer`
-    #     The previous layer with a output rank as 5.
     filter_size : tuple of int
         Pooling window size.
     strides : tuple of int
@@ -467,20 +407,19 @@ class MaxPool3d(Layer):
 
     Returns
     -------
-    :class:`Layer`
+    :class:`tf.Tensor`
         A max pooling 3-D layer with a output rank as 5.
 
     """
 
     def __init__(
-            self,  #prev_layer,
+            self,  
             filter_size=(3, 3, 3),
             strides=(2, 2, 2),
             padding='VALID',
             data_format='channels_last',
-            name=None,  #'maxpool3d'
+            name='maxpool3d'
     ):
-        # super(MaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.filter_size = filter_size
         self.strides = self._strides = strides
@@ -513,14 +452,6 @@ class MaxPool3d(Layer):
             raise Exception("unsupported data format")
 
     def forward(self, inputs):
-        """
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 5.
-        """
-        # self.outputs = tf.layers.max_pooling3d(
-        #     self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
-        # )
-        # self._add_layers(self.outputs)
         outputs = tf.nn.max_pool3d(
             input=inputs,
             ksize=self.filter_size,
@@ -537,8 +468,6 @@ class MeanPool3d(Layer):
 
     Parameters
     ------------
-    prev_layer : :class:`Layer`
-        The previous layer with a output rank as 5.
     filter_size : tuple of int
         Pooling window size.
     strides : tuple of int
@@ -552,21 +481,19 @@ class MeanPool3d(Layer):
 
     Returns
     -------
-    :class:`Layer`
+    :class:`tf.Tensor`
         A mean pooling 3-D layer with a output rank as 5.
 
     """
 
     def __init__(
-            self,  #prev_layer,
+            self,  
             filter_size=(3, 3, 3),
             strides=(2, 2, 2),
             padding='VALID',
             data_format='channels_last',
-            name=None,  #'meanpool3d'
+            name='meanpool3d'
     ):
-
-        # super(MeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.filter_size = filter_size
         self.strides = self._strides = strides
@@ -599,14 +526,6 @@ class MeanPool3d(Layer):
             raise Exception("unsupported data format")
 
     def forward(self, inputs):
-        """
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 5.
-        """
-        # self.outputs = tf.layers.average_pooling3d(
-        #     prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
-        # )
-        # self._add_layers(self.outputs)
         outputs = tf.nn.avg_pool3d(
             input=inputs,
             ksize=self.filter_size,
@@ -630,14 +549,19 @@ class GlobalMaxPool1d(Layer):
 
     Examples
     ---------
-    >>> x = tf.placeholder("float32", [None, 100, 30])
-    >>> n = Input(x, name='in')
-    >>> n = GlobalMaxPool1d(n)
-    [None, 30]
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 100, 30], name='input')
+    >>> net = tl.layers.GlobalMaxPool1d()(net)
+    >>> output shape : [None, 30]
+
     """
 
-    def __init__(self, data_format="channels_last", name=None):  #'globalmaxpool1d'):
-        # super(GlobalMaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
+    def __init__(
+            self,
+            data_format="channels_last",
+            name='globalmaxpool1d'
+    ):
         super().__init__(name)
 
         self.data_format = data_format
@@ -659,10 +583,6 @@ class GlobalMaxPool1d(Layer):
         pass
 
     def forward(self, inputs):
-        """
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 3 [batch, length, channel] or [batch, channel, length].
-        """
         if self.data_format == 'channels_last':
             outputs = tf.reduce_max(input_tensor=inputs, axis=1, name=self.name)
         elif self.data_format == 'channels_first':
@@ -686,16 +606,19 @@ class GlobalMeanPool1d(Layer):
 
     Examples
     ---------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder("float32", [None, 100, 30])
-    >>> n = tl.layers.Input(x, name='in')
-    >>> n = tl.layers.GlobalMeanPool1d(n)
-    [None, 30]
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 100, 30], name='input')
+    >>> net = tl.layers.GlobalMeanPool1d()(net)
+    >>> output shape : [None, 30]
+
     """
 
-    def __init__(self, data_format='channels_last', name=None):  #'globalmeanpool1d'):
-        # super(GlobalMeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
+    def __init__(
+            self,
+            data_format='channels_last',
+            name='globalmeanpool1d'
+    ):
         super().__init__(name)
         self.data_format = data_format
         self.name = name
@@ -716,10 +639,6 @@ class GlobalMeanPool1d(Layer):
         pass
 
     def forward(self, inputs):
-        """
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 3 [batch, length, channel] or [batch, channel, length].
-        """
         if self.data_format == 'channels_last':
             outputs = tf.reduce_mean(input_tensor=inputs, axis=1, name=self.name)
         elif self.data_format == 'channels_first':
@@ -743,16 +662,19 @@ class GlobalMaxPool2d(Layer):
 
     Examples
     ---------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder("float32", [None, 100, 100, 30])
-    >>> n = tl.layers.Input(x, name='in2')
-    >>> n = tl.layers.GlobalMaxPool2d(n)
-    [None, 30]
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 100, 100, 30], name='input')
+    >>> net = tl.layers.GlobalMaxPool3d()(net)
+    >>> output shape : [None, 30]
+
     """
 
-    def __init__(self, data_format='channels_last', name=None):  #'globalmaxpool2d'):
-        # super(GlobalMaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
+    def __init__(
+            self,
+            data_format='channels_last',
+            name='globalmaxpool2d'
+    ):
         super().__init__(name)
         self.data_format = data_format
         self.name = name
@@ -773,10 +695,6 @@ class GlobalMaxPool2d(Layer):
         pass
 
     def forward(self, inputs):
-        """
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 4 [batch, height, width, channel] or [batch, channel, height, width].
-        """
         if self.data_format == 'channels_last':
             outputs = tf.reduce_max(input_tensor=inputs, axis=[1, 2], name=self.name)
         elif self.data_format == 'channels_first':
@@ -800,16 +718,19 @@ class GlobalMeanPool2d(Layer):
 
     Examples
     ---------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder("float32", [None, 100, 100, 30])
-    >>> n = tl.layers.Input(x, name='in2')
-    >>> n = tl.layers.GlobalMeanPool2d(n)
-    [None, 30]
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 100, 100, 30], name='input')
+    >>> net = tl.layers.GlobalMeanPool2d()(net)
+    >>> output shape : [None, 30]
+
     """
 
-    def __init__(self, data_format='channels_last', name=None):  #'globalmeanpool2d'):
-        # super(GlobalMeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
+    def __init__(
+            self,
+            data_format='channels_last',
+            name='globalmeanpool2d'
+    ):
         super().__init__(name)
 
         self.data_format = data_format
@@ -831,10 +752,6 @@ class GlobalMeanPool2d(Layer):
         pass
 
     def forward(self, inputs):
-        """
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 4 [batch, height, width, channel] or [batch, channel, height, width].
-        """
         if self.data_format == 'channels_last':
             outputs = tf.reduce_mean(input_tensor=inputs, axis=[1, 2], name=self.name)
         elif self.data_format == 'channels_first':
@@ -858,16 +775,19 @@ class GlobalMaxPool3d(Layer):
 
     Examples
     ---------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder("float32", [None, 100, 100, 100, 30])
-    >>> n = tl.layers.Input(x, name='in')
-    >>> n = tl.layers.GlobalMaxPool3d(n)
-    [None, 30]
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 100, 100, 100, 30], name='input')
+    >>> net = tl.layers.GlobalMaxPool3d()(net)
+    >>> output shape : [None, 30]
+
     """
 
-    def __init__(self, data_format='channels_last', name=None):  #'globalmaxpool3d'):
-        # super(GlobalMaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
+    def __init__(
+            self,
+            data_format='channels_last',
+            name='globalmaxpool3d'
+    ):
         super().__init__(name)
 
         self.data_format = data_format
@@ -889,10 +809,6 @@ class GlobalMaxPool3d(Layer):
         pass
 
     def forward(self, inputs):
-        """
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 5 [batch, depth, height, width, channel] or [batch, channel, depth, height, width].
-        """
         if self.data_format == 'channels_last':
             outputs = tf.reduce_max(input_tensor=inputs, axis=[1, 2, 3], name=self.name)
         elif self.data_format == 'channels_first':
@@ -916,16 +832,19 @@ class GlobalMeanPool3d(Layer):
 
     Examples
     ---------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder("float32", [None, 100, 100, 100, 30])
-    >>> n = tl.layers.Input(x, name='in')
-    >>> n = tl.layers.GlobalMeanPool2d(n)
-    [None, 30]
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 100, 100, 100, 30], name='input')
+    >>> net = tl.layers.GlobalMeanPool3d()(net)
+    >>> output shape : [None, 30]
+
     """
 
-    def __init__(self, data_format='channels_last', name=None):  #'globalmeanpool3d'):
-        # super(GlobalMeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
+    def __init__(
+            self,
+            data_format='channels_last',
+            name='globalmeanpool3d'
+    ):
         super().__init__(name)
         self.data_format = data_format
         self.name = name
@@ -946,10 +865,6 @@ class GlobalMeanPool3d(Layer):
         pass
 
     def forward(self, inputs):
-        """
-        prev_layer : :class:`Layer`
-            The previous layer with a output rank as 5 [batch, depth, height, width, channel] or [batch, channel, depth, height, width].
-        """
         if self.data_format == 'channels_last':
             outputs = tf.reduce_mean(input_tensor=inputs, axis=[1, 2, 3], name=self.name)
         elif self.data_format == 'channels_first':

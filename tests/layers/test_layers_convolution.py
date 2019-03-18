@@ -399,7 +399,6 @@ class Layer_Convolution_3D_Test(CustomTestCase):
         cls.model = Model(inputs=cls.input_layer, outputs=cls.n4)
         print("Testing Conv3d model: \n", cls.model)
 
-
     @classmethod
     def tearDownClass(cls):
         pass

@@ -74,7 +74,7 @@ class Layer_Pooling_Test(CustomTestCase):
             name='meanpool2d'
         )(n6)
         n15 = tl.layers.PoolLayer(
-            name='pool1d'
+            name='pool2d'
         )(n6)
 
         cls.n6_shape = n6.get_shape().as_list()
