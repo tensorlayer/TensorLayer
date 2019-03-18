@@ -1,15 +1,14 @@
-
 import tensorflow as tf
 
 ## enable eager mode
-tf.enable_eager_execution()
+# tf.enable_eager_execution()
 
 import time
 import numpy as np
 import tensorlayer as tl
 from tensorlayer.layers import Input, Dense, Dropout
 from tensorlayer.models import Model
-import tensorflow.contrib.eager as tfe
+# import tensorflow.contrib.eager as tfe
 
 ## enable debug logging
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -44,7 +43,7 @@ n_epoch = 500
 batch_size = 500
 print_freq = 5
 train_weights = MLP.weights
-optimizer = tf.train.AdamOptimizer(learning_rate=0.0001)
+optimizer = tf.keras.optimizers.Adam(lr=0.0001)
 
 ## the following code can help you understand SGD deeply
 for epoch in range(n_epoch):  ## iterate the dataset n_epoch times

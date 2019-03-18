@@ -23,27 +23,6 @@ __all__ = [
 _global_layer_name_dict = {}  # TODO: better implementation?
 
 
-def _addindent(s_, numSpaces):
-    s = s_.split('\n')
-    # don't do anything for single-line stuff
-    if len(s) == 1:
-        return s_
-    first = s.pop(0)
-    s = [(numSpaces * ' ') + line for line in s]
-    s = '\n'.join(s)
-    s = first + '\n' + s
-    return s
-
-
-def tolist(tensors):
-    if isinstance(tensors, list):
-        return tensors
-    elif isinstance(tensors, tuple):
-        return list(tensors)
-    else:
-        return [tensors]
-
-
 class Layer(object):
     """The basic :class:`Layer` class represents a single layer of a neural network.
 
@@ -518,3 +497,23 @@ class LayerList(Layer):
         for layer in self.layers:
             layer._release_memory()
 
+
+def _addindent(s_, numSpaces):
+    s = s_.split('\n')
+    # don't do anything for single-line stuff
+    if len(s) == 1:
+        return s_
+    first = s.pop(0)
+    s = [(numSpaces * ' ') + line for line in s]
+    s = '\n'.join(s)
+    s = first + '\n' + s
+    return s
+
+
+def tolist(tensors):
+    if isinstance(tensors, list):
+        return tensors
+    elif isinstance(tensors, tuple):
+        return list(tensors)
+    else:
+        return [tensors]
