@@ -81,7 +81,7 @@ class TernaryConv2d(Layer):
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
-            name='ternary_cnn2d',
+            name=None  # 'ternary_cnn2d',
     ):
         super().__init__(name)
         self.n_filter = n_filter

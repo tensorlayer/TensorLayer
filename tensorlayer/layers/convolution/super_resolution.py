@@ -54,7 +54,7 @@ class SubpixelConv1d(Layer):
             scale=2,
             act=None,
             in_channels=None,
-            name='subpixel_conv1d'
+            name=None  # 'subpixel_conv1d'
             ):
         super().__init__(name)
         self.scale = scale
@@ -157,7 +157,7 @@ class SubpixelConv2d(Layer):
             n_out_channels=None,
             act=None,
             in_channels=None,
-            name='subpixel_conv2d'
+            name=None  # 'subpixel_conv2d'
             ):
         super().__init__(name)
         self.scale = scale

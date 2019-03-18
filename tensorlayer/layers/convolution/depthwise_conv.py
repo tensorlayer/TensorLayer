@@ -80,7 +80,7 @@ class DepthwiseConv2d(Layer):
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
-            name='depthwise_conv2d'
+            name=None  # 'depthwise_conv2d'
     ):
         super().__init__(name)
         self.filter_size = filter_size

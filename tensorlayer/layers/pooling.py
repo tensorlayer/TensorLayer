@@ -65,7 +65,7 @@ class PoolLayer(Layer):
             strides=(1, 2, 2, 1),
             padding='SAME',
             pool=tf.nn.max_pool,
-            name='pool_pro',
+            name=None  # 'pool_pro',
     ):
         super().__init__(name)
         self.filter_size = filter_size
@@ -126,7 +126,7 @@ class MaxPool1d(Layer):
             strides=2,
             padding='SAME',
             data_format='channels_last',
-            name='maxpool1d'
+            name=None  # 'maxpool1d'
     ):
         super().__init__(name)
         self.filter_size = self._filter_size = filter_size
@@ -199,7 +199,7 @@ class MeanPool1d(Layer):
             strides=2,
             padding='SAME',
             data_format='channels_last',
-            name='meanpool1d'
+            name=None  # 'meanpool1d'
     ):
         super().__init__(name)
         self.filter_size = self._filter_size = filter_size
@@ -273,7 +273,7 @@ class MaxPool2d(Layer):
             strides=(2, 2),
             padding='SAME',
             data_format='channels_last',
-            name='maxpool2d'
+            name=None  # 'maxpool2d'
     ):
         super().__init__(name)
         self.filter_size = filter_size
@@ -343,7 +343,7 @@ class MeanPool2d(Layer):
             strides=(2, 2),
             padding='SAME',
             data_format='channels_last',
-            name='meanpool2d'
+            name=None  # 'meanpool2d'
     ):
         super().__init__(name)
         self.filter_size = filter_size
@@ -418,7 +418,7 @@ class MaxPool3d(Layer):
             strides=(2, 2, 2),
             padding='VALID',
             data_format='channels_last',
-            name='maxpool3d'
+            name=None  # 'maxpool3d'
     ):
         super().__init__(name)
         self.filter_size = filter_size
@@ -492,7 +492,7 @@ class MeanPool3d(Layer):
             strides=(2, 2, 2),
             padding='VALID',
             data_format='channels_last',
-            name='meanpool3d'
+            name=None  # 'meanpool3d'
     ):
         super().__init__(name)
         self.filter_size = filter_size
@@ -560,7 +560,7 @@ class GlobalMaxPool1d(Layer):
     def __init__(
             self,
             data_format="channels_last",
-            name='globalmaxpool1d'
+            name=None  # 'globalmaxpool1d'
     ):
         super().__init__(name)
 
@@ -617,7 +617,7 @@ class GlobalMeanPool1d(Layer):
     def __init__(
             self,
             data_format='channels_last',
-            name='globalmeanpool1d'
+            name=None  # 'globalmeanpool1d'
     ):
         super().__init__(name)
         self.data_format = data_format
@@ -673,7 +673,7 @@ class GlobalMaxPool2d(Layer):
     def __init__(
             self,
             data_format='channels_last',
-            name='globalmaxpool2d'
+            name=None  # 'globalmaxpool2d'
     ):
         super().__init__(name)
         self.data_format = data_format
@@ -729,7 +729,7 @@ class GlobalMeanPool2d(Layer):
     def __init__(
             self,
             data_format='channels_last',
-            name='globalmeanpool2d'
+            name=None  # 'globalmeanpool2d'
     ):
         super().__init__(name)
 
@@ -786,7 +786,7 @@ class GlobalMaxPool3d(Layer):
     def __init__(
             self,
             data_format='channels_last',
-            name='globalmaxpool3d'
+            name=None  # 'globalmaxpool3d'
     ):
         super().__init__(name)
 
@@ -843,7 +843,7 @@ class GlobalMeanPool3d(Layer):
     def __init__(
             self,
             data_format='channels_last',
-            name='globalmeanpool3d'
+            name=None  # 'globalmeanpool3d'
     ):
         super().__init__(name)
         self.data_format = data_format

@@ -70,7 +70,7 @@ class Conv1dLayer(Layer):
             dilation_rate=1,
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
-            name='cnn1d_layer',
+            name=None  # 'cnn1d_layer',
     ):
         super().__init__(name)
         self.act = act
@@ -191,7 +191,7 @@ class Conv2dLayer(Layer):
             dilation_rate=(1, 1, 1, 1),
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
-            name='cnn2d_layer',
+            name=None  # 'cnn2d_layer',
     ):
         super().__init__(name)
         self.act = act
@@ -311,7 +311,7 @@ class Conv3dLayer(Layer):
             dilation_rate=(1, 1, 1, 1, 1),
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
-            name='cnn3d_layer'
+            name=None  # 'cnn3d_layer'
     ):
         super().__init__(name)
         self.act = act

@@ -85,7 +85,7 @@ class SeparableConv1d(Layer):
             # W_init=tf.truncated_normal_initializer(stddev=0.1),
             # b_init=tf.constant_initializer(value=0.0),
             in_channels=None,
-            name='seperable1d',
+            name=None  # 'seperable1d',
     ):
         super().__init__(name)
         self.n_filter = n_filter
@@ -230,7 +230,7 @@ class SeparableConv2d(Layer):
             # W_init=tf.truncated_normal_initializer(stddev=0.1),
             # b_init=tf.constant_initializer(value=0.0),
             in_channels=None,
-            name='seperable2d',
+            name=None  # 'seperable2d',
     ):
         super().__init__(name)
         self.n_filter = n_filter

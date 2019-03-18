@@ -79,7 +79,7 @@ class DeConv1dLayer(Layer):
             dilation_rate=(1, 1, 1),
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
-            name='decnn1d_layer',
+            name=None  # 'decnn1d_layer',
     ):
         super().__init__(name)
         self.act = act
@@ -215,7 +215,7 @@ class DeConv2dLayer(Layer):
             dilation_rate=(1, 1, 1, 1),
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
-            name='decnn2d_layer',
+            name=None  # 'decnn2d_layer',
     ):
         super().__init__(name)
         self.act = act
@@ -342,7 +342,7 @@ class DeConv3dLayer(Layer):
             dilation_rate=(1, 1, 1, 1, 1),
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
-            name='decnn3d_layer',
+            name=None  # 'decnn3d_layer',
     ):
         super().__init__(name)
         self.act = act

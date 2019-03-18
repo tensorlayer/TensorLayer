@@ -70,7 +70,7 @@ class Conv1d(Layer):
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
-            name='conv1d'
+            name=None  # 'conv1d'
     ):
         super().__init__(name)
         self.n_filter = n_filter
@@ -205,7 +205,7 @@ class Conv2d(Layer):
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
-            name='conv2d',
+            name=None  # 'conv2d',
     ):
         super().__init__(name)
         self.n_filter = n_filter
@@ -343,7 +343,7 @@ class Conv3d(Layer):
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
-            name='conv3d',
+            name=None  # 'conv3d',
     ):
         super().__init__(name)
         self.n_filter = n_filter

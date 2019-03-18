@@ -73,7 +73,7 @@ class DeConv2d(Layer):
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
-            name='decnn2d'
+            name=None  # 'decnn2d'
     ):
         super().__init__(name)
         self.n_filter = n_filter
@@ -195,7 +195,7 @@ class DeConv3d(Layer):
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
-            name='decnn3d'
+            name=None  # 'decnn3d'
     ):
         super().__init__(name)
         self.n_filter = n_filter
