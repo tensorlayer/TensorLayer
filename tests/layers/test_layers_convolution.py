@@ -40,7 +40,13 @@ class Layer_Convolution_1D_Test(CustomTestCase):
             n_filter=32, filter_size=3, strides=2, padding='SAME', act=tf.nn.relu, name='separable_1d'
         )(cls.n3)
 
-        cls.model = Model(inputs=cls.input_layer, outputs=cls.n4)
+        cls.n5 = tl.layers.SubpixelConv1d(
+            scale=2, act=tf.nn.relu, in_channels=32, name='subpixel_1d'
+        )(cls.n4)
+
+        cls.model = Model(
+            inputs=cls.input_layer, outputs=cls.n5
+        )
         print("Testing Conv1d model: \n", cls.model)
 
     @classmethod
@@ -79,6 +85,13 @@ class Layer_Convolution_1D_Test(CustomTestCase):
         # self.assertEqual(self.n2.count_params(), 5344)
         self.assertEqual(len(self.n4._info[0].layer.weights), 3)
         self.assertEqual(self.n4.get_shape().as_list()[1:], [25, 32])
+
+    def test_layer_n5(self):
+
+        # self.assertEqual(len(self.n2.all_layers), 3)
+        # self.assertEqual(len(self.n2.all_params), 4)
+        # self.assertEqual(self.n2.count_params(), 5344)
+        self.assertEqual(self.n5.get_shape().as_list()[1:], [50, 16])
 
     # def test_layer_n3(self):
     #
