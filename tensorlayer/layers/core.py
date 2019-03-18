@@ -35,6 +35,15 @@ def _addindent(s_, numSpaces):
     return s
 
 
+def tolist(tensors):
+    if isinstance(tensors, list):
+        return tensors
+    elif isinstance(tensors, tuple):
+        return list(tensors)
+    else:
+        return [tensors]
+
+
 class Layer(object):
     """The basic :class:`Layer` class represents a single layer of a neural network.
 
@@ -147,26 +156,23 @@ class Layer(object):
         outputs = self.forward(input_tensors, *args, **kwargs)
 
         if not self._nodes_fixed:
-            # FIXME: fix this
-            if isinstance(outputs, tuple):
-                for out in outputs:
-                    self._add_node(input_tensors, out)
-            else:
-                self._add_node(input_tensors, outputs)
+            self._add_node(input_tensors, outputs)
         return outputs
 
     def _add_node(self, input_tensors, output_tensors):
-        inputs_list = input_tensors if isinstance(input_tensors, list) else [input_tensors]
-        outputs_list = output_tensors if isinstance(output_tensors, list) else [output_tensors]
+        inputs_list = tolist(input_tensors) # input_tensors if isinstance(input_tensors, list) else [input_tensors]
+        outputs_list = tolist(output_tensors) # output_tensors if isinstance(output_tensors, list) else [output_tensors]
 
         if self.__class__.__name__ in tl.layers.inputs.__all__:
             # for InputLayer, there should be no in_nodes
             in_nodes = []
+            in_tensor_idxes = [0]
         else:
             in_nodes = [tensor._info[0] for tensor in inputs_list]
+            in_tensor_idxes = [tensor._info[1] for tensor in inputs_list]
         node_index = len(self._nodes)
 
-        new_node = LayerNode(self, node_index, in_nodes, inputs_list, outputs_list)
+        new_node = LayerNode(self, node_index, in_nodes, inputs_list, outputs_list, in_tensor_idxes)
         self._nodes.append(new_node)
         for idx, tensor in enumerate(outputs_list):
             tensor._info = (new_node, idx) # FIXME : modify tensor outside layers? how to deal?
@@ -280,7 +286,7 @@ class Layer(object):
     #     return args if args is not None else {}
 
 class LayerNode(object):
-    def __init__(self, layer, node_index, in_nodes, in_tensors, out_tensors):
+    def __init__(self, layer, node_index, in_nodes, in_tensors, out_tensors, in_tensor_idxes):
         self.layer = layer
         self.node_index = node_index
         self.in_nodes = in_nodes
@@ -289,11 +295,13 @@ class LayerNode(object):
         self.out_tensors = out_tensors
         self.name = layer.name + "_node_{}".format(node_index)
 
+        self.in_tensors_idxes = in_tensor_idxes
+
     def __call__(self, inputs, **kwargs):
         outputs = self.layer.forward(inputs, **kwargs)
-        self.in_tensors = inputs if isinstance(inputs, list) else [inputs]
-        self.out_tensors = outputs if isinstance(outputs, list) else [outputs]
-        return outputs
+        self.in_tensors = tolist(inputs) # inputs if isinstance(inputs, list) else [inputs]
+        self.out_tensors = tolist(outputs) # outputs if isinstance(outputs, list) else [outputs]
+        return self.out_tensors
 
 
 class ModelLayer(Layer):

@@ -169,16 +169,17 @@ class Model():
             else:
                 for node in nodes:
                     in_nodes = node.in_nodes
+                    in_tensors_idxes = node.in_tensors_idxes
                     if len(in_nodes) == 1:
-                        node_input = memory[in_nodes[0].name]
+                        node_input = memory[in_nodes[0].name][in_tensors_idxes[0]]
                     else:
-                        node_input = [memory[inode.name] for inode in in_nodes]
+                        node_input = [memory[inode.name][idx] for inode, idx in zip(in_nodes, in_tensors_idxes)]
                     memory[node.name] = node(node_input)
 
         if not isinstance(self._outputs, list):
-            return memory[self._outputs._info[0].name]
+            return memory[self._outputs._info[0].name][self._outputs._info[1]]
         else:
-            return [memory[tensor._info[0].name] for tensor in self._outputs]
+            return [memory[tensor._info[0].name][tensor._info[1]] for tensor in self._outputs]
 
     @property
     def all_layers(self):
