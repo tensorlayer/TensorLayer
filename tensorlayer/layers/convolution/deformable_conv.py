@@ -96,7 +96,6 @@ class DeformableConv2d(Layer):
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = in_channels
-        self.name = name
 
         self.kernel_n = filter_size[0] * filter_size[1]
         if self.offset_layer.get_shape()[-1] != 2 * self.kernel_n:

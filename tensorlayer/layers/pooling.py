@@ -565,7 +565,6 @@ class GlobalMaxPool1d(Layer):
         super().__init__(name)
 
         self.data_format = data_format
-        self.name = name
 
         self.build()
         self._built = True
@@ -621,7 +620,6 @@ class GlobalMeanPool1d(Layer):
     ):
         super().__init__(name)
         self.data_format = data_format
-        self.name = name
 
         self.build()
         self._built = True
@@ -677,7 +675,6 @@ class GlobalMaxPool2d(Layer):
     ):
         super().__init__(name)
         self.data_format = data_format
-        self.name = name
 
         self.build()
         self._built = True
@@ -734,7 +731,6 @@ class GlobalMeanPool2d(Layer):
         super().__init__(name)
 
         self.data_format = data_format
-        self.name = name
 
         self.build()
         self._built = True
@@ -791,7 +787,6 @@ class GlobalMaxPool3d(Layer):
         super().__init__(name)
 
         self.data_format = data_format
-        self.name = name
 
         self.build()
         self._built = True
@@ -801,7 +796,7 @@ class GlobalMaxPool3d(Layer):
     def __repr__(self):
         s = '{classname}('
         if self.name is not None:
-            s += ', name=\'{name}\''
+            s += 'name=\'{name}\''
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
@@ -847,7 +842,6 @@ class GlobalMeanPool3d(Layer):
     ):
         super().__init__(name)
         self.data_format = data_format
-        self.name = name
 
         self.build()
         self._built = True

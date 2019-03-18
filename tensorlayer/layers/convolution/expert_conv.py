@@ -84,7 +84,6 @@ class Conv1dLayer(Layer):
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = shape[-2]
-        self.name = name
 
         self.build(None)
         self._built = True
@@ -205,7 +204,6 @@ class Conv2dLayer(Layer):
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = shape[-2]
-        self.name = name
 
         self.build(None)
         self._built = True
@@ -325,7 +323,6 @@ class Conv3dLayer(Layer):
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = shape[-2]
-        self.name = name
 
         self.build(None)
         self._built = True

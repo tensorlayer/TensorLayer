@@ -61,8 +61,7 @@ class SubpixelConv1d(Layer):
         self.act = act
         self.in_channels = in_channels
         self.out_channels = int(self.in_channels / self.scale)
-        self.name = name
-
+        
         if self.in_channels is not None:
             self.build(None)
             self._built = True
@@ -164,8 +163,7 @@ class SubpixelConv2d(Layer):
         self.n_out_channels = n_out_channels
         self.act = act
         self.in_channels = in_channels
-        self.name = name
-
+        
         if self.in_channels is not None:
             self.build(None)
             self._built = True

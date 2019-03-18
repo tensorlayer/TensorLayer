@@ -95,7 +95,6 @@ class TernaryConv2d(Layer):
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = in_channels
-        self.name = name
 
         if self.in_channels:
             self.build(None)

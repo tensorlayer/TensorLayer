@@ -92,7 +92,6 @@ class DeConv1dLayer(Layer):
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = self.shape[-1]
-        self.name = name
 
         self.build(None)
         self._built = True
@@ -228,7 +227,6 @@ class DeConv2dLayer(Layer):
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = self.shape[-1]
-        self.name = name
 
         self.build(None)
         self._built = True
@@ -355,7 +353,6 @@ class DeConv3dLayer(Layer):
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = self.shape[-1]
-        self.name = name
 
         self.build(None)
         self._built = True

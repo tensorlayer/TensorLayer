@@ -100,7 +100,6 @@ class SeparableConv1d(Layer):
         self.pointwise_init = pointwise_init
         self.b_init = b_init
         self.in_channels = in_channels
-        self.name = name
 
         logging.info(
             "SeparableConv1d  %s: n_filter: %d filter_size: %s strides: %s depth_multiplier: %d act: %s" % (
@@ -245,7 +244,6 @@ class SeparableConv2d(Layer):
         self.pointwise_init = pointwise_init
         self.b_init = b_init
         self.in_channels = in_channels
-        self.name = name
 
         logging.info(
             "SeparableConv2d  %s: n_filter: %d filter_size: %s filter_size: %s depth_multiplier: %d act: %s" % (

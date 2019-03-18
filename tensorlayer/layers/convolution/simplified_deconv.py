@@ -86,7 +86,6 @@ class DeConv2d(Layer):
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = in_channels
-        self.name = name
 
         # Attention: To build, we need not only the in_channels!
         # if self.in_channels:
@@ -207,7 +206,6 @@ class DeConv3d(Layer):
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = in_channels,
-        self.name = name
 
         # Attention: To build, we need not only the in_channels!
         # if self.in_channels:
