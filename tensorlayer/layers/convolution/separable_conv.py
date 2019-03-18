@@ -51,6 +51,15 @@ class SeparableConv1d(Layer):
     name : None or str
         A unique layer name.
 
+    Examples
+    --------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([8, 50, 64], name='input')
+    >>> separableconv1d = tl.layers.Conv1d(n_filter=32, filter_size=3, strides=2, padding='SAME', act=tf.nn.relu, name='separable_1d')(net)
+    >>> print(separableconv1d)
+    >>> output shape : (8, 25, 32)
+
     """
 
     # @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -153,13 +162,6 @@ class SeparableConv1d(Layer):
         outputs = self.layer(inputs)
         return outputs
 
-    # new_variables = nn.weights
-    # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-    # new_variables = get_collection_trainable(self.name)
-    #
-    # self._add_layers(self.outputs)
-    # self._add_params(new_variables)
-
 
 class SeparableConv2d(Layer):
     """The :class:`SeparableConv2d` class is a 2D depthwise separable convolutional layer.
@@ -193,6 +195,15 @@ class SeparableConv2d(Layer):
         The number of in channels.
     name : None or str
         A unique layer name.
+
+    Examples
+    --------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([8, 50, 50, 64], name='input')
+    >>> separableconv2d = tl.layers.Conv1d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, padding='VALID', name='separableconv2d')(net)
+    >>> print(separableconv2d)
+    >>> output shape : (8, 24, 24, 32)
 
     """
 
@@ -293,10 +304,3 @@ class SeparableConv2d(Layer):
     def forward(self, inputs):
         outputs = self.layer(inputs)
         return outputs
-
-    # new_variables = nn.weights
-    # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
-    # new_variables = get_collection_trainable(self.name)
-    #
-    # self._add_layers(self.outputs)
-    # self._add_params(new_variables)

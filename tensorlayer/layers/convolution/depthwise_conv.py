@@ -50,19 +50,15 @@ class DepthwiseConv2d(Layer):
 
     Examples
     ---------
-    >>> net = InputLayer(x, name='input')
-    >>> net = Conv2d(net, 32, (3, 3), (2, 2), b_init=None, name='cin')
-    >>> net = BatchNormLayer(net, act=tf.nn.relu, is_train=is_train, name='bnin')
-    ...
-    >>> net = DepthwiseConv2d(net, (3, 3), (1, 1), b_init=None, name='cdw1')
-    >>> net = BatchNormLayer(net, act=tf.nn.relu, is_train=is_train, name='bn11')
-    >>> net = Conv2d(net, 64, (1, 1), (1, 1), b_init=None, name='c1')
-    >>> net = BatchNormLayer(net, act=tf.nn.relu, is_train=is_train, name='bn12')
-    ...
-    >>> net = DepthwiseConv2d(net, (3, 3), (2, 2), b_init=None, name='cdw2')
-    >>> net = BatchNormLayer(net, act=tf.nn.relu, is_train=is_train, name='bn21')
-    >>> net = Conv2d(net, 128, (1, 1), (1, 1), b_init=None, name='c2')
-    >>> net = BatchNormLayer(net, act=tf.nn.relu, is_train=is_train, name='bn22')
+    With TensorLayer
+
+    >>> net = tl.layers.Input([8, 200, 200, 32], name='input')
+    >>> depthwiseconv2d = tl.layers.DepthwiseConv2d(
+    ...     filter_size=(3, 3), strides=(1, 1), dilation_rate=(2, 2), act=tf.nn.relu, depth_multiplier=2, name='depthwise'
+    ... )(net)
+    >>> print(depthwiseconv2d)
+    >>> output shape : (8, 200, 200, 64)
+
 
     References
     -----------
