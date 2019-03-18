@@ -64,7 +64,7 @@ class DeConv1dLayer(Layer):
     ...     shape=(5, 64, 32), outputs_shape=(8, 50, 64), strides=(1, 2, 1), name='deconv1dlayer'
     ... )(input_layer)
     >>> print(tensor)
-    >>> output shape : [8, 50, 64]
+    >>> output shape : (8, 50, 64)
 
     """
 
@@ -327,7 +327,7 @@ class DeConv3dLayer(Layer):
     ...     shape=(2, 2, 2, 128, 32), outputs_shape=(8, 20, 20, 20, 128), strides=(1, 2, 2, 2, 1), name='deconv3dlayer'
     ... )(input_layer)
     >>> print(tensor)
-    >>> output shape : [8, 20, 20, 20, 128]
+    >>> output shape : (8, 20, 20, 20, 128)
 
     """
 

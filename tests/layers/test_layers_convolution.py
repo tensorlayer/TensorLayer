@@ -217,7 +217,11 @@ class Layer_Convolution_2D_Test(CustomTestCase):
             n_filter=32, filter_size=(5, 5), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='quancnn2d'
         )(cls.n12)
 
-        cls.model = Model(cls.input_layer, cls.n13)
+        cls.n14 = tl.layers.SubpixelConv2d(
+            scale=2, act=tf.nn.relu, name='subpixelconv2d'
+        )(cls.n13)
+
+        cls.model = Model(cls.input_layer, cls.n14)
         print("Testing Conv2d model: \n", cls.model)
 
         # cls.n12 = tl.layers.QuanConv2d(cls.n11, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='quancnn')
@@ -326,6 +330,9 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         # self.assertEqual(self.n7.count_params(), 74880)
         self.assertEqual(len(self.n13._info[0].layer.weights), 2)
         self.assertEqual(self.n13.get_shape().as_list()[1:], [12, 12, 32])
+
+    def test_layer_n14(self):
+        self.assertEqual(self.n14.get_shape().as_list()[1:], [24, 24, 8])
 
     # def test_layer_n8(self):
     #

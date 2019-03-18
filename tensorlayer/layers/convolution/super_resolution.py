@@ -29,6 +29,8 @@ class SubpixelConv1d(Layer):
         The up-scaling ratio, a wrong setting will lead to Dimension size error.
     act : activation function
         The activation function of this layer.
+    in_channels : int
+        The number of in channels.
     name : str
         A unique layer name.
 
@@ -37,9 +39,9 @@ class SubpixelConv1d(Layer):
     With TensorLayer
 
     >>> net = tl.layers.Input([8, 25, 32], name='input')
-    >>> subpixelconv1d = tl.layers.SubpixelConv1d(net, scale=2, name='subpixelconv1d')
+    >>> subpixelconv1d = tl.layers.SubpixelConv1d(scale=2, name='subpixelconv1d')(net)
     >>> print(subpixelconv1d)
-    >>> output shape : [8, 50, 16]
+    >>> output shape : (8, 50, 16)
 
     References
     -----------
@@ -60,6 +62,11 @@ class SubpixelConv1d(Layer):
         self.in_channels = in_channels
         self.out_channels = int(self.in_channels / self.scale)
         self.name = name
+
+        if self.in_channels is not None:
+            self.build(None)
+            self._built = True
+
         logging.info(
             "SubpixelConv1d  %s: scale: %d act: %s" %
             (self.name, scale, self.act.__name__ if self.act is not None else 'No Activation')
@@ -75,8 +82,9 @@ class SubpixelConv1d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        self.in_channels = inputs_shape[-1]
-        self.out_channels = int(inputs_shape[-1] / self.scale)
+        if inputs_shape is not None:
+            self.in_channels = inputs_shape[-1]
+        self.out_channels = int(self.in_channels / self.scale)
         pass
 
     def forward(self, inputs):
@@ -111,39 +119,30 @@ class SubpixelConv2d(Layer):
         - The number of input channels == (scale x scale) x The number of output channels.
     act : activation function
         The activation function of this layer.
+    in_channels : int
+        The number of in channels.
     name : str
         A unique layer name.
 
     Examples
     ---------
+    With TensorLayer
+
     >>> # examples here just want to tell you how to set the n_out_channel.
-    >>> import numpy as np
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = np.random.rand(2, 16, 16, 4)
-    >>> X = tf.placeholder("float32", shape=(2, 16, 16, 4), name="X")
-    >>> net = tl.layers.InputLayer(X, name='input')
-    >>> net = tl.layers.SubpixelConv2d(net, scale=2, n_out_channel=1, name='subpixel_conv2d')
-    >>> sess = tf.Session()
-    >>> y = sess.run(net.outputs, feed_dict={X: x})
-    >>> print(x.shape, y.shape)
-    (2, 16, 16, 4) (2, 32, 32, 1)
+    >>> net = tl.layers.Input([2, 16, 16, 4], name='input1')
+    >>> subpixelconv2d = tl.layers.SubpixelConv2d(scale=2, n_out_channel=1, name='subpixel_conv2d1')(net)
+    >>> print(subpixelconv2d)
+    >>> output shape : (2, 32, 32, 1)
 
-    >>> x = np.random.rand(2, 16, 16, 4*10)
-    >>> X = tf.placeholder("float32", shape=(2, 16, 16, 4*10), name="X")
-    >>> net = tl.layers.InputLayer(X, name='input2')
-    >>> net = tl.layers.SubpixelConv2d(net, scale=2, n_out_channel=10, name='subpixel_conv2d2')
-    >>> y = sess.run(net.outputs, feed_dict={X: x})
-    >>> print(x.shape, y.shape)
-    (2, 16, 16, 40) (2, 32, 32, 10)
+    >>> net = tl.layers.Input([2, 16, 16, 4*10], name='input2')
+    >>> subpixelconv2d = tl.layers.SubpixelConv2d(scale=2, n_out_channel=10, name='subpixel_conv2d2')(net)
+    >>> print(subpixelconv2d)
+    >>> output shape : (2, 32, 32, 10)
 
-    >>> x = np.random.rand(2, 16, 16, 25*10)
-    >>> X = tf.placeholder("float32", shape=(2, 16, 16, 25*10), name="X")
-    >>> net = tl.layers.InputLayer(X, name='input3')
-    >>> net = tl.layers.SubpixelConv2d(net, scale=5, n_out_channel=None, name='subpixel_conv2d3')
-    >>> y = sess.run(net.outputs, feed_dict={X: x})
-    >>> print(x.shape, y.shape)
-    (2, 16, 16, 250) (2, 80, 80, 10)
+    >>> net = tl.layers.Input([2, 16, 16, 25*10], name='input3')
+    >>> subpixelconv2d = tl.layers.SubpixelConv2d(scale=5, n_out_channel=10, name='subpixel_conv2d3')(net)
+    >>> print(subpixelconv2d)
+    >>> output shape : (2, 80, 80, 10)
 
     References
     ------------
@@ -155,44 +154,52 @@ class SubpixelConv2d(Layer):
     def __init__(
             self,
             scale=2,
-            n_out_channel=None,
+            n_out_channels=None,
             act=None,
+            in_channels=None,
             name='subpixel_conv2d'
             ):
         super().__init__(name)
         self.scale = scale
-        self.n_out_channel = n_out_channel
+        self.n_out_channels = n_out_channels
         self.act = act
-        # if n_out_channel is None:
-        #
-        #     if int(self.inputs.get_shape()[-1]) / (scale**2) % 1 != 0:
-        #         raise Exception(
-        #             "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
-        #         )
-        #
-        #     n_out_channel = int(int(self.inputs.get_shape()[-1]) / (scale**2))
-        #
-        # logging.info(
-        #     "SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" %
-        #     (self.name, scale, n_out_channel, self.act.__name__ if self.act is not None else 'No Activation')
-        # )
+        self.in_channels = in_channels
+        self.name = name
+
+        if self.in_channels is not None:
+            self.build(None)
+            self._built = True
         logging.info(
             "SubpixelConv2d  %s: scale: %d act: %s" %
             (self.name, scale, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(in_channels={in_channels}, out_channels={n_out_channels}')
+        s += (', ' + actstr)
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
     def build(self, inputs_shape):
 
-        if inputs_shape[-1] / (self.scale**2) % 1 != 0:
+        if inputs_shape is not None:
+            self.in_channels = inputs_shape[-1]
+
+        if self.in_channels / (self.scale**2) % 1 != 0:
             raise Exception(
                 "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
             )
-        self.n_out_channel = int(inputs_shape[-1] / (self.scale**2))
+        self.n_out_channels = int(self.in_channels / (self.scale**2))
 
     def forward(self, inputs):
-        # with tf.variable_scope(name):
-        #     self.outputs = self._apply_activation(self._PS(self.inputs, r=scale, n_out_channels=n_out_channel))
-        outputs = self._PS(inputs, r=self.scale, n_out_channels=self.n_out_channel)
+        outputs = self._PS(
+            X=inputs,
+            r=self.scale,
+            n_out_channels=self.n_out_channels
+        )
         if self.act is not None:
             outputs = self.act(outputs)
         return outputs
@@ -205,13 +212,10 @@ class SubpixelConv2d(Layer):
         if n_out_channels >= 1:
             if int(X.get_shape()[-1]) != (r**2) * n_out_channels:
                 raise Exception(_err_log)
-            # bsize, a, b, c = X.get_shape().as_list()
-            # bsize = tf.shape(X)[0] # Handling Dimension(None) type for undefined batch dim
-            # Xs=tf.split(X,r,3) #b*h*w*r*r
-            # Xr=tf.concat(Xs,2) #b*h*(r*w)*r
-            # X=tf.reshape(Xr,(bsize,r*a,r*b,n_out_channel)) # b*(r*h)*(r*w)*c
 
-            X = tf.compat.v1.depth_to_space(input=X, block_size=r)
+            X = tf.compat.v1.depth_to_space(
+                input=X, block_size=r
+            )
         else:
             raise RuntimeError(_err_log)
 
