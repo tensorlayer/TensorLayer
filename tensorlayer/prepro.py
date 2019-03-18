@@ -539,9 +539,9 @@ def affine_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', 
     final_affine_matrix = transform_matrix[:2, :2]
     final_offset = transform_matrix[:2, 2]
     channel_images = [
-        ndi.interpolation.
-        affine_transform(x_channel, final_affine_matrix, final_offset, order=order, mode=fill_mode, cval=cval)
-        for x_channel in x
+        ndi.interpolation.affine_transform(
+            x_channel, final_affine_matrix, final_offset, order=order, mode=fill_mode, cval=cval
+        ) for x_channel in x
     ]
     x = np.stack(channel_images, axis=0)
     x = np.rollaxis(x, 0, channel_index + 1)
@@ -3753,8 +3753,9 @@ def keypoint_resize_random_crop(image, annos, mask=None, size=(368, 368)):
 
     rescale_ratio = max(vertical_ratio, horizontal_ratio)
 
-    image, annos, mask = resize_image(image, annos, mask, round(input_width * rescale_ratio),
-                                      round(input_height * rescale_ratio))
+    image, annos, mask = resize_image(
+        image, annos, mask, round(input_width * rescale_ratio), round(input_height * rescale_ratio)
+    )
 
     # At this point we should have input image which matches at least target
     # height or target width, while the other dimensions larger than target.
