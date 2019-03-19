@@ -38,12 +38,20 @@ class Layer_Pooling_Test(CustomTestCase):
         n5 = tl.layers.GlobalMeanPool1d(
             name='meanpool1d'
         )(n1)
+        n16 = tl.layers.MaxPool1d(
+            filter_size=3, strides=1, padding='VALID', dilation_rate=2, name='maxpool1d'
+        )(n1)
+        n17 = tl.layers.MeanPool1d(
+            filter_size=3, strides=1, padding='VALID', dilation_rate=2, name='meanpool1d'
+        )(n1)
 
         cls.n1_shape = n1.get_shape().as_list()
         cls.n2_shape = n2.get_shape().as_list()
         cls.n3_shape = n3.get_shape().as_list()
         cls.n4_shape = n4.get_shape().as_list()
         cls.n5_shape = n5.get_shape().as_list()
+        cls.n16_shape = n16.get_shape().as_list()
+        cls.n17_shape = n17.get_shape().as_list()
 
         print("Printing Pool1d")
         print(nin_1._info[0].layer)
@@ -52,6 +60,8 @@ class Layer_Pooling_Test(CustomTestCase):
         print(n3._info[0].layer)
         print(n4._info[0].layer)
         print(n5._info[0].layer)
+        print(n16._info[0].layer)
+        print(n17._info[0].layer)
 
         ## 2D ========================================================================
 
@@ -172,6 +182,12 @@ class Layer_Pooling_Test(CustomTestCase):
 
     def test_n15_shape(self):
         self.assertEqual(self.n15_shape[1:4], [25, 25, 32])
+
+    def test_n16_shape(self):
+        self.assertEqual(self.n16_shape[1:4], [46, 32])
+
+    def test_n17_shape(self):
+        self.assertEqual(self.n17_shape[1:4], [48, 32])
 
 
 if __name__ == '__main__':

@@ -134,6 +134,7 @@ class MaxPool1d(Layer):
             strides=2,
             padding='SAME',
             data_format='channels_last',
+            dilation_rate=1,
             name=None  # 'maxpool1d'
     ):
         super().__init__(name)
@@ -141,6 +142,7 @@ class MaxPool1d(Layer):
         self.strides = self._strides = strides
         self.padding = padding
         self.data_format = data_format
+        self.dilation_rate = self._dilation_rate = dilation_rate
 
         self.build()
         self._built = True
@@ -153,6 +155,8 @@ class MaxPool1d(Layer):
     def __repr__(self):
         s = ('{classname}(filter_size={filter_size}'
              ', strides={strides}, padding={padding}')
+        if self.dilation_rate != 1:
+            s += ', dilation={dilation_rate}'
         if self.name is not None:
             s += ', name=\'{name}\''
         s += ')'
@@ -168,17 +172,18 @@ class MaxPool1d(Layer):
             raise Exception("unsupported data format")
         self._filter_size = [self.filter_size]
         self._strides = [self.strides]
+        self._dilation_rate = [self.dilation_rate]
 
     def forward(self, inputs):
         outputs = tf.nn.pool(
             input=inputs,
             window_shape=self._filter_size,
             pooling_type="MAX",
-            padding=self.padding,
-            dilations=None, # TODO: support dilations
             strides=self._strides,
+            padding=self.padding,
+            data_format=self.data_format,
+            dilations=self._dilation_rate,
             name=self.name,
-            data_format=self.data_format
         )
         return outputs
 
@@ -215,6 +220,7 @@ class MeanPool1d(Layer):
             strides=2,
             padding='SAME',
             data_format='channels_last',
+            dilation_rate=1,
             name=None  # 'meanpool1d'
     ):
         super().__init__(name)
@@ -222,6 +228,7 @@ class MeanPool1d(Layer):
         self.strides = self._strides = strides
         self.padding = padding
         self.data_format = data_format
+        self.dilation_rate = self._dilation_rate = dilation_rate
 
         self.build()
         self._built = True
@@ -234,6 +241,8 @@ class MeanPool1d(Layer):
     def __repr__(self):
         s = ('{classname}(filter_size={filter_size}'
              ', strides={strides}, padding={padding}')
+        if self.dilation_rate != 1:
+            s += ', dilation={dilation_rate}'
         if self.name is not None:
             s += ', name=\'{name}\''
         s += ')'
@@ -250,6 +259,7 @@ class MeanPool1d(Layer):
             raise Exception("unsupported data format")
         self._filter_size = [self.filter_size]
         self._strides = [self.strides]
+        self._dilation_rate = [self.dilation_rate]
 
     def forward(self, inputs):
         outputs = tf.nn.pool(
