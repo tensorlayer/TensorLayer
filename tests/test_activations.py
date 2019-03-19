@@ -18,26 +18,12 @@ class Test_Leaky_ReLUs(CustomTestCase):
     def setUpClass(cls):
         cls.alpha = 0.2
 
-        cls.input_var = tf.Variable(initial_value=0, dtype=tf.float32, name="Input_Var")
-
-        cls.lrelu_out = tl.act.leaky_relu(cls.input_var, alpha=cls.alpha)
-        cls.lrelu6_out = tl.act.leaky_relu6(cls.input_var, alpha=cls.alpha)
-        cls.ltrelu6_out = tl.act.leaky_twice_relu6(cls.input_var, alpha_low=cls.alpha, alpha_high=cls.alpha)
-
         cls.vmin = 0
         cls.vmax = 10
-        cls.ramp_out = tl.act.ramp(cls.input_var, v_min=cls.vmin, v_max=cls.vmax)
-
-        cls.sign_out = tl.act.sign(cls.input_var)
-
-        cls.swish_out = tl.act.swish(cls.input_var)
-
-        cls.sess = tf.Session()
-        cls.sess.run(tf.global_variables_initializer())
 
     @classmethod
     def tearDownClass(cls):
-        tf.reset_default_graph()
+        pass
 
     def test_lrelu(self):
         for i in range(-5, 15):
@@ -47,9 +33,9 @@ class Test_Leaky_ReLUs(CustomTestCase):
             else:
                 good_output = self.alpha * i
 
-            computed_output = self.sess.run(self.lrelu_out, feed_dict={self.input_var: i})
+            computed_output = tl.act.leaky_relu(float(i), alpha=self.alpha)
 
-            self.assertAlmostEqual(computed_output, good_output, places=5)
+            self.assertAlmostEqual(computed_output.numpy(), good_output, places=5)
 
         net = tl.layers.Input([10, 2])
         net = tl.layers.Dense(n_units=100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')(net)
@@ -63,9 +49,9 @@ class Test_Leaky_ReLUs(CustomTestCase):
             else:
                 good_output = min(6, i)
 
-            computed_output = self.sess.run(self.lrelu6_out, feed_dict={self.input_var: i})
+            computed_output = tl.act.leaky_relu6(float(i), alpha=self.alpha)
 
-            self.assertAlmostEqual(computed_output, good_output, places=5)
+            self.assertAlmostEqual(computed_output.numpy(), good_output, places=5)
 
         net = tl.layers.Input([10, 2])
         net = tl.layers.Dense(n_units=100, act=lambda x : tl.act.leaky_relu6(x, 0.2), name='dense')(net)
@@ -81,9 +67,10 @@ class Test_Leaky_ReLUs(CustomTestCase):
             else:
                 good_output = 6 + (self.alpha * (i - 6))
 
-            computed_output = self.sess.run(self.ltrelu6_out, feed_dict={self.input_var: i})
+            computed_output = tl.act.leaky_twice_relu6(float(i), alpha_low=self.alpha, alpha_high=self.alpha)
 
-            self.assertAlmostEqual(computed_output, good_output, places=5)
+            self.assertAlmostEqual(computed_output.numpy(), good_output, places=5)
+
         net = tl.layers.Input([10, 200])
         net = tl.layers.Dense(n_units=100, act=lambda x : tl.act.leaky_twice_relu6(x, 0.2, 0.2), name='dense')(net)
         print(net)
@@ -99,9 +86,9 @@ class Test_Leaky_ReLUs(CustomTestCase):
             else:
                 good_output = i
 
-            computed_output = self.sess.run(self.ramp_out, feed_dict={self.input_var: i})
+            computed_output = tl.act.ramp(float(i), v_min=self.vmin, v_max=self.vmax)
 
-            self.assertAlmostEqual(computed_output, good_output, places=5)
+            self.assertAlmostEqual(computed_output.numpy(), good_output, places=5)
 
     def test_sign(self):
 
@@ -114,9 +101,9 @@ class Test_Leaky_ReLUs(CustomTestCase):
             else:
                 good_output = 1
 
-            computed_output = self.sess.run(self.sign_out, feed_dict={self.input_var: i})
+            computed_output = tl.act.sign(float(i))
 
-            self.assertAlmostEqual(computed_output, good_output, places=5)
+            self.assertAlmostEqual(computed_output.numpy(), good_output, places=5)
 
     def test_swish(self):
         import numpy as np
@@ -125,13 +112,10 @@ class Test_Leaky_ReLUs(CustomTestCase):
 
             good_output = i / (1 + np.math.exp(-i))
 
-            computed_output = self.sess.run(self.swish_out, feed_dict={self.input_var: i})
+            computed_output = tl.act.swish(float(i))
 
-            self.assertAlmostEqual(computed_output, good_output, places=5)
+            self.assertAlmostEqual(computed_output.numpy(), good_output, places=5)
 
 if __name__ == '__main__':
-
-    tf.logging.set_verbosity(tf.logging.DEBUG)
-    tl.logging.set_verbosity(tl.logging.DEBUG)
 
     unittest.main()
