@@ -107,7 +107,7 @@ class MaxPool1d(Layer):
 
     Parameters
     ----------
-    filter_size : tuple of int
+    filter_size : int
         Pooling window size.
     strides : int
         Stride of the pooling operation.
@@ -117,6 +117,14 @@ class MaxPool1d(Layer):
         One of channels_last (default, [batch, length, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : None or str
         A unique layer name.
+
+    Examples
+    ---------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 50, 32], name='input')
+    >>> net = tl.layers.MaxPool1d(filter_size=3, strides=2, padding='SAME', name='maxpool1d')(net)
+    >>> output shape : [None, 25, 32]
 
     """
 
@@ -180,9 +188,9 @@ class MeanPool1d(Layer):
 
     Parameters
     ------------
-    filter_size : tuple of int
+    filter_size : int
         Pooling window size.
-    strides : tuple of int
+    strides : int
         Strides of the pooling operation.
     padding : str
         The padding method: 'VALID' or 'SAME'.
@@ -190,6 +198,14 @@ class MeanPool1d(Layer):
         One of channels_last (default, [batch, length, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : None or str
         A unique layer name.
+
+    Examples
+    ---------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 50, 32], name='input')
+    >>> net = tl.layers.MeanPool1d(filter_size=3, strides=2, padding='SAME')(net)
+    >>> output shape : [None, 25, 32]
 
     """
 
@@ -265,6 +281,14 @@ class MaxPool2d(Layer):
     name : None or str
         A unique layer name.
 
+    Examples
+    ---------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 50, 50, 32], name='input')
+    >>> net = tl.layers.MaxPool2d(filter_size=(3, 3), strides=(2, 2), padding='SAME')(net)
+    >>> output shape : [None, 25, 25, 32]
+
     """
 
     def __init__(
@@ -334,6 +358,14 @@ class MeanPool2d(Layer):
         One of channels_last (default, [batch, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
     name : None or str
         A unique layer name.
+
+    Examples
+    ---------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 50, 50, 32], name='input')
+    >>> net = tl.layers.MeanPool2d(filter_size=(3, 3), strides=(2, 2), padding='SAME')(net)
+    >>> output shape : [None, 25, 25, 32]
 
     """
 
@@ -410,6 +442,14 @@ class MaxPool3d(Layer):
     :class:`tf.Tensor`
         A max pooling 3-D layer with a output rank as 5.
 
+    Examples
+    ---------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 50, 50, 50, 32], name='input')
+    >>> net = tl.layers.MaxPool3d(filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME')(net)
+    >>> output shape : [None, 25, 25, 25, 32]
+
     """
 
     def __init__(
@@ -483,6 +523,14 @@ class MeanPool3d(Layer):
     -------
     :class:`tf.Tensor`
         A mean pooling 3-D layer with a output rank as 5.
+
+    Examples
+    ---------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 50, 50, 50, 32], name='input')
+    >>> net = tl.layers.MeanPool3d(filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME')(net)
+    >>> output shape : [None, 25, 25, 25, 32]
 
     """
 
@@ -663,7 +711,7 @@ class GlobalMaxPool2d(Layer):
     With TensorLayer
 
     >>> net = tl.layers.Input([None, 100, 100, 30], name='input')
-    >>> net = tl.layers.GlobalMaxPool3d()(net)
+    >>> net = tl.layers.GlobalMaxPool2d()(net)
     >>> output shape : [None, 30]
 
     """
