@@ -216,10 +216,6 @@ def main_word2vec_basic():
     print()
     model.train()
 
-    # FIXME: multiple return
-    print(model([inputs, labels]))
-    exit()
-
     if resume:
         print("Load existing model" + "!" * 10)
         model.load_weights(filepath=model_file_name + '.hdf5')
@@ -263,6 +259,7 @@ def main_word2vec_basic():
             # For simple visualization of validation set.
             valid_embed = tf.nn.embedding_lookup(normalized_embeddings, valid_dataset)
             sim = tf.matmul(valid_embed, normalized_embeddings, transpose_b=True)
+            sim = sim.numpy()
             # multiply all valid word vector with all word vector.
             # transpose_b=True, normalized_embeddings is transposed before multiplication.
 
