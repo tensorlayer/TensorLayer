@@ -25,7 +25,7 @@ class GroupConv2d(Layer):
         The number of filters.
     filter_size : tuple of int
         The filter size.
-    stride : tuple of int
+    strides : tuple of int
         The stride step.
     n_group : int
         The number of groups.
@@ -45,6 +45,18 @@ class GroupConv2d(Layer):
         The number of in channels.
     name : None or str
         A unique layer name.
+
+    Examples
+    ---------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([8, 24, 24, 32], name='input')
+    >>> groupconv2d = tl.layers.QuanConv2d(
+    ...     n_filter=64, filter_size=(3, 3), strides=(2, 2), n_group=2, name='group'
+    ... )(net)
+    >>> print(groupconv2d)
+    >>> output shape : (8, 12, 12, 64)
+
     """
 
     def __init__(
