@@ -71,11 +71,23 @@ class Layer_Embed_Test(CustomTestCase):
             embed_tensor, embed_nce_loss = emb_net(inputs)
         except ValueError as e:
             print(e)
-        embed_tensor, embed_nce_loss = emb_net([inputs, labels])
-        embed_tensor, embed_nce_loss = emb_net([inputs, labels], use_nce_loss=True)
+        try:
+            embed_tensor = emb_net(inputs, use_nce_loss=False)
+            print("Not use NCE without labels")
+        except Exception as e:
+            print(e)
         embed_tensor = emb_net([inputs, labels], use_nce_loss=False)
+        embed_tensor, embed_nce_loss = emb_net([inputs, labels], use_nce_loss=True)
+        embed_tensor, embed_nce_loss = emb_net([inputs, labels])
         self.assertEqual(embed_tensor.get_shape().as_list(), [batch_size, embedding_size])
-        model = tl.models.Model(inputs=[inputs, labels], outputs=[embed_tensor, embed_nce_loss], name="word2vec_model")
+
+        outputs = tl.layers.Dense(n_units=10, name="dense")(embed_tensor)
+        model = tl.models.Model(inputs=[inputs, labels], outputs=[outputs, embed_nce_loss], name="word2vec_model")
+        out, nce = model(
+            [np.random.randint(0, 1, size=[batch_size]), np.random.randint(0, 1, size=[batch_size, 1])],
+            is_train=True)
+        self.assertEqual(out.get_shape().as_list(), [batch_size, 10])
+        print(nce)
 
     def test_word2vec_no_nce(self):
         batch_size = 8

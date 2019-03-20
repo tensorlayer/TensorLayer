@@ -98,7 +98,6 @@ class OneHot(Layer):
         return outputs
 
 
-# TODO: how to handle the multiple output in forward
 class Word2vecEmbedding(Layer):
     """
     The :class:`Word2vecEmbedding` class is a fully connected layer.
@@ -107,7 +106,7 @@ class Word2vecEmbedding(Layer):
 
     The layer integrates NCE loss by default (activate_nce_loss=True).
     If the NCE loss is activated, in a dynamic model,
-    the computation of nce loss can be turned off in forward feeding
+    the computation of nce loss can be turned off in customised forward feeding
     by setting use_nce_loss=False when the layer is called.
     The NCE loss can be deactivated by setting activate_nce_loss=False.
 
@@ -122,9 +121,11 @@ class Word2vecEmbedding(Layer):
     activate_nce_loss : boolean
         Whether activate nce loss or not. By default, True
         If True, the layer will return both outputs of embedding and nce_cost in forward feeding.
+        If False, the layer will only return outputs of embedding.
         In a dynamic model, the computation of nce loss can be turned off in forward feeding
         by setting use_nce_loss=False when the layer is called.
-        If False, the layer will only return outputs of embedding.
+        In a static model, once the model is constructed, the computation of nce loss
+        cannot be changed (always computed or not computed).
     nce_loss_args : dictionary
         The arguments for tf.nn.nce_loss()
     E_init : initializer
@@ -170,8 +171,12 @@ class Word2vecEmbedding(Layer):
     >>> )
     >>> print(emb_net)
     Word2vecEmbedding(vocabulary_size=10000, embedding_size=50, num_sampled=100, activate_nce_loss=True, nce_loss_args={})
-    >>> embed_tensor, embed_nce_loss = emb_net([inputs, labels]) # the nce loss is calculate
+    >>> embed_tensor = emb_net(inputs, use_nce_loss=False) # the nce loss is turned off and no need to provide labels
     >>> embed_tensor = emb_net([inputs, labels], use_nce_loss=False) # the nce loss is turned off and the labels will be ignored
+    >>> embed_tensor, embed_nce_loss = emb_net([inputs, labels]) # the nce loss is calculated
+    >>> outputs = tl.layers.Dense(n_units=10, name="dense")(embed_tensor)
+    >>> model = tl.models.Model(inputs=[inputs, labels], outputs=[outputs, embed_nce_loss], name="word2vec_model") # a static model
+    >>> out = model([data_x, data_y], is_train=True) # where data_x is inputs and data_y is labels
 
     References
     ----------
