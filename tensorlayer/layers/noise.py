@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer.layers.core import Layer
 
@@ -22,9 +23,9 @@ class GaussianNoise(Layer):
     Parameters
     ------------
     mean : float
-        The mean. Default is 0.
+        The mean. Default is 0.0.
     stddev : float
-        The standard deviation. Default is 1.
+        The standard deviation. Default is 1.0.
     is_train : boolean
         Is trainable layer. If False, skip this layer. default is True.
     seed : int or None
@@ -33,37 +34,50 @@ class GaussianNoise(Layer):
         A unique layer name.
 
     Examples
-    ----------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder(tf.float32, shape=(100, 784))
-    >>> net = tl.layers.Input(x, name='input')
-    >>> net = tl.layers.Dense(net, n_units=100, act=tf.nn.relu, name='dense3')
-    >>> net = tl.layers.GaussianNoise(net, name='gaussian')
-    (64, 100)
+    --------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([64, 200], name='input')
+    >>> net = tl.layers.Dense(n_units=100, act=tf.nn.relu, name='dense')(net)
+    >>> gaussianlayer = tl.layers.GaussianNoise(name='gaussian')(net)
+    >>> print(gaussianlayer)
+    >>> output shape : (64, 100)
 
     """
 
     def __init__(
             self,
-            # prev_layer,
             mean=0.0,
             stddev=1.0,
+            is_train=True,
             seed=None,
-            name=None,  #'gaussian_noise',
+            name=None,  # 'gaussian_noise',
     ):
-        # super(GaussianNoise, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.mean = mean
         self.stddev = stddev
         self.seed = seed
-        logging.info("GaussianNoise %s: mean: %f stddev: %f" % (self.name, self.mean, self.stddev))
+        self.is_train = is_train
 
-    def build(self, inputs):
+        self.build()
+        self._built = True
+
+        logging.info(
+            "GaussianNoise %s: mean: %f stddev: %f" % (self.name, self.mean, self.stddev)
+        )
+
+    def __repr__(self):
+        s = '{classname}(mean={mean}, stddev={stddev}'
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs=None):
         pass
 
-    def forward(self, inputs, is_train):
-        if is_train is False:
+    def forward(self, inputs):
+        if self.is_train is False:
             return inputs
         else:
             # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())

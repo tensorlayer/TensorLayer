@@ -53,18 +53,14 @@ class TernaryConv2d(Layer):
 
     Examples
     ---------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder(tf.float32, [None, 256, 256, 3])
-    >>> net = tl.layers.Input(x, name='input')
-    >>> net = tl.layers.TernaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
-    >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
-    >>> net = tl.layers.BatchNorm(net, act=tl.act.htanh, is_train=True, name='bn1')
-    ...
-    >>> net = tl.layers.Sign(net)
-    >>> net = tl.layers.TernaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='bcnn2')
-    >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
-    >>> net = tl.layers.BatchNorm(net, act=tl.act.htanh, is_train=True, name='bn2')
+    With TensorLayer
+
+    >>> net = tl.layers.Input([8, 12, 12, 32], name='input')
+    >>> ternaryconv2d = tl.layers.QuanConv2d(
+    ...     n_filter=64, filter_size=(5, 5), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='ternaryconv2d'
+    ... )(net)
+    >>> print(ternaryconv2d)
+    >>> output shape : (8, 12, 12, 64)
 
     """
 

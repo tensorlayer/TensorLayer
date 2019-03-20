@@ -213,7 +213,7 @@ class Layer_Convolution_2D_Test(CustomTestCase):
             n_filter=64, filter_size=(5, 5), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='ternaryconv2d'
         )(cls.n11)
 
-        cls.n13 = tl.layers.TernaryConv2d(
+        cls.n13 = tl.layers.QuanConv2d(
             n_filter=32, filter_size=(5, 5), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='quancnn2d'
         )(cls.n12)
 

@@ -23,6 +23,8 @@ class QuanConv2d(Layer):
 
     Parameters
     ----------
+    With TensorLayer
+
     n_filter : int
         The number of filters.
     filter_size : tuple of int
@@ -56,17 +58,14 @@ class QuanConv2d(Layer):
 
     Examples
     ---------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder(tf.float32, [None, 256, 256, 3])
-    >>> net = tl.layers.Input(x, name='input')
-    >>> net = tl.layers.QuanConv2d(net, 32, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, name='qcnn1')
-    >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
-    >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=True, name='bn1')
-    ...
-    >>> net = tl.layers.QuanConv2d(net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, name='qcnn2')
-    >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
-    >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=True, name='bn2')
+    With TensorLayer
+
+    >>> net = tl.layers.Input([8, 12, 12, 64], name='input')
+    >>> quanconv2d = tl.layers.QuanConv2d(
+    ...     n_filter=32, filter_size=(5, 5), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='quancnn2d'
+    ... )(net)
+    >>> print(quanconv2d)
+    >>> output shape : (8, 12, 12, 32)
 
     """
 
