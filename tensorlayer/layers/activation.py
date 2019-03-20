@@ -94,6 +94,7 @@ class PRelu(Layer):
         self.alpha_var = self._get_weights("alpha", shape=w_shape, init=self.a_init)
         self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
 
+    @tf.function
     def forward(self, inputs):
 
         pos = tf.nn.relu(inputs)
@@ -179,6 +180,7 @@ class PRelu6(Layer):
         self.alpha_var = self._get_weights("alpha", shape=w_shape, init=self.a_init)
         self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
 
+    @tf.function
     def forward(self, inputs):
         pos = tf.nn.relu(inputs)
         pos_6 = -tf.nn.relu(inputs - 6)
@@ -272,6 +274,7 @@ class PTRelu6(Layer):
         self.alpha_high = self._get_weights("alpha_high", shape=w_shape, init=self.a_init)
         self.alpha_high_constrained = tf.nn.sigmoid(self.alpha_high, name="constraining_alpha_high_in_0_1")
 
+    @tf.function
     def forward(self, inputs):
         pos = tf.nn.relu(inputs)
         pos_6 = -tf.nn.relu(inputs - 6) + self.alpha_high_constrained * tf.nn.relu(inputs - 6)
