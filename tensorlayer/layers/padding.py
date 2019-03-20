@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer.layers.core import Layer
 
@@ -19,7 +20,7 @@ __all__ = [
 
 class PadLayer(Layer):
     """The :class:`PadLayer` class is a padding layer for any mode and dimension.
-    Please see `tf.pad <https://www.tensorflow.org/api_docs/python/tf/pad>`__ for usage.
+    Please see `tf.pad <https://www.tensorflow.org/versions/r2.0/api_docs/python/tf/pad>`__ for usage.
 
     Parameters
     ----------
@@ -32,6 +33,8 @@ class PadLayer(Layer):
 
     Examples
     --------
+    With TensorLayer
+
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> images = tf.placeholder(tf.float32, [None, 224, 224, 3])
@@ -44,9 +47,8 @@ class PadLayer(Layer):
             self,
             padding=None,
             mode='CONSTANT',
-            name=None,  #'pad_layer',
+            name=None,  # 'pad_layer',
     ):
-        # super(PadLayer, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.padding = padding
         self.mode = mode
@@ -55,7 +57,7 @@ class PadLayer(Layer):
 
         if self.padding is None:
             raise Exception(
-                "padding should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
+                "padding should be a Tensor of type int32. see https://www.tensorflow.org/versions/r2.0/api_docs/python/tf/pad"
             )
 
     def build(self, inputs_shape):
@@ -83,9 +85,9 @@ class ZeroPad1d(Layer):
     def __init__(
             self,
             padding,
-            name=None,  #'zeropad1d',
+            name=None,  # 'zeropad1d',
     ):
-        # super(ZeroPad1d, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
         self.padding = padding
         logging.info("ZeroPad1d   %s: padding: %s" % (self.name, str(padding)))
 
@@ -97,6 +99,7 @@ class ZeroPad1d(Layer):
 
     def forward(self, inputs):
         outputs = self.layer(inputs)
+        return outputs
 
 
 class ZeroPad2d(Layer):
@@ -117,9 +120,8 @@ class ZeroPad2d(Layer):
     def __init__(
             self,
             padding,
-            name=None,  #'zeropad2d',
+            name=None,  # 'zeropad2d',
     ):
-        # super(ZeroPad2d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
 
         self.padding = padding
@@ -154,9 +156,8 @@ class ZeroPad3d(Layer):
     def __init__(
             self,
             padding,
-            name=None,  #'zeropad3d',
+            name=None,  # 'zeropad3d',
     ):
-        # super(ZeroPad3d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.padding = padding
 
