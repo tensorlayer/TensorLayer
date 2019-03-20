@@ -52,18 +52,14 @@ class BinaryConv2d(Layer):
 
     Examples
     ---------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder(tf.float32, [None, 256, 256, 3])
-    >>> net = tl.layers.Input(x, name='input')
-    >>> net = tl.layers.BinaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
-    >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
-    >>> net = tl.layers.BatchNorm(net, act=tl.act.htanh, is_train=True, name='bn1')
-    ...
-    >>> net = tl.layers.Sign(net)
-    >>> net = tl.layers.BinaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='bcnn2')
-    >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
-    >>> net = tl.layers.BatchNorm(net, act=tl.act.htanh, is_train=True, name='bn2')
+    With TensorLayer
+
+    >>> net = tl.layers.Input([8, 100, 100, 32], name='input')
+    >>> binaryconv2d = tl.layers.QuanConv2d(
+    ...     n_filter=64, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, in_channels=32, name='binaryconv2d'
+    ... )(net)
+    >>> print(binaryconv2d)
+    >>> output shape : (8, 50, 50, 64)
 
     """
 
