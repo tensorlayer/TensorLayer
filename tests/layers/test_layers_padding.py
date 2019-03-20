@@ -18,53 +18,50 @@ class Layer_Padding_Test(CustomTestCase):
     def setUpClass(cls):
 
         ## 1D
-        x = tf.placeholder(tf.float32, (None, 100, 1))
-        n = tl.layers.InputLayer(x)
+        cls.input_layer1 = tl.layers.Input([None, 100, 1], name='input_layer1')
 
-        n1 = tl.layers.ZeroPad1d(n, padding=1)
-        n2 = tl.layers.ZeroPad1d(n, padding=(2, 3))
+        n1 = tl.layers.ZeroPad1d(padding=1)(cls.input_layer1)
+        n2 = tl.layers.ZeroPad1d(padding=(2, 3))(cls.input_layer1)
 
-        n1.print_layers()
-        n2.print_layers()
+        print(n1._info[0].layer)
+        print(n2._info[0].layer)
 
-        cls.n1_shape = n1.outputs.get_shape().as_list()
-        cls.n2_shape = n2.outputs.get_shape().as_list()
+        cls.n1_shape = n1.get_shape().as_list()
+        cls.n2_shape = n2.get_shape().as_list()
 
         ## 2D
-        x = tf.placeholder(tf.float32, (None, 100, 100, 3))
-        n = tl.layers.InputLayer(x)
+        cls.input_layer2 = tl.layers.Input([None, 100, 100, 3], name='input_layer2')
 
-        n3 = tl.layers.ZeroPad2d(n, padding=2)
-        n4 = tl.layers.ZeroPad2d(n, padding=(2, 3))
-        n5 = tl.layers.ZeroPad2d(n, padding=((3, 3), (4, 4)))
+        n3 = tl.layers.ZeroPad2d(padding=2)(cls.input_layer2)
+        n4 = tl.layers.ZeroPad2d(padding=(2, 3))(cls.input_layer2)
+        n5 = tl.layers.ZeroPad2d(padding=((3, 3), (4, 4)))(cls.input_layer2)
 
-        n3.print_layers()
-        n4.print_layers()
-        n5.print_layers()
+        print(n3._info[0].layer)
+        print(n4._info[0].layer)
+        print(n5._info[0].layer)
 
-        cls.n3_shape = n3.outputs.get_shape().as_list()
-        cls.n4_shape = n4.outputs.get_shape().as_list()
-        cls.n5_shape = n5.outputs.get_shape().as_list()
+        cls.n3_shape = n3.get_shape().as_list()
+        cls.n4_shape = n4.get_shape().as_list()
+        cls.n5_shape = n5.get_shape().as_list()
 
         ## 3D
-        x = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
-        n = tl.layers.InputLayer(x)
+        cls.input_layer3 = tl.layers.Input([None, 100, 100, 100, 3], name='input_layer3')
 
-        n6 = tl.layers.ZeroPad3d(n, padding=2)
-        n7 = tl.layers.ZeroPad3d(n, padding=(2, 3, 4))
-        n8 = tl.layers.ZeroPad3d(n, padding=((3, 3), (4, 4), (5, 5)))
+        n6 = tl.layers.ZeroPad3d(padding=2)(cls.input_layer3)
+        n7 = tl.layers.ZeroPad3d(padding=(2, 3, 4))(cls.input_layer3)
+        n8 = tl.layers.ZeroPad3d(padding=((3, 3), (4, 4), (5, 5)))(cls.input_layer3)
 
-        n6.print_layers()
-        n7.print_layers()
-        n8.print_layers()
+        print(n6._info[0].layer)
+        print(n7._info[0].layer)
+        print(n8._info[0].layer)
 
-        cls.n6_shape = n6.outputs.get_shape().as_list()
-        cls.n7_shape = n7.outputs.get_shape().as_list()
-        cls.n8_shape = n8.outputs.get_shape().as_list()
+        cls.n6_shape = n6.get_shape().as_list()
+        cls.n7_shape = n7.get_shape().as_list()
+        cls.n8_shape = n8.get_shape().as_list()
 
     @classmethod
     def tearDownClass(cls):
-        tf.reset_default_graph()
+        pass
 
     def test_n1_shape(self):
         self.assertEqual(self.n1_shape[1:], [102, 1])
@@ -93,7 +90,6 @@ class Layer_Padding_Test(CustomTestCase):
 
 if __name__ == '__main__':
 
-    tf.logging.set_verbosity(tf.logging.DEBUG)
     tl.logging.set_verbosity(tl.logging.DEBUG)
 
     unittest.main()
