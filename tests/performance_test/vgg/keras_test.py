@@ -10,14 +10,6 @@ from keras.utils import to_categorical
 import tensorflow as tf
 from exp_config import random_input_generator, MONITOR_INTERVAL, NUM_ITERS, BATCH_SIZE, LERANING_RATE
 
-# forbid tensorflow taking up all the GPU memory
-# FIXME: enable this to see the GPU memory it consumes, not sure whether it affects performance
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True  # dynamically grow the memory used on the GPU
-config.log_device_placement = True  # to log device placement (on which device the operation ran)
-sess = tf.Session(config=config)
-set_session(sess)  # set this TensorFlow session as the default
-
 # get the whole model
 vgg = VGG16(weights=None)
 

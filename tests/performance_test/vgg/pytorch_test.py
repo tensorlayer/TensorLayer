@@ -48,6 +48,7 @@ for idx, data in enumerate(gen):
     # forward + backward
     outputs = vgg(x_batch)
     loss = F.cross_entropy(outputs, y_batch)
+    optimizer.zero_grad()
     loss.backward()
     optimizer.step()
 
