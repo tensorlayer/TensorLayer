@@ -35,10 +35,7 @@ class PadLayer(Layer):
     --------
     With TensorLayer
 
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> images = tf.placeholder(tf.float32, [None, 224, 224, 3])
-    >>> net = tl.layers.Input(images, name='in')
+    >>> net = tl.layers.Input([None, 224, 224, 3], name='input')
     >>> net = tl.layers.PadLayer(net, [[0, 0], [3, 3], [3, 3], [0, 0]], "REFLECT", name='inpad')
 
     """
@@ -60,7 +57,17 @@ class PadLayer(Layer):
                 "padding should be a Tensor of type int32. see https://www.tensorflow.org/versions/r2.0/api_docs/python/tf/pad"
             )
 
-    def build(self, inputs_shape):
+        self.build()
+        self._built = True
+
+    def __repr__(self):
+        s = '{classname}(padding={padding}, mode={mode}'
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape=None):
         pass
 
     def forward(self, inputs):
@@ -94,7 +101,17 @@ class ZeroPad1d(Layer):
         if not isinstance(self.padding, (int, tuple, dict)):
             raise AssertionError()
 
-    def build(self, inputs_shape):
+        self.build()
+        self._built = True
+
+    def __repr__(self):
+        s = '{classname}(padding={padding}'
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape=None):
         self.layer = tf.keras.layers.ZeroPadding1D(padding=self.padding, name=self.name)
 
     def forward(self, inputs):
@@ -130,7 +147,17 @@ class ZeroPad2d(Layer):
         if not isinstance(self.padding, (int, tuple)):
             raise AssertionError("Padding should be of type `int` or `tuple`")
 
-    def build(self, inputs_shape):
+        self.build()
+        self._built = True
+
+    def __repr__(self):
+        s = '{classname}(padding={padding}'
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape=None):
         self.layer = tf.keras.layers.ZeroPadding2D(padding=self.padding, name=self.name)
 
     def forward(self, inputs):
@@ -166,7 +193,17 @@ class ZeroPad3d(Layer):
         if not isinstance(self.padding, (int, tuple)):
             raise AssertionError()
 
-    def build(self, inputs_shape):
+        self.build()
+        self._built = True
+
+    def __repr__(self):
+        s = '{classname}(padding={padding}'
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape=None):
         self.layer = tf.keras.layers.ZeroPadding3D(padding=self.padding, name=self.name)
 
     def forward(self, inputs):
