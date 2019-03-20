@@ -1,5 +1,9 @@
 # Performance Test (VGG16)
 
+
+
+## TF 1 environemnt
+
 ### Introduction
 
 This test compares performance of the following libraries:
@@ -60,4 +64,26 @@ Results:
 | Eager | TensorLayer |        2731         |        2608         |      223      |
 |       |  tf.keras   |        2676         |        2581         |      236      |
 |       |   PyTorch   |        2732         |        2674         |      267      |
+
+
+
+## TF 2 environment
+
+### With GPU
+
+Hardware: 
+
+- CPU: Intel(R) Xeon(R) CPU E5-2698 v4 @ 2.20GHz  40 core
+- GPU: Tesla V100-DGXS-32GB
+
+Results
+
+|   Mode    |       Lib       | Max GPU Memory (MB) | Max CPU Memory (MB) | Avg CPU Memory (MB) | Runtime (sec) |
+| :-------: | :-------------: | :-----------------: | :-----------------: | :-----------------: | :-----------: |
+| AutoGraph | TensorFlow 2.0  |                     |        3370         |        3346         |      49       |
+|           | Tensorlayer 2.0 |                     |        3358         |        3367         |      50       |
+|           |                 |                     |                     |                     |               |
+|   Eager   | TensorFlow 2.0  |                     |        3284         |        3293         |      65       |
+|           | TensorLayer 2.0 |                     |        3293         |        3296         |      65       |
+|           |     PyTorch     |                     |        2538         |        2541         |      41       |
 
