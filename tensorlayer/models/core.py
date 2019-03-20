@@ -16,6 +16,12 @@ __all__ = [
 class Model():
     """The :class:`Model` class represents a neural network.
 
+    It should be subclassed when implementing a dynamic model,
+    where 'forward' method must be overwritten.
+    Otherwise, please specify 'inputs' tensor(s) and 'outputs' tensor(s)
+    to create a static model. In that case, 'inputs' tensors should come
+    from tl.layers.Input().
+
     Parameters
     -----------
     inputs : a Layer or list of Layer
@@ -24,6 +30,81 @@ class Model():
         The output(s) to the model.
     name : None or str
         The name of the model.
+
+    Methods
+    ---------
+    __init__(self, inputs=None, outputs=None, name=None)
+        Initializing the Model.
+    inputs()
+        Get input tensors to this network (only avaiable for static model).
+    outputs()
+        Get output tensors to this network (only avaiable for static model).
+    __call__(inputs, is_train=None, **kwargs)
+        Forward input tensors through this network.
+    all_layers()
+        Get all layer objects of this network in a list of layers.
+    weights()
+        Get the weights of this network in a list of tensors.
+    train()
+        Set this network in training mode. (affect layers e.g. Dropout, BatchNorm).
+    eval()
+        Set this network in evaluation mode.
+    as_layer()
+        Set this network as a ModelLayer so that it can be integrated into another Model.
+    release_memory()
+        Release the memory that was taken up by tensors which are maintained by this network.
+    save_weights(self, filepath, format='hdf5')
+        Save the weights of this network in a given format.
+    load_weights(self, filepath, format=None, in_order=True, skip=False)
+        Load weights into this network from a specified file.
+
+    Examples
+    ---------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
+    >>> from tensorlayer.layers import Input, Dense, Dropout
+    >>> from tensorlayer.models import Model
+
+    - Define static model
+    >>> class CustomModel(Model):
+    >>>     def __init__(self):
+    >>>         super(CustomModel, self).__init__()
+    >>>         self.dense1 = Dense(n_units=800, act=tf.nn.relu, in_channels=784)
+    >>>         self.dropout1 = Dropout(keep=0.8)
+    >>>         self.dense2 = Dense(n_units=10, in_channels=800)
+
+    >>>     def forward(self, x, foo=0):
+    >>>         z = self.dense1(x)
+    >>>         z = self.dropout1(z)
+    >>>         z = self.dense2(z)
+    >>>         return z
+    >>> M_dynamic = CustomModel()
+
+    - Define static model
+
+    >>> ni = Input([None, 784])
+    >>> nn = Dense(n_units=800, act=tf.nn.relu)(ni)
+    >>> nn = Dropout(keep=0.8)(nn)
+    >>> nn = Dense(n_units=10, act=tf.nn.relu)(nn)
+    >>> M_static = Model(inputs=ni, outputs=nn, name="mlp")
+
+    - Get network information
+    >>> print(M_static)
+    Model(
+      (_inputlayer): Input(shape=[None, 784], name='_inputlayer')
+      (dense): Dense(n_units=800, relu, in_channels='784', name='dense')
+      (dropout): Dropout(keep=0.8, name='dropout')
+      (dense_1): Dense(n_units=10, relu, in_channels='800', name='dense_1')
+    )
+
+    - Save and load weights
+    >>> M_static.save_weights('./model_weights.h5')
+    >>> M_static.load_weights('./model_weights.h5')
+
+    - Convert model to layer
+    >>> M_layer = M_static.as_layer()
+
+    -----
     """
 
     @property
@@ -35,12 +116,18 @@ class Model():
         return self._outputs
 
     def __init__(self, inputs=None, outputs=None, name=None):
-        '''
+        """
+        Initializing the Model.
 
-        :param inputs: Layer or list of Layer
-        :param outputs: Layer or list of Layer
-        :param name: str
-        '''
+        Parameters
+        ----------
+        inputs : Tensor or list of tensors
+            Input tensor(s), which must come from tl.layers.Input()
+        outputs : Tensor or list of tensors
+            Output tensor(s), which must be the output(s) of some TL layers
+        name : str or None
+            Name for this network
+        """
         # Model properties
         # TODO: model auto naming
         self.name = name
@@ -100,11 +187,20 @@ class Model():
             self._fix_nodes_for_layers()
 
     def __call__(self, inputs, is_train=None, **kwargs):
-        """
+        """Forward input tensors through this network by calling.
 
-        :param inputs: Tensor or list of Tensor, numpy.ndarray of list of numpy.ndarray (if in eager mode)
-        :param is_train: boolean
-        :return:
+        Parameters
+        ----------
+        inputs : Tensor or list of Tensors, numpy.ndarray of list of numpy.ndarray
+            Inputs for network forwarding
+        is_train : boolean
+            Network's mode for this time forwarding. If 'is_train' == True, this network is set as training mode.
+            If 'is_train' == False, this network is set as evaluation mode
+        kwargs :
+            For other keyword-only arguments.
+        Returns
+        -------
+
         """
 
         self._check_mode(is_train)
@@ -136,13 +232,25 @@ class Model():
         return self.forward(inputs, **kwargs)
 
     @abstractmethod
-    def forward(self, *inputs):
+    def forward(self, *inputs, **kwargs):
+        """Network forwarding given input tensors
+
+        Parameters
+        ----------
+        inputs : Tensor or list of Tensors
+            input tensor(s)
+        kwargs :
+            For other keyword-only arguments.
+
+        Returns
+        -------
+            output tensor(s) : Tensor or list of Tensor(s)
+
+        """
         # FIXME: currently using self._outputs to judge static network or dynamic network
         if self._outputs is None:
             raise ValueError("Outputs not defined. Please define inputs and outputs when the model is created. Or overwrite forward() function.")
 
-        # results = list()
-        # TODO: clear memory when necessary
         memory = dict()
 
         # get each layer's output by going through the graph in depth order
@@ -171,6 +279,7 @@ class Model():
 
     @property
     def all_layers(self):
+        """Return all layers of this network in a list."""
         if self._all_layers is not None:
             return self._all_layers
 
@@ -201,6 +310,7 @@ class Model():
 
     @property
     def weights(self):
+        """Return all weights of this network in a list."""
         if self._weights is not None and len(self._weights) > 0:
             # self._weights already extracted, so do nothing
             pass
@@ -214,23 +324,72 @@ class Model():
         return self._weights
 
     def train(self):
+        """Set this network in training mode. After calling this method,
+        all layers in network are in training mode, in particular, BatchNorm, Dropout, etc.
+
+        Examples
+        --------
+        >>> import tensorlayer as tl
+        >>> net = tl.models.vgg16()
+        >>> net.train()
+        # do training
+
+        Returns
+        -------
+
+        """
         if self.is_train != True:
             self.is_train = True
             self._set_mode_for_layers(True)
 
     def eval(self):
+        """Set this network in evaluation mode. After calling this method,
+        all layers in network are in evaluation mode, in particular, BatchNorm, Dropout, etc.
+
+        Examples
+        --------
+        >>> import tensorlayer as tl
+        >>> net = tl.models.vgg16()
+        >>> net.eval()
+        # do evaluation
+
+        Returns
+        -------
+
+        """
         if self.is_train != False:
             self.is_train = False
             self._set_mode_for_layers(False)
 
     def test(self):
+        """Set this network in evaluation mode."""
         self.eval()
 
     def infer(self):
+        """Set this network in evaluation mode."""
         self.eval()
 
     def as_layer(self):
+        """Return this network as a ModelLayer so that it can be integrated into another Model.
 
+        Examples
+        --------
+        >>> from tensorlayer.layers import Input, Dense, Dropout
+        >>> from tensorlayer.models import Model
+        >>> ni = Input([None, 784])
+        >>> nn = Dense(n_units=800, act=tf.nn.relu)(ni)
+        >>> nn = Dropout(keep=0.8)(nn)
+        >>> nn = Dense(n_units=10, act=tf.nn.relu)(nn)
+        >>> M_hidden = Model(inputs=ni, outputs=nn, name="mlp").as_layer()
+        >>> nn = M_hidden(ni)   # use previously constructed model as layer
+        >>> nn = Dropout(keep=0.8)(nn)
+        >>> nn = Dense(n_units=10, act=tf.nn.relu)(nn)
+        >>> M_full = Model(inputs=ni, outputs=nn, name="mlp")
+
+        Returns
+        -------
+
+        """
         if self._outputs is None:
             raise AttributeError(
                 "Dynamic network cannot be converted to Layer."
@@ -242,6 +401,17 @@ class Model():
         return self._model_layer
 
     def _check_mode(self, is_train):
+        """Check whether this network is in a given mode.
+
+        Parameters
+        ----------
+        is_train : boolean
+            Network's mode. True means training mode while False means evaluation mode.
+
+        Returns
+        -------
+
+        """
         # contradiction test
         if is_train is None and self.is_train is None:
             raise ValueError("Training / inference mode not defined. Argument `is_train` should be set as True / False. Otherwise please use `Model.train()` / `Model.eval()` to switch the mode.")
@@ -254,24 +424,22 @@ class Model():
                                      "Please EITHER use the argument `is_train` OR `Model.train()` / `Model.eval()` to define the mode.")
 
     def _set_mode_for_layers(self, is_train):
-        # FIXME: currently using self._outputs to judge static network or dynamic network
+        """Set all layers of this network to a given mode.
+
+        Parameters
+        ----------
+        is_train : boolean
+            Network's mode. True means training mode while False means evaluation mode.
+
+        Returns
+        -------
+
+        """
         for layer in self.all_layers:
             layer._set_mode_for_layers(is_train)
-        # if self._outputs is not None:
-        #     for depth_layers in self.layer_by_depth:
-        #         for layer in depth_layers:
-        #             layer._set_mode_for_layers(is_train)
-        # else:
-        #     attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
-        #     attr_list.remove("weights")
-        #     for idx, attr in enumerate(attr_list):
-        #         try:
-        #             if isinstance(getattr(self, attr), Layer):
-        #                 getattr(self, attr)._set_mode_for_layers(is_train)
-        #         except Exception:
-        #             pass
 
     def _fix_nodes_for_layers(self):
+        """Fix each Layer's LayerNode to stop growing, see LayerNode for more."""
         for layer in self.all_layers:
             layer._nodes_fixed = True
         self._layer_node_fixed = True
@@ -300,56 +468,10 @@ class Model():
         tmpstr = tmpstr + ')'
         return tmpstr
 
-        # if self.inputs is None and self.outputs is None:
-        #     tmpstr = self.__class__.__name__ + '(\n'
-        #     attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
-        #     attr_list.remove("weights")
-        #     attr_list.remove("_set_mode_for_layers")
-        #     attr_list.remove("release_memory")
-        #     attr_list.remove("_inputs")
-        #     attr_list.remove("_outputs")
-        #     attr_list.remove("all_layers")
-        #     attr_list.remove("_all_layers")
-        #     for idx, attr in enumerate(attr_list):
-        #         try:
-        #             if isinstance(getattr(self, attr), Layer) or isinstance(getattr(self, attr), Model):
-        #                 nowlayer = getattr(self, attr)
-        #                 modstr = nowlayer.__repr__()
-        #                 modstr = _addindent(modstr, 2)
-        #                 tmpstr = tmpstr + '  (' + attr + '): ' + modstr + '\n'
-        #             elif isinstance(getattr(self, attr), list) and (isinstance(getattr(self, attr)[0], Layer) or
-        #                                                             isinstance(getattr(self, attr)[0], Model)):
-        #                 for idx, element in enumerate(getattr(self, attr)):
-        #                     modstr = element.__repr__()
-        #                     modstr = _addindent(modstr, 2)
-        #                     tmpstr = tmpstr + '  (' + attr + '[%d]): ' % idx + modstr + '\n'
-        #
-        #         except Exception:
-        #             pass
-        #     tmpstr = tmpstr + ')'
-        #     return tmpstr
-        # else:
-        #     tmpstr = self.__class__.__name__ + '(\n'
-        #     for idx, layer in enumerate(self.all_layers):
-        #         tmpstr = tmpstr + '  (' + str(idx) + '): ' + _addindent(layer.__repr__(), 2) + '\n'
-        #     tmpstr = tmpstr + ')'
-        #     return tmpstr
-
-    def print_all_layers(self):
-        # TODO : need update by @Ruihai
-        nowoutputs = self._outputs
-        if (isinstance(nowoutputs, list) == False):
-            nowoutputs = [nowoutputs]
-        for out in nowoutputs:
-            stacked_layers = list()
-            current = out
-            while current is not None:
-                print(current.name, current == self._inputs)
-                stacked_layers.append(current)
-                current = current._input_layer
-        pass
-
     ## raise Exceptions for old version codes
+    def print_all_layers(self):
+        raise Exception("please change net.print_all_layers --> print(net)")
+
     def count_params(self, **kwargs):
         raise Exception("please change count_params --> count_weights")
 
@@ -365,6 +487,7 @@ class Model():
         raise Exception("all_drop is deprecated")
 
     def _construct_graph(self):
+        """construct computation graph for static model using LayerNode object"""
         all_layers = []
         node_by_depth = []  # [[node0, node1], [node2, node3], ...]
 
@@ -429,6 +552,23 @@ class Model():
         For each layer in the model, layer.inputs and layer.outputs will be set as None but not deleted.
 
         A void function.
+
+        Examples
+        --------
+        >>> import tensorlayer as tl
+        >>> vgg = tl.models.vgg16()
+        # training preparation
+        # ...
+        # back propagation
+        >>> with tf.GradientTape() as tape:
+        >>>     _logits = vgg(x_batch)
+                ## compute loss and update model
+        >>>     _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
+                ## release unnecessary objects (layer.inputs, layer.outputs)
+                ## this function should be called with great caution
+                ## within the scope of tf.GradientTape(), using this function should be fine
+        >>>     vgg.release_memory()
+
         '''
         for layer in self.all_layers:
             layer._release_memory()
@@ -445,8 +585,7 @@ class Model():
     # def load(filepath):
     #     return utils.load_graph(name=filepath)
 
-    def save_weights(self, filepath, sess=None, format='hdf5'):
-        # TODO: Documentation pending
+    def save_weights(self, filepath, format='hdf5'):
         """Input filepath and the session(optional), save model weights into a file of given format.
             Use self.load_weights() to restore.
 
@@ -454,8 +593,6 @@ class Model():
         ----------
         filepath : str
             Filename to which the model weights will be saved.
-        sess : None or a tensorflow session
-            In eager mode, this should be left as None. In graph mode, must specify it with a tensorflow session.
         format : Save file format
             Value should be 'hdf5', 'npz', 'npz_dict' or 'ckpt'. Other format is not supported now.
             'hdf5' will save model weights name in a list and each layer has its weights stored in a group of
@@ -466,14 +603,15 @@ class Model():
 
         Examples
         --------
-        1) Save model to hdf5 in eager mode
-        >>> net = tl.models.vgg.vgg16()
+        1) Save model weights in hdf5 format
+        >>> net = tl.models.vgg16()
         >>> net.save_weights('./model.h5')
+        ...
+        >>> net.load_weights('./model.h5')
 
         2) Save model to npz in graph mode
-        >>> sess = tf.Session()
-        >>> sess.run(tf.global_variables_initializer())
-        >>> net.save_weights('./model.npz', sess=sess, format='npz')
+        >>> net = tl.models.vgg16()
+        >>> net.save_weights('./model.npz', format='npz')
 
         Returns
         -------
@@ -484,11 +622,11 @@ class Model():
             return
 
         if format == 'hdf5':
-            utils.save_weights_to_hdf5(filepath, self.weights, sess)
+            utils.save_weights_to_hdf5(filepath, self.weights)
         elif format == 'npz':
-            utils.save_npz(self.weights, filepath, sess)
+            utils.save_npz(self.weights, filepath)
         elif format == 'npz_dict':
-            utils.save_npz_dict(self.weights, filepath, sess)
+            utils.save_npz_dict(self.weights, filepath)
         elif format == 'ckpt':
             # TODO: enable this when tf save ckpt is enabled
             raise NotImplementedError("ckpt load/save is not supported now.")
@@ -496,21 +634,18 @@ class Model():
             raise ValueError("Save format must be 'hdf5', 'npz', 'npz_dict' or 'ckpt'."
                              "Other format is not supported now.")
 
-    def load_weights(self, filepath, sess=None, format='hdf5', in_order=True, skip=False):
-        # TODO: Documentation pending
+    def load_weights(self, filepath, format=None, in_order=True, skip=False):
         """Load model weights from a given file, which should be previously saved by self.save_weights().
 
         Parameters
         ----------
         filepath : str
             Filename from which the model weights will be loaded.
-        sess : None or a tensorflow session
-            In eager mode, this should be left as None. In graph mode, must specify it with a tensorflow session.
-            Default is 'None'.
-        format : Loaded file format
-            Value should be 'hdf5', 'npz', 'npz_dict' or 'ckpt'. Other format is not supported now.
+        format : str or None
+            If not specified (None), the postfix of the filepath will be used to decide its format. If specified,
+            value should be 'hdf5', 'npz', 'npz_dict' or 'ckpt'. Other format is not supported now.
             In addition, it should be the same format when you saved the file using self.save_weights().
-            Default is 'hdf5'.
+            Default is None.
         in_order : bool
             Allow loading weights into model in a sequential way or by name. Only useful when 'format' is 'hdf5'.
             If 'in_order' is True, weights from the file will be loaded into model in a sequential way.
@@ -527,15 +662,16 @@ class Model():
 
         Examples
         --------
-        1) load model from a hdf5 file in eager mode.
-        >>> net = tl.models.vgg.vgg16()
+        1) load model from a hdf5 file.
+        >>> net = tl.model.vgg16()
         >>> net.load_weights('./model_graph.h5', in_order=False, skip=True) # load weights by name, skipping mismatch
         >>> net.load_weights('./model_eager.h5') # load sequentially
 
-        2) load model from a npz file in graph mode
-        >>> sess = tf.Session()
-        >>> sess.run(tf.global_variables_initializer())
-        >>> net.load_weights('./model.npz', sess=sess, format='npz')
+        2) load model from a npz file
+        >>> net.load_weights('./model.npz')
+
+        2) load model from a npz file, which is saved as npz_dict previously
+        >>> net.load_weights('./model.npz', format='npz_dict')
 
         Notes
         -------
@@ -551,17 +687,20 @@ class Model():
         if not os.path.exists(filepath):
             raise FileNotFoundError("file {} doesn't exist.".format(filepath))
 
-        if format == 'hdf5':
+        if format is None:
+            format = filepath.split('.')[-1]
+
+        if format == 'hdf5' or format == 'h5':
             if skip == True or in_order == False:
                 # load by weights name
-                utils.load_hdf5_to_weights(filepath, self.weights, sess, skip)
+                utils.load_hdf5_to_weights(filepath, self.weights, skip)
             else:
                 # load in order
-                utils.load_hdf5_to_weights_in_order(filepath, self.weights, sess)
+                utils.load_hdf5_to_weights_in_order(filepath, self.weights)
         elif format == 'npz':
-            utils.load_and_assign_npz(sess, filepath, self)
+            utils.load_and_assign_npz(filepath, self)
         elif format == 'npz_dict':
-            utils.load_and_assign_npz_dict(sess, filepath, self, skip)
+            utils.load_and_assign_npz_dict(filepath, self, skip)
         elif format == 'ckpt':
             # TODO: enable this when tf save ckpt is enabled
             raise NotImplementedError("ckpt load/save is not supported now.")
@@ -569,17 +708,18 @@ class Model():
             raise ValueError("File format must be 'hdf5', 'npz', 'npz_dict' or 'ckpt'. "
                              "Other format is not supported now.")
 
-    def save_ckpt(self, sess=None, mode_name='model.ckpt', save_dir='checkpoint', global_step=None, printable=False):
-        # TODO: Documentation pending
-        """"""
-        if not os.path.exists(save_dir):
-            raise FileNotFoundError("Save directory {} doesn't exist.".format(save_dir))
-        utils.save_ckpt(sess, mode_name, save_dir, self.weights, global_step, printable)
-
-    def load_ckpt(self, sess=None, mode_name='model.ckpt', save_dir='checkpoint', is_latest=True, printable=False):
-        # TODO: Documentation pending
-        """"""
-        utils.load_ckpt(sess, mode_name, save_dir, self.weights, is_latest, printable)
+    # TODO: not supported now
+    # def save_ckpt(self, sess=None, mode_name='model.ckpt', save_dir='checkpoint', global_step=None, printable=False):
+    #     # TODO: Documentation pending
+    #     """"""
+    #     if not os.path.exists(save_dir):
+    #         raise FileNotFoundError("Save directory {} doesn't exist.".format(save_dir))
+    #     utils.save_ckpt(sess, mode_name, save_dir, self.weights, global_step, printable)
+    #
+    # def load_ckpt(self, sess=None, mode_name='model.ckpt', save_dir='checkpoint', is_latest=True, printable=False):
+    #     # TODO: Documentation pending
+    #     """"""
+    #     utils.load_ckpt(sess, mode_name, save_dir, self.weights, is_latest, printable)
 
 
 def _addindent(s_, numSpaces):
