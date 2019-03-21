@@ -139,8 +139,21 @@ class Layer(object):
         return outputs
 
     def _add_node(self, input_tensors, output_tensors):
-        inputs_list = tolist(input_tensors) # input_tensors if isinstance(input_tensors, list) else [input_tensors]
-        outputs_list = tolist(output_tensors) # output_tensors if isinstance(output_tensors, list) else [output_tensors]
+        """Add a LayerNode for this layer given input_tensors, output_tensors.
+
+        WARINING: This function should not be called from outside, it should only be called
+        in layer.__call__ when building static model.
+
+        Parameters
+        ----------
+        input_tensors : Tensor or a list of tensors
+            Input tensors to this layer.
+        output_tensors : Tensor or a list of tensors
+            Output tensors to this layer.
+
+        """
+        inputs_list = tolist(input_tensors)
+        outputs_list = tolist(output_tensors)
 
         if self.__class__.__name__ in tl.layers.inputs.__all__:
             # for InputLayer, there should be no in_nodes
@@ -265,7 +278,49 @@ class Layer(object):
     #     return args if args is not None else {}
 
 class LayerNode(object):
+    """
+    The class :class:`LayerNode` class represents a conceptional node for a layer.
+
+    LayerNode is used for building static model and it is actually a light weighted
+    wrapper over Layer. Specifically, it is used for building static computational graph
+    (see _construct_graph() in tl.models.Model). In static model, each layer relates to
+    one or more LayerNode, and the connection relationship between layers is built upon
+    LayerNode. In addition, LayerNode eases layer reuse and weights sharing.
+
+    Parameters
+    ----------
+    layer : tl.layers.Layer
+        A tl layer that wants to create a node.
+    node_index : int
+        Index of this node in layer._nodes.
+    in_nodes ：a list of LayerNode
+        Father nodes to this node.
+    in_tensors : a list of tensors
+        Input tensors to this node.
+    out_tensors : a list of tensors
+        Output tensors to this node.
+    in_tensor_idxes : a list of int
+        Indexes of each input tensor in its corresponding node's out_tensors.
+
+    Methods
+    ---------
+    __init__()
+        Initializing the LayerNode.
+    __call__()
+        (1) Forwarding through the layer. (2) Update its input/output tensors.
+    """
     def __init__(self, layer, node_index, in_nodes, in_tensors, out_tensors, in_tensor_idxes):
+        """
+
+        Parameters
+        ----------
+        layer
+        node_index
+        in_nodes
+        in_tensors
+        out_tensors
+        in_tensor_idxes
+        """
         self.layer = layer
         self.node_index = node_index
         self.in_nodes = in_nodes
@@ -277,9 +332,10 @@ class LayerNode(object):
         self.in_tensors_idxes = in_tensor_idxes
 
     def __call__(self, inputs, **kwargs):
+        """(1) Forwarding through the layer. (2) Update its input/output tensors."""
         outputs = self.layer.forward(inputs, **kwargs)
-        self.in_tensors = tolist(inputs) # inputs if isinstance(inputs, list) else [inputs]
-        self.out_tensors = tolist(outputs) # outputs if isinstance(outputs, list) else [outputs]
+        self.in_tensors = tolist(inputs)
+        self.out_tensors = tolist(outputs)
         return self.out_tensors
 
 
