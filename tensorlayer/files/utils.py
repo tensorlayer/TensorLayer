@@ -2576,7 +2576,7 @@ def save_weights_to_hdf5(filepath, weights):
 
     f = h5py.File(filepath, 'w')
 
-    weights_names = [w.name for w in weights]
+    weights_names = [w.name.encode('utf8') for w in weights]
     f.attrs['weights_names'] = weights_names  # 'layer_name/weight_name'
 
     save_val_list = tf_variables_to_numpy(weights)
@@ -2617,7 +2617,7 @@ def load_hdf5_to_weights_in_order(filepath, weights):
     """
     f = h5py.File(filepath, 'r')
     try:
-        weights_names = list(f.attrs['weights_names'])
+        weights_names = [n.decode('utf8') for n in f.attrs["weights_names"]]
     except Exception:
         raise NameError("The loaded hdf5 file needs to have 'weights_names' as attributes. "
                         "Please check whether this hdf5 file is saved from TL.")
@@ -2657,7 +2657,7 @@ def load_hdf5_to_weights(filepath, weights, skip=False):
     """
     f = h5py.File(filepath, 'r')
     try:
-        weights_names = list(f.attrs['weights_names'])
+        weights_names = [n.decode('utf8') for n in f.attrs["weights_names"]]
     except Exception:
         raise NameError("The loaded hdf5 file needs to have 'weights_names' as attributes. "
                         "Please check whether this hdf5 file is saved from TL.")
