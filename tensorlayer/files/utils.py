@@ -2517,45 +2517,20 @@ def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
         visualize.draw_weights(W, second=10, saveable=True, name=f.split('.')[0], fig_idx=2012)
 
 
-def tf_variables_to_numpy(variables, sess=None):
-    # TODO : Documentation pending
-    """"""
+def tf_variables_to_numpy(variables):
+    """Convert TF tensor or a list of tensors into a list of numpy array"""
     if not isinstance(variables, list):
         var_list = [variables]
     else:
         var_list = variables
 
-    results = []
-    if sess:
-        # graph mode
-        results = sess.run(var_list)
-    else:
-        try:
-            # eager mode
-            results.extend([v.numpy() for v in var_list])
-        except Exception:
-            logging.error(
-                "Fail to convert tf variables to numpy array. Hint: pass sess as argument if in graph mode."
-            )
+    results = [v.numpy() for v in var_list]
     return results
 
 
-def assign_tf_variable(variable, value, sess=None):
-    # TODO : Documentation pending
-    """"""
-    if sess:
-        # graph mode
-        assign_op = variable.assign(value)
-        sess.run(assign_op)
-    else:
-        # eager mode
-        try:
-            variable.assign(value)
-        except Exception:
-            logging.error(
-                "Fail to assign the tensorflow variable {}"
-                " Hint: pass sess as argument if in graph mode.".format(variable)
-            )
+def assign_tf_variable(variable, value):
+    """Assign value to a TF variable"""
+    variable.assign(value)
 
 
 def save_weights_to_hdf5(filepath, weights):
