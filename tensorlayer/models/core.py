@@ -1,6 +1,3 @@
-import sys
-sys.path.append("/Users/wurundi/PycharmProjects/tensorlayer2")
-import numpy as np
 from abc import ABCMeta, abstractmethod
 import tensorflow as tf
 from tensorflow.python.framework import ops as tf_ops
