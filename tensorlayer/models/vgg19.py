@@ -6,8 +6,8 @@ VGG-19 for ImageNet.
 Introduction
 ----------------
 VGG is a convolutional neural network model proposed by K. Simonyan and A. Zisserman
-from the University of Oxford in the paper “Very Deep Convolutional Networks for
-Large-Scale Image Recognition”  . The model achieves 92.7% top-5 test accuracy in ImageNet,
+from the University of Oxford in the paper "Very Deep Convolutional Networks for
+Large-Scale Image Recognition"  . The model achieves 92.7% top-5 test accuracy in ImageNet,
 which is a dataset of over 14 million images belonging to 1000 classes.
 
 Download Pre-trained Model
@@ -26,6 +26,7 @@ feeding images of multiple sizes is by doing center cropping.
 import os
 import numpy as np
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer import logging
 
@@ -52,10 +53,13 @@ class VGG19(Model):
     ------------
     end_with : str
         The end point of the model. Default ``fc3_relu`` i.e. the whole model.
+    name : None or str
+        A unique layer name.
 
     Examples
     ---------
     Classify ImageNet classes with VGG19, see `tutorial_models_vgg19.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_vgg19.py>`__
+    With TensorLayer
 
     >>> # get the whole model
     >>> vgg = tl.models.VGG19()
@@ -69,7 +73,7 @@ class VGG19(Model):
     >>> # get VGG without the last layer
     >>> vgg = tl.models.VGG19(end_with='fc2_relu')
     >>> # add one more layer
-    >>> net = tl.layers.DenseLayer(vgg, 100, name='out')
+    >>> net = tl.layers.Dense(n_units=100, name='out')(vgg)
     >>> # restore pre-trained VGG parameters
     >>> vgg.restore_weights()
     >>> # train your own classifier (only update the last layer)
@@ -77,24 +81,25 @@ class VGG19(Model):
 
     Reuse model
 
-    >>> # get VGG without the last layer
-    >>> vgg1 = tl.models.VGG19(end_with='fc2_relu')
-    >>> # reuse the parameters of vgg1 with different input
-    >>> vgg2 = tl.models.VGG19(end_with='fc2_relu', reuse=True)
-    >>> # restore pre-trained VGG parameters (as they share parameters, we don’t need to restore vgg2)
-    >>> vgg1.restore_weights()
+    >>> # in dynamic mode, we can directly use the same model
+    >>> # in static mode
+    >>> vgg_layer = tl.models.VGG19.as_layer()
+    >>> ni_1 = tl.layers.Input([None, 224, 244, 3])
+    >>> ni_2 = tl.layers.Input([None, 224, 244, 3])
+    >>> a_1 = vgg_layer(ni_1)
+    >>> a_2 = vgg_layer(ni_2)
+    >>> M = Model(inputs=[ni_1, ni_2], outputs=[a_1, a_2])
 
     """
 
     def __init__(self, end_with='outputs', name=None):
-        super(VGG19, self).__init__()
+        super(VGG19, self).__init__(name=name)
         self.end_with = end_with
 
         self.layer_names = ['conv1_1', 'conv1_2', 'pool1', 'conv2_1', 'conv2_2', 'pool2',
                             'conv3_1', 'conv3_2', 'conv3_3', 'conv3_4', 'pool3', 'conv4_1', 'conv4_2', 'conv4_3', 'conv4_4', 'pool4',
                             'conv5_1', 'conv5_2', 'conv5_3', 'conv5_4', 'pool5',
                             'flatten', 'fc1_relu', 'fc2_relu', 'outputs']
-        self.innet = Input([None, 224, 224, 3])
         self.layers = LayerList([
             # conv1
             Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=3, name='conv1_1'),
@@ -135,15 +140,11 @@ class VGG19(Model):
     def forward(self, inputs):
         """
         inputs : tensor
-            Shape [None, 224, 224, 3], value range [0, 1].
+            Shape [None, 224, 224, 3], value range [0, 255] - mean, mean = [123.68, 116.779, 103.939].
         """
-        outputs = inputs * 255.0
-        mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
-        outputs = outputs - mean
 
-        out = self.innet(outputs)
-        out = self.layers(out)
-        return out.outputs
+        out = self.layers(inputs)
+        return out
 
     def restore_params(self, **kwargs):
         raise Exception("please change restore_params --> restore_weights")

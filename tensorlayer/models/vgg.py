@@ -6,8 +6,8 @@ VGG for ImageNet.
 Introduction
 ----------------
 VGG is a convolutional neural network model proposed by K. Simonyan and A. Zisserman
-from the University of Oxford in the paper “Very Deep Convolutional Networks for
-Large-Scale Image Recognition”  . The model achieves 92.7% top-5 test accuracy in ImageNet,
+from the University of Oxford in the paper "Very Deep Convolutional Networks for
+Large-Scale Image Recognition"  . The model achieves 92.7% top-5 test accuracy in ImageNet,
 which is a dataset of over 14 million images belonging to 1000 classes.
 
 Download Pre-trained Model
@@ -24,14 +24,13 @@ in read the docs website.
 - When feeding other images to the model be sure to properly resize or crop them
 beforehand. Distorted images might end up being misclassified. One way of safely
 feeding images of multiple sizes is by doing center cropping.
-"""
 
-import sys
+"""
 
 import os
 import numpy as np
 import tensorflow as tf
-from tensorflow.python.eager import context
+import tensorlayer as tl
 
 from tensorlayer import logging
 
@@ -99,25 +98,27 @@ class VGG(Model):
     ------------
     end_with : str
         The end point of the model. Default ``fc3_relu`` i.e. the whole model.
+    name : None or str
+        A unique layer name.
 
     Examples
     ---------
     Classify ImageNet classes with VGG16, see `tutorial_models_vgg.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_vgg.py>`__
-
+    With TensorLayer
 
     >>> # get the whole model
     >>> vgg = tl.models.vgg.vgg16()
     >>> # restore pre-trained VGG parameters
     >>> vgg.restore_weights()
     >>> # use for inferencing
-    >>> probs = tf.nn.softmax(vgg.outputs)
+    >>> probs = tf.nn.softmax(output)[0].numpy()
 
     Extract features with VGG16 and Train a classifier with 100 classes
 
     >>> # get VGG without the last layer
     >>> vgg = tl.models.vgg.vgg16(end_with='fc2_relu')
     >>> # add one more layer
-    >>> net = tl.layers.DenseLayer(vgg, 100, name='out')
+    >>> net = tl.layers.Dense(n_units=100, name='out')(vgg)
     >>> # restore pre-trained VGG parameters
     >>> vgg.restore_weights()
     >>> # train your own classifier (only update the last layer)
@@ -125,17 +126,19 @@ class VGG(Model):
 
     Reuse model
 
-    >>> # get VGG without the last layer
-    >>> vgg1 = tl.models.vgg.vgg16(end_with='fc2_relu')
-    >>> # reuse the parameters of vgg1 with different input
-    >>> vgg2 = tl.models.vgg.vgg16(end_with='fc2_relu', reuse=True)
-    >>> # restore pre-trained VGG parameters (as they share parameters, we don’t need to restore vgg2)
-    >>> vgg1.restore_weights()
+    >>> # in dynamic mode, we can directly use the same model
+    >>> # in static mode
+    >>> vgg_layer = tl.models.vgg.vgg16.as_layer()
+    >>> ni_1 = tl.layers.Input([None, 224, 244, 3])
+    >>> ni_2 = tl.layers.Input([None, 224, 244, 3])
+    >>> a_1 = vgg_layer(ni_1)
+    >>> a_2 = vgg_layer(ni_2)
+    >>> M = Model(inputs=[ni_1, ni_2], outputs=[a_1, a_2])
 
     """
 
     def __init__(self, layer_type, batch_norm=False, end_with='outputs', name=None):
-        super(VGG, self).__init__()
+        super(VGG, self).__init__(name=name)
         self.end_with = end_with
 
         config = cfg[mapped_cfg[layer_type]]
@@ -144,7 +147,7 @@ class VGG(Model):
     def forward(self, inputs):
         """
         inputs : tensor
-            Shape [None, 224, 224, 3], value range [0, 1].
+            Shape [None, 224, 224, 3], value range [0, 255] - mean, mean = [123.68, 116.779, 103.939].
         """
 
         out = self.layers(inputs)
@@ -192,7 +195,7 @@ def make_layers(config, batch_norm=False, end_with='outputs'):
     return LayerList(layer_list)
 
 
-def restore_model(model, layer_type, sess=None):
+def restore_model(model, layer_type):
     logging.info("Restore pre-trained weights")
     # download weights
     maybe_download_and_extract(
@@ -217,7 +220,7 @@ def restore_model(model, layer_type, sess=None):
             if len(model.weights) == len(weights):
                 break
     # assign weight values
-    assign_weights(sess, weights, model)
+    assign_weights(weights, model)
     del weights
 
 
@@ -233,25 +236,27 @@ def VGG_static(layer_type, batch_norm=False, end_with='outputs', name=None):
     return M
 
 
-def vgg16(pretrained=False, end_with='outputs', sess=None):
-    if context.default_execution_mode == context.EAGER_MODE:
-        model = VGG(layer_type='vgg16', batch_norm=False, end_with=end_with)
+def vgg16(pretrained=False, end_with='outputs', mode='dynamic', name=None):
+    if mode == 'dynamic':
+        model = VGG(layer_type='vgg16', batch_norm=False, end_with=end_with, name=name)
+    elif mode == 'static':
+        model = VGG_static(layer_type='vgg16', batch_norm=False, end_with=end_with, name=name)
     else:
-        model = VGG_static(layer_type='vgg16', batch_norm=False, end_with=end_with)
+        raise Exception("No such mode %s" % mode)
     if pretrained:
-        # model.restore_weights()
-        restore_model(model, layer_type='vgg16', sess=sess)
+        restore_model(model, layer_type='vgg16')
     return model
 
 
-def vgg19(pretrained=False, end_with='outputs', sess=None):
-    if context.default_execution_mode == context.EAGER_MODE:
-        model = VGG(layer_type='vgg19', batch_norm=False, end_with=end_with)
+def vgg19(pretrained=False, end_with='outputs', mode='dynamic', name=None):
+    if mode == 'dynamic':
+        model = VGG(layer_type='vgg19', batch_norm=False, end_with=end_with, name=name)
+    elif mode == 'static':
+        model = VGG_static(layer_type='vgg19', batch_norm=False, end_with=end_with, name=name)
     else:
-        model = VGG_static(layer_type='vgg19', batch_norm=False, end_with=end_with)
+        raise Exception("No such mode %s" % mode)
     if pretrained:
-        # model.restore_weights()
-        restore_model(model, layer_type='vgg19', sess=sess)
+        restore_model(model, layer_type='vgg19')
     return model
 
 # models without pretrained parameters
