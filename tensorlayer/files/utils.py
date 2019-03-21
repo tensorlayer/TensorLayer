@@ -1901,8 +1901,6 @@ def load_and_assign_npz_dict(name='model.npz', network=None, skip=False):
     ----------
     name : str
         The name of the `.npz` file.
-    sess : Session
-        TensorFlow Session.
 
     """
     if not os.path.exists(name):
@@ -1928,14 +1926,12 @@ def load_and_assign_npz_dict(name='model.npz', network=None, skip=False):
 
 
 def save_ckpt(
-        sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=None, global_step=None, printable=False
+        mode_name='model.ckpt', save_dir='checkpoint', var_list=None, global_step=None, printable=False
 ):
     """Save parameters into `ckpt` file.
 
     Parameters
     ------------
-    sess : Session
-        TensorFlow Session.
     mode_name : str
         The name of the model, default is ``model.ckpt``.
     save_dir : str
@@ -1952,8 +1948,7 @@ def save_ckpt(
     load_ckpt
 
     """
-    # if sess is None:
-    #     raise ValueError("session is None.")
+
     if var_list is None:
         if sess is None:
             # FIXME: not sure whether global variables can be accessed in eager mode
