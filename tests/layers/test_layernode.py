@@ -1,164 +1,145 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
+import os
+import unittest
 
-import sys
-sys.path.append("/Users/wurundi/PycharmProjects/tensorlayer2")
-import numpy as np
-import tensorlayer as tl
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import tensorflow as tf
-from tensorlayer.layers import Input, Conv2d, Flatten, Dense, Dropout, MaxPool2d, Concat, UnStack
-from tensorlayer.layers import RNN, Embedding
+import tensorlayer as tl
+from tensorlayer.layers import *
 from tensorlayer.models import Model
 from tensorflow.python.ops.rnn_cell import LSTMCell
+import numpy as np
 
-tl.logging.set_verbosity(tl.logging.DEBUG)
-#
-#
-# class CustomModel(Model):
-#
-#     def __init__(self):
-#         super(CustomModel, self).__init__()
-#
-#         self.dropout1 = Dropout(keep=0.8)#(self.innet)
-#         self.dense1 = Dense(n_units=800, act=tf.nn.relu, in_channels=784)#(self.dropout1)
-#         self.dropout2 = Dropout(keep=0.8)#(self.dense1)
-#         self.dense2 = Dense(n_units=800, act=tf.nn.relu, in_channels=800)#(self.dropout2)
-#         self.dropout3 = Dropout(keep=0.8)#(self.dense2)
-#         self.dense3 = Dense(n_units=10, act=tf.nn.relu, in_channels=800)#(self.dropout3)
-#         self.dense4 = Dense(n_units=10, in_channels=800)#(self.dropout3)
-#
-#     def forward(self, x, foo=0):
-#         z = self.dropout1(x)
-#         z = self.dense1(z)
-#         z = self.dropout2(z)
-#         z = self.dense2(z)
-#         z = self.dropout3(z)
-#         if foo == 0:
-#             out = self.dense3(z)
-#         else:
-#             out = self.dense4(z)
-#             out = tf.nn.relu(out)
-#         return out
-#
-#
-# net = CustomModel()
-#
-# print(net.all_layers)
-# print([x.name for x in net.weights])
-
-def get_model(input_shape):
-    ni = Input(input_shape)
-
-    nii = Conv2d(32, filter_size=(3,3), strides=(1, 1))(ni)
-    nn = Dropout(keep=0.9)(nii)
-
-    conv = Conv2d(32, filter_size=(3,3), strides=(1, 1))
-    tt = conv(nn)   # conv2d_1_node_0
-    nn = conv(nn)   # conv2d_1_node_1
-
-    # a branch
-    na = Conv2d(64, filter_size=(3,3), strides=(1, 1))(nn)
-    na = MaxPool2d()(na)
-
-    # b branch
-    nb = MaxPool2d()(nn)
-    nb = conv(nb)   # conv2d_1_node_2
-
-    out = Concat()([na, nb])
-    M = Model(inputs=ni, outputs=[out, nn, nb], name='model')
-
-    gg = conv(nii)  # this node will not be added since model fixed
-
-    return M
+from tests.utils import CustomTestCase
 
 
-def get_unstack_model(input_shape):
-    ni = Input(input_shape)
+class LayerNode_Test(CustomTestCase):
 
-    nn = Dropout(keep=0.9)(ni)
+    @classmethod
+    def setUpClass(cls):
+        pass
 
-    a, b, c = UnStack(axis=-1)(nn)
+    @classmethod
+    def tearDownClass(cls):
+        pass
 
-    b = Flatten()(b)
-    b = Dense(10)(b)
+    def test_net1(self):
+        print('-' * 20, 'test_net1', '-' * 20)
+        def get_model(input_shape):
+            ni = Input(input_shape)
 
-    M = Model(inputs=ni, outputs=[a, b, c], name='model')
-    return M
+            nii = Conv2d(32, filter_size=(3, 3), strides=(1, 1), name='conv1')(ni)
+            nn = Dropout(keep=0.9, name='drop1')(nii)
 
+            conv = Conv2d(32, filter_size=(3, 3), strides=(1, 1), name='conv2')
+            tt = conv(nn)  # conv2_node_0
+            nn = conv(nn)  # conv2_node_1
 
-def get_rnn(input_shape):
-    net_in = Input(input_shape, dtype=tf.int32)
-    net = Embedding(1000, 10, name='embedding')(net_in)
-    lstm = RNN(
-        cell_fn=LSTMCell,
-        cell_init_args={
-            'forget_bias': 0.0,
-            'state_is_tuple': True
-        },
-        n_hidden=10, n_steps=None,
-        return_last=False, return_seq_2d=True, name='lstm1'
-    )(net)
-    net_out = Dense(1000, act=None, name='output')(lstm)
-    rnn_model = tl.models.Model(
-        inputs=net_in,
-        outputs=[net_out, lstm]
-    )
-    return rnn_model
+            # a branch
+            na = Conv2d(64, filter_size=(3, 3), strides=(1, 1), name='conv3')(nn)
+            na = MaxPool2d(name='pool1')(na)
 
-def get_word2vec():
-    vocabulary_size = 800
-    batch_size = 10
-    embedding_size = 60
-    num_sampled = 25
-    inputs = tl.layers.Input([batch_size], dtype=tf.int32)
-    labels = tl.layers.Input([batch_size, 1], dtype=tf.int32)
+            # b branch
+            nb = MaxPool2d(name='pool2')(nn)
+            nb = conv(nb)  # conv2_node_2
 
-    emb_net = tl.layers.Word2vecEmbedding(
-        vocabulary_size=vocabulary_size,
-        embedding_size=embedding_size,
-        num_sampled=num_sampled,
-        activate_nce_loss=True,  # nce loss is activated
-        nce_loss_args={},
-        E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
-        nce_W_init=tl.initializers.truncated_normal(stddev=float(1.0 / np.sqrt(embedding_size))),
-        nce_b_init=tl.initializers.constant(value=0.0),
-        name='word2vec_layer',
-    )
-    emb, nce = emb_net([inputs, labels])
+            out = Concat(name='concat')([na, nb])
+            M = Model(inputs=ni, outputs=[out, nn, nb], name='model')
 
-    model = tl.models.Model(inputs=[inputs, labels], outputs=[emb, nce], name="word2vec_model")
-    return model
+            gg = conv(nii)  # this node will not be added since model fixed
+
+            return M
+        net = get_model([None, 24, 24, 3])
+
+        for k, v in enumerate(net._node_by_depth):
+            print(k, [x.name for x in v], [x.in_tensors_idxes for x in v])
+
+        all_node_names = []
+        for k, v in enumerate(net._node_by_depth):
+            all_node_names.extend([x.name for x in v])
+
+        self.assertNotIn('conv2_node_0', all_node_names)
+        self.assertNotIn('conv2_node_3', all_node_names)
+
+        self.assertEqual(len(net.all_layers), 8)
+        print(net.all_layers)
 
 
-# net = get_model([None, 24, 24, 3])
-# net = get_unstack_model([None, 24, 24, 3])
-# net = get_rnn([None, None])
-net = get_word2vec()
-net.train()
+        data = np.random.normal(size=[2, 24, 24, 3]).astype(np.float32)
+        out, nn, nb = net(data, is_train=True)
 
-for k, v in enumerate(net._node_by_depth):
-    print(k, [x.name for x in v], [x.in_tensors_idxes for x in v])
+        self.assertEqual(nn.shape, [2, 24, 24, 32])
+        self.assertEqual(nb.shape, [2, 12, 12, 32])
 
-print("*" * 20)
+    def test_net2(self):
+        print('-' * 20, 'test_net2', '-' * 20)
+        def get_unstack_model(input_shape):
+            ni = Input(input_shape)
 
-for layer in net._all_layers:
-    print(layer.name)
+            nn = Dropout(keep=0.9)(ni)
 
-print("*" * 20)
+            a, b, c = UnStack(axis=-1)(nn)
 
-# x = tf.random.normal(shape=(2, 24, 24, 3))
-# x = tf.ones(shape=(10,1), dtype=tf.int32)
-# outputs = net(x)
-x = tf.ones(shape=(10,), dtype=tf.int32)
-y = tf.ones(shape=(10,1), dtype=tf.int32)
-outputs = net([x, y])
+            b = Flatten()(b)
+            b = Dense(10)(b)
 
-if isinstance(outputs, list):
-    print([out.shape for out in outputs])
-else:
-    print(outputs.shape)
+            c = Flatten()(c)
 
-print("*" * 20)
+            M = Model(inputs=ni, outputs=[a, b, c], name='model')
+            return M
 
-print([w.name for w in net.weights])
+        net = get_unstack_model([None, 24, 24, 3])
 
-print("*" * 20)
+        for k, v in enumerate(net._node_by_depth):
+            print(k, [x.name for x in v], [x.in_tensors_idxes for x in v])
+
+        data = np.random.normal(size=[2, 24, 24, 3]).astype(np.float32)
+        out = net(data, is_train=True)
+
+        self.assertEqual(len(out), 3)
+
+    def test_word2vec(self):
+        print('-' * 20, 'test_word2vec', '-' * 20)
+        def get_word2vec():
+            vocabulary_size = 800
+            batch_size = 10
+            embedding_size = 60
+            num_sampled = 25
+            inputs = tl.layers.Input([batch_size], dtype=tf.int32)
+            labels = tl.layers.Input([batch_size, 1], dtype=tf.int32)
+
+            emb_net = tl.layers.Word2vecEmbedding(
+                vocabulary_size=vocabulary_size,
+                embedding_size=embedding_size,
+                num_sampled=num_sampled,
+                activate_nce_loss=True,  # nce loss is activated
+                nce_loss_args={},
+                E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
+                nce_W_init=tl.initializers.truncated_normal(stddev=float(1.0 / np.sqrt(embedding_size))),
+                nce_b_init=tl.initializers.constant(value=0.0),
+                name='word2vec_layer',
+            )
+            emb, nce = emb_net([inputs, labels])
+
+            model = tl.models.Model(inputs=[inputs, labels], outputs=[emb, nce], name="word2vec_model")
+            return model
+
+        net = get_word2vec()
+
+        for k, v in enumerate(net._node_by_depth):
+            print(k, [x.name for x in v], [x.in_tensors_idxes for x in v])
+
+        x = tf.ones(shape=(10,), dtype=tf.int32)
+        y = tf.ones(shape=(10,1), dtype=tf.int32)
+        out = net([x, y], is_train=True)
+
+        self.assertEqual(len(out), 2)
+
+if __name__ == '__main__':
+
+    tl.logging.set_verbosity(tl.logging.DEBUG)
+
+    unittest.main()

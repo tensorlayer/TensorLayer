@@ -53,7 +53,7 @@ class basic_dynamic_model(Model):
         return x
 
 
-class Layer_Core_Test(CustomTestCase):
+class Model_Core_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
