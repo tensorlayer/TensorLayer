@@ -1731,8 +1731,7 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
     return img_train_list, ann_train_list, img_test_list, ann_test_list
 
 
-def save_npz(save_list=None, name='model.npz', sess=None):
-    # TODO: Documentation needs updating
+def save_npz(save_list=None, name='model.npz'):
     """Input parameters and the file name, save parameters into .npz file. Use tl.utils.load_npz() to restore.
 
     Parameters
@@ -1741,27 +1740,21 @@ def save_npz(save_list=None, name='model.npz', sess=None):
         A list of parameters (tensor) to be saved.
     name : str
         The name of the `.npz` file.
-    sess : None or Session
-        Session may be required in some case.
 
     Examples
     --------
     Save model to npz
 
-    >>> tl.files.save_npz(network.all_params, name='model.npz', sess=sess)
+    >>> tl.files.save_npz(network.weights, name='model.npz')
 
     Load model from npz (Method 1)
 
     >>> load_params = tl.files.load_npz(name='model.npz')
-    >>> tl.files.assign_weights(sess, load_params, network)
+    >>> tl.files.assign_weights(load_params, network)
 
     Load model from npz (Method 2)
 
-    >>> tl.files.load_and_assign_npz(sess=sess, name='model.npz', network=network)
-
-    Notes
-    -----
-    If you got session issues, you can change the value.eval() to value.eval(session=sess)
+    >>> tl.files.load_and_assign_npz(name='model.npz', network=network)
 
     References
     ----------
@@ -1772,17 +1765,7 @@ def save_npz(save_list=None, name='model.npz', sess=None):
     if save_list is None:
         save_list = []
 
-    save_list_var = tf_variables_to_numpy(save_list, sess)
-    # save_list_var = []
-    # if sess:
-    #     save_list_var = sess.run(save_list)
-    # else:
-    #     try:
-    #         save_list_var.extend([v.eval() for v in save_list])
-    #     except Exception:
-    #         logging.info(
-    #             " Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_params, name='model.npz', sess=sess)"
-    #         )
+    save_list_var = tf_variables_to_numpy(save_list)
     np.savez(name, params=save_list_var)
     save_list_var = None
     del save_list_var
@@ -1821,13 +1804,11 @@ def assign_params(**kwargs):
     raise Exception("please change assign_params --> assign_weights")
 
 
-def assign_weights(sess, weights, network):
+def assign_weights(weights, network):
     """Assign the given parameters to the TensorLayer network.
 
     Parameters
     ----------
-    sess : Session
-        TensorFlow Session. In eager mode, it should be none; In graph mode, it should be specified.
     weights : list of array
         A list of model weights (array) in order.
     network : :class:`Layer`
@@ -1851,19 +1832,14 @@ def assign_weights(sess, weights, network):
     ops = []
     for idx, param in enumerate(weights):
         ops.append(network.weights[idx].assign(param))
-    if sess is not None:
-        sess.run(ops)
     return ops
 
 
-def load_and_assign_npz(sess=None, name=None, network=None):
-    # TODO: Documentation pending
+def load_and_assign_npz(name=None, network=None):
     """Load model from npz and assign to a network.
 
     Parameters
     -------------
-    sess : Session
-        TensorFlow Session.
     name : str
         The name of the `.npz` file.
     network : :class:`Layer`
@@ -1887,11 +1863,11 @@ def load_and_assign_npz(sess=None, name=None, network=None):
         return
     else:
         weights = load_npz(name=name)
-        assign_weights(sess, weights, network)
+        assign_weights(weights, network)
         logging.info("[*] Load {} SUCCESS!".format(name))
 
 
-def save_npz_dict(save_list=None, name='model.npz', sess=None):
+def save_npz_dict(save_list=None, name='model.npz'):
     """Input parameters and the file name, save parameters as a dictionary into .npz file.
 
     Use ``tl.files.load_and_assign_npz_dict()`` to restore.
@@ -1902,18 +1878,13 @@ def save_npz_dict(save_list=None, name='model.npz', sess=None):
         A list of parameters (tensor) to be saved.
     name : str
         The name of the `.npz` file.
-    sess : Session
-        TensorFlow Session.
 
     """
-    # if sess is None:
-    #     raise ValueError("session is None.")
     if save_list is None:
         save_list = []
 
     save_list_names = [tensor.name for tensor in save_list]
-    # save_list_var = sess.run(save_list)
-    save_list_var = tf_variables_to_numpy(save_list, sess)
+    save_list_var = tf_variables_to_numpy(save_list)
     save_var_dict = {save_list_names[idx]: val for idx, val in enumerate(save_list_var)}
     np.savez(name, **save_var_dict)
     save_list_var = None
@@ -1923,8 +1894,7 @@ def save_npz_dict(save_list=None, name='model.npz', sess=None):
     logging.info("[*] Model saved in npz_dict %s" % name)
 
 
-def load_and_assign_npz_dict(sess=None, name='model.npz', network=None, skip=False):
-    # TODO: Documentation pending
+def load_and_assign_npz_dict(name='model.npz', network=None, skip=False):
     """Restore the parameters saved by ``tl.files.save_npz_dict()``.
 
     Parameters
@@ -1935,9 +1905,6 @@ def load_and_assign_npz_dict(sess=None, name='model.npz', network=None, skip=Fal
         TensorFlow Session.
 
     """
-    # if sess is None:
-    #     raise ValueError("session is None.")
-
     if not os.path.exists(name):
         logging.error("file {} doesn't exist.".format(name))
         return
@@ -1956,29 +1923,7 @@ def load_and_assign_npz_dict(sess=None, name='model.npz', network=None, skip=Fal
                 raise RuntimeError("Weights named '%s' not found in network. Hint: set argument skip=Ture "
                                    "if you want to skip redundant or mismatch weights." % key)
         else:
-            assign_tf_variable(network.weights[net_weights_name.index(key)], weights[key], sess)
-
-        # try:
-        #     assign_tf_variable(network.weights[net_weights_name.index(key)], weights[key], sess)
-        # except KeyError:
-        #     logging.info("[!] Warning: Tensor named %s not found in network." % key)
-    # ops = list()
-    # for key in weights.keys():
-    #     try:
-    #         # tensor = tf.get_default_graph().get_tensor_by_name(key)
-    #         # varlist = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=key)
-    #         varlist = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.GLOBAL_VARIABLES, scope=key)
-    #         if len(varlist) > 1:
-    #             raise Exception("[!] Multiple candidate variables to be assigned for name %s" % key)
-    #         elif len(varlist) == 0:
-    #             raise KeyError
-    #         else:
-    #             ops.append(varlist[0].assign(weights[key]))
-    #             logging.info("[*] weights restored: %s" % key)
-    #     except KeyError:
-    #         logging.info("[!] Warning: Tensor named %s not found in network." % key)
-    #
-    # sess.run(ops)
+            assign_tf_variable(network.weights[net_weights_name.index(key)], weights[key])
     logging.info("[*] Model restored from npz_dict %s" % name)
 
 
@@ -2613,9 +2558,20 @@ def assign_tf_variable(variable, value, sess=None):
             )
 
 
-def save_weights_to_hdf5(filepath, weights, sess=None):
-    # TODO : Documentation pending
-    """"""
+def save_weights_to_hdf5(filepath, weights):
+    """Input filepath and save weights in hdf5 format.
+
+    Parameters
+    ----------
+    filepath : str
+        Filename to which the weights will be saved.
+    weights : list of tf eager tensors/variables
+        model weights
+
+    Returns
+    -------
+
+    """
     logging.info("[*] Saving TL weights into %s" % filepath)
 
     f = h5py.File(filepath, 'w')
@@ -2623,7 +2579,7 @@ def save_weights_to_hdf5(filepath, weights, sess=None):
     weights_names = [w.name for w in weights]
     f.attrs['weights_names'] = weights_names  # 'layer_name/weight_name'
 
-    save_val_list = tf_variables_to_numpy(weights, sess)
+    save_val_list = tf_variables_to_numpy(weights)
 
     for name, val in zip(weights_names, save_val_list):
         # each layer as a group
@@ -2641,9 +2597,24 @@ def save_weights_to_hdf5(filepath, weights, sess=None):
     logging.info("[*] Saved")
 
 
-def load_hdf5_to_weights_in_order(filepath, weights, sess=None):
-    # TODO : Documentation pending
-    """"""
+def load_hdf5_to_weights_in_order(filepath, weights):
+    """Load weights sequentially from a given file of hdf5 format
+
+    Parameters
+    ----------
+    filepath : str
+        Filename to which the weights will be loaded, should be of hdf5 format.
+    weights : list of tf eager tensors/variables
+        model weights
+
+    Notes:
+        If the file contains more weights than given 'weights', then the redundant ones will be ignored
+        if all previous weights match perfectly.
+
+    Returns
+    -------
+
+    """
     f = h5py.File(filepath, 'r')
     try:
         weights_names = list(f.attrs['weights_names'])
@@ -2659,15 +2630,31 @@ def load_hdf5_to_weights_in_order(filepath, weights, sess=None):
 
     for idx, name in enumerate(weights_names):
         weights_val = np.asarray(f[name])
-        assign_tf_variable(weights[idx], weights_val, sess) # FIXME: whether assign in a list way will be faster
+        assign_tf_variable(weights[idx], weights_val)
+        if idx == len(weights) - 1:
+            break
 
     f.close()
     logging.info("[*] Load %s SUCCESS!" % filepath)
 
 
-def load_hdf5_to_weights(filepath, weights, sess=None, skip=False):
-    # TODO : Documentation pending
-    """"""
+def load_hdf5_to_weights(filepath, weights, skip=False):
+    """Load weights by name from a given file of hdf5 format
+
+    Parameters
+    ----------
+    filepath : str
+        Filename to which the weights will be loaded, should be of hdf5 format.
+    weights : list of tf eager tensors/variables
+        model weights
+    skip : bool
+        If 'skip' == True, loaded weights whose name is not found in 'weights' will be skipped. If 'skip' is False,
+        error will be raised when mismatch is found. Default False.
+
+    Returns
+    -------
+
+    """
     f = h5py.File(filepath, 'r')
     try:
         weights_names = list(f.attrs['weights_names'])
@@ -2696,7 +2683,7 @@ def load_hdf5_to_weights(filepath, weights, sess=None, skip=False):
                                    "if you want to skip redundant or mismatch weights." % name)
         else:
             weights_val = np.asarray(f[name])
-            assign_tf_variable(weights[net_weights_name.index(name)], weights_val, sess)
+            assign_tf_variable(weights[net_weights_name.index(name)], weights_val)
 
     f.close()
     logging.info("[*] Load %s SUCCESS!" % filepath)
