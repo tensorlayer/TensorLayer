@@ -36,7 +36,9 @@ class PadLayer(Layer):
     With TensorLayer
 
     >>> net = tl.layers.Input([None, 224, 224, 3], name='input')
-    >>> net = tl.layers.PadLayer(net, [[0, 0], [3, 3], [3, 3], [0, 0]], "REFLECT", name='inpad')
+    >>> padlayer = tl.layers.PadLayer([[0, 0], [3, 3], [3, 3], [0, 0]], "REFLECT", name='inpad')(net)
+    >>> print(padlayer)
+    >>> output shape : (None, 106, 106, 3)
 
     """
 
@@ -87,6 +89,15 @@ class ZeroPad1d(Layer):
     name : None or str
         A unique layer name.
 
+    Examples
+    --------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 100, 1], name='input')
+    >>> pad1d = tl.layers.ZeroPad1d(padding=(2, 3))(net)
+    >>> print(pad1d)
+    >>> output shape : (None, 106, 1)
+
     """
 
     def __init__(
@@ -131,6 +142,15 @@ class ZeroPad2d(Layer):
             - If tuple of 2 tuples of 2 ints, interpreted as ``((top_pad, bottom_pad), (left_pad, right_pad))``.
     name : None or str
         A unique layer name.
+
+    Examples
+    --------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 100, 100, 3], name='input')
+    >>> pad2d = tl.layers.ZeroPad2d(padding=((3, 3), (4, 4)))(net)
+    >>> print(pad2d)
+    >>> output shape : (None, 106, 108, 3)
 
     """
 
@@ -177,6 +197,15 @@ class ZeroPad3d(Layer):
             - If tuple of 2 tuples of 2 ints, interpreted as ``((left_dim1_pad, right_dim1_pad), (left_dim2_pad, right_dim2_pad), (left_dim3_pad, right_dim3_pad))``.
     name : None or str
         A unique layer name.
+
+    Examples
+    --------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 100, 100, 100, 3], name='input')
+    >>> pad3d = tl.layers.ZeroPad3d(padding=((3, 3), (4, 4), (5, 5)))(net)
+    >>> print(pad3d)
+    >>> output shape : (None, 106, 108, 110, 3)
 
     """
 
