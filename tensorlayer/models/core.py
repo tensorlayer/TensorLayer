@@ -1,3 +1,5 @@
+import sys
+sys.path.append("/Users/wurundi/PycharmProjects/tensorlayer2")
 import numpy as np
 from abc import ABCMeta, abstractmethod
 import tensorflow as tf
@@ -61,7 +63,7 @@ class Model():
     Examples
     ---------
     >>> import tensorflow as tf
-    >>> import tensorlayer as tl
+    >>> import numpy as np
     >>> from tensorlayer.layers import Input, Dense, Dropout
     >>> from tensorlayer.models import Model
 
@@ -73,7 +75,7 @@ class Model():
     >>>         self.dropout1 = Dropout(keep=0.8)
     >>>         self.dense2 = Dense(n_units=10, in_channels=800)
 
-    >>>     def forward(self, x, foo=0):
+    >>>     def forward(self, x):
     >>>         z = self.dense1(x)
     >>>         z = self.dropout1(z)
     >>>         z = self.dense2(z)
@@ -96,6 +98,11 @@ class Model():
       (dropout): Dropout(keep=0.8, name='dropout')
       (dense_1): Dense(n_units=10, relu, in_channels='800', name='dense_1')
     )
+
+    - Forwarding through this network
+    >>> data = np.random.normal(size=[16, 784]).astype(np.float32)
+    >>> outputs_d = M_dynamic(data)
+    >>> outputs_s = M_static(data)
 
     - Save and load weights
     >>> M_static.save_weights('./model_weights.h5')
@@ -159,7 +166,6 @@ class Model():
             # check type of inputs and outputs
             check_order = ['inputs', 'outputs']
             for co, check_argu in enumerate([inputs, outputs]):
-                # FIXME : make this check to a util function later
                 if isinstance(check_argu, tf_ops._TensorLike) or tf_ops.is_dense_tensor_like(check_argu):
                     pass
                 elif isinstance(check_argu, list):
@@ -169,7 +175,6 @@ class Model():
                             "It should be either Tensor or a list of Tensor."
                         )
                     for idx in range(len(check_argu)):
-                        # FIXME : make this check to a util function later
                         if not isinstance(check_argu[idx], tf_ops._TensorLike) or not tf_ops.is_dense_tensor_like(check_argu[idx]):
                             raise TypeError(
                                 "The argument `%s` should be either Tensor or a list of Tensor "
@@ -180,6 +185,17 @@ class Model():
                 else:
                     raise TypeError("The argument `%s` should be either Tensor or a list of Tensor but received %s" %
                                     (check_order[co], type(check_argu)))
+
+            if not _check_tl_layer_tensors(inputs):
+                raise TypeError(
+                    "The argument `inputs` should be either Tensor or a list of Tensor "
+                    "that come from TensorLayer's Input layer: tl.layers.Input(shape). "
+                )
+            if not _check_tl_layer_tensors(outputs):
+                raise TypeError(
+                    "The argument `outputs` should be either Tensor or a list of Tensor "
+                    "that is/are outputs from some TensorLayer's layers, e.g. tl.layers.Dense, tl.layers.Conv2d."
+                )
 
             # build network graph
             self._node_by_depth, self._all_layers = self._construct_graph()
@@ -314,7 +330,6 @@ class Model():
         if self._weights is not None and len(self._weights) > 0:
             # self._weights already extracted, so do nothing
             pass
-        # FIXME: currently using self._outputs to judge static network or dynamic network
         else:
             self._weights = []
             for layer in self.all_layers:
@@ -444,21 +459,6 @@ class Model():
             layer._nodes_fixed = True
         self._layer_node_fixed = True
 
-    # TODO : this function seems to be useless ?
-    def _find_idx_of_inputs(self, target_input):
-        """
-        Return the index of the target_input in self._inputs.
-        Return -1 if not found.
-
-        :param target_input: the input layer needs to be located
-        :return:
-        """
-        if isinstance(self._inputs, list):
-            for idx, input in enumerate(self._inputs):
-                if input is target_input:
-                    return idx
-        return -1
-
     def __repr__(self):
         tmpstr = self.__class__.__name__ + '(\n'
         for idx, layer in enumerate(self.all_layers):
@@ -492,13 +492,6 @@ class Model():
         node_by_depth = []  # [[node0, node1], [node2, node3], ...]
 
         input_tensors_list = self.inputs if isinstance(self.inputs, list) else [self.inputs]
-        # check input tensor comes from tl.layers.Input
-        # (has '_info' attribute, which records the LayerNode Information)
-        for tensor in input_tensors_list:
-            if not hasattr(tensor, '_info'):
-                raise ValueError('Input tensors to Model "' + self.name + '" ' +
-                                 'must come from `tl.layers.Input`. '
-                                 'Received: ' + str(tensor) + '.')
 
         queue_node = Queue()
 
@@ -585,7 +578,7 @@ class Model():
     # def load(filepath):
     #     return utils.load_graph(name=filepath)
 
-    def save_weights(self, filepath, format='hdf5'):
+    def save_weights(self, filepath, format=None):
         """Input filepath and the session(optional), save model weights into a file of given format.
             Use self.load_weights() to restore.
 
@@ -593,35 +586,48 @@ class Model():
         ----------
         filepath : str
             Filename to which the model weights will be saved.
-        format : Save file format
-            Value should be 'hdf5', 'npz', 'npz_dict' or 'ckpt'. Other format is not supported now.
-            'hdf5' will save model weights name in a list and each layer has its weights stored in a group of
+        format : str or None
+            Saved file format.
+            Value should be None, 'hdf5', 'npz', 'npz_dict' or 'ckpt'. Other format is not supported now.
+            1) If this is set to None, then the postfix of filepath will be used to decide saved format.
+            If the postfix is not in ['h5', 'hdf5', 'npz', 'ckpt'], then file will be saved in hdf5 format by default.
+            2) 'hdf5' will save model weights name in a list and each layer has its weights stored in a group of
             the hdf5 file.
-            'npz' will save model weights sequentially into a npz file.
-            'npz_dict' will save model weights along with its name as a dict into a npz file.
-            'ckpt' will save model weights into a tensorflow ckpt file.
+            3) 'npz' will save model weights sequentially into a npz file.
+            4) 'npz_dict' will save model weights along with its name as a dict into a npz file.
+            5) 'ckpt' will save model weights into a tensorflow ckpt file.
+
+            Default None.
 
         Examples
         --------
-        1) Save model weights in hdf5 format
+        1) Save model weights in hdf5 format by default.
         >>> net = tl.models.vgg16()
         >>> net.save_weights('./model.h5')
         ...
         >>> net.load_weights('./model.h5')
 
-        2) Save model to npz in graph mode
+        2) Save model weights in npz/npz_dict format
         >>> net = tl.models.vgg16()
-        >>> net.save_weights('./model.npz', format='npz')
+        >>> net.save_weights('./model.npz')
+        >>> net.save_weights('./model.npz', format='npz_dict')
 
         Returns
         -------
 
         """
-        if self.weights is None:
+        if self.weights is None or len(self.weights) == 0:
             logging.warning("Model contains no weights or layers haven't been built, nothing will be saved")
             return
 
-        if format == 'hdf5':
+        if format is None:
+            postfix = filepath.split('.')[-1]
+            if postfix in ['h5', 'hdf5', 'npz', 'ckpt']:
+                format = postfix
+            else:
+                format = 'hdf5'
+
+        if format == 'hdf5' or format == 'h5':
             utils.save_weights_to_hdf5(filepath, self.weights)
         elif format == 'npz':
             utils.save_npz(self.weights, filepath)
@@ -732,3 +738,14 @@ def _addindent(s_, numSpaces):
     s = '\n'.join(s)
     s = first + '\n' + s
     return s
+
+
+def _check_tl_layer_tensors(tensors):
+    if not isinstance(tensors, list):
+        return hasattr(tensors, '_info')
+    else:
+        for t in tensors:
+            if not hasattr(t, '_info'):
+                return False
+        return True
+
