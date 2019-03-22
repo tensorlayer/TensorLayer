@@ -25,33 +25,39 @@ class ExpandDims(Layer):
     axis : int
         The dimension index at which to expand the shape of input.
     name : str
-        A unique layer name.
+        A unique layer name. If None, a unique name will be automatically assigned.
 
     Examples
     --------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder(tf.float32, (None, 100))
-    >>> n = tl.layers.Input(x, name='in')
-    >>> n = tl.layers.ExpandDims(n, 2)
-    [None, 100, 1]
+    >>> x = tl.layers.Input([10, 3], name='in')
+    >>> y = tl.layers.ExpandDims(axis=-1)(x)
+    [10, 3, 1]
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             axis,
-            name='expand_dims',
+            name=None # 'expand_dims',
     ):
-        # super(ExpandDims, self).__init__(prev_layer=prev_layer, name=name)
-        super().__init__(name)
+        super(ExpandDims, self).__init__(name)
         self.axis = axis
+
+        self.build((None,))
+        self._built = True
+
         logging.info("ExpandDims  %s: axis: %d" % (self.name, self.axis))
+
+    def __repr__(self):
+        s = '{classname}('
+        s += 'axis={axis},'
+        s += 'name={name}'
+        s += ")"
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
         pass
 
+    @tf.function
     def forward(self, inputs):
         outputs = tf.expand_dims(inputs, axis=self.axis, name=self.name)
         return outputs
@@ -72,26 +78,32 @@ class Tile(Layer):
 
     Examples
     --------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder(tf.float32, (None, 100))
-    >>> n = tl.layers.Input(x, name='in')
-    >>> n = tl.layers.ExpandDims(n, 2)
-    >>> n = tl.layers.Tile(n, [-1, 1, 3])
-    [None, 100, 3]
+    >>> x = tl.layers.Input([10, 3], name='in')
+    >>> y = tl.layers.Tile(multiples=[2, 3])(x)
+    [20, 9]
     """
 
     def __init__(self, multiples=None, name=None):  #'tile'):
 
-        # super(Tile, self).__init__(prev_layer=prev_layer, name=name)
-        super().__init__(name)
+        super(Tile, self).__init__(name)
         self.multiples = multiples
 
+        self.build((None,))
+        self._built = True
+
         logging.info("Tile  %s: multiples: %s" % (self.name, self.multiples))
+
+    def __repr__(self):
+        s = '{classname}('
+        s += 'multiples={multiples},'
+        s += 'name={name}'
+        s += ")"
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
         pass
 
+    @tf.function
     def forward(self, inputs):
         outputs = tf.tile(inputs, multiples=self.multiples, name=self.name)
         return outputs
