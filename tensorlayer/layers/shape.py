@@ -121,7 +121,7 @@ class Transpose(Layer):
     Examples
     ----------
     >>> x = tl.layers.Input([8, 4, 3], name='input')
-    >>> y1 = tl.layers.Transpose(perm=[0, 2, 1], conjugate=False, name='trans')(x)
+    >>> y = tl.layers.Transpose(perm=[0, 2, 1], conjugate=False, name='trans')(x)
     (8, 3, 4)
 
     """

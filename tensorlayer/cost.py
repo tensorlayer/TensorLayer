@@ -143,9 +143,9 @@ def mean_squared_error(output, target, is_mean=False, axis=-1, name="mean_square
     #     raise Exception("Unknow dimension")
 
     if is_mean:
-        mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), axis), name=name)
+        mse = tf.reduce_mean(tf.reduce_mean(tf.math.squared_difference(output, target), axis), name=name)
     else:
-        mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), axis), name=name)
+        mse = tf.reduce_mean(tf.reduce_sum(tf.math.squared_difference(output, target), axis), name=name)
     return mse
 
 
