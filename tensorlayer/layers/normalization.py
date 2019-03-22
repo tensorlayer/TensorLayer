@@ -211,6 +211,9 @@ class BatchNorm(Layer):
             self.build(None)
             self._built = True
 
+        if self.decay < 0.0 or 1.0 < self.decay:
+            raise ValueError("decay should be between 0 to 1")
+
         logging.info(
             "BatchNorm %s: decay: %f epsilon: %f act: %s is_train: %s" %
             (self.name, decay, epsilon, self.act.__name__ if self.act is not None else 'No Activation', is_train)
@@ -242,9 +245,6 @@ class BatchNorm(Layer):
         return params_shape, axes
 
     def build(self, inputs_shape):
-        if self.decay < 0 or 1 < self.decay:
-            raise Exception("decay should be between 0 to 1")
-
         params_shape, self.axes = self._get_param_shape(inputs_shape)
 
         self.beta, self.gamma = None, None
