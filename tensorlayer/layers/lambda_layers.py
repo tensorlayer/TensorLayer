@@ -19,12 +19,14 @@ __all__ = [
 class Lambda(Layer):
     """A layer that takes a user-defined function using Lambda.
     If the function has trainable weights, the weights should be provided.
+    Remember to make sure the weights provided when the layer is constructed are SAME as
+    the weights used when the layer is forwarded.
     For multiple inputs see :class:`ElementwiseLambdaLayer`.
 
     Parameters
     ----------
     fn : function
-        The function that applies to the outputs of previous layer. The function should be callable.
+        The function that applies to the inputs (e.g. tensor from the previous layer).
     fn_weights: a list of trainable weights (e.g. tf.Variable)
         Optional. If the function has trainable weights, the weights should be explicitly provided.
         Remember to make sure the weights provided when the layer is constructed are SAME as
@@ -32,6 +34,8 @@ class Lambda(Layer):
     fn_args: a dict
         The arguments for the function if any.
         In a dynamic model, fn_args can be given via **kwargs when the layer is called.
+        Note that the arguments should not be inputs.
+        For multiple inputs, see :class:`ElementwiseLambdaLayer`.
     name : str or None
         A unique layer name.
 
@@ -42,7 +46,7 @@ class Lambda(Layer):
     >>> x = tl.layers.Input([8, 3], name='input')
     >>> y = tl.layers.Lambda(lambda x: 2*x, name='lambda')(x)
 
-    >>> def customize_func(x, foo):
+    >>> def customize_func(x, foo=42): # x is the inputs, foo is an argument
     >>>     return foo * x
     >>> x = tl.layers.Input([8, 3], name='input')
     >>> lambdalayer = tl.layers.Lambda(customize_func, fn_args={'foo': 2}, name='lambda')(x)
@@ -55,7 +59,7 @@ class Lambda(Layer):
     >>>     tf.keras.layers.Dense(1, activation=tf.identity)
     >>> ]
     >>> perceptron = tf.keras.Sequential(layers)
-    >>> # in order to get trainable_variables of keras
+    >>> # in order to compile keras model and get trainable_variables of the keras model
     >>> _ = perceptron(np.random.random([100, 5]).astype(np.float32))
 
     >>> class CustomizeModel(tl.models.Model):
@@ -122,6 +126,7 @@ class Lambda(Layer):
         # the weights of the function are provided when the Lambda layer is constructed
         pass
 
+    @tf.function
     def forward(self, inputs, **kwargs):
 
         if len(kwargs) == 0:
@@ -133,56 +138,88 @@ class Lambda(Layer):
 
 class ElementwiseLambda(Layer):
     """A layer that use a custom function to combine multiple :class:`Layer` inputs.
+    If the function has trainable weights, the weights should be provided.
+    Remember to make sure the weights provided when the layer is constructed are SAME as
+    the weights used when the layer is forwarded.
 
     Parameters
     ----------
-    layers : list of :class:`Layer`
-        The list of layers to combine.
     fn : function
-        The function that applies to the outputs of previous layer.
-    fn_args : dictionary or None
-        The arguments for the function (option).
-    act : activation function
-        The activation function of this layer.
-    name : str
+        The function that applies to the inputs (e.g. tensor from the previous layer).
+    fn_weights: a list of trainable weights (e.g. tf.Variable)
+        Optional. If the function has trainable weights, the weights should be explicitly provided.
+        Remember to make sure the weights provided when the layer is constructed are SAME as
+        the weights used when the layer is forwarded.
+    fn_args: a dict
+        The arguments for the function if any.
+        In a dynamic model, fn_args can be given via **kwargs when the layer is called.
+        Note that the arguments should not be inputs.
+    name : str or None
         A unique layer name.
 
     Examples
     --------
-    z = mean + noise * tf.exp(std * 0.5)
+    z = mean + noise * tf.exp(std * 0.5) + foo
 
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
+    >>> def func(noise, mean, std, foo=42):
+    >>>     return mean + noise * tf.exp(std * 0.5) + foo
 
-    >>> def func(noise, mean, std):
-    >>>     return mean + noise * tf.exp(std * 0.5)
-
-    >>> x = tf.placeholder(tf.float32, [None, 200])
-    >>> noise_tensor = tf.random_normal(tf.stack([tf.shape(x)[0], 200]))
-    >>> noise = tl.layers.Input(noise_tensor)
-    >>> net = tl.layers.Input(x)
-    >>> net = tl.layers.Dense(net, n_units=200, act=tf.nn.relu, name='dense1')
-    >>> mean = tl.layers.Dense(net, n_units=200, name='mean')
-    >>> std = tl.layers.Dense(net, n_units=200, name='std')
-    >>> z = tl.layers.ElementwiseLambda([noise, mean, std], fn=func, name='z')
+    >>> noise = tl.layers.Input([100, 1])
+    >>> mean = tl.layers.Input([100, 1])
+    >>> std = tl.layers.Input([100, 1])
+    >>> out = tl.layers.ElementwiseLambda(fn=func, fn_args={'foo': 84}, name='elementwiselambda')([noise, mean, std])
     """
 
     def __init__(
             self,
-            layers,
             fn,
+            fn_weights=None,
             fn_args=None,
-            act=None,
             name=None,  #'elementwiselambda',
     ):
 
-        super(ElementwiseLambda, self).__init__(prev_layer=layers, act=act, fn_args=fn_args, name=name)
-        logging.info("ElementwiseLambda %s" % self.name)
+        super(ElementwiseLambda, self).__init__(name=name)
+        self.fn = fn
+        self._weights = fn_weights if fn_weights is not None else []
+        self.fn_args = fn_args if fn_args is not None else {}
 
-        with tf.compat.v1.variable_scope(name) as vs:
-            self.outputs = self._apply_activation(fn(*self.inputs, **self.fn_args))
+        try:
+            fn_name = repr(self.fn)
+        except:
+            fn_name = 'name not available'
+        logging.info("ElementwiseLambda  %s: func: %s, len_weights: %s" % (self.name, fn_name, len(self._weights)))
 
-            variables = tf.compat.v1.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        self.build()
+        self._built = True
 
-        self._add_layers(self.outputs)
-        self._add_params(variables)
+    def __repr__(self):
+        s = '{classname}('
+        s += 'fn={fn_name},'
+        s += 'len_weights={len_weights},'
+        s += 'name=\'{name}\''
+        s += ')'
+        try:
+            fn_name = repr(self.fn)
+        except:
+            fn_name = 'name not available'
+        return s.format(classname=self.__class__.__name__, fn_name=fn_name, len_weights=len(self._weights), **self.__dict__)
+
+    def build(self, inputs_shape=None):
+        # do nothing
+        # the weights of the function are provided when the Lambda layer is constructed
+        pass
+
+    @tf.function
+    def forward(self, inputs, **kwargs):
+
+        if not isinstance(inputs, list):
+            raise TypeError("The inputs should be a list of values which corresponds with the customised lambda function.")
+
+        if len(kwargs) == 0:
+            outputs = self.fn(*inputs, **self.fn_args)
+        else:
+            outputs = self.fn(*inputs, **kwargs)
+
+        return outputs
+
+

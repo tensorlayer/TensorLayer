@@ -76,12 +76,14 @@ class Concat(Layer):
 class Elementwise(Layer):
     """A layer that combines multiple :class:`Layer` that have the same output shapes
     according to an element-wise operation.
+    If the element-wise operation is complicated, please consider to use :class:`ElementwiseLambda`.
 
     Parameters
     ----------
     combine_fn : a TensorFlow element-wise combine function
         e.g. AND is ``tf.minimum`` ;  OR is ``tf.maximum`` ; ADD is ``tf.add`` ; MUL is ``tf.multiply`` and so on.
         See `TensorFlow Math API <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html#math>`__ .
+        If the combine function is more complicated, please consider to use :class:`ElementwiseLambda`.
     act : activation function
         The activation function of this layer.
     name : None or str

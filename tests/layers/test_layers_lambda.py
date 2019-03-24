@@ -52,7 +52,7 @@ class Layer_Lambda_Test(CustomTestCase):
 
         model.train()
 
-        for epoch in range(50):
+        for epoch in range(10):
             with tf.GradientTape() as tape:
                 pred_y = model(self.data_x)
                 loss = tl.cost.mean_squared_error(pred_y, self.data_y)
@@ -63,7 +63,7 @@ class Layer_Lambda_Test(CustomTestCase):
             print("epoch %d, loss %f" % (epoch, loss))
 
     def test_lambda_func_with_args(self):
-        def customize_func(x, foo):
+        def customize_func(x, foo=42):
             if foo == 0:
                 return tf.nn.relu(x)
             elif foo == 1:
@@ -77,25 +77,25 @@ class Layer_Lambda_Test(CustomTestCase):
                 self.dense = tl.layers.Dense(in_channels=1, n_units=5)
                 self.lambdalayer = tl.layers.Lambda(customize_func, fn_weights=[], fn_args={'foo': 0})
 
-            def forward(self, x, foo):
+            def forward(self, x, bar):
                 z = self.dense(x)
-                if foo == -1:
+                if bar == -1:
                     zf = self.lambdalayer(z)
                 else:
-                    zf = self.lambdalayer(z, foo=foo)
+                    zf = self.lambdalayer(z, foo=bar)
                 return z, zf
 
         model = CustomizeModel()
         print(model.lambdalayer)
         model.train()
 
-        out, out2 = model(self.data_x, foo=-1)
+        out, out2 = model(self.data_x, bar=-1)
         self.assertTrue(np.array_equal(out2.numpy(), tf.nn.relu(out).numpy()))
-        out, out2 = model(self.data_x, foo=0)
+        out, out2 = model(self.data_x, bar=0)
         self.assertTrue(np.array_equal(out2.numpy(), tf.nn.relu(out).numpy()))
-        out, out2 = model(self.data_x, foo=1)
+        out, out2 = model(self.data_x, bar=1)
         self.assertTrue(np.array_equal(out2.numpy(), tf.nn.sigmoid(out).numpy()))
-        out, out2 = model(self.data_x, foo=2)
+        out, out2 = model(self.data_x, bar=2)
         self.assertTrue(np.array_equal(out2.numpy(), out.numpy()))
 
     def test_lambda_func_without_args(self):
@@ -118,6 +118,64 @@ class Layer_Lambda_Test(CustomTestCase):
         out, out2 = model(self.data_x)
         self.assertTrue(np.array_equal(out2.numpy(), out.numpy()*2))
 
+    def test_elementwiselambda_func_with_args(self):
+
+        def customize_func(noise, mean, std, foo=42):
+            return mean + noise * tf.exp(std * 0.5) + foo
+
+        class CustomizeModel(tl.models.Model):
+            def __init__(self):
+                super(CustomizeModel, self).__init__()
+                self.dense1 = tl.layers.Dense(in_channels=1, n_units=5)
+                self.dense2 = tl.layers.Dense(in_channels=1, n_units=5)
+                self.dense3 = tl.layers.Dense(in_channels=1, n_units=5)
+                self.lambdalayer = tl.layers.ElementwiseLambda(customize_func, fn_weights=[], fn_args={'foo': 1024})
+
+            def forward(self, x, bar=None):
+                noise = self.dense1(x)
+                mean = self.dense2(x)
+                std = self.dense3(x)
+                if bar is None:
+                    out = self.lambdalayer([noise, mean, std])
+                else:
+                    out = self.lambdalayer([noise, mean, std], foo=bar)
+                return noise, mean, std, out
+
+        model = CustomizeModel()
+        print(model.lambdalayer)
+        model.train()
+
+        noise, mean, std, out = model(self.data_x)
+        self.assertTrue(np.allclose(out.numpy(), customize_func(noise, mean, std, foo=1024).numpy()))
+        noise, mean, std, out = model(self.data_x, bar=2048)
+        self.assertTrue(np.allclose(out.numpy(), customize_func(noise, mean, std, foo=2048).numpy()))
+
+    def test_elementwiselambda_func_without_args(self):
+
+        def customize_func(noise, mean, std):
+            return mean + noise * tf.exp(std * 0.5)
+
+        class CustomizeModel(tl.models.Model):
+            def __init__(self):
+                super(CustomizeModel, self).__init__()
+                self.dense1 = tl.layers.Dense(in_channels=1, n_units=5)
+                self.dense2 = tl.layers.Dense(in_channels=1, n_units=5)
+                self.dense3 = tl.layers.Dense(in_channels=1, n_units=5)
+                self.lambdalayer = tl.layers.ElementwiseLambda(customize_func, fn_weights=[])
+
+            def forward(self, x):
+                noise = self.dense1(x)
+                mean = self.dense2(x)
+                std = self.dense3(x)
+                out = self.lambdalayer([noise, mean, std])
+                return noise, mean, std, out
+
+        model = CustomizeModel()
+        print(model.lambdalayer)
+        model.train()
+
+        noise, mean, std, out = model(self.data_x)
+        self.assertTrue(np.array_equal(out.numpy(), customize_func(noise, mean, std).numpy()))
 
 
 if __name__ == '__main__':
