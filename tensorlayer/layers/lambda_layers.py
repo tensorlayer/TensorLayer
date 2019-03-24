@@ -32,7 +32,7 @@ class Lambda(Layer):
         Remember to make sure the weights provided when the layer is constructed are SAME as
         the weights used when the layer is forwarded.
     fn_args: a dict
-        The arguments for the function if any.
+        Optional, the arguments for the function if any.
         In a dynamic model, fn_args can be given via **kwargs when the layer is called.
         Note that the arguments should not be inputs.
         For multiple inputs, see :class:`ElementwiseLambdaLayer`.
@@ -151,7 +151,7 @@ class ElementwiseLambda(Layer):
         Remember to make sure the weights provided when the layer is constructed are SAME as
         the weights used when the layer is forwarded.
     fn_args: a dict
-        The arguments for the function if any.
+        Optional, the arguments for the function if any.
         In a dynamic model, fn_args can be given via **kwargs when the layer is called.
         Note that the arguments should not be inputs.
     name : str or None

@@ -1,16 +1,12 @@
 import tensorflow as tf
-## enable eager mode
-tf.enable_eager_execution()
 
 import time
 import numpy as np
 import tensorlayer as tl
 from tensorlayer.layers import Input, Dense, Dropout
 from tensorlayer.models import Model
-import tensorflow.contrib.eager as tfe
 
 ## enable debug logging
-tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 ## prepare MNIST data
@@ -28,18 +24,15 @@ class CustomModel(Model):
         self.dense2 = Dense(n_units=800, act=tf.nn.relu, in_channels=800)#(self.dropout2)
         self.dropout3 = Dropout(keep=0.8)#(self.dense2)
         self.dense3 = Dense(n_units=10, act=tf.nn.relu, in_channels=800)#(self.dropout3)
-        self.dense4 = Dense(n_units=10, in_channels=800)#(self.dropout3)
 
-    def forward(self, x, foo=0):
+    def forward(self, x, foo=None):
         z = self.dropout1(x)
         z = self.dense1(z)
         z = self.dropout2(z)
         z = self.dense2(z)
         z = self.dropout3(z)
-        if foo == 0:
-            out = self.dense3(z)
-        else:
-            out = self.dense4(z)
+        out = self.dense3(z)
+        if foo is not None:
             out = tf.nn.relu(out)
         return out
 
@@ -53,7 +46,7 @@ n_epoch = 500
 batch_size = 500
 print_freq = 5
 train_weights = MLP.weights
-optimizer = tf.train.AdamOptimizer(learning_rate=0.0001)
+optimizer = tf.optimizers.Adam(learning_rate=0.0001)
 
 ## the following code can help you understand SGD deeply
 for epoch in range(n_epoch):  ## iterate the dataset n_epoch times

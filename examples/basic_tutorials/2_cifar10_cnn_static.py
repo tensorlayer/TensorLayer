@@ -4,7 +4,6 @@
 import time
 import multiprocessing
 import tensorflow as tf
-tf.enable_eager_execution()
 import tensorlayer as tl
 from tensorlayer.layers import Input, Conv2d, BatchNorm, MaxPool2d, Flatten, Dense, LocalResponseNorm
 from tensorlayer.models import Model
@@ -13,9 +12,6 @@ import numpy as np
 # enable debug logging
 tl.logging.set_verbosity(tl.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
-
-# enable eager mode
-# tf.enable_eager_execution()
 
 # prepare cifar10 data
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
@@ -90,7 +86,7 @@ shuffle_buffer_size = 128 # 100
 
 train_weights = net.weights
 # learning_rate = tf.Variable(init_learning_rate)
-optimizer = tf.train.AdamOptimizer(learning_rate)
+optimizer = tf.optimizers.Adam(learning_rate)
 
 
 def generator_train():

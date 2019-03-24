@@ -1,16 +1,12 @@
 import tensorflow as tf
-## enable eager mode
-tf.enable_eager_execution()
 
 import time
 import numpy as np
 import tensorlayer as tl
 from tensorlayer.layers import Input, Dense, Dropout, LayerList
 from tensorlayer.models import Model
-import tensorflow.contrib.eager as tfe
 
 ## enable debug logging
-tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 ## prepare MNIST data
@@ -22,43 +18,36 @@ class CustomModelHidden(Model):
     def __init__(self):
         super(CustomModelHidden, self).__init__()
 
-        self.innet = Input([None, 784])
         self.dropout1 = Dropout(keep=0.8)#(self.innet)
 
         self.seq = LayerList(
             [
                 Dense(n_units=800, act=tf.nn.relu, in_channels=784),
                 Dropout(keep=0.8),
-                Dense(n_units=800, act=tf.nn.relu),
+                Dense(n_units=800, act=tf.nn.relu, in_channels=800),
             ]
         )
 
         self.dropout3 = Dropout(keep=0.8)#(self.seq)
 
     def forward(self, x):
-        z = self.innet(x)
-        z = self.dropout1(z)
+        z = self.dropout1(x)
         z = self.seq(z)
         z = self.dropout3(z)
-        return z.outputs
+        return z
 
 class CustomModelOut(Model):
 
     def __init__(self):
         super(CustomModelOut, self).__init__()
 
-        self.innet = Input([None, 800])
-        self.dense3 = Dense(n_units=10, act=tf.nn.relu)(self.innet)
-        self.dense4 = Dense(n_units=10)(self.innet)
+        self.dense3 = Dense(n_units=10, act=tf.nn.relu, in_channels=800)
 
-    def forward(self, x, foo=0):
-        z = self.innet(x)
-        if foo == 0:
-            out = self.dense3(z)
-        else:
-            out = self.dense4(z)
-            out.outputs = tf.nn.relu(out.outputs)
-        return out.outputs
+    def forward(self, x, foo=None):
+        out = self.dense3(x)
+        if foo is not None:
+            out = tf.nn.relu(out)
+        return out
 
 
 # NOTE: using previous defined model is different in dynamic network
@@ -76,7 +65,7 @@ n_epoch = 500
 batch_size = 500
 print_freq = 5
 train_weights = MLP1.weights + MLP2.weights
-optimizer = tf.train.AdamOptimizer(learning_rate=0.0001)
+optimizer = tf.optimizers.Adam(learning_rate=0.0001)
 
 ## the following code can help you understand SGD deeply
 for epoch in range(n_epoch):  ## iterate the dataset n_epoch times

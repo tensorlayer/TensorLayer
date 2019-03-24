@@ -1,17 +1,16 @@
 import tensorflow as tf
 
 ## enable eager mode
-tf.enable_eager_execution()
+# tf.enable_eager_execution()
 
 import time
 import numpy as np
 import tensorlayer as tl
 from tensorlayer.layers import Input, Dense, Dropout
 from tensorlayer.models import Model
-import tensorflow.contrib.eager as tfe
+# import tensorflow.contrib.eager as tfe
 
 ## enable debug logging
-tl.logging.set_verbosity(tl.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 ## prepare MNIST data
@@ -25,16 +24,13 @@ X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(sha
 def get_model(inputs_shape):
     ni = Input(inputs_shape)
     nn = Dropout(keep=0.8)(ni)
-    nn = Dense(n_units=800, act=tf.nn.relu)(nn)
+    nn = Dense(n_units=800, act=tf.nn.relu, in_channels=784)(nn) # in_channels is optional in this case as it can be inferred by the previous layer
     nn = Dropout(keep=0.8)(nn)
-    nn = Dense(n_units=800, act=tf.nn.relu)(nn)
-
-    M_hidden = Model(inputs=ni, outputs=nn, name="mlp_hidden").as_layer()
-
-    nn = M_hidden(ni)
+    nn = Dense(n_units=800, act=tf.nn.relu, in_channels=800)(nn) # in_channels is optional in this case as it can be inferred by the previous layer
     nn = Dropout(keep=0.8)(nn)
-    nn = Dense(n_units=10, act=tf.nn.relu)(nn)
-    return Model(inputs=ni, outputs=nn, name="mlp")
+    nn = Dense(n_units=10, act=tf.nn.relu, in_channels=800)(nn) # in_channels is optional in this case as it can be inferred by the previous layer
+    M = Model(inputs=ni, outputs=nn, name="mlp")
+    return M
 
 MLP = get_model([None, 784])
 # MLP.print_layers()
@@ -45,7 +41,7 @@ n_epoch = 500
 batch_size = 500
 print_freq = 5
 train_weights = MLP.weights
-optimizer = tf.train.AdamOptimizer(learning_rate=0.0001)
+optimizer = tf.optimizers.Adam(lr=0.0001)
 
 ## the following code can help you understand SGD deeply
 for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
