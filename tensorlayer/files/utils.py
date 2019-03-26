@@ -1842,13 +1842,8 @@ def load_and_assign_npz(name=None, network=None):
     -------------
     name : str
         The name of the `.npz` file.
-    network : :class:`Layer`
+    network : :class:`Model`
         The network to be assigned.
-
-    Returns
-    --------
-    False or network
-        Returns False, if the model is not exist.
 
     Examples
     --------
@@ -1898,9 +1893,14 @@ def load_and_assign_npz_dict(name='model.npz', network=None, skip=False):
     """Restore the parameters saved by ``tl.files.save_npz_dict()``.
 
     Parameters
-    ----------
+    -------------
     name : str
         The name of the `.npz` file.
+    network : :class:`Model`
+        The network to be assigned.
+    skip : boolean
+        If 'skip' == True, loaded weights whose name is not found in network's weights will be skipped.
+        If 'skip' is False, error will be raised when mismatch is found. Default False.
 
     """
     if not os.path.exists(name):
