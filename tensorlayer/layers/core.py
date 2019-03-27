@@ -70,6 +70,9 @@ class Layer(object):
             else:
                 _global_layer_name_dict[prefix] = 0
                 name = prefix
+        else:
+            if _global_layer_name_dict.get(name) is not None:
+                raise ValueError('Layer name \'%s\' has already been used by another layer. Please change the layer name.' % name)
 
         self.name = name
 
