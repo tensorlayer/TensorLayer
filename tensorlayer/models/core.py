@@ -151,7 +151,7 @@ class Model():
         self._model_layer = None
 
         # Layer Node status
-        self._layer_node_fixed = False
+        self._nodes_fixed = False
 
         # Model layers
         self._all_layers = None
@@ -219,7 +219,7 @@ class Model():
         self._check_mode(is_train)
 
         # fix LayerNodes when first calling
-        if self._layer_node_fixed is False:
+        if self._nodes_fixed is False:
             self._fix_nodes_for_layers()
 
         # set training / inference mode if necessary
@@ -453,8 +453,8 @@ class Model():
     def _fix_nodes_for_layers(self):
         """Fix each Layer's LayerNode to stop growing, see LayerNode for more."""
         for layer in self.all_layers:
-            layer._nodes_fixed = True
-        self._layer_node_fixed = True
+            layer._fix_nodes_for_layers()
+        self._nodes_fixed = True
 
     def __repr__(self):
         tmpstr = self.__class__.__name__ + '(\n'
