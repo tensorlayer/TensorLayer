@@ -448,6 +448,8 @@ class Model():
 
         """
         for layer in self.all_layers:
+            if isinstance(layer, Model):
+                layer.is_train = is_train
             layer._set_mode_for_layers(is_train)
 
     def _fix_nodes_for_layers(self):
