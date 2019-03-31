@@ -136,6 +136,9 @@ class Layer_Core_Test(CustomTestCase):
         ])(innet)
         model = Model(inputs=innet, outputs=hlayer)
 
+        # for w in model.weights:
+        #     print(w.name)
+
         data = np.random.normal(size=[self.batch_size, self.inputs_shape[1]]).astype(np.float32)
         pred = model(data, is_train=False)
         self.assertEqual(pred.get_shape().as_list(), [self.batch_size, 4])

@@ -53,7 +53,7 @@ class _InputLayer(Layer):
         s += ')'
         return s
 
-    def __call__(self, inputs):
+    def __call__(self, inputs, *args, **kwargs):
         return super(_InputLayer, self).__call__(inputs)
 
     def build(self, inputs_shape):

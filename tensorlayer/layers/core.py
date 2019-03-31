@@ -575,9 +575,10 @@ def _addindent(s_, numSpaces):
 
 
 def tolist(tensors):
-    if isinstance(tensors, list):
-        return tensors
-    elif isinstance(tensors, tuple):
-        return list(tensors)
+    if isinstance(tensors, list) or isinstance(tensors, tuple):
+        ntensors = list()
+        for t in tensors:
+            ntensors += tolist(t)
+        return ntensors
     else:
         return [tensors]

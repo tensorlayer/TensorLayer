@@ -218,6 +218,9 @@ class Model():
 
         self._check_mode(is_train)
 
+        # FIXME: this may cause inefficiency, this is used to check if every layer is built
+        self.all_layers
+
         # fix LayerNodes when first calling
         if self._nodes_fixed is False:
             self._fix_nodes_for_layers()
@@ -317,6 +320,9 @@ class Model():
                     elif isinstance(getattr(self, attr), Model):
                         nowmodel = getattr(self, attr)
                         self._all_layers.append(nowmodel)
+                # TODO: define customised exception for TL
+                except AttributeError as e:
+                    raise e
                 except Exception:
                     pass
             return self._all_layers
