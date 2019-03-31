@@ -144,6 +144,19 @@ class Layer_Core_Test(CustomTestCase):
 
         model.release_memory()
 
+    def test_duplicate_names(self):
+        try:
+            dense1 = tl.layers.Dense(n_units=10, name='dense')
+            dense2 = tl.layers.Dense(n_units=10, name='dense')
+            print(dense1)
+            print(dense2)
+        except Exception as e:
+            print(e)
+        dense1 = tl.layers.Dense(n_units=10, name='dense1')
+        dense2 = tl.layers.Dense(n_units=10, name='dense2')
+        print(dense1)
+        print(dense2)
+
 
 if __name__ == '__main__':
 

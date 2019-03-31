@@ -70,6 +70,9 @@ class Layer(object):
             else:
                 _global_layer_name_dict[prefix] = 0
                 name = prefix
+        else:
+            if _global_layer_name_dict.get(name) is not None:
+                raise ValueError('Layer name \'%s\' has already been used by another layer. Please change the layer name.' % name)
 
         self.name = name
 
@@ -183,6 +186,10 @@ class Layer(object):
     def _set_mode_for_layers(self, is_train):
         """ Set training/evaluation mode for the Layer"""
         self.is_train = is_train
+
+    def _fix_nodes_for_layers(self):
+        """ fix LayerNodes to stop growing for this layer"""
+        self._nodes_fixed = True
 
     def _get_weights(self, var_name, shape, init=tl.initializers.random_normal()):
         """ Get trainable variables. """
@@ -376,16 +383,6 @@ class ModelLayer(Layer):
 
         self.model = model
 
-        # Layer input outputs
-        # if isinstance(model.inputs, list):
-        #     self.inputs = [t.outputs for t in model.inputs]
-        # else:
-        #     self.inputs = model.inputs.outputs
-        #
-        # self.outputs = model.forward(self.inputs)
-
-        # self._input_layer = model.inputs
-
         # Layer building state
         self._built = True
 
@@ -419,6 +416,11 @@ class ModelLayer(Layer):
         """ Set training/evaluation mode for the ModelLayer."""
         self.is_train = is_train
         return self.model._set_mode_for_layers(is_train)
+
+    def _fix_nodes_for_layers(self):
+        """ fix LayerNodes to stop growing for this ModelLayer."""
+        self._nodes_fixed = True
+        self.model._fix_nodes_for_layers()
 
     def _release_memory(self):
         """
@@ -542,6 +544,12 @@ class LayerList(Layer):
                 layer._set_mode_for_layers(is_train)
             else:
                 layer.is_train = is_train
+
+    def _fix_nodes_for_layers(self):
+        """ fix LayerNodes to stop growing for this LayerList."""
+        self._nodes_fixed = True
+        for layer in self.layers:
+            layer._fix_nodes_for_layers()
 
     def _release_memory(self):
         """

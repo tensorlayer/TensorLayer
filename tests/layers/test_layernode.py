@@ -138,6 +138,62 @@ class LayerNode_Test(CustomTestCase):
 
         self.assertEqual(len(out), 2)
 
+    def test_layerlist(self):
+        print('-' * 20, 'layerlist', '-' * 20)
+
+        class MyModel(Model):
+            def __init__(self):
+                super(MyModel, self).__init__()
+                self.layers = LayerList([
+                    Dense(50, in_channels=100),
+                    Dropout(0.9),
+                    Dense(10, in_channels=50)
+                ])
+
+            def forward(self, x):
+                return self.layers(x)
+
+        net = MyModel()
+        self.assertEqual(net._nodes_fixed, False)
+
+        data = np.random.normal(size=[4, 100]).astype(np.float32)
+        out = net(data, is_train=False)
+
+        self.assertEqual(net._nodes_fixed, True)
+        self.assertEqual(net.layers._nodes_fixed, True)
+        self.assertEqual(net.layers[0]._nodes_fixed, True)
+        self.assertEqual(net.layers[1]._nodes_fixed, True)
+        self.assertEqual(net.layers[2]._nodes_fixed, True)
+
+    def test_ModelLayer(self):
+        print('-' * 20, 'ModelLayer', '-' * 20)
+
+        def MyModel():
+            nii = Input(shape=[None, 100])
+            nn = Dense(50, in_channels=100)(nii)
+            nn = Dropout(0.9)(nn)
+            nn = Dense(10)(nn)
+            M = Model(inputs=nii, outputs=nn)
+            return M
+
+        mlayer = MyModel().as_layer()
+
+        ni = Input(shape=[None, 100])
+        nn = mlayer(ni)
+        nn = Dense(5)(nn)
+        net = Model(inputs=ni, outputs=nn)
+
+        self.assertEqual(net._nodes_fixed, True)
+
+        data = np.random.normal(size=[4, 100]).astype(np.float32)
+        out = net(data, is_train=False)
+
+        self.assertEqual(net._nodes_fixed, True)
+        self.assertEqual(net.all_layers[1]._nodes_fixed, True)
+        self.assertEqual(net.all_layers[1].model._nodes_fixed, True)
+        self.assertEqual(net.all_layers[1].model.all_layers[0]._nodes_fixed, True)
+
+
 if __name__ == '__main__':
 
     tl.logging.set_verbosity(tl.logging.DEBUG)
