@@ -25,10 +25,11 @@ After 5 epochs, you should get test accuracy around 90.3%.
 [3] https://www.tensorflow.org/api_guides/python/nn#Candidate_Sampling
 
 """
-import os
 import array
 import hashlib
+import os
 import time
+
 import numpy as np
 import tensorflow as tf
 
@@ -170,5 +171,3 @@ def train_test_and_save_model():
 
 if __name__ == '__main__':
     train_test_and_save_model()
-
-

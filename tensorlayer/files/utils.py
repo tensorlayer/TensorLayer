@@ -1,22 +1,30 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import os
-# import ast
-import sys
 import gzip
+import importlib
 import math
+import os
 import pickle
-import progressbar
 import re
 import shutil
+# import ast
+import sys
 import tarfile
 import time
 import zipfile
-import importlib
-import h5py
 
+import h5py
+import numpy as np
+import progressbar
+import scipy.io as sio
+import tensorflow as tf
 from six.moves import cPickle
+from tensorflow.python.platform import gfile
+
+import tensorlayer as tl
+from tensorlayer import logging, nlp, utils, visualize
+
 # from six.moves import zip
 
 if sys.version_info[0] == 2:
@@ -24,19 +32,8 @@ if sys.version_info[0] == 2:
 else:
     from urllib.request import urlretrieve
 
-import scipy.io as sio
-import numpy as np
-
-import tensorflow as tf
-from tensorflow.python.platform import gfile
 # import tensorflow.contrib.eager.python.saver as tfes
 # TODO: tf2.0 not stable, cannot import tensorflow.contrib.eager.python.saver
-
-import tensorlayer as tl
-from tensorlayer import logging
-from tensorlayer import nlp
-from tensorlayer import utils
-from tensorlayer import visualize
 
 __all__ = [
     'assign_weights',
@@ -93,9 +90,7 @@ def save_graph(network=None, name='graph.pkl'):
     >>> net = tl.files.load_graph('graph.pkl')
     """
     if network.outputs is None:
-        raise AssertionError(
-            "save_graph not support dynamic mode yet"
-        )
+        raise AssertionError("save_graph not support dynamic mode yet")
 
     logging.info("[*] Saving TL graph into {}".format(name))
     saved_file = dict()
@@ -217,6 +212,7 @@ def load_graph(name='graph.pkl'):
     from tensorlayer.models import Model
     M = Model(inputs=inputs, outputs=outputs, name=model_name)
     return M
+
 
 # Load dataset functions
 def load_mnist_dataset(shape=(-1, 784), path='data'):
@@ -1355,9 +1351,8 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     imgs_file_list = load_file_list(path=folder_imgs, regx='\\.jpg', printable=False)
     logging.info("[VOC] {} images found".format(len(imgs_file_list)))
 
-    imgs_file_list.sort(
-        key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-    )  # 2007_000027.jpg --> 2007000027
+    imgs_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+                       )  # 2007_000027.jpg --> 2007000027
 
     imgs_file_list = [os.path.join(folder_imgs, s) for s in imgs_file_list]
     # logging.info('IM',imgs_file_list[0::3333], imgs_file_list[-1])
@@ -1367,9 +1362,8 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         folder_semseg = os.path.join(path, extracted_filename, "SegmentationClass")
         imgs_semseg_file_list = load_file_list(path=folder_semseg, regx='\\.png', printable=False)
         logging.info("[VOC] {} maps for semantic segmentation found".format(len(imgs_semseg_file_list)))
-        imgs_semseg_file_list.sort(
-            key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-        )  # 2007_000032.png --> 2007000032
+        imgs_semseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+                                  )  # 2007_000032.png --> 2007000032
         imgs_semseg_file_list = [os.path.join(folder_semseg, s) for s in imgs_semseg_file_list]
         # logging.info('Semantic Seg IM',imgs_semseg_file_list[0::333], imgs_semseg_file_list[-1])
         # ======== 3. instance segmentation maps path list
@@ -1377,9 +1371,8 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         folder_insseg = os.path.join(path, extracted_filename, "SegmentationObject")
         imgs_insseg_file_list = load_file_list(path=folder_insseg, regx='\\.png', printable=False)
         logging.info("[VOC] {} maps for instance segmentation found".format(len(imgs_semseg_file_list)))
-        imgs_insseg_file_list.sort(
-            key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-        )  # 2007_000032.png --> 2007000032
+        imgs_insseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+                                  )  # 2007_000032.png --> 2007000032
         imgs_insseg_file_list = [os.path.join(folder_insseg, s) for s in imgs_insseg_file_list]
         # logging.info('Instance Seg IM',imgs_insseg_file_list[0::333], imgs_insseg_file_list[-1])
     else:
@@ -1392,9 +1385,8 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     logging.info(
         "[VOC] {} XML annotation files for bounding box and object class found".format(len(imgs_ann_file_list))
     )
-    imgs_ann_file_list.sort(
-        key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-    )  # 2007_000027.xml --> 2007000027
+    imgs_ann_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+                           )  # 2007_000027.xml --> 2007000027
     imgs_ann_file_list = [os.path.join(folder_ann, s) for s in imgs_ann_file_list]
     # logging.info('ANN',imgs_ann_file_list[0::3333], imgs_ann_file_list[-1])
 
@@ -1918,16 +1910,16 @@ def load_and_assign_npz_dict(name='model.npz', network=None, skip=False):
             if skip:
                 logging.warning("Weights named '%s' not found in network. Skip it." % key)
             else:
-                raise RuntimeError("Weights named '%s' not found in network. Hint: set argument skip=Ture "
-                                   "if you want to skip redundant or mismatch weights." % key)
+                raise RuntimeError(
+                    "Weights named '%s' not found in network. Hint: set argument skip=Ture "
+                    "if you want to skip redundant or mismatch weights." % key
+                )
         else:
             assign_tf_variable(network.weights[net_weights_name.index(key)], weights[key])
     logging.info("[*] Model restored from npz_dict %s" % name)
 
 
-def save_ckpt(
-        mode_name='model.ckpt', save_dir='checkpoint', var_list=None, global_step=None, printable=False
-):
+def save_ckpt(mode_name='model.ckpt', save_dir='checkpoint', var_list=None, global_step=None, printable=False):
     """Save parameters into `ckpt` file.
 
     Parameters
@@ -1952,8 +1944,10 @@ def save_ckpt(
     if var_list is None:
         if sess is None:
             # FIXME: not sure whether global variables can be accessed in eager mode
-            raise ValueError("If var_list is None, sess must be specified. "
-                             "In eager mode, can not access global variables easily. ")
+            raise ValueError(
+                "If var_list is None, sess must be specified. "
+                "In eager mode, can not access global variables easily. "
+            )
         var_list = []
 
     ckpt_file = os.path.join(save_dir, mode_name)
@@ -2020,8 +2014,10 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
     if var_list is None:
         if sess is None:
             # FIXME: not sure whether global variables can be accessed in eager mode
-            raise ValueError("If var_list is None, sess must be specified. "
-                             "In eager mode, can not access global variables easily. ")
+            raise ValueError(
+                "If var_list is None, sess must be specified. "
+                "In eager mode, can not access global variables easily. "
+            )
         var_list = []
 
     if is_latest:
@@ -2589,14 +2585,17 @@ def load_hdf5_to_weights_in_order(filepath, weights):
     try:
         weights_names = [n.decode('utf8') for n in f.attrs["weights_names"]]
     except Exception:
-        raise NameError("The loaded hdf5 file needs to have 'weights_names' as attributes. "
-                        "Please check whether this hdf5 file is saved from TL.")
+        raise NameError(
+            "The loaded hdf5 file needs to have 'weights_names' as attributes. "
+            "Please check whether this hdf5 file is saved from TL."
+        )
 
     if len(weights) != len(weights_names):
-        logging.warning("Number of weights mismatch."
-                     "Trying to load a weight file with " + str(len(weights)) +
-                     " weights into a model with " + str(len(weights_names)) +
-                     " weights.")
+        logging.warning(
+            "Number of weights mismatch."
+            "Trying to load a weight file with " + str(len(weights)) + " weights into a model with " +
+            str(len(weights_names)) + " weights."
+        )
 
     for idx, name in enumerate(weights_names):
         weights_val = np.asarray(f[name])
@@ -2629,12 +2628,16 @@ def load_hdf5_to_weights(filepath, weights, skip=False):
     try:
         weights_names = [n.decode('utf8') for n in f.attrs["weights_names"]]
     except Exception:
-        raise NameError("The loaded hdf5 file needs to have 'weights_names' as attributes. "
-                        "Please check whether this hdf5 file is saved from TL.")
+        raise NameError(
+            "The loaded hdf5 file needs to have 'weights_names' as attributes. "
+            "Please check whether this hdf5 file is saved from TL."
+        )
 
     if len(weights) != len(weights_names):
-        logging.warning("Number of weights mismatch. Trying to load a hdf5 file with {} weights elements"
-                        " into a model with {} weights elements.".format(len(weights_names), len(weights)))
+        logging.warning(
+            "Number of weights mismatch. Trying to load a hdf5 file with {} weights elements"
+            " into a model with {} weights elements.".format(len(weights_names), len(weights))
+        )
 
     net_weights_name = [w.name for w in weights]
 
@@ -2649,8 +2652,10 @@ def load_hdf5_to_weights(filepath, weights, skip=False):
             if skip:
                 logging.warning("Weights named '%s' not found in network. Skip it." % name)
             else:
-                raise RuntimeError("Weights named '%s' not found in network. Hint: set argument skip=Ture "
-                                   "if you want to skip redundant or mismatch weights." % name)
+                raise RuntimeError(
+                    "Weights named '%s' not found in network. Hint: set argument skip=Ture "
+                    "if you want to skip redundant or mismatch weights." % name
+                )
         else:
             weights_val = np.asarray(f[name])
             assign_tf_variable(weights[net_weights_name.index(name)], weights_val)

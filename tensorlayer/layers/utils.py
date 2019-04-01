@@ -3,13 +3,10 @@
 
 import numpy as np
 import tensorflow as tf
-
 from tensorflow.python.ops.rnn_cell import LSTMStateTuple
 
 from tensorlayer import logging
-
-from tensorlayer.decorators import deprecated
-from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import deprecated, deprecated_alias
 
 __all__ = [
     'cabs',
@@ -156,7 +153,7 @@ def get_variable_with_initializer(scope_name, var_name, shape, init=tf.compat.v1
     # var = tf.Variable(initial_value=initial_value, name=var_name)
     # FIXME: not sure whether this is correct?
     initial_value = init(shape=shape)
-    var = tf.Variable(initial_value=initial_value, name=var_name)#, **init_args)
+    var = tf.Variable(initial_value=initial_value, name=var_name)  #, **init_args)
 
     # else:
     #     with tf.variable_scope(scope_name, reuse=tf.AUTO_REUSE):

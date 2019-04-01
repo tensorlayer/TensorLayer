@@ -3,11 +3,9 @@
 
 import tensorflow as tf
 
-from tensorlayer.layers.core import Layer
-
 from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.layers.core import Layer
 
 __all__ = [
     'UpSampling2d',

@@ -7,17 +7,10 @@ import os
 import tensorflow as tf
 
 from tensorlayer import logging
-
-from tensorlayer.layers import Layer
-from tensorlayer.layers import BatchNormLayer
-from tensorlayer.layers import Conv2d
-from tensorlayer.layers import DepthwiseConv2d
-from tensorlayer.layers import FlattenLayer
-from tensorlayer.layers import GlobalMeanPool2d
-from tensorlayer.layers import InputLayer
-from tensorlayer.layers import ReshapeLayer
-
-from tensorlayer.files import maybe_download_and_extract, assign_weights, load_npz
+from tensorlayer.files import (assign_weights, load_npz, maybe_download_and_extract)
+from tensorlayer.layers import (
+    BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, InputLayer, Layer, ReshapeLayer
+)
 
 __all__ = [
     'MobileNetV1',

@@ -2,20 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 import tensorlayer as tl
+from tensorlayer import logging
+from tensorlayer.decorators import deprecated_alias
+from tensorlayer.layers.core import Layer
 
 # from tensorflow.python.ops import array_ops
 # from tensorflow.python.util.tf_inspect import getfullargspec
 # from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
 # from tensorflow.python.ops.rnn_cell import LSTMStateTuple
 
-from tensorlayer.layers.core import Layer
 # from tensorlayer.layers.core import LayersConfig
 # from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
-
-from tensorlayer import logging
-
-from tensorlayer.decorators import deprecated_alias
 
 # TODO: uncomment
 __all__ = [
@@ -92,7 +91,7 @@ class RNN(Layer):
             return_seq_2d=False,
             return_state=False,
             inputs_shape=None,
-            name=None, # 'rnn'
+            name=None,  # 'rnn'
     ):
 
         super(RNN, self).__init__(name=name)
@@ -106,16 +105,16 @@ class RNN(Layer):
             self.build(inputs_shape)
             self._built = True
 
-        logging.info(
-            "RNN %s: cell: %s, n_hidden: %s" %
-            (self.name, self.cell.__class__.__name__, self.cell.units)
-        )
+        logging.info("RNN %s: cell: %s, n_hidden: %s" % (self.name, self.cell.__class__.__name__, self.cell.units))
 
     def __repr__(self):
         s = ('{classname}(cell={cellname}, n_hidden={n_hidden}')
         s += ', name=\'{name}\''
         s += ')'
-        return s.format(classname=self.__class__.__name__, cellname=self.cell.__class__.__name__, n_hidden=self.cell.units, **self.__dict__)
+        return s.format(
+            classname=self.__class__.__name__, cellname=self.cell.__class__.__name__, n_hidden=self.cell.units,
+            **self.__dict__
+        )
 
     def build(self, inputs_shape):
         """
@@ -192,7 +191,9 @@ class RNN(Layer):
         else:
             return outputs
 
+
 # TODO: write tl.layers.SimpleRNN, tl.layers.GRU, tl.layers.LSTM
+
 
 class BiRNN(Layer):
     """
@@ -731,6 +732,7 @@ class ConvLSTM(Layer):
         self._add_layers(self.outputs)
         self._add_params(rnn_variables)
 
+
 @tf.function
 def retrieve_seq_length_op(data):
     """An op to compute the length of a sequence from input shape of [batch_size, n_step(max), n_features],
@@ -742,8 +744,9 @@ def retrieve_seq_length_op(data):
         [batch_size, n_step(max), n_features] with zero padding on right hand side.
 
     Examples
-    ---------
+    -----------
     Single feature
+
     >>> data = [[[1],[2],[0],[0],[0]],
     >>>         [[1],[2],[3],[0],[0]],
     >>>         [[1],[2],[6],[1],[0]]]
@@ -752,6 +755,7 @@ def retrieve_seq_length_op(data):
     [2 3 4]
 
     Multiple features
+
     >>> data = [[[1,2],[2,2],[1,2],[1,2],[0,0]],
     >>>          [[2,3],[2,4],[3,2],[0,0],[0,0]],
     >>>          [[3,3],[2,2],[5,3],[1,2],[0,0]]]
@@ -769,6 +773,7 @@ def retrieve_seq_length_op(data):
         length = tf.reduce_sum(input_tensor=used, axis=1)
 
         return tf.cast(length, tf.int32)
+
 
 @tf.function
 def retrieve_seq_length_op2(data):
@@ -791,6 +796,7 @@ def retrieve_seq_length_op2(data):
 
     """
     return tf.reduce_sum(input_tensor=tf.cast(tf.greater(data, tf.zeros_like(data)), tf.int32), axis=1)
+
 
 @tf.function
 def retrieve_seq_length_op3(data, pad_val=0):

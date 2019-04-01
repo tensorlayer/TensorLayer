@@ -1,15 +1,13 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import os
-
 import gzip
+import os
 import tarfile
 
 from tensorflow.python.platform import gfile
 
 from tensorlayer import logging
-
 from tensorlayer.files.utils import maybe_download_and_extract
 
 __all__ = ['load_wmt_en_fr_dataset']

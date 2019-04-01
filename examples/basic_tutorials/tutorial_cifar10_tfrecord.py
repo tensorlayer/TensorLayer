@@ -41,7 +41,9 @@ we run them inside 16 separate threads which continuously fill a TensorFlow queu
 
 import os
 import time
+
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import *
 

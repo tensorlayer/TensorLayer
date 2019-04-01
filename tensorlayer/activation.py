@@ -252,8 +252,10 @@ def sign(x):
        https://arxiv.org/abs/1602.02830
 
     """
+
     def grad(dy):
         return tf.clip_by_value(dy, -1, 1)
+
     return tf.sign(x, name='sign'), grad
 
 

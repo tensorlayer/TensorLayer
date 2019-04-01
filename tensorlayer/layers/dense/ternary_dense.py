@@ -3,15 +3,15 @@
 
 import tensorflow as tf
 
+from tensorlayer import logging
+from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
+from tensorlayer.layers.utils import compute_alpha, ternary_operation
+
 # from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer.layers.utils import compute_alpha
-from tensorlayer.layers.utils import ternary_operation
 
-from tensorlayer import logging
 
-from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'TernaryDense',

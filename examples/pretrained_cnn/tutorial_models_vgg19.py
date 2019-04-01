@@ -3,8 +3,10 @@
 """VGG-19 for ImageNet using TL models."""
 
 import time
+
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.models.imagenet_classes import class_names
 

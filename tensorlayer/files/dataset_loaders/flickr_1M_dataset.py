@@ -3,15 +3,10 @@
 
 import os
 
-from tensorlayer import logging
-from tensorlayer import visualize
-
-from tensorlayer.files.utils import del_file
-from tensorlayer.files.utils import folder_exists
-from tensorlayer.files.utils import load_file_list
-from tensorlayer.files.utils import load_folder_list
-from tensorlayer.files.utils import maybe_download_and_extract
-from tensorlayer.files.utils import read_file
+from tensorlayer import logging, visualize
+from tensorlayer.files.utils import (del_file, folder_exists, load_file_list,
+                                     load_folder_list,
+                                     maybe_download_and_extract, read_file)
 
 __all__ = ['load_flickr1M_dataset']
 

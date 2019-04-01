@@ -3,10 +3,9 @@
 
 import tensorflow as tf
 
-from tensorlayer.layers.core import Layer
-from tensorlayer.initializers import constant
-
 from tensorlayer import logging
+from tensorlayer.initializers import constant
+from tensorlayer.layers.core import Layer
 
 __all__ = [
     'Scale',
@@ -54,9 +53,7 @@ class Scale(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        self.scale = self._get_weights(
-            "scale", shape=[1], init=constant(value=self.init_scale)
-        )
+        self.scale = self._get_weights("scale", shape=[1], init=constant(value=self.init_scale))
 
     @tf.function
     def forward(self, inputs):
