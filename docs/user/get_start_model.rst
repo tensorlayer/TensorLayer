@@ -72,19 +72,76 @@ For example,
 Reuse weights
 =======================
 
-Siamese network
+For static model, call the layer multiple time in model creation
 
 .. code-block:: python
 
-  xxx
+  # create siamese network
+
+  def create_base_network(input_shape):
+        '''Base network to be shared (eq. to feature extraction).
+        '''
+        input = Input(shape=input_shape)
+        x = Flatten()(input)
+        x = Dense(128, act=tf.nn.relu)(x)
+        x = Dropout(0.9)(x)
+        x = Dense(128, act=tf.nn.relu)(x)
+        x = Dropout(0.9)(x)
+        x = Dense(128, act=tf.nn.relu)(x)
+        return Model(input, x)
+
+
+  def get_siamese_network(input_shape):
+        """Create siamese network with shared base network as layer
+        """
+        base_layer = create_base_network(input_shape).as_layer() # convert model as layer
+
+        ni_1 = Input(input_shape)
+        ni_2 = Input(input_shape)
+        nn_1 = base_layer(ni_1) # call base_layer twice
+        nn_2 = base_layer(ni_2)
+        return Model(inputs=[ni_1, ni_2], outputs=[nn_1, nn_2])
+
+  siamese_net = get_siamese_network([None, 784])
+
+For dynamic model, call the layer multiple time in forward function
+
+.. code-block:: python
+
+  class MyModel(Model):
+      def __init__(self):
+          super(MyModel, self).__init__()
+          self.dense_shared = Dense(n_units=800, act=tf.nn.relu, in_channels=784)
+          self.dense1 = Dense(n_units=10, act=tf.nn.relu, in_channels=800)
+          self.dense2 = Dense(n_units=10, act=tf.nn.relu, in_channels=800)
+          self.cat = Concat()
+
+      def forward(self, x):
+          x1 = self.dense_shared(x) # call dense_shared twice
+          x2 = self.dense_shared(x)
+          x1 = self.dense1(x1)
+          x2 = self.dense2(x2)
+          out = self.cat([x1, x2])
+          return out
+
+  model = MyModel()
 
 Print model information
 =======================
 
 .. code-block:: python
 
-  xxx
+  print(MLP) # simply call print function
 
+  # Model(
+  #   (_inputlayer): Input(shape=[None, 784], name='_inputlayer')
+  #   (dropout): Dropout(keep=0.8, name='dropout')
+  #   (dense): Dense(n_units=800, relu, in_channels='784', name='dense')
+  #   (dropout_1): Dropout(keep=0.8, name='dropout_1')
+  #   (dense_1): Dense(n_units=800, relu, in_channels='800', name='dense_1')
+  #   (dropout_2): Dropout(keep=0.8, name='dropout_2')
+  #   (dense_2): Dense(n_units=10, relu, in_channels='800', name='dense_2')
+  # )
 Get specific weights
 =======================
 
@@ -111,7 +168,8 @@ Save weights only
 
 .. code-block:: python
 
-  xxx
+  MLP.save_weights('./model_weights.h5') # by default, file will be in hdf5 format
+  MLP.load_weights('./model_weights.h5')
 
 Save weights and config
 ------------------------
