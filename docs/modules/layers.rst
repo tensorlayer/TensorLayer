@@ -171,7 +171,7 @@ Input Layers
 
 Input Layer
 ^^^^^^^^^^^^^^^^
-.. autoclass:: Input
+.. autofunction:: Input
 
 .. -----------------------------------------------------------
 ..                        Embedding Layers
