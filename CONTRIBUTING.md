@@ -1,11 +1,12 @@
 # TensorLayer Contributor Guideline
 
-* Welcome to contribute!
-* Continuous integration
-* Build from sources and Unittest
-
 ## Welcome to contribute!
 You are more than welcome to contribute to TensorLayer! If you have any improvement, please send us your [pull requests](https://help.github.com/en/articles/about-pull-requests). You may implement your improvement on your [folk](https://help.github.com/en/articles/working-with-forks).
+
+## Checklist
+* Continuous integration
+* Build from sources
+* Unittest
 
 ## Continuous integration
 
@@ -27,7 +28,7 @@ make format
 
 to apply those tools before submitting your PR.
 
-## Build from sources and Unittest
+## Build from sources
 
 ```bash
 # First clone the repository and change the current directory to the newly cloned repository
@@ -50,15 +51,42 @@ venv\Scripts\activate.bat
 
 # ============= IF TENSORFLOW IS NOT ALREADY INSTALLED ============= #
 
-# for a machine **without** an NVIDIA GPU
-pip install -e .[all_cpu_dev] --upgrade
+# basic installation
+pip install .
 
-# for a machine **with** an NVIDIA GPU
-pip install -e .[all_gpu_dev] --upgrade
+# advanced: for a machine **without** an NVIDIA GPU
+pip install -e .[all_cpu_dev]
+
+# advanced: for a machine **with** an NVIDIA GPU
+pip install -e .[all_gpu_dev]
 ```
 
-Launching the unittest:
+## Unittest
+
+Launching the unittest for a complete unittest:
 
 ```bash
+# install pytest
+pip install pytest
+
+# run pytest
 pytest
 ```
+
+Running your own unittest code on your implemented module:
+
+```bash
+# install coverage
+pip install coverage 
+
+cd /path/to/your/unittest/code
+# For example: cd tests/layers/
+
+# run unittest
+coverage run --source myproject.module -m unittest discover
+# For example: coverage run --source tensorlayer.layers -m unittest discover
+
+# generate html report
+coverage html
+```
+
