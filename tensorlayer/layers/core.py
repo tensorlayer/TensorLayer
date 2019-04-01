@@ -67,6 +67,7 @@ class Layer(object):
                 raise ValueError(
                     'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % name
                 )
+            _global_layer_name_dict[name] = 0
 
         self.name = name
 

@@ -28,38 +28,38 @@ class Laye_BatchNorm_Test(CustomTestCase):
         cls.x3 = tf.random.normal([batchsize] + x_3_input_shape[1:])
 
         ## Base
-        ni_1 = Input(x_1_input_shape, name='ni1')
+        ni_1 = Input(x_1_input_shape, name='test_ni1')
         nn_1 = Conv1d(
-            n_filter=32, filter_size=5, stride=2, name='conv1d'
+            n_filter=32, filter_size=5, stride=2, name='test_conv1d'
         )(ni_1)
-        n1_b = BatchNorm(name='conv')(nn_1)
+        n1_b = BatchNorm(name='test_conv')(nn_1)
         cls.n1_b = n1_b
-        cls.base_1d = Model(inputs=ni_1, outputs=n1_b, name='base_1d')
+        cls.base_1d = Model(inputs=ni_1, outputs=n1_b, name='test_base_1d')
 
-        ni_2 = Input(x_2_input_shape, name='ni2')
+        ni_2 = Input(x_2_input_shape, name='test_ni2')
         nn_2 = Conv2d(
-            n_filter=32, filter_size=(3, 3), strides=(2, 2), name='conv2d'
+            n_filter=32, filter_size=(3, 3), strides=(2, 2), name='test_conv2d'
         )(ni_2)
-        n2_b = BatchNorm2d(name='bn2d')(nn_2)
+        n2_b = BatchNorm2d(name='test_bn2d')(nn_2)
         cls.n2_b = n2_b
-        cls.base_2d = Model(inputs=ni_2, outputs=n2_b, name='base_2d')
+        cls.base_2d = Model(inputs=ni_2, outputs=n2_b, name='test_base_2d')
 
-        ni_3 = Input(x_3_input_shape, name='ni2')
+        ni_3 = Input(x_3_input_shape, name='test_ni2')
         nn_3 = Conv3d(
-            n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), name='conv3d'
+            n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), name='test_conv3d'
         )(ni_3)
-        n3_b = BatchNorm3d(name='bn3d')(nn_3)
+        n3_b = BatchNorm3d(name='test_bn3d')(nn_3)
         cls.n3_b = n3_b
-        cls.base_3d = Model(inputs=ni_3, outputs=n3_b, name='base_3d')
+        cls.base_3d = Model(inputs=ni_3, outputs=n3_b, name='test_base_3d')
 
         ## 1D ========================================================================
 
-        nin_1 = Input(x_1_input_shape, name='in1')
+        nin_1 = Input(x_1_input_shape, name='test_in1')
 
         n1 = Conv1d(
-            n_filter=32, filter_size=5, stride=2, name='conv1d'
+            n_filter=32, filter_size=5, stride=2, name='test_conv1d'
         )(nin_1)
-        n1 = BatchNorm1d(name='bn1d')(n1)
+        n1 = BatchNorm1d(name='test_bn1d')(n1)
 
         cls.n1 = n1
 
@@ -67,9 +67,9 @@ class Laye_BatchNorm_Test(CustomTestCase):
 
         class bn_1d_model(Model):
             def __init__(self):
-                super(bn_1d_model, self).__init__(name='bn_1d_model')
-                self.conv = Conv1d(n_filter=32, filter_size=5, stride=2, name='conv1d', in_channels=1)
-                self.bn = BatchNorm1d(num_features=32, name='bn1d')
+                super(bn_1d_model, self).__init__(name='test_bn_1d_model')
+                self.conv = Conv1d(n_filter=32, filter_size=5, stride=2, name='test_conv1d', in_channels=1)
+                self.bn = BatchNorm1d(num_features=32, name='test_bn1d')
 
             def forward(self, x):
                 x = self.bn(self.conv(x))
@@ -83,12 +83,12 @@ class Laye_BatchNorm_Test(CustomTestCase):
 
         ## 2D ========================================================================
 
-        nin_2 = Input(x_2_input_shape, name='in2')
+        nin_2 = Input(x_2_input_shape, name='test_in2')
 
         n2 = Conv2d(
-            n_filter=32, filter_size=(3, 3), strides=(2, 2), name='conv2d'
+            n_filter=32, filter_size=(3, 3), strides=(2, 2), name='test_conv2d'
         )(nin_2)
-        n2 = BatchNorm2d(name='bn2d')(n2)
+        n2 = BatchNorm2d(name='test_bn2d')(n2)
 
         cls.n2 = n2
 
@@ -96,9 +96,9 @@ class Laye_BatchNorm_Test(CustomTestCase):
 
         class bn_2d_model(Model):
             def __init__(self):
-                super(bn_2d_model, self).__init__(name='bn_2d_model')
-                self.conv = Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), name='conv2d', in_channels=3)
-                self.bn = BatchNorm2d(num_features=32, name='bn2d')
+                super(bn_2d_model, self).__init__(name='test_bn_2d_model')
+                self.conv = Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), name='test_conv2d', in_channels=3)
+                self.bn = BatchNorm2d(num_features=32, name='test_bn2d')
 
             def forward(self, x):
                 x = self.bn(self.conv(x))
@@ -112,12 +112,12 @@ class Laye_BatchNorm_Test(CustomTestCase):
 
         ## 3D ========================================================================
 
-        nin_3 = Input(x_3_input_shape, name='in3')
+        nin_3 = Input(x_3_input_shape, name='test_in3')
 
         n3 = Conv3d(
-            n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), name='conv3d'
+            n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), name='test_conv3d'
         )(nin_3)
-        n3 = BatchNorm3d(name='bn3d', act=tf.nn.relu)(n3)
+        n3 = BatchNorm3d(name='test_bn3d', act=tf.nn.relu)(n3)
 
         cls.n3 = n3
 
@@ -125,9 +125,9 @@ class Laye_BatchNorm_Test(CustomTestCase):
 
         class bn_3d_model(Model):
             def __init__(self):
-                super(bn_3d_model, self).__init__(name='bn_3d_model')
-                self.conv = Conv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), name='conv3d', in_channels=3)
-                self.bn = BatchNorm3d(num_features=32, name='bn3d')
+                super(bn_3d_model, self).__init__(name='test_bn_3d_model')
+                self.conv = Conv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), name='test_conv3d', in_channels=3)
+                self.bn = BatchNorm3d(num_features=32, name='test_bn3d')
 
             def forward(self, x):
                 x = self.bn(self.conv(x))
@@ -190,7 +190,7 @@ class Laye_BatchNorm_Test(CustomTestCase):
             print(e)
 
         try:
-            ni = Input([None, 100, 1], name='ni1')
+            ni = Input([None, 100, 1], name='test_ni1')
             bn = BatchNorm(decay=1.5)(ni)
         except Exception as e:
             self.assertIsInstance(e, ValueError)
