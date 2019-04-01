@@ -20,6 +20,7 @@
 import os, sys, datetime
 sys.path.insert(0, os.path.abspath("../"))  # Important
 sys.path.insert(0, os.path.abspath(os.path.join("..", "tensorlayer"))) # Important
+sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "tensorlayer"))) # Important for local docs
 
 from package_info import __shortversion__
 from package_info import __version__
@@ -460,7 +461,7 @@ epub_exclude_files = ['search.html']
 # If false, no index is generated.
 #
 # epub_use_index = True
-              
+
 pygments_style = 'sphinx'
 
 html_theme = "sphinx_rtd_theme"
