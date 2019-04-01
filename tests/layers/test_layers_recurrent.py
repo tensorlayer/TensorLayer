@@ -34,6 +34,7 @@ class Layer_RNN_Test(CustomTestCase):
         for i in range(cls.batch_size):
             cls.data_y[i] = np.matmul(map1, np.matmul(cls.data_x[i], map2))
 
+
     @classmethod
     def tearDownClass(cls):
         pass
@@ -53,6 +54,7 @@ class Layer_RNN_Test(CustomTestCase):
         optimizer = tf.optimizers.Adam(learning_rate=0.01)
 
         rnn_model.train()
+        assert rnnlayer.is_train
 
         for epoch in range(50):
             with tf.GradientTape() as tape:
@@ -119,6 +121,7 @@ class Layer_RNN_Test(CustomTestCase):
         print(rnn_model)
         optimizer = tf.optimizers.Adam(learning_rate=0.01)
         rnn_model.train()
+        assert rnn_model.rnnlayer.is_train
 
         for epoch in range(50):
             with tf.GradientTape() as tape:
@@ -163,7 +166,7 @@ class Layer_RNN_Test(CustomTestCase):
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
         rnnlayer = tl.layers.RNN(
             cell=tf.keras.layers.GRUCell(units=self.hidden_size, dropout=0.1),
-            return_last=True, return_seq_2d=False, return_state=True, name='lstmrnn'
+            return_last=True, return_seq_2d=False, return_state=True, name='grurnn'
         )
         rnn, rnn_state = rnnlayer(inputs)
         outputs = tl.layers.Dense(n_units=1)(rnn)
@@ -184,6 +187,70 @@ class Layer_RNN_Test(CustomTestCase):
 
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
+
+    def test_sequence_length(self):
+        data = [[[1],[2],[0],[0],[0]],
+                [[1],[2],[3],[0],[0]],
+                [[1],[2],[6],[1],[0]]]
+        data = tf.convert_to_tensor(data, dtype=tf.float32)
+        length = tl.layers.retrieve_seq_length_op(data)
+        print(length)
+        data = [[[1,2],[2,2],[1,2],[1,2],[0,0]],
+                 [[2,3],[2,4],[3,2],[0,0],[0,0]],
+                 [[3,3],[2,2],[5,3],[1,2],[0,0]]]
+        data = tf.convert_to_tensor(data, dtype=tf.float32)
+        length = tl.layers.retrieve_seq_length_op(data)
+        print(length)
+
+    def test_sequence_length2(self):
+        data = [[1,2,0,0,0],
+                [1,2,3,0,0],
+                [1,2,6,1,0]]
+        data = tf.convert_to_tensor(data, dtype=tf.float32)
+        length = tl.layers.retrieve_seq_length_op2(data)
+        print(length)
+
+    def test_sequence_length3(self):
+        data = [[[1],[2],[0],[0],[0]],
+                [[1],[2],[3],[0],[0]],
+                [[1],[2],[6],[1],[0]]]
+        data = tf.convert_to_tensor(data, dtype=tf.float32)
+        length = tl.layers.retrieve_seq_length_op3(data)
+        print(length)
+        data = [[[1,2],[2,2],[1,2],[1,2],[0,0]],
+                [[2,3],[2,4],[3,2],[0,0],[0,0]],
+                [[3,3],[2,2],[5,3],[1,2],[0,0]]]
+        data = tf.convert_to_tensor(data, dtype=tf.float32)
+        length = tl.layers.retrieve_seq_length_op3(data)
+        print(length)
+        data = [[1,2,0,0,0],
+                [1,2,3,0,0],
+                [1,2,6,1,0]]
+        data = tf.convert_to_tensor(data, dtype=tf.float32)
+        length = tl.layers.retrieve_seq_length_op3(data)
+        print(length)
+        data = [['hello','world','','',''],
+                ['hello','world','tensorlayer','',''],
+                ['hello','world','tensorlayer','2.0','']]
+        data = tf.convert_to_tensor(data, dtype=tf.string)
+        length = tl.layers.retrieve_seq_length_op3(data, pad_val='')
+        print(length)
+
+        try:
+            data = [1,2,0,0,0]
+            data = tf.convert_to_tensor(data, dtype=tf.float32)
+            length = tl.layers.retrieve_seq_length_op3(data)
+            print(length)
+        except Exception as e:
+            print(e)
+
+        try:
+            data = np.random.random([4,2,6,2])
+            data = tf.convert_to_tensor(data, dtype=tf.float32)
+            length = tl.layers.retrieve_seq_length_op3(data)
+            print(length)
+        except Exception as e:
+            print(e)
 
 if __name__ == '__main__':
 
