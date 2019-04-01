@@ -17,7 +17,7 @@ from tensorlayer.layers import DropoutLayer
 from tensorlayer.layers import GlobalMeanPool2d
 
 from tensorlayer.files import maybe_download_and_extract
-from tensorlayer.files import assign_params
+from tensorlayer.files import assign_weights
 from tensorlayer.files import load_npz
 
 __all__ = [
@@ -96,8 +96,8 @@ class SqueezeNetV1(Layer):
 
     @classmethod
     def squeezenetv1(cls, x, end_with='output', is_train=False, reuse=None):
-        with tf.variable_scope("squeezenetv1", reuse=reuse):
-            with tf.variable_scope("input"):
+        with tf.compat.v1.variable_scope("squeezenetv1", reuse=reuse):
+            with tf.compat.v1.variable_scope("input"):
                 n = InputLayer(x)
                 # n = Conv2d(n, 96, (7,7),(2,2),tf.nn.relu,'SAME',name='conv1')
                 n = Conv2d(n, 64, (3, 3), (2, 2), tf.nn.relu, 'SAME', name='conv1')
@@ -105,7 +105,7 @@ class SqueezeNetV1(Layer):
             if end_with in n.outputs.name:
                 return n
 
-            with tf.variable_scope("fire2"):
+            with tf.compat.v1.variable_scope("fire2"):
                 n = Conv2d(n, 16, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 64, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
@@ -113,7 +113,7 @@ class SqueezeNetV1(Layer):
             if end_with in n.outputs.name:
                 return n
 
-            with tf.variable_scope("fire3"):
+            with tf.compat.v1.variable_scope("fire3"):
                 n = Conv2d(n, 16, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 64, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
@@ -122,7 +122,7 @@ class SqueezeNetV1(Layer):
             if end_with in n.outputs.name:
                 return n
 
-            with tf.variable_scope("fire4"):
+            with tf.compat.v1.variable_scope("fire4"):
                 n = Conv2d(n, 32, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 128, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
@@ -130,7 +130,7 @@ class SqueezeNetV1(Layer):
             if end_with in n.outputs.name:
                 return n
 
-            with tf.variable_scope("fire5"):
+            with tf.compat.v1.variable_scope("fire5"):
                 n = Conv2d(n, 32, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 128, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
@@ -139,7 +139,7 @@ class SqueezeNetV1(Layer):
             if end_with in n.outputs.name:
                 return n
 
-            with tf.variable_scope("fire6"):
+            with tf.compat.v1.variable_scope("fire6"):
                 n = Conv2d(n, 48, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 192, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 192, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
@@ -147,7 +147,7 @@ class SqueezeNetV1(Layer):
             if end_with in n.outputs.name:
                 return n
 
-            with tf.variable_scope("fire7"):
+            with tf.compat.v1.variable_scope("fire7"):
                 n = Conv2d(n, 48, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 192, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 192, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
@@ -155,7 +155,7 @@ class SqueezeNetV1(Layer):
             if end_with in n.outputs.name:
                 return n
 
-            with tf.variable_scope("fire8"):
+            with tf.compat.v1.variable_scope("fire8"):
                 n = Conv2d(n, 64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 256, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 256, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
@@ -163,7 +163,7 @@ class SqueezeNetV1(Layer):
             if end_with in n.outputs.name:
                 return n
 
-            with tf.variable_scope("fire9"):
+            with tf.compat.v1.variable_scope("fire9"):
                 n = Conv2d(n, 64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 256, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 256, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
@@ -171,7 +171,7 @@ class SqueezeNetV1(Layer):
             if end_with in n.outputs.name:
                 return n
 
-            with tf.variable_scope("output"):
+            with tf.compat.v1.variable_scope("output"):
                 n = DropoutLayer(n, keep=0.5, is_fix=True, is_train=is_train, name='drop1')
                 n = Conv2d(n, 1000, (1, 1), (1, 1), padding='VALID', name='conv10')  # 13, 13, 1000
                 n = GlobalMeanPool2d(n)
@@ -187,5 +187,5 @@ class SqueezeNetV1(Layer):
             expected_bytes=7405613
         )  # ls -al
         params = load_npz(name=os.path.join(path, 'squeezenet.npz'))
-        assign_params(sess, params[:len(self.net.all_params)], self.net)
+        assign_weights(sess, params[:len(self.net.all_params)], self.net)
         del params

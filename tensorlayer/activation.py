@@ -25,6 +25,8 @@ __all__ = [
 def ramp(x, v_min=0, v_max=1, name=None):
     """Ramp activation function.
 
+    Reference: [tf.clip_by_value]<https://www.tensorflow.org/api_docs/python/tf/clip_by_value>
+
     Parameters
     ----------
     x : Tensor
@@ -68,7 +70,8 @@ def leaky_relu(x, alpha=0.2, name="leaky_relu"):
     Examples
     --------
     >>> import tensorlayer as tl
-    >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')
+    >>> net = tl.layers.Input([10, 200])
+    >>> net = tl.layers.Dense(n_units=100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')(net)
 
     Returns
     -------
@@ -83,7 +86,7 @@ def leaky_relu(x, alpha=0.2, name="leaky_relu"):
     if not (0 < alpha <= 1):
         raise ValueError("`alpha` value must be in [0, 1]`")
 
-    with tf.name_scope(name, "leaky_relu") as name_scope:
+    with tf.name_scope(name) as name_scope:
         x = tf.convert_to_tensor(x, name="features")
         return tf.maximum(x, alpha * x, name=name_scope)
 
@@ -114,7 +117,8 @@ def leaky_relu6(x, alpha=0.2, name="leaky_relu6"):
     Examples
     --------
     >>> import tensorlayer as tl
-    >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.leaky_relu6(x, 0.2), name='dense')
+    >>> net = tl.layers.Input([10, 200])
+    >>> net = tl.layers.Dense(n_units=100, act=lambda x : tl.act.leaky_relu6(x, 0.2), name='dense')(net)
 
     Returns
     -------
@@ -129,7 +133,7 @@ def leaky_relu6(x, alpha=0.2, name="leaky_relu6"):
     if not isinstance(alpha, tf.Tensor) and not (0 < alpha <= 1):
         raise ValueError("`alpha` value must be in [0, 1]`")
 
-    with tf.name_scope(name, "leaky_relu6") as name_scope:
+    with tf.name_scope(name) as name_scope:
         x = tf.convert_to_tensor(x, name="features")
         return tf.minimum(tf.maximum(x, alpha * x), 6, name=name_scope)
 
@@ -164,7 +168,8 @@ def leaky_twice_relu6(x, alpha_low=0.2, alpha_high=0.2, name="leaky_relu6"):
     Examples
     --------
     >>> import tensorlayer as tl
-    >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.leaky_twice_relu6(x, 0.2, 0.2), name='dense')
+    >>> net = tl.layers.Input([10, 200])
+    >>> net = tl.layers.Dense(n_units=100, act=lambda x : tl.act.leaky_twice_relu6(x, 0.2, 0.2), name='dense')(net)
 
     Returns
     -------
@@ -183,7 +188,7 @@ def leaky_twice_relu6(x, alpha_low=0.2, alpha_high=0.2, name="leaky_relu6"):
     if not isinstance(alpha_low, tf.Tensor) and not (0 < alpha_low <= 1):
         raise ValueError("`alpha_low` value must be in [0, 1]`")
 
-    with tf.name_scope(name, "leaky_twice_relu6") as name_scope:
+    with tf.name_scope(name) as name_scope:
         x = tf.convert_to_tensor(x, name="features")
 
         x_is_above_0 = tf.minimum(x, 6 * (1 - alpha_high) + alpha_high * x)
@@ -210,16 +215,18 @@ def swish(x, name='swish'):
         A ``Tensor`` in the same type as ``x``.
 
     """
+    # TODO: in this case, the beta = 1, but the beta can either be a constant or a trainable parameter
     with tf.name_scope(name):
         x = tf.nn.sigmoid(x) * x
     return x
 
 
-@tf.RegisterGradient("QuantizeGrad")
-def _sign_grad(unused_op, grad):
-    return tf.clip_by_value(grad, -1, 1)
+# @tf.RegisterGradient("QuantizeGrad")
+# def _sign_grad(unused_op, grad):
+#     return tf.clip_by_value(grad, -1, 1)
 
 
+@tf.custom_gradient
 def sign(x):
     """Sign function.
 
@@ -230,10 +237,6 @@ def sign(x):
     ----------
     x : Tensor
         input.
-
-    Examples
-    --------
-    >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')
 
     Returns
     -------
@@ -249,8 +252,9 @@ def sign(x):
        https://arxiv.org/abs/1602.02830
 
     """
-    with tf.get_default_graph().gradient_override_map({"Sign": "QuantizeGrad"}):
-        return tf.sign(x, name='sign')
+    def grad(dy):
+        return tf.clip_by_value(dy, -1, 1)
+    return tf.sign(x, name='sign'), grad
 
 
 # if tf.__version__ > "1.7":

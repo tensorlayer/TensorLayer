@@ -15,6 +15,7 @@ from .core import *
 from .dense import *
 from .dropout import *
 from .deprecated import *
+from .embedding import *
 from .extend import *
 # from .flow_control import * # remove for TF 2.0
 from .image_resampling import *
@@ -34,5 +35,5 @@ from .scale import *
 from .shape import *
 from .spatial_transformer import *
 from .stack import *
-from .time_distribution import *
+# from .time_distribution import * # remove for TF 2.0
 from .utils import *

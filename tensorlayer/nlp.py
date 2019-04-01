@@ -559,12 +559,13 @@ def read_analogies_file(eval_file='questions-words.txt', word2id=None):
 
     questions = []
     questions_skipped = 0
+
     with open(eval_file, "rb") as analogy_f:
         for line in analogy_f:
             if line.startswith(b":"):  # Skip comments.
                 continue
             words = line.strip().lower().split(b" ")  # lowercase
-            ids = [word2id.get(w.strip()) for w in words]
+            ids = [word2id.get(w.strip().decode()) for w in words]
             if None in ids or len(ids) != 4:
                 questions_skipped += 1
             else:

@@ -62,9 +62,9 @@ def activation_module(layer, activation_fn, leaky_relu_alpha=0.2, name=None):
 
 def conv_module(
         prev_layer, n_out_channel, filter_size, strides, padding, is_train=True, use_batchnorm=True, activation_fn=None,
-        conv_init=tf.contrib.layers.xavier_initializer(uniform=True),
-        batch_norm_init=tf.truncated_normal_initializer(mean=1.,
-                                                        stddev=0.02), bias_init=tf.zeros_initializer(), name=None
+        conv_init=tl.initializers.random_uniform(),
+        batch_norm_init=tl.initializers.truncated_normal(mean=1., stddev=0.02),
+        bias_init=tf.zeros_initializer(), name=None
 ):
 
     if activation_fn not in ["ReLU", "ReLU6", "Leaky_ReLU", "PReLU", "PReLU6", "PTReLU6", "CReLU", "ELU", "SELU",
@@ -99,9 +99,9 @@ def conv_module(
 
 def dense_module(
         prev_layer, n_units, is_train, use_batchnorm=True, activation_fn=None,
-        dense_init=tf.contrib.layers.xavier_initializer(uniform=True),
-        batch_norm_init=tf.truncated_normal_initializer(mean=1.,
-                                                        stddev=0.02), bias_init=tf.zeros_initializer(), name=None
+        dense_init=tl.initializers.random_uniform(),
+        batch_norm_init=tl.initializers.truncated_normal(mean=1., stddev=0.02),
+        bias_init=tf.zeros_initializer(), name=None
 ):
 
     if activation_fn not in ["ReLU", "ReLU6", "Leaky_ReLU", "PReLU", "PReLU6", "PTReLU6", "CReLU", "ELU", "SELU",

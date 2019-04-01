@@ -4,7 +4,7 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
+# from tensorlayer.layers.core import LayersConfig
 
 from tensorlayer import logging
 
@@ -31,18 +31,31 @@ class Dropout(Layer):
         A unique layer name.
 
     """
-    def __init__(self, keep, seed, name=None):  #"dropout"):
-        super().__init__(name)
+
+    def __init__(self, keep, seed=None, name=None):  #"dropout"):
+        super(Dropout, self).__init__(name)
         self.keep = keep
         self.seed = seed
+
+        self.build()
+        self._built = True
+
         logging.info("Dropout %s: keep: %f " % (self.name, self.keep))
 
-    def build(self, inputs):
+    def __repr__(self):
+        s = ('{classname}(keep={keep}')
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape=None):
         pass
 
-    def forward(self, inputs, train):
-        if train:
-            outputs = tf.nn.dropout(inputs, keep=self.keep, seed=self.seed, name=self.name)
+    @tf.function
+    def forward(self, inputs):
+        if self.is_train:
+            outputs = tf.nn.dropout(inputs, rate=1 - (self.keep), seed=self.seed, name=self.name)
         else:
             outputs = inputs
         return outputs

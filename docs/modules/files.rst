@@ -27,18 +27,12 @@ Load benchmark dataset, save and restore model, save and load variables.
 
    save_npz
    load_npz
-   assign_params
+   assign_weights
    load_and_assign_npz
    save_npz_dict
    load_and_assign_npz_dict
    save_ckpt
    load_ckpt
-
-..
-   save_graph
-   load_graph
-   save_graph_and_params
-   load_graph_and_params
 
    save_any_to_npy
    load_npy_to_any
@@ -54,6 +48,12 @@ Load benchmark dataset, save and restore model, save and load variables.
    maybe_download_and_extract
 
    natural_keys
+
+..
+   save_graph
+   load_graph
+   save_graph_and_params
+   load_graph_and_params
 
    npz_to_W_pdf
 
@@ -149,15 +149,15 @@ sake of cross-platform.
   tl.files.save_npz(network.all_params , name='model.npz')
   # restore model from .npz (method 1)
   load_params = tl.files.load_npz(name='model.npz')
-  tl.files.assign_params(sess, load_params, network)
+  tl.files.assign_weights(sess, load_params, network)
   # restore model from .npz (method 2)
   tl.files.load_and_assign_npz(sess=sess, name='model.npz', network=network)
 
   ## you can assign the pre-trained parameters as follow
   # 1st parameter
-  tl.files.assign_params(sess, [load_params[0]], network)
+  tl.files.assign_weights(sess, [load_params[0]], network)
   # the first three parameters
-  tl.files.assign_params(sess, load_params[:3], network)
+  tl.files.assign_weights(sess, load_params[:3], network)
 
 Save network into list (npz)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -169,7 +169,7 @@ Load network from list (npz)
 
 Assign a list of parameters to network
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: assign_params
+.. autofunction:: assign_weights
 
 Load and assign a list of parameters to network
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

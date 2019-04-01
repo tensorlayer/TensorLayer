@@ -1,6 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import numpy as np
 import tensorflow as tf
 
 from tensorflow.python.ops.rnn_cell import LSTMStateTuple
@@ -49,9 +50,10 @@ def compute_alpha(x):
         tf.greater(alpha_array_abs, 0), tf.ones_like(alpha_array_abs, tf.float32),
         tf.zeros_like(alpha_array_abs, tf.float32)
     )
-    alpha_sum = tf.reduce_sum(alpha_array_abs)
-    n = tf.reduce_sum(alpha_array_abs1)
-    alpha = tf.div(alpha_sum, n)
+    alpha_sum = tf.reduce_sum(input_tensor=alpha_array_abs)
+    n = tf.reduce_sum(input_tensor=alpha_array_abs1)
+    # alpha = tf.compat.v1.div(alpha_sum, n)
+    alpha = tf.math.divide(alpha_sum, n)
     return alpha
 
 
@@ -95,7 +97,7 @@ def flatten_reshape(variable, name='flatten'):
 
 def get_collection_trainable(name=''):
     variables = []
-    for p in tf.trainable_variables():
+    for p in tf.compat.v1.trainable_variables():
         # print(p.name.rpartition('/')[0], self.name)
         if p.name.rpartition('/')[0] == name:
             variables.append(p)
@@ -143,6 +145,25 @@ def get_layers_with_name(net, name="", verbose=False):
     return layers
 
 
+def get_variable_with_initializer(scope_name, var_name, shape, init=tf.compat.v1.initializers.random_normal()):
+    # FIXME: documentation needed
+    # if tf.executing_eagerly():
+    var_name = scope_name + "/" + var_name
+    # if init_args is not None and len(init_args) != 0:
+    #     initial_value = init(**init_args)(shape=shape)
+    # else:
+    #     initial_value = init()(shape=shape)
+    # var = tf.Variable(initial_value=initial_value, name=var_name)
+    # FIXME: not sure whether this is correct?
+    initial_value = init(shape=shape)
+    var = tf.Variable(initial_value=initial_value, name=var_name)#, **init_args)
+
+    # else:
+    #     with tf.variable_scope(scope_name, reuse=tf.AUTO_REUSE):
+    #         var = tf.get_variable(name=var_name, initializer=tf.zeros(shape), trainable=train)
+    return var
+
+
 @deprecated_alias(printable='verbose', end_support_version=1.9)  # TODO remove this line for the 1.9 release
 def get_variables_with_name(name=None, train_only=True, verbose=False):
     """Get a list of TensorFlow variables by a given name scope.
@@ -174,10 +195,10 @@ def get_variables_with_name(name=None, train_only=True, verbose=False):
 
     # tvar = tf.trainable_variables() if train_only else tf.all_variables()
     if train_only:
-        t_vars = tf.trainable_variables()
+        t_vars = tf.compat.v1.trainable_variables()
 
     else:
-        t_vars = tf.global_variables()
+        t_vars = tf.compat.v1.global_variables()
 
     d_vars = [var for var in t_vars if name in var.name]
 
@@ -188,7 +209,9 @@ def get_variables_with_name(name=None, train_only=True, verbose=False):
     return d_vars
 
 
-@deprecated(date="2018-09-30", instructions="This API is deprecated in favor of `sess.run(tf.global_variables_initializer())`")
+@deprecated(
+    date="2018-09-30", instructions="This API is deprecated in favor of `sess.run(tf.global_variables_initializer())`"
+)
 def initialize_global_variables(sess):
     """Initialize the global variables of TensorFlow.
 
@@ -204,7 +227,7 @@ def initialize_global_variables(sess):
     if sess is None:
         raise AssertionError('The session must be defined')
 
-    sess.run(tf.global_variables_initializer())
+    sess.run(tf.compat.v1.global_variables_initializer())
 
 
 def initialize_rnn_state(state, feed_dict=None):
@@ -321,11 +344,11 @@ def print_all_variables(train_only=False):
     """
     # tvar = tf.trainable_variables() if train_only else tf.all_variables()
     if train_only:
-        t_vars = tf.trainable_variables()
+        t_vars = tf.compat.v1.trainable_variables()
         logging.info("  [*] printing trainable variables")
 
     else:
-        t_vars = tf.global_variables()
+        t_vars = tf.compat.v1.global_variables()
         logging.info("  [*] printing global variables")
 
     for idx, v in enumerate(t_vars):
@@ -335,7 +358,7 @@ def print_all_variables(train_only=False):
 def quantize(x):
     # ref: https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L70
     #  https://github.com/itayhubara/BinaryNet.tf/blob/master/nnUtils.py
-    with tf.get_default_graph().gradient_override_map({"Sign": "TL_Sign_QuantizeGrad"}):
+    with tf.compat.v1.get_default_graph().gradient_override_map({"Sign": "TL_Sign_QuantizeGrad"}):
         return tf.sign(x)
 
 
@@ -346,12 +369,12 @@ def quantize_active(x, bitA):
 
 
 def quantize_weight(x, bitW, force_quantization=False):
-    G = tf.get_default_graph()
+    G = tf.compat.v1.get_default_graph()
     if bitW == 32 and not force_quantization:
         return x
     if bitW == 1:  # BWN
         with G.gradient_override_map({"Sign": "Identity"}):
-            E = tf.stop_gradient(tf.reduce_mean(tf.abs(x)))
+            E = tf.stop_gradient(tf.reduce_mean(input_tensor=tf.abs(x)))
             return tf.sign(x / E) * E
     x = tf.clip_by_value(x * 0.5 + 0.5, 0.0, 1.0)  # it seems as though most weights are within -1 to 1 region anyways
     return 2 * _quantize_dorefa(x, bitW) - 1
@@ -376,7 +399,7 @@ def set_name_reuse(enable=True):
 
 def ternary_operation(x):
     """Ternary operation use threshold computed with weights."""
-    g = tf.get_default_graph()
+    g = tf.compat.v1.get_default_graph()
     with g.gradient_override_map({"Sign": "Identity"}):
         threshold = _compute_threshold(x)
         x = tf.sign(tf.add(tf.sign(tf.add(x, threshold)), tf.sign(tf.add(x, -threshold))))
@@ -393,17 +416,17 @@ def _quantize_grad(op, grad):
 
 
 def _quantize_dorefa(x, k):
-    G = tf.get_default_graph()
+    G = tf.compat.v1.get_default_graph()
     n = float(2**k - 1)
     with G.gradient_override_map({"Round": "Identity"}):
         return tf.round(x * n) / n
 
 
 def _quantize_overflow(x, k):
-    G = tf.get_default_graph()
+    G = tf.compat.v1.get_default_graph()
     n = float(2**k - 1)
-    max_value = tf.reduce_max(x)
-    min_value = tf.reduce_min(x)
+    max_value = tf.reduce_max(input_tensor=x)
+    min_value = tf.reduce_min(input_tensor=x)
     with G.gradient_override_map({"Round": "Identity"}):
         step = tf.stop_gradient((max_value - min_value) / n)
         return tf.round((tf.maximum(tf.minimum(x, max_value), min_value) - min_value) / step) * step + min_value
@@ -414,7 +437,8 @@ def _compute_threshold(x):
     ref: https://github.com/XJTUWYD/TWN
     Computing the threshold.
     """
-    x_sum = tf.reduce_sum(tf.abs(x), reduction_indices=None, keepdims=False, name=None)
-    threshold = tf.div(x_sum, tf.cast(tf.size(x), tf.float32), name=None)
+    x_sum = tf.reduce_sum(input_tensor=tf.abs(x), axis=None, keepdims=False, name=None)
+    # threshold = tf.compat.v1.div(x_sum, tf.cast(tf.size(input=x), tf.float32), name=None)
+    threshold = tf.math.divide(x_sum, tf.cast(tf.size(input=x), tf.float32), name=None)
     threshold = tf.multiply(0.7, threshold, name=None)
     return threshold

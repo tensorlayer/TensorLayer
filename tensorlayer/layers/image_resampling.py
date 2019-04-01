@@ -47,7 +47,7 @@ class UpSampling2d(Layer):
             method=0,
             align_corners=False,
             data_format='channel_last',
-            name=None, #'upsample2d',
+            name=None,  #'upsample2d',
     ):
         # super(UpSampling2d, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
@@ -65,38 +65,37 @@ class UpSampling2d(Layer):
         if not isinstance(self.size, (list, tuple)) and len(self.size) == 2:
             raise AssertionError()
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         if self.data_format != 'channel_last':
             raise Exception("UpSampling2d tf.image.resize_images only support channel_last")
 
         # if len(self.inputs.get_shape()) == 3:
-        if inputs.shape.ndims == 3:
+        if len(inputs_shape) == 3:
             if self.is_scale:
-                input_shape = inputs.shape.as_list()
-                if input_shape[0] is not None:
-                    size_h = self.size[0] * input_shape[0]
+                # inputs_shape = inputs.shape.as_list()
+                if inputs_shape[0] is not None:
+                    size_h = self.size[0] * inputs_shape[0]
                 else:
-                    size_h = self.size[0] * tf.shape(inputs)[0]
-                if input_shape[1] is not None:
-                    size_w = self.size[1] * input_shape[1]
+                    size_h = self.size[0] * tf.shape(input=inputs)[0]
+                if inputs_shape[1] is not None:
+                    size_w = self.size[1] * inputs_shape[1]
                 else:
-                    size_w = self.size[1] * tf.shape(inputs)[1]
+                    size_w = self.size[1] * tf.shape(input=inputs)[1]
                 self.size = [size_h, size_w]
 
         # elif len(self.inputs.get_shape()) == 4:
-        elif inputs.shape.ndims == 4:
+        elif len(inputs_shape) == 4:
             if self.is_scale:
-                input_shape = inputs.shape.as_list()
-                if input_shape[1] is not None:
-                    size_h = self.size[0] * input_shape[1]
+                # inputs_shape = inputs.shape.as_list()
+                if inputs_shape[1] is not None:
+                    size_h = self.size[0] * inputs_shape[1]
                 else:
-                    size_h = self.size[0] * tf.shape(inputs)[1]
-                if input_shape[2] is not None:
-                    size_w = self.size[1] * input_shape[2]
+                    size_h = self.size[0] * tf.shape(input=inputs)[1]
+                if inputs_shape[2] is not None:
+                    size_w = self.size[1] * inputs_shape[2]
                 else:
-                    size_w = self.size[1] * tf.shape(inputs)[2]
+                    size_w = self.size[1] * tf.shape(input=inputs)[2]
                 self.size = [size_h, size_w]
-
         else:
             raise Exception("Donot support shape %s" % str(inputs.shape.as_list()))
 
@@ -108,9 +107,7 @@ class UpSampling2d(Layer):
         prev_layer : :class:`Layer`
             Previous layer with 4-D Tensor of the shape (batch, height, width, channels) or 3-D Tensor of the shape (height, width, channels).
         """
-        outputs = tf.image.resize_images(
-                inputs, size=self.size, method=self.method, align_corners=self.align_corners
-            )
+        outputs = tf.image.resize(inputs, size=self.size, method=self.method, align_corners=self.align_corners)
         return outputs
 
 
@@ -164,36 +161,36 @@ class DownSampling2d(Layer):
         if not isinstance(self.size, (list, tuple)) and len(self.size) == 2:
             raise AssertionError()
 
-    def build(self, inputs):
+    def build(self, inputs_shape):
         if self.data_format != 'channel_last':
             raise Exception("DownSampling2d tf.image.resize_images only support channel_last")
 
-        # if len(self.inputs.get_shape()) == 3:
-        if inputs.shape.ndims == 3:
+        if len(inputs_shape) == 3:
+            # if inputs.shape.ndims == 3:
             if self.is_scale:
-                input_shape = inputs.shape.as_list()
-                if input_shape[1] is not None:
-                    size_h = self.size[0] * input_shape[0]
+                # inputs_shape = inputs.shape.as_list()
+                if inputs_shape[1] is not None:
+                    size_h = self.size[0] * inputs_shape[0]
                 else:
-                    size_h = self.size[0] * tf.shape(inputs)[0]
-                if input_shape[1] is not None:
-                    size_w = self.size[1] * input_shape[1]
+                    size_h = self.size[0] * tf.shape(input=inputs)[0]
+                if inputs_shape[1] is not None:
+                    size_w = self.size[1] * inputs_shape[1]
                 else:
-                    size_w = self.size[1] * tf.shape(inputs)[1]
+                    size_w = self.size[1] * tf.shape(input=inputs)[1]
                 self.size = [size_h, size_w]
 
-        # elif len(self.inputs.get_shape()) == 4:
-        elif inputs.shape.ndims == 4:
+        elif len(inputs_shape) == 4:
+            # elif inputs.shape.ndims == 4:
             if self.is_scale:
-                input_shape = inputs.shape.as_list()
-                if input_shape[1] is not None:
-                    size_h = self.size[0] * input_shape[1]
+                # inputs_shape = inputs.shape.as_list()
+                if inputs_shape[1] is not None:
+                    size_h = self.size[0] * inputs_shape[1]
                 else:
-                    size_h = self.size[0] * tf.shape(inputs)[1]
-                if input_shape[2] is not None:
-                    size_w = self.size[1] * input_shape[2]
+                    size_h = self.size[0] * tf.shape(input=inputs)[1]
+                if inputs_shape[2] is not None:
+                    size_w = self.size[1] * inputs_shape[2]
                 else:
-                    size_w = self.size[1] * tf.shape(inputs)[2]
+                    size_w = self.size[1] * tf.shape(input=inputs)[2]
                 self.size = [size_h, size_w]
 
         else:
@@ -207,7 +204,5 @@ class DownSampling2d(Layer):
         prev_layer : :class:`Layer`
             Previous layer with 4-D Tensor of the shape (batch, height, width, channels) or 3-D Tensor of the shape (height, width, channels).
         """
-        outputs = tf.image.resize_images(
-            inputs, size=self.size, method=self.method, align_corners=self.align_corners
-        )
+        outputs = tf.image.resize(inputs, size=self.size, method=self.method, align_corners=self.align_corners)
         return outputs

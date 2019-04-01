@@ -28,14 +28,19 @@ to the library as a developer.
 
 .. toctree::
   :maxdepth: 2
-  :caption: Starting with TensorLayer
 
   user/installation
-  user/tutorials
   user/examples
   user/contributing
   user/get_involved
   user/faq
+
+.. toctree::
+  :maxdepth: 2
+  :caption: Getting started
+
+  user/get_start_model
+  user/get_start_advance
 
 API Reference
 -------------

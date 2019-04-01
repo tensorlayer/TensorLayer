@@ -31,13 +31,15 @@ The episode ends when the pole is more than 15 degrees from vertical, or the
 cart moves more than 2.4 units from the center.
 
 """
+import tensorflow as tf
+
+## enable eager mode
+tf.enable_eager_execution()
 
 import time
-import numpy as np
-import tensorflow as tf
 import gym
+import numpy as np
 import tensorlayer as tl
-from tensorlayer.layers import DenseLayer, InputLayer
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -71,29 +73,38 @@ print("num of actions: %d" % N_A)  # 2 : left or right
 
 class Actor(object):
 
-    def __init__(self, sess, n_features, n_actions, lr=0.001):
-        self.sess = sess
-        self.s = tf.placeholder(tf.float32, [1, n_features], "state")
-        self.a = tf.placeholder(tf.int32, [None], "act")
-        self.td_error = tf.placeholder(tf.float32, [None], "td_error")  # TD_error
+    def __init__(self, n_features, n_actions, lr=0.001):
+            # self.sess = sess
+            # self.s = tf.placeholder(tf.float32, [1, n_features], "state")
+            # self.a = tf.placeholder(tf.int32, [None], "act")
+            # self.td_error = tf.placeholder(tf.float32, [None], "td_error")  # TD_error
 
-        with tf.variable_scope('Actor'):  # Policy network
-            n = InputLayer(self.s, name='in')
-            n = DenseLayer(n, n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')
-            # n = DenseLayer(n, n_units=10, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')
-            n = DenseLayer(n, n_units=n_actions, name='Pi')
-            self.acts_logits = n.outputs
-            self.acts_prob = tf.nn.softmax(self.acts_logits)
+            # with tf.variable_scope('Actor'):  # Policy network
+            #     n = InputLayer(self.s, name='in')
+            #     n = DenseLayer(n, n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')
+            #     # n = DenseLayer(n, n_units=10, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')
+            #     n = DenseLayer(n, n_units=n_actions, name='Pi')
 
-        # Hao Dong
-        with tf.variable_scope('loss'):
-            self.exp_v = tl.rein.cross_entropy_reward_loss(
-                logits=self.acts_logits, actions=self.a, rewards=self.td_error, name='actor_weighted_loss'
-            )
+        def get_model(inputs_shape):
+            ni = tl.layers.Input(inputs_shape, name='state')
+            nn = tl.layers.Dense(n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')(ni)
+            nn = tl.layers.Dense(n_units=10, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')(nn)
+            nn = tl.layers.Dense(n_units=n_actions, name='actions')(nn)
+            return tl.models.Model(inputs=ni, outputs=nn, name="Actor")
+        self.model = get_model([1, n_features])
+        self.model.train()
+            # self.acts_logits = n.outputs
+            # self.acts_prob = tf.nn.softmax(self.acts_logits)
 
-        with tf.variable_scope('train'):
-            self.train_op = tf.train.AdamOptimizer(lr).minimize(self.exp_v)
+            # Hao Dong
+            # with tf.variable_scope('loss'):
+            #     self.exp_v = tl.rein.cross_entropy_reward_loss(
+            #         logits=self.acts_logits, actions=self.a, rewards=self.td_error, name='actor_weighted_loss'
+            #     )
 
+            # with tf.variable_scope('train'):
+            #     self.train_op = tf.train.AdamOptimizer(lr).minimize(self.exp_v)
+        self.optimizer = tf.train.AdamOptimizer(lr)
         # Morvan Zhou (the same)
         # with tf.variable_scope('exp_v'):
         #     # log_prob = tf.log(self.acts_prob[0, self.a[0]])
@@ -104,61 +115,80 @@ class Actor(object):
         #     self.train_op = tf.train.AdamOptimizer(lr).minimize(-self.exp_v)  # minimize(-exp_v) = maximize(exp_v)
 
     def learn(self, s, a, td):
-        _, exp_v = self.sess.run([self.train_op, self.exp_v], {self.s: [s], self.a: [a], self.td_error: td[0]})
-        return exp_v
+            # _, exp_v = self.sess.run([self.train_op, self.exp_v], {self.s: [s], self.a: [a], self.td_error: td[0]})
+        with tf.GradientTape() as tape:
+            _logits = self.model([s]).outputs
+            # _probs = tf.nn.softmax(_logits)
+            _exp_v = tl.rein.cross_entropy_reward_loss(logits=_logits, actions=[a], rewards=td[0])
+        grad = tape.gradient(_exp_v, self.model.weights)
+        self.optimizer.apply_gradients(zip(grad, self.model.weights))
+        return _exp_v
 
     def choose_action(self, s):
-        probs = self.sess.run(self.acts_prob, {self.s: [s]})  # get probabilities of all actions
-        return tl.rein.choice_action_by_probs(probs.ravel())
+            # probs = self.sess.run(self.acts_prob, {self.s: [s]})  # get probabilities of all actions
+        _logits = self.model([s]).outputs
+        _probs = tf.nn.softmax(_logits).numpy()
+        return tl.rein.choice_action_by_probs(_probs.ravel())
 
     def choose_action_greedy(self, s):
-        probs = self.sess.run(self.acts_prob, {self.s: [s]})  # get probabilities of all actions
-        return np.argmax(probs.ravel())
+            # probs = self.sess.run(self.acts_prob, {self.s: [s]})  # get probabilities of all actions
+        _logits = self.model([s]).outputs
+        _probs = tf.nn.softmax(_logits).numpy()
+        return np.argmax(_probs.ravel())
 
 
 class Critic(object):
 
-    def __init__(self, sess, n_features, lr=0.01):
-        self.sess = sess
-        self.s = tf.placeholder(tf.float32, [1, n_features], "state")
-        self.v_ = tf.placeholder(tf.float32, [1, 1], "v_next")
-        self.r = tf.placeholder(tf.float32, None, 'r')
+    def __init__(self, n_features, lr=0.01):
+            # self.sess = sess
+            # self.s = tf.placeholder(tf.float32, [1, n_features], "state")
+            # self.v_ = tf.placeholder(tf.float32, [1, 1], "v_next")
+            # self.r = tf.placeholder(tf.float32, None, 'r')
 
-        with tf.variable_scope('Critic'):  # we use Value-function here, not Action-Value-function
-            n = InputLayer(self.s, name='in')
-            n = DenseLayer(n, n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')
-            # n = DenseLayer(n, n_units=5, act=tf.nn.relu, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')
-            n = DenseLayer(n, n_units=1, act=None, name='V')
-            self.v = n.outputs
-
-        with tf.variable_scope('squared_TD_error'):
-            # TD_error = r + lambd * V(newS) - V(S)
-            self.td_error = self.r + LAMBDA * self.v_ - self.v
-            self.loss = tf.square(self.td_error)
-
-        with tf.variable_scope('train'):
-            self.train_op = tf.train.AdamOptimizer(lr).minimize(self.loss)
+            # with tf.variable_scope('Critic'):  # we use Value-function here, not Action-Value-function
+            #     n = InputLayer(self.s, name='in')
+            #     n = DenseLayer(n, n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')
+            #     # n = DenseLayer(n, n_units=5, act=tf.nn.relu, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')
+            #     n = DenseLayer(n, n_units=1, act=None, name='V')
+            #     self.v = n.outputs
+        def get_model(inputs_shape):
+            ni = tl.layers.Input(inputs_shape, name='state')
+            nn = tl.layers.Dense(n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')(ni)
+            nn = tl.layers.Dense(n_units=5, act=tf.nn.relu, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')(nn)
+            nn = tl.layers.Dense(n_units=1, act=None, name='value')(nn)
+            return tl.models.Model(inputs=ni, outputs=nn, name="Critic")
+        self.model = get_model([1, n_features])
+        self.model.train()
+            # with tf.variable_scope('squared_TD_error'):
+            #     # TD_error = r + lambd * V(newS) - V(S)
+            #     self.td_error = self.r + LAMBDA * self.v_ - self.v
+            #     self.loss = tf.square(self.td_error)
+            # with tf.variable_scope('train'):
+                # self.train_op = tf.train.AdamOptimizer(lr).minimize(self.loss)
+        self.optimizer = tf.train.AdamOptimizer(lr)
 
     def learn(self, s, r, s_):
-        v_ = self.sess.run(self.v, {self.s: [s_]})
-        td_error, _ = self.sess.run([self.td_error, self.train_op], {self.s: [s], self.v_: v_, self.r: r})
+            # v_ = self.sess.run(self.v, {self.s: [s_]})
+        v_ = self.model([s_]).outputs
+            # td_error, _ = self.sess.run([self.td_error, self.train_op], {self.s: [s], self.v_: v_, self.r: r})
+        with tf.GradientTape() as tape:
+            v = self.model([s]).outputs
+            # TD_error = r + lambd * V(newS) - V(S)
+            td_error = r + LAMBDA * v_ - v
+            loss = tf.square(td_error)
+        grad = tape.gradient(loss, self.model.weights)
+        self.optimizer.apply_gradients(zip(grad, self.model.weights))
+
         return td_error
 
-
-sess = tf.Session()
-
-actor = Actor(sess, n_features=N_F, n_actions=N_A, lr=LR_A)
+actor = Actor(n_features=N_F, n_actions=N_A, lr=LR_A)
 # we need a good teacher, so the teacher should learn faster than the actor
-critic = Critic(sess, n_features=N_F, lr=LR_C)
+critic = Critic(n_features=N_F, lr=LR_C)
 
-tl.layers.initialize_global_variables(sess)
-
-if OUTPUT_GRAPH:
-    tf.summary.FileWriter("logs/", sess.graph)
 
 for i_episode in range(MAX_EPISODE):
     episode_time = time.time()
-    s = env.reset()
+    s = env.reset().astype(np.float32)
     t = 0  # number of step in this episode
     all_r = []  # rewards of all steps
     while True:
@@ -167,6 +197,7 @@ for i_episode in range(MAX_EPISODE):
         a = actor.choose_action(s)
 
         s_new, r, done, info = env.step(a)
+        s_new = s_new.astype(np.float32)
 
         if done: r = -20
         # these may helpful in some tasks
@@ -199,18 +230,18 @@ for i_episode in range(MAX_EPISODE):
             # Early Stopping for quick check
             if t >= MAX_EP_STEPS:
                 print("Early Stopping")
-                s = env.reset()
+                s = env.reset().astype(np.float32)
                 rall = 0
                 while True:
                     env.render()
                     # a = actor.choose_action(s)
                     a = actor.choose_action_greedy(s)  # Hao Dong: it is important for this task
                     s_new, r, done, info = env.step(a)
-                    s_new = np.concatenate((s_new[0:N_F], s[N_F:]), axis=0)
+                    s_new = np.concatenate((s_new[0:N_F], s[N_F:]), axis=0).astype(np.float32)
                     rall += r
                     s = s_new
                     if done:
                         print("reward", rall)
-                        s = env.reset()
+                        s = env.reset().astype(np.float32)
                         rall = 0
             break

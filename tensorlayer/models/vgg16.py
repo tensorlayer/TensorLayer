@@ -6,8 +6,8 @@ VGG-16 for ImageNet.
 Introduction
 ----------------
 VGG is a convolutional neural network model proposed by K. Simonyan and A. Zisserman
-from the University of Oxford in the paper “Very Deep Convolutional Networks for
-Large-Scale Image Recognition”  . The model achieves 92.7% top-5 test accuracy in ImageNet,
+from the University of Oxford in the paper "Very Deep Convolutional Networks for
+Large-Scale Image Recognition"  . The model achieves 92.7% top-5 test accuracy in ImageNet,
 which is a dataset of over 14 million images belonging to 1000 classes.
 
 Download Pre-trained Model
@@ -28,192 +28,143 @@ feeding images of multiple sizes is by doing center cropping.
 import os
 import numpy as np
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer import logging
 
 from tensorlayer.layers import Conv2d
-from tensorlayer.layers import DenseLayer
-from tensorlayer.layers import FlattenLayer
-from tensorlayer.layers import InputLayer
+from tensorlayer.layers import Dense
+from tensorlayer.layers import Flatten
+from tensorlayer.layers import Input
 from tensorlayer.layers import MaxPool2d
+from tensorlayer.layers import LayerList
+from tensorlayer.models import Model
 
 from tensorlayer.files import maybe_download_and_extract
-from tensorlayer.files import assign_params
+from tensorlayer.files import assign_weights
 
 __all__ = [
     'VGG16',
 ]
 
 
-class VGG16Base(object):
-    """The VGG16 model."""
-
-    @staticmethod
-    def vgg16_simple_api(net_in, end_with):
-        with tf.name_scope('preprocess'):
-            # Notice that we include a preprocessing layer that takes the RGB image
-            # with pixels values in the range of 0-255 and subtracts the mean image
-            # values (calculated over the entire ImageNet training set).
-
-            # Rescale the input tensor with pixels values in the range of 0-255
-            net_in.outputs = net_in.outputs * 255.0
-
-            mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
-            net_in.outputs = net_in.outputs - mean
-
-        layers = [
-            # conv1
-            lambda net: Conv2d(
-                net_in, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1'
-            ),
-            lambda net: Conv2d(
-                net, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2'
-            ),
-            lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1'),
-
-            # conv2
-            lambda net: Conv2d(
-                net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_1'
-            ),
-            lambda net: Conv2d(
-                net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_2'
-            ),
-            lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2'),
-
-            # conv3
-            lambda net: Conv2d(
-                net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_1'
-            ),
-            lambda net: Conv2d(
-                net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_2'
-            ),
-            lambda net: Conv2d(
-                net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_3'
-            ),
-            lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool3'),
-
-            # conv4
-            lambda net: Conv2d(
-                net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1'
-            ),
-            lambda net: Conv2d(
-                net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2'
-            ),
-            lambda net: Conv2d(
-                net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_3'
-            ),
-            lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool4'),
-
-            # conv5
-            lambda net: Conv2d(
-                net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_1'
-            ),
-            lambda net: Conv2d(
-                net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_2'
-            ),
-            lambda net: Conv2d(
-                net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_3'
-            ),
-            lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5'),
-            lambda net: FlattenLayer(net, name='flatten'),
-            lambda net: DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu'),
-            lambda net: DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc2_relu'),
-            lambda net: DenseLayer(net, n_units=1000, name='fc3_relu'),
-        ]
-        net = net_in
-        for l in layers:
-            net = l(net)
-            # if end_with in net.name:
-            if net.name.endswith(end_with):
-                return net
-
-        raise Exception("unknown layer name (end_with): {}".format(end_with))
-
-    def restore_params(self, sess):
-        logging.info("Restore pre-trained parameters")
-        maybe_download_and_extract(
-            'vgg16_weights.npz', 'models', 'http://www.cs.toronto.edu/~frossard/vgg16/', expected_bytes=553436134
-        )
-        npz = np.load(os.path.join('models', 'vgg16_weights.npz'))
-
-        params = []
-        for val in sorted(npz.items()):
-            logging.info("  Loading params %s" % str(val[1].shape))
-            params.append(val[1])
-            if len(self.all_params) == len(params):
-                break
-
-        assign_params(sess, params, self.net)
-        del params
-
-
-class VGG16(VGG16Base):
+class VGG16(Model):
     """Pre-trained VGG-16 model.
 
     Parameters
     ------------
-    x : placeholder
-        shape [None, 224, 224, 3], value range [0, 1].
     end_with : str
         The end point of the model. Default ``fc3_relu`` i.e. the whole model.
-    reuse : boolean
-        Whether to reuse the model.
+    name : None or str
+        A unique layer name.
 
     Examples
     ---------
     Classify ImageNet classes with VGG16, see `tutorial_models_vgg16.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_vgg16.py>`__
+    With TensorLayer
 
-    >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get the whole model
-    >>> vgg = tl.models.VGG16(x)
+    >>> vgg = tl.models.VGG16()
     >>> # restore pre-trained VGG parameters
-    >>> sess = tf.InteractiveSession()
-    >>> vgg.restore_params(sess)
+    >>> vgg.restore_weights()
     >>> # use for inferencing
-    >>> probs = tf.nn.softmax(vgg.outputs)
+    >>> probs = tf.nn.softmax(output)[0].numpy()
 
     Extract features with VGG16 and Train a classifier with 100 classes
 
-    >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get VGG without the last layer
-    >>> vgg = tl.models.VGG16(x, end_with='fc2_relu')
+    >>> vgg = tl.models.VGG16(end_with='fc2_relu')
     >>> # add one more layer
-    >>> net = tl.layers.DenseLayer(vgg, 100, name='out')
-    >>> # initialize all parameters
-    >>> sess = tf.InteractiveSession()
-    >>> tl.layers.initialize_global_variables(sess)
+    >>> net = tl.layers.Dense(n_units=100, name='out')(vgg)
     >>> # restore pre-trained VGG parameters
-    >>> vgg.restore_params(sess)
+    >>> vgg.restore_weights()
     >>> # train your own classifier (only update the last layer)
     >>> train_params = tl.layers.get_variables_with_name('out')
 
     Reuse model
 
-    >>> x1 = tf.placeholder(tf.float32, [None, 224, 224, 3])
-    >>> x2 = tf.placeholder(tf.float32, [None, 224, 224, 3])
-    >>> # get VGG without the last layer
-    >>> vgg1 = tl.models.VGG16(x1, end_with='fc2_relu')
-    >>> # reuse the parameters of vgg1 with different input
-    >>> vgg2 = tl.models.VGG16(x2, end_with='fc2_relu', reuse=True)
-    >>> # restore pre-trained VGG parameters (as they share parameters, we don’t need to restore vgg2)
-    >>> sess = tf.InteractiveSession()
-    >>> vgg1.restore_params(sess)
+    >>> # in dynamic mode, we can directly use the same model
+    >>> # in static mode
+    >>> vgg_layer = tl.models.VGG16.as_layer()
+    >>> ni_1 = tl.layers.Input([None, 224, 244, 3])
+    >>> ni_2 = tl.layers.Input([None, 224, 244, 3])
+    >>> a_1 = vgg_layer(ni_1)
+    >>> a_2 = vgg_layer(ni_2)
+    >>> M = Model(inputs=[ni_1, ni_2], outputs=[a_1, a_2])
 
     """
 
-    def __init__(self, x, end_with='fc3_relu', reuse=None):
-        with tf.variable_scope("vgg16", reuse=reuse):
-            scope_name = tf.get_variable_scope().name
-            self.name = scope_name + '/vgg16' if scope_name else '/vgg16'
+    def __init__(self, end_with='outputs', name=None):
+        super(VGG16, self).__init__(name=name)
+        self.end_with = end_with
 
-            net = InputLayer(x, name='input')
-            self.net = VGG16Base.vgg16_simple_api(net, end_with)
+        self.layer_names = ['conv1_1', 'conv1_2', 'pool1', 'conv2_1', 'conv2_2', 'pool2',
+                            'conv3_1', 'conv3_2', 'conv3_3', 'pool3', 'conv4_1', 'conv4_2', 'conv4_3', 'pool4',
+                            'conv5_1', 'conv5_2', 'conv5_3', 'pool5',
+                            'flatten', 'fc1_relu', 'fc2_relu', 'outputs']
+        self.layers = LayerList([
+            # conv1
+            Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=3, name='conv1_1'),
+            Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=64, name='conv1_2'),
+            MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1'),
 
-            self.outputs = self.net.outputs
+            # conv2
+            Conv2d(n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=64, name='conv2_1'),
+            Conv2d(n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=128, name='conv2_2'),
+            MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2'),
 
-            self.all_params = list(self.net.all_params)
-            self.all_layers = list(self.net.all_layers)
-            self.all_drop = dict(self.net.all_drop)
+            # conv3
+            Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=128, name='conv3_1'),
+            Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=256, name='conv3_2'),
+            Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=256, name='conv3_3'),
+            MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool3'),
 
-            self.print_layers = self.net.print_layers
-            self.print_params = self.net.print_params
+            # conv4
+            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=256, name='conv4_1'),
+            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512, name='conv4_2'),
+            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512, name='conv4_3'),
+            MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool4'),
+
+            # conv5
+            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512, name='conv5_1'),
+            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512, name='conv5_2'),
+            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512, name='conv5_3'),
+            MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5'),
+            Flatten(name='flatten'),
+            Dense(n_units=4096, act=tf.nn.relu, in_channels=512*7*7, name='fc1_relu'),
+            Dense(n_units=4096, act=tf.nn.relu, in_channels=4096, name='fc2_relu'),
+            Dense(n_units=1000, in_channels=4096, name='outputs'),
+        ][:self.layer_names.index(self.end_with) + 1])
+
+    def forward(self, inputs):
+        """
+        inputs : tensor
+            Shape [None, 224, 224, 3], value range [0, 255] - mean, mean = [123.68, 116.779, 103.939].
+        """
+
+        out = self.layers(inputs)
+        return out
+
+    def restore_params(self, **kwargs):
+        raise Exception("please change restore_params --> restore_weights")
+
+    def restore_weights(self):
+        logging.info("Restore pre-trained weights")
+        ## download weights
+        maybe_download_and_extract(
+            'vgg16_weights.npz', 'models', 'http://www.cs.toronto.edu/~frossard/vgg16/', expected_bytes=553436134
+        )
+        npz = np.load(os.path.join('models', 'vgg16_weights.npz'))
+        ## get weight list
+        weights = []
+        for val in sorted(npz.items()):
+            logging.info("  Loading weights %s in %s" % (str(val[1].shape), val[0]))
+            weights.append(val[1])
+            if len(self.weights) == len(weights):
+                break
+        ## assign weight values
+        # print(self.weights)
+        assign_weights(weights, self)
+        del weights
+
+

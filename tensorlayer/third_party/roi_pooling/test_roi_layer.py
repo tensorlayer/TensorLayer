@@ -21,14 +21,14 @@ print('Input: ', input_value, ', shape: ', input_value.shape)
 print('ROIs: ', rois_value, ', shape: ', rois_value.shape)
 
 # precise semantics is now only defined by the kernel, need tests
-input = tf.placeholder(tf.float32)
-rois = tf.placeholder(tf.int32)
+input = tf.compat.v1.placeholder(tf.float32)
+rois = tf.compat.v1.placeholder(tf.int32)
 
 # y = roi_pooling(input, rois, pool_height=2, pool_width=2)
 n = InputLayer(input, name='in')
 n = ROIPoolingLayer(n, rois=rois, pool_height=2, pool_width=2, name='roi')
 y = n.outputs
-mean = tf.reduce_mean(y)
+mean = tf.reduce_mean(input_tensor=y)
 
 grads = tf.gradients(mean, input)
 print(type(grads))
@@ -36,17 +36,17 @@ print(len(grads))
 print(grads)
 print(input_value.shape)
 
-with tf.Session('') as sess:
+with tf.compat.v1.Session('') as sess:
     input_const = tf.constant(input_value, tf.float32)
     rois_const = tf.constant(rois_value, tf.int32)
     y = roi_pooling(input_const, rois_const, pool_height=2, pool_width=2)
-    mean = tf.reduce_mean(y)
+    mean = tf.reduce_mean(input_tensor=y)
 
-    numerical_grad_error_1 = tf.test.compute_gradient_error([input_const], [input_value.shape], y, y_shape)
-    numerical_grad_error_2 = tf.test.compute_gradient_error([input_const], [input_value.shape], mean, [])
+    numerical_grad_error_1 = tf.compat.v1.test.compute_gradient_error([input_const], [input_value.shape], y, y_shape)
+    numerical_grad_error_2 = tf.compat.v1.test.compute_gradient_error([input_const], [input_value.shape], mean, [])
     print(numerical_grad_error_1, numerical_grad_error_2)
 
-with tf.Session('') as sess:
+with tf.compat.v1.Session('') as sess:
     y_output = sess.run(y, feed_dict={input: input_value, rois: rois_value})
     print('y: ', y_output)
     grads_output = sess.run(grads, feed_dict={input: input_value, rois: rois_value})

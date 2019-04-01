@@ -14,7 +14,7 @@ import numpy as np
 import cv2
 
 # tl.logging.set_verbosity(tl.logging.DEBUG)
-image = tl.vis.read_image('tiger.jpeg')
+image = tl.vis.read_image('data/tiger.jpeg')
 h, w, _ = image.shape
 
 

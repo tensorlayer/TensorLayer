@@ -4,7 +4,7 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
+# from tensorlayer.layers.core import LayersConfig
 
 from tensorlayer.layers.utils import cabs
 from tensorlayer.layers.utils import quantize_active
@@ -57,50 +57,56 @@ class DorefaDense(Layer):
             n_units=100,
             act=None,
             use_gemm=False,
-            W_init=tf.truncated_normal_initializer(stddev=0.1),
-            b_init=tf.constant_initializer(value=0.0),
+            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.1),
+            b_init=tf.compat.v1.initializers.constant(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name=None, #'dorefa_dense',
+            name=None,  #'dorefa_dense',
     ):
         # super(DorefaDense, self
         #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
-        self.bitW=bitW
-        self.bitA=bitA
-        self.n_units=n_units
-        self.act=act
-        self.use_gemm=use_gemm
-        self.W_init=W_init
-        self.b_init=b_init
-        self.W_init_args=W_init_args
-        self.b_init_args=b_init_args
+        self.bitW = bitW
+        self.bitA = bitA
+        self.n_units = n_units
+        self.act = act
+        self.use_gemm = use_gemm
+        self.W_init = W_init
+        self.b_init = b_init
+        self.W_init_args = W_init_args
+        self.b_init_args = b_init_args
         logging.info(
             "DorefaDense  %s: %d %s" %
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-    def build(self, inputs):
-        if inputs.get_shape().ndims != 2:
+    def build(self, inputs_shape):
+        if len(inputs_shape) != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
         if self.use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
-        n_in = int(inputs.get_shape()[-1])
-        self.W = tf.get_variable(
-            name=self.name+'\W', shape=(n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
-        )
+        n_in = inputs_shape[-1]
+        self.W = self._get_weights("weights", shape=(n_in, self.n_units), init=self.W_init, init_args=self.W_init_args)
+        # self.W = tf.compat.v1.get_variable(
+        #     name=self.name + '\W', shape=(n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype,
+        #     **self.W_init_args
+        # )
         if self.b_init is not None:
-            try:
-                self.b = tf.get_variable(
-                    name=self.name+'\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
-                )
-
-            except Exception:  # If initializer is a constant, do not specify shape.
-                self.b = tf.get_variable(name=self.name+'\b', initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
-            self.add_weights([self.W, self.b])
-        else:
-            self.add_weights(self.W)
+            self.b = self._get_weights("biases", shape=(self.n_units), init=self.b_init, init_args=self.b_init_args)
+        #     try:
+        #         self.b = tf.compat.v1.get_variable(
+        #             name=self.name + '\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
+        #             **self.b_init_args
+        #         )
+        #
+        #     except Exception:  # If initializer is a constant, do not specify shape.
+        #         self.b = tf.compat.v1.get_variable(
+        #             name=self.name + '\b', initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+        #         )
+        #     self.get_weights([self.W, self.b])
+        # else:
+        #     self.get_weights(self.W)
 
     def forward(self, inputs):
         inputs = quantize_active(cabs(inputs), self.bitA)

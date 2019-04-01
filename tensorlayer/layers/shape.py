@@ -30,26 +30,33 @@ class Flatten(Layer):
 
     Examples
     --------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
-    >>> net = tl.layers.Input(x, name='input')
-    >>> net = tl.layers.Flatten(net, name='flatten')
-    [?, 784]
+    >>> x = tl.layers.Input([8, 4, 3], name='input')
+    >>> y = tl.layers.Flatten(name='flatten')(x)
+    [8, 12]
 
     """
 
-    def __init__(self, name=None): #'flatten'):
-        # super(Flatten, self).__init__(prev_layer=prev_layer, name=name)
-        super().__init__(name)
+    def __init__(self, name=None):  #'flatten'):
+        super(Flatten, self).__init__(name)
+
+        self.build()
+        self._built = True
+
         logging.info("Flatten %s:" % (self.name))
 
-    def build(self, inputs):
+    def __repr__(self):
+        s = '{classname}('
+        s += 'name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape=None):
         pass
 
+    @tf.function
     def forward(self, inputs):
         outputs = flatten_reshape(inputs, name=self.name)
-
+        return outputs
 
 
 class Reshape(Layer):
@@ -64,29 +71,35 @@ class Reshape(Layer):
 
     Examples
     --------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder(tf.float32, shape=(None, 784))
-    >>> net = tl.layers.Input(x, name='input')
-    >>> net = tl.layers.Reshape(net, [-1, 28, 28, 1], name='reshape')
-    >>> print(net.outputs)
-    (?, 28, 28, 1)
+    >>> x = tl.layers.Input([8, 4, 3], name='input')
+    >>> y = tl.layers.Reshape(shape=[-1, 12], name='reshape')(x)
+    (8, 12)
 
     """
 
-    def __init__(self, shape, name=None):#'reshape'):
-        # super(Reshape, self).__init__(prev_layer=prev_layer, name=name)
-        super().__init__(name)
+    def __init__(self, shape, name=None):  #'reshape'):
+        super(Reshape, self).__init__(name)
         self.shape = shape
-        logging.info("Reshape %s" % (self.name))
-        if not self.shape:
-            raise ValueError("Shape list can not be empty")
 
-    def build(self, inputs):
+        logging.info("Reshape %s" % (self.name))
+
+        self.build()
+        self._built = True
+
+    def __repr__(self):
+        s = '{classname}('
+        s += 'shape={shape},'
+        s += 'name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape=None):
         pass
 
+    @tf.function
     def forward(self, inputs):
         outputs = tf.reshape(inputs, shape=self.shape, name=self.name)
+        return outputs
 
 
 class Transpose(Layer):
@@ -98,31 +111,43 @@ class Transpose(Layer):
     ----------
     perm: list of int
         The permutation of the dimensions, similar with ``numpy.transpose``.
+        If None, it is set to (n-1...0), where n is the rank of the input tensor.
+    conjugate: bool
+        By default False. If True, returns the complex conjugate of complex numbers (and transposed)
+        For example [[1+1j, 2+2j]] --> [[1-1j], [2-2j]]
     name : str
         A unique layer name.
 
     Examples
     ----------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
-    >>> net = tl.layers.Input(x, name='input')
-    >>> net = tl.layers.Transpose(net, perm=[0, 1, 3, 2], name='trans')
-    [None, 28, 1, 28]
+    >>> x = tl.layers.Input([8, 4, 3], name='input')
+    >>> y = tl.layers.Transpose(perm=[0, 2, 1], conjugate=False, name='trans')(x)
+    (8, 3, 4)
 
     """
 
-    def __init__(self, perm, name=None):#'transpose'):
-        # super(Transpose, self).__init__(prev_layer=prev_layer, name=name)
-        super().__init__(name)
+    def __init__(self, perm=None, conjugate=False, name=None):  #'transpose'):
+        super(Transpose, self).__init__(name)
         self.perm = perm
+        self.conjugate  = conjugate
 
-        logging.info("Transpose  %s: perm: %s" % (self.name, self.perm))
-        if self.perm is None:
-            raise AssertionError("The `perm` argument cannot be None")
+        logging.info("Transpose  %s: perm: %s, conjugate: %s" % (self.name, self.perm, self.conjugate))
 
-    def build(self, inputs):
+        self.build()
+        self._built = True
+
+    def __repr__(self):
+        s = '{classname}('
+        s += 'perm={perm},'
+        s += 'conjugate={conjugate},'
+        s += 'name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape=None):
         pass
 
+    @tf.function
     def forward(self, inputs):
-        outputs = tf.transpose(inputs, perm=self.perm, name=self.name)
+        outputs = tf.transpose(a=inputs, perm=self.perm, conjugate=self.conjugate, name=self.name)
+        return outputs

@@ -1,2 +1,6 @@
 opencv-python>=3.4,<3.5
 nltk>=3.3,<3.5
+matplotlib>=2.2,<3.1
+requests>=2.19,<2.21
+tqdm>=4.23,<4.29
+lxml>=4.2,<4.3

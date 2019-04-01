@@ -4,7 +4,7 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+# from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer import logging
 
@@ -61,10 +61,10 @@ class SlimNets(Layer):
         #     net, end_points = slim_layer(self.inputs, **slim_args)
         #     slim_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        with tf.variable_scope(name):
+        with tf.compat.v1.variable_scope(name):
             self.outputs, end_points = slim_layer(self.inputs, **self.slim_args)
 
-        slim_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)
+        slim_variables = tf.compat.v1.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)
 
         if slim_variables == []:
             raise RuntimeError(
@@ -84,47 +84,47 @@ class SlimNets(Layer):
 # @deprecated(
 #     date="2018-06-30", instructions="This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing"
 # )
-# class Keras(Layer):
-#     """A layer to import Keras layers into TensorLayer.
-#
-#     Example can be found here `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`__.
-#
-#     Parameters
-#     ----------
-#     prev_layer : :class:`Layer`
-#         Previous layer
-#     keras_layer : function
-#         A tensor in tensor out function for building model.
-#     keras_args : dictionary
-#         The arguments for the `keras_layer`.
-#     name : str
-#         A unique layer name.
-#
-#     """
-#
-#     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-#     def __init__(
-#             self,
-#             prev_layer,
-#             keras_layer,
-#             keras_args=None,
-#             name='keras_layer',
-#     ):
-#
-#         super(Keras, self).__init__(prev_layer=prev_layer, keras_args=keras_args, name=name)
-#
-#         logging.info("Keras %s: %s" % (self.name, keras_layer))
-#
-#         logging.warning("This API will be removed, please use LambdaLayer instead.")
-#
-#         with tf.variable_scope(name) as vs:
-#             self.outputs = keras_layer(self.inputs, **self.keras_args)
-#             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-#
-#         self._add_layers(self.outputs)
-#         self._add_params(variables)
-#
-#
+class Keras(Layer):
+    """A layer to import Keras layers into TensorLayer.
+
+    Example can be found here `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`__.
+
+    Parameters
+    ----------
+    prev_layer : :class:`Layer`
+        Previous layer
+    keras_layer : function
+        A tensor in tensor out function for building model.
+    keras_args : dictionary
+        The arguments for the `keras_layer`.
+    name : str
+        A unique layer name.
+
+    """
+
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(
+            self,
+            prev_layer,
+            keras_layer,
+            keras_args=None,
+            name='keras_layer',
+    ):
+
+        super(Keras, self).__init__(prev_layer=prev_layer, keras_args=keras_args, name=name)
+
+        logging.info("Keras %s: %s" % (self.name, keras_layer))
+
+        logging.warning("This API will be removed, please use LambdaLayer instead.")
+
+        with tf.variable_scope(name) as vs:
+            self.outputs = keras_layer(self.inputs, **self.keras_args)
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+        self._add_layers(self.outputs)
+        self._add_params(variables)
+
+
 # @deprecated(
 #     date="2018-06-30", instructions="This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing"
 # )
