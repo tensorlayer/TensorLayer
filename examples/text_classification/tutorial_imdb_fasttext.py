@@ -120,7 +120,6 @@ def train_test_and_save_model():
     if os.path.exists(MODEL_FILE_PATH):
         # loading pre-trained model if applicable
         model.load_weights(MODEL_FILE_PATH)
-
     else:
         # training
         model.train()

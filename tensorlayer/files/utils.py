@@ -1855,7 +1855,7 @@ def load_and_assign_npz(name=None, network=None):
 
     if not os.path.exists(name):
         logging.error("file {} doesn't exist.".format(name))
-        return
+        return False
     else:
         weights = load_npz(name=name)
         assign_weights(weights, network)
@@ -1905,7 +1905,7 @@ def load_and_assign_npz_dict(name='model.npz', network=None, skip=False):
     """
     if not os.path.exists(name):
         logging.error("file {} doesn't exist.".format(name))
-        return
+        return False
 
     weights = np.load(name)
     if len(weights.keys()) != len(set(weights.keys())):

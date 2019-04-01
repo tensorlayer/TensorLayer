@@ -213,7 +213,6 @@ def main_word2vec_basic():
     normalized_embeddings = emb_net.normalized_embeddings
 
     # Step 5: Start training.
-    print()
     model.train()
 
     if resume:

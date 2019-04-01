@@ -34,12 +34,6 @@ Load benchmark dataset, save and restore model, save and load variables.
    save_ckpt
    load_ckpt
 
-..
-   save_graph
-   load_graph
-   save_graph_and_params
-   load_graph_and_params
-
    save_any_to_npy
    load_npy_to_any
 
@@ -54,6 +48,12 @@ Load benchmark dataset, save and restore model, save and load variables.
    maybe_download_and_extract
 
    natural_keys
+
+..
+   save_graph
+   load_graph
+   save_graph_and_params
+   load_graph_and_params
 
    npz_to_W_pdf
 

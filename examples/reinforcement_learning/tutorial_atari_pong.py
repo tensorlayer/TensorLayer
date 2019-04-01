@@ -74,6 +74,7 @@ xs, ys, rs = [], [], []
 # observation for training and inference
 # t_states = tf.placeholder(tf.float32, shape=[None, D])
 # policy network
+
 def get_model(inputs_shape):
     ni = tl.layers.Input(inputs_shape)
     nn = tl.layers.Dense(n_units=H, act=tf.nn.relu, name='hidden')(ni)

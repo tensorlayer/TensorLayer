@@ -76,6 +76,7 @@ optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.1)
 lambd = .99  # decay factor
 e = 0.1  # e-Greedy Exploration, the larger the more random
 num_episodes = 10000
+
 # with tf.Session() as sess:
     # tl.layers.initialize_global_variables(sess)
 for i in range(num_episodes):
