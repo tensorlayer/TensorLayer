@@ -1,5 +1,12 @@
 # TensorLayer Contributor Guideline
 
+* Welcome to contribute!
+* Continuous integration
+* Build from sources and Unittest
+
+## Welcome to contribute!
+You are more than welcome to contribute to TensorLayer! If you have any improvement, please send us your [pull requests](https://help.github.com/en/articles/about-pull-requests). You may implement your improvement on your [folk](https://help.github.com/en/articles/working-with-forks).
+
 ## Continuous integration
 
 We appreciate contributions
@@ -20,7 +27,7 @@ make format
 
 to apply those tools before submitting your PR.
 
-## Build from sources
+## Build from sources and Unittest
 
 ```bash
 # First clone the repository and change the current directory to the newly cloned repository
