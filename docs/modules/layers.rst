@@ -105,13 +105,10 @@ Layer list
    BasicConvLSTMCell
    ConvLSTM
 
-   advanced_indexing_op
    retrieve_seq_length_op
    retrieve_seq_length_op2
    retrieve_seq_length_op3
    target_mask_op
-   DynamicRNN
-   BiDynamicRNN
 
    Seq2Seq
 
