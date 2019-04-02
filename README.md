@@ -7,18 +7,18 @@
 
 
 
-[![PyPI Version](https://badge.fury.io/py/tensorlayer.svg)](https://badge.fury.io/py/tensorlayer)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/tensorlayer.svg)
-![GitHub last commit (branch)](https://img.shields.io/github/last-commit/tensorlayer/tensorlayer/master.svg)
+<!--- [![PyPI Version](https://badge.fury.io/py/tensorlayer.svg)](https://badge.fury.io/py/tensorlayer) --->
+<!--- ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/tensorlayer.svg)) --->
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/zsdonghao/tensorlayer2/master.svg)
 [![Supported TF Version](https://img.shields.io/badge/TensorFlow-2.0.0%2B-brightgreen.svg)](https://github.com/tensorflow/tensorflow/releases)
-[![Downloads](http://pepy.tech/badge/tensorlayer)](http://pepy.tech/project/tensorlayer)
-[![Build Status](https://travis-ci.org/tensorlayer/tensorlayer.svg?branch=master)](https://travis-ci.org/tensorlayer/tensorlayer)
-[![CircleCI](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master.svg?style=svg)](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master)
-[![Documentation Status](https://readthedocs.org/projects/tensorlayer/badge/)](https://tensorlayer.readthedocs.io/)
-[![Documentation Status](https://readthedocs.org/projects/tensorlayercn/badge/)](https://tensorlayercn.readthedocs.io/)
-[![PyUP Updates](https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg)](https://pyup.io/repos/github/tensorlayer/tensorlayer/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg)](https://hub.docker.com/r/tensorlayer/tensorlayer/)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d6b118784e25435498e7310745adb848)](https://www.codacy.com/app/tensorlayer/tensorlayer)
+<!---  ([![Downloads](http://pepy.tech/badge/tensorlayer)](http://pepy.tech/project/tensorlayer)) --->
+<!---  ([![Build Status](https://travis-ci.org/tensorlayer/tensorlayer.svg?branch=master)](https://travis-ci.org/tensorlayer/tensorlayer)) --->
+<!---  [![CircleCI](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master.svg?style=svg)](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master) --->
+[![Documentation Status](https://readthedocs.org/projects/tensorlayer2/badge/)](https://tensorlayer2.readthedocs.io/)
+<!---  [![Documentation Status](https://readthedocs.org/projects/tensorlayercn/badge/)](https://tensorlayercn.readthedocs.io/) --->
+<!---  [![PyUP Updates](https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg)](https://pyup.io/repos/github/tensorlayer/tensorlayer/) --->
+<!---  [![Docker Pulls](https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg)](https://hub.docker.com/r/tensorlayer/tensorlayer/) --->
+<!---  [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d6b118784e25435498e7310745adb848)](https://www.codacy.com/app/tensorlayer/tensorlayer) --->
 
 
 <br/>
@@ -31,9 +31,13 @@
 
 <br/>
 
+
+🚀🚀🚀🚀 Welcome to TensorLayer 2.0 !
+
+We are working hard on updating TensorLayer 2.0 to support TensorFlow 2.0. Latest progress can be found [here](https://github.com/tensorlayer/tensorlayer/issues/900) and latest [doc](https://tensorlayer2.readthedocs.io). Feel free to discuss and [contribute](CONTRIBUTING.md)! Note that TensorLayer 2.0 is still under construction and not everything in this repository is ready yet.
+
 TensorLayer is a novel TensorFlow-based deep learning and reinforcement learning library designed for researchers and engineers. It provides a large collection of customizable neural layers / functions that are key to build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software by the [ACM Multimedia Society](http://www.acmmm.org/2017/mm-2017-awardees/).
 
-🚀🚀🚀🚀 We are working hard on updating TensorLayer for TensorFlow 2.0 [here](https://github.com/tensorlayer/tensorlayer/issues/900), feel free to discuss and contribute!
 
 # Features
 
@@ -43,17 +47,22 @@ Also, it allow users to easily fine-tune TensorFlow; while being suitable for pr
 
 - ***Simplicity*** : TensorLayer lifts the low-level dataflow interface of TensorFlow to *high-level* layers / models. It is very easy to learn through the rich [example codes](https://github.com/tensorlayer/awesome-tensorlayer) contributed by a wide community.
 - ***Flexibility*** : TensorLayer APIs are transparent: it does not mask TensorFlow from users; but leaving massive hooks that help *low-level tuning* and *deep customization*.
-- ***Zero-cost Abstraction*** : TensorLayer can achieve the *full power* of TensorFlow. The following table shows the training speeds of classic models using TensorLayer and native TensorFlow on a Titan X Pascal GPU.
+- ***Zero-cost Abstraction*** : TensorLayer can achieve the *full power* of TensorFlow. The following table shows the training speeds of [VGG16](http://www.robots.ox.ac.uk/~vgg/research/very_deep/) using TensorLayer and native TensorFlow on a Tesla V100-DGXS-32GB.
 
-	|             	| CIFAR-10      | PTB LSTM      | Word2Vec      |
-	|-------------	|---------------|---------------|---------------|
-	| TensorLayer 	| 2528 images/s | 18063 words/s | 58167 words/s |
-	| TensorFlow  	| 2530 images/s | 18075 words/s | 58181 words/s |
+	|   Mode    |       Lib       |  Data Format  | Max CPU Memory (MB) | Avg CPU Memory (MB) | Runtime (sec) |
+	| :-------: | :-------------: | :-----------: | :-----------------: | :-----------------: | :-----------: |
+	| AutoGraph | TensorFlow 2.0  | channel last  |        3370         |        3346         |      49       |
+	|           | Tensorlayer 2.0 | channel last  |        3358         |        3367         |      50       |
+	|   Graph   |      Keras      | channel last  |        3776         |        3775         |      62       |
+	|   Eager   | TensorFlow 2.0  | channel last  |        3293         |        3284         |      65       |
+	|           | TensorLayer 2.0 | channel last  |        3296         |        3293         |      65       |
+	|           |     PyTorch     | channel first |        2562         |        2555         |      43       |
+
 
 
 TensorLayer stands at a unique spot in the library landscape. Other wrapper libraries like Keras and TFLearn also provide high-level abstractions. They, however, often
 hide the underlying engine from users, which make them hard to customize
-and fine-tune. On the contrary, TensorLayer APIs are generally flexible and transparent.
+and fine-tune. On the contrary, TensorLayer APIs are generally lightweight, flexible and transparent.
 Users often find it easy to start with the examples and tutorials, and then dive
 into TensorFlow seamlessly. In addition, TensorLayer does not create library lock-in through native supports for importing components from Keras, TFSlim and TFLearn.
 
@@ -63,7 +72,7 @@ University of Technology of Compiegne (UTC), and companies like Google, Microsof
 
 # Tutorials and Real-World Applications
 
-You can find a large collection of tutorials, examples and real-world applications using TensorLayer through the following space:
+You can find a large collection of tutorials, examples and real-world applications using TensorLayer within [examples](examples/) or through the following space:
 
 <a href="https://github.com/tensorlayer/awesome-tensorlayer/blob/master/readme.md" target="\_blank">
 	<div align="center">
@@ -76,23 +85,57 @@ You can find a large collection of tutorials, examples and real-world applicatio
 TensorLayer has extensive documentation for both beginners and professionals. The documentation is available in
 both English and Chinese. Please click the following icons to find the documents you need:
 
-[![English Documentation](https://img.shields.io/badge/documentation-english-blue.svg)](https://tensorlayer.readthedocs.io/)
-[![Chinese Documentation](https://img.shields.io/badge/documentation-%E4%B8%AD%E6%96%87-blue.svg)](https://tensorlayercn.readthedocs.io/)
+[![English Documentation](https://img.shields.io/badge/documentation-english-blue.svg)](https://tensorlayer2.readthedocs.io/)
+<!--- [![Chinese Documentation](https://img.shields.io/badge/documentation-%E4%B8%AD%E6%96%87-blue.svg)](https://tensorlayercn.readthedocs.io/) --->
 [![Chinese Book](https://img.shields.io/badge/book-%E4%B8%AD%E6%96%87-blue.svg)](http://www.broadview.com.cn/book/5059/)
 
 If you want to try the experimental features on the the master branch, you can find the latest document
-[here](https://tensorlayer.readthedocs.io/en/latest/).
+[here](https://tensorlayer2.readthedocs.io/en/latest/).
 
 # Install
 
-TensorLayer has pre-requisites including TensorFlow, numpy, and others. For GPU support, CUDA and cuDNN are required.
-The simplest way to install TensorLayer is to use the **Py**thon **P**ackage **I**ndex (PyPI):
+
+
+For latest code for TensorLayer 2.0, please build from the source. TensorLayer 2.0 has pre-requisites including TensorFlow 2, numpy, and others. For GPU support, CUDA and cuDNN are required.
 
 ```bash
-# for last stable version
+# First clone the repository and change the current directory to the newly cloned repository
+git clone https://github.com/zsdonghao/tensorlayer2.git
+cd tensorlayer2
+
+# Install virtualenv if necessary
+pip install virtualenv
+# Then create a virtualenv called `venv`
+virtualenv venv
+
+# Activate the virtualenv
+
+## Linux:
+source venv/bin/activate
+
+## Windows:
+venv\Scripts\activate.bat
+
+# basic installation
+pip install .
+
+# ============= IF TENSORFLOW IS NOT ALREADY INSTALLED ============= #
+
+# for a machine **without** an NVIDIA GPU
+pip install -e ".[all_cpu_dev]"
+
+# for a machine **with** an NVIDIA GPU
+pip install -e ".[all_gpu_dev]"
+
+```
+
+If you want install TensorLayer 1.X, the simplest way to install TensorLayer 1.X is to use the **Py**thon **P**ackage **I**ndex (PyPI):
+
+```bash
+# for last stable version of TensorLayer 1.X
 pip install --upgrade tensorlayer
 
-# for latest release candidate
+# for latest release candidate of TensorLayer 1.X
 pip install --upgrade --pre tensorlayer
 
 # if you want to install the additional dependencies, you can also run
@@ -100,7 +143,7 @@ pip install --upgrade tensorlayer[all]              # all additional dependencie
 pip install --upgrade tensorlayer[extra]            # only the `extra` dependencies
 pip install --upgrade tensorlayer[contrib_loggers]  # only the `contrib_loggers` dependencies
 ```
-
+<!---
 Alternatively, you can install the latest or development version by directly pulling from github:
 
 ```bash
@@ -108,7 +151,9 @@ pip install https://github.com/tensorlayer/tensorlayer/archive/master.zip
 # or
 # pip install https://github.com/tensorlayer/tensorlayer/archive/<branch-name>.zip
 ```
+--->
 
+<!---
 ## Using Docker
 
 The [TensorLayer containers](https://hub.docker.com/r/tensorlayer/tensorlayer/) are built on top of the official [TensorFlow containers](https://hub.docker.com/r/tensorflow/tensorflow/):
@@ -138,10 +183,11 @@ nvidia-docker run -it --rm -p 8888:8888 -p 6006:6006 -e PASSWORD=JUPYTER_NB_PASS
 docker pull tensorlayer/tensorlayer:latest-gpu-py3
 nvidia-docker run -it --rm -p 8888:8888 -p 6006:6006 -e PASSWORD=JUPYTER_NB_PASSWORD tensorlayer/tensorlayer:latest-gpu-py3
 ```
+--->
 
 # Contribute
 
-Please read the [Contributor Guideline](https://github.com/tensorlayer/tensorlayer/blob/master/CONTRIBUTING.md) before submitting your PRs.
+Please read the [Contributor Guideline](CONTRIBUTING.md) before submitting your PRs.
 
 # Cite
 If you find this project useful, we would be grateful if you cite the TensorLayer paper：
