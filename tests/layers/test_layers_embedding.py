@@ -64,7 +64,6 @@ class Layer_Embed_Test(CustomTestCase):
             E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
             nce_W_init=tl.initializers.truncated_normal(stddev=float(1.0 / np.sqrt(embedding_size))),
             nce_b_init=tl.initializers.constant(value=0.0),
-            name='word2vec_layer',
         )
         print(emb_net)
         try:
@@ -102,7 +101,6 @@ class Layer_Embed_Test(CustomTestCase):
             E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
             nce_W_init=tl.initializers.truncated_normal(stddev=float(1.0 / np.sqrt(embedding_size))),
             nce_b_init=tl.initializers.constant(value=0.0),
-            name='word2vec_layer',
         )
         print(emb_net)
         embed_tensor = emb_net(inputs)

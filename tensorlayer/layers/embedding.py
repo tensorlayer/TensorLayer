@@ -118,7 +118,7 @@ class Word2vecEmbedding(Layer):
     embedding_size : int
         The number of embedding dimensions
     num_sampled : int
-        The mumber of negative examples for NCE loss
+        The number of negative examples for NCE loss
     activate_nce_loss : boolean
         Whether activate nce loss or not. By default, True
         If True, the layer will return both outputs of embedding and nce_cost in forward feeding.
@@ -187,8 +187,8 @@ class Word2vecEmbedding(Layer):
 
     def __init__(
             self,
-            vocabulary_size=80000,
-            embedding_size=200,
+            vocabulary_size,
+            embedding_size,
             num_sampled=64,
             activate_nce_loss=True,
             nce_loss_args=None,
