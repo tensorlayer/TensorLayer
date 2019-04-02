@@ -3,11 +3,9 @@
 
 import tensorflow as tf
 
-from tensorlayer.layers.core import Layer
-
 from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.layers.core import Layer
 
 __all__ = [
     'ExpandDims',
@@ -37,12 +35,12 @@ class ExpandDims(Layer):
     def __init__(
             self,
             axis,
-            name=None # 'expand_dims',
+            name=None  # 'expand_dims',
     ):
         super(ExpandDims, self).__init__(name)
         self.axis = axis
 
-        self.build((None,))
+        self.build((None, ))
         self._built = True
 
         logging.info("ExpandDims  %s: axis: %d" % (self.name, self.axis))
@@ -88,7 +86,7 @@ class Tile(Layer):
         super(Tile, self).__init__(name)
         self.multiples = multiples
 
-        self.build((None,))
+        self.build((None, ))
         self._built = True
 
         logging.info("Tile  %s: multiples: %s" % (self.name, self.multiples))

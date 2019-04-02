@@ -30,7 +30,7 @@ class Layer_Core_Test(CustomTestCase):
 
         cls.inputs_shape = [None, 784]
         cls.innet = Input(cls.inputs_shape)
-        cls.dense1 = Dense(n_units=800, act=tf.nn.relu, in_channels=784)(cls.innet)
+        cls.dense1 = Dense(n_units=800, act=tf.nn.relu, in_channels=784, name='test_dense')(cls.innet)
         cls.dropout1 = Dropout(keep=0.8)(cls.dense1)
         cls.dense2 = Dense(n_units=10, act=tf.nn.relu, b_init=None)(cls.dropout1)
         cls.dense3 = Dense(n_units=10, act=tf.nn.relu, b_init=None)
@@ -148,15 +148,15 @@ class Layer_Core_Test(CustomTestCase):
         model.release_memory()
 
     def test_duplicate_names(self):
+        dense1 = tl.layers.Dense(n_units=10, name='test_densehh')
+        print(dense1)
         try:
-            dense1 = tl.layers.Dense(n_units=10, name='dense')
-            dense2 = tl.layers.Dense(n_units=10, name='dense')
-            print(dense1)
+            dense2 = tl.layers.Dense(n_units=10, name='test_densehh')
             print(dense2)
         except Exception as e:
             print(e)
-        dense1 = tl.layers.Dense(n_units=10, name='dense1')
-        dense2 = tl.layers.Dense(n_units=10, name='dense2')
+        dense1 = tl.layers.Dense(n_units=10, name='test_densehh1')
+        dense2 = tl.layers.Dense(n_units=10, name='test_densehh2')
         print(dense1)
         print(dense2)
 

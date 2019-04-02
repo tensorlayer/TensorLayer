@@ -1,22 +1,18 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-from six.moves import xrange
-
 import numpy as np
-
 import tensorflow as tf
+from six.moves import xrange
 from tensorflow.python.ops import array_ops
 
+from tensorlayer import logging
+from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
-# from tensorlayer.layers.core import LayersConfig
-# from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
-
 from tensorlayer.layers.utils import flatten_reshape
 
-from tensorlayer import logging
-
-from tensorlayer.decorators import deprecated_alias
+# from tensorlayer.layers.core import LayersConfig
+# from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 __all__ = [
     'transformer',

@@ -2,14 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 import tensorlayer as tl
-
-from tensorlayer.layers.core import Layer
-
 from tensorlayer import logging
-
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.decorators import private_method
+from tensorlayer.decorators import deprecated_alias, private_method
+from tensorlayer.layers.core import Layer
 
 __all__ = [
     'SubpixelConv1d',

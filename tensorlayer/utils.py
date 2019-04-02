@@ -2,24 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import os
-
+import random
+import subprocess
 import sys
+import time
+from collections import Counter
 from sys import exit as _exit
 from sys import platform as _platform
 
-import random
-import subprocess
-import time
-
-from collections import Counter
-
 import numpy as np
-
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import f1_score
-
 import tensorflow as tf
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
+
 import tensorlayer as tl
 
 __all__ = [
@@ -573,9 +567,8 @@ def exit_tensorflow(sess=None, port=6006):
 
     elif _platform == "darwin":
         tl.logging.info('OS X: %s' % text)
-        subprocess.Popen(
-            "lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill", shell=True
-        )  # kill tensorboard
+        subprocess.Popen("lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill",
+                         shell=True)  # kill tensorboard
     elif _platform == "win32":
         raise NotImplementedError("this function is not supported on the Windows platform")
 

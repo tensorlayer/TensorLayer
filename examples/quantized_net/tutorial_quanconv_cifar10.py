@@ -39,8 +39,10 @@ we run them inside 16 separate threads which continuously fill a TensorFlow queu
 
 """
 import time
+
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
 
 bitW = 8

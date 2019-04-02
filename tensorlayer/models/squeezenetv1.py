@@ -7,18 +7,8 @@ import os
 import tensorflow as tf
 
 from tensorlayer import logging
-
-from tensorlayer.layers import Layer
-from tensorlayer.layers import Conv2d
-from tensorlayer.layers import InputLayer
-from tensorlayer.layers import MaxPool2d
-from tensorlayer.layers import ConcatLayer
-from tensorlayer.layers import DropoutLayer
-from tensorlayer.layers import GlobalMeanPool2d
-
-from tensorlayer.files import maybe_download_and_extract
-from tensorlayer.files import assign_weights
-from tensorlayer.files import load_npz
+from tensorlayer.files import (assign_weights, load_npz, maybe_download_and_extract)
+from tensorlayer.layers import (ConcatLayer, Conv2d, DropoutLayer, GlobalMeanPool2d, InputLayer, Layer, MaxPool2d)
 
 __all__ = [
     'SqueezeNetV1',

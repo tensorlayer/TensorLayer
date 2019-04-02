@@ -3,13 +3,11 @@
 
 import tensorflow as tf
 
-from tensorlayer.layers.core import Layer
-# from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
-
 from tensorlayer import logging
+from tensorlayer.decorators import deprecated, deprecated_alias
+from tensorlayer.layers.core import Layer
 
-from tensorlayer.decorators import deprecated
-from tensorlayer.decorators import deprecated_alias
+# from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 __all__ = [
     'SlimNets',

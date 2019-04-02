@@ -3,12 +3,10 @@
 
 import tensorflow as tf
 
+from tensorlayer import logging
+from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.utils import flatten_reshape
-
-from tensorlayer import logging
-
-from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'Flatten',
@@ -129,7 +127,7 @@ class Transpose(Layer):
     def __init__(self, perm=None, conjugate=False, name=None):  #'transpose'):
         super(Transpose, self).__init__(name)
         self.perm = perm
-        self.conjugate  = conjugate
+        self.conjugate = conjugate
 
         logging.info("Transpose  %s: perm: %s, conjugate: %s" % (self.name, self.perm, self.conjugate))
 

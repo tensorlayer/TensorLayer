@@ -36,8 +36,8 @@ to apply those tools before submitting your PR.
 
 ```bash
 # First clone the repository and change the current directory to the newly cloned repository
-git clone https://github.com/tensorlayer/tensorlayer.git
-cd tensorlayer
+git clone https://github.com/zsdonghao/tensorlayer2.git
+cd tensorlayer2
 
 # Install virtualenv if necessary
 pip install virtualenv
@@ -59,10 +59,10 @@ venv\Scripts\activate.bat
 pip install .
 
 # advanced: for a machine **without** an NVIDIA GPU
-pip install -e .[all_cpu_dev]
+pip install -e ".[all_cpu_dev]"
 
 # advanced: for a machine **with** an NVIDIA GPU
-pip install -e .[all_gpu_dev]
+pip install -e ".[all_gpu_dev]"
 ```
 
 ## Unittest
@@ -81,7 +81,7 @@ Running your unittest code on your implemented module only:
 
 ```bash
 # install coverage
-pip install coverage 
+pip install coverage
 
 cd /path/to/your/unittest/code
 # For example: cd tests/layers/
@@ -112,7 +112,7 @@ class CustomizeModel(tl.models.Model):
         super(CustomizeModel, self).__init__()
         self.dense1 = tl.layers.Dense(n_units=800, act=tf.nn.relu, in_channels=784, name='dense1')
         self.dense2 = tl.layers.Dense(n_units=10,  act=tf.nn.relu, in_channels=800, name='dense2')
-    
+
     # a dynamic model allows more flexibility by customising forwarding.
     def forward(self, x, bar=None):
         d1 = self.dense1(x)
@@ -121,7 +121,7 @@ class CustomizeModel(tl.models.Model):
         else:
             d2 = self.dense2(d1)
             return d1, d2
-       
+
 model = CustomizeModel()
 ```
 * More examples can be found in [examples](examples/) and [tests/layers](tests/layers/). Note that not all of them are completed.
@@ -136,15 +136,15 @@ model = CustomizeModel()
     - Logging by `logging.info(...)`.
   - `__repr__(self)`: Return a printable representation of the `NewLayer`.
   - `build(self, inputs_shape)`: Build the `NewLayer` by defining weights.
-  - `forward(self, inputs, **kwargs)`: Forward feeding the `NewLayer`. Note that the forward feeding of some `Layers` may be different during training and testing like [`Dropout`](tensorlayer/layers/dropout.py). 
-* Unittest: 
+  - `forward(self, inputs, **kwargs)`: Forward feeding the `NewLayer`. Note that the forward feeding of some `Layers` may be different during training and testing like [`Dropout`](tensorlayer/layers/dropout.py).
+* Unittest:
   - Unittest should be done before a pull request. Unittest code can be written in [tests/](tests/)
-* Documents: 
+* Documents:
   - Please write a description for each class and method in RST format. The description may include the functionality, arguments, references, examples of the `NewLayer`.
 * Examples: [`Dense`](tensorlayer/layers/dense/base_dense.py), [`Dropout`](tensorlayer/layers/dropout.py), [`Conv`](tensorlayer/layers/convolution/simplified_conv.py).
 
 ## How to contribute a new `Model`
-* A `NewModel` should be derived from the base class [`Model`](tensorlayer/models/core.py) (if dynamic) or an instance of [`Model`](tensorlayer/models/core.py) (if static). 
+* A `NewModel` should be derived from the base class [`Model`](tensorlayer/models/core.py) (if dynamic) or an instance of [`Model`](tensorlayer/models/core.py) (if static).
 * A static `NewModel` should have fixed inputs and outputs. Please check the example [`VGG_Static`](tensorlayer/models/vgg.py)
 * A dynamic `NewModel` has more flexiblility. Please check the example [`VGG16`](tensorlayer/models/vgg16.py)
 

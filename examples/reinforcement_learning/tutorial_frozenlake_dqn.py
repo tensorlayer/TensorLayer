@@ -25,15 +25,17 @@ The episode ends when you reach the goal or fall in a hole. You receive a reward
 of 1 if you reach the goal, and zero otherwise.
 
 """
+import time
+
+import numpy as np
 import tensorflow as tf
+
+import gym
+import tensorlayer as tl
 
 ## enable eager mode
 tf.enable_eager_execution()
 
-import time
-import gym
-import numpy as np
-import tensorlayer as tl
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)

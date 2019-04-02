@@ -10,15 +10,15 @@ For more details, see the reference paper.
 
 '''
 
+import random
+import time
+
+import numpy as np
 import tensorflow as tf
 
-import time
-import numpy as np
-import random
 import tensorlayer as tl
-from tensorlayer.layers import Input, Dense, Dropout, Flatten
+from tensorlayer.layers import Dense, Dropout, Flatten, Input
 from tensorlayer.models import Model
-
 
 num_classes = 10
 epochs = 20

@@ -14,7 +14,9 @@ CN: https://zhuanlan.zhihu.com/p/25710327
 """
 
 import time
+
 import numpy as np
+
 import gym
 
 ## Load the environment

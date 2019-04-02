@@ -1,19 +1,12 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import logging as _logging
 import os as _os
 import sys as _sys
-import time as _time
-
-import logging as _logging
-
-from logging import DEBUG
-from logging import ERROR
-from logging import FATAL
-from logging import INFO
-from logging import WARN
-
 import threading
+import time as _time
+from logging import DEBUG, ERROR, FATAL, INFO, WARN
 
 import six
 

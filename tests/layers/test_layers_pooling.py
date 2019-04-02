@@ -21,28 +21,28 @@ class Layer_Pooling_Test(CustomTestCase):
         ## 1D ========================================================================
 
         x_1_input_shape =[None, 100, 1]
-        nin_1 = Input(x_1_input_shape, name='in1')
+        nin_1 = Input(x_1_input_shape, name='test_in1')
 
         n1 = tl.layers.Conv1d(
-            n_filter=32, filter_size=5, stride=2, name='conv1d'
+            n_filter=32, filter_size=5, stride=2, name='test_conv1d'
         )(nin_1)
         n2 = tl.layers.MaxPool1d(
-            filter_size=3, strides=2, padding='SAME', name='maxpool1d'
+            filter_size=3, strides=2, padding='SAME', name='test_maxpool1d'
         )(n1)
         n3 = tl.layers.MeanPool1d(
-            filter_size=3, strides=2, padding='SAME', name='meanpool1d'
+            filter_size=3, strides=2, padding='SAME', name='test_meanpool1d'
         )(n1)
         n4 = tl.layers.GlobalMaxPool1d(
-            name='maxpool1d'
+            name='test_maxpool1d'
         )(n1)
         n5 = tl.layers.GlobalMeanPool1d(
-            name='meanpool1d'
+            name='test_meanpool1d'
         )(n1)
         n16 = tl.layers.MaxPool1d(
-            filter_size=3, strides=1, padding='VALID', dilation_rate=2, name='maxpool1d'
+            filter_size=3, strides=1, padding='VALID', dilation_rate=2, name='test_maxpool1d'
         )(n1)
         n17 = tl.layers.MeanPool1d(
-            filter_size=3, strides=1, padding='VALID', dilation_rate=2, name='meanpool1d'
+            filter_size=3, strides=1, padding='VALID', dilation_rate=2, name='test_meanpool1d'
         )(n1)
 
         cls.n1_shape = n1.get_shape().as_list()
@@ -66,25 +66,25 @@ class Layer_Pooling_Test(CustomTestCase):
         ## 2D ========================================================================
 
         x_2_input_shape =[None, 100, 100, 3]
-        nin_2 = Input(x_2_input_shape, name='in2')
+        nin_2 = Input(x_2_input_shape, name='test_in2')
 
         n6 = tl.layers.Conv2d(
-            n_filter=32, filter_size=(3, 3), strides=(2, 2), name='conv2d'
+            n_filter=32, filter_size=(3, 3), strides=(2, 2), name='test_conv2d'
         )(nin_2)
         n7 = tl.layers.MaxPool2d(
-            filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool2d'
+            filter_size=(3, 3), strides=(2, 2), padding='SAME', name='test_maxpool2d'
         )(n6)
         n8 = tl.layers.MeanPool2d(
-            filter_size=(3, 3), strides=(2, 2), padding='SAME', name='meanpool2d'
+            filter_size=(3, 3), strides=(2, 2), padding='SAME', name='test_meanpool2d'
         )(n6)
         n9 = tl.layers.GlobalMaxPool2d(
-            name='maxpool2d'
+            name='test_maxpool2d'
         )(n6)
         n10 = tl.layers.GlobalMeanPool2d(
-            name='meanpool2d'
+            name='test_meanpool2d'
         )(n6)
         n15 = tl.layers.PoolLayer(
-            name='pool2d'
+            name='test_pool2d'
         )(n6)
 
         cls.n6_shape = n6.get_shape().as_list()
@@ -106,19 +106,19 @@ class Layer_Pooling_Test(CustomTestCase):
         ## 3D ========================================================================
 
         x_3_input_shape =[None, 100, 100, 100, 3]
-        nin_3 = Input(x_3_input_shape, name='in3')
+        nin_3 = Input(x_3_input_shape, name='test_in3')
 
         n11 = tl.layers.MeanPool3d(
-            filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME', name='meanpool3d'
+            filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME', name='test_meanpool3d'
         )(nin_3)
         n12 = tl.layers.GlobalMaxPool3d(
-            name='maxpool3d'
+            name='test_maxpool3d'
         )(nin_3)
         n13 = tl.layers.GlobalMeanPool3d(
-            name='meanpool3d'
+            name='test_meanpool3d'
         )(nin_3)
         n14 = tl.layers.MaxPool3d(
-            filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME', name='maxpool3d'
+            filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME', name='test_maxpool3d'
         )(nin_3)
 
         cls.n11_shape = n11.get_shape().as_list()

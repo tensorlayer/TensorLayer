@@ -1,9 +1,10 @@
+import time
+
+import numpy as np
 import tensorflow as tf
 
-import time
-import numpy as np
 import tensorlayer as tl
-from tensorlayer.layers import Input, Dense, Dropout, LayerList
+from tensorlayer.layers import Dense, Dropout, Input, LayerList
 from tensorlayer.models import Model
 
 ## enable debug logging

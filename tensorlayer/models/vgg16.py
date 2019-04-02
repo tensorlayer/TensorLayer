@@ -26,22 +26,15 @@ feeding images of multiple sizes is by doing center cropping.
 """
 
 import os
+
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
-
 from tensorlayer import logging
-
-from tensorlayer.layers import Conv2d
-from tensorlayer.layers import Dense
-from tensorlayer.layers import Flatten
-from tensorlayer.layers import Input
-from tensorlayer.layers import MaxPool2d
-from tensorlayer.layers import LayerList
+from tensorlayer.files import assign_weights, maybe_download_and_extract
+from tensorlayer.layers import (Conv2d, Dense, Flatten, Input, LayerList, MaxPool2d)
 from tensorlayer.models import Model
-
-from tensorlayer.files import maybe_download_and_extract
-from tensorlayer.files import assign_weights
 
 __all__ = [
     'VGG16',
@@ -98,43 +91,85 @@ class VGG16(Model):
         super(VGG16, self).__init__(name=name)
         self.end_with = end_with
 
-        self.layer_names = ['conv1_1', 'conv1_2', 'pool1', 'conv2_1', 'conv2_2', 'pool2',
-                            'conv3_1', 'conv3_2', 'conv3_3', 'pool3', 'conv4_1', 'conv4_2', 'conv4_3', 'pool4',
-                            'conv5_1', 'conv5_2', 'conv5_3', 'pool5',
-                            'flatten', 'fc1_relu', 'fc2_relu', 'outputs']
-        self.layers = LayerList([
-            # conv1
-            Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=3, name='conv1_1'),
-            Conv2d(n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=64, name='conv1_2'),
-            MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1'),
+        self.layer_names = [
+            'conv1_1', 'conv1_2', 'pool1', 'conv2_1', 'conv2_2', 'pool2', 'conv3_1', 'conv3_2', 'conv3_3', 'pool3',
+            'conv4_1', 'conv4_2', 'conv4_3', 'pool4', 'conv5_1', 'conv5_2', 'conv5_3', 'pool5', 'flatten', 'fc1_relu',
+            'fc2_relu', 'outputs'
+        ]
+        self.layers = LayerList(
+            [
+                # conv1
+                Conv2d(
+                    n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=3,
+                    name='conv1_1'
+                ),
+                Conv2d(
+                    n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=64,
+                    name='conv1_2'
+                ),
+                MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1'),
 
-            # conv2
-            Conv2d(n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=64, name='conv2_1'),
-            Conv2d(n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=128, name='conv2_2'),
-            MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2'),
+                # conv2
+                Conv2d(
+                    n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=64,
+                    name='conv2_1'
+                ),
+                Conv2d(
+                    n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=128,
+                    name='conv2_2'
+                ),
+                MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2'),
 
-            # conv3
-            Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=128, name='conv3_1'),
-            Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=256, name='conv3_2'),
-            Conv2d(n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=256, name='conv3_3'),
-            MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool3'),
+                # conv3
+                Conv2d(
+                    n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=128,
+                    name='conv3_1'
+                ),
+                Conv2d(
+                    n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=256,
+                    name='conv3_2'
+                ),
+                Conv2d(
+                    n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=256,
+                    name='conv3_3'
+                ),
+                MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool3'),
 
-            # conv4
-            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=256, name='conv4_1'),
-            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512, name='conv4_2'),
-            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512, name='conv4_3'),
-            MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool4'),
+                # conv4
+                Conv2d(
+                    n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=256,
+                    name='conv4_1'
+                ),
+                Conv2d(
+                    n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512,
+                    name='conv4_2'
+                ),
+                Conv2d(
+                    n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512,
+                    name='conv4_3'
+                ),
+                MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool4'),
 
-            # conv5
-            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512, name='conv5_1'),
-            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512, name='conv5_2'),
-            Conv2d(n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512, name='conv5_3'),
-            MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5'),
-            Flatten(name='flatten'),
-            Dense(n_units=4096, act=tf.nn.relu, in_channels=512*7*7, name='fc1_relu'),
-            Dense(n_units=4096, act=tf.nn.relu, in_channels=4096, name='fc2_relu'),
-            Dense(n_units=1000, in_channels=4096, name='outputs'),
-        ][:self.layer_names.index(self.end_with) + 1])
+                # conv5
+                Conv2d(
+                    n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512,
+                    name='conv5_1'
+                ),
+                Conv2d(
+                    n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512,
+                    name='conv5_2'
+                ),
+                Conv2d(
+                    n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', in_channels=512,
+                    name='conv5_3'
+                ),
+                MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5'),
+                Flatten(name='flatten'),
+                Dense(n_units=4096, act=tf.nn.relu, in_channels=512 * 7 * 7, name='fc1_relu'),
+                Dense(n_units=4096, act=tf.nn.relu, in_channels=4096, name='fc2_relu'),
+                Dense(n_units=1000, in_channels=4096, name='outputs'),
+            ][:self.layer_names.index(self.end_with) + 1]
+        )
 
     def forward(self, inputs):
         """
@@ -166,5 +201,3 @@ class VGG16(Model):
         # print(self.weights)
         assign_weights(weights, self)
         del weights
-
-

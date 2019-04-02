@@ -3,12 +3,11 @@
 
 import tensorflow as tf
 
-from tensorlayer.layers.core import Layer
-# from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
-
 from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.layers.core import Layer
+
+# from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 __all__ = [
     'Lambda',
@@ -119,7 +118,9 @@ class Lambda(Layer):
             fn_name = repr(self.fn)
         except:
             fn_name = 'name not available'
-        return s.format(classname=self.__class__.__name__, fn_name=fn_name, len_weights=len(self._weights), **self.__dict__)
+        return s.format(
+            classname=self.__class__.__name__, fn_name=fn_name, len_weights=len(self._weights), **self.__dict__
+        )
 
     def build(self, inputs_shape=None):
         # do nothing
@@ -135,6 +136,7 @@ class Lambda(Layer):
             outputs = self.fn(inputs, **kwargs)
 
         return outputs
+
 
 class ElementwiseLambda(Layer):
     """A layer that use a custom function to combine multiple :class:`Layer` inputs.
@@ -202,7 +204,9 @@ class ElementwiseLambda(Layer):
             fn_name = repr(self.fn)
         except:
             fn_name = 'name not available'
-        return s.format(classname=self.__class__.__name__, fn_name=fn_name, len_weights=len(self._weights), **self.__dict__)
+        return s.format(
+            classname=self.__class__.__name__, fn_name=fn_name, len_weights=len(self._weights), **self.__dict__
+        )
 
     def build(self, inputs_shape=None):
         # do nothing
@@ -213,7 +217,9 @@ class ElementwiseLambda(Layer):
     def forward(self, inputs, **kwargs):
 
         if not isinstance(inputs, list):
-            raise TypeError("The inputs should be a list of values which corresponds with the customised lambda function.")
+            raise TypeError(
+                "The inputs should be a list of values which corresponds with the customised lambda function."
+            )
 
         if len(kwargs) == 0:
             outputs = self.fn(*inputs, **self.fn_args)
@@ -221,5 +227,3 @@ class ElementwiseLambda(Layer):
             outputs = self.fn(*inputs, **kwargs)
 
         return outputs
-
-

@@ -7,9 +7,14 @@
 # cn ref: https://blog.csdn.net/dQCFKyQDXYm3F8rB0/article/details/79342369
 # cn ref: https://zhuanlan.zhihu.com/p/31466173
 
+import json
+import multiprocessing
+import random
+import time
+
 import numpy as np
-import multiprocessing, random, json, time
 import tensorflow as tf
+
 import tensorlayer as tl
 
 tf.logging.set_verbosity(tf.logging.DEBUG)

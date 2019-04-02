@@ -5,15 +5,10 @@ import os
 
 import tensorflow as tf
 
-from tensorlayer import logging
-
-from tensorlayer.files.utils import del_file
-from tensorlayer.files.utils import del_folder
-from tensorlayer.files.utils import folder_exists
-from tensorlayer.files.utils import load_file_list
-from tensorlayer.files.utils import maybe_download_and_extract
-
-from tensorlayer import utils
+from tensorlayer import logging, utils
+from tensorlayer.files.utils import (del_file, del_folder, folder_exists,
+                                     load_file_list,
+                                     maybe_download_and_extract)
 
 __all__ = ['load_voc_dataset']
 

@@ -661,10 +661,6 @@ Advanced Ops for Dynamic RNN
 These operations usually be used inside Dynamic RNN layer, they can
 compute the sequence lengths for different situation and get the last RNN outputs by indexing.
 
-Output indexing
-"""""""""""""""""""""""""
-.. autofunction:: advanced_indexing_op
-
 Compute Sequence length 1
 """"""""""""""""""""""""""
 .. autofunction:: retrieve_seq_length_op
@@ -684,14 +680,6 @@ Get Mask
 
 Dynamic RNN Layer
 ^^^^^^^^^^^^^^^^^^^^^^
-
-RNN Layer
-""""""""""""""""""""""""""
-.. autoclass:: DynamicRNN
-
-Bidirectional Layer
-"""""""""""""""""""""""""""""""""
-.. autoclass:: BiDynamicRNN
 
 
 Sequence to Sequence
