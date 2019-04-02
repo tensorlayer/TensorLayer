@@ -1,23 +1,20 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import pickle
-import time
 import os
+import pickle
 import sys
+import time
 from datetime import datetime
+
+import numpy as np
+import tensorflow as tf
 
 import gridfs
 import pymongo
-
-# from tensorlayer.files import load_graph_and_params
-from tensorlayer.files import exists_or_mkdir
-from tensorlayer.files import del_folder
-
 from tensorlayer import logging
-
-import tensorflow as tf
-import numpy as np
+# from tensorlayer.files import load_graph_and_params
+from tensorlayer.files import del_folder, exists_or_mkdir
 
 
 class TensorHub(object):

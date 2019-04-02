@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import time
+
 import tensorflow as tf
-import tensorlayer as tl
 import tensorflow.contrib.slim as slim
+
+import tensorlayer as tl
 from tensorlayer.layers import *
 
 tf.logging.set_verbosity(tf.logging.DEBUG)

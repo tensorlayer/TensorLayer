@@ -64,7 +64,6 @@ class Layer_Embed_Test(CustomTestCase):
             E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
             nce_W_init=tl.initializers.truncated_normal(stddev=float(1.0 / np.sqrt(embedding_size))),
             nce_b_init=tl.initializers.constant(value=0.0),
-            name='word2vec_layer',
         )
         print(emb_net)
         try:
@@ -81,7 +80,7 @@ class Layer_Embed_Test(CustomTestCase):
         embed_tensor, embed_nce_loss = emb_net([inputs, labels])
         self.assertEqual(embed_tensor.get_shape().as_list(), [batch_size, embedding_size])
 
-        outputs = tl.layers.Dense(n_units=10, name="dense")(embed_tensor)
+        outputs = tl.layers.Dense(n_units=10)(embed_tensor)
         model = tl.models.Model(inputs=[inputs, labels], outputs=[outputs, embed_nce_loss], name="word2vec_model")
         out, nce = model(
             [np.random.randint(0, 1, size=[batch_size]), np.random.randint(0, 1, size=[batch_size, 1])],
@@ -102,7 +101,6 @@ class Layer_Embed_Test(CustomTestCase):
             E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
             nce_W_init=tl.initializers.truncated_normal(stddev=float(1.0 / np.sqrt(embedding_size))),
             nce_b_init=tl.initializers.constant(value=0.0),
-            name='word2vec_layer',
         )
         print(emb_net)
         embed_tensor = emb_net(inputs)

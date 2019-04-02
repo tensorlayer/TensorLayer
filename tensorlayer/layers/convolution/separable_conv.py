@@ -1,17 +1,14 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-import tensorlayer as tl
-
 import numpy as np
+import tensorflow as tf
 
+import tensorlayer as tl
+from tensorlayer import logging
+from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.utils import get_collection_trainable
-
-from tensorlayer import logging
-
-from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'SeparableConv1d',

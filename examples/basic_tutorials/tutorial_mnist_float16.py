@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import time
+
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import *
 

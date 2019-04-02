@@ -3,9 +3,8 @@
 
 import tensorflow as tf
 
-from tensorlayer.layers.core import Layer
-
 from tensorlayer import logging
+from tensorlayer.layers.core import Layer
 
 __all__ = [
     'Concat',

@@ -38,9 +38,11 @@ following snippet:
 
 import os
 import time
+
 import numpy as np
-from scipy.misc import imread, imresize
 import tensorflow as tf
+from scipy.misc import imread, imresize
+
 import tensorlayer as tl
 from tensorlayer.layers import *
 

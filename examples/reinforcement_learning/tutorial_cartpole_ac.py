@@ -31,15 +31,17 @@ The episode ends when the pole is more than 15 degrees from vertical, or the
 cart moves more than 2.4 units from the center.
 
 """
+import time
+
+import numpy as np
 import tensorflow as tf
+
+import gym
+import tensorlayer as tl
 
 ## enable eager mode
 tf.enable_eager_execution()
 
-import time
-import gym
-import numpy as np
-import tensorlayer as tl
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)

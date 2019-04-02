@@ -3,16 +3,15 @@
 
 import tensorflow as tf
 
+from tensorlayer import logging
+from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
+from tensorlayer.layers.utils import cabs, quantize_active, quantize_weight
+
 # from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer.layers.utils import cabs
-from tensorlayer.layers.utils import quantize_active
-from tensorlayer.layers.utils import quantize_weight
 
-from tensorlayer import logging
 
-from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'DorefaDense',

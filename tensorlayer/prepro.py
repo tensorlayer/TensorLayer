@@ -2,37 +2,30 @@
 # -*- coding: utf-8 -*-
 
 import copy
-
+import math
+import random
 import threading
 import time
 
 import numpy as np
-
-import tensorlayer as tl
-
+import PIL
 import scipy
 import scipy.ndimage as ndi
-
+import skimage
 from scipy import linalg
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
-
-import skimage
-
-from skimage import exposure
-from skimage import transform
-
-from skimage.morphology import disk
-from skimage.morphology import erosion as _erosion
+from six.moves import range
+from skimage import exposure, transform
 from skimage.morphology import binary_dilation as _binary_dilation
 from skimage.morphology import binary_erosion as _binary_erosion
+from skimage.morphology import disk
+from skimage.morphology import erosion as _erosion
 
-from six.moves import range
+import tensorlayer as tl
 from tensorlayer.lazy_imports import LazyImport
-import PIL
+
 cv2 = LazyImport("cv2")
-import math
-import random
 
 # linalg https://docs.scipy.org/doc/scipy/reference/linalg.html
 # ndimage https://docs.scipy.org/doc/scipy/reference/ndimage.html

@@ -2,13 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 import tensorlayer as tl
-
-from tensorlayer.layers.core import Layer
-
 from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.layers.core import Layer
 
 __all__ = [
     'GaussianNoise',
@@ -62,9 +60,7 @@ class GaussianNoise(Layer):
         self.build()
         self._built = True
 
-        logging.info(
-            "GaussianNoise %s: mean: %f stddev: %f" % (self.name, self.mean, self.stddev)
-        )
+        logging.info("GaussianNoise %s: mean: %f stddev: %f" % (self.name, self.mean, self.stddev))
 
     def __repr__(self):
         s = '{classname}(mean={mean}, stddev={stddev}'

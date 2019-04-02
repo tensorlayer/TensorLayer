@@ -2,20 +2,17 @@
 # -*- coding: utf-8 -*-
 
 import collections
-from collections import Counter
 import os
 import random
 import re
 import subprocess
 import tempfile
 import warnings
-
-from six.moves import urllib
-from six.moves import xrange
+from collections import Counter
 
 import numpy as np
-
 import tensorflow as tf
+from six.moves import urllib, xrange
 from tensorflow.python.platform import gfile
 
 import tensorlayer as tl

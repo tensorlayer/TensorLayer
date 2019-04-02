@@ -26,15 +26,17 @@ References
 - http://karpathy.github.io/2016/05/31/rl/
 
 """
+import time
+
+import numpy as np
 import tensorflow as tf
+
+import gym
+import tensorlayer as tl
 
 ## enable eager mode
 tf.enable_eager_execution()
 
-import time
-import gym
-import numpy as np
-import tensorlayer as tl
 
 tf.logging.set_verbosity(tf.logging.DEBUG) # enable logging
 tl.logging.set_verbosity(tl.logging.DEBUG)

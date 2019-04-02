@@ -3,16 +3,13 @@
 
 import tensorflow as tf
 
-from tensorlayer.layers.core import Layer
-from tensorlayer.initializers import truncated_normal
-# from tensorlayer.layers.core import LayersConfig
-
-from tensorlayer.activation import leaky_relu6
-from tensorlayer.activation import leaky_twice_relu6
-
 from tensorlayer import logging
-
+from tensorlayer.activation import leaky_relu6, leaky_twice_relu6
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.initializers import truncated_normal
+from tensorlayer.layers.core import Layer
+
+# from tensorlayer.layers.core import LayersConfig
 
 __all__ = [
     'PRelu',
@@ -70,7 +67,7 @@ class PRelu(Layer):
         self.a_init = a_init
 
         if self.channel_shared:
-            self.build((None,))
+            self.build((None, ))
             self._built = True
         elif self.in_channels is not None:
             self.build((None, self.in_channels))
@@ -156,7 +153,7 @@ class PRelu6(Layer):
         self.a_init = a_init
 
         if self.channel_shared:
-            self.build((None,))
+            self.build((None, ))
             self._built = True
         elif self.in_channels is not None:
             self.build((None, self.in_channels))
@@ -244,7 +241,7 @@ class PTRelu6(Layer):
         self.a_init = a_init
 
         if self.channel_shared:
-            self.build((None,))
+            self.build((None, ))
             self._built = True
         elif self.in_channels:
             self.build((None, self.in_channels))

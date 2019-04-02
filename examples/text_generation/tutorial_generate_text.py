@@ -25,9 +25,11 @@ Data: https://github.com/tensorlayer/tensorlayer/tree/master/example/data/
 import os
 import re
 import time
+
 import nltk
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import *
 

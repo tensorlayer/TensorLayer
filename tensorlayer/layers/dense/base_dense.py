@@ -3,14 +3,15 @@
 
 import numpy as np
 import tensorflow as tf
-import tensorlayer as tl
 
+import tensorlayer as tl
+from tensorlayer import logging
+from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
+
 # from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer import logging
 
-from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'Dense',

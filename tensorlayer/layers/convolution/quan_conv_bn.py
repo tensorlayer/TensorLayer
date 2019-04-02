@@ -2,17 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+from tensorflow.python.training import moving_averages
 
+from tensorlayer import logging
+from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
+from tensorlayer.layers.utils import (quantize_active_overflow,
+                                      quantize_weight_overflow)
+
 # from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer.layers.utils import quantize_active_overflow
-from tensorlayer.layers.utils import quantize_weight_overflow
 
-from tensorflow.python.training import moving_averages
-from tensorlayer import logging
 
-from tensorlayer.decorators import deprecated_alias
 
 __all__ = ['QuanConv2dWithBN']
 

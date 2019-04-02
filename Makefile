@@ -31,14 +31,14 @@ test:
 	python3 tests/test_layers_time_distributed.py
 
 format:
-	autoflake -i example/*.py
+	autoflake -i examples/*.py
 	autoflake -i tensorlayer/*.py
 	autoflake -i tensorlayer/**/*.py
 
-	isort -rc example
+	isort -rc examples
 	isort -rc tensorlayer
 
-	yapf -i example/*.py
+	yapf -i examples/*.py
 	yapf -i tensorlayer/*.py
 	yapf -i tensorlayer/**/*.py
 

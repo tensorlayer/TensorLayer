@@ -1,12 +1,9 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-from tensorlayer.layers.core import Layer
-
 from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
-
+from tensorlayer.layers.core import Layer
 from tensorlayer.lazy_imports import LazyImport
 
 try:

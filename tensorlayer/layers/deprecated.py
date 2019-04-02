@@ -17,16 +17,17 @@ __all__ += [
 
 __log__ = '\n Hint: 1) downgrade TF and TL from version 2.x to 1.x. 2) check the documentation of TF and TL version 2.x'
 
+
 def PReluLayer(*args, **kwargs):
-    raise NonExistingLayerError("PReluLayer(net, name='a') --> PRelu(name='a')(net))"+__log__)
+    raise NonExistingLayerError("PReluLayer(net, name='a') --> PRelu(name='a')(net))" + __log__)
 
 
 def PRelu6Layer(*args, **kwargs):
-    raise NonExistingLayerError("PRelu6Layer(net, name='a') --> PRelu6(name='a')(net))"+__log__)
+    raise NonExistingLayerError("PRelu6Layer(net, name='a') --> PRelu6(name='a')(net))" + __log__)
 
 
 def PTRelu6Layer(*args, **kwargs):
-    raise NonExistingLayerError("PTRelu6Layer(net, name='a') --> PTRelu(name='a')(net))"+__log__)
+    raise NonExistingLayerError("PTRelu6Layer(net, name='a') --> PTRelu(name='a')(net))" + __log__)
 
 
 # convolution/atrous_conv.py
@@ -38,16 +39,17 @@ __all__ += [
 
 
 def AtrousConv1dLayer(*args, **kwargs):
-    raise NonExistingLayerError("use `tl.layers.Conv1d` with dilation instead"+__log__)
+    raise NonExistingLayerError("use `tl.layers.Conv1d` with dilation instead" + __log__)
 
 
 def AtrousConv2dLayer(*args, **kwargs):
-    raise NonExistingLayerError("use `tl.layers.Conv2d` with dilation instead"+__log__)
+    raise NonExistingLayerError("use `tl.layers.Conv2d` with dilation instead" + __log__)
 
 
 def AtrousDeConv2dLayer(*args, **kwargs):
     # raise NonExistingLayerError("AtrousDeConv2dLayer(net, name='a') --> AtrousDeConv2d(name='a')(net)")
-    raise NonExistingLayerError("use `tl.layers.DeConv2d` with dilation instead"+__log__)
+    raise NonExistingLayerError("use `tl.layers.DeConv2d` with dilation instead" + __log__)
+
 
 # dense/base_dense.py
 __all__ += [
@@ -56,7 +58,7 @@ __all__ += [
 
 
 def DenseLayer(*args, **kwargs):
-    raise NonExistingLayerError("DenseLayer(net, name='a') --> Dense(name='a')(net)"+__log__)
+    raise NonExistingLayerError("DenseLayer(net, name='a') --> Dense(name='a')(net)" + __log__)
 
 
 # dense/binary_dense.py
@@ -66,7 +68,7 @@ __all__ += [
 
 
 def BinaryDenseLayer(*args, **kwargs):
-    raise NonExistingLayerError("BinaryDenseLayer(net, name='a') --> BinaryDense(name='a')(net)"+__log__)
+    raise NonExistingLayerError("BinaryDenseLayer(net, name='a') --> BinaryDense(name='a')(net)" + __log__)
 
 
 # dense/dorefa_dense.py
@@ -76,7 +78,7 @@ __all__ += [
 
 
 def DorefaDenseLayer(*args, **kwargs):
-    raise NonExistingLayerError("DorefaDenseLayer(net, name='a') --> DorefaDense(name='a')(net)"+__log__)
+    raise NonExistingLayerError("DorefaDenseLayer(net, name='a') --> DorefaDense(name='a')(net)" + __log__)
 
 
 # dense/dropconnect.py
@@ -86,7 +88,7 @@ __all__ += [
 
 
 def DropconnectDenseLayer(*args, **kwargs):
-    raise NonExistingLayerError("DropconnectDenseLayer(net, name='a') --> DropconnectDense(name='a')(net)"+__log__)
+    raise NonExistingLayerError("DropconnectDenseLayer(net, name='a') --> DropconnectDense(name='a')(net)" + __log__)
 
 
 # dense/ternary_dense.py
@@ -96,7 +98,7 @@ __all__ += [
 
 
 def TernaryDenseLayer(*args, **kwargs):
-    raise NonExistingLayerError("TernaryDenseLayer(net, name='a') --> TernaryDense(name='a')(net)"+__log__)
+    raise NonExistingLayerError("TernaryDenseLayer(net, name='a') --> TernaryDense(name='a')(net)" + __log__)
 
 
 # dropout.py
@@ -106,7 +108,9 @@ __all__ += [
 
 
 def DropoutLayer(*args, **kwargs):
-    raise NonExistingLayerError("DropoutLayer(net, is_train=True, name='a') --> Dropout(name='a')(net, is_train=True)"+__log__)
+    raise NonExistingLayerError(
+        "DropoutLayer(net, is_train=True, name='a') --> Dropout(name='a')(net, is_train=True)" + __log__
+    )
 
 
 # extend.py
@@ -117,11 +121,11 @@ __all__ += [
 
 
 def ExpandDimsLayer(*args, **kwargs):
-    raise NonExistingLayerError("ExpandDimsLayer(net, name='a') --> ExpandDims(name='a')(net)"+__log__)
+    raise NonExistingLayerError("ExpandDimsLayer(net, name='a') --> ExpandDims(name='a')(net)" + __log__)
 
 
 def TileLayer(*args, **kwargs):
-    raise NonExistingLayerError("TileLayer(net, name='a') --> Tile(name='a')(net)"+__log__)
+    raise NonExistingLayerError("TileLayer(net, name='a') --> Tile(name='a')(net)" + __log__)
 
 
 # image_resampling.py
@@ -132,11 +136,11 @@ __all__ += [
 
 
 def UpSampling2dLayer(*args, **kwargs):
-    raise NonExistingLayerError("UpSampling2dLayer(net, name='a') --> UpSampling2d(name='a')(net)"+__log__)
+    raise NonExistingLayerError("UpSampling2dLayer(net, name='a') --> UpSampling2d(name='a')(net)" + __log__)
 
 
 def DownSampling2dLayer(*args, **kwargs):
-    raise NonExistingLayerError("DownSampling2dLayer(net, name='a') --> DownSampling2d(name='a')(net)"+__log__)
+    raise NonExistingLayerError("DownSampling2dLayer(net, name='a') --> DownSampling2d(name='a')(net)" + __log__)
 
 
 # importer.py
@@ -147,11 +151,11 @@ __all__ += [
 
 
 def SlimNetsLayer(*args, **kwargs):
-    raise NonExistingLayerError("SlimNetsLayer(net, name='a') --> SlimNets(name='a')(net)"+__log__)
+    raise NonExistingLayerError("SlimNetsLayer(net, name='a') --> SlimNets(name='a')(net)" + __log__)
 
 
 def KerasLayer(*args, **kwargs):
-    raise NonExistingLayerError("KerasLayer(net, name='a') --> Keras(name='a')(net)"+__log__)
+    raise NonExistingLayerError("KerasLayer(net, name='a') --> Keras(name='a')(net)" + __log__)
 
 
 # inputs.py
@@ -161,7 +165,8 @@ __all__ += [
 
 
 def InputLayer(*args, **kwargs):
-    raise NonExistingLayerError("InputLayer(x, name='a') --> Input(name='a')(x)"+__log__)
+    raise NonExistingLayerError("InputLayer(x, name='a') --> Input(name='a')(x)" + __log__)
+
 
 # embedding.py
 __all__ += [
@@ -173,19 +178,29 @@ __all__ += [
 
 
 def OneHotInputLayer(*args, **kwargs):
-    raise NonExistingLayerError("Not longer Input layer: OneHotInputLayer(x, name='a') --> OneHot(name='a')(layer)"+__log__)
+    raise NonExistingLayerError(
+        "Not longer Input layer: OneHotInputLayer(x, name='a') --> OneHot(name='a')(layer)" + __log__
+    )
 
 
 def Word2vecEmbeddingInputlayer(*args, **kwargs):
-    raise NonExistingLayerError("Not longer Input layer: Word2vecEmbeddingInputlayer(x, name='a') --> Word2vecEmbedding(name='a')(layer)"+__log__)
+    raise NonExistingLayerError(
+        "Not longer Input layer: Word2vecEmbeddingInputlayer(x, name='a') --> Word2vecEmbedding(name='a')(layer)" +
+        __log__
+    )
 
 
 def EmbeddingInputlayer(*args, **kwargs):
-    raise NonExistingLayerError("Not longer Input layer: EmbeddingInputlayer(x, name='a') --> Embedding(name='a')(layer)"+__log__)
+    raise NonExistingLayerError(
+        "Not longer Input layer: EmbeddingInputlayer(x, name='a') --> Embedding(name='a')(layer)" + __log__
+    )
 
 
 def AverageEmbeddingInputlayer(*args, **kwargs):
-    raise NonExistingLayerError("Not longer Input layer: AverageEmbeddingInputlayer(x, name='a') --> AverageEmbedding(name='a')(layer)"+__log__)
+    raise NonExistingLayerError(
+        "Not longer Input layer: AverageEmbeddingInputlayer(x, name='a') --> AverageEmbedding(name='a')(layer)" +
+        __log__
+    )
 
 
 # lambda.py
@@ -196,11 +211,15 @@ __all__ += [
 
 
 def LambdaLayer(*args, **kwargs):
-    raise NonExistingLayerError("LambdaLayer(x, lambda x: 2*x, name='a') --> Lambda(lambda x: 2*x, name='a')(x)"+__log__)
+    raise NonExistingLayerError(
+        "LambdaLayer(x, lambda x: 2*x, name='a') --> Lambda(lambda x: 2*x, name='a')(x)" + __log__
+    )
 
 
 def ElementwiseLambdaLayer(*args, **kwargs):
-    raise NonExistingLayerError("ElementwiseLambdaLayer(x, ..., name='a') --> ElementwiseLambda(..., name='a')(x)"+__log__)
+    raise NonExistingLayerError(
+        "ElementwiseLambdaLayer(x, ..., name='a') --> ElementwiseLambda(..., name='a')(x)" + __log__
+    )
 
 
 # merge.py
@@ -211,11 +230,11 @@ __all__ += [
 
 
 def ConcatLayer(*args, **kwargs):
-    raise NonExistingLayerError("ConcatLayer(x, ..., name='a') --> Concat(..., name='a')(x)"+__log__)
+    raise NonExistingLayerError("ConcatLayer(x, ..., name='a') --> Concat(..., name='a')(x)" + __log__)
 
 
 def ElementwiseLayer(*args, **kwargs):
-    raise NonExistingLayerError("ElementwiseLayer(x, ..., name='a') --> Elementwise(..., name='a')(x)"+__log__)
+    raise NonExistingLayerError("ElementwiseLayer(x, ..., name='a') --> Elementwise(..., name='a')(x)" + __log__)
 
 
 # noise.py
@@ -225,7 +244,7 @@ __all__ += [
 
 
 def GaussianNoiseLayer(*args, **kwargs):
-    raise NonExistingLayerError("GaussianNoiseLayer(x, ..., name='a') --> GaussianNoise(..., name='a')(x)"+__log__)
+    raise NonExistingLayerError("GaussianNoiseLayer(x, ..., name='a') --> GaussianNoise(..., name='a')(x)" + __log__)
 
 
 # normalization.py
@@ -240,27 +259,29 @@ __all__ += [
 
 
 def BatchNormLayer(*args, **kwargs):
-    raise NonExistingLayerError("BatchNormLayer(x, is_train=True, name='a') --> BatchNorm(name='a')(x, is_train=True)"+__log__)
+    raise NonExistingLayerError(
+        "BatchNormLayer(x, is_train=True, name='a') --> BatchNorm(name='a')(x, is_train=True)" + __log__
+    )
 
 
 def InstanceNormLayer(*args, **kwargs):
-    raise NonExistingLayerError("InstanceNormLayer(x, name='a') --> InstanceNorm(name='a')(x)"+__log__)
+    raise NonExistingLayerError("InstanceNormLayer(x, name='a') --> InstanceNorm(name='a')(x)" + __log__)
 
 
 def LayerNormLayer(*args, **kwargs):
-    raise NonExistingLayerError("LayerNormLayer(x, name='a') --> LayerNorm(name='a')(x)"+__log__)
+    raise NonExistingLayerError("LayerNormLayer(x, name='a') --> LayerNorm(name='a')(x)" + __log__)
 
 
 def LocalResponseNormLayer(*args, **kwargs):
-    raise NonExistingLayerError("LocalResponseNormLayer(x, name='a') --> LocalResponseNorm(name='a')(x)"+__log__)
+    raise NonExistingLayerError("LocalResponseNormLayer(x, name='a') --> LocalResponseNorm(name='a')(x)" + __log__)
 
 
 def GroupNormLayer(*args, **kwargs):
-    raise NonExistingLayerError("GroupNormLayer(x, name='a') --> GroupNorm(name='a')(x)"+__log__)
+    raise NonExistingLayerError("GroupNormLayer(x, name='a') --> GroupNorm(name='a')(x)" + __log__)
 
 
 def SwitchNormLayer(*args, **kwargs):
-    raise NonExistingLayerError("SwitchNormLayer(x, name='a') --> SwitchNorm(name='a')(x)"+__log__)
+    raise NonExistingLayerError("SwitchNormLayer(x, name='a') --> SwitchNorm(name='a')(x)" + __log__)
 
 
 # quantize_layer.py
@@ -270,7 +291,7 @@ __all__ += [
 
 
 def SignLayer(*args, **kwargs):
-    raise NonExistingLayerError("SignLayer(x, name='a') --> Sign(name='a')(x)"+__log__)
+    raise NonExistingLayerError("SignLayer(x, name='a') --> Sign(name='a')(x)" + __log__)
 
 
 # recurrent/lstm_layers.py
@@ -280,7 +301,7 @@ __all__ += [
 
 
 def ConvLSTMLayer(*args, **kwargs):
-    raise NonExistingLayerError("ConvLSTMLayer(x, name='a') --> ConvLSTM(name='a')(x)"+__log__)
+    raise NonExistingLayerError("ConvLSTMLayer(x, name='a') --> ConvLSTM(name='a')(x)" + __log__)
 
 
 # recurrent/rnn_dynamic_layers.py
@@ -292,13 +313,13 @@ __all__ += [
 
 def DynamicRNNLayer(*args, **kwargs):
     raise NonExistingLayerError(
-        "DynamicRNNLayer(x, is_train=True, name='a') --> DynamicRNN(name='a')(x, is_train=True)"+__log__
+        "DynamicRNNLayer(x, is_train=True, name='a') --> DynamicRNN(name='a')(x, is_train=True)" + __log__
     )
 
 
 def BiDynamicRNNLayer(*args, **kwargs):
     raise NonExistingLayerError(
-        "BiDynamicRNNLayer(x, is_train=True, name='a') --> BiDynamicRNN(name='a')(x, is_train=True)"+__log__
+        "BiDynamicRNNLayer(x, is_train=True, name='a') --> BiDynamicRNN(name='a')(x, is_train=True)" + __log__
     )
 
 
@@ -310,11 +331,13 @@ __all__ += [
 
 
 def RNNLayer(*args, **kwargs):
-    raise NonExistingLayerError("RNNLayer(x, name='a') --> RNN(name='a')(x)"+__log__)
+    raise NonExistingLayerError("RNNLayer(x, name='a') --> RNN(name='a')(x)" + __log__)
 
 
 def BiRNNLayer(*args, **kwargs):
-    raise NonExistingLayerError("BiRNNLayer(x, is_train=True, name='a') --> BiRNN(name='a')(x, is_train=True)"+__log__)
+    raise NonExistingLayerError(
+        "BiRNNLayer(x, is_train=True, name='a') --> BiRNN(name='a')(x, is_train=True)" + __log__
+    )
 
 
 # reshape.py
@@ -326,15 +349,15 @@ __all__ += [
 
 
 def FlattenLayer(*args, **kwargs):
-    raise NonExistingLayerError("FlattenLayer(x, name='a') --> Flatten(name='a')(x)"+__log__)
+    raise NonExistingLayerError("FlattenLayer(x, name='a') --> Flatten(name='a')(x)" + __log__)
 
 
 def ReshapeLayer(*args, **kwargs):
-    raise NonExistingLayerError("ReshapeLayer(x, name='a') --> Reshape(name='a')(x)"+__log__)
+    raise NonExistingLayerError("ReshapeLayer(x, name='a') --> Reshape(name='a')(x)" + __log__)
 
 
 def TransposeLayer(*args, **kwargs):
-    raise NonExistingLayerError("TransposeLayer(x, name='a') --> Transpose(name='a')(x)"+__log__)
+    raise NonExistingLayerError("TransposeLayer(x, name='a') --> Transpose(name='a')(x)" + __log__)
 
 
 # scale.py
@@ -344,7 +367,7 @@ __all__ += [
 
 
 def ScaleLayer(*args, **kwargs):
-    raise NonExistingLayerError("ScaleLayer(x, name='a') --> Scale(name='a')(x)"+__log__)
+    raise NonExistingLayerError("ScaleLayer(x, name='a') --> Scale(name='a')(x)" + __log__)
 
 
 # spatial_transformer.py
@@ -353,7 +376,7 @@ __all__ += ['SpatialTransformer2dAffineLayer']
 
 def SpatialTransformer2dAffineLayer(*args, **kwargs):
     raise NonExistingLayerError(
-        "SpatialTransformer2dAffineLayer(x1, x2, name='a') --> SpatialTransformer2dAffine(name='a')(x1, x2)"+__log__
+        "SpatialTransformer2dAffineLayer(x1, x2, name='a') --> SpatialTransformer2dAffine(name='a')(x1, x2)" + __log__
     )
 
 
@@ -365,11 +388,11 @@ __all__ += [
 
 
 def StackLayer(*args, **kwargs):
-    raise NonExistingLayerError("StackLayer(x1, x2, name='a') --> Stack(name='a')(x1, x2)"+__log__)
+    raise NonExistingLayerError("StackLayer(x1, x2, name='a') --> Stack(name='a')(x1, x2)" + __log__)
 
 
 def UnStackLayer(*args, **kwargs):
-    raise NonExistingLayerError("UnStackLayer(x1, x2, name='a') --> UnStack(name='a')(x1, x2)"+__log__)
+    raise NonExistingLayerError("UnStackLayer(x1, x2, name='a') --> UnStack(name='a')(x1, x2)" + __log__)
 
 
 # time_distributed.py
@@ -380,4 +403,4 @@ __all__ += [
 
 def TimeDistributedLayer(*args, **kwargs):
     # raise NonExistingLayerError("TimeDistributedLayer(x1, x2, name='a') --> TimeDistributed(name='a')(x1, x2)")
-    raise NonExistingLayerError("TimeDistributedLayer is removed for TF 2.0, please use eager mode instead."+__log__)
+    raise NonExistingLayerError("TimeDistributedLayer is removed for TF 2.0, please use eager mode instead." + __log__)

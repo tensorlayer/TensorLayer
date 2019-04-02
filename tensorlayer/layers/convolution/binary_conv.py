@@ -2,15 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 import tensorlayer as tl
-
-from tensorlayer.layers.core import Layer
-
-from tensorlayer.layers.utils import quantize
-
 from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.layers.core import Layer
+from tensorlayer.layers.utils import quantize
 
 __all__ = ['BinaryConv2d']
 

@@ -5,6 +5,7 @@ Note that, TensorFlow's TFRecord and Dataset API are faster.
 """
 
 import time
+
 import tensorlayer as tl
 
 tl.logging.set_verbosity(tl.logging.DEBUG)

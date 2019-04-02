@@ -20,7 +20,6 @@
 import os, sys, datetime
 sys.path.insert(0, os.path.abspath("../"))  # Important
 sys.path.insert(0, os.path.abspath(os.path.join("..", "tensorlayer"))) # Important
-sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "tensorlayer"))) # Important for local docs
 
 from package_info import __shortversion__
 from package_info import __version__

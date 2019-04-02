@@ -38,15 +38,17 @@ https://www.tensorflow.org/versions/r0.9/tutorials/word2vec/index.html#vector-re
 
 """
 
+import argparse
 import os
 import sys
-import wget
 import time
-import argparse
+
 import numpy as np
 import tensorflow as tf
-import tensorlayer as tl
+import wget
 from six.moves import xrange  # pylint: disable=redefined-builtin
+
+import tensorlayer as tl
 
 parser = argparse.ArgumentParser()
 

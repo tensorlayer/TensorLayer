@@ -23,7 +23,7 @@ class Layer_Convolution_1D_Test(CustomTestCase):
         cls.input_layer = Input(cls.inputs_shape, name='input_layer')
 
         cls.dense = tl.layers.Dense(
-            n_units=100, act=tf.nn.relu, in_channels=200, name='dense'
+            n_units=100, act=tf.nn.relu, in_channels=200
         )(cls.input_layer)
 
         cls.noiselayer = tl.layers.GaussianNoise(

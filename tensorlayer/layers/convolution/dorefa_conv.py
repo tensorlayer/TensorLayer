@@ -2,17 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 import tensorlayer as tl
-
-from tensorlayer.layers.core import Layer
-
-from tensorlayer.layers.utils import cabs
-from tensorlayer.layers.utils import quantize_active
-from tensorlayer.layers.utils import quantize_weight
-
 from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.layers.core import Layer
+from tensorlayer.layers.utils import cabs, quantize_active, quantize_weight
 
 __all__ = ['DorefaConv2d']
 
