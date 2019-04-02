@@ -11,10 +11,11 @@
 <!--- ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/tensorlayer.svg)) --->
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/zsdonghao/tensorlayer2/master.svg)
 [![Supported TF Version](https://img.shields.io/badge/TensorFlow-2.0.0%2B-brightgreen.svg)](https://github.com/tensorflow/tensorflow/releases)
+[![Documentation Status](https://readthedocs.org/projects/tensorlayer2/badge/)](https://tensorlayer2.readthedocs.io/)
 <!---  ([![Downloads](http://pepy.tech/badge/tensorlayer)](http://pepy.tech/project/tensorlayer)) --->
 <!---  ([![Build Status](https://travis-ci.org/tensorlayer/tensorlayer.svg?branch=master)](https://travis-ci.org/tensorlayer/tensorlayer)) --->
 <!---  [![CircleCI](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master.svg?style=svg)](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master) --->
-[![Documentation Status](https://readthedocs.org/projects/tensorlayer2/badge/)](https://tensorlayer2.readthedocs.io/)
+
 <!---  [![Documentation Status](https://readthedocs.org/projects/tensorlayercn/badge/)](https://tensorlayercn.readthedocs.io/) --->
 <!---  [![PyUP Updates](https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg)](https://pyup.io/repos/github/tensorlayer/tensorlayer/) --->
 <!---  [![Docker Pulls](https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg)](https://hub.docker.com/r/tensorlayer/tensorlayer/) --->
@@ -36,7 +37,7 @@
 
 We are working hard on updating TensorLayer 2.0 to support TensorFlow 2.0. Latest progress can be found [here](https://github.com/tensorlayer/tensorlayer/issues/900) and latest [doc](https://tensorlayer2.readthedocs.io). Feel free to discuss and [contribute](CONTRIBUTING.md)! Note that TensorLayer 2.0 is still under construction and not everything in this repository is ready yet.
 
-TensorLayer is a novel TensorFlow-based deep learning and reinforcement learning library designed for researchers and engineers. It provides a large collection of customizable neural layers / functions that are key to build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software by the [ACM Multimedia Society](http://www.acmmm.org/2017/mm-2017-awardees/).
+TensorLayer is a novel TensorFlow-based deep learning and reinforcement learning library designed for researchers and engineers. It provides a large collection of customizable neural layers / functions that are key to build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software by the [ACM Multimedia Society](https://twitter.com/ImperialDSI/status/923928895325442049).
 
 
 # Features
