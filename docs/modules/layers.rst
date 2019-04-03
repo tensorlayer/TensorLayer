@@ -3,26 +3,6 @@ API - Layers
 
 .. automodule:: tensorlayer.layers
 
-
-Name Scope and Sharing Parameters
----------------------------------
-
-These functions help you to reuse parameters for different inference (graph), and get a
-list of parameters by given name. About TensorFlow parameters sharing click `here <https://www.tensorflow.org/versions/master/how_tos/variable_scope/index.html>`__.
-
-Get variables with name
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: get_variables_with_name
-
-Get layers with name
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: get_layers_with_name
-
-Print variables
-^^^^^^^^^^^^^^^^^^
-.. autofunction:: print_all_variables
-
-
 .. -----------------------------------------------------------
 ..                        Layer List
 .. -----------------------------------------------------------
@@ -31,10 +11,6 @@ Layer list
 ----------
 
 .. autosummary::
-
-   get_variables_with_name
-   get_layers_with_name
-   print_all_variables
 
    Layer
 
