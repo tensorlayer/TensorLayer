@@ -71,6 +71,7 @@ autodoc_mock_imports = [
     'sklearn',
     'tensorflow',
     'tqdm',
+    'h5py',
 
     # TL C++ Packages
     'tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops',
