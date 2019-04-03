@@ -23,7 +23,7 @@ class UpSampling2d(Layer):
     scale : int/float or tuple of int/float
         (height, width) scale factor.
     method : str
-        The resize method selected through the index. Default 'bilinear'.
+        The resize method selected through the given string. Default 'bilinear'.
             - 'bilinear', Bilinear interpolation.
             - 'nearest', Nearest neighbor interpolation.
             - 'bicubic', Bicubic interpolation.
@@ -105,7 +105,7 @@ class DownSampling2d(Layer):
     scale : int/float or tuple of int/float
         (height, width) scale factor.
     method : str
-        The resize method selected through the index. Default 'bilinear'.
+        The resize method selected through the given string. Default 'bilinear'.
             - 'bilinear', Bilinear interpolation.
             - 'nearest', Nearest neighbor interpolation.
             - 'bicubic', Bicubic interpolation.
