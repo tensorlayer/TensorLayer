@@ -157,4 +157,4 @@ model = CustomizeModel()
   - Loss function.
   - Back propagation by `tf.GradientTape()`.
   - Model saving and restoring.
-* Examples: [MNIST](examples/basic_tutorials/1_mnist_mlp_static.py), [CIFAR10](examples/basic_tutorials/2_cifar10_cnn_static.py), [FastText](examples/text_classification/tutorial_imdb_fasttext.py)
+* Examples: [MNIST](examples/basic_tutorials/tutorial_mnist_mlp_static.py), [CIFAR10](examples/basic_tutorials/tutorial_cifar10_cnn_static.py), [FastText](examples/text_classification/tutorial_imdb_fasttext.py)
