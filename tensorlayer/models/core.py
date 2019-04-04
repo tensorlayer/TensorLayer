@@ -358,6 +358,8 @@ class Model():
                     elif isinstance(getattr(self, attr), Model):
                         nowmodel = getattr(self, attr)
                         self._all_layers.append(nowmodel)
+                    elif isinstance(getattr(self, attr), list):
+                        self._all_layers.extend(_add_list_to_all_layers(getattr(self, attr)))
                 # TODO: define customised exception for TL
                 except AttributeError as e:
                     raise e
@@ -809,3 +811,19 @@ def _check_tl_layer_tensors(tensors):
             if not hasattr(t, '_info'):
                 return False
         return True
+
+
+def _add_list_to_all_layers(list_member):
+    temp_all_layers = list()
+    for component in list_member:
+        if isinstance(component, Layer):
+            temp_all_layers.append(component)
+            if not component._built:
+                raise AttributeError(
+                    "Layer %s not built yet." % repr(component)
+                )
+        elif isinstance(component, Model):
+            temp_all_layers.append(component)
+        elif isinstance(component, list):
+            temp_all_layers.extend(_add_list_to_all_layers(component))
+    return temp_all_layers
