@@ -13,6 +13,8 @@ __all__ = [
     'Model',
 ]
 
+_global_model_name_dict = {}  # TODO: better implementation?
+
 
 class Model():
     """The :class:`Model` class represents a neural network.
@@ -134,8 +136,29 @@ class Model():
         name : str or None
             Name for this network
         """
+        # Auto naming if the name is not given
+        global _global_model_name_dict
+        if name is None:
+            prefix = self.__class__.__name__.lower()
+            if _global_model_name_dict.get(prefix) is not None:
+                _global_model_name_dict[prefix] += 1
+                name = prefix + '_' + str(_global_model_name_dict[prefix])
+            else:
+                _global_model_name_dict[prefix] = 0
+                name = prefix
+            while True:
+                if _global_model_name_dict.get(name) is None:
+                    break
+                _global_model_name_dict[prefix] += 1
+                name = prefix + '_' + str(_global_model_name_dict[prefix])
+        else:
+            if _global_model_name_dict.get(name) is not None:
+                raise ValueError(
+                    'Model name \'%s\' has already been used by another model. Please change the model name.' % name
+                )
+            _global_model_name_dict[name] = 0
+
         # Model properties
-        # TODO: model auto naming
         self.name = name
 
         # Model state: train or test
@@ -201,6 +224,16 @@ class Model():
             self._node_by_depth, self._all_layers = self._construct_graph()
 
             self._fix_nodes_for_layers()
+
+            # check if layer name inside this model unique (static mode)
+            local_layer_name_dict = set()
+            for layer in self.all_layers:
+                if layer.name in local_layer_name_dict:
+                    raise ValueError(
+                        'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % layer.name
+                    )
+                else:
+                    local_layer_name_dict.add(layer.name)
 
     def __call__(self, inputs, is_train=None, **kwargs):
         """Forward input tensors through this network by calling.
@@ -330,6 +363,15 @@ class Model():
                     raise e
                 except Exception:
                     pass
+
+            # check layer name uniqueness
+            local_layer_name_dict = set()
+            for layer in self._all_layers:
+                if layer.name in local_layer_name_dict:
+                    logging.warning(
+                        'Layer name \'%s\' has already been used by another layer. Please consider change to another name.' % layer.name)
+                else:
+                    local_layer_name_dict.add(layer.name)
             return self._all_layers
 
     @property
@@ -361,7 +403,7 @@ class Model():
         -------
 
         """
-        if self.is_train !=True:
+        if self.is_train != True:
             self.is_train = True
             self._set_mode_for_layers(True)
 
@@ -714,7 +756,7 @@ class Model():
             format = filepath.split('.')[-1]
 
         if format == 'hdf5' or format == 'h5':
-            if skip ==True or in_order == False:
+            if skip == True or in_order == False:
                 # load by weights name
                 utils.load_hdf5_to_weights(filepath, self.weights, skip)
             else:
