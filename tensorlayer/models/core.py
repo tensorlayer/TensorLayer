@@ -509,7 +509,8 @@ class Model():
         self._nodes_fixed = True
 
     def __repr__(self):
-        tmpstr = self.__class__.__name__ + '(\n'
+        # tmpstr = self.__class__.__name__ + '(\n'
+        tmpstr = self.name + '(\n'
         for idx, layer in enumerate(self.all_layers):
             modstr = layer.__repr__()
             modstr = _addindent(modstr, 2)
