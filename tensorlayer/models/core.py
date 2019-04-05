@@ -14,6 +14,7 @@ __all__ = [
 ]
 
 _global_model_name_dict = {}  # TODO: better implementation?
+_global_model_name_set = set()
 
 
 class Model():
@@ -138,6 +139,7 @@ class Model():
         """
         # Auto naming if the name is not given
         global _global_model_name_dict
+        global _global_model_name_set
         if name is None:
             prefix = self.__class__.__name__.lower()
             if _global_model_name_dict.get(prefix) is not None:
@@ -146,16 +148,16 @@ class Model():
             else:
                 _global_model_name_dict[prefix] = 0
                 name = prefix
-            while True:
-                if _global_model_name_dict.get(name) is None:
-                    break
+            while name in _global_model_name_set:
                 _global_model_name_dict[prefix] += 1
                 name = prefix + '_' + str(_global_model_name_dict[prefix])
+            _global_model_name_set.add(name)
         else:
-            if _global_model_name_dict.get(name) is not None:
+            if name in _global_model_name_set:
                 raise ValueError(
                     'Model name \'%s\' has already been used by another model. Please change the model name.' % name
                 )
+            _global_model_name_set.add(name)
             _global_model_name_dict[name] = 0
 
         # Model properties
