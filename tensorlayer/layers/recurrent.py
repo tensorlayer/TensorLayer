@@ -56,9 +56,10 @@ class RNN(Layer):
     return_state: boolean
         Whether to return the last state of the RNN cell. The state is a list of Tensor.
         In a dynamic model, `return_state` can be updated when it is called in customised forward().
-    inputs_shape: list of int
-        Optional, the shape of inputs. The inputs should have 3 dimensions [batch_size, n_steps, n_features].
+    in_channels: list of int
+        Optional, the number of channels of the previous layer which is normally the size of embedding.
         If given, the layer will be built when init.
+        If None, it will be automatically detected when the layer is forwarded for the first time.
     name : str
         A unique layer name.
 
@@ -70,6 +71,7 @@ class RNN(Layer):
     >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
     >>> rnn_out, lstm_state = tl.layers.RNN(
     >>>     cell=tf.keras.layers.LSTMCell(units=hidden_size, dropout=0.1),
+    >>>     in_channels=embedding_size,
     >>>     return_last=True, return_seq_2d=False, return_state=True, name='lstmrnn'
     >>> )(inputs)
     >>> outputs = tl.layers.Dense(n_units=1)(rnn_out)
@@ -90,7 +92,7 @@ class RNN(Layer):
             return_last=False,
             return_seq_2d=False,
             return_state=False,
-            inputs_shape=None,
+            in_channels=None,
             name=None,  # 'rnn'
     ):
 
@@ -101,8 +103,8 @@ class RNN(Layer):
         self.return_seq_2d = return_seq_2d
         self.return_state = return_state
 
-        if inputs_shape is not None:
-            self.build(inputs_shape)
+        if in_channels is not None:
+            self.build((None, None, in_channels))
             self._built = True
 
         logging.info("RNN %s: cell: %s, n_hidden: %s" % (self.name, self.cell.__class__.__name__, self.cell.units))
