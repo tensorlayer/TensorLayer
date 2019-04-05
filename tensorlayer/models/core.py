@@ -225,16 +225,6 @@ class Model():
 
             self._fix_nodes_for_layers()
 
-            # check if layer name inside this model unique (static mode)
-            local_layer_name_dict = set()
-            for layer in self.all_layers:
-                if layer.name in local_layer_name_dict:
-                    raise ValueError(
-                        'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % layer.name
-                    )
-                else:
-                    local_layer_name_dict.add(layer.name)
-
     def __call__(self, inputs, is_train=None, **kwargs):
         """Forward input tensors through this network by calling.
 
@@ -571,6 +561,12 @@ class Model():
                     if node.name not in visited_node_names:
                         visited_node_names.append(node.name)
                         queue_node.put(node)
+                    # else have multiple layers with the same name
+                    else:
+                        raise ValueError(
+                            'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % node.layer.name
+                        )
+
 
         # construct the computation graph in top-sort order
         cur_depth = [tensor._info[0] for tensor in input_tensors_list]
