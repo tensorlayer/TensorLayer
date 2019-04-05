@@ -28,12 +28,13 @@ class Layer_RNN_Test(CustomTestCase):
 
         cls.data_x = np.random.random([cls.batch_size, cls.num_steps, cls.embedding_size]).astype(np.float32)
         cls.data_y = np.zeros([cls.batch_size, 1]).astype(np.float32)
+        cls.data_y2 = np.zeros([cls.batch_size, cls.num_steps]).astype(np.float32)
 
         map1 = np.random.random([1, cls.num_steps])
         map2 = np.random.random([cls.embedding_size, 1])
         for i in range(cls.batch_size):
             cls.data_y[i] = np.matmul(map1, np.matmul(cls.data_x[i], map2))
-
+            cls.data_y2[i] = np.matmul(cls.data_x[i], map2)[:, 0]
 
     @classmethod
     def tearDownClass(cls):
@@ -44,11 +45,11 @@ class Layer_RNN_Test(CustomTestCase):
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
         rnnlayer = tl.layers.RNN(
             cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.1),
-            return_last=True, return_seq_2d=False, return_state=True, name='simplernn'
+            return_last=True, return_seq_2d=False, return_state=True
         )
         rnn, rnn_state = rnnlayer(inputs)
         outputs = tl.layers.Dense(n_units=1)(rnn)
-        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0]], name='rnn_model')
+        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0]])
         print(rnn_model)
 
         optimizer = tf.optimizers.Adam(learning_rate=0.01)
@@ -67,6 +68,42 @@ class Layer_RNN_Test(CustomTestCase):
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
 
+    def test_basic_simplernn2(self):
+
+        inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
+        rnnlayer = tl.layers.RNN(
+            cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.1),
+            return_last=False, return_seq_2d=True, return_state=False
+        )
+        rnn = rnnlayer(inputs)
+        outputs = tl.layers.Dense(n_units=1)(rnn)
+        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn])
+        print(rnn_model)
+
+        rnn_model.eval()
+        assert not rnnlayer.is_train
+
+        pred_y, rnn_y = rnn_model(self.data_x)
+        self.assertEqual(pred_y.get_shape().as_list(), [self.batch_size * self.num_steps, 1])
+        self.assertEqual(rnn_y.get_shape().as_list(), [self.batch_size * self.num_steps, self.hidden_size])
+
+    def test_basic_simplernn3(self):
+
+        inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
+        rnnlayer = tl.layers.RNN(
+            cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.1),
+            return_last=False, return_seq_2d=False, return_state=False
+        )
+        rnn = rnnlayer(inputs)
+        rnn_model = tl.models.Model(inputs=inputs, outputs=rnn)
+        print(rnn_model)
+
+        rnn_model.eval()
+        assert not rnnlayer.is_train
+
+        rnn_y = rnn_model(self.data_x)
+        self.assertEqual(rnn_y.get_shape().as_list(), [self.batch_size, self.num_steps, self.hidden_size])
+
     def test_basic_simplernn_dynamic(self):
 
         class CustomisedModel(tl.models.Model):
@@ -75,7 +112,7 @@ class Layer_RNN_Test(CustomTestCase):
                 self.rnnlayer = tl.layers.RNN(
                     cell=tf.keras.layers.SimpleRNNCell(units=8, dropout=0.1),
                     in_channels=4,
-                    return_last=False, return_seq_2d=False, return_state=False, name='simplernn3'
+                    return_last=False, return_seq_2d=False, return_state=False
                 )
                 self.dense = tl.layers.Dense(in_channels=8, n_units=1)
 
@@ -108,7 +145,7 @@ class Layer_RNN_Test(CustomTestCase):
                 self.rnnlayer = tl.layers.RNN(
                     cell=tf.keras.layers.SimpleRNNCell(units=8, dropout=0.1),
                     in_channels=4,
-                    return_last=False, return_seq_2d=False, return_state=False, name='simplernn2'
+                    return_last=False, return_seq_2d=False, return_state=False
                 )
                 self.dense = tl.layers.Dense(in_channels=8, n_units=1)
 
@@ -134,16 +171,57 @@ class Layer_RNN_Test(CustomTestCase):
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
 
+    def test_basic_simplernn_dynamic_3(self):
+
+        class CustomisedModel(tl.models.Model):
+            def __init__(self):
+                super(CustomisedModel, self).__init__()
+                self.rnnlayer1 = tl.layers.RNN(
+                    cell=tf.keras.layers.SimpleRNNCell(units=8, dropout=0.1),
+                    in_channels=4,
+                    return_last=True, return_state=True
+                )
+                self.rnnlayer2 = tl.layers.RNN(
+                    cell=tf.keras.layers.SimpleRNNCell(units=8, dropout=0.1),
+                    in_channels=4,
+                    return_last=True, return_state=False
+                )
+                self.dense = tl.layers.Dense(in_channels=8, n_units=1)
+
+            def forward(self, x):
+                _, state = self.rnnlayer1(x[:,:2,:])
+                z = self.rnnlayer2(x[:,2:,:], initial_state=state)
+                z = self.dense(z)
+                return z
+
+        rnn_model = CustomisedModel()
+        print(rnn_model)
+        optimizer = tf.optimizers.Adam(learning_rate=0.01)
+        rnn_model.train()
+        assert rnn_model.rnnlayer1.is_train
+        assert rnn_model.rnnlayer2.is_train
+
+        for epoch in range(50):
+            with tf.GradientTape() as tape:
+                pred_y = rnn_model(self.data_x)
+                loss = tl.cost.mean_squared_error(pred_y, self.data_y)
+
+            gradients = tape.gradient(loss, rnn_model.weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.weights))
+
+            if (epoch + 1) % 10 == 0:
+                print("epoch %d, loss %f" % (epoch, loss))
+
     def test_basic_lstmrnn(self):
 
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
         rnnlayer = tl.layers.RNN(
             cell=tf.keras.layers.LSTMCell(units=self.hidden_size, dropout=0.1),
-            return_last=True, return_seq_2d=False, return_state=True, name='lstmrnn'
+            return_last=True, return_seq_2d=False, return_state=True
         )
         rnn, rnn_state = rnnlayer(inputs)
         outputs = tl.layers.Dense(n_units=1)(rnn)
-        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0], rnn_state[1]], name='rnn_model2')
+        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0], rnn_state[1]])
         print(rnn_model)
 
         optimizer = tf.optimizers.Adam(learning_rate=0.01)
@@ -166,11 +244,11 @@ class Layer_RNN_Test(CustomTestCase):
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
         rnnlayer = tl.layers.RNN(
             cell=tf.keras.layers.GRUCell(units=self.hidden_size, dropout=0.1),
-            return_last=True, return_seq_2d=False, return_state=True, name='grurnn'
+            return_last=True, return_seq_2d=False, return_state=True
         )
         rnn, rnn_state = rnnlayer(inputs)
         outputs = tl.layers.Dense(n_units=1)(rnn)
-        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0]], name='rnn_model')
+        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0]] )
         print(rnn_model)
 
         optimizer = tf.optimizers.Adam(learning_rate=0.01)
@@ -180,6 +258,105 @@ class Layer_RNN_Test(CustomTestCase):
         for epoch in range(50):
             with tf.GradientTape() as tape:
                 pred_y, final_h = rnn_model(self.data_x)
+                loss = tl.cost.mean_squared_error(pred_y, self.data_y)
+
+            gradients = tape.gradient(loss, rnn_model.weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.weights))
+
+            if (epoch + 1) % 10 == 0:
+                print("epoch %d, loss %f" % (epoch, loss))
+
+    def test_basic_birnn_simplernncell(self):
+
+        inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
+        rnnlayer = tl.layers.BiRNN(
+            fw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.1),
+            bw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size + 1, dropout=0.1),
+            return_seq_2d=True, return_state=True
+        )
+        rnn, rnn_fw_state, rnn_bw_state = rnnlayer(inputs)
+        dense = tl.layers.Dense(n_units=1)(rnn)
+        outputs = tl.layers.Reshape([-1, self.num_steps])(dense)
+        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn, rnn_fw_state[0], rnn_bw_state[0]])
+        print(rnn_model)
+
+        optimizer = tf.optimizers.Adam(learning_rate=0.01)
+
+        rnn_model.train()
+        assert rnnlayer.is_train
+
+        for epoch in range(50):
+            with tf.GradientTape() as tape:
+                pred_y, r, rfw, rbw = rnn_model(self.data_x)
+                loss = tl.cost.mean_squared_error(pred_y, self.data_y2)
+
+            self.assertEqual(r.get_shape().as_list(), [self.batch_size * self.num_steps, self.hidden_size + self.hidden_size + 1])
+            gradients = tape.gradient(loss, rnn_model.weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.weights))
+
+            if (epoch + 1) % 10 == 0:
+                print("epoch %d, loss %f" % (epoch, loss))
+
+    def test_basic_birnn_lstmcell(self):
+
+        inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
+        rnnlayer = tl.layers.BiRNN(
+            fw_cell=tf.keras.layers.LSTMCell(units=self.hidden_size, dropout=0.1),
+            bw_cell=tf.keras.layers.LSTMCell(units=self.hidden_size + 1, dropout=0.1),
+            return_seq_2d=False, return_state=True
+        )
+        rnn, rnn_fw_state, rnn_bw_state = rnnlayer(inputs)
+        din = tl.layers.Reshape([-1, self.hidden_size + self.hidden_size + 1])(rnn)
+        dense = tl.layers.Dense(n_units=1)(din)
+        outputs = tl.layers.Reshape([-1, self.num_steps])(dense)
+        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn, rnn_fw_state[0], rnn_bw_state[0]])
+        print(rnn_model)
+
+        optimizer = tf.optimizers.Adam(learning_rate=0.01)
+
+        rnn_model.train()
+        assert rnnlayer.is_train
+
+        for epoch in range(50):
+            with tf.GradientTape() as tape:
+                pred_y, r, rfw, rbw = rnn_model(self.data_x)
+                loss = tl.cost.mean_squared_error(pred_y, self.data_y2)
+
+            self.assertEqual(r.get_shape().as_list(), [self.batch_size, self.num_steps, self.hidden_size + self.hidden_size + 1])
+            gradients = tape.gradient(loss, rnn_model.weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.weights))
+
+            if (epoch + 1) % 10 == 0:
+                print("epoch %d, loss %f" % (epoch, loss))
+
+    def test_basic_birnn_grucell(self):
+
+        class CustomisedModel(tl.models.Model):
+            def __init__(self):
+                super(CustomisedModel, self).__init__()
+                self.rnnlayer = tl.layers.BiRNN(
+                    fw_cell=tf.keras.layers.GRUCell(units=8, dropout=0.1),
+                    bw_cell=tf.keras.layers.GRUCell(units=8, dropout=0.1),
+                    in_channels=4,
+                    return_seq_2d=False, return_state=False
+                )
+                self.dense = tl.layers.Dense(in_channels=16, n_units=1)
+                self.reshape = tl.layers.Reshape([-1, 6])
+
+            def forward(self, x):
+                z = self.rnnlayer(x, return_seq_2d=True)
+                z = self.dense(z)
+                z = self.reshape(z)
+                return z
+
+        rnn_model = CustomisedModel()
+        print(rnn_model)
+        optimizer = tf.optimizers.Adam(learning_rate=0.01)
+        rnn_model.train()
+
+        for epoch in range(50):
+            with tf.GradientTape() as tape:
+                pred_y = rnn_model(self.data_x)
                 loss = tl.cost.mean_squared_error(pred_y, self.data_y)
 
             gradients = tape.gradient(loss, rnn_model.weights)
