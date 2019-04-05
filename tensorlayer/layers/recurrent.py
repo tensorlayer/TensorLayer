@@ -48,16 +48,19 @@ class RNN(Layer):
             - If False, return all outputs, "Synced sequence input and output"
             - In other word, if you want to stack more RNNs on this layer, set to False.
         In a dynamic model, `return_last` can be updated when it is called in customised forward().
+        By default, `False`.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
             - If True, return 2D Tensor [batch_size * n_steps, n_hidden], for stacking Dense layer after it.
             - If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
         In a dynamic model, `return_seq_2d` can be updated when it is called in customised forward().
+        By default, `False`.
     return_state: boolean
         Whether to return the last state of the RNN cell. The state is a list of Tensor.
             - If True, the layer will return outputs and the final state of the cell.
             - If False, the layer will return outputs only.
         In a dynamic model, `return_state` can be updated when it is called in customised forward().
+        By default, `False`.
     in_channels: int
         Optional, the number of channels of the previous layer which is normally the size of embedding.
         If given, the layer will be built when init.
@@ -209,15 +212,16 @@ class BiRNN(Layer):
             - Note TF2.0+, TF1.0+ and TF1.0- are different
     bw_cell: TensorFlow cell function for backward direction similar with `fw_cell`
     return_seq_2d : boolean
-        Optional,
             - If True, return 2D Tensor [batch_size * n_steps, n_hidden], for stacking Dense layer after it.
             - If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
         In a dynamic model, `return_seq_2d` can be updated when it is called in customised forward().
+        By default, `False`.
     return_state: boolean
         Whether to return the last state of the two cells. The state is a list of Tensor.
             - If True, the layer will return outputs, the final state of `fw_cell` and the final state of `bw_cell`.
             - If False, the layer will return outputs only.
         In a dynamic model, `return_state` can be updated when it is called in customised forward().
+        By default, `False`.
     in_channels: int
         Optional, the number of channels of the previous layer which is normally the size of embedding.
         If given, the layer will be built when init.
