@@ -19,7 +19,7 @@ from tensorlayer.layers.core import Layer
 # TODO: uncomment
 __all__ = [
     'RNN',
-    # 'BiRNN',
+    'BiRNN',
     # 'ConvRNNCell',
     # 'BasicConvLSTMCell',
     # 'ConvLSTM',
@@ -33,7 +33,7 @@ __all__ = [
 
 class RNN(Layer):
     """
-    The :class:`RNN` class is a fixed length recurrent layer for implementing vanilla RNN,
+    The :class:`RNN` class is a fixed length recurrent layer for implementing simple RNN,
     LSTM, GRU and etc.
 
     Parameters
@@ -50,13 +50,15 @@ class RNN(Layer):
         In a dynamic model, `return_last` can be updated when it is called in customised forward().
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-            - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
-            - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+            - If True, return 2D Tensor [batch_size * n_steps, n_hidden], for stacking Dense layer after it.
+            - If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
         In a dynamic model, `return_seq_2d` can be updated when it is called in customised forward().
     return_state: boolean
         Whether to return the last state of the RNN cell. The state is a list of Tensor.
+            - If True, the layer will return outputs and the final state of the cell.
+            - If False, the layer will return outputs only.
         In a dynamic model, `return_state` can be updated when it is called in customised forward().
-    in_channels: list of int
+    in_channels: int
         Optional, the number of channels of the previous layer which is normally the size of embedding.
         If given, the layer will be built when init.
         If None, it will be automatically detected when the layer is forwarded for the first time.
@@ -76,13 +78,12 @@ class RNN(Layer):
     >>> )(inputs)
     >>> outputs = tl.layers.Dense(n_units=1)(rnn_out)
     >>> rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0], rnn_state[1]], name='rnn_model')
-
-    # Note that, if LSTMCell is applied, the rnn_state is [h, c] where h the hidden state and c the cell state of LSTM.
-
+    >>> # If LSTMCell is applied, the rnn_state is [h, c] where h the hidden state and c the cell state of LSTM.
 
     Notes
     -----
-    Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see :class:`ReshapeLayer`.
+    Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see layer :class:`Reshape`.
+
 
     """
 
@@ -107,14 +108,14 @@ class RNN(Layer):
             self.build((None, None, in_channels))
             self._built = True
 
-        logging.info("RNN %s: cell: %s, n_hidden: %s" % (self.name, self.cell.__class__.__name__, self.cell.units))
+        logging.info("RNN %s: cell: %s, n_units: %s" % (self.name, self.cell.__class__.__name__, self.cell.units))
 
     def __repr__(self):
-        s = ('{classname}(cell={cellname}, n_hidden={n_hidden}')
+        s = ('{classname}(cell={cellname}, n_units={n_units}')
         s += ', name=\'{name}\''
         s += ')'
         return s.format(
-            classname=self.__class__.__name__, cellname=self.cell.__class__.__name__, n_hidden=self.cell.units,
+            classname=self.__class__.__name__, cellname=self.cell.__class__.__name__, n_units=self.cell.units,
             **self.__dict__
         )
 
@@ -146,7 +147,6 @@ class RNN(Layer):
             The input of a network
         initial_state : None or list of Tensor (RNN State)
             If None, `initial_state` is zero state.
-            In dynamic eager mode, `initial_state` can be updated when it is called in customised forward().
         **kwargs: dict
             Some attributes can be updated during forwarding
             such as `return_last`, `return_seq_2d`, `return_state`.
@@ -203,224 +203,171 @@ class BiRNN(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
-    cell_fn : TensorFlow cell function
-        A TensorFlow core RNN cell.
-            - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__.
-            - Note TF1.0+ and TF1.0- are different.
-    cell_init_args : dictionary or None
-        The arguments for the cell function.
-    n_hidden : int
-        The number of hidden units in the layer.
-    initializer : initializer
-        The initializer for initializing the model parameters.
-    n_steps : int
-        The fixed sequence length.
-    fw_initial_state : None or forward RNN State
-        If None, `initial_state` is zero state.
-    bw_initial_state : None or backward RNN State
-        If None, `initial_state` is zero state.
-    dropout : tuple of float or int
-        The input and output keep probability (input_keep_prob, output_keep_prob).
-        If one int, input and output keep probability are the same.
-    n_layer : int
-        The number of RNN layers, default is 1.
-    return_last : boolean
-        Whether return last output or all outputs in each step.
-            - If True, return the last output, "Sequence input and single output"
-            - If False, return all outputs, "Synced sequence input and output"
-            - In other word, if you want to stack more RNNs on this layer, set to False.
+    fw_cell : TensorFlow cell function for forward direction
+        A RNN cell implemented by tf.keras
+            - E.g. tf.keras.layers.SimpleRNNCell, tf.keras.layers.LSTMCell, tf.keras.layers.GRUCell
+            - Note TF2.0+, TF1.0+ and TF1.0- are different
+    bw_cell: TensorFlow cell function for backward direction similar with `fw_cell`
     return_seq_2d : boolean
-        Only consider this argument when `return_last` is `False`
-            - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
-            - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+        Optional,
+            - If True, return 2D Tensor [batch_size * n_steps, n_hidden], for stacking Dense layer after it.
+            - If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
+        In a dynamic model, `return_seq_2d` can be updated when it is called in customised forward().
+    return_state: boolean
+        Whether to return the last state of the two cells. The state is a list of Tensor.
+            - If True, the layer will return outputs, the final state of `fw_cell` and the final state of `bw_cell`.
+            - If False, the layer will return outputs only.
+        In a dynamic model, `return_state` can be updated when it is called in customised forward().
+    in_channels: int
+        Optional, the number of channels of the previous layer which is normally the size of embedding.
+        If given, the layer will be built when init.
+        If None, it will be automatically detected when the layer is forwarded for the first time.
     name : str
         A unique layer name.
 
-    Attributes
-    ----------
-    outputs : tensor
-        The output of this layer.
-    fw(bw)_final_state : tensor or StateTuple
-        The finial state of this layer.
-            - When `state_is_tuple` is `False`, it is the final hidden and cell states, `states.get_shape() = [?, 2 * n_hidden]`.
-            - When `state_is_tuple` is `True`, it stores two elements: `(c, h)`.
-            - In practice, you can get the final state after each iteration during training, then feed it to the initial state of next iteration.
-    fw(bw)_initial_state : tensor or StateTuple
-        The initial state of this layer.
-            - In practice, you can set your state at the begining of each epoch or iteration according to your training procedure.
-    batch_size : int or tensor
-        It is an integer, if it is able to compute the `batch_size`; otherwise, tensor for dynamic batch size.
+    Examples
+    --------
+    - A simple regression model below.
+    >>> inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
+    >>> # the fw_cell and bw_cell can be different
+    >>> rnnlayer = tl.layers.BiRNN(
+    >>>     fw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.1),
+    >>>     bw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size + 1, dropout=0.1),
+    >>>     return_seq_2d=True, return_state=True
+    >>> )
+    >>> # if return_state=True, the final state of the two cells will be returned together with the outputs
+    >>> # if return_state=False, only the outputs will be returned
+    >>> rnn_out, rnn_fw_state, rnn_bw_state = rnnlayer(inputs)
+    >>> # if the BiRNN is followed by a Dense, return_seq_2d should be True.
+    >>> # if the BiRNN is followed by other RNN, return_seq_2d can be False.
+    >>> dense = tl.layers.Dense(n_units=1)(rnn_out)
+    >>> outputs = tl.layers.Reshape([-1, self.num_steps])(dense)
+    >>> rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_out, rnn_fw_state[0], rnn_bw_state[0]])
 
     Notes
     -----
-    Input dimension should be rank 3 : [batch_size, n_steps, n_features]. If not, please see :class:`ReshapeLayer`.
-    For predicting, the sequence length has to be the same with the sequence length of training, while, for normal
-    RNN, we can use sequence length of 1 for predicting.
-
-    References
-    ----------
-    `Source <https://github.com/akaraspt/deepsleep/blob/master/deepsleep/model.py>`__
+    Input dimension should be rank 3 : [batch_size, n_steps, n_features]. If not, please see layer :class:`Reshape`.
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
-            cell_fn,
-            cell_init_args=None,
-            n_hidden=100,
-            initializer=tf.compat.v1.initializers.random_uniform(-0.1, 0.1),
-            n_steps=5,
-            fw_initial_state=None,
-            bw_initial_state=None,
-            dropout=None,
-            n_layer=1,
-            return_last=False,
+            fw_cell,
+            bw_cell,
             return_seq_2d=False,
-            name='birnn',
+            return_state=False,
+            in_channels=None,
+            name=None, # 'birnn'
     ):
-        super(BiRNN, self).__init__(prev_layer=prev_layer, cell_init_args=cell_init_args, name=name)
+        super(BiRNN, self).__init__(name)
 
-        if self.cell_init_args:
-            self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True,
+        self.fw_cell = fw_cell
+        self.bw_cell = bw_cell
+        self.return_seq_2d = return_seq_2d
+        self.return_state = return_state
 
-        if 'GRU' in cell_fn.__name__:
-            try:
-                self.cell_init_args.pop('state_is_tuple')
-            except Exception:
-                logging.warning("pop state_is_tuple fails.")
+        if in_channels is not None:
+            self.build((None, None, in_channels))
+            self._built = True
 
-        if cell_fn is None:
-            raise Exception("Please put in cell_fn")
+        logging.info("RNN %s: fw_cell: %s, fw_n_units: %s, bw_cell: %s, bw_n_units： %s" %
+                     (self.name, self.fw_cell.__class__.__name__, self.fw_cell.units,
+                      self.bw_cell.__class__.__name__, self.bw_cell.units))
 
-        logging.info(
-            "BiRNN %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d " % (
-                self.name, n_hidden, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__,
-                dropout, n_layer
-            )
+    def __repr__(self):
+        s = ('{classname}(fw_cell={fw_cellname}, fw_n_units={fw_n_units}'
+             ', bw_cell={bw_cellname}, bw_n_units={bw_n_units}')
+        s += ', name=\'{name}\''
+        s += ')'
+        return s.format(
+            classname=self.__class__.__name__,
+            fw_cellname=self.fw_cell.__class__.__name__,
+            fw_n_units=self.fw_cell.units,
+            bw_cellname=self.bw_cell.__class__.__name__,
+            bw_n_units=self.bw_cell.units,
+            **self.__dict__
         )
 
-        fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
-
-        if fixed_batch_size.value:
-            self.batch_size = fixed_batch_size.value
-            logging.info("       RNN batch_size (concurrent processes): %d" % self.batch_size)
-
-        else:
-            self.batch_size = array_ops.shape(self.inputs)[0]
-            logging.info("       non specified batch_size, uses a tensor instead.")
-
+    def build(self, inputs_shape):
+        """
+        Parameters
+        ----------
+        inputs_shape : tuple
+            the shape of inputs tensor
+        """
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
-        try:
-            self.inputs.get_shape().with_rank(3)
-        except Exception:
+        if len(inputs_shape) != 3:
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps, n_features]")
 
-        with tf.compat.v1.variable_scope(name, initializer=initializer) as vs:
-            rnn_creator = lambda: cell_fn(num_units=n_hidden, **self.cell_init_args)
-            # Apply dropout
-            if dropout:
+        with tf.name_scope(self.name) as scope:
+            self.fw_cell.build(tuple(inputs_shape))
+            self.bw_cell.build(tuple(inputs_shape))
 
-                if isinstance(dropout, (tuple, list)):  # type(dropout) in [tuple, list]:
-                    in_keep_prob = dropout[0]
-                    out_keep_prob = dropout[1]
+        if self._weights is None:
+            self._weights = list()
+        for var in self.fw_cell.trainable_variables:
+            self._weights.append(var)
+        for var in self.bw_cell.trainable_variables:
+            self._weights.append(var)
 
-                elif isinstance(dropout, float):
-                    in_keep_prob, out_keep_prob = dropout, dropout
+    @tf.function
+    def forward(self, inputs, fw_initial_state=None, bw_initial_state=None, **kwargs):
+        """
+        Parameters
+        ----------
+        inputs : input tensor
+            The input of a network
+        fw_initial_state : None or list of Tensor (RNN State)
+            If None, `fw_initial_state` is zero state.
+        bw_initial_state : None or list of Tensor (RNN State)
+            If None, `bw_initial_state` is zero state.
+        **kwargs: dict
+            Some attributes can be updated during forwarding
+            such as `return_last`, `return_seq_2d`, `return_state`.
+        """
 
-                else:
-                    raise Exception("Invalid dropout type (must be a 2-D tuple of " "float)")
+        if kwargs:
+            for attr in kwargs:
+                setattr(self, attr, kwargs[attr])
 
-                DropoutWrapper_fn = tf.contrib.rnn.DropoutWrapper
+        fw_outputs = list()
+        bw_outputs = list()
 
-                cell_creator = lambda is_last=True: DropoutWrapper_fn(
-                    rnn_creator(), input_keep_prob=in_keep_prob, output_keep_prob=out_keep_prob if is_last else 1.0
-                )
+        fw_states = fw_initial_state if fw_initial_state is not None else self.fw_cell.get_initial_state(inputs)
+        bw_states = bw_initial_state if bw_initial_state is not None else self.bw_cell.get_initial_state(inputs)
 
-            else:
-                cell_creator = rnn_creator
+        if not isinstance(fw_states, list):
+            fw_states = [fw_states]
+        if not isinstance(bw_states, list):
+            bw_states = [bw_states]
 
-            self.fw_cell = cell_creator()
-            self.bw_cell = cell_creator()
+        total_steps = inputs.get_shape().as_list()[1]
 
-            # Apply multiple layers
-            if n_layer > 1:
-                MultiRNNCell_fn = tf.contrib.rnn.MultiRNNCell
+        for time_step in range(total_steps):
 
-                if dropout:
-                    try:
-                        self.fw_cell = MultiRNNCell_fn(
-                            [cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)], state_is_tuple=True
-                        )
-                        self.bw_cell = MultiRNNCell_fn(
-                            [cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)], state_is_tuple=True
-                        )
-                    except Exception:
-                        self.fw_cell = MultiRNNCell_fn([cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)])
-                        self.bw_cell = MultiRNNCell_fn([cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)])
-                else:
-                    try:
-                        self.fw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)], state_is_tuple=True)
-                        self.bw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)], state_is_tuple=True)
-                    except Exception:
-                        self.fw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
-                        self.bw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
+            fw_cell_output, fw_states = self.fw_cell.call(inputs[:, time_step, :], fw_states, training=self.is_train)
+            bw_cell_output, bw_states = self.bw_cell.call(inputs[:, - time_step - 1, :], bw_states, training=self.is_train)
 
-            # Initial state of RNN
-            if fw_initial_state is None:
-                self.fw_initial_state = self.fw_cell.zero_state(
-                    self.batch_size, dtype=LayersConfig.tf_dtype
-                )  # dtype=tf.float32)
-            else:
-                self.fw_initial_state = fw_initial_state
-            if bw_initial_state is None:
-                self.bw_initial_state = self.bw_cell.zero_state(
-                    self.batch_size, dtype=LayersConfig.tf_dtype
-                )  # dtype=tf.float32)
-            else:
-                self.bw_initial_state = bw_initial_state
-            # exit()
-            # Feedforward to MultiRNNCell
-            list_rnn_inputs = tf.unstack(self.inputs, axis=1)
+            fw_outputs.append(fw_cell_output)
+            bw_outputs.append(bw_cell_output)
 
-            bidirectional_rnn_fn = tf.contrib.rnn.static_bidirectional_rnn
+        if self.return_seq_2d:
+            # PTB tutorial: stack dense layer after that, or compute the cost from the output
+            # 2D Tensor [batch_size * n_steps, n_hidden]
+            fw_outputs = tf.reshape(tf.concat(fw_outputs, 1), [-1, self.fw_cell.units])
+            bw_outputs = tf.reshape(tf.concat(bw_outputs, 1), [-1, self.bw_cell.units])
+        else:
+            # <akara>: stack more RNN layer after that
+            # 3D Tensor [batch_size, n_steps, n_hidden]
+            fw_outputs = tf.reshape(tf.concat(fw_outputs, 1), [-1, total_steps, self.fw_cell.units])
+            bw_outputs = tf.reshape(tf.concat(bw_outputs, 1), [-1, total_steps, self.bw_cell.units])
 
-            outputs, fw_state, bw_state = bidirectional_rnn_fn(  # outputs, fw_state, bw_state = tf.contrib.rnn.static_bidirectional_rnn(
-                cell_fw=self.fw_cell,
-                cell_bw=self.bw_cell,
-                inputs=list_rnn_inputs,
-                initial_state_fw=self.fw_initial_state,
-                initial_state_bw=self.bw_initial_state
-            )
+        outputs = tf.concat([fw_outputs, bw_outputs], -1)
 
-            if return_last:
-                raise Exception("Do not support return_last at the moment.")
-                # self.outputs = outputs[-1]
-            else:
-                self.outputs = outputs
-                if return_seq_2d:
-                    # 2D Tensor [n_example, n_hidden]
-                    self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden * 2])
-
-                else:
-                    # <akara>: stack more RNN layer after that
-                    # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
-
-                    self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_steps, n_hidden * 2])
-
-            self.fw_final_state = fw_state
-            self.bw_final_state = bw_state
-
-            # Retrieve just the RNN variables.
-            rnn_variables = tf.compat.v1.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-        logging.info("     n_params : %d" % (len(rnn_variables)))
-
-        self._add_layers(self.outputs)
-        self._add_params(rnn_variables)
+        if self.return_state:
+            return outputs, fw_states, bw_states
+        else:
+            return outputs
 
 
 class ConvRNNCell(object):
