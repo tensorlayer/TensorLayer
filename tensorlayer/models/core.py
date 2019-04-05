@@ -549,7 +549,7 @@ class Model():
         output_tensors_list = self.outputs if isinstance(self.outputs, list) else [self.outputs]
         output_nodes = [tensor._info[0] for tensor in output_tensors_list]
 
-        visited_node_names = []
+        visited_node_names = set()
         for out_node in output_nodes:
             queue_node.put(out_node)
 
@@ -559,14 +559,16 @@ class Model():
 
                 for node in in_nodes:
                     node.out_nodes.append(cur_node)
-                    if node.name not in visited_node_names:
-                        visited_node_names.append(node.name)
+                    if not node.visited:
                         queue_node.put(node)
-                    # else have multiple layers with the same name
-                    else:
-                        raise ValueError(
-                            'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % node.layer.name
-                        )
+                        node.visited = True
+                        if node.name not in visited_node_names:
+                            visited_node_names.add(node.name)
+                        # else have multiple layers with the same name
+                        else:
+                            raise ValueError(
+                                'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % node.layer.name
+                            )
 
 
         # construct the computation graph in top-sort order

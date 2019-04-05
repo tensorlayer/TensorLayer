@@ -341,6 +341,8 @@ class LayerNode(object):
 
         self.in_tensors_idxes = in_tensor_idxes
 
+        self.visited = False
+
     def __call__(self, inputs, **kwargs):
         """(1) Forwarding through the layer. (2) Update its input/output tensors."""
         outputs = self.layer.forward(inputs, **kwargs)
