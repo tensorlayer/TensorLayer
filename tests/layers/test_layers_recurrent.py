@@ -74,8 +74,8 @@ class Layer_RNN_Test(CustomTestCase):
                 super(CustomisedModel, self).__init__()
                 self.rnnlayer = tl.layers.RNN(
                     cell=tf.keras.layers.SimpleRNNCell(units=8, dropout=0.1),
-                    inputs_shape=[2, 6, 4],
-                    return_last=False, return_seq_2d=False, return_state=False, name='simplernn'
+                    in_channels=4,
+                    return_last=False, return_seq_2d=False, return_state=False, name='simplernn3'
                 )
                 self.dense = tl.layers.Dense(in_channels=8, n_units=1)
 
@@ -107,8 +107,8 @@ class Layer_RNN_Test(CustomTestCase):
                 super(CustomisedModel, self).__init__()
                 self.rnnlayer = tl.layers.RNN(
                     cell=tf.keras.layers.SimpleRNNCell(units=8, dropout=0.1),
-                    inputs_shape=[2, 6, 4],
-                    return_last=False, return_seq_2d=False, return_state=False, name='simplernn'
+                    in_channels=4,
+                    return_last=False, return_seq_2d=False, return_state=False, name='simplernn2'
                 )
                 self.dense = tl.layers.Dense(in_channels=8, n_units=1)
 
@@ -143,7 +143,7 @@ class Layer_RNN_Test(CustomTestCase):
         )
         rnn, rnn_state = rnnlayer(inputs)
         outputs = tl.layers.Dense(n_units=1)(rnn)
-        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0], rnn_state[1]], name='rnn_model')
+        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0], rnn_state[1]], name='rnn_model2')
         print(rnn_model)
 
         optimizer = tf.optimizers.Adam(learning_rate=0.01)
