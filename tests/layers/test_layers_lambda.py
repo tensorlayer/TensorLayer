@@ -104,7 +104,7 @@ class Layer_Lambda_Test(CustomTestCase):
             def __init__(self):
                 super(CustomizeModel, self).__init__()
                 self.dense = tl.layers.Dense(in_channels=1, n_units=5)
-                self.lambdalayer = tl.layers.Lambda(lambda x: 2*x, fn_weights=[])
+                self.lambdalayer = tl.layers.Lambda(lambda x: 2*x)
 
             def forward(self, x):
                 z = self.dense(x)
@@ -129,7 +129,7 @@ class Layer_Lambda_Test(CustomTestCase):
                 self.dense1 = tl.layers.Dense(in_channels=1, n_units=5)
                 self.dense2 = tl.layers.Dense(in_channels=1, n_units=5)
                 self.dense3 = tl.layers.Dense(in_channels=1, n_units=5)
-                self.lambdalayer = tl.layers.ElementwiseLambda(customize_func, fn_weights=[], fn_args={'foo': 1024})
+                self.lambdalayer = tl.layers.ElementwiseLambda(customize_func, fn_args={'foo': 1024})
 
             def forward(self, x, bar=None):
                 noise = self.dense1(x)
