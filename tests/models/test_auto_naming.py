@@ -75,6 +75,8 @@ class Auto_Naming_Test(CustomTestCase):
 
     def test_dynamic_model_auto_naming(self):
         print('-' * 20, 'test_dynamic_model_auto_naming', '-' * 20)
+        test_flag = True
+
         model_basic = basic_dynamic_model()
         model_basic_1 = basic_dynamic_model()
         model_basic_2 = basic_dynamic_model("basic_dynamic_model_2")
@@ -91,9 +93,11 @@ class Auto_Naming_Test(CustomTestCase):
 
         try:
             model_basic_given_repeat_name = basic_dynamic_model("basic_dynamic_model_1")
-            self.fail("Failed to detect repeat user given names")
+            test_flag = False
         except Exception as e:
-            pass
+            print(e)
+        if not test_flag:
+            self.fail("Failed to detect repeat user given names")
 
         model_nested = nested_dynamic_model()
         model_nested_1 = nested_dynamic_model(inner_model_name_1="a_inner_dynamic_model")
@@ -107,18 +111,24 @@ class Auto_Naming_Test(CustomTestCase):
 
         try:
             model_nested_given_repeat_name = nested_dynamic_model(inner_model_name_2="basic_dynamic_model_1")
-            self.fail("Failed to detect nested repeat user given names")
+            test_flag = False
         except Exception as e:
-            pass
+            print(e)
+        if not test_flag:
+            self.fail("Failed to detect nested repeat user given names")
 
         try:
             model_nested_given_repeat_name_1 = nested_dynamic_model(name="basic_dynamic_model_5")
-            self.fail("Failed to detect nested repeat user given names")
+            test_flag = False
         except Exception as e:
-            pass
+            print(e)
+        if not test_flag:
+            self.fail("Failed to detect nested repeat user given names")
 
     def test_static_model_auto_naming(self):
         print('-' * 20, 'test_static_model_auto_naming', '-' * 20)
+        test_flag = True
+
         model_basic = basic_static_model()
         model_basic_1 = basic_static_model()
         model_basic_2 = basic_static_model("model_2")
@@ -133,9 +143,11 @@ class Auto_Naming_Test(CustomTestCase):
 
         try:
             model_basic_given_repeat_name = basic_static_model("model_1")
-            self.fail("Failed to detect repeat user given names")
+            test_flag = False
         except Exception as e:
-            pass
+            print(e)
+        if not test_flag:
+            self.fail("Failed to detect repeat user given names")
 
         model_nested = nested_static_model()
         model_nested_1 = nested_static_model(inner_model_name="a_inner_static_model")
@@ -145,28 +157,40 @@ class Auto_Naming_Test(CustomTestCase):
 
         try:
             model_nested_given_repeat_name = nested_static_model(inner_model_name="a_inner_static_model")
-            self.fail("Failed to detect nested repeat user given names")
+            test_flag = False
         except Exception as e:
-            pass
+            print(e)
+        if not test_flag:
+            self.fail("Failed to detect repeat user given names")
 
     def test_layer_name_uniqueness(self):
         print('-' * 20, 'test_layer_name_uniqueness', '-' * 20)
+        test_flag =True
+
         # dynamic
         try:
             model_dynamic = basic_dynamic_model(conv1_name="conv", conv2_name="conv")
-            self.fail("Failed to detect that layers inside a model have the same name in dynamic mode")
+            # dynamic mode check uniqueness when self.all_layers is called
+            all_layers = model_dynamic.all_layers
+            test_flag = False
         except Exception as e:
-            pass
+            print(e)
+        if not test_flag:
+            self.fail("Failed to detect that layers inside a model have the same name in dynamic mode")
 
         # static
         try:
             model_static = basic_static_model(conv1_name="conv", conv2_name="conv")
-            self.fail("Failed to detect that layers inside a model have the same name in static mode")
+            test_flag = False
         except Exception as e:
-            pass
+            print(e)
+        if not test_flag:
+            self.fail("Failed to detect that layers inside a model have the same name in static mode")
 
     def test_vgg_auto_naming(self):
         print('-' * 20, 'test_vgg_auto_naming', '-' * 20)
+        test_flag = True
+
         vgg = VGG16()
         vgg_1 = VGG16()
         vgg_2 = VGG16(name="vgg16_2")
@@ -181,9 +205,52 @@ class Auto_Naming_Test(CustomTestCase):
 
         try:
             vgg_given_repeat_name = VGG16(name="vgg16_1")
-            self.fail("Failed to detect repeat user given names")
+            test_flag = False
         except Exception as e:
-            pass
+            print(e)
+        if not test_flag:
+            self.fail("Failed to detect repeat user given names")
+
+    def test_layerlist(self):
+        test_flag = True
+
+        try:
+            inputs = tl.layers.Input([10, 5])
+            layer1 = tl.layers.LayerList([
+                tl.layers.Dense(n_units=4, name='dense1'),
+                tl.layers.Dense(n_units=3, name='dense1')
+            ])(inputs)
+            model = tl.models.Model(inputs=inputs, outputs=layer1, name='layerlistmodel')
+            print([w.name for w in model.weights])
+            test_flag = False
+        except Exception as e:
+            print(e)
+        if not test_flag:
+            self.fail("Fail to detect duplicate name in LayerList")
+
+    def test_modellayer(self):
+        test_flag = True
+
+        try:
+            class inner_model(Model):
+                def __init__(self):
+                    super(inner_model, self).__init__()
+                    self.layer1 = tl.layers.Dense(n_units=4, in_channels=5, name='dense1')
+                    self.layer2 = tl.layers.Dense(n_units=4, in_channels=4, name='dense1')
+
+                def forward(self, x):
+                    return self.layer2(self.layer1(x))
+
+            inputs = tl.layers.Input([10, 5])
+            model_layer = tl.layers.ModelLayer(inner_model())(inputs)
+            model = tl.models.Model(inputs=inputs, outputs=model_layer, name='modellayermodel')
+            print(model)
+            print([w.name for w in model.weights])
+            test_flag = False
+        except Exception as e:
+            print(e)
+        if not test_flag:
+            self.fail("Fail to detect duplicate name in ModelLayer")
 
 
 if __name__ == '__main__':
