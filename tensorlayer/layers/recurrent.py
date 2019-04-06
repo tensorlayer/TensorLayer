@@ -77,11 +77,24 @@ class RNN(Layer):
     >>> rnn_out, lstm_state = tl.layers.RNN(
     >>>     cell=tf.keras.layers.LSTMCell(units=hidden_size, dropout=0.1),
     >>>     in_channels=embedding_size,
-    >>>     return_last=True, return_seq_2d=False, return_state=True, name='lstmrnn'
+    >>>     return_last=True, return_state=True, name='lstmrnn'
     >>> )(inputs)
     >>> outputs = tl.layers.Dense(n_units=1)(rnn_out)
     >>> rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0], rnn_state[1]], name='rnn_model')
     >>> # If LSTMCell is applied, the rnn_state is [h, c] where h the hidden state and c the cell state of LSTM.
+
+    - A stacked RNN model.
+    >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
+    >>> rnn_out1 = tl.layers.RNN(
+    >>>     cell=tf.keras.layers.SimpleRNNCell(units=hidden_size, dropout=0.1),
+    >>>     return_last=False, return_seq_2d=False, return_state=False
+    >>> )(inputs)
+    >>> rnn_out2 = tl.layers.RNN(
+    >>>     cell=tf.keras.layers.SimpleRNNCell(units=hidden_size, dropout=0.1),
+    >>>     return_last=True, return_state=False
+    >>> )(rnn_out1)
+    >>> outputs = tl.layers.Dense(n_units=1)(rnn_out2)
+    >>> rnn_model = tl.models.Model(inputs=inputs, outputs=outputs)
 
     Notes
     -----
@@ -232,11 +245,11 @@ class BiRNN(Layer):
     Examples
     --------
     - A simple regression model below.
-    >>> inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
+    >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
     >>> # the fw_cell and bw_cell can be different
     >>> rnnlayer = tl.layers.BiRNN(
-    >>>     fw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.1),
-    >>>     bw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size + 1, dropout=0.1),
+    >>>     fw_cell=tf.keras.layers.SimpleRNNCell(units=hidden_size, dropout=0.1),
+    >>>     bw_cell=tf.keras.layers.SimpleRNNCell(units=hidden_size + 1, dropout=0.1),
     >>>     return_seq_2d=True, return_state=True
     >>> )
     >>> # if return_state=True, the final state of the two cells will be returned together with the outputs
@@ -245,8 +258,25 @@ class BiRNN(Layer):
     >>> # if the BiRNN is followed by a Dense, return_seq_2d should be True.
     >>> # if the BiRNN is followed by other RNN, return_seq_2d can be False.
     >>> dense = tl.layers.Dense(n_units=1)(rnn_out)
-    >>> outputs = tl.layers.Reshape([-1, self.num_steps])(dense)
+    >>> outputs = tl.layers.Reshape([-1, num_steps])(dense)
     >>> rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_out, rnn_fw_state[0], rnn_bw_state[0]])
+
+    - A stacked BiRNN model.
+    >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
+    >>> rnn_out1 = tl.layers.BiRNN(
+    >>>     fw_cell=tf.keras.layers.SimpleRNNCell(units=hidden_size, dropout=0.1),
+    >>>     bw_cell=tf.keras.layers.SimpleRNNCell(units=hidden_size + 1, dropout=0.1),
+    >>>     return_seq_2d=False, return_state=False
+    >>> )(inputs)
+    >>> rnn_out2 = tl.layers.BiRNN(
+    >>>     fw_cell=tf.keras.layers.SimpleRNNCell(units=hidden_size, dropout=0.1),
+    >>>     bw_cell=tf.keras.layers.SimpleRNNCell(units=hidden_size + 1, dropout=0.1),
+    >>>     return_seq_2d=True, return_state=False
+    >>> )(rnn_out1)
+    >>> dense = tl.layers.Dense(n_units=1)(rnn_out2)
+    >>> outputs = tl.layers.Reshape([-1, num_steps])(dense)
+    >>> rnn_model = tl.models.Model(inputs=inputs, outputs=outputs)
+
 
     Notes
     -----
