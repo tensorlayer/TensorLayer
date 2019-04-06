@@ -538,6 +538,40 @@ class Model():
     def all_drop(self):
         raise Exception("all_drop is deprecated")
 
+    def get_layer(self, name=None, index=None):
+        """Network forwarding given input tensors
+
+        Parameters
+        ----------
+        name : str or None
+            Name of the requested layer. Default None.
+        index : int or None
+            Index of the requested layer. Default None.
+
+        Returns
+        -------
+            layer : The requested layer
+
+        Notes
+        -----
+        Either a layer name or a layer index should be given.
+
+        """
+        if index is not None:
+            if len(self.all_layers) <= index:
+                raise ValueError('model only has ' + str(len(self.all_layers)) +
+                                 ' layers, but ' + str(index) + '-th layer is requested.')
+            else:
+                return self.all_layers[index]
+        elif name is not None:
+            for layer in self.all_layers:
+                if layer.name == name:
+                    return layer
+            raise ValueError('Model has no layer named ' + name + '.')
+        else:
+            raise ValueError('Either a layer name or a layer index should be given.')
+
+
     def _construct_graph(self):
         """construct computation graph for static model using LayerNode object"""
         all_layers = []
@@ -731,7 +765,7 @@ class Model():
         Examples
         --------
         1) load model from a hdf5 file.
-        >>> net = tl.model.vgg16()
+        >>> net = tl.models.vgg16()
         >>> net.load_weights('./model_graph.h5', in_order=False, skip=True) # load weights by name, skipping mismatch
         >>> net.load_weights('./model_eager.h5') # load sequentially
 

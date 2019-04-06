@@ -359,6 +359,34 @@ class Model_Core_Test(CustomTestCase):
         self.assertGreater(len(weights), 2)
         print(len(weights))
 
+    def test_get_layer(self):
+        print('-' * 20, 'test_get_layer', '-' * 20)
+        model_basic = basic_dynamic_model()
+        self.assertIsInstance(model_basic.get_layer('conv2'), tl.layers.Conv2d)
+        try:
+            model_basic.get_layer('abc')
+        except Exception as e:
+            print(e)
+
+        try:
+            model_basic.get_layer(index=99)
+        except Exception as e:
+            print(e)
+
+        model_basic = basic_static_model()
+        self.assertIsInstance(model_basic.get_layer('conv2'), tl.layers.Conv2d)
+        self.assertIsInstance(model_basic.get_layer(index=2), tl.layers.MaxPool2d)
+        print([w.name for w in model_basic.get_layer(index=-1).weights])
+        try:
+            model_basic.get_layer('abc')
+        except Exception as e:
+            print(e)
+
+        try:
+            model_basic.get_layer(index=99)
+        except Exception as e:
+            print(e)
+
 if __name__ == '__main__':
 
     unittest.main()
