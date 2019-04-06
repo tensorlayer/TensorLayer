@@ -169,7 +169,7 @@ class Auto_Naming_Test(CustomTestCase):
 
         # dynamic
         try:
-            model_dynamic = basic_dynamic_model(conv1_name="conv", conv2_name="conv")
+            model_dynamic = basic_dynamic_model(conv1_name="conv", conv2_name="conv", name="test_layer_name_static")
             # dynamic mode check uniqueness when self.all_layers is called
             all_layers = model_dynamic.all_layers
             test_flag = False
@@ -180,7 +180,7 @@ class Auto_Naming_Test(CustomTestCase):
 
         # static
         try:
-            model_static = basic_static_model(conv1_name="conv", conv2_name="conv")
+            model_static = basic_static_model(conv1_name="conv", conv2_name="conv", name="test_layer_name_static")
             test_flag = False
         except Exception as e:
             print(e)
