@@ -688,7 +688,7 @@ class Model():
                 format = 'hdf5'
 
         if format == 'hdf5' or format == 'h5':
-            utils.save_weights_to_hdf5(filepath, self.weights)
+            utils.save_weights_to_hdf5(filepath, self)
         elif format == 'npz':
             utils.save_npz(self.weights, filepath)
         elif format == 'npz_dict':
@@ -761,10 +761,10 @@ class Model():
         if format == 'hdf5' or format == 'h5':
             if skip == True or in_order == False:
                 # load by weights name
-                utils.load_hdf5_to_weights(filepath, self.weights, skip)
+                utils.load_hdf5_to_weights(filepath, self, skip)
             else:
                 # load in order
-                utils.load_hdf5_to_weights_in_order(filepath, self.weights)
+                utils.load_hdf5_to_weights_in_order(filepath, self)
         elif format == 'npz':
             utils.load_and_assign_npz(filepath, self)
         elif format == 'npz_dict':
