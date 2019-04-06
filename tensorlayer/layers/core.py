@@ -489,6 +489,16 @@ class LayerList(Layer):
             "LayerList %s including layers [%s]" % (self.name, ', '.join([layer.name for layer in self.layers]))
         )
 
+        # check layer name uniqueness in LayerList
+        local_layer_name_set = set()
+        for layer in self.layers:
+            if layer.name not in local_layer_name_set:
+                local_layer_name_set.add(layer.name)
+            else:
+                raise ValueError(
+                    'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % layer.name
+                )
+
     def __getitem__(self, idx):
         if isinstance(idx, slice):
             return LayerList(list(self.layers)[idx])
