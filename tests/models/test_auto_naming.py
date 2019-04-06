@@ -153,14 +153,14 @@ class Auto_Naming_Test(CustomTestCase):
         print('-' * 20, 'test_layer_name_uniqueness', '-' * 20)
         # dynamic
         try:
-            model_dynamic = basic_dynamic_model(conv1_name="conv", conv2_name="conv")
+            model_dynamic = basic_dynamic_model(conv1_name="conv", conv2_name="conv", name='unique_name_dyanmic')
             self.fail("Failed to detect that layers inside a model have the same name in dynamic mode")
         except Exception as e:
             pass
 
         # static
         try:
-            model_static = basic_static_model(conv1_name="conv", conv2_name="conv")
+            model_static = basic_static_model(conv1_name="conv", conv2_name="conv", name='unique_name_static')
             self.fail("Failed to detect that layers inside a model have the same name in static mode")
         except Exception as e:
             pass
@@ -184,6 +184,19 @@ class Auto_Naming_Test(CustomTestCase):
             self.fail("Failed to detect repeat user given names")
         except Exception as e:
             pass
+
+    def test_layerlist(self):
+        try:
+            inputs = tl.layers.Input([10, 5])
+            layer1 = tl.layers.LayerList([
+                tl.layers.Dense(n_units=4, name='dense1'),
+                tl.layers.Dense(n_units=3, name='dense1')
+            ])(inputs)
+            model = tl.models.Model(inputs=inputs, outputs=layer1, name='layerlistmodel')
+            print([w.name for w in model.weights])
+            self.fail("Fail to detect duplicate name in layerlist")
+        except Exception as e:
+            print(e)
 
 
 if __name__ == '__main__':
