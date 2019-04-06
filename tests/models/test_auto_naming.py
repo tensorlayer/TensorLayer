@@ -157,11 +157,31 @@ class Auto_Naming_Test(CustomTestCase):
             self.fail("Failed to detect that layers inside a model have the same name in dynamic mode")
         except Exception as e:
             pass
-        
+
         # static
         try:
             model_static = basic_static_model(conv1_name="conv", conv2_name="conv")
             self.fail("Failed to detect that layers inside a model have the same name in static mode")
+        except Exception as e:
+            pass
+
+    def test_vgg_auto_naming(self):
+        print('-' * 20, 'test_vgg_auto_naming', '-' * 20)
+        vgg = VGG16()
+        vgg_1 = VGG16()
+        vgg_2 = VGG16(name="vgg16_2")
+        vgg_3 = VGG16()
+        vgg_given_name = VGG16(name="a_vgg_model")
+
+        self.assertEqual(vgg.name, "vgg16")
+        self.assertEqual(vgg_1.name, "vgg16_1")
+        self.assertEqual(vgg_2.name, "vgg16_2")
+        self.assertEqual(vgg_3.name, "vgg16_3")
+        self.assertEqual(vgg_given_name.name, "a_vgg_model")
+
+        try:
+            vgg_given_repeat_name = VGG16(name="vgg16_1")
+            self.fail("Failed to detect repeat user given names")
         except Exception as e:
             pass
 
