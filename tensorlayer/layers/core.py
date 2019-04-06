@@ -56,18 +56,26 @@ class Layer(object):
         global _global_layer_name_dict
         if name is None:
             prefix = self.__class__.__name__.lower()
+
             if _global_layer_name_dict.get(prefix) is not None:
                 _global_layer_name_dict[prefix] += 1
                 name = prefix + '_' + str(_global_layer_name_dict[prefix])
             else:
                 _global_layer_name_dict[prefix] = 0
                 name = prefix
+            while True:
+                if _global_layer_name_dict.get(name) is None:
+                    break
+                _global_layer_name_dict[prefix] += 1
+                name = prefix + '_' + str(_global_layer_name_dict[prefix])
         else:
             if _global_layer_name_dict.get(name) is not None:
-                raise ValueError(
-                    'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % name
-                )
-            _global_layer_name_dict[name] = 0
+                pass
+                # raise ValueError(
+                #     'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % name
+                # )
+            else:
+                _global_layer_name_dict[name] = 0
 
         self.name = name
 
@@ -332,6 +340,8 @@ class LayerNode(object):
         self.name = layer.name + "_node_{}".format(node_index)
 
         self.in_tensors_idxes = in_tensor_idxes
+
+        self.visited = False
 
     def __call__(self, inputs, **kwargs):
         """(1) Forwarding through the layer. (2) Update its input/output tensors."""
