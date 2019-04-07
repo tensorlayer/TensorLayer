@@ -2524,6 +2524,124 @@ def assign_tf_variable(variable, value):
     variable.assign(value)
 
 
+def _save_weights_to_hdf5_group(f, layers):
+    """
+    Save layer/model weights into hdf5 group recursively.
+
+    Parameters
+    ----------
+    f: hdf5 group
+        A hdf5 group created by h5py.File() or create_group().
+    layers: list
+        A list of layers to save weights.
+
+    """
+    f.attrs['layer_names'] = [layer.name.encode('utf8') for layer in layers]
+
+    for layer in layers:
+        g = f.create_group(layer.name)
+        if isinstance(layer, tl.models.Model):
+            _save_weights_to_hdf5_group(g, layer.all_layers)
+        elif isinstance(layer, tl.layers.ModelLayer):
+            _save_weights_to_hdf5_group(g, layer.model.all_layers)
+        elif isinstance(layer, tl.layers.LayerList):
+            _save_weights_to_hdf5_group(g, layer.layers)
+        elif isinstance(layer, tl.layers.Layer):
+            if layer.weights is not None:
+                weight_values = tf_variables_to_numpy(layer.weights)
+                weight_names = [w.name.encode('utf8') for w in layer.weights]
+            else:
+                weight_values = []
+                weight_names = []
+            g.attrs['weight_names'] = weight_names
+            for name, val in zip(weight_names, weight_values):
+                val_dataset = g.create_dataset(name, val.shape, dtype=val.dtype)
+                if not val.shape:
+                    # scalar
+                    val_dataset[()] = val
+                else:
+                    val_dataset[:] = val
+        else:
+            raise Exception("Only layer or model can be saved into hdf5.")
+
+
+def _load_weights_from_hdf5_group_in_order(f, layers):
+    """
+    Load layer weights from a hdf5 group sequentially.
+
+    Parameters
+    ----------
+    f: hdf5 group
+        A hdf5 group created by h5py.File() or create_group().
+    layers: list
+        A list of layers to load weights.
+
+    """
+    layer_names = [n.decode('utf8') for n in f.attrs["layer_names"]]
+
+    for idx, name in enumerate(layer_names):
+        g = f[name]
+        layer = layers[idx]
+        if isinstance(layer, tl.models.Model):
+            _load_weights_from_hdf5_group_in_order(g, layer.all_layers)
+        elif isinstance(layer, tl.layers.ModelLayer):
+            _load_weights_from_hdf5_group_in_order(g, layer.model.all_layers)
+        elif isinstance(layer, tl.layers.LayerList):
+            _load_weights_from_hdf5_group_in_order(g, layer.layers)
+        elif isinstance(layer, tl.layers.Layer):
+            weight_names = [n.decode('utf8') for n in g.attrs['weight_names']]
+            for iid, w_name in enumerate(weight_names):
+                assign_tf_variable(layer.weights[iid], np.asarray(g[w_name]))
+        else:
+            raise Exception("Only layer or model can be saved into hdf5.")
+        if idx == len(layers) - 1:
+            break
+
+
+def _load_weights_from_hdf5_group(f, layers, skip=False):
+    """
+    Load layer weights from a hdf5 group by layer name.
+
+    Parameters
+    ----------
+    f: hdf5 group
+        A hdf5 group created by h5py.File() or create_group().
+    layers: list
+        A list of layers to load weights.
+    skip : boolean
+        If 'skip' == True, loaded layer whose name is not found in 'layers' will be skipped. If 'skip' is False,
+        error will be raised when mismatch is found. Default False.
+
+    """
+    layer_names = [n.decode('utf8') for n in f.attrs["layer_names"]]
+    layer_index = {layer.name: layer for layer in layers}
+
+    for idx, name in enumerate(layer_names):
+        if name not in layer_index.keys():
+            if skip:
+                logging.warning("Layer named '%s' not found in network. Skip it." % name)
+            else:
+                raise RuntimeError(
+                    "Layer named '%s' not found in network. Hint: set argument skip=Ture "
+                    "if you want to skip redundant or mismatch Layers." % name
+                )
+        else:
+            g = f[name]
+            layer = layer_index[name]
+            if isinstance(layer, tl.models.Model):
+                _load_weights_from_hdf5_group(g, layer.all_layers, skip)
+            elif isinstance(layer, tl.layers.ModelLayer):
+                _load_weights_from_hdf5_group(g, layer.model.all_layers, skip)
+            elif isinstance(layer, tl.layers.LayerList):
+                _load_weights_from_hdf5_group(g, layer.layers, skip)
+            elif isinstance(layer, tl.layers.Layer):
+                weight_names = [n.decode('utf8') for n in g.attrs['weight_names']]
+                for iid, w_name in enumerate(weight_names):
+                    assign_tf_variable(layer.weights[iid], np.asarray(g[w_name]))
+            else:
+                raise Exception("Only layer or model can be saved into hdf5.")
+
+
 def save_weights_to_hdf5(filepath, network):
     """Input filepath and save weights in hdf5 format.
 
@@ -2540,29 +2658,8 @@ def save_weights_to_hdf5(filepath, network):
     """
     logging.info("[*] Saving TL weights into %s" % filepath)
 
-    f = h5py.File(filepath, 'w')
-
-    f.attrs['layer_names'] = [layer.name.encode('utf8') for layer in network.all_layers]
-
-    for layer in network.all_layers:
-        g = f.create_group(layer.name)
-        if layer.weights is not None:
-            weight_values = tf_variables_to_numpy(layer.weights)
-            weight_names = [w.name.encode('utf8') for w in layer.weights]
-        else:
-            weight_values = []
-            weight_names = []
-        g.attrs['weight_names'] = weight_names
-        for name, val in zip(weight_names, weight_values):
-            val_dataset = g.create_dataset(name, val.shape, dtype=val.dtype)
-            if not val.shape:
-                # scalar
-                val_dataset[()] = val
-            else:
-                val_dataset[:] = val
-
-    f.flush()
-    f.close()
+    with h5py.File(filepath, 'w') as f:
+        _save_weights_to_hdf5_group(f, network.all_layers)
 
     logging.info("[*] Saved")
 
@@ -2594,24 +2691,14 @@ def load_hdf5_to_weights_in_order(filepath, network):
             "Please check whether this hdf5 file is saved from TL."
         )
 
-    net_layers = network.all_layers
-
-    if len(net_layers) != len(layer_names):
+    if len(network.all_layers) != len(layer_names):
         logging.warning(
             "Number of weights mismatch."
-            "Trying to load a saved file with " + str(len(net_layers)) + " layers into a model with " +
-            str(len(layer_names)) + " layers."
+            "Trying to load a saved file with " + str(len(layer_names)) + " layers into a model with " +
+            str(len(network.all_layers)) + " layers."
         )
 
-
-    for idx, name in enumerate(layer_names):
-        g = f[name]
-        weight_names = [n.decode('utf8') for n in g.attrs['weight_names']]
-        layer = net_layers[idx]
-        for iid, w_name in enumerate(weight_names):
-            assign_tf_variable(layer.weights[iid], np.asarray(g[w_name]))
-        if idx == len(net_layers) - 1:
-            break
+    _load_weights_from_hdf5_group_in_order(f, network.all_layers)
 
     f.close()
     logging.info("[*] Load %s SUCCESS!" % filepath)
@@ -2643,14 +2730,13 @@ def load_hdf5_to_weights(filepath, network, skip=False):
             "Please check whether this hdf5 file is saved from TL."
         )
 
-    net_layers = network.all_layers
-    net_index = {layer.name: layer for layer in net_layers}
+    net_index = {layer.name: layer for layer in network.all_layers}
 
-    if len(net_layers) != len(layer_names):
+    if len(network.all_layers) != len(layer_names):
         logging.warning(
             "Number of weights mismatch."
-            "Trying to load a saved file with " + str(len(net_layers)) + " layers into a model with " +
-            str(len(layer_names)) + " layers."
+            "Trying to load a saved file with " + str(len(layer_names)) + " layers into a model with " +
+            str(len(network.all_layers)) + " layers."
         )
 
     # check mismatch form network weights to hdf5
@@ -2659,21 +2745,7 @@ def load_hdf5_to_weights(filepath, network, skip=False):
             logging.warning("Network layer named '%s' not found in loaded hdf5 file. It will be skipped." % name)
 
     # load weights from hdf5 to network
-    for idx, name in enumerate(layer_names):
-        if name not in net_index.keys():
-            if skip:
-                logging.warning("Layer named '%s' not found in network. Skip it." % name)
-            else:
-                raise RuntimeError(
-                    "Layer named '%s' not found in network. Hint: set argument skip=Ture "
-                    "if you want to skip redundant or mismatch Layers." % name
-                )
-        else:
-            g = f[name]
-            weight_names = [n.decode('utf8') for n in g.attrs['weight_names']]
-            layer = net_index[name]
-            for iid, w_name in enumerate(weight_names):
-                assign_tf_variable(layer.weights[iid], np.asarray(g[w_name]))
+    _load_weights_from_hdf5_group(f, network.all_layers, skip)
 
     f.close()
     logging.info("[*] Load %s SUCCESS!" % filepath)
