@@ -168,6 +168,11 @@ class Model_Save_Test(CustomTestCase):
         self.dynamic_basic_skip.load_weights("./model_basic.h5", skip=True)
         self.assertLess(np.max(np.abs(ori_val - self.dynamic_basic_skip.weights[1].numpy())), 1e-7)
 
+        try:
+            self.dynamic_basic_skip.load_weights("./model_basic.h5", in_order=False, skip=False)
+        except Exception as e:
+            print(e)
+
         print("testing static skip load...")
         self.static_basic.save_weights("./model_basic.h5")
         ori_weights = self.static_basic_skip.weights
@@ -176,6 +181,11 @@ class Model_Save_Test(CustomTestCase):
         self.static_basic_skip.weights[1].assign(modify_val)
         self.static_basic_skip.load_weights("./model_basic.h5", skip=True)
         self.assertLess(np.max(np.abs(ori_val - self.static_basic_skip.weights[1].numpy())), 1e-7)
+
+        try:
+            self.static_basic_skip.load_weights("./model_basic.h5", in_order=False, skip=False)
+        except Exception as e:
+            print(e)
 
     def test_nested_vgg(self):
         print('-' * 20, 'test nested vgg', '-' * 20)
@@ -201,23 +211,65 @@ class Model_Save_Test(CustomTestCase):
         self.assertLess(np.max(np.abs(ori_val1 - tar_weight1.numpy())), 1e-7)
         self.assertLess(np.max(np.abs(ori_val2 - tar_weight2.numpy())), 1e-7)
 
-    # TODO : three level nesting is not supported now.
-    # def test_double_nested_vgg(self):
-    #     print('-' * 20, 'test_double_nested_vgg', '-' * 20)
-    #     class mymodel(Model):
-    #         def __init__(self):
-    #             super(mymodel, self).__init__()
-    #             self.inner = Nested_VGG()
-    #
-    #         def forward(self, *inputs, **kwargs):
-    #             pass
-    #
-    #     net = mymodel()
-    #     try:
-    #         net.save_weights("double_nested.h5")
-    #         net.load_weights("double_nested.h5")
-    #     except Exception as e:
-    #         print(e)
+    def test_double_nested_vgg(self):
+        print('-' * 20, 'test_double_nested_vgg', '-' * 20)
+        class mymodel(Model):
+            def __init__(self):
+                super(mymodel, self).__init__()
+                self.inner = Nested_VGG()
+                self.list = LayerList([
+                    tl.layers.Dense(n_units=4, in_channels=10, name='dense1'),
+                    tl.layers.Dense(n_units=3, in_channels= 4, name='dense2')
+                ])
+
+            def forward(self, *inputs, **kwargs):
+                pass
+
+        net = mymodel()
+        net.save_weights("double_nested.h5")
+        print([x.name for x in net.all_layers])
+
+        # modify vgg1 weight val
+        tar_weight1 = net.inner.vgg1.layers[0].weights[0]
+        ori_val1 = tar_weight1.numpy()
+        modify_val1 = np.zeros_like(ori_val1)
+        tar_weight1.assign(modify_val1)
+        # modify vgg2 weight val
+        tar_weight2 = net.inner.vgg2.layers[1].weights[0]
+        ori_val2 = tar_weight2.numpy()
+        modify_val2 = np.zeros_like(ori_val2)
+        tar_weight2.assign(modify_val2)
+
+        net.load_weights("double_nested.h5")
+        self.assertLess(np.max(np.abs(ori_val1 - tar_weight1.numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val2 - tar_weight2.numpy())), 1e-7)
+
+    def test_layerlist(self):
+        print('-' * 20, 'test_layerlist', '-' * 20)
+
+        # simple modellayer
+        ni = tl.layers.Input([10, 4])
+        nn = tl.layers.Dense(n_units=3, name='dense1')(ni)
+        modellayer = tl.models.Model(inputs=ni, outputs=nn, name='modellayer').as_layer()
+
+        # nested layerlist with modellayer
+        inputs = tl.layers.Input([10, 5])
+        layer1 = tl.layers.LayerList([
+            tl.layers.Dense(n_units=4, name='dense1'),
+            modellayer
+        ])(inputs)
+        model = tl.models.Model(inputs=inputs, outputs=layer1, name='layerlistmodel')
+
+        model.save_weights("layerlist.h5")
+        tar_weight = model.get_layer(index=-1)[0].weights[0]
+        print(tar_weight.name)
+        ori_val = tar_weight.numpy()
+        modify_val = np.zeros_like(ori_val)
+        tar_weight.assign(modify_val)
+
+        model.load_weights("layerlist.h5")
+        self.assertLess(np.max(np.abs(ori_val - tar_weight.numpy())), 1e-7)
+
 
     def test_exceptions(self):
         print('-' * 20, 'test_exceptions', '-' * 20)
