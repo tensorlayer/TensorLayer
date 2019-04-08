@@ -55,7 +55,7 @@ class ExpandDims(Layer):
     def build(self, inputs_shape):
         pass
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs):
         outputs = tf.expand_dims(inputs, axis=self.axis, name=self.name)
         return outputs
@@ -101,7 +101,7 @@ class Tile(Layer):
     def build(self, inputs_shape):
         pass
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs):
         outputs = tf.tile(inputs, multiples=self.multiples, name=self.name)
         return outputs

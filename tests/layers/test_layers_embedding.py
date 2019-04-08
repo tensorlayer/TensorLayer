@@ -81,7 +81,7 @@ class Layer_Embed_Test(CustomTestCase):
         self.assertEqual(embed_tensor.get_shape().as_list(), [batch_size, embedding_size])
 
         outputs = tl.layers.Dense(n_units=10)(embed_tensor)
-        model = tl.models.Model(inputs=[inputs, labels], outputs=[outputs, embed_nce_loss], name="word2vec_model")
+        model = tl.models.Model(inputs=[inputs, labels], outputs=[outputs, embed_nce_loss])
         out, nce = model(
             [np.random.randint(0, 1, size=[batch_size]), np.random.randint(0, 1, size=[batch_size, 1])],
             is_train=True)
@@ -110,7 +110,7 @@ class Layer_Embed_Test(CustomTestCase):
         except AttributeError as e:
             print(e)
         self.assertEqual(embed_tensor.get_shape().as_list(), [batch_size, embedding_size])
-        model = tl.models.Model(inputs=inputs, outputs=embed_tensor, name="word2vec_model")
+        model = tl.models.Model(inputs=inputs, outputs=embed_tensor)
 
 
 if __name__ == '__main__':

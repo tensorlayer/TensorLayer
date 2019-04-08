@@ -25,7 +25,7 @@ class Layer_Pooling_Test(CustomTestCase):
         ## 2D ========================================================================
 
         x_2_input_shape =[None, 100, 100, 3]
-        nin_2 = Input(x_2_input_shape, name='test_in2')
+        nin_2 = Input(x_2_input_shape)
 
         n6 = tl.layers.Conv2d(
             n_filter=32, filter_size=(3, 3), strides=(2, 2), name='test_conv2d'

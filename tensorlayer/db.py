@@ -7,11 +7,11 @@ import sys
 import time
 from datetime import datetime
 
+import gridfs
 import numpy as np
+import pymongo
 import tensorflow as tf
 
-import gridfs
-import pymongo
 from tensorlayer import logging
 # from tensorlayer.files import load_graph_and_params
 from tensorlayer.files import del_folder, exists_or_mkdir

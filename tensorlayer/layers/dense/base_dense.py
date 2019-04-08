@@ -104,7 +104,7 @@ class Dense(Layer):
         if self.b_init:
             self.b = self._get_weights("biases", shape=(self.n_units, ), init=self.b_init)
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs):
         z = tf.matmul(inputs, self.W)
         if self.b_init:

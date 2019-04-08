@@ -47,7 +47,7 @@ class LayerNode_Test(CustomTestCase):
             nb = conv(nb)  # conv2_node_2
 
             out = Concat(name='concat')([na, nb])
-            M = Model(inputs=ni, outputs=[out, nn, nb], name='model')
+            M = Model(inputs=ni, outputs=[out, nn, nb])
 
             gg = conv(nii)  # this node will not be added since model fixed
 
@@ -88,7 +88,7 @@ class LayerNode_Test(CustomTestCase):
 
             c = Flatten()(c)
 
-            M = Model(inputs=ni, outputs=[a, b, c], name='model')
+            M = Model(inputs=ni, outputs=[a, b, c])
             return M
 
         net = get_unstack_model([None, 24, 24, 3])
@@ -124,7 +124,7 @@ class LayerNode_Test(CustomTestCase):
             )
             emb, nce = emb_net([inputs, labels])
 
-            model = tl.models.Model(inputs=[inputs, labels], outputs=[emb, nce], name="word2vec_model")
+            model = tl.models.Model(inputs=[inputs, labels], outputs=[emb, nce])
             return model
 
         net = get_word2vec()

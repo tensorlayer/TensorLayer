@@ -363,7 +363,9 @@ class Model():
             for layer in self._all_layers:
                 if layer.name in local_layer_name_dict:
                     raise ValueError(
-                        'Layer name \'%s\' has already been used by another layer. Please consider change to another name.' % layer.name)
+                        'Layer name \'%s\' has already been used by another layer. Please consider change to another name.'
+                        % layer.name
+                    )
                 else:
                     local_layer_name_dict.add(layer.name)
             return self._all_layers
@@ -397,7 +399,7 @@ class Model():
         -------
 
         """
-        if self.is_train != True:
+        if self.is_train !=True:
             self.is_train = True
             self._set_mode_for_layers(True)
 
@@ -559,8 +561,10 @@ class Model():
         """
         if index is not None:
             if len(self.all_layers) <= index:
-                raise ValueError('model only has ' + str(len(self.all_layers)) +
-                                 ' layers, but ' + str(index) + '-th layer is requested.')
+                raise ValueError(
+                    'model only has ' + str(len(self.all_layers)) + ' layers, but ' + str(index) +
+                    '-th layer is requested.'
+                )
             else:
                 return self.all_layers[index]
         elif name is not None:
@@ -570,7 +574,6 @@ class Model():
             raise ValueError('Model has no layer named ' + name + '.')
         else:
             raise ValueError('Either a layer name or a layer index should be given.')
-
 
     def _construct_graph(self):
         """construct computation graph for static model using LayerNode object"""
@@ -603,9 +606,9 @@ class Model():
                         # else have multiple layers with the same name
                         else:
                             raise ValueError(
-                                'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % node.layer.name
+                                'Layer name \'%s\' has already been used by another layer. Please change the layer name.'
+                                % node.layer.name
                             )
-
 
         # construct the computation graph in top-sort order
         cur_depth = [tensor._info[0] for tensor in input_tensors_list]
@@ -793,7 +796,7 @@ class Model():
             format = filepath.split('.')[-1]
 
         if format == 'hdf5' or format == 'h5':
-            if skip == True or in_order == False:
+            if skip ==True or in_order == False:
                 # load by weights name
                 utils.load_hdf5_to_weights(filepath, self, skip)
             else:
@@ -854,9 +857,7 @@ def _add_list_to_all_layers(list_member):
         if isinstance(component, Layer):
             temp_all_layers.append(component)
             if not component._built:
-                raise AttributeError(
-                    "Layer %s not built yet." % repr(component)
-                )
+                raise AttributeError("Layer %s not built yet." % repr(component))
         elif isinstance(component, Model):
             temp_all_layers.append(component)
         elif isinstance(component, list):

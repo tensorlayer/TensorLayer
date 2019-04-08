@@ -60,7 +60,7 @@ class Concat(Layer):
     def build(self, inputs_shape):
         pass
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs):
         """
 
@@ -134,7 +134,7 @@ class Elementwise(Layer):
     def build(self, inputs_shape):
         pass
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs):
         outputs = inputs[0]
         for input in inputs[1:]:
