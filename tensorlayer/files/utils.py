@@ -139,7 +139,7 @@ def save_hdf5_graph(network=None, name='h5.hdf5', save_weights=False):
     Examples
     --------
     Save the architecture
-    >>> tl.files.save_graph(net_test, 'graph.pkl')
+    >>> tl.files.save_hdf5_graph(network, 'h5.hdf5', save_weights=False)
 
     Load the architecture in another script (no parameters restore)
     >>> net = tl.files.load_graph('graph.pkl')
@@ -147,91 +147,24 @@ def save_hdf5_graph(network=None, name='h5.hdf5', save_weights=False):
     if network.outputs is None:
         raise AssertionError("save_hdf5_graph not support dynamic mode yet")
 
-    logging.info("[*] Saving TL graph into {}".format(name))
+    logging.info("[*] Saving TL graph into {}, saving weights={}".format(name, save_weights))
+
 
     saved_file = make_saved_file(network)
     saved_file_str = str(saved_file)
 
+    if save_weights:
+        with h5py.File(name, 'w') as f:
+            _save_weights_to_hdf5_group(f, network.all_layers, model_structure=saved_file_str)
+        return
     f = h5py.File(name, 'w')
     f["model_structure"] = saved_file_str
+
     f.flush()
     f.close()
 
     logging.info("[*] Saved graph")
 
-
-# def _graph2net(graphs):
-#     """Inputs graphs, returns network."""
-#     input_list = list()
-#     layer_dict = dict()
-#     # prev_layer_dict = dict()
-#     # loop every layers
-#     for graph in graphs:
-#         # get current layer class
-#         name, layer_kwargs = graph
-#         layer_kwargs = dict(
-#             layer_kwargs
-#         )  # when InputLayer is used for twice, if we "pop" elements, the second time to use it will have error.
-#
-#         layer_class = layer_kwargs.pop('class')  # class of current layer
-#         prev_layer = layer_kwargs.pop(
-#             'prev_layer'
-#         )  # name of previous layer : str =one layer   list of str = multiple layers
-#         # prev_layer_dict.update({name: prev_layer})
-#
-#         # convert function dictionary into real function
-#         for key in layer_kwargs:  # set input placeholder into the lastest layer
-#             fn_dict = layer_kwargs[key]
-#             if key in ['act']:
-#                 module_path = fn_dict['module_path']
-#                 func_name = fn_dict['func_name']
-#                 lib = importlib.import_module(module_path)
-#                 fn = getattr(lib, func_name)
-#                 layer_kwargs[key] = fn
-#                 # print(key, layer_kwargs[key])
-#         # print(name, prev_layer, layer_class, layer_kwargs)
-#
-#         # if layer_class == 'placeholder':  # create placeholder
-#         #     if name not in input_list:  # if placeholder is not exist
-#         #         dtype = layer_kwargs.pop('dtype')
-#         #         shape = layer_kwargs.pop('shape')
-#         #         _placeholder = tf.placeholder(eval('tf.' + dtype), shape,
-#         #                                       name=name.split(':')[0])  # globals()['tf.'+dtype]
-#         #         # _placeholder = tf.placeholder(ast.literal_eval('tf.' + dtype), shape, name=name.split(':')[0])
-#         #         # input_dict.update({name: _placeholder})
-#         #         input_list.append((name, _placeholder))
-#         # else:  # create networkz
-#         if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
-#             raise NotImplementedError("TL graph does not support this layer at the moment: %s" % (layer_class))
-#         else:  # normal layers e.g. Conv2d
-#             layer_kwargs.update({'name': name})
-#             net = eval('tl.layers.' + layer_class)(**layer_kwargs)
-#             if prev_layer is not None:
-#                 net(layer_dict[prev_layer])
-#             else:
-#                 net._input_layer = None
-#             layer_dict.update({name: net})
-#
-#     # rename placeholder e.g. x:0 --> x
-#     # for i, (n, t) in enumerate(input_list):
-#     #     n_new = n.replace(':', '')
-#     #     if n_new[-1] == '0':
-#     #         n_new = n_new[:-1]
-#     #     input_list[i] = (n_new, t)
-#     #     # print(n_new, t)
-#
-#     # put placeholder into network attributes
-#     # for n, t in input_list:
-#     #     # print(name, n, t)
-#     #     layer_dict[name].__dict__.update({n: t})
-#     #     logging.info("[*] attributes: {} {} {}".format(n, t.get_shape().as_list(), t.dtype.name))
-#     # for key in input_dict: # set input placeholder into the lastest layer
-#     #     layer_dict[name].globals()[key] = input_dict[key]
-#     #     logging.info("  attributes: {:3} {:15} {:15}".format(n, input_dict[key].get_shape().as_list(), input_dict[key].dtype.name))
-#     logging.info("[*] Load graph finished")
-#     # return the lastest layer as network
-#
-#     return layer_dict[name]
 
 def generate_func(args):
     for key in args:  # set input placeholder into the lastest layer
@@ -343,7 +276,7 @@ def load_pkl_graph(name='graph.pkl'):
     return M
 
 
-def load_hdf5_graph(name='h5.hdf5'):
+def load_hdf5_graph(name='h5.hdf5', load_weights=False):
     """Restore TL model archtecture from a a pickle file. No parameters be restored.
 
     Parameters
@@ -361,12 +294,15 @@ def load_hdf5_graph(name='h5.hdf5'):
     - see ``tl.files.save_graph``
     """
     # ipdb.set_trace()
+    logging.info("[*] Loading TL graph from {}, loading weights={}".format(name, load_weights))
     f = h5py.File(name, 'r')
     saved_file_str = f["model_structure"][()]
     saved_file = eval(saved_file_str)
     f.close()
 
     M = static_graph2net(saved_file)
+    if load_weights:
+        M.load_weights(filepath=name)
 
     # inputs = _graph2net(saved_file["inputs"])
     # outputs = _graph2net(saved_file["outputs"])
@@ -2691,7 +2627,7 @@ def assign_tf_variable(variable, value):
     variable.assign(value)
 
 
-def _save_weights_to_hdf5_group(f, layers):
+def _save_weights_to_hdf5_group(f, layers, model_structure=None):
     """
     Save layer/model weights into hdf5 group recursively.
 
@@ -2730,6 +2666,9 @@ def _save_weights_to_hdf5_group(f, layers):
                     val_dataset[:] = val
         else:
             raise Exception("Only layer or model can be saved into hdf5.")
+
+    if model_structure is not None:
+        f["model_structure"] = model_structure
 
 
 def _load_weights_from_hdf5_group_in_order(f, layers):

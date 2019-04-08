@@ -672,8 +672,9 @@ class Model():
             )
         utils.save_hdf5_graph(network=self, name=filepath, save_weights=save_weights)
 
-    def load(filepath="h5.hdf5"):
-        return utils.load_hdf5_graph(name=filepath)
+    @staticmethod
+    def load(filepath="h5.hdf5", load_weights=False):
+        return utils.load_hdf5_graph(name=filepath, load_weights=load_weights)
 
     # FIXME : Model save part @runhai
     # def save(self, filepath):
