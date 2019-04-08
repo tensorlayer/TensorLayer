@@ -27,7 +27,7 @@ class Layer_Merge_Test(CustomTestCase):
 
         class CustomModel(tl.models.Model):
             def __init__(self):
-                super(CustomModel, self).__init__(name="custom")
+                super(CustomModel, self).__init__()
                 self.dense1 = tl.layers.Dense(in_channels=20, n_units=10, act=tf.nn.relu, name='relu1_1')
                 self.dense2 = tl.layers.Dense(in_channels=20, n_units=10, act=tf.nn.relu, name='relu2_1')
                 self.concat = tl.layers.Concat(concat_dim=1, name='concat_layer')
@@ -49,7 +49,7 @@ class Layer_Merge_Test(CustomTestCase):
     def test_elementwise(self):
         class CustomModel(tl.models.Model):
             def __init__(self):
-                super(CustomModel, self).__init__(name="custom")
+                super(CustomModel, self).__init__()
                 self.dense1 = tl.layers.Dense(in_channels=20, n_units=10, act=tf.nn.relu, name='relu1_1')
                 self.dense2 = tl.layers.Dense(in_channels=20, n_units=10, act=tf.nn.relu, name='relu2_1')
                 self.element = tl.layers.Elementwise(combine_fn=tf.minimum, name='minimum', act=tf.identity)
