@@ -496,7 +496,8 @@ class LayerList(Layer):
                 local_layer_name_set.add(layer.name)
             else:
                 raise ValueError(
-                    'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % layer.name
+                    'Layer name \'%s\' has already been used by another layer. Please change the layer name.' %
+                    layer.name
                 )
 
     def __getitem__(self, idx):
