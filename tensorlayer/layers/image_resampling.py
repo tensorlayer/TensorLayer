@@ -59,8 +59,7 @@ class UpSampling2d(Layer):
         self.data_format = data_format
 
         logging.info(
-            "UpSampling2d %s: scale: %s method: %s antialias: %s" %
-            (self.name, scale, self.method, self.antialias)
+            "UpSampling2d %s: scale: %s method: %s antialias: %s" % (self.name, scale, self.method, self.antialias)
         )
 
         self.build(None)
@@ -141,8 +140,7 @@ class DownSampling2d(Layer):
         self.data_format = data_format
 
         logging.info(
-            "DownSampling2d %s: scale: %s method: %s antialias: %s" %
-            (self.name, scale, self.method, self.antialias)
+            "DownSampling2d %s: scale: %s method: %s antialias: %s" % (self.name, scale, self.method, self.antialias)
         )
 
         self.build(None)
