@@ -25,13 +25,13 @@ def basic_static_model():
     nn = Flatten(name='flatten')(nn)
     nn = Dense(100, act=None, name="dense1")(nn)
     nn = Dense(10, act=None, name="dense2")(nn)
-    M = Model(inputs=ni, outputs=nn, name='basic_static')
+    M = Model(inputs=ni, outputs=nn)
     return M
 
 
 class basic_dynamic_model(Model):
     def __init__(self):
-        super(basic_dynamic_model, self).__init__(name="basic_dynamic")
+        super(basic_dynamic_model, self).__init__()
         self.conv1 = Conv2d(16, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, in_channels=3, name="conv1")
         self.pool1 = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')
 
@@ -74,7 +74,7 @@ class Model_Core_Test(CustomTestCase):
         self.assertEqual(model_basic._outputs, None)
         self.assertEqual(model_basic._model_layer, None)
         self.assertEqual(model_basic._all_layers, None)
-        self.assertEqual(model_basic._layer_node_fixed, False)
+        self.assertEqual(model_basic._nodes_fixed, False)
 
         # test layer and weights access
         all_layers = model_basic.all_layers
@@ -110,7 +110,7 @@ class Model_Core_Test(CustomTestCase):
         # test forwarding
         inputs = np.random.normal(size=[2, 24, 24, 3]).astype(np.float32)
         outputs1 = model_basic(inputs)
-        self.assertEqual(model_basic._layer_node_fixed, True)
+        self.assertEqual(model_basic._nodes_fixed, True)
         self.assertEqual(model_basic.is_train, False)
 
         try:
@@ -143,7 +143,7 @@ class Model_Core_Test(CustomTestCase):
         self.assertIsNotNone(model_basic._outputs)
         self.assertEqual(model_basic._model_layer, None)
         self.assertIsNotNone(model_basic._all_layers)
-        self.assertIsNotNone(model_basic._layer_node_fixed)
+        self.assertIsNotNone(model_basic._nodes_fixed)
 
         # test layer and weights access
         all_layers = model_basic.all_layers
@@ -176,7 +176,7 @@ class Model_Core_Test(CustomTestCase):
         # test forwarding
         inputs = np.random.normal(size=[2, 24, 24, 3]).astype(np.float32)
         outputs1 = model_basic(inputs)
-        self.assertEqual(model_basic._layer_node_fixed, True)
+        self.assertEqual(model_basic._nodes_fixed, True)
         self.assertEqual(model_basic.is_train, False)
 
         try:
@@ -195,86 +195,6 @@ class Model_Core_Test(CustomTestCase):
         # test release_memory
         try:
             model_basic.release_memory()
-        except Exception as e:
-            print(e)
-
-    def test_save_weights(self):
-        print('-' * 20, 'test save weights', '-' * 20)
-        def process(model_basic):
-            # Default save
-            model_basic.save_weights('./model_basic.none')
-
-            # hdf5
-            print('testing hdf5 saving...')
-            modify_val = np.zeros_like(model_basic.weights[-2].numpy())
-            ori_val = model_basic.weights[-2].numpy()
-            model_basic.save_weights("./model_basic.h5")
-            model_basic.weights[-2].assign(modify_val)
-            model_basic.load_weights("./model_basic.h5")
-            self.assertLess(np.max(np.abs(ori_val - model_basic.weights[-2].numpy())), 1e-7)
-
-            model_basic.weights[-2].assign(modify_val)
-            model_basic.load_weights("./model_basic.h5", format="hdf5")
-            self.assertLess(np.max(np.abs(ori_val - model_basic.weights[-2].numpy())), 1e-7)
-
-            model_basic.weights[-2].assign(modify_val)
-            model_basic.load_weights("./model_basic.h5", format="hdf5", in_order=False)
-            self.assertLess(np.max(np.abs(ori_val - model_basic.weights[-2].numpy())), 1e-7)
-
-            ori_weights = model_basic._weights
-            model_basic._weights = model_basic._weights[1:]
-            model_basic.weights[-2].assign(modify_val)
-            model_basic.load_weights("./model_basic.h5", skip=True)
-            self.assertLess(np.max(np.abs(ori_val - model_basic.weights[-2].numpy())), 1e-7)
-            model_basic._weights = ori_weights
-
-            # npz
-            print('testing npz saving...')
-            model_basic.save_weights("./model_basic.npz", format='npz')
-            model_basic.weights[-2].assign(modify_val)
-            model_basic.load_weights("./model_basic.npz")
-
-            model_basic.weights[-2].assign(modify_val)
-            model_basic.load_weights("./model_basic.npz", format='npz')
-            model_basic.save_weights("./model_basic.npz")
-            self.assertLess(np.max(np.abs(ori_val - model_basic.weights[-2].numpy())), 1e-7)
-
-            # npz_dict
-            print('testing npz_dict saving...')
-            model_basic.save_weights("./model_basic.npz", format='npz_dict')
-            model_basic.weights[-2].assign(modify_val)
-            model_basic.load_weights("./model_basic.npz", format='npz_dict')
-            self.assertLess(np.max(np.abs(ori_val - model_basic.weights[-2].numpy())), 1e-7)
-
-            # ckpt
-            try:
-                model_basic.save_weights('./model_basic.ckpt', format='ckpt')
-            except Exception as e:
-                self.assertIsInstance(e, NotImplementedError)
-
-            # other cases
-            try:
-                model_basic.save_weights('./model_basic.xyz', format='xyz')
-            except Exception as e:
-                self.assertIsInstance(e, ValueError)
-            try:
-                model_basic.load_weights('./model_basic.xyz', format='xyz')
-            except Exception as e:
-                self.assertIsInstance(e, FileNotFoundError)
-            try:
-                model_basic.load_weights('./model_basic.h5', format='xyz')
-            except Exception as e:
-                self.assertIsInstance(e, ValueError)
-
-        dynamic_basic = basic_dynamic_model()
-        process(dynamic_basic)
-        static_basic = basic_static_model()
-        process(static_basic)
-
-        print('testing save dynamic and load static...')
-        try:
-            dynamic_basic.save_weights("./model_basic.h5")
-            static_basic.load_weights("./model_basic.h5", in_order=False)
         except Exception as e:
             print(e)
 
@@ -352,7 +272,7 @@ class Model_Core_Test(CustomTestCase):
         try:
             class ill_model(Model):
                 def __init__(self):
-                    super(ill_model, self).__init__(name="basic_dynamic")
+                    super(ill_model, self).__init__()
                     self.dense2 = Dense(10, act=None)
 
                 def forward(self, x):
@@ -438,6 +358,34 @@ class Model_Core_Test(CustomTestCase):
         weights = model.weights
         self.assertGreater(len(weights), 2)
         print(len(weights))
+
+    def test_get_layer(self):
+        print('-' * 20, 'test_get_layer', '-' * 20)
+        model_basic = basic_dynamic_model()
+        self.assertIsInstance(model_basic.get_layer('conv2'), tl.layers.Conv2d)
+        try:
+            model_basic.get_layer('abc')
+        except Exception as e:
+            print(e)
+
+        try:
+            model_basic.get_layer(index=99)
+        except Exception as e:
+            print(e)
+
+        model_basic = basic_static_model()
+        self.assertIsInstance(model_basic.get_layer('conv2'), tl.layers.Conv2d)
+        self.assertIsInstance(model_basic.get_layer(index=2), tl.layers.MaxPool2d)
+        print([w.name for w in model_basic.get_layer(index=-1).weights])
+        try:
+            model_basic.get_layer('abc')
+        except Exception as e:
+            print(e)
+
+        try:
+            model_basic.get_layer(index=99)
+        except Exception as e:
+            print(e)
 
 if __name__ == '__main__':
 
