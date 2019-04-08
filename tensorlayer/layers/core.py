@@ -9,6 +9,9 @@ import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import (deprecated_alias, private_method, protected_method)
 from tensorlayer.layers.utils import (get_variable_with_initializer, list_remove_repeat)
+from tensorlayer.files import utils
+
+import inspect
 
 __all__ = ['Layer', 'ModelLayer', 'LayerList']
 
@@ -92,6 +95,17 @@ class Layer(object):
         # Layer training state
         self.is_train = True
 
+        self.graph = {}
+        self.graph.update({'class': self.__class__.__name__.split('.')[-1]})
+        self.layer_args = self._get_init_args(skip=3)
+        self.layer_args.update(self.get_args())
+        self.layer_args["name"] = self.name
+        self.graph.update({"args": self.layer_args})
+        if self.__class__.__name__ in tl.layers.inputs.__all__:
+            self.graph.update({'prev_layer': None})
+        else:
+            self.graph.update({'prev_layer': []})
+
         # FIXME : model save part @ruihai
         # self.add_prev = False
         # self.graph = {}
@@ -142,6 +156,12 @@ class Layer(object):
 
         if not self._nodes_fixed:
             self._add_node(input_tensors, outputs)
+            if not isinstance(input_tensors, list):
+                prev_name = input_tensors._info[0].name
+            else:
+                prev_name = [input_tensor._info[0].name for input_tensor in input_tensors]
+            self.graph['prev_layer'].append(prev_name)
+
         return outputs
 
     def _add_node(self, input_tensors, output_tensors):
@@ -236,54 +256,42 @@ class Layer(object):
     def __delitem__(self, key):
         raise TypeError("The Layer API does not allow to use the method: `__delitem__`")
 
+    @protected_method
+    def get_args(self):
+        init_args = {"layer_type": "normal"}
+        return init_args
+
     # FIXME : model save part @ruihai
-    # @protected_method
-    # def _get_init_args(self, skip=3):
-    #     """Get all arguments of current layer for saving the graph."""
-    #     stack = inspect.stack()
-    #
-    #     if len(stack) < skip + 1:
-    #         raise ValueError("The length of the inspection stack is shorter than the requested start position.")
-    #
-    #     args, _, _, values = inspect.getargvalues(stack[skip][0])
-    #
-    #     params = {}
-    #
-    #     for arg in args:
-    #
-    #         # some args dont need to be saved into the graph. e.g. the input placeholder
-    #         if values[arg] is not None and arg not in ['self', 'prev_layer', 'inputs']:
-    #
-    #             val = values[arg]
-    #
-    #             # change function (e.g. act) into dictionary of module path and function name
-    #             if inspect.isfunction(val):
-    #                 params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
-    #             # ignore more args e.g. TF class
-    #             elif arg.endswith('init'):
-    #                 continue
-    #             # for other data type, save them directly
-    #             else:
-    #                 params[arg] = val
-    #
-    #     return params
-    #
-    # @protected_method
-    # def _add_graphs(self, graphs):
-    #     if isinstance(graphs, list):
-    #         self.all_graphs.extend(list(graphs))
-    #     else:
-    #         self.all_graphs.append(graphs)
-    #
-    # @private_method
-    # def _argument_dict_checkup(self, args):
-    #
-    #     if not isinstance(args, dict) and args is not None:
-    #         raise AssertionError(
-    #             "One of the argument given to %s should be formatted as a dictionary" % self.__class__.__name__
-    #         )
-    #
-    #     return args if args is not None else {}
+    @protected_method
+    def _get_init_args(self, skip=3):
+        """Get all arguments of current layer for saving the graph."""
+        stack = inspect.stack()
+
+        if len(stack) < skip + 1:
+            raise ValueError("The length of the inspection stack is shorter than the requested start position.")
+
+        args, _, _, values = inspect.getargvalues(stack[skip][0])
+
+        params = {}
+
+        for arg in args:
+
+            # some args dont need to be saved into the graph. e.g. the input placeholder
+            if values[arg] is not None and arg not in ['self', 'prev_layer', 'inputs']:
+
+                val = values[arg]
+
+                # change function (e.g. act) into dictionary of module path and function name
+                if inspect.isfunction(val):
+                    params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
+                # ignore more args e.g. TF class
+                elif arg.endswith('init'):
+                    continue
+                # for other data type, save them directly
+                else:
+                    params[arg] = val
+
+        return params
 
 
 class LayerNode(object):
@@ -434,6 +442,12 @@ class ModelLayer(Layer):
         super(ModelLayer, self)._release_memory()
         self.model.release_memory()
 
+    def get_args(self):
+        init_args = {}
+        init_args.update({"layer_type": "modellayer"})
+        init_args["model"] = utils.make_saved_file(self.layer_args["model"])
+        return init_args
+
 
 class LayerList(Layer):
     """
@@ -572,6 +586,14 @@ class LayerList(Layer):
         super(LayerList, self)._release_memory()
         for layer in self.layers:
             layer._release_memory()
+
+    def get_args(self):
+        # ipdb.set_trace()
+        init_args = {}
+        layers = self.layer_args["layers"]
+        init_args["layers"] = [layer.graph for layer in layers]
+        init_args.update({"layer_type": "layerlist"})
+        return init_args
 
 
 def _addindent(s_, numSpaces):
