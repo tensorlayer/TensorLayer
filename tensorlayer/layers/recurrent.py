@@ -294,7 +294,7 @@ class BiRNN(Layer):
             return_seq_2d=False,
             return_state=False,
             in_channels=None,
-            name=None,  # 'birnn'
+            name=None, # 'birnn'
     ):
         super(BiRNN, self).__init__(name)
 
@@ -307,23 +307,21 @@ class BiRNN(Layer):
             self.build((None, None, in_channels))
             self._built = True
 
-        logging.info(
-            "RNN %s: fw_cell: %s, fw_n_units: %s, bw_cell: %s, bw_n_units： %s" % (
-                self.name, self.fw_cell.__class__.__name__, self.fw_cell.units, self.bw_cell.__class__.__name__,
-                self.bw_cell.units
-            )
-        )
+        logging.info("BiRNN %s: fw_cell: %s, fw_n_units: %s, bw_cell: %s, bw_n_units： %s" %
+                     (self.name, self.fw_cell.__class__.__name__, self.fw_cell.units,
+                      self.bw_cell.__class__.__name__, self.bw_cell.units))
 
     def __repr__(self):
-        s = (
-            '{classname}(fw_cell={fw_cellname}, fw_n_units={fw_n_units}'
-            ', bw_cell={bw_cellname}, bw_n_units={bw_n_units}'
-        )
+        s = ('{classname}(fw_cell={fw_cellname}, fw_n_units={fw_n_units}'
+             ', bw_cell={bw_cellname}, bw_n_units={bw_n_units}')
         s += ', name=\'{name}\''
         s += ')'
         return s.format(
-            classname=self.__class__.__name__, fw_cellname=self.fw_cell.__class__.__name__,
-            fw_n_units=self.fw_cell.units, bw_cellname=self.bw_cell.__class__.__name__, bw_n_units=self.bw_cell.units,
+            classname=self.__class__.__name__,
+            fw_cellname=self.fw_cell.__class__.__name__,
+            fw_n_units=self.fw_cell.units,
+            bw_cellname=self.bw_cell.__class__.__name__,
+            bw_n_units=self.bw_cell.units,
             **self.__dict__
         )
 

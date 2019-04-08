@@ -542,7 +542,6 @@ class Layer_RNN_Test(CustomTestCase):
         pred_y_2, rnn_2 = rnn_model(self.data_x)
         self.assertTrue(np.allclose(rnn_1, rnn_2))
 
-
     def test_sequence_length(self):
         data = [[[1],[2],[0],[0],[0]],
                 [[1],[2],[3],[0],[0]],
