@@ -55,7 +55,7 @@ class Scale(Layer):
     def build(self, inputs_shape):
         self.scale = self._get_weights("scale", shape=[1], init=constant(value=self.init_scale))
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs):
         outputs = inputs * self.scale
         return outputs

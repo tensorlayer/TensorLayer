@@ -40,6 +40,7 @@ class Layer_RNN_Test(CustomTestCase):
     def tearDownClass(cls):
         pass
 
+    '''
     def test_basic_simplernn(self):
 
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
@@ -435,8 +436,42 @@ class Layer_RNN_Test(CustomTestCase):
 
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
+    '''
 
+    def test_basic_simplernn_dropout(self):
 
+        inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
+        rnnlayer = tl.layers.RNN(
+            cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.5, recurrent_dropout=0.5),
+            return_last=True, return_seq_2d=False, return_state=False
+        )
+        rnn = rnnlayer(inputs)
+        outputs = tl.layers.Dense(n_units=1)(rnn)
+        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn])
+        print(rnn_model)
+
+        rnn_model.train()
+        print('rnnlayer:', rnnlayer.is_train)
+        assert rnnlayer.is_train
+
+        pred_y, rnn_1 = rnn_model(self.data_x)
+        pred_y, rnn_2 = rnn_model(self.data_x)
+        print(rnn_1)
+        print(rnn_2)
+        self.assertFalse(np.allclose(rnn_1, rnn_2))
+
+        rnn_model.eval()
+        print('-------')
+        print('rnnlayer:', rnnlayer.is_train)
+        assert not rnnlayer.is_train
+
+        pred_y_1, rnn_1 = rnn_model(self.data_x)
+        pred_y_2, rnn_2 = rnn_model(self.data_x)
+        print(rnn_1)
+        print(rnn_2)
+        self.assertTrue(np.allclose(rnn_1, rnn_2))
+
+    '''
     def test_sequence_length(self):
         data = [[[1],[2],[0],[0],[0]],
                 [[1],[2],[3],[0],[0]],
@@ -500,6 +535,7 @@ class Layer_RNN_Test(CustomTestCase):
             print(length)
         except Exception as e:
             print(e)
+    '''
 
 if __name__ == '__main__':
 

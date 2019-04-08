@@ -154,7 +154,7 @@ class RNN(Layer):
         for var in self.cell.trainable_variables:
             self._weights.append(var)
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs, initial_state=None, **kwargs):
         """
         Parameters
@@ -344,7 +344,7 @@ class BiRNN(Layer):
         for var in self.bw_cell.trainable_variables:
             self._weights.append(var)
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs, fw_initial_state=None, bw_initial_state=None, **kwargs):
         """
         Parameters
@@ -716,7 +716,7 @@ class ConvLSTM(Layer):
         self._add_params(rnn_variables)
 
 
-@tf.function
+# @tf.function
 def retrieve_seq_length_op(data):
     """An op to compute the length of a sequence from input shape of [batch_size, n_step(max), n_features],
     it can be used when the features of padding (on right hand side) are all zeros.
@@ -758,7 +758,7 @@ def retrieve_seq_length_op(data):
         return tf.cast(length, tf.int32)
 
 
-@tf.function
+# @tf.function
 def retrieve_seq_length_op2(data):
     """An op to compute the length of a sequence, from input shape of [batch_size, n_step(max)],
     it can be used when the features of padding (on right hand side) are all zeros.
@@ -781,7 +781,7 @@ def retrieve_seq_length_op2(data):
     return tf.reduce_sum(input_tensor=tf.cast(tf.greater(data, tf.zeros_like(data)), tf.int32), axis=1)
 
 
-@tf.function
+# @tf.function
 def retrieve_seq_length_op3(data, pad_val=0):
     """An op to compute the length of a sequence, the data shape can be [batch_size, n_step(max)] or
     [batch_size, n_step(max), n_features].
