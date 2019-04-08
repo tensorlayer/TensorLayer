@@ -56,18 +56,26 @@ class Layer(object):
         global _global_layer_name_dict
         if name is None:
             prefix = self.__class__.__name__.lower()
+
             if _global_layer_name_dict.get(prefix) is not None:
                 _global_layer_name_dict[prefix] += 1
                 name = prefix + '_' + str(_global_layer_name_dict[prefix])
             else:
                 _global_layer_name_dict[prefix] = 0
                 name = prefix
+            while True:
+                if _global_layer_name_dict.get(name) is None:
+                    break
+                _global_layer_name_dict[prefix] += 1
+                name = prefix + '_' + str(_global_layer_name_dict[prefix])
         else:
             if _global_layer_name_dict.get(name) is not None:
-                raise ValueError(
-                    'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % name
-                )
-            _global_layer_name_dict[name] = 0
+                pass
+                # raise ValueError(
+                #     'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % name
+                # )
+            else:
+                _global_layer_name_dict[name] = 0
 
         self.name = name
 
@@ -333,6 +341,8 @@ class LayerNode(object):
 
         self.in_tensors_idxes = in_tensor_idxes
 
+        self.visited = False
+
     def __call__(self, inputs, **kwargs):
         """(1) Forwarding through the layer. (2) Update its input/output tensors."""
         outputs = self.layer.forward(inputs, **kwargs)
@@ -478,6 +488,17 @@ class LayerList(Layer):
         logging.info(
             "LayerList %s including layers [%s]" % (self.name, ', '.join([layer.name for layer in self.layers]))
         )
+
+        # check layer name uniqueness in LayerList
+        local_layer_name_set = set()
+        for layer in self.layers:
+            if layer.name not in local_layer_name_set:
+                local_layer_name_set.add(layer.name)
+            else:
+                raise ValueError(
+                    'Layer name \'%s\' has already been used by another layer. Please change the layer name.' %
+                    layer.name
+                )
 
     def __getitem__(self, idx):
         if isinstance(idx, slice):

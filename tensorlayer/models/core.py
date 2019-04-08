@@ -13,6 +13,9 @@ __all__ = [
     'Model',
 ]
 
+_global_model_name_dict = {}  # TODO: better implementation?
+_global_model_name_set = set()
+
 
 class Model():
     """The :class:`Model` class represents a neural network.
@@ -134,8 +137,30 @@ class Model():
         name : str or None
             Name for this network
         """
+        # Auto naming if the name is not given
+        global _global_model_name_dict
+        global _global_model_name_set
+        if name is None:
+            prefix = self.__class__.__name__.lower()
+            if _global_model_name_dict.get(prefix) is not None:
+                _global_model_name_dict[prefix] += 1
+                name = prefix + '_' + str(_global_model_name_dict[prefix])
+            else:
+                _global_model_name_dict[prefix] = 0
+                name = prefix
+            while name in _global_model_name_set:
+                _global_model_name_dict[prefix] += 1
+                name = prefix + '_' + str(_global_model_name_dict[prefix])
+            _global_model_name_set.add(name)
+        else:
+            if name in _global_model_name_set:
+                raise ValueError(
+                    'Model name \'%s\' has already been used by another model. Please change the model name.' % name
+                )
+            _global_model_name_set.add(name)
+            _global_model_name_dict[name] = 0
+
         # Model properties
-        # TODO: model auto naming
         self.name = name
 
         # Model state: train or test
@@ -325,11 +350,24 @@ class Model():
                     elif isinstance(getattr(self, attr), Model):
                         nowmodel = getattr(self, attr)
                         self._all_layers.append(nowmodel)
+                    elif isinstance(getattr(self, attr), list):
+                        self._all_layers.extend(_add_list_to_all_layers(getattr(self, attr)))
                 # TODO: define customised exception for TL
                 except AttributeError as e:
                     raise e
                 except Exception:
                     pass
+
+            # check layer name uniqueness
+            local_layer_name_dict = set()
+            for layer in self._all_layers:
+                if layer.name in local_layer_name_dict:
+                    raise ValueError(
+                        'Layer name \'%s\' has already been used by another layer. Please consider change to another name.'
+                        % layer.name
+                    )
+                else:
+                    local_layer_name_dict.add(layer.name)
             return self._all_layers
 
     @property
@@ -475,7 +513,8 @@ class Model():
         self._nodes_fixed = True
 
     def __repr__(self):
-        tmpstr = self.__class__.__name__ + '(\n'
+        # tmpstr = self.__class__.__name__ + '(\n'
+        tmpstr = self.name + '(\n'
         for idx, layer in enumerate(self.all_layers):
             modstr = layer.__repr__()
             modstr = _addindent(modstr, 2)
@@ -501,6 +540,41 @@ class Model():
     def all_drop(self):
         raise Exception("all_drop is deprecated")
 
+    def get_layer(self, name=None, index=None):
+        """Network forwarding given input tensors
+
+        Parameters
+        ----------
+        name : str or None
+            Name of the requested layer. Default None.
+        index : int or None
+            Index of the requested layer. Default None.
+
+        Returns
+        -------
+            layer : The requested layer
+
+        Notes
+        -----
+        Either a layer name or a layer index should be given.
+
+        """
+        if index is not None:
+            if len(self.all_layers) <= index:
+                raise ValueError(
+                    'model only has ' + str(len(self.all_layers)) + ' layers, but ' + str(index) +
+                    '-th layer is requested.'
+                )
+            else:
+                return self.all_layers[index]
+        elif name is not None:
+            for layer in self.all_layers:
+                if layer.name == name:
+                    return layer
+            raise ValueError('Model has no layer named ' + name + '.')
+        else:
+            raise ValueError('Either a layer name or a layer index should be given.')
+
     def _construct_graph(self):
         """construct computation graph for static model using LayerNode object"""
         all_layers = []
@@ -514,7 +588,7 @@ class Model():
         output_tensors_list = self.outputs if isinstance(self.outputs, list) else [self.outputs]
         output_nodes = [tensor._info[0] for tensor in output_tensors_list]
 
-        visited_node_names = []
+        visited_node_names = set()
         for out_node in output_nodes:
             queue_node.put(out_node)
 
@@ -524,9 +598,17 @@ class Model():
 
                 for node in in_nodes:
                     node.out_nodes.append(cur_node)
-                    if node.name not in visited_node_names:
-                        visited_node_names.append(node.name)
+                    if not node.visited:
                         queue_node.put(node)
+                        node.visited = True
+                        if node.name not in visited_node_names:
+                            visited_node_names.add(node.name)
+                        # else have multiple layers with the same name
+                        else:
+                            raise ValueError(
+                                'Layer name \'%s\' has already been used by another layer. Please change the layer name.'
+                                % node.layer.name
+                            )
 
         # construct the computation graph in top-sort order
         cur_depth = [tensor._info[0] for tensor in input_tensors_list]
@@ -643,7 +725,7 @@ class Model():
                 format = 'hdf5'
 
         if format == 'hdf5' or format == 'h5':
-            utils.save_weights_to_hdf5(filepath, self.weights)
+            utils.save_weights_to_hdf5(filepath, self)
         elif format == 'npz':
             utils.save_npz(self.weights, filepath)
         elif format == 'npz_dict':
@@ -686,7 +768,7 @@ class Model():
         Examples
         --------
         1) load model from a hdf5 file.
-        >>> net = tl.model.vgg16()
+        >>> net = tl.models.vgg16()
         >>> net.load_weights('./model_graph.h5', in_order=False, skip=True) # load weights by name, skipping mismatch
         >>> net.load_weights('./model_eager.h5') # load sequentially
 
@@ -716,10 +798,10 @@ class Model():
         if format == 'hdf5' or format == 'h5':
             if skip ==True or in_order == False:
                 # load by weights name
-                utils.load_hdf5_to_weights(filepath, self.weights, skip)
+                utils.load_hdf5_to_weights(filepath, self, skip)
             else:
                 # load in order
-                utils.load_hdf5_to_weights_in_order(filepath, self.weights)
+                utils.load_hdf5_to_weights_in_order(filepath, self)
         elif format == 'npz':
             utils.load_and_assign_npz(filepath, self)
         elif format == 'npz_dict':
@@ -767,3 +849,17 @@ def _check_tl_layer_tensors(tensors):
             if not hasattr(t, '_info'):
                 return False
         return True
+
+
+def _add_list_to_all_layers(list_member):
+    temp_all_layers = list()
+    for component in list_member:
+        if isinstance(component, Layer):
+            temp_all_layers.append(component)
+            if not component._built:
+                raise AttributeError("Layer %s not built yet." % repr(component))
+        elif isinstance(component, Model):
+            temp_all_layers.append(component)
+        elif isinstance(component, list):
+            temp_all_layers.extend(_add_list_to_all_layers(component))
+    return temp_all_layers

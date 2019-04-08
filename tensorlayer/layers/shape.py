@@ -51,7 +51,7 @@ class Flatten(Layer):
     def build(self, inputs_shape=None):
         pass
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs):
         outputs = flatten_reshape(inputs, name=self.name)
         return outputs
@@ -94,7 +94,7 @@ class Reshape(Layer):
     def build(self, inputs_shape=None):
         pass
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs):
         outputs = tf.reshape(inputs, shape=self.shape, name=self.name)
         return outputs
@@ -145,7 +145,7 @@ class Transpose(Layer):
     def build(self, inputs_shape=None):
         pass
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs):
         outputs = tf.transpose(a=inputs, perm=self.perm, conjugate=self.conjugate, name=self.name)
         return outputs

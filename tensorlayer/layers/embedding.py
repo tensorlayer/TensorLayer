@@ -85,7 +85,7 @@ class OneHot(Layer):
     def build(self, inputs_shape):
         pass
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs):
         """
         Parameters
@@ -264,7 +264,7 @@ class Word2vecEmbedding(Layer):
                 init=self.nce_b_init,
             )
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs, use_nce_loss=None):
         """
         Parameters
@@ -390,7 +390,7 @@ class Embedding(Layer):
             init=self.E_init,
         )
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs):
         """
         Parameters
@@ -490,7 +490,7 @@ class AverageEmbedding(Layer):
             init=self.E_init,
         )
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs):
         """
         Parameters

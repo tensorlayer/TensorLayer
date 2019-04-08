@@ -45,10 +45,10 @@ import time
 
 import numpy as np
 import tensorflow as tf
-import wget
 from six.moves import xrange  # pylint: disable=redefined-builtin
 
 import tensorlayer as tl
+import wget
 
 parser = argparse.ArgumentParser()
 

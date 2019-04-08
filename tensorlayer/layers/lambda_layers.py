@@ -127,7 +127,7 @@ class Lambda(Layer):
         # the weights of the function are provided when the Lambda layer is constructed
         pass
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs, **kwargs):
 
         if len(kwargs) == 0:
@@ -213,7 +213,7 @@ class ElementwiseLambda(Layer):
         # the weights of the function are provided when the Lambda layer is constructed
         pass
 
-    @tf.function
+    # @tf.function
     def forward(self, inputs, **kwargs):
 
         if not isinstance(inputs, list):

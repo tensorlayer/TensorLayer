@@ -160,6 +160,15 @@ class Layer_Core_Test(CustomTestCase):
         print(dense1)
         print(dense2)
 
+    def test_dropout(self):
+        data_x = np.random.random([10, 784]).astype(np.float32)
+        pred_y_1 = self.model(data_x, is_train=True)
+        pred_y_2 = self.model(data_x, is_train=True)
+        self.assertFalse(np.allclose(pred_y_1, pred_y_2))
+        pred_y_1 = self.model(data_x, is_train=False)
+        pred_y_2 = self.model(data_x, is_train=False)
+        self.assertTrue(np.allclose(pred_y_1, pred_y_2))
+
 
 if __name__ == '__main__':
 
