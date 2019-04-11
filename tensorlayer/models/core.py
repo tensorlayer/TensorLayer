@@ -169,6 +169,9 @@ class Model():
         # Model weights
         self._weights = None
 
+        # Model args of all layers, ordered by all_layers
+        self._config = None
+
         # Model inputs and outputs
         # TODO: note that in dynamic network, inputs and outputs are both None, may cause problem, test needed
         self._inputs = inputs
@@ -223,7 +226,7 @@ class Model():
                 )
 
             # build network graph
-            self._node_by_depth, self._all_layers, self.all_args = self._construct_graph()
+            self._node_by_depth, self._all_layers = self._construct_graph()
 
             self._fix_nodes_for_layers()
 
@@ -383,6 +386,21 @@ class Model():
                     self._weights.extend(layer.weights)
 
         return self._weights
+
+    @property
+    def config(self):
+        if self._config is not None and len(self._config) > 0:
+            pass
+        else:
+            self._config = []
+            # if self.all_layers is None or len(self.all_layers) == 0:
+            #     raise ValueError(
+            #         "Dynamic mode does not support save() yet."
+            #     )
+            for layer in self.all_layers:
+                self._config.append(layer.config)
+
+        return self._config
 
     def train(self):
         """Set this network in training mode. After calling this method,
@@ -578,7 +596,6 @@ class Model():
     def _construct_graph(self):
         """construct computation graph for static model using LayerNode object"""
         all_layers = []
-        all_args = []
         node_by_depth = []  # [[node0, node1], [node2, node3], ...]
 
         input_tensors_list = self.inputs if isinstance(self.inputs, list) else [self.inputs]
@@ -622,7 +639,6 @@ class Model():
             for node in cur_depth:
                 if node.layer.name not in visited_layer_names:
                     all_layers.append(node.layer)
-                    all_args.append(node.layer.graph)
                     visited_layer_names.append(node.layer.name)
                 for out_node in node.out_nodes:
                     if out_node.name not in indegrees.keys():
@@ -634,7 +650,7 @@ class Model():
             cur_depth = next_depth
             next_depth = []
 
-        return node_by_depth, all_layers, all_args
+        return node_by_depth, all_layers
 
     def release_memory(self):
         '''
@@ -665,16 +681,18 @@ class Model():
         for layer in self.all_layers:
             layer._release_memory()
 
-    def save(self, filepath="h5.hdf5", save_weights=False):
+    def save(self, filepath, save_weights=True):
         if self.outputs is None:
             raise AssertionError(
-                "save_graph not support dynamic mode yet"
+                "Model save not support dynamic mode yet.\nHint: you can use Model save_weights to save the weights in dynamic mode."
             )
-        utils.save_hdf5_graph(network=self, name=filepath, save_weights=save_weights)
+        utils.save_hdf5_graph(network=self, filepath=filepath, save_weights=save_weights)
 
     @staticmethod
-    def load(filepath="h5.hdf5", load_weights=False):
-        return utils.load_hdf5_graph(name=filepath, load_weights=load_weights)
+    def load(filepath, load_weights=True):
+        M = utils.load_hdf5_graph(filepath=filepath, load_weights=load_weights)
+        M.config
+        return M#utils.load_hdf5_graph(filepath=filepath, load_weights=load_weights)
 
     # FIXME : Model save part @runhai
     # def save(self, filepath):

@@ -95,16 +95,9 @@ class Layer(object):
         # Layer training state
         self.is_train = True
 
-        self.graph = {}
-        self.graph.update({'class': self.__class__.__name__.split('.')[-1]})
+        # self.graph = {}
+        self._config = None
         self.layer_args = self._get_init_args(skip=3)
-        self.layer_args.update(self.get_args())
-        self.layer_args["name"] = self.name
-        self.graph.update({"args": self.layer_args})
-        if self.__class__.__name__ in tl.layers.inputs.__all__:
-            self.graph.update({'prev_layer': None})
-        else:
-            self.graph.update({'prev_layer': []})
 
         # FIXME : model save part @ruihai
         # self.add_prev = False
@@ -125,6 +118,34 @@ class Layer(object):
         else:
             shape_mem = tensors.get_shape().as_list()
         return shape_mem
+
+    @property
+    def config(self):
+        if not self._nodes_fixed:
+            raise RuntimeError("Model can not be saved when nodes are not fixed.")
+        if self._config is not None:
+            pass
+        else:
+            self._config = {}
+            self._config.update({'class': self.__class__.__name__.split('.')[-1]})
+            self.layer_args.update(self.get_args())
+            self.layer_args["name"] = self.name
+            self._config.update({"args": self.layer_args})
+            if self.__class__.__name__ in tl.layers.inputs.__all__:
+                self._config.update({'prev_layer': None})
+            else:
+                self._config.update({'prev_layer': []})
+                for node in self._nodes:
+                    input_tensors = node.in_tensors
+                    if not isinstance(input_tensors, list):
+                        prev_name = input_tensors._info[0].name
+                    else:
+                        prev_name = [input_tensor._info[0].name for input_tensor in input_tensors]
+                        if len(prev_name) == 1:
+                            prev_name = prev_name[0]
+                    self._config['prev_layer'].append(prev_name)
+
+        return self._config
 
     @property
     def weights(self):
@@ -156,11 +177,12 @@ class Layer(object):
 
         if not self._nodes_fixed:
             self._add_node(input_tensors, outputs)
-            if not isinstance(input_tensors, list):
-                prev_name = input_tensors._info[0].name
-            else:
-                prev_name = [input_tensor._info[0].name for input_tensor in input_tensors]
-            self.graph['prev_layer'].append(prev_name)
+            # if not isinstance(input_tensors, list):
+            #     prev_name = input_tensors._info[0].name
+            # else:
+            #     prev_name = [input_tensor._info[0].name for input_tensor in input_tensors]
+
+            # self.graph['prev_layer'].append(prev_name)
 
         return outputs
 
@@ -488,15 +510,15 @@ class LayerList(Layer):
 
         is_built = True
         for layer in self.layers:
-            if layer._built == False:
+            if layer._built is False:
                 is_built = False
-            if layer._built ==True and layer.weights is not None:
+            if layer._built and layer.weights is not None:
                 # some layers in the list passed in have already been built
                 # e.g. using input shape to construct layers in dynamic eager
-                if self._weights == None:
+                if self._weights is None:
                     self._weights = list()
                 self._weights.extend(layer.weights)
-        if is_built ==True:
+        if is_built:
             self._built = True
 
         logging.info(
@@ -544,7 +566,7 @@ class LayerList(Layer):
             out_tensor = layer(in_tensor)
             # nlayer = layer(in_layer)
             if is_build == False and layer.weights is not None:
-                if self._weights == None:
+                if self._weights is None:
                     self._weights = list()
                 self._weights.extend(layer.weights)
             layer._built = True
@@ -588,7 +610,6 @@ class LayerList(Layer):
             layer._release_memory()
 
     def get_args(self):
-        # ipdb.set_trace()
         init_args = {}
         layers = self.layer_args["layers"]
         init_args["layers"] = [layer.graph for layer in layers]

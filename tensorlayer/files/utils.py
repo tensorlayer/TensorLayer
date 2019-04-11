@@ -90,7 +90,7 @@ def make_saved_file(network=None):
         for saved_output in network.outputs:
             saved_outputs.append(saved_output._info[0].name)
         saved_file.update({"outputs": saved_outputs})
-    saved_file.update({"all_args": network.all_args})
+    saved_file.update({"config": network.config})
 
     return saved_file
 
@@ -105,7 +105,7 @@ def save_pkl_graph(network=None, name='graph.pkl'):
     name : str
         The name of graph file.
 
-    Examples
+    Example
     --------
     Save the architecture
     >>> tl.files.save_graph(net_test, 'graph.pkl')
@@ -126,7 +126,7 @@ def save_pkl_graph(network=None, name='graph.pkl'):
     logging.info("[*] Saved graph")
 
 
-def save_hdf5_graph(network=None, name='h5.hdf5', save_weights=False):
+def save_hdf5_graph(network=None, filepath='h5.hdf5', save_weights=False):
     """Save the architecture of TL model into a pickle file. No parameters be saved.
 
     Parameters
@@ -139,25 +139,26 @@ def save_hdf5_graph(network=None, name='h5.hdf5', save_weights=False):
     Examples
     --------
     Save the architecture
-    >>> tl.files.save_hdf5_graph(network, 'h5.hdf5', save_weights=False)
+    >>> tl.files.save_hdf5_graph(network, filepath='h5.hdf5', save_weights=True)
 
     Load the architecture in another script (no parameters restore)
-    >>> net = tl.files.load_graph('graph.pkl')
+    >>> net = tl.files.load_hdf5_graph('h5.hdf5', load_weights=True)
     """
     if network.outputs is None:
         raise AssertionError("save_hdf5_graph not support dynamic mode yet")
 
-    logging.info("[*] Saving TL graph into {}, saving weights={}".format(name, save_weights))
+    logging.info("[*] Saving TL graph into {}, saving weights={}".format(filepath, save_weights))
 
 
     saved_file = make_saved_file(network)
     saved_file_str = str(saved_file)
 
     if save_weights:
-        with h5py.File(name, 'w') as f:
+        with h5py.File(filepath, 'w') as f:
             _save_weights_to_hdf5_group(f, network.all_layers, model_structure=saved_file_str)
-        return
-    f = h5py.File(name, 'w')
+            logging.info("[*] Saved graph")
+            return
+    f = h5py.File(filepath, 'w')
     f["model_structure"] = saved_file_str
 
     f.flush()
@@ -203,14 +204,14 @@ def static_graph2net(saved_file):
     model_name = saved_file['name']
     inputs_tensors = saved_file['inputs']
     outputs_tensors = saved_file['outputs']
-    all_args = saved_file['all_args']
+    all_args = saved_file['config']
     for idx, layer_kwargs in enumerate(all_args):
         layer_class = layer_kwargs['class']  # class of current layer
         prev_layers = layer_kwargs.pop('prev_layer')  # name of previous layer : str =one layer   list of str = multiple layers
         net = eval_layer(layer_kwargs)
+        # ipdb.set_trace()
         if layer_class in tl.layers.inputs.__all__:
             net = net._nodes[0].out_tensors[0]
-        # ipdb.set_trace()
         if prev_layers is not None:
             for prev_layer in prev_layers:
                 if not isinstance(prev_layer, list):
@@ -276,12 +277,12 @@ def load_pkl_graph(name='graph.pkl'):
     return M
 
 
-def load_hdf5_graph(name='h5.hdf5', load_weights=False):
+def load_hdf5_graph(filepath='h5.hdf5', load_weights=False):
     """Restore TL model archtecture from a a pickle file. No parameters be restored.
 
     Parameters
     -----------
-    name : str
+    filepath : str
         The name of graph file.
 
     Returns
@@ -294,15 +295,15 @@ def load_hdf5_graph(name='h5.hdf5', load_weights=False):
     - see ``tl.files.save_graph``
     """
     # ipdb.set_trace()
-    logging.info("[*] Loading TL graph from {}, loading weights={}".format(name, load_weights))
-    f = h5py.File(name, 'r')
+    logging.info("[*] Loading TL graph from {}, loading weights={}".format(filepath, load_weights))
+    f = h5py.File(filepath, 'r')
     saved_file_str = f["model_structure"][()]
     saved_file = eval(saved_file_str)
     f.close()
 
     M = static_graph2net(saved_file)
     if load_weights:
-        M.load_weights(filepath=name)
+        M.load_weights(filepath=filepath)
 
     # inputs = _graph2net(saved_file["inputs"])
     # outputs = _graph2net(saved_file["outputs"])
