@@ -17,7 +17,7 @@ import tensorflow as tf
 
 import tensorlayer as tl
 
-tf.logging.set_verbosity(tf.logging.DEBUG)
+# tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 imgs_file_list, _, _, _, classes, _, _, _, objs_info_list, _ = tl.files.load_voc_dataset(dataset="2007")
@@ -74,7 +74,7 @@ def _data_aug_fn(im, ann):
 
 def _map_fn(filename, annotation):
     ## read image
-    image = tf.read_file(filename)
+    image = tf.io.read_file(filename)
     image = tf.image.decode_jpeg(image, channels=3)
     image = tf.image.convert_image_dtype(image, dtype=tf.float32)
     ## data augmentation for image only  0.02s
@@ -83,32 +83,30 @@ def _map_fn(filename, annotation):
     # subtract off the mean and divide by the variance of the pixels. (optional)
     # img = tf.image.per_image_standardization(img)
     ## data augmentation for image and bounding box
-    image, annotation = tf.py_func(_data_aug_fn, [image, annotation], [tf.float32, tf.string])
+    image, annotation = tf.numpy_function(_data_aug_fn, [image, annotation], [tf.float32, tf.string])
     return image, annotation
 
 
-ds = tf.data.Dataset().from_generator(generator, output_types=(tf.string, tf.string))
+ds = tf.data.Dataset.from_generator(generator, output_types=(tf.string, tf.string))
 ds = ds.shuffle(shuffle_buffer_size)
 ds = ds.map(_map_fn, num_parallel_calls=multiprocessing.cpu_count())
 ds = ds.repeat(n_epoch)
 ds = ds.prefetch(buffer_size=2048)
 ds = ds.batch(batch_size)
-value = ds.make_one_shot_iterator().get_next()
 
-sess = tf.InteractiveSession()
-
-## get a batch of images (after data augmentation)
-_, _ = sess.run(value)  # 1st time takes time to compile
 st = time.time()
-im, annbyte = sess.run(value)
+im, annbyte = next(iter(ds))
 print('took {}s'.format(time.time() - st))
+
+im = im.numpy()
 
 ann = []
 for a in annbyte:
-    a = a.decode()
+    a = a.numpy().decode()
     ann.append(json.loads(a))
 
 ## save all images
 for i in range(len(im)):
-    tl.vis.draw_boxes_and_labels_to_image(im[i] * 255, ann[i][0], ann[i][1], [], classes, \
-        True, save_name='_bbox_vis_%d.png' % i)
+    print(ann[i][1])
+    tl.vis.draw_boxes_and_labels_to_image(im[i] * 255, ann[i][0], ann[i][1], [], classes,
+                                          True, save_name='_bbox_vis_%d.png' % i)
