@@ -165,11 +165,11 @@ class Auto_Naming_Test(CustomTestCase):
 
     def test_layer_name_uniqueness(self):
         print('-' * 20, 'test_layer_name_uniqueness', '-' * 20)
-        test_flag =True
+        test_flag = True
 
         # dynamic
         try:
-            model_dynamic = basic_dynamic_model(conv1_name="conv", conv2_name="conv", name="test_layer_name_static")
+            model_dynamic = basic_dynamic_model(conv1_name="conv", conv2_name="conv", name="test_layer_name_dynamic")
             # dynamic mode check uniqueness when self.all_layers is called
             all_layers = model_dynamic.all_layers
             test_flag = False
@@ -212,6 +212,7 @@ class Auto_Naming_Test(CustomTestCase):
             self.fail("Failed to detect repeat user given names")
 
     def test_layerlist(self):
+        print('-' * 20, 'test_layerlist', '-' * 20)
         test_flag = True
 
         try:
@@ -229,6 +230,7 @@ class Auto_Naming_Test(CustomTestCase):
             self.fail("Fail to detect duplicate name in LayerList")
 
     def test_modellayer(self):
+        print('-' * 20, 'test_modellayer', '-' * 20)
         test_flag = True
 
         try:
