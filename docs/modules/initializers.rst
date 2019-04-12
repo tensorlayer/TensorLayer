@@ -48,4 +48,4 @@ TruncatedNormal
 
 deconv2d_bilinear_upsampling_initializer
 --------------------
-.. autoclass:: deconv2d_bilinear_upsampling_initializer
+.. autofunction:: deconv2d_bilinear_upsampling_initializer
