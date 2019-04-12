@@ -3,65 +3,64 @@
 
 import time
 
+import numpy as np
 import tensorflow as tf
 
 import tensorlayer as tl
-from keras import backend as K
-from keras.layers import *
-from tensorlayer.layers import *
+from tensorlayer.layers import Input, Lambda
 
-tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 
-sess = tf.InteractiveSession()
-
 batch_size = 128
-x = tf.placeholder(tf.float32, shape=[None, 784])
-y_ = tf.placeholder(tf.int64, shape=[None])
 
 
-def keras_block(x):
-    x = Dropout(0.8)(x)
-    x = Dense(800, activation='relu')(x)
-    x = Dropout(0.5)(x)
-    x = Dense(800, activation='relu')(x)
-    x = Dropout(0.5)(x)
-    logits = Dense(10, activation='linear')(x)
-    return logits
+# keras layers
+layers = [
+    tf.keras.layers.Dropout(0.8),
+    tf.keras.layers.Dense(800, activation='relu'),
+    tf.keras.layers.Dropout(0.5),
+    tf.keras.layers.Dense(800, activation='relu'),
+    tf.keras.layers.Dropout(0.5),
+    tf.keras.layers.Dense(10, activation='linear')]
+keras_block = tf.keras.Sequential(layers)
+# in order to compile keras model and get trainable_variables of the keras model
+_ = keras_block(np.random.random([batch_size, 784]).astype(np.float32))
 
 
-network = InputLayer(x, name='input')
-network = LambdaLayer(network, fn=keras_block, name='keras')
-
-y = network.outputs
-network.print_params(False)
-network.print_layers()
-
-cost = tl.cost.cross_entropy(y, y_, 'cost')
-correct_prediction = tf.equal(tf.argmax(y, 1), y_)
-acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+# build tl model using keras layers
+ni = Input([None, 784], dtype=tf.float32)
+nn = Lambda(fn=keras_block, fn_weights=keras_block.trainable_variables)(ni)
+network = tl.models.Model(inputs=ni, outputs=nn)
+print(network)
 
 n_epoch = 200
 learning_rate = 0.0001
 
-train_params = network.all_params
-train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost, var_list=train_params)
-
-sess.run(tf.global_variables_initializer())
+train_params = network.weights
+optimizer = tf.optimizers.Adam(learning_rate)
 
 for epoch in range(n_epoch):
     start_time = time.time()
     ## Training
     for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
-        _, _ = sess.run([cost, train_op], feed_dict={x: X_train_a, y_: y_train_a, K.learning_phase(): 1})
+        with tf.GradientTape() as tape:
+            _logits = network(X_train_a, is_train=True)
+            err = tl.cost.cross_entropy(_logits, y_train_a, name='train_loss')
+
+        grad = tape.gradient(err, train_params)
+        optimizer.apply_gradients(zip(grad, train_params))
+        # _, _ = sess.run([cost, train_op], feed_dict={x: X_train_a, y_: y_train_a, K.learning_phase(): 1})
 
     print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
+
     ## Evaluation
     train_loss, train_acc, n_batch = 0, 0, 0
     for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=False):
-        err, ac = sess.run([cost, acc], feed_dict={x: X_train_a, y_: y_train_a, K.learning_phase(): 0})
+        _logits = network(X_train_a, is_train=False)
+        err = tl.cost.cross_entropy(_logits, y_train_a, name='train_loss')
+        ac = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(_logits, 1), y_train_a), tf.float32))
         train_loss += err
         train_acc += ac
         n_batch += 1
@@ -69,7 +68,9 @@ for epoch in range(n_epoch):
     print("   train acc: %f" % (train_acc / n_batch))
     val_loss, val_acc, n_batch = 0, 0, 0
     for X_val_a, y_val_a in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=False):
-        err, ac = sess.run([cost, acc], feed_dict={x: X_val_a, y_: y_val_a, K.learning_phase(): 0})
+        _logits = network(X_val_a, is_train=False)
+        err = tl.cost.cross_entropy(_logits, y_val_a, name='train_loss')
+        ac = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(_logits, 1), y_val_a), tf.float32))
         val_loss += err
         val_acc += ac
         n_batch += 1

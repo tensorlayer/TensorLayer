@@ -131,14 +131,16 @@ class Auto_Naming_Test(CustomTestCase):
 
         model_basic = basic_static_model()
         model_basic_1 = basic_static_model()
-        model_basic_2 = basic_static_model("model_2")
+        assname = "model_%d" % (int(model_basic_1.name.split("_")[-1]) + 1)
+        model_basic_2 = basic_static_model(name=assname)
         model_basic_3 = basic_static_model()
         model_basic_given_name = basic_static_model("a_static_model")
 
-        self.assertEqual(model_basic.name, "model")
-        self.assertEqual(model_basic_1.name, "model_1")
-        self.assertEqual(model_basic_2.name, "model_2")
-        self.assertEqual(model_basic_3.name, "model_3")
+        # self.assertEqual(model_basic.name, "model")
+        basename = model_basic.name
+        self.assertEqual(model_basic_1.name, "model_%d" % (int(basename.split("_")[-1]) + 1))
+        self.assertEqual(model_basic_2.name, assname)
+        self.assertEqual(model_basic_3.name, "model_%d" % (int(assname.split("_")[-1]) + 1))
         self.assertEqual(model_basic_given_name.name, "a_static_model")
 
         try:
@@ -152,8 +154,8 @@ class Auto_Naming_Test(CustomTestCase):
         model_nested = nested_static_model()
         model_nested_1 = nested_static_model(inner_model_name="a_inner_static_model")
 
-        self.assertEqual(model_nested.name, "model_5")
-        self.assertEqual(model_nested_1.name, "model_6")
+        # self.assertEqual(model_nested.name, "model_5")
+        self.assertEqual(model_nested_1.name, "model_%d" % (int(model_nested.name.split("_")[-1]) + 1))
 
         try:
             model_nested_given_repeat_name = nested_static_model(inner_model_name="a_inner_static_model")
