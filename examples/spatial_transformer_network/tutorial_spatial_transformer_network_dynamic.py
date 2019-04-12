@@ -11,6 +11,7 @@ from tensorlayer.models import Model
 X_train, y_train, X_val, y_val, X_test, y_test = \
     tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
 
+
 def pad_distort_im_fn(x):
     """ Zero pads an image to 40x40, and distort it.
 
@@ -51,33 +52,36 @@ tl.vis.save_images(X_test_40[0:32], [4, 8], '_imgs_distorted.png')
 
 
 ##================== DEFINE MODEL ============================================##
-def get_model(inputs_shape):
-    ni = Input(inputs_shape)
+class Net(Model):
+    def __init__(self):
+        super(Net, self).__init__()
 
-    ## 1. Localisation network
-    # use MLP as the localisation net
-    nn = Flatten()(ni)
-    nn = Dense(n_units=20, act=tf.nn.tanh)(nn)
-    nn = Dropout(keep=0.8)(nn)
-    # you can also use CNN instead for MLP as the localisation net
+        ## 1. Localisation network
+        # use MLP as the localisation net
+        self.flatten1 = Flatten()
+        self.dense1 = Dense(n_units=20, in_channels=1600, act=tf.nn.tanh)
+        self.dropout1 = Dropout(keep=0.8)
+        # you can also use CNN instead for MLP as the localisation net
 
-    ## 2. Spatial transformer module (sampler)
-    stn = SpatialTransformer2dAffine(out_size=(40, 40), in_channels=20)
-    s = stn((nn, ni))
-    nn = stn((nn, ni))
+        ## 2. Spatial transformer module (sampler)
+        self.stn = SpatialTransformer2dAffine(out_size=(40, 40), in_channels=20)
+        stn = SpatialTransformer2dAffine(out_size=(40, 40), in_channels=20)
 
-    ## 3. Classifier
-    nn = Conv2d(16, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME')(nn)
-    nn = Conv2d(16, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME')(nn)
-    nn = Flatten()(nn)
-    nn = Dense(n_units=1024, act=tf.nn.relu)(nn)
-    nn = Dense(n_units=10, act=tf.identity)(nn)
+        ## 3. Classifier
+        self.conv1 = Conv2d(16, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME', in_channels=1)
+        self.conv2 = Conv2d(16, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME', in_channels=16)
+        self.flatten2 = Flatten()
+        self.dense2 = Dense(n_units=1024, in_channels=1600, act=tf.nn.relu)
+        self.dense3 = Dense(n_units=10, in_channels=1024, act=tf.identity)
 
-    M = Model(inputs=ni, outputs=[nn, s])
-    return M
+    def forward(self, inputs):
+        theta_input = self.dropout1(self.dense1(self.flatten1(inputs)))
+        V = self.stn((theta_input, inputs))
+        _logits = self.dense3(self.dense2(self.flatten2(self.conv2(self.conv1(V)))))
+        return _logits, V
 
 
-net = get_model([None, 40, 40, 1])
+net = Net()
 
 ##================== DEFINE TRAIN OPS ========================================##
 n_epoch = 100
@@ -120,7 +124,7 @@ for epoch in range(n_epoch):
             X_train_a = tf.expand_dims(X_train_a, 3)
 
             _logits, _ = net(X_train_a)  # alternatively, you can use MLP(x, is_train=False) and remove MLP.eval()
-            train_loss += tl.cost.cross_entropy(_logits, y_train_a,  name='eval_train_loss')
+            train_loss += tl.cost.cross_entropy(_logits, y_train_a, name='eval_train_loss')
             train_acc += np.mean(np.equal(np.argmax(_logits, 1), y_train_a))
             n_iter += 1
         print("   train loss: %f" % (train_loss / n_iter))
