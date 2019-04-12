@@ -3,6 +3,7 @@
 
 import numpy as np
 import tensorflow as tf
+import tensorlayer as tl
 from tensorflow.python.ops.rnn_cell import LSTMStateTuple
 
 from tensorlayer import logging
@@ -128,7 +129,7 @@ def get_layers_with_name(net, name="", verbose=False):
     return layers
 
 
-def get_variable_with_initializer(scope_name, var_name, shape, init=tf.compat.v1.initializers.random_normal()):
+def get_variable_with_initializer(scope_name, var_name, shape, init=tl.initializers.random_normal()):
     # FIXME: documentation needed
     # if tf.executing_eagerly():
     var_name = scope_name + "/" + var_name
@@ -138,7 +139,13 @@ def get_variable_with_initializer(scope_name, var_name, shape, init=tf.compat.v1
     #     initial_value = init()(shape=shape)
     # var = tf.Variable(initial_value=initial_value, name=var_name)
     # FIXME: not sure whether this is correct?
-    initial_value = init(shape=shape)
+    if isinstance(init, tf.Tensor):
+        if shape != init.shape:
+            raise ValueError('The shape of initial value: %s is not equal to the shape of variable: %s'
+                             % (init.shape, shape))
+        initial_value = init
+    else:
+        initial_value = init(shape=shape)
     var = tf.Variable(initial_value=initial_value, name=var_name)  #, **init_args)
 
     # else:
