@@ -33,7 +33,6 @@ import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
 
-tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 _UNK = "_UNK"
@@ -158,17 +157,17 @@ def main_restore_embedding_layer():
 
     del all_var, data, count
 
-    x = tf.placeholder(tf.int32, shape=[batch_size])
+    # x = tf.placeholder(tf.int32, shape=[batch_size])
 
     net_in = tl.layers.Input([batch_size], dtype=tf.int32)
     emb_net = tl.layers.Embedding(vocabulary_size, embedding_size, name='emb')(net_in)
 
     model = tl.models.Model(inputs=net_in, outputs=emb_net, name="model")
 
-    sess.run(tf.global_variables_initializer())
+    # sess.run(tf.global_variables_initializer())
 
     # TODO: assign certain parameters to model
-    model.load_weights(model_file_name + ".hdf5", sess=sess, skip=True, in_order=False)
+    model.load_weights(model_file_name + ".hdf5", skip=True, in_order=False)
 
     # Step 2: Input word(s), output the word vector(s).
     word = 'hello'
@@ -181,11 +180,11 @@ def main_restore_embedding_layer():
     print('word_ids:', word_ids)
     print('context:', context)
 
-    vector = sess.run(emb_net.outputs, feed_dict={x: [word_id]})
+    vector = model([word_id])
     print('vector:', vector.shape)
     print(vector)
 
-    vectors = sess.run(emb_net.outputs, feed_dict={x: word_ids})
+    vectors = model(word_ids)
     print('vectors:', vectors.shape)
     print(vectors)
 
@@ -222,20 +221,19 @@ def main_lstm_generate_text():
     seed = nltk.tokenize.word_tokenize(seed)
     print('seed : %s' % seed)
 
-    sess = tf.InteractiveSession()
+    # sess = tf.InteractiveSession()
 
     # ===== Define model
-    input_data = tf.placeholder(tf.int32, [batch_size, sequence_length])
-    targets = tf.placeholder(tf.int32, [batch_size, sequence_length])
+    # input_data = tf.placeholder(tf.int32, [batch_size, sequence_length])
+    # targets = tf.placeholder(tf.int32, [batch_size, sequence_length])
     # Testing (Evaluation), for generate text
-    input_data_test = tf.placeholder(tf.int32, [1, 1])
+    # input_data_test = tf.placeholder(tf.int32, [1, 1])
 
     rnn_init = tl.initializers.random_uniform(-init_scale, init_scale)
 
     net_in = tl.layers.Input([None, None], dtype=tf.int32)
-    print(net_in.outputs)
     net = Embedding(vocab_size, hidden_size, rnn_init, name='embedding')(net_in)
-    print(net.outputs)
+    '''
     lstm = RNN(
         cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
         cell_init_args={
@@ -245,18 +243,19 @@ def main_lstm_generate_text():
         n_hidden=hidden_size, initializer=rnn_init, n_steps=None,
         return_last=False, return_seq_2d=True, name='lstm1'
     )(net)
-    net_out = Dense(vocab_size, W_init=rnn_init, b_init=rnn_init, act=None, name='output')(lstm)
+    '''
+    lstm, lstm_final_state = RNN(
+        cell=tf.keras.layers.LSTM(units=hidden_size),
+        return_last=False,
+        return_seq_2d=True,
+        return_state=True,
+    )(net)
+    net_out = Dense(vocab_size, W_init=rnn_init, b_init=rnn_init, act=None)(lstm)
     rnn_model = tl.models.Model(
         inputs=net_in,
-        outputs=[net_out, lstm]
+        outputs=[net_out, lstm, lstm_final_state[0], lstm_final_state[1]]
     )
 
-    # Inference for Training
-    network, lstm1 = rnn_model(input_data, is_train=True)
-    # Inference for generate text, sequence_length=1
-    network_test, lstm1_test = rnn_model(input_data_test, is_train=False)
-    y_linear = network_test
-    y_soft = tf.nn.softmax(y_linear)
 
     # y_id = tf.argmax(tf.nn.softmax(y), 1)
 
@@ -277,12 +276,9 @@ def main_lstm_generate_text():
         cost = tf.reduce_sum(loss) / batch_size
         return cost
 
-    # Cost for Training
-    cost = loss_fn(network, targets, batch_size, sequence_length)
-
     # Truncated Backpropagation for training
-    with tf.variable_scope('learning_rate'):
-        lr = tf.Variable(0.0, trainable=False)
+    # with tf.variable_scope('learning_rate'):
+    #     lr = tf.Variable(0.0, trainable=False)
     # You can get all trainable parameters as follow.
     # tvars = tf.trainable_variables()
     # Alternatively, you can specify the parameters for training as follw.
@@ -292,7 +288,9 @@ def main_lstm_generate_text():
     tvars = rnn_model.weights
     # grads, _ = tf.clip_by_global_norm(tf.gradients(cost, tvars), max_grad_norm)
     # optimizer = tf.train.GradientDescentOptimizer(lr)
-    train_op = tf.train.GradientDescentOptimizer(lr).minimize(cost, var_list=tvars)
+    # train_op = tf.optimizers.SGD(learning_rate=0.0001).minimize(cost, var_list=tvars)
+    lr = 0.0001
+    train_op = tf.optimizers.SGD(learning_rate=lr)
     # grads = tf.gradients(cost, tvars)
     # grads[0] = tf.convert_to_tensor(grads[0].values)
     # grads = optimizer.compute_gradients(cost, tvars)
@@ -301,15 +299,15 @@ def main_lstm_generate_text():
     # train_op = optimizer.apply_gradients(zip(grads, tvars))
 
     # ===== Training
-    sess.run(tf.global_variables_initializer())
+    # sess.run(tf.global_variables_initializer())
 
     print("\nStart learning a model to generate text")
     for i in range(max_max_epoch):
         # decrease the learning_rate after ``max_epoch``, by multipling lr_decay.
-        new_lr_decay = lr_decay**max(i - max_epoch, 0.0)
-        sess.run(tf.assign(lr, learning_rate * new_lr_decay))
+        # new_lr_decay = lr_decay**max(i - max_epoch, 0.0)
+        # sess.run(tf.assign(lr, learning_rate * new_lr_decay))
 
-        print("Epoch: %d/%d Learning rate: %.8f" % (i + 1, max_max_epoch, sess.run(lr)))
+        print("Epoch: %d/%d Learning rate: %.8f" % (i + 1, max_max_epoch, lr))
         epoch_size = ((len(train_data) // batch_size) - 1) // sequence_length
 
         start_time = time.time()
@@ -318,6 +316,17 @@ def main_lstm_generate_text():
         # reset all states at the begining of every epoch
         state1 = tl.layers.initialize_rnn_state(lstm1.initial_state)
         for step, (x, y) in enumerate(tl.iterate.ptb_iterator(train_data, batch_size, sequence_length)):
+            # Inference for generate text, sequence_length=1
+            network_test, lstm1_test = rnn_model(input_data_test, is_train=False)
+            y_linear = network_test
+            y_soft = tf.nn.softmax(y_linear)
+
+            # Inference for Training
+            network, lstm1, state0, state1 = rnn_model(x, is_train=True)
+            state1
+
+            # Cost for Training
+            cost = loss_fn(network, y, batch_size, sequence_length)
             _cost, state1, _ = sess.run(
                 [cost, lstm1.final_state, train_op], feed_dict={
                     input_data: x,

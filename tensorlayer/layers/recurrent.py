@@ -170,7 +170,8 @@ class RNN(Layer):
 
         if kwargs:
             for attr in kwargs:
-                setattr(self, attr, kwargs[attr])
+                if attr in self.__dict__:
+                    setattr(self, attr, kwargs[attr])
 
         if self.return_last:
             outputs = [-1]
@@ -367,7 +368,8 @@ class BiRNN(Layer):
 
         if kwargs:
             for attr in kwargs:
-                setattr(self, attr, kwargs[attr])
+                if attr in self.__dict__:
+                    setattr(self, attr, kwargs[attr])
 
         fw_outputs = list()
         bw_outputs = list()
