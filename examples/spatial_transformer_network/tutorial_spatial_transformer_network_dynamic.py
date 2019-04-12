@@ -65,7 +65,6 @@ class Net(Model):
 
         ## 2. Spatial transformer module (sampler)
         self.stn = SpatialTransformer2dAffine(out_size=(40, 40), in_channels=20)
-        stn = SpatialTransformer2dAffine(out_size=(40, 40), in_channels=20)
 
         ## 3. Classifier
         self.conv1 = Conv2d(16, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME', in_channels=1)
