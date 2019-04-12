@@ -267,8 +267,8 @@ class SpatialTransformer2dAffine(Layer):
             self.in_channels = inputs_shape[1]
             shape = [inputs_shape[1], 6]
         self.W = self._get_weights("weights", shape=tuple(shape), init=tl.initializers.Zeros())
-        identity = tf.constant(np.array([[1., 0, 0], [0, 1., 0]]).astype('float32').flatten())
-        self.b = self._get_weights("biases", shape=(6,), init=identity)
+        identity = np.reshape(np.array([[1, 0, 0], [0, 1, 0]], dtype=np.float32), newshape=(6, ))
+        self.b = self._get_weights("biases", shape=(6,), init=tl.initializers.Constant(identity))
 
     def forward(self, inputs):
         theta_input, U = inputs

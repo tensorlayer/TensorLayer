@@ -139,13 +139,7 @@ def get_variable_with_initializer(scope_name, var_name, shape, init=tl.initializ
     #     initial_value = init()(shape=shape)
     # var = tf.Variable(initial_value=initial_value, name=var_name)
     # FIXME: not sure whether this is correct?
-    if isinstance(init, tf.Tensor):
-        if shape != init.shape:
-            raise ValueError('The shape of initial value: %s is not equal to the shape of variable: %s'
-                             % (init.shape, shape))
-        initial_value = init
-    else:
-        initial_value = init(shape=shape)
+    initial_value = init(shape=shape)
     var = tf.Variable(initial_value=initial_value, name=var_name)  #, **init_args)
 
     # else:
