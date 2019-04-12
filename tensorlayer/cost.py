@@ -5,7 +5,7 @@ import numbers
 
 import tensorflow as tf
 from tensorflow.python.framework import ops
-from tensorflow.python.ops import standard_ops
+from tensorflow.python.ops import standard_ops, math_ops, nn_ops, array_ops
 
 from tensorlayer import logging
 
@@ -100,7 +100,8 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
 
     # with tf.name_scope(name):
     return tf.reduce_mean(
-        tf.reduce_sum(-(target * tf.log(output + epsilon) + (1. - target) * tf.log(1. - output + epsilon)), axis=1),
+        tf.reduce_sum(-(target * tf.math.log(output + epsilon) + (1. - target) * tf.math.log(1. - output + epsilon)),
+                      axis=1),
         name=name
     )
 
@@ -171,7 +172,7 @@ def normalized_mean_square_error(output, target, axis=-1, name="normalized_mean_
         #     axis = [1, 2]
         # elif len(output.shape) == 4:  # [batch_size, w, h, c]
         #     axis = [1, 2, 3]
-        nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=axis))
+        nmse_a = tf.sqrt(tf.reduce_sum(tf.math.squared_difference(output, target), axis=axis))
         nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=axis))
         nmse = tf.reduce_mean(nmse_a / nmse_b, name=name)
     return nmse
@@ -235,7 +236,7 @@ def dice_coe(output, target, loss_type='jaccard', axis=(1, 2, 3), smooth=1e-5):
     Examples
     ---------
     >>> import tensorlayer as tl
-    >>> outputs = tl.act.pixel_wise_softmax(network.outputs)
+    >>> outputs = tl.act.pixel_wise_softmax(outputs)
     >>> dice_loss = 1 - tl.cost.dice_coe(outputs, y_)
 
     References
@@ -372,7 +373,61 @@ def iou_coe(output, target, threshold=0.5, axis=(1, 2, 3), smooth=1e-5):
 # exit()
 
 
-def cross_entropy_seq(logits, target_seqs, batch_size=None):  # , batch_size=1, num_steps=None):
+def sequence_loss_by_example(logits, targets, weights, average_across_timesteps=True, softmax_loss_function=None, name=None):
+    """Weighted cross-entropy loss for a sequence of logits (per example). see original tensorflow code :
+    <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/legacy_seq2seq/python/ops/seq2seq.py#L1057>
+
+    Parameters
+    ----------
+    logits: List
+        List of 2D Tensors of shape [batch_size x num_decoder_symbols].
+    targets: List
+        List of 1D batch-sized int32 Tensors of the same length as logits.
+    weights: List
+        List of 1D batch-sized float-Tensors of the same length as logits.
+    average_across_timesteps: Boolean
+        If set, divide the returned cost by the total label weight.
+    softmax_loss_function: None or Function
+        Function (labels, logits) -> loss-batch to be used instead of the standard softmax (the default if this is None).
+        **Note that to avoid confusion, it is required for the function to accept named arguments.**
+    name: None or str
+        Optional name for this operation, default: "sequence_loss_by_example".
+
+    Returns
+    -------
+    1D batch-sized float Tensor: The log-perplexity for each sequence.
+
+    Raises
+    ------
+    ValueError: If len(logits) is different from len(targets) or len(weights).
+
+    """
+    if len(targets) != len(logits) or len(weights) != len(logits):
+        raise ValueError("Lengths of logits, weights, and targets must be the same "
+                         "%d, %d, %d." % (len(logits), len(weights), len(targets)))
+    with ops.name_scope(name, "sequence_loss_by_example",
+                      logits + targets + weights):
+        log_perp_list = []
+        for logit, target, weight in zip(logits, targets, weights):
+            if softmax_loss_function is None:
+                # TODO(irving,ebrevdo): This reshape is needed because
+                # sequence_loss_by_example is called with scalars sometimes, which
+                # violates our general scalar strictness policy.
+                target = array_ops.reshape(target, [-1])
+                crossent = nn_ops.sparse_softmax_cross_entropy_with_logits(
+                    labels=target, logits=logit)
+            else:
+                crossent = softmax_loss_function(labels=target, logits=logit)
+            log_perp_list.append(crossent * weight)
+    log_perps = math_ops.add_n(log_perp_list)
+    if average_across_timesteps:
+        total_size = math_ops.add_n(weights)
+        total_size += 1e-12  # Just to avoid division by 0 for all-0 weights.
+        log_perps /= total_size
+    return log_perps
+
+
+def cross_entropy_seq(logits, target_seqs, batch_size=None):
     """Returns the expression of cross-entropy of two sequences, implement
     softmax internally. Normally be used for fixed length RNN outputs, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__.
 
@@ -390,16 +445,13 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):  # , batch_size=1, 
     Examples
     --------
     >>> import tensorlayer as tl
-    >>> see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__.for more details
-    >>> input_data = tf.placeholder(tf.int32, [batch_size, n_steps])
-    >>> targets = tf.placeholder(tf.int32, [batch_size, n_steps])
-    >>> # build the network
-    >>> print(net.outputs)
-    (batch_size * n_steps, n_classes)
-    >>> cost = tl.cost.cross_entropy_seq(network.outputs, targets)
+    >>> # see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__.for more details
+    >>> # outputs shape : (batch_size * n_steps, n_classes)
+    >>> # targets shape : (batch_size, n_steps)
+    >>> cost = tl.cost.cross_entropy_seq(outputs, targets)
 
     """
-    sequence_loss_by_example_fn = tf.contrib.legacy_seq2seq.sequence_loss_by_example
+    sequence_loss_by_example_fn = sequence_loss_by_example
 
     loss = sequence_loss_by_example_fn(
         [logits], [tf.reshape(target_seqs, [-1])], [tf.ones_like(tf.reshape(target_seqs, [-1]), dtype=tf.float32)]
@@ -432,34 +484,31 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
     Examples
     --------
     >>> import tensorlayer as tl
+    >>> import tensorflow as tf
+    >>> import numpy as np
     >>> batch_size = 64
     >>> vocab_size = 10000
     >>> embedding_size = 256
-    >>> input_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="input")
-    >>> target_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="target")
-    >>> input_mask = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="mask")
-    >>> net = tl.layers.EmbeddingInputlayer(
-    ...         inputs = input_seqs,
+    >>> ni = tl.layers.Input([batch_size, None], dtype=tf.int64)
+    >>> net = tl.layers.Embedding(
     ...         vocabulary_size = vocab_size,
     ...         embedding_size = embedding_size,
-    ...         name = 'seq_embedding')
-    >>> net = tl.layers.DynamicRNNLayer(net,
-    ...         cell_fn = tf.contrib.rnn.BasicLSTMCell,
-    ...         n_hidden = embedding_size,
-    ...         dropout = (0.7 if is_train else None),
-    ...         sequence_length = tl.layers.retrieve_seq_length_op2(input_seqs),
+    ...         name = 'seq_embedding')(ni)
+    >>> net = tl.layers.RNN(
+    ...         cell =tf.keras.layers.LSTMCell(units=embedding_size, dropout=0.1),
     ...         return_seq_2d = True,
-    ...         name = 'dynamicrnn')
-    >>> print(net.outputs)
-    (?, 256)
-    >>> net = tl.layers.DenseLayer(net, n_units=vocab_size, name="output")
-    >>> print(net.outputs)
-    (?, 10000)
-    >>> loss = tl.cost.cross_entropy_seq_with_mask(net.outputs, target_seqs, input_mask)
+    ...         name = 'dynamicrnn')(net)
+    >>> net = tl.layers.Dense(n_units=vocab_size, name="output")(net)
+    >>> model = tl.models.Model(inputs=ni, outputs=net)
+    >>> input_seqs = np.random.randint(0, 10, size=(batch_size, 10), dtype=np.int64)
+    >>> target_seqs = np.random.randint(0, 10, size=(batch_size, 10), dtype=np.int64)
+    >>> input_mask = np.random.randint(0, 2, size=(batch_size, 10), dtype=np.int64)
+    >>> outputs = model(input_seqs, is_train=True)
+    >>> loss = tl.cost.cross_entropy_seq_with_mask(outputs, target_seqs, input_mask)
 
     """
     targets = tf.reshape(target_seqs, [-1])  # to one vector
-    weights = tf.to_float(tf.reshape(input_mask, [-1]))  # to one vector like targets
+    weights = tf.cast(tf.reshape(input_mask, [-1]), dtype=tf.float32)  # to one vector like targets
     losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=targets, name=name) * weights
     # losses = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=targets, name=name)) # for TF1.0 and others
 
