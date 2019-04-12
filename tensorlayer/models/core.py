@@ -363,9 +363,7 @@ class Model():
             for layer in self._all_layers:
                 if layer.name in local_layer_name_dict:
                     raise ValueError(
-                        'Layer name \'%s\' has already been used by another layer. Please consider change to another name.'
-                        % layer.name
-                    )
+                        'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % layer.name)
                 else:
                     local_layer_name_dict.add(layer.name)
             return self._all_layers
