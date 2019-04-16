@@ -4,7 +4,6 @@
 import numpy as np
 import tensorflow as tf
 
-# from tensorlayer.layers.core import LayersConfig
 
 __all__ = [
     'Initializer', 'Zeros', 'Ones', 'Constant', 'RandomUniform', 'RandomNormal', 'TruncatedNormal',
@@ -23,8 +22,8 @@ class Initializer(object):
         ----------
         shape : tuple of int.
             The shape of the tensor.
-        dtype : Optional dtype of the tensor. If not provided will return tensor
-            of `tf.float32`.
+        dtype : Optional dtype of the tensor.
+            If not provided will return tensor of `tf.float32`.
 
         Returns
         -------
@@ -80,7 +79,9 @@ class Constant(Initializer):
 
     Parameters
     ----------
-        value : A python scalar, the value of the generated tensor.
+    value : A python scalar or a numpy array.
+        The assigned value.
+
     """
 
     def __init__(self, value=0):
@@ -98,11 +99,12 @@ class RandomUniform(Initializer):
 
     Parameters
     ----------
-        minval : A python scalar or a scalar tensor. Lower bound of the range
-          of random values to generate.
-        maxval : A python scalar or a scalar tensor. Upper bound of the range
-          of random values to generate.
-        seed : A Python integer. Used to seed the random generator.
+    minval : A python scalar or a scalar tensor.
+        Lower bound of the range of random values to generate.
+    maxval : A python scalar or a scalar tensor.
+        Upper bound of the range of random values to generate.
+    seed : A Python integer.
+        Used to seed the random generator.
 
     """
 
@@ -123,11 +125,12 @@ class RandomNormal(Initializer):
 
     Parameters
     ----------
-        mean : a python scalar or a scalar tensor. Mean of the random values
-          to generate.
-        stddev : a python scalar or a scalar tensor. Standard deviation of the
-          random values to generate.
-        seed : A Python integer. Used to seed the random generator.
+    mean : A python scalar or a scalar tensor.
+        Mean of the random values to generate.
+    stddev : A python scalar or a scalar tensor.
+        Standard deviation of the random values to generate.
+    seed : A Python integer.
+        Used to seed the random generator.
     """
 
     def __init__(self, mean=0.0, stddev=0.05, seed=None):
@@ -153,11 +156,12 @@ class TruncatedNormal(Initializer):
 
     Parameters
     ----------
-        mean : a python scalar or a scalar tensor. Mean of the random values
-          to generate.
-        stddev : a python scalar or a scalar tensor. Standard deviation of the
-      random values to generate.
-        seed : A Python integer. Used to seed the random generator.
+    mean : A python scalar or a scalar tensor.
+        Mean of the random values to generate.
+    stddev : A python scalar or a scalar tensor.
+        Standard deviation of the andom values to generate.
+    seed : A Python integer.
+        Used to seed the random generator.
     """
 
     def __init__(self, mean=0.0, stddev=0.05, seed=None):
@@ -197,21 +201,18 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     >>> rescale_factor = 2
     >>> imsize = 128
     >>> num_channels = 3
-    >>> filter_shape = (5, 5)
-    >>> filter_size = (2 * rescale_factor - rescale_factor % 2) #Corresponding bilinear filter size
     >>> num_in_channels = 3
     >>> num_out_channels = 3
-    >>> deconv_filter_shape = (filter_size, filter_size, num_out_channels, num_in_channels)
-    >>> x = tf.placeholder(tf.float32, (1, imsize, imsize, num_channels))
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
+    >>> filter_shape = (5, 5, num_out_channels, num_in_channels)
+    >>> ni = tl.layers.Input(shape=(1, imsize, imsize, num_channels))
     >>> bilinear_init = deconv2d_bilinear_upsampling_initializer(shape=filter_shape)
-    >>> net = tl.layers.DeConv2dLayer(net,
+    >>> net = tl.layers.DeConv2dLayer(
     ...                    shape=filter_shape,
-    ...                    output_shape=(1, imsize*rescale_factor, imsize*rescale_factor, num_out_channels),
+    ...                    outputs_shape=(1, imsize*rescale_factor, imsize*rescale_factor, num_out_channels),
     ...                    strides=(1, rescale_factor, rescale_factor, 1),
     ...                    W_init=bilinear_init,
     ...                    padding='SAME',
-    ...                    act=None, name='g/h1/decon2d')
+    ...                    act=None, name='g/h1/decon2d')(ni)
 
     """
     if shape[0] != shape[1]:
@@ -236,13 +237,12 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     for x in range(filter_size):
         for y in range(filter_size):
             bilinear_kernel[x, y] = (1 - abs(x - center) / scale_factor) * (1 - abs(y - center) / scale_factor)
-    weights = np.zeros((filter_size, filter_size, num_out_channels, num_in_channels))
+    weights = np.zeros((filter_size, filter_size, num_out_channels, num_in_channels), dtype=np.float32)
     for i in range(num_out_channels):
         weights[:, :, i, i] = bilinear_kernel
 
     # assign numpy array to constant_initalizer and pass to get_variable
-    # FIXME : How to deal with this? Will LayersConfig be removed?
-    return tf.constant_initializer(value=weights, dtype=LayersConfig.tf_dtype)
+    return tf.constant_initializer(value=weights)
 
 
 # Alias

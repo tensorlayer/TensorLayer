@@ -3,6 +3,7 @@
 
 import numpy as np
 import tensorflow as tf
+import tensorlayer as tl
 from tensorflow.python.ops.rnn_cell import LSTMStateTuple
 
 from tensorlayer import logging
@@ -128,7 +129,7 @@ def get_layers_with_name(net, name="", verbose=False):
     return layers
 
 
-def get_variable_with_initializer(scope_name, var_name, shape, init=tf.compat.v1.initializers.random_normal()):
+def get_variable_with_initializer(scope_name, var_name, shape, init=tl.initializers.random_normal()):
     # FIXME: documentation needed
     # if tf.executing_eagerly():
     var_name = scope_name + "/" + var_name
