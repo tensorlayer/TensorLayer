@@ -1,4 +1,4 @@
-#! /usr/bin/python
+    #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import os
@@ -30,14 +30,14 @@ __all__ = [
     'open_tensorboard',
     'clear_all_placeholder_variables',
     'set_gpu_fraction',
+    'train_epoch',
+    'run_epoch'
 ]
 
 
-def fit(
-        sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_size=100, n_epoch=100, print_freq=5,
+def fit(network, train_op, cost, X_train, y_train, acc=None, batch_size=100, n_epoch=100, print_freq=5,
         X_val=None, y_val=None, eval_train=True, tensorboard_dir=None, tensorboard_epoch_freq=5,
-        tensorboard_weight_histograms=True, tensorboard_graph_vis=True
-):
+        tensorboard_weight_histograms=True, tensorboard_graph_vis=True):
     """Training a given non time-series network by the given cost function, training data, batch_size, n_epoch etc.
 
     - MNIST example click `here <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_simple.py>`_.
@@ -45,21 +45,17 @@ def fit(
 
     Parameters
     ----------
-    sess : Session
-        TensorFlow Session.
-    network : TensorLayer layer
+    network : TensorLayer Model
         the network to be trained.
     train_op : TensorFlow optimizer
-        The optimizer for training e.g. tf.train.AdamOptimizer.
+        The optimizer for training e.g. tf.optimizers.Adam().
+    cost : TensorLayer or TensorFlow loss function
+        Metric for loss function, e.g tl.cost.cross_entropy.
     X_train : numpy.array
         The input of training data
     y_train : numpy.array
         The target of training data
-    x : placeholder
-        For inputs.
-    y_ : placeholder
-        For targets.
-    acc : TensorFlow expression or None
+    acc : TensorFlow/numpy expression or None
         Metric for accuracy or others. If None, would not print the information.
     batch_size : int
         The batch size for training and evaluating.
@@ -76,7 +72,6 @@ def fit(
         If X_val and y_val are not None, it reflects whether to evaluate the model on training data.
     tensorboard_dir : string
         path to log dir, if set, summary data will be stored to the tensorboard_dir/ directory for visualization with tensorboard. (default None)
-        Also runs `tl.layers.initialize_global_variables(sess)` internally in fit() to setup the summary nodes.
     tensorboard_epoch_freq : int
         How many epochs between storing tensorboard checkpoint for visualization to log/ directory (default 5).
     tensorboard_weight_histograms : boolean
@@ -89,19 +84,16 @@ def fit(
     --------
     See `tutorial_mnist_simple.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_simple.py>`_
 
-    >>> tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_,
+    >>> tl.utils.fit(network, train_op=tf.optimizers.Adam(learning_rate=0.0001),
+    ...              cost=tl.cost.cross_entropy, X_train=X_train, y_train=y_train, acc=acc,
+    ...              batch_size=64, n_epoch=20, _val=X_val, y_val=y_val, eval_train=True)
+    >>> tl.utils.fit(network, train_op, cost, X_train, y_train,
     ...            acc=acc, batch_size=500, n_epoch=200, print_freq=5,
-    ...            X_val=X_val, y_val=y_val, eval_train=False)
-    >>> tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_,
-    ...            acc=acc, batch_size=500, n_epoch=200, print_freq=5,
-    ...            X_val=X_val, y_val=y_val, eval_train=False,
-    ...            tensorboard=True, tensorboard_weight_histograms=True, tensorboard_graph_vis=True)
+    ...            X_val=X_val, y_val=y_val, eval_train=False, tensorboard=True)
 
     Notes
     --------
-    If tensorboard_dir not None, the `global_variables_initializer` will be run inside the fit function
-    in order to initialize the automatically generated summary nodes used for tensorboard visualization,
-    thus `tf.global_variables_initializer().run()` before the `fit()` call will be undefined.
+    'tensorboard_weight_histograms' and 'tensorboard_weight_histograms' are not supported now.
 
     """
     if X_train.shape[0] < batch_size:
@@ -113,99 +105,71 @@ def fit(
         tl.files.exists_or_mkdir(tensorboard_dir)
 
         #Only write summaries for more recent TensorFlow versions
-        if hasattr(tf, 'summary') and hasattr(tf.summary, 'FileWriter'):
+        if hasattr(tf, 'summary') and hasattr(tf.summary, 'create_file_writer'):
+            train_writer = tf.summary.create_file_writer(tensorboard_dir + '/train')
+            val_writer = tf.summary.create_file_writer(tensorboard_dir + '/validation')
             if tensorboard_graph_vis:
-                train_writer = tf.summary.FileWriter(tensorboard_dir + '/train', sess.graph)
-                val_writer = tf.summary.FileWriter(tensorboard_dir + '/validation', sess.graph)
-            else:
-                train_writer = tf.summary.FileWriter(tensorboard_dir + '/train')
-                val_writer = tf.summary.FileWriter(tensorboard_dir + '/validation')
+                # FIXME : not sure how to add tl network graph
+                pass
+    else:
+        train_writer = None
+        val_writer = None
 
-        #Set up summary nodes
-        if (tensorboard_weight_histograms):
-            for param in network.all_params:
-                if hasattr(tf, 'summary') and hasattr(tf.summary, 'histogram'):
-                    tl.logging.info('Param name %s' % param.name)
-                    tf.summary.histogram(param.name, param)
-
-        if hasattr(tf, 'summary') and hasattr(tf.summary, 'histogram'):
-            tf.summary.scalar('cost', cost)
-
-        merged = tf.summary.merge_all()
-
-        #Initalize all variables and summaries
-        tl.layers.initialize_global_variables(sess)
         tl.logging.info("Finished! use `tensorboard --logdir=%s/` to start tensorboard" % tensorboard_dir)
 
     tl.logging.info("Start training the network ...")
     start_time_begin = time.time()
-    tensorboard_train_index, tensorboard_val_index = 0, 0
     for epoch in range(n_epoch):
         start_time = time.time()
-        loss_ep = 0
-        n_step = 0
-        for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
-            feed_dict = {x: X_train_a, y_: y_train_a}
-            feed_dict.update(network.all_drop)  # enable noise layers
-            loss, _ = sess.run([cost, train_op], feed_dict=feed_dict)
-            loss_ep += loss
-            n_step += 1
-        loss_ep = loss_ep / n_step
+        loss_ep, _, __ = train_epoch(network, X_train, y_train,
+                                     cost=cost, train_op=train_op, batch_size=batch_size)
 
+        train_loss, train_acc = None, None
+        val_loss, val_acc = None, None
         if tensorboard_dir is not None and hasattr(tf, 'summary'):
             if epoch + 1 == 1 or (epoch + 1) % tensorboard_epoch_freq == 0:
-                for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
-                    dp_dict = dict_to_one(network.all_drop)  # disable noise layers
-                    feed_dict = {x: X_train_a, y_: y_train_a}
-                    feed_dict.update(dp_dict)
-                    result = sess.run(merged, feed_dict=feed_dict)
-                    train_writer.add_summary(result, tensorboard_train_index)
-                    tensorboard_train_index += 1
+                if eval_train is True:
+                    train_loss, train_acc, _ = run_epoch(network, X_train, y_train,
+                                                               cost=cost, acc=acc, batch_size=batch_size)
+                    with train_writer.as_default():
+                        tf.compat.v2.summary.scalar('loss', train_loss, step=epoch)
+                        if acc is not None:
+                            tf.summary.scalar('acc', train_acc, step=epoch)
+                    # FIXME : there seems to be an internal error in Tensorboard (misuse of tf.name_scope)
+                    # if tensorboard_weight_histograms is not None:
+                    #     for param in network.weights:
+                    #         tf.summary.histogram(param.name, param, step=epoch)
+
                 if (X_val is not None) and (y_val is not None):
-                    for X_val_a, y_val_a in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=True):
-                        dp_dict = dict_to_one(network.all_drop)  # disable noise layers
-                        feed_dict = {x: X_val_a, y_: y_val_a}
-                        feed_dict.update(dp_dict)
-                        result = sess.run(merged, feed_dict=feed_dict)
-                        val_writer.add_summary(result, tensorboard_val_index)
-                        tensorboard_val_index += 1
+                    val_loss, val_acc, _ = run_epoch(network, X_val, y_val,
+                                                     cost=cost, acc=acc, batch_size=batch_size)
+                    with val_writer.as_default():
+                        tf.summary.scalar('loss', val_loss, step=epoch)
+                        if acc is not None:
+                            tf.summary.scalar('acc', val_acc, step=epoch)
+                        # FIXME : there seems to be an internal error in Tensorboard (misuse of tf.name_scope)
+                        # if tensorboard_weight_histograms is not None:
+                        #     for param in network.weights:
+                        #         tf.summary.histogram(param.name, param, step=epoch)
 
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
             if (X_val is not None) and (y_val is not None):
                 tl.logging.info("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
                 if eval_train is True:
-                    train_loss, train_acc, n_batch = 0, 0, 0
-                    for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
-                        dp_dict = dict_to_one(network.all_drop)  # disable noise layers
-                        feed_dict = {x: X_train_a, y_: y_train_a}
-                        feed_dict.update(dp_dict)
-                        if acc is not None:
-                            err, ac = sess.run([cost, acc], feed_dict=feed_dict)
-                            train_acc += ac
-                        else:
-                            err = sess.run(cost, feed_dict=feed_dict)
-                        train_loss += err
-                        n_batch += 1
-                    tl.logging.info("   train loss: %f" % (train_loss / n_batch))
+                    if train_loss is None:
+                        train_loss, train_acc, _ = run_epoch(network, X_train, y_train,
+                                                             cost=cost, acc=acc, batch_size=batch_size)
+                    tl.logging.info("   train loss: %f" % train_loss)
                     if acc is not None:
-                        tl.logging.info("   train acc: %f" % (train_acc / n_batch))
-                val_loss, val_acc, n_batch = 0, 0, 0
-                for X_val_a, y_val_a in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=True):
-                    dp_dict = dict_to_one(network.all_drop)  # disable noise layers
-                    feed_dict = {x: X_val_a, y_: y_val_a}
-                    feed_dict.update(dp_dict)
-                    if acc is not None:
-                        err, ac = sess.run([cost, acc], feed_dict=feed_dict)
-                        val_acc += ac
-                    else:
-                        err = sess.run(cost, feed_dict=feed_dict)
-                    val_loss += err
-                    n_batch += 1
+                        tl.logging.info("   train acc: %f" % train_acc)
+                if val_loss is None:
+                    val_loss, val_acc, _ = run_epoch(network, X_val, y_val,
+                                                     cost=cost, acc=acc, batch_size=batch_size)
 
-                tl.logging.info("   val loss: %f" % (val_loss / n_batch))
+                tl.logging.info("   val loss: %f" % val_loss)
 
                 if acc is not None:
-                    tl.logging.info("   val acc: %f" % (val_acc / n_batch))
+                    tl.logging.info("   val acc: %f" % val_acc)
             else:
                 tl.logging.info(
                     "Epoch %d of %d took %fs, loss %f" % (epoch + 1, n_epoch, time.time() - start_time, loss_ep)
@@ -213,89 +177,65 @@ def fit(
     tl.logging.info("Total training time: %fs" % (time.time() - start_time_begin))
 
 
-def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
+def test(network, acc, X_test, y_test, batch_size, cost=None):
     """
     Test a given non time-series network by the given test data and metric.
 
     Parameters
     ----------
-    sess : Session
-        TensorFlow session.
-    network : TensorLayer layer
+    network : TensorLayer Model
         The network.
-    acc : TensorFlow expression or None
+    acc : TensorFlow/numpy expression or None
         Metric for accuracy or others.
             - If None, would not print the information.
     X_test : numpy.array
         The input of testing data.
     y_test : numpy array
         The target of testing data
-    x : placeholder
-        For inputs.
-    y_ : placeholder
-        For targets.
     batch_size : int or None
         The batch size for testing, when dataset is large, we should use minibatche for testing;
         if dataset is small, we can set it to None.
-    cost : TensorFlow expression or None
-        Metric for cost or others. If None, would not print the information.
+    cost : TensorLayer or TensorFlow loss function
+        Metric for loss function, e.g tl.cost.cross_entropy. If None, would not print the information.
 
     Examples
     --------
     See `tutorial_mnist_simple.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_simple.py>`_
 
-    >>> tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)
+    >>> def acc(_logits, y_batch):
+    ...     return np.mean(np.equal(np.argmax(_logits, 1), y_batch))
+    >>> tl.utils.test(network, acc, X_test, y_test, batch_size=None, cost=tl.cost.cross_entropy)
 
     """
     tl.logging.info('Start testing the network ...')
+    network.eval()
     if batch_size is None:
-        dp_dict = dict_to_one(network.all_drop)
-        feed_dict = {x: X_test, y_: y_test}
-        feed_dict.update(dp_dict)
-
+        y_pred = network(X_test)
         if cost is not None:
-            tl.logging.info("   test loss: %f" % sess.run(cost, feed_dict=feed_dict))
-
-        test_acc = sess.run(acc, feed_dict=feed_dict)
-        tl.logging.info("   test acc: %f" % test_acc)
-        # tl.logging.info("   test acc: %f" % np.mean(y_test == sess.run(y_op,
-        #                                           feed_dict=feed_dict)))
+            test_loss = cost(y_pred, y_test)
+            tl.logging.info("   test loss: %f" % test_loss)
+        test_acc = acc(y_pred, y_test)
+        tl.logging.info("   test acc: %f" % (test_acc / test_acc))
         return test_acc
     else:
-        test_loss, test_acc, n_batch = 0, 0, 0
-        for X_test_a, y_test_a in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=True):
-            dp_dict = dict_to_one(network.all_drop)  # disable noise layers
-            feed_dict = {x: X_test_a, y_: y_test_a}
-            feed_dict.update(dp_dict)
-            if cost is not None:
-                err, ac = sess.run([cost, acc], feed_dict=feed_dict)
-                test_loss += err
-            else:
-                ac = sess.run(acc, feed_dict=feed_dict)
-            test_acc += ac
-            n_batch += 1
+        test_loss, test_acc, n_batch = run_epoch(network, X_test, y_test,
+                                                 cost=cost, acc=acc, batch_size=batch_size, shuffle=False)
         if cost is not None:
-            tl.logging.info("   test loss: %f" % (test_loss / n_batch))
-        tl.logging.info("   test acc: %f" % (test_acc / n_batch))
-        return test_acc / n_batch
+            tl.logging.info("   test loss: %f" % test_loss)
+        tl.logging.info("   test acc: %f" % test_acc)
+        return test_acc
 
 
-def predict(sess, network, X, x, y_op, batch_size=None):
+def predict(network, X, batch_size=None):
     """
     Return the predict results of given non time-series network.
 
     Parameters
     ----------
-    sess : Session
-        TensorFlow Session.
-    network : TensorLayer layer
+    network : TensorLayer Model
         The network.
     X : numpy.array
         The inputs.
-    x : placeholder
-        For inputs.
-    y_op : placeholder
-        The argmax expression of softmax outputs.
     batch_size : int or None
         The batch size for prediction, when dataset is large, we should use minibatche for prediction;
         if dataset is small, we can set it to None.
@@ -304,48 +244,29 @@ def predict(sess, network, X, x, y_op, batch_size=None):
     --------
     See `tutorial_mnist_simple.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_simple.py>`_
 
-    >>> y = network.outputs
-    >>> y_op = tf.argmax(tf.nn.softmax(y), 1)
-    >>> print(tl.utils.predict(sess, network, X_test, x, y_op))
+    >>> _logits = tl.utils.predict(network, X_test)
+    >>> y_pred = np.argmax(_logits, 1)
 
     """
+    network.eval()
     if batch_size is None:
-        dp_dict = dict_to_one(network.all_drop)  # disable noise layers
-        feed_dict = {
-            x: X,
-        }
-        feed_dict.update(dp_dict)
-        return sess.run(y_op, feed_dict=feed_dict)
+        y_pred = network(X)
+        return y_pred
     else:
         result = None
         for X_a, _ in tl.iterate.minibatches(X, X, batch_size, shuffle=False):
-            dp_dict = dict_to_one(network.all_drop)
-            feed_dict = {
-                x: X_a,
-            }
-            feed_dict.update(dp_dict)
-            result_a = sess.run(y_op, feed_dict=feed_dict)
+            result_a = network(X_a)
             if result is None:
                 result = result_a
             else:
                 result = np.concatenate((result, result_a))
         if result is None:
-            if len(X) % batch_size != 0:
-                dp_dict = dict_to_one(network.all_drop)
-                feed_dict = {
-                    x: X[-(len(X) % batch_size):, :],
-                }
-                feed_dict.update(dp_dict)
-                result_a = sess.run(y_op, feed_dict=feed_dict)
+            if len(X) % batch_size == 0:
+                result_a = network(X[-(len(X) % batch_size):, :])
                 result = result_a
         else:
             if len(X) != len(result) and len(X) % batch_size != 0:
-                dp_dict = dict_to_one(network.all_drop)
-                feed_dict = {
-                    x: X[-(len(X) % batch_size):, :],
-                }
-                feed_dict.update(dp_dict)
-                result_a = sess.run(y_op, feed_dict=feed_dict)
+                result_a = network(X[-(len(X) % batch_size):, :])
                 result = np.concatenate((result, result_a))
         return result
 
@@ -391,12 +312,6 @@ def dict_to_one(dp_dict):
     ----------
     dp_dict : dictionary
         The dictionary contains key and number, e.g. keeping probabilities.
-
-    Examples
-    --------
-    >>> dp_dict = dict_to_one( network.all_drop )
-    >>> dp_dict = dict_to_one( network.all_drop )
-    >>> feed_dict.update(dp_dict)
 
     """
     return {x: 1 for x in dp_dict}
@@ -636,15 +551,143 @@ def set_gpu_fraction(gpu_fraction=0.3):
 
     Parameters
     ----------
-    gpu_fraction : float
-        Fraction of GPU memory, (0 ~ 1]
+    gpu_fraction : None or float
+        Fraction of GPU memory, (0 ~ 1]. If None, allow gpu memory growth.
 
     References
     ----------
-    - `TensorFlow using GPU <https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html>`__
+    - `TensorFlow using GPU <https://www.tensorflow.org/alpha/guide/using_gpu#allowing_gpu_memory_growth>`__
 
     """
     tl.logging.info("[TL]: GPU MEM Fraction %f" % gpu_fraction)
-    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
-    sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
-    return sess
+    if gpu_fraction is None:
+        tf.config.gpu.set_per_process_memory_growth()
+    else:
+        tf.config.gpu.set_per_process_memory_fraction(0.4)
+    # gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
+    # sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+    # return sess
+
+
+def train_epoch(network, X, y, cost, train_op=tf.optimizers.Adam(learning_rate=0.0001),
+                acc=None, batch_size=100, shuffle=True):
+    """Training a given non time-series network by the given cost function, training data, batch_size etc.
+    for one epoch.
+
+    Parameters
+    ----------
+    network : TensorLayer Model
+        the network to be trained.
+    X : numpy.array
+        The input of training data
+    y : numpy.array
+        The target of training data
+    cost : TensorLayer or TensorFlow loss function
+        Metric for loss function, e.g tl.cost.cross_entropy.
+    train_op : TensorFlow optimizer
+        The optimizer for training e.g. tf.optimizers.Adam().
+    acc : TensorFlow/numpy expression or None
+        Metric for accuracy or others. If None, would not print the information.
+    batch_size : int
+        The batch size for training and evaluating.
+    shuffle : boolean
+        Indicating whether to shuffle the dataset in training.
+
+    Returns
+    -------
+    loss_ep : Tensor. Average loss of this epoch.
+    acc_ep : Tensor or None. Average accuracy(metric) of this epoch. None if acc is not given.
+    n_step : int. Number of iterations taken in this epoch.
+
+    """
+    network.train()
+    loss_ep = 0
+    acc_ep = 0
+    n_step = 0
+    for X_batch, y_batch in tl.iterate.minibatches(X, y, batch_size, shuffle=shuffle):
+        _loss, _acc = _train_step(network, X_batch, y_batch, cost=cost, train_op=train_op, acc=acc)
+
+        loss_ep += _loss
+        if acc is not None:
+            acc_ep += _acc
+        n_step += 1
+
+    loss_ep = loss_ep / n_step
+    acc_ep = acc_ep / n_step if acc is not None else None
+
+    return loss_ep, acc_ep, n_step
+
+
+def run_epoch(network, X, y, cost=None, acc=None, batch_size=100, shuffle=False):
+    """Run a given non time-series network by the given cost function, test data, batch_size etc.
+    for one epoch.
+
+    Parameters
+    ----------
+    network : TensorLayer Model
+        the network to be trained.
+    X : numpy.array
+        The input of training data
+    y : numpy.array
+        The target of training data
+    cost : TensorLayer or TensorFlow loss function
+        Metric for loss function, e.g tl.cost.cross_entropy.
+    acc : TensorFlow/numpy expression or None
+        Metric for accuracy or others. If None, would not print the information.
+    batch_size : int
+        The batch size for training and evaluating.
+    shuffle : boolean
+        Indicating whether to shuffle the dataset in training.
+
+    Returns
+    -------
+    loss_ep : Tensor. Average loss of this epoch. None if 'cost' is not given.
+    acc_ep : Tensor. Average accuracy(metric) of this epoch. None if 'acc' is not given.
+    n_step : int. Number of iterations taken in this epoch.
+    """
+    network.eval()
+    loss_ep = 0
+    acc_ep = 0
+    n_step = 0
+    for X_batch, y_batch in tl.iterate.minibatches(X, y, batch_size, shuffle=shuffle):
+        _loss, _acc = _run_step(network, X_batch, y_batch, cost=cost, acc=acc)
+        if cost is not None:
+            loss_ep += _loss
+        if acc is not None:
+            acc_ep += _acc
+        n_step += 1
+
+    loss_ep = loss_ep / n_step if cost is not None else None
+    acc_ep = acc_ep / n_step if acc is not None else None
+
+    return loss_ep, acc_ep, n_step
+
+
+@tf.function
+def _train_step(network, X_batch, y_batch, cost, train_op=tf.optimizers.Adam(learning_rate=0.0001), acc=None):
+    """Train for one step"""
+    with tf.GradientTape() as tape:
+        y_pred = network(X_batch)
+        _loss = cost(y_pred, y_batch)
+
+    grad = tape.gradient(_loss, network.weights)
+    train_op.apply_gradients(zip(grad, network.weights))
+
+    if acc is not None:
+        _acc = acc(y_pred, y_batch)
+        return _loss, _acc
+    else:
+        return _loss, None
+
+
+# @tf.function # FIXME : enable tf.function will cause some bugs in numpy, need fixing
+def _run_step(network, X_batch, y_batch, cost=None, acc=None):
+    """Run for one step"""
+    y_pred = network(X_batch)
+    _loss, _acc = None, None
+    if cost is not None:
+        _loss = cost(y_pred, y_batch)
+    if acc is not None:
+        _acc = acc(y_pred, y_batch)
+    return _loss, _acc
+

@@ -54,8 +54,8 @@ def cross_entropy(output, target, name=None):
     - The code is borrowed from: `<https://en.wikipedia.org/wiki/Cross_entropy>`__.
 
     """
-    if name is None:
-        raise Exception("Please give a unique name to tl.cost.cross_entropy for TF1.0+")
+    # if name is None:
+    #     raise Exception("Please give a unique name to tl.cost.cross_entropy for TF1.0+")
     return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output), name=name)
 
 
