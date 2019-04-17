@@ -61,6 +61,10 @@ class Model():
         Save the weights of this network in a given format.
     load_weights(self, filepath, format=None, in_order=True, skip=False)
         Load weights into this network from a specified file.
+    save(self, filepath, save_weights=True)
+        Save the network with/without weights.
+    load(filepath, save_weights=True)
+        Load the network with/without weights.
 
     Examples
     ---------
@@ -110,6 +114,10 @@ class Model():
     >>> M_static.save_weights('./model_weights.h5')
     >>> M_static.load_weights('./model_weights.h5')
 
+    - Save and load the model
+    >>> M_static.save('./model.h5')
+    >>> M = Model.load('./model.h5')
+
     - Convert model to layer
     >>> M_layer = M_static.as_layer()
 
@@ -138,9 +146,11 @@ class Model():
             Name for this network
         """
         # Auto naming if the name is not given
+        self.NameNone = False
         global _global_model_name_dict
         global _global_model_name_set
         if name is None:
+            self.NameNone = True
             prefix = self.__class__.__name__.lower()
             if _global_model_name_dict.get(prefix) is not None:
                 _global_model_name_dict[prefix] += 1
@@ -391,10 +401,10 @@ class Model():
             pass
         else:
             self._config = []
-            # if self.all_layers is None or len(self.all_layers) == 0:
-            #     raise ValueError(
-            #         "Dynamic mode does not support save() yet."
-            #     )
+            if self.outputs is None:
+                raise RuntimeError(
+                    "Dynamic mode does not support config yet."
+                )
             for layer in self.all_layers:
                 self._config.append(layer.config)
 
@@ -680,32 +690,49 @@ class Model():
             layer._release_memory()
 
     def save(self, filepath, save_weights=True):
+        """Save model into a given file. Support saving model weights.
+
+        Parameters
+        ----------
+        filepath : str
+            Filename into which the model will be saved.
+        save_weights : bool
+            Whether to save model weights.
+
+        Examples
+        --------
+        >>> net = tl.models.vgg16()
+        >>> net.save('./model.h5', save_weights=True)
+        >>> new_net = Model.load('./model.h5', load_weights=True)
+        """
         if self.outputs is None:
-            raise AssertionError(
-                "Model save not support dynamic mode yet.\nHint: you can use Model save_weights to save the weights in dynamic mode."
+            raise RuntimeError(
+                "Model save() not support dynamic mode yet.\nHint: you can use Model save_weights() to save the weights in dynamic mode."
             )
         utils.save_hdf5_graph(network=self, filepath=filepath, save_weights=save_weights)
 
     @staticmethod
     def load(filepath, load_weights=True):
-        M = utils.load_hdf5_graph(filepath=filepath, load_weights=load_weights)
-        M.config
-        return M#utils.load_hdf5_graph(filepath=filepath, load_weights=load_weights)
+        """Load model from a given file, which should be previously saved by Model.save(). Support loading model weights.
 
-    # FIXME : Model save part @runhai
-    # def save(self, filepath):
-    #     if self.outputs is None:
-    #         raise AssertionError(
-    #             "save_graph not support dynamic mode yet"
-    #         )
-    #     utils.save_graph(network=self, name=filepath)
-    #
-    #
-    # def load(filepath):
-    #     return utils.load_graph(name=filepath)
+        Parameters
+        ----------
+        filepath : str
+            Filename from which the model will be loaded.
+        load_weights : bool
+            Whether to load model weights.
+
+        Examples
+        --------
+        >>> net = tl.models.vgg16()
+        >>> net.save('./model.h5', save_weights=True)
+        >>> new_net = Model.load('./model.h5', load_weights=True)
+        """
+        M = utils.load_hdf5_graph(filepath=filepath, load_weights=load_weights)
+        return M
 
     def save_weights(self, filepath, format=None):
-        """Input filepath and the session(optional), save model weights into a file of given format.
+        """Input filepath, save model weights into a file of given format.
             Use self.load_weights() to restore.
 
         Parameters

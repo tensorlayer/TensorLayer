@@ -50,7 +50,6 @@ class Layer(object):
         :param name: str or None
         """
 
-        # FIXME : model save part @runhai
         # Layer constants
         # for key in kwargs.keys():
         #     setattr(self, key, self._argument_dict_checkup(kwargs[key]))
@@ -95,21 +94,9 @@ class Layer(object):
         # Layer training state
         self.is_train = True
 
-        # self.graph = {}
+        # layer config and init_args
         self._config = None
         self.layer_args = self._get_init_args(skip=3)
-
-        # FIXME : model save part @ruihai
-        # self.add_prev = False
-        # self.graph = {}
-        # self.graph.update({'class': self.__class__.__name__.split('.')[-1]})
-        # self.all_graphs = list()
-        # self.layer_args = self._get_init_args(skip=3)
-        # self.graph.update(self.layer_args)
-        # if self.__class__.__name__ in tl.layers.inputs.__all__:
-        #     self.graph.update({'prev_layer': None})
-        #     self._add_graphs((self.name, self.graph))
-        #     self.add_prev = True
 
     @staticmethod
     def _compute_shape(tensors):
@@ -136,11 +123,11 @@ class Layer(object):
             else:
                 self._config.update({'prev_layer': []})
                 for node in self._nodes:
-                    input_tensors = node.in_tensors
-                    if not isinstance(input_tensors, list):
-                        prev_name = input_tensors._info[0].name
+                    in_nodes = node.in_nodes
+                    if not isinstance(in_nodes, list):
+                        prev_name = in_nodes.name
                     else:
-                        prev_name = [input_tensor._info[0].name for input_tensor in input_tensors]
+                        prev_name = [in_node.name for in_node in in_nodes]
                         if len(prev_name) == 1:
                             prev_name = prev_name[0]
                     self._config['prev_layer'].append(prev_name)
@@ -177,12 +164,6 @@ class Layer(object):
 
         if not self._nodes_fixed:
             self._add_node(input_tensors, outputs)
-            # if not isinstance(input_tensors, list):
-            #     prev_name = input_tensors._info[0].name
-            # else:
-            #     prev_name = [input_tensor._info[0].name for input_tensor in input_tensors]
-
-            # self.graph['prev_layer'].append(prev_name)
 
         return outputs
 
@@ -612,7 +593,7 @@ class LayerList(Layer):
     def get_args(self):
         init_args = {}
         layers = self.layer_args["layers"]
-        init_args["layers"] = [layer.graph for layer in layers]
+        init_args["layers"] = [layer.config for layer in layers]
         init_args.update({"layer_type": "layerlist"})
         return init_args
 
