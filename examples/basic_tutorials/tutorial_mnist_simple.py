@@ -27,7 +27,10 @@ network = tl.models.Model(inputs=ni, outputs=nn, name="mlp")
 # define metric.
 def acc(_logits, y_batch):
     # return np.mean(np.equal(np.argmax(_logits, 1), y_batch))
-    return tf.reduce_mean(tf.cast(tf.equal(tf.argmax(_logits, 1), tf.convert_to_tensor(y_batch, tf.int64)), tf.float32), name='accuracy')
+    return tf.reduce_mean(
+        tf.cast(tf.equal(tf.argmax(_logits, 1), tf.convert_to_tensor(y_batch, tf.int64)), tf.float32), name='accuracy'
+    )
+
 
 # print network information
 print(network)
@@ -36,18 +39,11 @@ print(network)
 # tl.utils.open_tensorboard('./tb_log', port=6006)
 
 # train the network
-tl.utils.fit(network,
-             train_op=tf.optimizers.Adam(learning_rate=0.0001),
-             cost=tl.cost.cross_entropy,
-             X_train=X_train,
-             y_train=y_train,
-             acc=acc,
-             batch_size=256,
-             n_epoch=20,
-             X_val=X_val,
-             y_val=y_val,
-             eval_train=True,
-             tensorboard_dir='./tb_log')
+tl.utils.fit(
+    network, train_op=tf.optimizers.Adam(learning_rate=0.0001), cost=tl.cost.cross_entropy, X_train=X_train,
+    y_train=y_train, acc=acc, batch_size=256, n_epoch=20, X_val=X_val, y_val=y_val, eval_train=True,
+    tensorboard_dir='./tb_log'
+)
 
 # test
 tl.utils.test(network, acc, X_test, y_test, batch_size=None, cost=tl.cost.cross_entropy)

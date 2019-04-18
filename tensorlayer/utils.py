@@ -1,4 +1,4 @@
-    #! /usr/bin/python
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import os
@@ -17,27 +17,17 @@ from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 import tensorlayer as tl
 
 __all__ = [
-    'fit',
-    'test',
-    'predict',
-    'evaluation',
-    'dict_to_one',
-    'flatten_list',
-    'class_balancing_oversample',
-    'get_random_int',
-    'list_string_to_dict',
-    'exit_tensorflow',
-    'open_tensorboard',
-    'clear_all_placeholder_variables',
-    'set_gpu_fraction',
-    'train_epoch',
-    'run_epoch'
+    'fit', 'test', 'predict', 'evaluation', 'dict_to_one', 'flatten_list', 'class_balancing_oversample',
+    'get_random_int', 'list_string_to_dict', 'exit_tensorflow', 'open_tensorboard', 'clear_all_placeholder_variables',
+    'set_gpu_fraction', 'train_epoch', 'run_epoch'
 ]
 
 
-def fit(network, train_op, cost, X_train, y_train, acc=None, batch_size=100, n_epoch=100, print_freq=5,
-        X_val=None, y_val=None, eval_train=True, tensorboard_dir=None, tensorboard_epoch_freq=5,
-        tensorboard_weight_histograms=True, tensorboard_graph_vis=True):
+def fit(
+        network, train_op, cost, X_train, y_train, acc=None, batch_size=100, n_epoch=100, print_freq=5, X_val=None,
+        y_val=None, eval_train=True, tensorboard_dir=None, tensorboard_epoch_freq=5, tensorboard_weight_histograms=True,
+        tensorboard_graph_vis=True
+):
     """Training a given non time-series network by the given cost function, training data, batch_size, n_epoch etc.
 
     - MNIST example click `here <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_simple.py>`_.
@@ -121,16 +111,16 @@ def fit(network, train_op, cost, X_train, y_train, acc=None, batch_size=100, n_e
     start_time_begin = time.time()
     for epoch in range(n_epoch):
         start_time = time.time()
-        loss_ep, _, __ = train_epoch(network, X_train, y_train,
-                                     cost=cost, train_op=train_op, batch_size=batch_size)
+        loss_ep, _, __ = train_epoch(network, X_train, y_train, cost=cost, train_op=train_op, batch_size=batch_size)
 
         train_loss, train_acc = None, None
         val_loss, val_acc = None, None
         if tensorboard_dir is not None and hasattr(tf, 'summary'):
             if epoch + 1 == 1 or (epoch + 1) % tensorboard_epoch_freq == 0:
                 if eval_train is True:
-                    train_loss, train_acc, _ = run_epoch(network, X_train, y_train,
-                                                               cost=cost, acc=acc, batch_size=batch_size)
+                    train_loss, train_acc, _ = run_epoch(
+                        network, X_train, y_train, cost=cost, acc=acc, batch_size=batch_size
+                    )
                     with train_writer.as_default():
                         tf.compat.v2.summary.scalar('loss', train_loss, step=epoch)
                         if acc is not None:
@@ -141,8 +131,7 @@ def fit(network, train_op, cost, X_train, y_train, acc=None, batch_size=100, n_e
                     #         tf.summary.histogram(param.name, param, step=epoch)
 
                 if (X_val is not None) and (y_val is not None):
-                    val_loss, val_acc, _ = run_epoch(network, X_val, y_val,
-                                                     cost=cost, acc=acc, batch_size=batch_size)
+                    val_loss, val_acc, _ = run_epoch(network, X_val, y_val, cost=cost, acc=acc, batch_size=batch_size)
                     with val_writer.as_default():
                         tf.summary.scalar('loss', val_loss, step=epoch)
                         if acc is not None:
@@ -157,14 +146,14 @@ def fit(network, train_op, cost, X_train, y_train, acc=None, batch_size=100, n_e
                 tl.logging.info("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
                 if eval_train is True:
                     if train_loss is None:
-                        train_loss, train_acc, _ = run_epoch(network, X_train, y_train,
-                                                             cost=cost, acc=acc, batch_size=batch_size)
+                        train_loss, train_acc, _ = run_epoch(
+                            network, X_train, y_train, cost=cost, acc=acc, batch_size=batch_size
+                        )
                     tl.logging.info("   train loss: %f" % train_loss)
                     if acc is not None:
                         tl.logging.info("   train acc: %f" % train_acc)
                 if val_loss is None:
-                    val_loss, val_acc, _ = run_epoch(network, X_val, y_val,
-                                                     cost=cost, acc=acc, batch_size=batch_size)
+                    val_loss, val_acc, _ = run_epoch(network, X_val, y_val, cost=cost, acc=acc, batch_size=batch_size)
 
                 tl.logging.info("   val loss: %f" % val_loss)
 
@@ -218,8 +207,9 @@ def test(network, acc, X_test, y_test, batch_size, cost=None):
         tl.logging.info("   test acc: %f" % (test_acc / test_acc))
         return test_acc
     else:
-        test_loss, test_acc, n_batch = run_epoch(network, X_test, y_test,
-                                                 cost=cost, acc=acc, batch_size=batch_size, shuffle=False)
+        test_loss, test_acc, n_batch = run_epoch(
+            network, X_test, y_test, cost=cost, acc=acc, batch_size=batch_size, shuffle=False
+        )
         if cost is not None:
             tl.logging.info("   test loss: %f" % test_loss)
         tl.logging.info("   test acc: %f" % test_acc)
@@ -568,8 +558,9 @@ def set_gpu_fraction(gpu_fraction=0.3):
     # return sess
 
 
-def train_epoch(network, X, y, cost, train_op=tf.optimizers.Adam(learning_rate=0.0001),
-                acc=None, batch_size=100, shuffle=True):
+def train_epoch(
+        network, X, y, cost, train_op=tf.optimizers.Adam(learning_rate=0.0001), acc=None, batch_size=100, shuffle=True
+):
     """Training a given non time-series network by the given cost function, training data, batch_size etc.
     for one epoch.
 
@@ -689,4 +680,3 @@ def _run_step(network, X_batch, y_batch, cost=None, acc=None):
     if acc is not None:
         _acc = acc(y_pred, y_batch)
     return _loss, _acc
-

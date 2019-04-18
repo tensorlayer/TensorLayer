@@ -100,9 +100,9 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
 
     # with tf.name_scope(name):
     return tf.reduce_mean(
-        tf.reduce_sum(-(target * tf.math.log(output + epsilon) + (1. - target) * tf.math.log(1. - output + epsilon)),
-                      axis=1),
-        name=name
+        tf.reduce_sum(
+            -(target * tf.math.log(output + epsilon) + (1. - target) * tf.math.log(1. - output + epsilon)), axis=1
+        ), name=name
     )
 
     # For brevity, let `x = output`, `z = target`.  The binary cross entropy loss is
@@ -373,7 +373,9 @@ def iou_coe(output, target, threshold=0.5, axis=(1, 2, 3), smooth=1e-5):
 # exit()
 
 
-def sequence_loss_by_example(logits, targets, weights, average_across_timesteps=True, softmax_loss_function=None, name=None):
+def sequence_loss_by_example(
+        logits, targets, weights, average_across_timesteps=True, softmax_loss_function=None, name=None
+):
     """Weighted cross-entropy loss for a sequence of logits (per example). see original tensorflow code :
     <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/legacy_seq2seq/python/ops/seq2seq.py#L1057>
 
@@ -403,10 +405,11 @@ def sequence_loss_by_example(logits, targets, weights, average_across_timesteps=
 
     """
     if len(targets) != len(logits) or len(weights) != len(logits):
-        raise ValueError("Lengths of logits, weights, and targets must be the same "
-                         "%d, %d, %d." % (len(logits), len(weights), len(targets)))
-    with ops.name_scope(name, "sequence_loss_by_example",
-                      logits + targets + weights):
+        raise ValueError(
+            "Lengths of logits, weights, and targets must be the same "
+            "%d, %d, %d." % (len(logits), len(weights), len(targets))
+        )
+    with ops.name_scope(name, "sequence_loss_by_example", logits + targets + weights):
         log_perp_list = []
         for logit, target, weight in zip(logits, targets, weights):
             if softmax_loss_function is None:
@@ -414,8 +417,7 @@ def sequence_loss_by_example(logits, targets, weights, average_across_timesteps=
                 # sequence_loss_by_example is called with scalars sometimes, which
                 # violates our general scalar strictness policy.
                 target = array_ops.reshape(target, [-1])
-                crossent = nn_ops.sparse_softmax_cross_entropy_with_logits(
-                    labels=target, logits=logit)
+                crossent = nn_ops.sparse_softmax_cross_entropy_with_logits(labels=target, logits=logit)
             else:
                 crossent = softmax_loss_function(labels=target, logits=logit)
             log_perp_list.append(crossent * weight)
