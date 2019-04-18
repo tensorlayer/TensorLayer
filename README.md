@@ -57,7 +57,7 @@ Also, it allow users to easily fine-tune TensorFlow; while being suitable for pr
     |   Graph   |      Keras      | channel last  | 8677 |      2580         |        2576         |      101       |
     |   Eager   | TensorFlow 2.0  | channel last  | 8723 |      2052         |        2024         |      97       |
     |           | TensorLayer 2.0 | channel last  | 8723 |      2010         |        2007         |      95       |
-    |           |     PyTorch     | channel first | 9321 |      1932         |        1929         |      48       |
+    |           |     PyTorch     | channel first | 9321 |      1938         |        1935         |      53       |
 
 
 

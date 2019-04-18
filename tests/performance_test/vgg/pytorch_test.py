@@ -37,11 +37,11 @@ gen = random_input_generator(num_iter, batch_size, format='NCHW')
 # begin training
 
 for idx, data in enumerate(gen):
-    x_batch = torch.Tensor(data[0])
-    y_batch = torch.Tensor(data[1]).long()
 
     start_time = time.time()
 
+    x_batch = torch.Tensor(data[0])
+    y_batch = torch.Tensor(data[1]).long()
     x_batch = x_batch.to(device)
     y_batch = y_batch.to(device)
 

@@ -45,11 +45,10 @@ def train_step(x_batch, y_batch):
 
 # begin training
 for idx, data in enumerate(gen):
-    x_batch = tf.convert_to_tensor(data[0])
-    y_batch = tf.convert_to_tensor(data[1])
-
     start_time = time.time()
 
+    x_batch = tf.convert_to_tensor(data[0])
+    y_batch = tf.convert_to_tensor(data[1])
     train_step(x_batch, y_batch)
 
     end_time = time.time()

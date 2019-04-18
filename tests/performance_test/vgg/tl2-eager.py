@@ -48,12 +48,9 @@ def train_step(x_batch, y_batch):
 vgg.train()
 
 for idx, data in enumerate(gen):
-    x_batch = data[0]
-    y_batch = data[1]
-
     start_time = time.time()
 
-    train_step(x_batch, y_batch)
+    train_step(data[0], data[1])
 
     end_time = time.time()
     consume_time = end_time - start_time
