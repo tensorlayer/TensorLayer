@@ -213,15 +213,11 @@ class SpatialTransformer2dAffine(Layer):
 
     Parameters
     -----------
-    prev_layer : :class:`Layer`
-        Previous layer.
-    theta_layer : :class:`Layer`
-        The localisation network.
-        - We will use a :class:`Dense` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
+    in_channels:
     out_size : tuple of int or None
-        The size of the output of the network (height, width), the feature maps will be resized by this.
+        - The size of the output of the network (height, width), the feature maps will be resized by this.
     name : str
-        A unique layer name.
+        - A unique layer name.
 
     References
     -----------
@@ -271,6 +267,14 @@ class SpatialTransformer2dAffine(Layer):
         self.b = self._get_weights("biases", shape=(6,), init=tl.initializers.Constant(identity))
 
     def forward(self, inputs):
+        """
+        :param inputs: a tuple (theta_input, U).
+                    - theta_input is of size [batch, in_channels]. We will use a :class:`Dense` to
+                    make the theta size to [batch, 6], value range to [0, 1] (via tanh).
+                    - U is the previous layer, which the affine transformation is applied to.
+        :return: tensor of size [batch, out_size[0], out_size[1], n_channels] after affine transformation,
+                    n_channels is identical to that of U.
+        """
         theta_input, U = inputs
         theta = tf.nn.tanh(tf.matmul(theta_input, self.W) + self.b)
         outputs = transformer(U, theta, out_size=self.out_size)
