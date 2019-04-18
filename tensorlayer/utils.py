@@ -456,27 +456,22 @@ def list_string_to_dict(string):
     return dictionary
 
 
-def exit_tensorflow(sess=None, port=6006):
-    """Close TensorFlow session, TensorBoard and Nvidia-process if available.
+def exit_tensorflow(port=6006):
+    """Close TensorBoard and Nvidia-process if available.
 
     Parameters
     ----------
-    sess : Session
-        TensorFlow Session.
-    tb_port : int
+    port : int
         TensorBoard port you want to close, `6006` as default.
 
     """
     text = "[TL] Close tensorboard and nvidia-process if available"
     text2 = "[TL] Close tensorboard and nvidia-process not yet supported by this function (tl.ops.exit_tf) on "
 
-    if sess is not None:
-        sess.close()
-
     if _platform == "linux" or _platform == "linux2":
         tl.logging.info('linux: %s' % text)
         os.system('nvidia-smi')
-        os.system('fuser ' + port + '/tcp -k')  # kill tensorboard 6006
+        os.system('fuser ' + str(port) + '/tcp -k')  # kill tensorboard 6006
         os.system("nvidia-smi | grep python |awk '{print $3}'|xargs kill")  # kill all nvidia-smi python process
         _exit()
 
@@ -510,7 +505,10 @@ def open_tensorboard(log_dir='/tmp/tensorflow', port=6006):
         tl.logging.info("[TL] Log reportory was created at %s" % log_dir)
 
     if _platform == "linux" or _platform == "linux2":
-        raise NotImplementedError()
+        tl.logging.info('linux: %s' % text)
+        subprocess.Popen(
+            sys.prefix + " | python -m tensorflow.tensorboard --logdir=" + log_dir + " --port=" + str(port), shell=True
+        )  # open tensorboard in localhost:6006/ or whatever port you chose
     elif _platform == "darwin":
         tl.logging.info('OS X: %s' % text)
         subprocess.Popen(
@@ -559,10 +557,11 @@ def set_gpu_fraction(gpu_fraction=0.3):
     - `TensorFlow using GPU <https://www.tensorflow.org/alpha/guide/using_gpu#allowing_gpu_memory_growth>`__
 
     """
-    tl.logging.info("[TL]: GPU MEM Fraction %f" % gpu_fraction)
     if gpu_fraction is None:
-        tf.config.gpu.set_per_process_memory_growth()
+        tl.logging.info("[TL]: ALLOW GPU MEM GROWTH")
+        tf.config.gpu.set_per_process_memory_growth(True)
     else:
+        tl.logging.info("[TL]: GPU MEM Fraction %f" % gpu_fraction)
         tf.config.gpu.set_per_process_memory_fraction(0.4)
     # gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
     # sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))

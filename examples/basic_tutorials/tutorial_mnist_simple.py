@@ -7,6 +7,9 @@ import numpy as np
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
+# set gpu mem fraction or allow growth
+# tl.utils.set_gpu_fraction()
+
 # prepare data
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 
@@ -29,6 +32,9 @@ def acc(_logits, y_batch):
 # print network information
 print(network)
 
+# open tensorboard
+# tl.utils.open_tensorboard('./tb_log', port=6006)
+
 # train the network
 tl.utils.fit(network,
              train_op=tf.optimizers.Adam(learning_rate=0.0001),
@@ -36,7 +42,7 @@ tl.utils.fit(network,
              X_train=X_train,
              y_train=y_train,
              acc=acc,
-             batch_size=64,
+             batch_size=256,
              n_epoch=20,
              X_val=X_val,
              y_val=y_val,
@@ -53,3 +59,6 @@ tl.utils.evaluation(y_test, y_pred, n_classes=10)
 
 # save network weights
 network.save_weights('model.h5')
+
+# close tensorboard
+# tl.utils.exit_tensorflow(port=6006)

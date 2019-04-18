@@ -6,7 +6,7 @@ This test compares performance of the following libraries:
 
 1. TensorLayer v. 2.0
 2. TensorFlow ([tf.keras](https://www.tensorflow.org/api_docs/python/tf/keras)) v. 2.0.0-alpha
-3. Keras v. 2.2.4
+3. [Keras](https://keras.io/) v. 2.2.4
 4. [PyTorch](https://pytorch.org) v. 1.0.1
 
 
@@ -15,8 +15,8 @@ This test compares performance of the following libraries:
 
 __Hardware:__
 
-- CPU: Intel(R) Xeon(R) CPU E5-2698 v4 @ 2.20GHz  40 core
-- GPU: Tesla V100-DGXS-32GB
+- CPU: Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz  40 core
+- GPU: TITAN Xp
 
 __Experiment Settings:__
 - Model: [VGG16](http://www.robots.ox.ac.uk/~vgg/research/very_deep/)
@@ -25,12 +25,12 @@ __Experiment Settings:__
 
 __Results:__
 
-|   Mode    |       Lib       |  Data Format  | Max CPU Memory (MB) | Avg CPU Memory (MB) | Runtime (sec) |
-| :-------: | :-------------: | :-----------: | :-----------------: | :-----------------: | :-----------: |
-| AutoGraph | TensorFlow 2.0  | channel last  |        3370         |        3346         |      49       |
-|           | Tensorlayer 2.0 | channel last  |        3358         |        3367         |      50       |
-|   Graph   |      Keras      | channel last  |        3776         |        3775         |      62       |
-|   Eager   | TensorFlow 2.0  | channel last  |        3293         |        3284         |      65       |
-|           | TensorLayer 2.0 | channel last  |        3296         |        3293         |      65       |
-|           |     PyTorch     | channel first |        2562         |        2555         |      43       |
+|   Mode    |       Lib       |  Data Format  | Max GPU Memory Usage(MB)  |Max CPU Memory Usage(MB) | Avg CPU Memory Usage(MB) | Runtime (sec) |
+| :-------: | :-------------: | :-----------: | :-----------------: | :-----------------: | :-----------------: | :-----------: |
+| AutoGraph | TensorFlow 2.0  | channel last  | 11833 |      2161         |        2136         |      74       |
+|           | Tensorlayer 2.0 | channel last  | 11833 |      2187         |        2169         |      76       |
+|   Graph   |      Keras      | channel last  | 8677 |      2580         |        2576         |      101       |
+|   Eager   | TensorFlow 2.0  | channel last  | 8723 |      2052         |        2024         |      97       |
+|           | TensorLayer 2.0 | channel last  | 8723 |      2010         |        2007         |      95       |
+|           |     PyTorch     | channel first | 9321 |      1932         |        1929         |      48       |
 

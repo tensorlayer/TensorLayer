@@ -1,10 +1,11 @@
 import time
 import os
 import psutil
-import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from exp_config import random_input_generator, MONITOR_INTERVAL, NUM_ITERS, BATCH_SIZE, LERANING_RATE
+
+tf.config.gpu.set_per_process_memory_growth(True)
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
@@ -23,8 +24,8 @@ total_time = 0
 num_iter = NUM_ITERS
 batch_size = BATCH_SIZE
 train_weights = vgg.weights
-optimizer = tf.keras.optimizers.Adam(lr=LERANING_RATE)
-loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+optimizer = tf.optimizers.Adam(learning_rate=LERANING_RATE)
+loss_object = tl.cost.cross_entropy
 
 # data generator
 gen = random_input_generator(num_iter, batch_size)
@@ -37,7 +38,7 @@ def train_step(x_batch, y_batch):
         ## compute outputs
         _logits = vgg(x_batch)
         ## compute loss and update model
-        _loss = loss_object(y_batch, _logits)
+        _loss = loss_object(_logits, y_batch)
 
     grad = tape.gradient(_loss, train_weights)
     optimizer.apply_gradients(zip(grad, train_weights))
