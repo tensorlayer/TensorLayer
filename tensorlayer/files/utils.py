@@ -71,9 +71,9 @@ __all__ = [
 ]
 
 
-def make_saved_file(network=None):
+def make_saved_file(network):
     saved_file = dict()
-    if network.NameNone is True:
+    if network._NameNone is True:
         saved_file.update({"name": None})
     else:
         saved_file.update({"name": network.name})
@@ -96,49 +96,45 @@ def make_saved_file(network=None):
     return saved_file
 
 
-def save_hdf5_graph(network=None, filepath='h5.hdf5', save_weights=False):
+def save_hdf5_graph(network, filepath='model.hdf5', save_weights=False):
     """Save the architecture of TL model into a hdf5 file. Support saving model weights.
 
     Parameters
     -----------
-    network : TensorLayer layer
+    network : TensorLayer Model.
         The network to save.
-    name : str
-        The name of graph file.
-    load_weights : bool
+    filepath : str
+        The name of model file.
+    save_weights : bool
         Whether to save model weights.
 
     Examples
     --------
     >>> # Save the architecture (with parameters)
-    >>> tl.files.save_hdf5_graph(network, filepath='h5.hdf5', save_weights=True)
+    >>> tl.files.save_hdf5_graph(network, filepath='model.hdf5', save_weights=True)
     >>> # Save the architecture (without parameters)
-    >>> tl.files.save_hdf5_graph(network, filepath='h5.hdf5', save_weights=False)
+    >>> tl.files.save_hdf5_graph(network, filepath='model.hdf5', save_weights=False)
     >>> # Load the architecture in another script (no parameters restore)
-    >>> net = tl.files.load_hdf5_graph(filepath='h5.hdf5', load_weights=False)
+    >>> net = tl.files.load_hdf5_graph(filepath='model.hdf5', load_weights=False)
     >>> # Load the architecture in another script (restore parameters)
-    >>> net = tl.files.load_hdf5_graph(filepath='h5.hdf5', load_weights=True)
+    >>> net = tl.files.load_hdf5_graph(filepath='model.hdf5', load_weights=True)
     """
     if network.outputs is None:
         raise RuntimeError("save_hdf5_graph not support dynamic mode yet")
 
-    logging.info("[*] Saving TL graph into {}, saving weights={}".format(filepath, save_weights))
+    logging.info("[*] Saving TL model into {}, saving weights={}".format(filepath, save_weights))
 
     saved_file = make_saved_file(network)
     saved_file_str = str(saved_file)
 
-    if save_weights:
-        with h5py.File(filepath, 'w') as f:
-            _save_weights_to_hdf5_group(f, network.all_layers, model_structure=saved_file_str)
-            logging.info("[*] Saved graph")
-            return
-    f = h5py.File(filepath, 'w')
-    f["model_structure"] = saved_file_str
+    with h5py.File(filepath, 'w') as f:
+        f.attrs["model_structure"] = saved_file_str.encode('utf8')
+        if save_weights:
+            _save_weights_to_hdf5_group(f, network.all_layers)
+        f.flush()
+        f.close()
 
-    f.flush()
-    f.close()
-
-    logging.info("[*] Saved graph")
+    logging.info("[*] Saved TL model into {}, saving weights={}".format(filepath, save_weights))
 
 
 def generate_func(args):
@@ -214,13 +210,13 @@ def static_graph2net(saved_file):
     return M
 
 
-def load_hdf5_graph(filepath='h5.hdf5', load_weights=False):
+def load_hdf5_graph(filepath='model.hdf5', load_weights=False):
     """Restore TL model archtecture from a a pickle file. Support loading model weights.
 
     Parameters
     -----------
     filepath : str
-        The name of graph file.
+        The name of model file.
     load_weights : bool
         Whether to load model weights.
 
@@ -232,20 +228,25 @@ def load_hdf5_graph(filepath='h5.hdf5', load_weights=False):
     --------
     - see ``tl.files.save_hdf5_graph``
     """
-    logging.info("[*] Loading TL graph from {}, loading weights={}".format(filepath, load_weights))
+    logging.info("[*] Loading TL model from {}, loading weights={}".format(filepath, load_weights))
     f = h5py.File(filepath, 'r')
-    saved_file_str = f["model_structure"][()]
+    saved_file_str = f.attrs["model_structure"].decode('utf8')
     saved_file = eval(saved_file_str)
-    f.close()
 
     M = static_graph2net(saved_file)
     if load_weights:
+        if not ('layer_names' in f.attrs.keys()):
+            raise RuntimeError("Saved model does not contain weights.")
         M.load_weights(filepath=filepath)
+
+    f.close()
+
+    logging.info("[*] Loaded TL model from {}, loading weights={}".format(filepath, load_weights))
 
     return M
 
 
-def load_pkl_graph(name='graph.pkl'):
+def load_pkl_graph(name='model.pkl'):
     """Restore TL model archtecture from a a pickle file. No parameters be restored.
 
     Parameters
@@ -270,7 +271,7 @@ def load_pkl_graph(name='graph.pkl'):
     return M
 
 
-def save_pkl_graph(network=None, name='graph.pkl'):
+def save_pkl_graph(network, name='model.pkl'):
     """Save the architecture of TL model into a pickle file. No parameters be saved.
 
     Parameters
@@ -2442,7 +2443,7 @@ def assign_tf_variable(variable, value):
     variable.assign(value)
 
 
-def _save_weights_to_hdf5_group(f, layers, model_structure=None):
+def _save_weights_to_hdf5_group(f, layers):
     """
     Save layer/model weights into hdf5 group recursively.
 
@@ -2481,9 +2482,6 @@ def _save_weights_to_hdf5_group(f, layers, model_structure=None):
                     val_dataset[:] = val
         else:
             raise Exception("Only layer or model can be saved into hdf5.")
-
-    if model_structure is not None:
-        f["model_structure"] = model_structure
 
 
 def _load_weights_from_hdf5_group_in_order(f, layers):

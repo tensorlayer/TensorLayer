@@ -146,11 +146,11 @@ class Model():
             Name for this network
         """
         # Auto naming if the name is not given
-        self.NameNone = False
+        self._NameNone = False
         global _global_model_name_dict
         global _global_model_name_set
         if name is None:
-            self.NameNone = True
+            self._NameNone = True
             prefix = self.__class__.__name__.lower()
             if _global_model_name_dict.get(prefix) is not None:
                 _global_model_name_dict[prefix] += 1

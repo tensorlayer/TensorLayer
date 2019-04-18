@@ -259,15 +259,23 @@ class Exception_test(CustomTestCase):
         print("##### begin testing exception in dynamic mode  #####")
 
     def test_exception(self):
-        M = basic_dynamic_model()
+        M1 = basic_dynamic_model()
         try:
-            M.save("dynamic.hdf5", save_weights=False)
+            M1.save("dynamic.hdf5", save_weights=False)
         except Exception as e:
             self.assertIsInstance(e, RuntimeError)
             print(e)
 
         try:
-            print(M.config)
+            print(M1.config)
+        except Exception as e:
+            self.assertIsInstance(e, RuntimeError)
+            print(e)
+
+        M2 = basic_static_model()
+        M2.save("basic_static_mode.hdf5", save_weights=False)
+        try:
+            M3 = Model.load("basic_static_mode.hdf5")
         except Exception as e:
             self.assertIsInstance(e, RuntimeError)
             print(e)
