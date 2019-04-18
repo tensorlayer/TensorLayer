@@ -784,7 +784,7 @@ def word_ids_to_words(data, id_to_word):
 
     Examples
     ---------
-    >>> see ``tl.nlp.words_to_word_ids``
+    see ``tl.nlp.words_to_word_ids``
 
     """
     return [id_to_word[i] for i in data]
