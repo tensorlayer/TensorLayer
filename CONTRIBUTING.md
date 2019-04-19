@@ -1,7 +1,7 @@
 # TensorLayer Contributor Guideline
 
 ## Welcome to contribute!
-You are more than welcome to contribute to TensorLayer! If you have any improvement, please send us your [pull requests](https://help.github.com/en/articles/about-pull-requests). You may implement your improvement on your [folk](https://help.github.com/en/articles/working-with-forks).
+You are more than welcome to contribute to TensorLayer! If you have any improvement, please send us your [pull requests](https://help.github.com/en/articles/about-pull-requests). You may implement your improvement on your [fork](https://help.github.com/en/articles/working-with-forks).
 
 ## Checklist
 * Continuous integration
