@@ -4,7 +4,6 @@
 import numpy as np
 import tensorflow as tf
 
-
 __all__ = [
     'Initializer', 'Zeros', 'Ones', 'Constant', 'RandomUniform', 'RandomNormal', 'TruncatedNormal',
     'deconv2d_bilinear_upsampling_initializer'
