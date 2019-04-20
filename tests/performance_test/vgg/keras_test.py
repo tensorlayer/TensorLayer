@@ -1,14 +1,17 @@
 import time
 import os
 import psutil
-import numpy as np
 import keras
 from keras.applications.vgg16 import VGG16
-from keras.models import Model
 from keras.backend.tensorflow_backend import set_session
 from keras.utils import to_categorical
 import tensorflow as tf
 from exp_config import random_input_generator, MONITOR_INTERVAL, NUM_ITERS, BATCH_SIZE, LERANING_RATE
+
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
+set_session(sess)
 
 # get the whole model
 vgg = VGG16(weights=None)
