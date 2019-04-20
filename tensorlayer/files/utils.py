@@ -25,6 +25,9 @@ from tensorflow.python.platform import gfile
 import tensorlayer as tl
 from tensorlayer import logging, nlp, utils, visualize
 
+import cloudpickle
+import base64
+
 # from six.moves import zip
 
 if sys.version_info[0] == 2:
@@ -69,6 +72,18 @@ __all__ = [
     # 'save_pkl_graph',
     # 'load_pkl_graph',
 ]
+
+
+def func2str(expr):
+    b = cloudpickle.dumps(expr)
+    s = base64.b64encode(b).decode()
+    return s
+
+
+def str2func(s):
+    b = base64.b64decode(s)
+    expr = cloudpickle.loads(b)
+    return expr
 
 
 def make_saved_file(network):
@@ -132,20 +147,27 @@ def save_hdf5_graph(network, filepath='model.hdf5', save_weights=False):
         if save_weights:
             _save_weights_to_hdf5_group(f, network.all_layers)
         f.flush()
-        f.close()
 
     logging.info("[*] Saved TL model into {}, saving weights={}".format(filepath, save_weights))
 
 
 def generate_func(args):
     for key in args:
-        if key in ['act']:
-            fn_dict = args[key]
-            module_path = fn_dict['module_path']
-            func_name = fn_dict['func_name']
-            lib = importlib.import_module(module_path)
-            fn = getattr(lib, func_name)
+        if isinstance(args[key], tuple) and args[key][0] == 'is_Func':
+            fn = str2func(args[key][1])
             args[key] = fn
+        # if key in ['act']:
+        #     # fn_dict = args[key]
+        #     # module_path = fn_dict['module_path']
+        #     # func_name = fn_dict['func_name']
+        #     # lib = importlib.import_module(module_path)
+        #     # fn = getattr(lib, func_name)
+        #     # args[key] = fn
+        #     fn = str2func(args[key])
+        #     args[key] = fn
+        # elif key in ['fn']:
+        #     fn = str2func(args[key])
+        #     args[key] = fn
 
 
 def eval_layer(layer_kwargs):

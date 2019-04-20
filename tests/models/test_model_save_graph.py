@@ -252,6 +252,30 @@ class basic_dynamic_model(Model):
         return x
 
 
+class Lambda_layer_test(CustomTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        print("##### begin testing lambda layer #####")
+
+    def test_list_inputs_outputs(self):
+        x = tl.layers.Input([8, 3], name='input')
+        y = tl.layers.Lambda(lambda x: 2*x, name='lambda')(x)
+        M1 = tl.models.Model(x, y)
+        M1.save("lambda.hdf5")
+        M2 = tl.models.Model.load("lambda.hdf5")
+        print(M1)
+        print(M2)
+        M1.eval()
+        M2.eval()
+        npInput = np.zeros((8, 3)) + 3
+        output1 = M1(npInput).numpy()
+        output2 = M1(npInput).numpy()
+
+        self.assertEqual((output1 == output2).all(), True)
+        self.assertEqual(M1.config, M2.config)
+
+
 class Exception_test(CustomTestCase):
 
     @classmethod
