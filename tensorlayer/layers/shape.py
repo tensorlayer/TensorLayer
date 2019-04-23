@@ -195,6 +195,6 @@ class Shuffle(Layer):
         assert in_channel % self.group == 0
         temp = tf.reshape(inputs, [-1, h, w, in_channel // self.group, self.group])
         temp = tf.transpose(temp, [0, 1, 2, 4, 3])
-        outputs = tf.reshape(temp, [-1, h, w, in_channel])
+        outputs = tf.reshape(temp, [-1, h, w, in_channel],name=self.name)
         return outputs
 
