@@ -908,7 +908,7 @@ class GlobalMeanPool3d(Layer):
 
 
 class CornerPool2d(Layer):
-    """Corner pooling for 2D image [batch, height, width, channel].
+    """Corner pooling for 2D image [batch, height, width, channel]. , see `here <https://arxiv.org/abs/1808.01244>`__.
 
     Parameters
     ----------

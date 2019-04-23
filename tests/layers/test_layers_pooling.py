@@ -86,6 +86,9 @@ class Layer_Pooling_Test(CustomTestCase):
         n15 = tl.layers.PoolLayer(
             name='test_pool2d'
         )(n6)
+        n18 = tl.layers.CornerPool2d('TopLeft',
+            name='test_cornerpool2d'
+        )(n6)
 
         cls.n6_shape = n6.get_shape().as_list()
         cls.n7_shape = n7.get_shape().as_list()
@@ -93,6 +96,7 @@ class Layer_Pooling_Test(CustomTestCase):
         cls.n9_shape = n9.get_shape().as_list()
         cls.n10_shape = n10.get_shape().as_list()
         cls.n15_shape = n15.get_shape().as_list()
+        cls.n18_shape = n18.get_shape().as_list()
 
         print("Printing Pool2d")
         print(nin_2._info[0].layer)
@@ -102,6 +106,7 @@ class Layer_Pooling_Test(CustomTestCase):
         print(n9._info[0].layer)
         print(n10._info[0].layer)
         print(n15._info[0].layer)
+        print(n18._info[0].layer)
 
         ## 3D ========================================================================
 
@@ -188,6 +193,9 @@ class Layer_Pooling_Test(CustomTestCase):
 
     def test_n17_shape(self):
         self.assertEqual(self.n17_shape[1:4], [48, 32])
+
+    def test_n18_shape(self):
+        self.assertEqual(self.n18_shape[1:], [50, 50, 32])
 
 
 if __name__ == '__main__':
