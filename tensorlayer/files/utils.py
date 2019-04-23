@@ -27,8 +27,10 @@ from tensorlayer import logging, nlp, utils, visualize
 
 import cloudpickle
 import base64
-
-import ipdb
+from tensorflow.python.keras.saving import model_config as model_config_lib
+from tensorflow.python.util.tf_export import keras_export
+from tensorflow.python.util import serialization
+import json
 
 # from six.moves import zip
 
@@ -113,6 +115,40 @@ def make_saved_file(network):
     return saved_file
 
 
+@keras_export('keras.models.save_model')
+def save_keras_model(model):
+    # f.attrs['keras_model_config'] = json.dumps(
+    #     {
+    #         'class_name': model.__class__.__name__,
+    #         'config': model.get_config()
+    #     },
+    #     default=serialization.get_json_type).encode('utf8')
+    #
+    # f.flush()
+
+    return json.dumps(
+    {
+        'class_name': model.__class__.__name__,
+        'config': model.get_config()
+    },
+    default=serialization.get_json_type).encode('utf8')
+
+
+
+@keras_export('keras.models.load_model')
+def load_keras_model(model_config):
+
+    custom_objects = {}
+
+    if model_config is None:
+        raise ValueError('No model found in config.')
+    model_config = json.loads(model_config.decode('utf-8'))
+    model = model_config_lib.model_from_config(model_config,
+                                               custom_objects=custom_objects)
+
+    return model
+
+
 def save_hdf5_graph(network, filepath='model.hdf5', save_weights=False):
     """Save the architecture of TL model into a hdf5 file. Support saving model weights.
 
@@ -190,8 +226,17 @@ def eval_layer(layer_kwargs):
         M = static_graph2net(args['model'])
         args['model'] = M
         return eval('tl.layers.' + layer_class)(**args)
+    elif layer_type == "lambdalayer":
         # import ipdb
         # ipdb.set_trace()
+        M = load_keras_model(args['fn'])
+        input_shape = args.pop('input_shape')
+        _ = M(np.random.random(input_shape).astype(np.float32))
+        args['fn'] = M
+        args['fn_weights'] = M.trainable_variables
+        return eval('tl.layers.' + layer_class)(**args)
+    else:
+        raise RuntimeError("Unknown layer type.")
 
 
 def static_graph2net(saved_file):
