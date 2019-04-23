@@ -12,6 +12,7 @@ __all__ = [
     'Flatten',
     'Reshape',
     'Transpose',
+    'Shuffle',
 ]
 
 
@@ -149,3 +150,51 @@ class Transpose(Layer):
     def forward(self, inputs):
         outputs = tf.transpose(a=inputs, perm=self.perm, conjugate=self.conjugate, name=self.name)
         return outputs
+
+class Shuffle(Layer):
+    """A layer that shuffle a 2D image [batch, height, width, channel].
+
+    Parameters
+    ----------
+    group: int
+        The number of groups.
+    name : str
+        A unique layer name.
+
+    Examples
+    --------
+    >>> x = tl.layers.Input([1, 16, 16, 8], name='input')
+    >>> y = tl.layers.Shuffle(group=2, name='shuffle')(x)
+    (1, 16, 16, 8)
+
+    """
+
+    def __init__(self, group, name=None):  #'reshape'):
+        super(Shuffle, self).__init__(name)
+        self.group = group
+
+        logging.info("Shuffle %s" % (self.name))
+
+        self.build()
+        self._built = True
+
+    def __repr__(self):
+        s = '{classname}('
+        s += 'group={group},'
+        s += 'name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape=None):
+        pass
+
+    # @tf.function
+    def forward(self, inputs):
+        in_shape = inputs.get_shape().as_list()
+        h, w, in_channel = in_shape[1:]
+        assert in_channel % self.group == 0
+        temp = tf.reshape(inputs, [-1, h, w, in_channel // self.group, self.group])
+        temp = tf.transpose(temp, [0, 1, 2, 4, 3])
+        outputs = tf.reshape(temp, [-1, h, w, in_channel])
+        return outputs
+
