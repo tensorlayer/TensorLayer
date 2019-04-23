@@ -6,6 +6,7 @@ import tensorflow as tf
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
+from tensorlayer.files import utils
 
 # from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
@@ -136,6 +137,20 @@ class Lambda(Layer):
             outputs = self.fn(inputs, **kwargs)
 
         return outputs
+
+    def get_args(self):
+        init_args = {}
+        if isinstance(self.fn, tf.keras.Model):
+            init_args.update({"layer_type": "lambdalayer"})
+            if self.fn._build_input_shape is None:
+                raise RuntimeError("Keras model in LambdaLayer should be built.")
+            else:
+                init_args["input_shape"] = self.fn._build_input_shape
+            init_args["fn"] = utils.save_keras_model(self.fn)
+            init_args["fn_weights"] = None
+        else:
+            init_args = {"layer_type": "normal"}
+        return init_args
 
 
 class ElementwiseLambda(Layer):

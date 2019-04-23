@@ -690,7 +690,10 @@ class Model():
             layer._release_memory()
 
     def save(self, filepath, save_weights=True):
-        """Save model into a given file. Support saving model weights.
+        """
+        Save model into a given file.
+        This function save can save both the architecture of neural networks and weights (optional).
+
 
         Parameters
         ----------
@@ -713,7 +716,11 @@ class Model():
 
     @staticmethod
     def load(filepath, load_weights=True):
-        """Load model from a given file, which should be previously saved by Model.save(). Support loading model weights.
+        """
+        Load model from a given file, which should be previously saved by Model.save().
+        This function load can load both the architecture of neural networks and weights (optional, and needs to be saved in Model.save()).
+        When a model is loaded by this function load, there is no need to reimplement or declare the architecture of the model explicitly in code.
+
 
         Parameters
         ----------

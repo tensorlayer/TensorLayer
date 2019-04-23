@@ -28,6 +28,8 @@ from tensorlayer import logging, nlp, utils, visualize
 import cloudpickle
 import base64
 
+import ipdb
+
 # from six.moves import zip
 
 if sys.version_info[0] == 2:
@@ -188,6 +190,8 @@ def eval_layer(layer_kwargs):
         M = static_graph2net(args['model'])
         args['model'] = M
         return eval('tl.layers.' + layer_class)(**args)
+        # import ipdb
+        # ipdb.set_trace()
 
 
 def static_graph2net(saved_file):
