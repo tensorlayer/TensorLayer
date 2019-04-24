@@ -140,12 +140,8 @@ class Lambda(Layer):
 
     def get_args(self):
         init_args = {}
-        if isinstance(self.fn, tf.keras.Model):
-            init_args.update({"layer_type": "lambdalayer"})
-            if self.fn._build_input_shape is None:
-                raise RuntimeError("Keras model in LambdaLayer should be built.")
-            else:
-                init_args["input_shape"] = self.fn._build_input_shape
+        if isinstance(self.fn, tf.keras.layers.Layer) or isinstance(self.fn, tf.keras.Model):
+            init_args.update({"layer_type": "keraslayer"})
             init_args["fn"] = utils.save_keras_model(self.fn)
             init_args["fn_weights"] = None
         else:

@@ -73,6 +73,8 @@ __all__ = [
     'load_hdf5_to_weights',
     'save_hdf5_graph',
     'load_hdf5_graph',
+    'net2static_graph',
+    'static_graph2net',
     # 'save_pkl_graph',
     # 'load_pkl_graph',
 ]
@@ -90,7 +92,7 @@ def str2func(s):
     return expr
 
 
-def make_saved_file(network):
+def net2static_graph(network):
     saved_file = dict()
     if network._NameNone is True:
         saved_file.update({"name": None})
@@ -177,7 +179,7 @@ def save_hdf5_graph(network, filepath='model.hdf5', save_weights=False):
 
     logging.info("[*] Saving TL model into {}, saving weights={}".format(filepath, save_weights))
 
-    saved_file = make_saved_file(network)
+    saved_file = net2static_graph(network)
     saved_file_str = str(saved_file)
 
     with h5py.File(filepath, 'w') as f:
@@ -226,11 +228,9 @@ def eval_layer(layer_kwargs):
         M = static_graph2net(args['model'])
         args['model'] = M
         return eval('tl.layers.' + layer_class)(**args)
-    elif layer_type == "lambdalayer":
-        # import ipdb
-        # ipdb.set_trace()
+    elif layer_type == "keraslayer":
         M = load_keras_model(args['fn'])
-        input_shape = args.pop('input_shape')
+        input_shape = args.pop('keras_input_shape')
         _ = M(np.random.random(input_shape).astype(np.float32))
         args['fn'] = M
         args['fn_weights'] = M.trainable_variables
@@ -361,7 +361,7 @@ def save_pkl_graph(network, name='model.pkl'):
 
     logging.info("[*] Saving TL graph into {}".format(name))
 
-    saved_file = make_saved_file(network)
+    saved_file = net2static_graph(network)
 
     with open(name, 'wb') as file:
         pickle.dump(saved_file, file, protocol=pickle.HIGHEST_PROTOCOL)

@@ -12,7 +12,17 @@ import tensorlayer as tl
 from tensorlayer.layers import *
 from tensorlayer.models import *
 
-from tests.utils import CustomTestCase
+#from tests.utils import CustomTestCase
+
+from contextlib import contextmanager
+class CustomTestCase(unittest.TestCase):
+
+    @contextmanager
+    def assertNotRaises(self, exc_type):
+        try:
+            yield None
+        except exc_type:
+            raise self.failureException('{} raised'.format(exc_type.__name__))
 
 
 def basic_static_model():
@@ -258,12 +268,12 @@ class Lambda_layer_test(CustomTestCase):
     def setUpClass(cls):
         print("##### begin testing lambda layer #####")
 
-    def test_list_inputs_outputs(self):
+    def test_lambda_layer_no_para_no_args(self):
         x = tl.layers.Input([8, 3], name='input')
         y = tl.layers.Lambda(lambda x: 2*x, name='lambda')(x)
         M1 = tl.models.Model(x, y)
-        M1.save("lambda.hdf5")
-        M2 = tl.models.Model.load("lambda.hdf5")
+        M1.save("lambda_no_para_no_args.hdf5")
+        M2 = tl.models.Model.load("lambda_no_para_no_args.hdf5")
         print(M1)
         print(M2)
         M1.eval()
@@ -274,6 +284,89 @@ class Lambda_layer_test(CustomTestCase):
 
         self.assertEqual((output1 == output2).all(), True)
         self.assertEqual(M1.config, M2.config)
+
+    def test_lambda_layer_no_para_with_args(self):
+        def customize_func(x, foo=42):  # x is the inputs, foo is an argument
+            return foo * x
+        x = tl.layers.Input([8, 3], name='input')
+        y = tl.layers.Lambda(customize_func, fn_args={'foo': 3}, name='lambda')(x)
+        M1 = tl.models.Model(x, y)
+        M1.save("lambda_no_para_with_args.hdf5")
+        M2 = tl.models.Model.load("lambda_no_para_with_args.hdf5")
+        print(M1)
+        print(M2)
+        M1.eval()
+        M2.eval()
+        npInput = np.zeros((8, 3)) + 3
+        output1 = M1(npInput).numpy()
+        output2 = M2(npInput).numpy()
+
+        self.assertEqual((output1 == output2).all(), True)
+        self.assertEqual((output1 == (np.zeros((8, 3)) + 9)).all(), True)
+        self.assertEqual(M1.config, M2.config)
+
+    def test_lambda_layer_keras_model(self):
+        input_shape = [100, 5]
+        in_2 = tl.layers.Input(input_shape, name='input')
+        layers = [
+            tf.keras.layers.Dense(10, activation=tf.nn.relu),
+            tf.keras.layers.Dense(5, activation=tf.nn.sigmoid),
+            tf.keras.layers.Dense(1, activation=tf.nn.relu)
+        ]
+        perceptron = tf.keras.Sequential(layers)
+        # in order to compile keras model and get trainable_variables of the keras model
+        _ = perceptron(np.random.random(input_shape).astype(np.float32))
+        plambdalayer = tl.layers.Lambda(perceptron, perceptron.trainable_variables)(in_2)
+        M2 = tl.models.Model(inputs=in_2, outputs=plambdalayer)
+
+        M2.save('M2_keras.hdf5')
+        M4 = Model.load('M2_keras.hdf5')
+
+        M2.eval()
+        M4.eval()
+        npInput = np.zeros(input_shape) + 3
+        output2 = M2(npInput).numpy()
+        output4 = M4(npInput).numpy()
+
+        self.assertEqual((output2 == output4).all(), True)
+        self.assertEqual(M2.config, M4.config)
+
+        ori_weights = M4.weights
+        ori_val = ori_weights[1].numpy()
+        modify_val = np.zeros_like(ori_val) + 10
+        M4.weights[1].assign(modify_val)
+        M4 = Model.load('M2_keras.hdf5')
+
+        self.assertLess(np.max(np.abs(ori_val - M4.weights[1].numpy())), 1e-7)
+
+    def test_lambda_layer_keras_layer(self):
+        input_shape = [100, 5]
+        in_1 = tl.layers.Input(input_shape, name='input')
+        denselayer = tf.keras.layers.Dense(10, activation=tf.nn.relu)
+        # in order to compile keras model and get trainable_variables of the keras model
+        _ = denselayer(np.random.random(input_shape).astype(np.float32))
+        dlambdalayer = tl.layers.Lambda(denselayer, denselayer.trainable_variables)(in_1)
+        M1 = tl.models.Model(inputs=in_1, outputs=dlambdalayer)
+
+        M1.save('M1_keras.hdf5')
+        M3 = Model.load('M1_keras.hdf5')
+
+        M1.eval()
+        M3.eval()
+        npInput = np.zeros(input_shape) + 3
+        output1 = M1(npInput).numpy()
+        output3 = M3(npInput).numpy()
+
+        self.assertEqual((output1 == output3).all(), True)
+        self.assertEqual(M1.config, M3.config)
+
+        ori_weights = M3.weights
+        ori_val = ori_weights[1].numpy()
+        modify_val = np.zeros_like(ori_val) + 10
+        M3.weights[1].assign(modify_val)
+        M3 = Model.load('M1_keras.hdf5')
+
+        self.assertLess(np.max(np.abs(ori_val - M3.weights[1].numpy())), 1e-7)
 
 
 class Exception_test(CustomTestCase):

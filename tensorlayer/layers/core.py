@@ -117,6 +117,8 @@ class Layer(object):
             self._config.update({'class': self.__class__.__name__.split('.')[-1]})
             self.layer_args.update(self.get_args())
             self.layer_args["name"] = self.name
+            if "keraslayer" == self.layer_args["layer_type"]:
+                self.layer_args["keras_input_shape"] = self._nodes[0].in_tensors[0].get_shape().as_list()
             self._config.update({"args": self.layer_args})
             if self.__class__.__name__ in tl.layers.inputs.__all__:
                 self._config.update({'prev_layer': None})
@@ -264,7 +266,6 @@ class Layer(object):
         init_args = {"layer_type": "normal"}
         return init_args
 
-    # FIXME : model save part @ruihai
     @protected_method
     def _get_init_args(self, skip=3):
         """Get all arguments of current layer for saving the graph."""
@@ -452,7 +453,7 @@ class ModelLayer(Layer):
     def get_args(self):
         init_args = {}
         init_args.update({"layer_type": "modellayer"})
-        init_args["model"] = utils.make_saved_file(self.layer_args["model"])
+        init_args["model"] = utils.net2static_graph(self.layer_args["model"])
         return init_args
 
 
