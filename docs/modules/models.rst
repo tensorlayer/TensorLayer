@@ -29,4 +29,4 @@ SqueezeNetV1
 MobileNetV1
 ----------------
 
-.. autoclass:: MobileNetV1
+.. autofunction:: MobileNetV1

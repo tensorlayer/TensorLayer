@@ -46,6 +46,7 @@ class Stack(Layer):
         self.axis = axis
 
         self.build(None)
+        self._built = True
         logging.info("Stack %s: axis: %d" % (self.name, self.axis))
 
     def __repr__(self):
@@ -97,6 +98,7 @@ class UnStack(Layer):
         self.axis = axis
 
         self.build(None)
+        self._built = True
         logging.info("UnStack %s: num: %s axis: %d" % (self.name, self.num, self.axis))
 
     def __repr__(self):
