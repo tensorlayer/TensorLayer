@@ -104,19 +104,25 @@ class Layer_Shape_Test(CustomTestCase):
     def test_shuffle(self):
 
         class CustomizeModel(tl.models.Model):
-
-            def __init__(self):
+            def __init__(self,x):
                 super(CustomizeModel, self).__init__()
-                self.shuffle = tl.layers.Shuffle(2)
-
+                self.shuffle = tl.layers.Shuffle(x)
             def forward(self, x):
                 return self.shuffle(x)
-
-        model = CustomizeModel()
+        model = CustomizeModel(2)
         print(model.shuffle)
         model.train()
         out = model(self.imgdata)
         self.assertEqual(out.get_shape().as_list(), [2, 16, 16, 8])
+        try:
+            model_fail=CustomizeModel(3)
+            print(model_fail.shuffle)
+            model_fail.train()
+            out = model_fail(self.imgdata)
+            self.assertEqual(out.get_shape().as_list(), [2, 16, 16, 8])
+        except Exception as e:
+            self.assertIsInstance(e, ValueError)
+            print(e)
 
 
 if __name__ == '__main__':
