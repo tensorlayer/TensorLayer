@@ -52,7 +52,7 @@ def restore_params(network, path='models'):
 
 
 def MobileNetV1(pretrained=False, end_with='out', name=None):
-    """Pre-trained MobileNetV1 model (static mode).
+    """Pre-trained MobileNetV1 model (static mode). Input shape [?, 224, 224, 3], value range [0, 1].
 
     Parameters
     ----------
