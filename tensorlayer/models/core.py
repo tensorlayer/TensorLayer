@@ -398,17 +398,19 @@ class Model():
     @property
     def config(self):
         if self._config is not None and len(self._config) > 0:
-            pass
+            return self._config
         else:
-            self._config = []
-            if self.outputs is None:
-                raise RuntimeError(
-                    "Dynamic mode does not support config yet."
-                )
+            _config = []
+            # if self.outputs is None:
+            #     raise RuntimeError(
+            #         "Dynamic mode does not support config yet."
+            #     )
             for layer in self.all_layers:
-                self._config.append(layer.config)
+                _config.append(layer.config)
+            if self._nodes_fixed or self.outputs is None:
+                self._config = _config
 
-        return self._config
+            return _config
 
     def train(self):
         """Set this network in training mode. After calling this method,

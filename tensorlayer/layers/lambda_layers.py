@@ -144,6 +144,10 @@ class Lambda(Layer):
             init_args.update({"layer_type": "keraslayer"})
             init_args["fn"] = utils.save_keras_model(self.fn)
             init_args["fn_weights"] = None
+            if len(self._nodes) == 0:
+                init_args["keras_input_shape"] = []
+            else:
+                init_args["keras_input_shape"] = self._nodes[0].in_tensors[0].get_shape().as_list()
         else:
             init_args = {"layer_type": "normal"}
         return init_args

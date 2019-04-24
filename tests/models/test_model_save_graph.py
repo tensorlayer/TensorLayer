@@ -228,30 +228,6 @@ class List_inputs_outputs_test(CustomTestCase):
         self.assertEqual(M1.config, M2.config)
 
 
-class basic_dynamic_model(Model):
-    def __init__(self):
-        super(basic_dynamic_model, self).__init__()
-        self.conv1 = Conv2d(16, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, in_channels=3, name="conv1")
-        self.pool1 = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')
-
-        self.conv2 = Conv2d(16, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, in_channels=16, name="conv2")
-        self.pool2 = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')
-
-        self.flatten = Flatten(name='flatten')
-        self.dense1 = Dense(100, act=None, in_channels=576, name="dense1")
-        self.dense2 = Dense(10, act=None, in_channels=100, name="dense2")
-
-    def forward(self, x):
-        x = self.conv1(x)
-        x = self.pool1(x)
-        x = self.conv2(x)
-        x = self.pool2(x)
-        x = self.flatten(x)
-        x = self.dense1(x)
-        x = self.dense2(x)
-        return x
-
-
 class Lambda_layer_test(CustomTestCase):
 
     @classmethod
@@ -359,6 +335,43 @@ class Lambda_layer_test(CustomTestCase):
         self.assertLess(np.max(np.abs(ori_val - M3.weights[1].numpy())), 1e-7)
 
 
+class basic_dynamic_model(Model):
+    def __init__(self):
+        super(basic_dynamic_model, self).__init__()
+        self.conv1 = Conv2d(16, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, in_channels=3, name="conv1")
+        self.pool1 = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')
+
+        self.conv2 = Conv2d(16, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, in_channels=16, name="conv2")
+        self.pool2 = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')
+
+        self.flatten = Flatten(name='flatten')
+        self.dense1 = Dense(100, act=None, in_channels=576, name="dense1")
+        self.dense2 = Dense(10, act=None, in_channels=100, name="dense2")
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.pool1(x)
+        x = self.conv2(x)
+        x = self.pool2(x)
+        x = self.flatten(x)
+        x = self.dense1(x)
+        x = self.dense2(x)
+        return x
+
+
+class Dynamic_config_test(CustomTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        print("##### begin testing exception in dynamic mode  #####")
+
+    def test_dynamic_config(self):
+        M1 = basic_dynamic_model()
+        print(M1.config)
+        for layer in M1.all_layers:
+            print(layer.config)
+
+
 class Exception_test(CustomTestCase):
 
     @classmethod
@@ -369,12 +382,6 @@ class Exception_test(CustomTestCase):
         M1 = basic_dynamic_model()
         try:
             M1.save("dynamic.hdf5", save_weights=False)
-        except Exception as e:
-            self.assertIsInstance(e, RuntimeError)
-            print(e)
-
-        try:
-            print(M1.config)
         except Exception as e:
             self.assertIsInstance(e, RuntimeError)
             print(e)

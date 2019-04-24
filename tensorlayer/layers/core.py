@@ -108,22 +108,20 @@ class Layer(object):
 
     @property
     def config(self):
-        if not self._nodes_fixed:
-            raise RuntimeError("Model can not be saved when nodes are not fixed.")
+        # if not self._nodes_fixed:
+        #     raise RuntimeError("Model can not be saved when nodes are not fixed.")
         if self._config is not None:
-            pass
+            return self._config
         else:
-            self._config = {}
-            self._config.update({'class': self.__class__.__name__.split('.')[-1]})
+            _config = {}
+            _config.update({'class': self.__class__.__name__.split('.')[-1]})
             self.layer_args.update(self.get_args())
             self.layer_args["name"] = self.name
-            if "keraslayer" == self.layer_args["layer_type"]:
-                self.layer_args["keras_input_shape"] = self._nodes[0].in_tensors[0].get_shape().as_list()
-            self._config.update({"args": self.layer_args})
+            _config.update({"args": self.layer_args})
             if self.__class__.__name__ in tl.layers.inputs.__all__:
-                self._config.update({'prev_layer': None})
+                _config.update({'prev_layer': None})
             else:
-                self._config.update({'prev_layer': []})
+                _config.update({'prev_layer': []})
                 for node in self._nodes:
                     in_nodes = node.in_nodes
                     if not isinstance(in_nodes, list):
@@ -132,9 +130,10 @@ class Layer(object):
                         prev_name = [in_node.name for in_node in in_nodes]
                         if len(prev_name) == 1:
                             prev_name = prev_name[0]
-                    self._config['prev_layer'].append(prev_name)
-
-        return self._config
+                    _config['prev_layer'].append(prev_name)
+            if self._nodes_fixed:
+                self._config = _config
+            return _config
 
     @property
     def weights(self):
