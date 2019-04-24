@@ -24,9 +24,9 @@ VGG19
 
 SqueezeNetV1
 ----------------
-.. autoclass:: SqueezeNetV1
+.. autofunction:: SqueezeNetV1
 
 MobileNetV1
 ----------------
 
-.. autoclass:: MobileNetV1
+.. autofunction:: MobileNetV1

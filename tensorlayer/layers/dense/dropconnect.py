@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
-
-# from tensorlayer.layers.core import LayersConfig
-
+import numbers
 
 
 __all__ = [
@@ -35,22 +34,21 @@ class DropconnectDense(Layer):
         The initializer for the weight matrix.
     b_init : biases initializer
         The initializer for the bias vector.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer.
-    b_init_args : dictionary
-        The arguments for the bias vector initializer.
+    in_channels: int
+        The number of channels of the previous layer.
+        If None, it will be automatically detected when the layer is forwarded for the first time.
     name : str
         A unique layer name.
 
     Examples
     --------
-    >>> net = tl.layers.Input(x, name='input')
-    >>> net = tl.layers.DropconnectDense(net, keep=0.8,
-    ...         n_units=800, act=tf.nn.relu, name='relu1')
-    >>> net = tl.layers.DropconnectDense(net, keep=0.5,
-    ...         n_units=800, act=tf.nn.relu, name='relu2')
-    >>> net = tl.layers.DropconnectDense(net, keep=0.5,
-    ...         n_units=10, name='output')
+    >>> net = tl.layers.Input([None, 784], name='input')
+    >>> net = tl.layers.DropconnectDense(keep=0.8,
+    ...         n_units=800, act=tf.nn.relu, name='relu1')(net)
+    >>> net = tl.layers.DropconnectDense(keep=0.5,
+    ...         n_units=800, act=tf.nn.relu, name='relu2')(net)
+    >>> net = tl.layers.DropconnectDense(keep=0.5,
+    ...         n_units=10, name='output')(net)
 
     References
     ----------
@@ -63,54 +61,61 @@ class DropconnectDense(Layer):
             keep=0.5,
             n_units=100,
             act=None,
-            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.1),
-            b_init=tf.compat.v1.initializers.constant(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
+            W_init=tl.initializers.truncated_normal(stddev=0.1),
+            b_init=tl.initializers.constant(value=0.0),
+            in_channels=None,
             name=None,  # 'dropconnect',
     ):
-        # super(DropconnectDense, self
-        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
+
+        if isinstance(keep, numbers.Real) and not (keep > 0 and keep <= 1):
+            raise ValueError("keep must be a scalar tensor or a float in the "
+                             "range (0, 1], got %g" % keep)
+
         self.keep = keep
         self.n_units = n_units
         self.act = act
         self.W_init = W_init
         self.b_init = b_init
-        self.W_init_args = W_init_args
-        self.b_init_args = b_init_args
+        self.in_channels = in_channels
+
+        if self.in_channels is not None:
+            self.build((None, self.in_channels))
+            self._built = True
 
         logging.info(
             "DropconnectDense %s: %d %s" %
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-    def build(self, inputs_shape):
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(n_units={n_units}, ' + actstr)
+        s += ', keep={keep}'
+        if self.in_channels is not None:
+            s += ', in_channels=\'{in_channels}\''
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
+    def build(self, inputs_shape):
         if len(inputs_shape) != 2:
             raise Exception("The input dimension must be rank 2")
 
-        self.n_in = inputs_shape[-1]
+        if self.in_channels is None:
+            self.in_channels = inputs_shape[1]
 
-        self.W = self._get_weights("weights", shape=(n_in, self.n_units), init=self.W_init, init_args=self.W_init_args)
-        # self.W = tf.compat.v1.get_variable(
-        #     name=self.name + '\W', shape=(self.n_in, self.n_units), initializer=self.W_init,
-        #     dtype=LayersConfig.tf_dtype, **self.W_init_args
-        # )
+        n_in = inputs_shape[-1]
+        self.W = self._get_weights("weights", shape=(n_in, self.n_units), init=self.W_init)
         if self.b_init:
-            self.b = self._get_weights("biases", shape=(self.n_units), init=self.b_init, init_args=self.b_init_args)
-        #     self.b = tf.compat.v1.get_variable(
-        #         name=self.name + '\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
-        #         **self.b_init_args
-        #     )
-        #     self.get_weights([self.W, self.b])
-        # else:
-        #     self.get_weights(self.W)
+            self.b = self._get_weights("biases", shape=(self.n_units), init=self.b_init)
 
     def forward(self, inputs):
         W_dropcon = tf.nn.dropout(self.W, 1 - (self.keep))
         outputs = tf.matmul(inputs, W_dropcon)
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
-        outputs = self.act(outputs)
+        if self.act:
+            outputs = self.act(outputs)
         return outputs

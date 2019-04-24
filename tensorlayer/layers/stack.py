@@ -20,7 +20,7 @@ class Stack(Layer):
     Parameters
     ----------
     axis : int
-        Dimension along which to concatenate.
+        New dimension along which to stack.
     name : str
         A unique layer name.
 
@@ -28,12 +28,11 @@ class Stack(Layer):
     ---------
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
-    >>> x = tf.placeholder(tf.float32, shape=[None, 30])
-    >>> net = tl.layers.Input(x, name='input')
-    >>> net1 = tl.layers.Dense(net, 10, name='dense1')
-    >>> net2 = tl.layers.Dense(net, 10, name='dense2')
-    >>> net3 = tl.layers.Dense(net, 10, name='dense3')
-    >>> net = tl.layers.Stack([net1, net2, net3], axis=1, name='stack')
+    >>> ni = tl.layers.Input([None, 784], name='input')
+    >>> net1 = tl.layers.Dense(10, name='dense1')(ni)
+    >>> net2 = tl.layers.Dense(10, name='dense2')(ni)
+    >>> net3 = tl.layers.Dense(10, name='dense3')(ni)
+    >>> net = tl.layers.Stack(axis=1, name='stack')([net1, net2, net3])
     (?, 3, 10)
 
     """
@@ -43,10 +42,19 @@ class Stack(Layer):
             axis=1,
             name=None,  #'stack',
     ):
-        # super(Stack, self).__init__(prev_layer=layers, name=name)
         super().__init__(name)
         self.axis = axis
+
+        self.build(None)
+        self._built = True
         logging.info("Stack %s: axis: %d" % (self.name, self.axis))
+
+    def __repr__(self):
+        s = '{classname}(axis={axis}'
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
         pass
@@ -74,14 +82,31 @@ class UnStack(Layer):
     list of :class:`Layer`
         The list of layer objects unstacked from the input.
 
+    Examples
+    --------
+    >>> ni = Input([4, 10], name='input')
+    >>> nn = Dense(n_units=5)(ni)
+    >>> nn = UnStack(axis=1)(nn)  # unstack in channel axis
+    >>> len(nn)  # 5
+    >>> nn[0].shape  # (4,)
+
     """
 
     def __init__(self, num=None, axis=0, name=None):  #'unstack'):
-        # super(UnStack, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
         self.num = num
         self.axis = axis
+
+        self.build(None)
+        self._built = True
         logging.info("UnStack %s: num: %s axis: %d" % (self.name, self.num, self.axis))
+
+    def __repr__(self):
+        s = '{classname}(num={num}, axis={axis}'
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
         pass
