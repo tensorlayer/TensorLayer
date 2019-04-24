@@ -12,17 +12,7 @@ import tensorlayer as tl
 from tensorlayer.layers import *
 from tensorlayer.models import *
 
-#from tests.utils import CustomTestCase
-
-from contextlib import contextmanager
-class CustomTestCase(unittest.TestCase):
-
-    @contextmanager
-    def assertNotRaises(self, exc_type):
-        try:
-            yield None
-        except exc_type:
-            raise self.failureException('{} raised'.format(exc_type.__name__))
+from tests.utils import CustomTestCase
 
 
 def basic_static_model():
