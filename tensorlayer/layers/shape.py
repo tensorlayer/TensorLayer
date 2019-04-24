@@ -152,7 +152,7 @@ class Transpose(Layer):
         return outputs
 
 class Shuffle(Layer):
-    """A layer that shuffle a 2D image [batch, height, width, channel].
+    """A layer that shuffle a 2D image [batch, height, width, channel], see `here <https://arxiv.org/abs/1707.01083>`__.
 
     Parameters
     ----------
