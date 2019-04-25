@@ -134,6 +134,7 @@ to the cost function.
    maxnorm_regularizer
    maxnorm_o_regularizer
    maxnorm_i_regularizer
+   huber_loss
 
 
 Softmax cross entropy
@@ -200,3 +201,7 @@ Special
 .. autofunction:: lo_regularizer
 .. autofunction:: maxnorm_o_regularizer
 .. autofunction:: maxnorm_i_regularizer
+
+Huber Loss
+^^^^^^^^^^
+.. autofunction:: huber_loss

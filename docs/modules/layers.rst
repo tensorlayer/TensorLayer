@@ -57,6 +57,7 @@ Layer list
    GlobalMeanPool2d
    GlobalMaxPool3d
    GlobalMeanPool3d
+   CornerPool2d
 
    SubpixelConv1d
    SubpixelConv2d
@@ -91,6 +92,7 @@ Layer list
    Flatten
    Reshape
    Transpose
+   Shuffle
 
    Lambda
 
@@ -514,6 +516,10 @@ Pooling layer for any dimensions and any pooling functions.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: GlobalMeanPool3d
 
+2D Corner pooling
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: CornerPool2d
+
 .. -----------------------------------------------------------
 ..                    Quantized Layers
 .. -----------------------------------------------------------
@@ -684,6 +690,10 @@ Reshape Layer
 Transpose Layer
 ^^^^^^^^^^^^^^^^^
 .. autoclass:: Transpose
+
+Shuffle Layer
+^^^^^^^^^^^^^^^^^
+.. autoclass:: Shuffle
 
 .. -----------------------------------------------------------
 ..               Spatial Transformer Layers
