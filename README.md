@@ -48,16 +48,17 @@ Also, it allow users to easily fine-tune TensorFlow; while being suitable for pr
 
 - ***Simplicity*** : TensorLayer lifts the low-level dataflow interface of TensorFlow to *high-level* layers / models. It is very easy to learn through the rich [example codes](https://github.com/tensorlayer/awesome-tensorlayer) contributed by a wide community.
 - ***Flexibility*** : TensorLayer APIs are transparent: it does not mask TensorFlow from users; but leaving massive hooks that help *low-level tuning* and *deep customization*.
-- ***Zero-cost Abstraction*** : TensorLayer can achieve the *full power* of TensorFlow. The following table shows the training speeds of [VGG16](http://www.robots.ox.ac.uk/~vgg/research/very_deep/) using TensorLayer and native TensorFlow on a Tesla V100-DGXS-32GB.
+- ***Zero-cost Abstraction*** : TensorLayer can achieve the *full power* of TensorFlow. The following table shows the training speeds of [VGG16](http://www.robots.ox.ac.uk/~vgg/research/very_deep/) using TensorLayer and native TensorFlow on a TITAN Xp.
 
-	|   Mode    |       Lib       |  Data Format  | Max CPU Memory (MB) | Avg CPU Memory (MB) | Runtime (sec) |
-	| :-------: | :-------------: | :-----------: | :-----------------: | :-----------------: | :-----------: |
-	| AutoGraph | TensorFlow 2.0  | channel last  |        3370         |        3346         |      49       |
-	|           | Tensorlayer 2.0 | channel last  |        3358         |        3367         |      50       |
-	|   Graph   |      Keras      | channel last  |        3776         |        3775         |      62       |
-	|   Eager   | TensorFlow 2.0  | channel last  |        3293         |        3284         |      65       |
-	|           | TensorLayer 2.0 | channel last  |        3296         |        3293         |      65       |
-	|           |     PyTorch     | channel first |        2562         |        2555         |      43       |
+    |   Mode    |       Lib       |  Data Format  | Max GPU Memory Usage(MB)  |Max CPU Memory Usage(MB) | Avg CPU Memory Usage(MB) | Runtime (sec) |
+    | :-------: | :-------------: | :-----------: | :-----------------: | :-----------------: | :-----------------: | :-----------: |
+    | AutoGraph | TensorFlow 2.0  | channel last  | 11833 |      2161         |        2136         |      74       |
+    |           | Tensorlayer 2.0 | channel last  | 11833 |      2187         |        2169         |      76       |
+    |   Graph   |      Keras      | channel last  | 8677 |      2580         |        2576         |      101       |
+    |   Eager   | TensorFlow 2.0  | channel last  | 8723 |      2052         |        2024         |      97       |
+    |           | TensorLayer 2.0 | channel last  | 8723 |      2010         |        2007         |      95       |
+    |           |     PyTorch     | channel first | 9321 |      1938         |        1935         |      53       |
+
 
 
 

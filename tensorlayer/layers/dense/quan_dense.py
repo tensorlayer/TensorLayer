@@ -2,16 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.utils import (quantize_active_overflow,
                                       quantize_weight_overflow)
-
-# from tensorlayer.layers.core import LayersConfig
-
-
 
 
 __all__ = [
@@ -39,10 +36,9 @@ class QuanDense(Layer):
         The initializer for the weight matrix.
     b_init : initializer or None
         The initializer for the bias vector. If None, skip biases.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer.
-    b_init_args : dictionary
-        The arguments for the bias vector initializer.
+    in_channels: int
+        The number of channels of the previous layer.
+        If None, it will be automatically detected when the layer is forwarded for the first time.
     name : None or str
         A unique layer name.
 
@@ -55,14 +51,11 @@ class QuanDense(Layer):
             bitW=8,
             bitA=8,
             use_gemm=False,
-            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.1),
-            b_init=tf.compat.v1.initializers.constant(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
+            W_init=tl.initializers.truncated_normal(stddev=0.1),
+            b_init=tl.initializers.constant(value=0.0),
+            in_channels=None,
             name=None,  #'quan_dense',
     ):
-        # super(QuanDense, self
-        #      ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         super().__init__(name)
         self.n_units = n_units
         self.act = act
@@ -71,42 +64,42 @@ class QuanDense(Layer):
         self.use_gemm = use_gemm
         self.W_init = W_init
         self.b_init = b_init
-        self.W_init_args = W_init_args
-        self.b_init_args = b_init_args
+        self.in_channels = in_channels
+
+        if self.in_channels is not None:
+            self.build((None, self.in_channels))
+            self._built = True
+
         logging.info(
             "QuanDense  %s: %d %s" %
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(n_units={n_units}, ' + actstr)
+        s += ', bitW={bitW}, bitA={bitA}'
+        if self.in_channels is not None:
+            s += ', in_channels=\'{in_channels}\''
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
     def build(self, inputs_shape):
-        # if inputs.get_shape().ndims != 2:
         if len(inputs_shape) != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
+
+        if self.in_channels is None:
+            self.in_channels = inputs_shape[1]
 
         if self.use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         n_in = inputs_shape[-1]
-
-        # self.W = tf.compat.v1.get_variable(
-        #     name=self.name + '\W', shape=(n_in, self.n_units), initializer=self.W_init, dtype=LayersConfig.tf_dtype,
-        #     **self.W_init_args
-        # )
-        self.W = self._get_weights("weights", shape=(n_in, self.n_units), init=self.W_init, init_args=self.W_init_args)
+        self.W = self._get_weights("weights", shape=(n_in, self.n_units), init=self.W_init)
         if self.b_init is not None:
-            self.b = self._get_weights("biases", shape=int(self.n_units), init=self.b_init, init_args=self.b_init_args)
-        #     try:
-        #         self.b = tf.compat.v1.get_variable(
-        #             name=self.name + '\b', shape=(self.n_units), initializer=self.b_init, dtype=LayersConfig.tf_dtype,
-        #             **self.b_init_args
-        #         )
-        #     except Exception:  # If initializer is a constant, do not specify shape.
-        #         self.b = tf.compat.v1.get_variable(
-        #             name=self.name + '\b', initializer=self.b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
-        #         )
-        #     self.get_weights([self.W, self.b])
-        # else:
-        #     self.get_weights(self.W)
+            self.b = self._get_weights("biases", shape=int(self.n_units), init=self.b_init)
 
     def forward(self, inputs):
 

@@ -1,12 +1,13 @@
 # TensorLayer Contributor Guideline
 
 ## Welcome to contribute!
-You are more than welcome to contribute to TensorLayer! If you have any improvement, please send us your [pull requests](https://help.github.com/en/articles/about-pull-requests). You may implement your improvement on your [folk](https://help.github.com/en/articles/working-with-forks).
+You are more than welcome to contribute to TensorLayer! If you have any improvement, please send us your [pull requests](https://help.github.com/en/articles/about-pull-requests). You may implement your improvement on your [fork](https://help.github.com/en/articles/working-with-forks).
 
 ## Checklist
 * Continuous integration
 * Build from sources
 * Unittest
+* Documentation
 * General intro to TensorLayer2
 * How to contribute a new `Layer`
 * How to contribute a new `Model`
@@ -93,6 +94,44 @@ coverage run --source myproject.module -m unittest discover
 # generate html report
 coverage html
 ```
+
+## Documentation
+Even though you follow [numpydoc](https://numpydoc.readthedocs.io/en/latest/) document style when writing your code, 
+this does not ensure those lines appear on TensorLayer online documentation. 
+You need further modify corresponding RST files in `docs/modules`.
+
+For example, to add your implemented new pooling layer into documentation, modify `docs/modules/layer.rst`. First, insert layer name under Layer list
+```rst
+Layer list
+----------
+
+.. autosummary::
+
+    NewPoolingLayer
+```
+
+Second, find pooling layer part and add:
+```rst
+.. -----------------------------------------------------------
+..                     Pooling Layers
+.. -----------------------------------------------------------
+
+Pooling Layers
+------------------------
+
+New Pooling Layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: NewPoolingLayer
+```
+
+Finally, test with local documentation:
+```bash
+cd ./docs
+
+make clean
+make html  
+# then view generated local documentation by ./html/index.html
+``` 
 
 ## General intro to TensorLayer2
 * TensorLayer2 is built on [TensorFlow2](https://www.tensorflow.org/alpha), so TensorLayer2 is purely eager, no sessions, no globals.
