@@ -710,6 +710,7 @@ class Model():
         >>> net.save('./model.h5', save_weights=True)
         >>> new_net = Model.load('./model.h5', load_weights=True)
         """
+        # TODO: support saving LambdaLayer that includes parametric self defined function with outside variables
         if self.outputs is None:
             raise RuntimeError(
                 "Model save() not support dynamic mode yet.\nHint: you can use Model save_weights() to save the weights in dynamic mode."
@@ -737,6 +738,7 @@ class Model():
         >>> net.save('./model.h5', save_weights=True)
         >>> new_net = Model.load('./model.h5', load_weights=True)
         """
+        # TODO: support loading LambdaLayer that includes parametric self defined function with outside variables
         M = utils.load_hdf5_graph(filepath=filepath, load_weights=load_weights)
         return M
 

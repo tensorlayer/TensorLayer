@@ -41,17 +41,35 @@ class Lambda(Layer):
 
     Examples
     ---------
-    Non-parametric case
+    Non-parametric with args case
+    In this case, you can use Model.save() / Model.load() to save / load the whole model architecture and weights(optional).
 
     >>> x = tl.layers.Input([8, 3], name='input')
     >>> y = tl.layers.Lambda(lambda x: 2*x, name='lambda')(x)
+
+    Non-parametric and non-args case
+    In this case, you can use Model.save() / Model.load() to save / load the whole model architecture and weights(optional).
 
     >>> def customize_func(x, foo=42): # x is the inputs, foo is an argument
     >>>     return foo * x
     >>> x = tl.layers.Input([8, 3], name='input')
     >>> lambdalayer = tl.layers.Lambda(customize_func, fn_args={'foo': 2}, name='lambda')(x)
 
+
+    Parametric self defined function with outside variables
+    In this case, we hasn't supported using Model.save() / Model.load() to save / load the whole model architecture and weights(optional) yet.
+    Please avoid using Model.save() / Model.load(). Instead, you can use Model.save_weights() / Model.load_weights() to save / load model weights.
+    Note: In this case, fn_weights should be a list, and then the trainable weights in this LambdaLayer can be added into the weights of the whole model.
+
+    >>> vara = [tf.Variable(1.0)]
+    >>> def func(x):
+    >>>     return x + vara
+    >>> x = tl.layers.Input([8, 3], name='input')
+    >>> y = tl.layers.Lambda(func, fn_weights=a, name='lambda')(x)
+
+
     Parametric case, merge other wrappers into TensorLayer
+    In this case, you can use Model.save() / Model.load() to save / load the whole model architecture and weights(optional).
 
     >>> layers = [
     >>>     tf.keras.layers.Dense(10, activation=tf.nn.relu),
