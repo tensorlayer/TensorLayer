@@ -335,6 +335,101 @@ class Lambda_layer_test(CustomTestCase):
         self.assertLess(np.max(np.abs(ori_val - M3.weights[1].numpy())), 1e-7)
 
 
+class ElementWise_lambda_test(CustomTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        print("##### begin testing elementwise lambda layer  #####")
+
+    def test_elementwise_no_para_with_args(self):
+        # z = mean + noise * tf.exp(std * 0.5) + foo
+        def func(noise, mean, std, foo=42):
+            return mean + noise * tf.exp(std * 0.5) + foo
+
+        noise = tl.layers.Input([100, 1])
+        mean = tl.layers.Input([100, 1])
+        std = tl.layers.Input([100, 1])
+        out = tl.layers.ElementwiseLambda(fn=func, fn_args={'foo': 84}, name='elementwiselambda')([noise, mean, std])
+        M1 = Model(inputs=[noise, mean, std], outputs=out)
+        M1.save("elementwise_npwa.hdf5")
+        M2 = Model.load("elementwise_npwa.hdf5")
+
+        M1.eval()
+        M2.eval()
+        ipt = [np.zeros((100, 1)) + 11, np.zeros((100, 1)) + 21, np.zeros((100, 1)) + 31]
+        output1 = M1(ipt).numpy()
+        output2 = M2(ipt).numpy()
+
+        self.assertEqual((output1 == output2).all(), True)
+        self.assertEqual(M1.config, M2.config)
+
+    def test_elementwise_no_para_no_args(self):
+        # z = mean + noise * tf.exp(std * 0.5) + foo
+        def func(noise, mean, std, foo=42):
+            return mean + noise * tf.exp(std * 0.5) + foo
+
+        noise = tl.layers.Input([100, 1])
+        mean = tl.layers.Input([100, 1])
+        std = tl.layers.Input([100, 1])
+        out = tl.layers.ElementwiseLambda(fn=func, name='elementwiselambda')([noise, mean, std])
+        M1 = Model(inputs=[noise, mean, std], outputs=out)
+        M1.save("elementwise_npna.hdf5")
+        M2 = Model.load("elementwise_npna.hdf5")
+
+        M1.eval()
+        M2.eval()
+        ipt = [np.zeros((100, 1)) + 11, np.zeros((100, 1)) + 21, np.zeros((100, 1)) + 31]
+        output1 = M1(ipt).numpy()
+        output2 = M2(ipt).numpy()
+
+        self.assertEqual((output1 == output2).all(), True)
+        self.assertEqual(M1.config, M2.config)
+
+    def test_elementwise_lambda_func(self):
+        # z = mean + noise * tf.exp(std * 0.5)
+        noise = tl.layers.Input([100, 1])
+        mean = tl.layers.Input([100, 1])
+        std = tl.layers.Input([100, 1])
+        out = tl.layers.ElementwiseLambda(fn=lambda x, y, z: x + y * tf.exp(z * 0.5), name='elementwiselambda')([noise, mean, std])
+        M1 = Model(inputs=[noise, mean, std], outputs=out)
+        M1.save("elementwise_lambda.hdf5")
+        M2 = Model.load("elementwise_lambda.hdf5")
+
+        M1.eval()
+        M2.eval()
+        ipt = [(np.zeros((100, 1)) + 11).astype(np.float32), (np.zeros((100, 1)) + 21).astype(np.float32), (np.zeros((100, 1)) + 31).astype(np.float32)]
+        output1 = M1(ipt).numpy()
+        output2 = M2(ipt).numpy()
+
+        self.assertEqual((output1 == output2).all(), True)
+        self.assertEqual(M1.config, M2.config)
+
+
+    # # ElementwiseLambda does not support keras layer/model func yet
+    # def test_elementwise_keras_model(self):
+    #     kerasinput1 = tf.keras.layers.Input(shape=(100, ))
+    #     kerasinput2 = tf.keras.layers.Input(shape=(100, ))
+    #     kerasconcate = tf.keras.layers.concatenate(inputs=[kerasinput1, kerasinput2])
+    #     kerasmodel = tf.keras.models.Model(inputs=[kerasinput1, kerasinput2], outputs=kerasconcate)
+    #     _ = kerasmodel([np.random.random([100,]).astype(np.float32), np.random.random([100,]).astype(np.float32)])
+    #
+    #     input1 = tl.layers.Input([100, 1])
+    #     input2 = tl.layers.Input([100, 1])
+    #     out = tl.layers.ElementwiseLambda(fn=kerasmodel, name='elementwiselambda')([input1, input2])
+    #     M1 = Model(inputs=[input1, input2], outputs=out)
+    #     M1.save("elementwise_keras_model.hdf5")
+    #     M2 = Model.load("elementwise_keras_model.hdf5")
+    #
+    #     M1.eval()
+    #     M2.eval()
+    #     ipt = [np.zeros((100, 1)) + 11, np.zeros((100, 1)) + 21, np.zeros((100, 1)) + 31]
+    #     output1 = M1(ipt).numpy()
+    #     output2 = M2(ipt).numpy()
+    #
+    #     self.assertEqual((output1 == output2).all(), True)
+    #     self.assertEqual(M1.config, M2.config)
+
+
 class basic_dynamic_model(Model):
     def __init__(self):
         super(basic_dynamic_model, self).__init__()

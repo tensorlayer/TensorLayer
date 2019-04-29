@@ -695,6 +695,7 @@ class Model():
         """
         Save model into a given file.
         This function save can save both the architecture of neural networks and weights (optional).
+        WARNING: If the model contains Lambda / ElementwiseLambda layer, please check the documentation of Lambda / ElementwiseLambda layer and find out the cases that have / have not been supported by Model.save().
 
 
         Parameters
@@ -723,6 +724,7 @@ class Model():
         Load model from a given file, which should be previously saved by Model.save().
         This function load can load both the architecture of neural networks and weights (optional, and needs to be saved in Model.save()).
         When a model is loaded by this function load, there is no need to reimplement or declare the architecture of the model explicitly in code.
+        WARNING: If the model contains Lambda / ElementwiseLambda layer, please check the documentation of Lambda / ElementwiseLambda layer and find out the cases that have / have not been supported by Model.load().
 
 
         Parameters
