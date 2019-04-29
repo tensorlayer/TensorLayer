@@ -256,6 +256,19 @@ class Auto_Naming_Test(CustomTestCase):
         if not test_flag:
             self.fail("Fail to detect duplicate name in ModelLayer")
 
+    def test_layerlist(self):
+        try:
+            inputs = tl.layers.Input([10, 5])
+            layer1 = tl.layers.LayerList([
+                tl.layers.Dense(n_units=4, name='dense1'),
+                tl.layers.Dense(n_units=3, name='dense1')
+            ])(inputs)
+            model = tl.models.Model(inputs=inputs, outputs=layer1, name='layerlistmodel')
+            print([w.name for w in model.weights])
+            self.fail("Fail to detect duplicate name in layerlist")
+        except Exception as e:
+            print(e)
+
 
 if __name__ == '__main__':
     unittest.main()
