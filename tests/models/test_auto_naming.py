@@ -138,7 +138,12 @@ class Auto_Naming_Test(CustomTestCase):
 
         # self.assertEqual(model_basic.name, "model")
         basename = model_basic.name
-        self.assertEqual(model_basic_1.name, "model_%d" % (int(basename.split("_")[-1]) + 1))
+        bnum = basename.split("_")[-1]
+        try:
+            bnum = int(bnum)
+        except:
+            bnum = 0
+        self.assertEqual(model_basic_1.name, "model_%d" % (bnum + 1))
         self.assertEqual(model_basic_2.name, assname)
         self.assertEqual(model_basic_3.name, "model_%d" % (int(assname.split("_")[-1]) + 1))
         self.assertEqual(model_basic_given_name.name, "a_static_model")
