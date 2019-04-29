@@ -7,3 +7,4 @@ scikit-image>=0.14,<0.15
 scipy>=1.1,<1.2
 wrapt>=1.10,<1.11
 h5py>=2.9
+cloudpickle>=0.8.1
