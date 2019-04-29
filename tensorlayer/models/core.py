@@ -61,6 +61,10 @@ class Model():
         Save the weights of this network in a given format.
     load_weights(self, filepath, format=None, in_order=True, skip=False)
         Load weights into this network from a specified file.
+    save(self, filepath, save_weights=True)
+        Save the network with/without weights.
+    load(filepath, save_weights=True)
+        Load the network with/without weights.
 
     Examples
     ---------
@@ -110,6 +114,10 @@ class Model():
     >>> M_static.save_weights('./model_weights.h5')
     >>> M_static.load_weights('./model_weights.h5')
 
+    - Save and load the model
+    >>> M_static.save('./model.h5')
+    >>> M = Model.load('./model.h5')
+
     - Convert model to layer
     >>> M_layer = M_static.as_layer()
 
@@ -138,9 +146,11 @@ class Model():
             Name for this network
         """
         # Auto naming if the name is not given
+        self._NameNone = False
         global _global_model_name_dict
         global _global_model_name_set
         if name is None:
+            self._NameNone = True
             prefix = self.__class__.__name__.lower()
             if _global_model_name_dict.get(prefix) is not None:
                 _global_model_name_dict[prefix] += 1
@@ -168,6 +178,9 @@ class Model():
 
         # Model weights
         self._weights = None
+
+        # Model args of all layers, ordered by all_layers
+        self._config = None
 
         # Model inputs and outputs
         # TODO: note that in dynamic network, inputs and outputs are both None, may cause problem, test needed
@@ -381,6 +394,23 @@ class Model():
                     self._weights.extend(layer.weights)
 
         return self._weights
+
+    @property
+    def config(self):
+        if self._config is not None and len(self._config) > 0:
+            return self._config
+        else:
+            _config = []
+            # if self.outputs is None:
+            #     raise RuntimeError(
+            #         "Dynamic mode does not support config yet."
+            #     )
+            for layer in self.all_layers:
+                _config.append(layer.config)
+            if self._nodes_fixed or self.outputs is None:
+                self._config = _config
+
+            return _config
 
     def train(self):
         """Set this network in training mode. After calling this method,
@@ -661,20 +691,61 @@ class Model():
         for layer in self.all_layers:
             layer._release_memory()
 
-    # FIXME : Model save part @runhai
-    # def save(self, filepath):
-    #     if self.outputs is None:
-    #         raise AssertionError(
-    #             "save_graph not support dynamic mode yet"
-    #         )
-    #     utils.save_graph(network=self, name=filepath)
-    #
-    #
-    # def load(filepath):
-    #     return utils.load_graph(name=filepath)
+    def save(self, filepath, save_weights=True):
+        """
+        Save model into a given file.
+        This function save can save both the architecture of neural networks and weights (optional).
+        WARNING: If the model contains Lambda / ElementwiseLambda layer, please check the documentation of Lambda / ElementwiseLambda layer and find out the cases that have / have not been supported by Model.save().
+
+
+        Parameters
+        ----------
+        filepath : str
+            Filename into which the model will be saved.
+        save_weights : bool
+            Whether to save model weights.
+
+        Examples
+        --------
+        >>> net = tl.models.vgg16()
+        >>> net.save('./model.h5', save_weights=True)
+        >>> new_net = Model.load('./model.h5', load_weights=True)
+        """
+        # TODO: support saving LambdaLayer that includes parametric self defined function with outside variables
+        if self.outputs is None:
+            raise RuntimeError(
+                "Model save() not support dynamic mode yet.\nHint: you can use Model save_weights() to save the weights in dynamic mode."
+            )
+        utils.save_hdf5_graph(network=self, filepath=filepath, save_weights=save_weights)
+
+    @staticmethod
+    def load(filepath, load_weights=True):
+        """
+        Load model from a given file, which should be previously saved by Model.save().
+        This function load can load both the architecture of neural networks and weights (optional, and needs to be saved in Model.save()).
+        When a model is loaded by this function load, there is no need to reimplement or declare the architecture of the model explicitly in code.
+        WARNING: If the model contains Lambda / ElementwiseLambda layer, please check the documentation of Lambda / ElementwiseLambda layer and find out the cases that have / have not been supported by Model.load().
+
+
+        Parameters
+        ----------
+        filepath : str
+            Filename from which the model will be loaded.
+        load_weights : bool
+            Whether to load model weights.
+
+        Examples
+        --------
+        >>> net = tl.models.vgg16()
+        >>> net.save('./model.h5', save_weights=True)
+        >>> new_net = Model.load('./model.h5', load_weights=True)
+        """
+        # TODO: support loading LambdaLayer that includes parametric self defined function with outside variables
+        M = utils.load_hdf5_graph(filepath=filepath, load_weights=load_weights)
+        return M
 
     def save_weights(self, filepath, format=None):
-        """Input filepath and the session(optional), save model weights into a file of given format.
+        """Input filepath, save model weights into a file of given format.
             Use self.load_weights() to restore.
 
         Parameters

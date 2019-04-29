@@ -289,7 +289,7 @@ class Conv2d(Layer):
 
 
 class Conv3d(Layer):
-    """Simplified version of :class:`Conv2dLayer`.
+    """Simplified version of :class:`Conv3dLayer`.
 
     Parameters
     ----------
