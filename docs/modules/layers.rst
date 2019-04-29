@@ -135,7 +135,7 @@ Layer list
 ..                        Basic Layers
 .. -----------------------------------------------------------
 
-Basic Layer
+Base Layer
 -----------
 
 .. autoclass:: Layer
