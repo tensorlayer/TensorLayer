@@ -7,10 +7,17 @@ TensorLayer provides many pretrained models, you can easily use the whole or a p
 
 .. autosummary::
 
+    Model
+
     VGG16
     VGG19
     SqueezeNetV1
     MobileNetV1
+
+Base Model
+-----------
+
+.. autoclass:: Model
 
 VGG16
 ----------------------

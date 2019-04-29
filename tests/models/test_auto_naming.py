@@ -138,7 +138,12 @@ class Auto_Naming_Test(CustomTestCase):
 
         # self.assertEqual(model_basic.name, "model")
         basename = model_basic.name
-        self.assertEqual(model_basic_1.name, "model_%d" % (int(basename.split("_")[-1]) + 1))
+        bnum = basename.split("_")[-1]
+        try:
+            bnum = int(bnum)
+        except:
+            bnum = 0
+        self.assertEqual(model_basic_1.name, "model_%d" % (bnum + 1))
         self.assertEqual(model_basic_2.name, assname)
         self.assertEqual(model_basic_3.name, "model_%d" % (int(assname.split("_")[-1]) + 1))
         self.assertEqual(model_basic_given_name.name, "a_static_model")
@@ -255,6 +260,19 @@ class Auto_Naming_Test(CustomTestCase):
             print(e)
         if not test_flag:
             self.fail("Fail to detect duplicate name in ModelLayer")
+
+    def test_layerlist(self):
+        try:
+            inputs = tl.layers.Input([10, 5])
+            layer1 = tl.layers.LayerList([
+                tl.layers.Dense(n_units=4, name='dense1'),
+                tl.layers.Dense(n_units=3, name='dense1')
+            ])(inputs)
+            model = tl.models.Model(inputs=inputs, outputs=layer1, name='layerlistmodel')
+            print([w.name for w in model.weights])
+            self.fail("Fail to detect duplicate name in layerlist")
+        except Exception as e:
+            print(e)
 
 
 if __name__ == '__main__':
