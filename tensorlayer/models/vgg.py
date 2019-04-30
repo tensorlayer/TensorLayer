@@ -35,7 +35,7 @@ import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.files import assign_weights, maybe_download_and_extract
-from tensorlayer.layers import (BatchNorm, Conv2d, Dense, Flatten, Input, LayerList, MaxPool2d)
+from tensorlayer.layers import (BatchNorm, Conv2d, Dense, Flatten, Input, LayerList, MaxPool2d, Lambda)
 from tensorlayer.models import Model
 
 __all__ = [
@@ -99,29 +99,31 @@ class VGG(Model):
     Classify ImageNet classes with VGG16, see `tutorial_models_vgg.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_vgg.py>`__
     With TensorLayer
 
-    >>> # get the whole model
-    >>> vgg = tl.models.vgg.vgg16()
-    >>> # restore pre-trained VGG parameters
-    >>> vgg.restore_weights()
+    >>> # get the whole model, without pre-trained VGG parameters
+    >>> vgg = tl.models.vgg16()
+    >>> # get the whole model, restore pre-trained VGG parameters
+    >>> vgg = tl.models.vgg16(pretrained=True)
     >>> # use for inferencing
+    >>> output = vgg(img, is_train=False)
     >>> probs = tf.nn.softmax(output)[0].numpy()
 
     Extract features with VGG16 and Train a classifier with 100 classes
 
     >>> # get VGG without the last layer
-    >>> vgg = tl.models.vgg.vgg16(end_with='fc2_relu')
-    >>> # add one more layer
-    >>> net = tl.layers.Dense(n_units=100, name='out')(vgg)
-    >>> # restore pre-trained VGG parameters
-    >>> vgg.restore_weights()
+    >>> cnn = tl.models.vgg16(end_with='fc2_relu', mode='static').as_layer()
+    >>> # add one more layer and build a new model
+    >>> ni = Input([None, 224, 224, 3], name="inputs")
+    >>> nn = cnn(ni)
+    >>> nn = tl.layers.Dense(n_units=100, name='out')(nn)
+    >>> model = tl.models.Model(inputs=ni, outputs=nn)
     >>> # train your own classifier (only update the last layer)
-    >>> train_params = tl.layers.get_variables_with_name('out')
+    >>> train_params = model.get_layer('out').weights
 
     Reuse model
 
     >>> # in dynamic mode, we can directly use the same model
     >>> # in static mode
-    >>> vgg_layer = tl.models.vgg.vgg16.as_layer()
+    >>> vgg_layer = tl.models.vgg16().as_layer()
     >>> ni_1 = tl.layers.Input([None, 224, 244, 3])
     >>> ni_2 = tl.layers.Input([None, 224, 244, 3])
     >>> a_1 = vgg_layer(ni_1)
@@ -140,8 +142,10 @@ class VGG(Model):
     def forward(self, inputs):
         """
         inputs : tensor
-            Shape [None, 224, 224, 3], value range [0, 255] - mean, mean = [123.68, 116.779, 103.939].
+            Shape [None, 224, 224, 3], value range [0, 1].
         """
+
+        inputs = inputs * 255 - np.array([123.68, 116.779, 103.939], dtype=np.float32).reshape([1, 1, 1, 3])
 
         out = self.layers(inputs)
         return out
@@ -221,11 +225,12 @@ def restore_model(model, layer_type):
 
 def VGG_static(layer_type, batch_norm=False, end_with='outputs', name=None):
     ni = Input([None, 224, 224, 3])
+    n = Lambda(lambda x: x * 255 - np.array([123.68, 116.779, 103.939], dtype=np.float32).reshape([1, 1, 1, 3]), name='scale')(ni)
 
     config = cfg[mapped_cfg[layer_type]]
     layers = make_layers(config, batch_norm, end_with)
 
-    nn = layers(ni)
+    nn = layers(n)
 
     M = Model(inputs=ni, outputs=nn, name=name)
     return M
