@@ -20,7 +20,7 @@ Static model
   def get_model(inputs_shape):
       ni = Input(inputs_shape)
       nn = Dropout(keep=0.8)(ni)
-      nn = Dense(n_units=800, act=tf.nn.relu)(nn)
+      nn = Dense(n_units=800, act=tf.nn.relu, name="dense1")(nn)
       nn = Dropout(keep=0.8)(nn)
       nn = Dense(n_units=800, act=tf.nn.relu)(nn)
       nn = Dropout(keep=0.8)(nn)
@@ -155,7 +155,7 @@ We can get the specific weights by indexing or naming.
   some_weights = MLP.weights[1:3]
 
   # naming
-  some_weights = MLP.get_weights('bias')
+  some_weights = MLP.get_layer('dense1').weights
 
 
 Save and restore model
