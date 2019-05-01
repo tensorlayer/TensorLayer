@@ -106,7 +106,7 @@ __all__ += [
 
 
 def DropoutLayer(*args, **kwargs):
-    raise NonExistingLayerError("DropoutLayer(net, is_train=True, name='a') --> Dropout(name='a')(net, is_train=True)"+__log__)
+    raise NonExistingLayerError("DropoutLayer(net, is_train=True, name='a') --> Dropout(name='a')(net)"+__log__)
 
 
 # extend.py
@@ -240,7 +240,7 @@ __all__ += [
 
 
 def BatchNormLayer(*args, **kwargs):
-    raise NonExistingLayerError("BatchNormLayer(x, is_train=True, name='a') --> BatchNorm(name='a')(x, is_train=True)"+__log__)
+    raise NonExistingLayerError("BatchNormLayer(x, is_train=True, name='a') --> BatchNorm(name='a')(x)"+__log__)
 
 
 def InstanceNormLayer(*args, **kwargs):
@@ -292,13 +292,13 @@ __all__ += [
 
 def DynamicRNNLayer(*args, **kwargs):
     raise NonExistingLayerError(
-        "DynamicRNNLayer(x, is_train=True, name='a') --> DynamicRNN(name='a')(x, is_train=True)"+__log__
+        "DynamicRNNLayer(x, is_train=True, name='a') --> DynamicRNN(name='a')(x)"+__log__
     )
 
 
 def BiDynamicRNNLayer(*args, **kwargs):
     raise NonExistingLayerError(
-        "BiDynamicRNNLayer(x, is_train=True, name='a') --> BiDynamicRNN(name='a')(x, is_train=True)"+__log__
+        "BiDynamicRNNLayer(x, is_train=True, name='a') --> BiDynamicRNN(name='a')(x)"+__log__
     )
 
 
@@ -314,7 +314,7 @@ def RNNLayer(*args, **kwargs):
 
 
 def BiRNNLayer(*args, **kwargs):
-    raise NonExistingLayerError("BiRNNLayer(x, is_train=True, name='a') --> BiRNN(name='a')(x, is_train=True)"+__log__)
+    raise NonExistingLayerError("BiRNNLayer(x, is_train=True, name='a') --> BiRNN(name='a')(x)"+__log__)
 
 
 # reshape.py
