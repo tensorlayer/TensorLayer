@@ -126,10 +126,8 @@ Layer list
    PTRelu6
 
    flatten_reshape
-   clear_layers_name
    initialize_rnn_state
    list_remove_repeat
-   merge_networks
 
 .. -----------------------------------------------------------
 ..                        Basic Layers
@@ -741,10 +739,6 @@ Flatten tensor
 ^^^^^^^^^^^^^^^^^
 .. autofunction:: flatten_reshape
 
-Permanent clear existing layer names
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: clear_layers_name
-
 Initialize RNN state
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: initialize_rnn_state
@@ -753,6 +747,3 @@ Remove repeated items in a list
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: list_remove_repeat
 
-Merge networks attributes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: merge_networks
