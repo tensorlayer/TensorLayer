@@ -43,8 +43,8 @@ Reuse CNN
 
 .. code-block:: python
 
-  # in dynamic mode, we can directly use the same model
-  # in static mode
+  # in dynamic model, we can directly use the same model
+  # in static model
   vgg_layer = tl.models.vgg16().as_layer()
   ni_1 = tl.layers.Input([None, 224, 224, 3])
   ni_2 = tl.layers.Input([None, 224, 224, 3])
