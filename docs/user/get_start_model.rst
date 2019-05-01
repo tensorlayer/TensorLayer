@@ -20,7 +20,7 @@ Static model
   def get_model(inputs_shape):
       ni = Input(inputs_shape)
       nn = Dropout(keep=0.8)(ni)
-      nn = Dense(n_units=800, act=tf.nn.relu)(nn)
+      nn = Dense(n_units=800, act=tf.nn.relu, name="dense1")(nn)
       nn = Dropout(keep=0.8)(nn)
       nn = Dense(n_units=800, act=tf.nn.relu)(nn)
       nn = Dropout(keep=0.8)(nn)
@@ -142,6 +142,7 @@ Print model information
   #   (dropout_2): Dropout(keep=0.8, name='dropout_2')
   #   (dense_2): Dense(n_units=10, relu, in_channels='800', name='dense_2')
   # )
+
 Get specific weights
 =======================
 
@@ -154,7 +155,7 @@ We can get the specific weights by indexing or naming.
   some_weights = MLP.weights[1:3]
 
   # naming
-  some_weights = MLP.get_weights('bias')
+  some_weights = MLP.get_layer('dense1').weights
 
 
 Save and restore model
@@ -171,12 +172,14 @@ Save weights only
   MLP.save_weights('./model_weights.h5') # by default, file will be in hdf5 format
   MLP.load_weights('./model_weights.h5')
 
-Save weights and config
-------------------------
+Save model architecture and weights(optional)
+---------------------------------------------
 
 .. code-block:: python
 
-  xxx
+  # When using Model.load(), there is no need to reimplement or declare the architecture of the model explicitly in code
+  MLP.save('./model.h5', save_weights=True)
+  MLP = Model.load('./model.h5', load_weights=True)
 
 Customizing layer
 ==================
