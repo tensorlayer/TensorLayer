@@ -5,6 +5,7 @@ from queue import Queue
 import tensorflow as tf
 from tensorflow.python.framework import ops as tf_ops
 
+import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.files import utils
 from tensorlayer.layers import Layer, ModelLayer
@@ -401,6 +402,8 @@ class Model():
             return self._config
         else:
             _config = []
+            _config.append({"tf_version": tf.__version__})
+            _config.append({"tl_version": tl.__version__})
             # if self.outputs is None:
             #     raise RuntimeError(
             #         "Dynamic mode does not support config yet."

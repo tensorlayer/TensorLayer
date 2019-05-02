@@ -245,6 +245,16 @@ def static_graph2net(saved_file):
     inputs_tensors = saved_file['inputs']
     outputs_tensors = saved_file['outputs']
     all_args = saved_file['config']
+    tf_version = saved_file['config'].pop(0)['tf_version']
+    tl_version = saved_file['config'].pop(0)['tl_version']
+    if tf_version != tf.__version__:
+        logging.warning(
+            "Saved model uses tensorflow version {}, but now you are using tensorflow version {}".format(tf_version, tf.__version__)
+        )
+    if tl_version != tl.__version__:
+        logging.warning(
+            "Saved model uses tensorlayer version {}, but now you are using tensorlayer version {}".format(tl_version, tl.__version__)
+        )
     for idx, layer_kwargs in enumerate(all_args):
         layer_class = layer_kwargs['class']  # class of current layer
         prev_layers = layer_kwargs.pop('prev_layer')  # name of previous layers
