@@ -10,7 +10,8 @@ import tensorflow as tf
 import tensorlayer as tl
 
 from tests.utils import CustomTestCase
-
+import nltk
+nltk.download('punkt')
 
 class Test_Leaky_ReLUs(CustomTestCase):
 
