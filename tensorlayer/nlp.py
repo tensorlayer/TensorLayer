@@ -10,6 +10,7 @@ import tempfile
 import warnings
 from collections import Counter
 
+import six as _six
 import numpy as np
 import tensorflow as tf
 from six.moves import urllib, xrange
@@ -44,6 +45,42 @@ __all__ = [
     'data_to_token_ids',
     'moses_multi_bleu',
 ]
+
+def as_bytes(bytes_or_text, encoding='utf-8'):
+  """Converts either bytes or unicode to `bytes`, using utf-8 encoding for text.
+  Args:
+    bytes_or_text: A `bytes`, `str`, or `unicode` object.
+    encoding: A string indicating the charset for encoding unicode.
+  Returns:
+    A `bytes` object.
+  Raises:
+    TypeError: If `bytes_or_text` is not a binary or unicode string.
+  """
+  if isinstance(bytes_or_text, _six.text_type):
+    return bytes_or_text.encode(encoding)
+  elif isinstance(bytes_or_text, bytes):
+    return bytes_or_text
+  else:
+    raise TypeError('Expected binary or unicode string, got %r' %
+                    (bytes_or_text,))
+
+
+def as_text(bytes_or_text, encoding='utf-8'):
+  """Returns the given argument as a unicode string.
+  Args:
+    bytes_or_text: A `bytes`, `str`, or `unicode` object.
+    encoding: A string indicating the charset for decoding unicode.
+  Returns:
+    A `unicode` (Python 2) or `str` (Python 3) object.
+  Raises:
+    TypeError: If `bytes_or_text` is not a binary or unicode string.
+  """
+  if isinstance(bytes_or_text, _six.text_type):
+    return bytes_or_text
+  elif isinstance(bytes_or_text, bytes):
+    return bytes_or_text.decode(encoding)
+  else:
+    raise TypeError('Expected binary or unicode string, got %r' % bytes_or_text)
 
 
 def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_index=0):
@@ -277,11 +314,11 @@ class Vocabulary(object):
     """
 
     def __init__(self, vocab_file, start_word="<S>", end_word="</S>", unk_word="<UNK>", pad_word="<PAD>"):
-        if not tf.gfile.Exists(vocab_file):
+        if not tf.io.gfile.Exists(vocab_file):
             tl.logging.fatal("Vocab file %s not found." % vocab_file)
         tl.logging.info("Initializing vocabulary from file: %s" % vocab_file)
 
-        with tf.gfile.GFile(vocab_file, mode="r") as f:
+        with tf.io.gfile.GFile(vocab_file, mode="r") as f:
             reverse_vocab = list(f.readlines())
         reverse_vocab = [line.split()[0] for line in reverse_vocab]
         # assert start_word in reverse_vocab
@@ -443,7 +480,7 @@ def create_vocab(sentences, word_counts_output_file, min_word_count=1):
     tl.logging.info("    Words in vocabulary: %d" % len(word_counts))
 
     # Write out the word counts file.
-    with tf.gfile.FastGFile(word_counts_output_file, "w") as f:
+    with tf.io.gfile.GFile(word_counts_output_file, "w") as f:
         f.write("\n".join(["%s %d" % (w, c) for w, c in word_counts]))
     tl.logging.info("    Wrote vocabulary file: %s" % word_counts_output_file)
 
@@ -496,7 +533,7 @@ def read_words(filename="nietzsche.txt", replace=None):
     if replace is None:
         replace = ['\n', '<eos>']
 
-    with tf.gfile.GFile(filename, "r") as f:
+    with tf.io.gfile.GFile(filename, "r") as f:
         try:  # python 3.4 or older
             context_list = f.read().replace(*replace).split()
         except Exception:  # python 3.5
@@ -824,7 +861,7 @@ def save_vocab(count=None, name='vocab.txt'):
     vocabulary_size = len(count)
     with open(os.path.join(pwd, name), "w") as f:
         for i in xrange(vocabulary_size):
-            f.write("%s %d\n" % (tf.compat.as_text(count[i][0]), count[i][1]))
+            f.write("%s %d\n" % (as_text(count[i][0]), count[i][1]))
     tl.logging.info("%d vocab saved to %s in %s" % (vocabulary_size, name, pwd))
 
 
@@ -862,7 +899,7 @@ def basic_tokenizer(sentence, _WORD_SPLIT=re.compile(b"([.,!?\"':;)(])")):
 
     """
     words = []
-    sentence = tf.compat.as_bytes(sentence)
+    sentence = as_bytes(sentence)
     for space_separated_fragment in sentence.strip().split():
         words.extend(re.split(_WORD_SPLIT, space_separated_fragment))
     return [w for w in words if w]
@@ -969,7 +1006,7 @@ def initialize_vocabulary(vocabulary_path):
         rev_vocab = []
         with gfile.GFile(vocabulary_path, mode="rb") as f:
             rev_vocab.extend(f.readlines())
-        rev_vocab = [tf.compat.as_bytes(line.strip()) for line in rev_vocab]
+        rev_vocab = [as_bytes(line.strip()) for line in rev_vocab]
         vocab = dict([(x, y) for (y, x) in enumerate(rev_vocab)])
         return vocab, rev_vocab
     else:
