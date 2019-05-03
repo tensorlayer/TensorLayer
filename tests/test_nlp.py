@@ -9,6 +9,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 import tensorlayer as tl
 
+from tensorflow.python.platform import gfile
 from tests.utils import CustomTestCase
 import nltk
 nltk.download('punkt')
@@ -22,6 +23,36 @@ class Test_Leaky_ReLUs(CustomTestCase):
     @classmethod
     def tearDownClass(cls):
         pass
+
+    def test_as_bytes(self):
+        origin_str = "str"
+        origin_bytes = b'bytes'
+        converted_str = tl.nlp.as_bytes(origin_str)
+        converted_bytes = tl.nlp.as_bytes(origin_bytes)
+        print('str after using as_bytes:', converted_str)
+        print('bytes after using as_bytes:', converted_bytes)
+
+    def test_as_text(self):
+        origin_str = "str"
+        origin_bytes = b'bytes'
+        converted_str = tl.nlp.as_text(origin_str)
+        converted_bytes = tl.nlp.as_text(origin_bytes)
+        print('str after using as_text:', converted_str)
+        print('bytes after using as_text:', converted_bytes)
+
+    def test_save_vocab(self):
+        words = tl.files.load_matt_mahoney_text8_dataset()
+        vocabulary_size = 50000
+        data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size, True)
+        tl.nlp.save_vocab(count, name='vocab_text8.txt')        
+
+    def test_basic_tokenizer(self):
+        train_path = "wmt/giga-fren.release2"
+        with gfile.GFile(train_path + ".en", mode="rb") as f:
+           for line in f:
+              tokens = tl.nlp.basic_tokenizer(line)
+              tl.logging.info(tokens)
+              exit()
 
     def test_generate_skip_gram_batch(self):
         data = [1,2,3,4,5,6,7,8,9,10,11]
