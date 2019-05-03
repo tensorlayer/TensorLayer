@@ -44,15 +44,12 @@ class Test_Leaky_ReLUs(CustomTestCase):
         words = tl.files.load_matt_mahoney_text8_dataset()
         vocabulary_size = 50000
         data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size, True)
-        tl.nlp.save_vocab(count, name='vocab_text8.txt')        
+        tl.nlp.save_vocab(count, name='vocab_text8.txt')     
 
     def test_basic_tokenizer(self):
-        train_path = "wmt/giga-fren.release2"
-        with gfile.GFile(train_path + ".en", mode="rb") as f:
-           for line in f:
-              tokens = tl.nlp.basic_tokenizer(line)
-              tl.logging.info(tokens)
-              exit()
+        c = "how are you?"
+        tokens = tl.nlp.basic_tokenizer(c)
+        print(tokens)
 
     def test_generate_skip_gram_batch(self):
         data = [1,2,3,4,5,6,7,8,9,10,11]
