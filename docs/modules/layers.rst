@@ -315,24 +315,6 @@ Tile layer
 ^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: Tile
 
-
-.. -----------------------------------------------------------
-..                 External Libraries Layers
-.. -----------------------------------------------------------
-
-External Libraries Layers
-------------------------------
-
-TF-Slim Layer
-^^^^^^^^^^^^^^^^^^^
-TF-Slim models can be connected into TensorLayer. All Google's Pre-trained model can be used easily ,
-see `Slim-model <https://github.com/tensorflow/models/tree/master/research/slim>`__.
-
-.. autoclass:: SlimNets
-
-
-
-
 .. -----------------------------------------------------------
 ..                  Image Resampling Layers
 .. -----------------------------------------------------------
@@ -393,9 +375,6 @@ Noise Layer
 Normalization Layers
 --------------------
 
-For local response normalization as it does not have any weights and arguments,
-you can also apply ``tf.nn.lrn`` on ``network.outputs``.
-
 Batch Normalization
 ^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: BatchNorm
@@ -419,14 +398,6 @@ Group Normalization
 Switch Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: SwitchNorm
-
-.. -----------------------------------------------------------
-..                Object Detection Layers
-.. -----------------------------------------------------------
-
-Object Detection Layer
-------------------------
-.. autoclass:: ROIPoolingLayer
 
 .. -----------------------------------------------------------
 ..                     Padding Layers
@@ -527,7 +498,7 @@ Quantized Nets
 
 This is an experimental API package for building Quantized Neural Networks. We are using matrix multiplication rather than add-minus and bit-count operation at the moment. Therefore, these APIs would not speed up the inferencing, for production, you can train model via TensorLayer and deploy the model into other customized C/C++ implementation (We probably provide users an extra C/C++ binary net framework that can load model from TensorLayer).
 
-Note that, these experimental APIs can be changed in the future
+Note that, these experimental APIs can be changed in the future.
 
 
 Sign
@@ -607,7 +578,7 @@ QuantizedConv2dWithBN
 Recurrent Layers
 ---------------------
 
-Fixed Length Recurrent layer
+Common Recurrent layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 All recurrent layers can implement any type of RNN cell by feeding different cell function (LSTM, GRU etc).
 
@@ -635,6 +606,9 @@ Conv LSTM layer
 """""""""""""""""""""""""""""""""
 .. autoclass:: ConvLSTM
 
+Simple Seq2Seq
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: Seq2Seq
 
 Advanced Ops for Dynamic RNN
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -657,17 +631,6 @@ Get Mask
 """"""""""""""""""""""""""
 .. autofunction:: target_mask_op
 
-
-Dynamic RNN Layer
-^^^^^^^^^^^^^^^^^^^^^^
-
-
-Sequence to Sequence
-^^^^^^^^^^^^^^^^^^^^^^
-
-Simple Seq2Seq
-"""""""""""""""""
-.. autoclass:: Seq2Seq
 
 
 .. -----------------------------------------------------------
