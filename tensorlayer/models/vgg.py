@@ -42,6 +42,8 @@ __all__ = [
     'VGG',
     'vgg16',
     'vgg19',
+    'VGG16',
+    'VGG19',
     #    'vgg11', 'vgg11_bn', 'vgg13', 'vgg13_bn', 'vgg16', 'vgg16_bn',
     #    'vgg19_bn', 'vgg19',
 ]
