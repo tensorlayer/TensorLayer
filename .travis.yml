@@ -63,7 +63,7 @@ matrix:
 install:
   - |
     if [[ -v _DOC_AND_YAPF_TEST ]]; then
-        pip install tensorflow==$_TF_VERSION
+        pip install tensorflow==2.0.0a0
         pip install yapf
         pip install -e .[doc]
     else
