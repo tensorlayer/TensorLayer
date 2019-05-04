@@ -19,7 +19,6 @@ from .embedding import *
 from .extend import *
 # from .flow_control import * # remove for TF 2.0
 from .image_resampling import *
-from .importer import *
 from .inputs import *
 from .lambda_layers import *
 from .merge import *
