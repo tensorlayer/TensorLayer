@@ -482,7 +482,7 @@ class LayerList(Layer):
         Forward the computation. The computation will go through all layer instances.
     """
 
-    def __init__(self, layers: list, name=None):
+    def __init__(self, layers, name=None):
         """
         Initializing the LayerList given a list of Layer.
 

@@ -18,8 +18,8 @@ branches:
 
 python:
   - "3.6"
-#  - "3.5"
-  - "2.7"
+  - "3.5"
+#  - "2.7"  # TensorLayer 2.0 does not support python2 now
 
 env:
 
@@ -63,7 +63,7 @@ matrix:
 install:
   - |
     if [[ -v _DOC_AND_YAPF_TEST ]]; then
-        pip install tensorflow
+        pip install tensorflow==$_TF_VERSION
         pip install yapf
         pip install -e .[doc]
     else
