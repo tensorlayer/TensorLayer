@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys
-sys.path.append("/Users/wurundi/PycharmProjects/tensorlayer2")
+
 import os
 import unittest
 
@@ -69,20 +68,20 @@ class Model_Core_Test(CustomTestCase):
     def test_hdf5(self):
         modify_val = np.zeros_like(self.static_model.weights[-2].numpy())
         ori_val = self.static_model.weights[-2].numpy()
-        tl.files.save_weights_to_hdf5("./model_basic.h5", self.static_model.weights)
+        tl.files.save_weights_to_hdf5("./model_basic.h5", self.static_model)
 
         self.static_model.weights[-2].assign(modify_val)
-        tl.files.load_hdf5_to_weights_in_order("./model_basic.h5", self.static_model.weights)
+        tl.files.load_hdf5_to_weights_in_order("./model_basic.h5", self.static_model)
         self.assertLess(np.max(np.abs(ori_val - self.static_model.weights[-2].numpy())), 1e-7)
 
         self.static_model.weights[-2].assign(modify_val)
-        tl.files.load_hdf5_to_weights("./model_basic.h5", self.static_model.weights)
+        tl.files.load_hdf5_to_weights("./model_basic.h5", self.static_model)
         self.assertLess(np.max(np.abs(ori_val - self.static_model.weights[-2].numpy())), 1e-7)
 
         ori_weights = self.static_model._weights
         self.static_model._weights = self.static_model._weights[1:]
         self.static_model.weights[-2].assign(modify_val)
-        tl.files.load_hdf5_to_weights("./model_basic.h5", self.static_model.weights, skip=True)
+        tl.files.load_hdf5_to_weights("./model_basic.h5", self.static_model, skip=True)
         self.assertLess(np.max(np.abs(ori_val - self.static_model.weights[-2].numpy())), 1e-7)
         self.static_model._weights = ori_weights
 
