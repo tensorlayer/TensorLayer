@@ -13,12 +13,12 @@ addons:
 branches:
   only:
     - master
-    - TensorLayer-1.x
+    - TensorLayer-2.x
     - /^\d+\.\d+(\.\d+)?(\S*)?$/
 
 python:
   - "3.6"
-  - "3.5"
+#  - "3.5"
   - "2.7"
 
 env:
@@ -26,14 +26,15 @@ env:
   # Backward Compatibility in insured for release less than 1 year old.
   # https://pypi.org/project/tensorflow/#history
   matrix:
-    - _TF_VERSION=1.12.0 # Remove on Oct 22, 2019
-    - _TF_VERSION=1.11.0 # Remove on Sep 28, 2019
-    - _TF_VERSION=1.10.1 # Remove on Aug 24, 2019
-    - _TF_VERSION=1.9.0  # Remove on Jul 10, 2019
-    - _TF_VERSION=1.8.0  # Remove on Apr 28, 2019
-    - _TF_VERSION=1.7.1  # Remove on May 08, 2019
-    - _TF_VERSION=1.7.0  # Remove on Mar 29, 2019
-    - _TF_VERSION=1.6.0  # Remove on Mar 01, 2019
+    - _TF_VERSION=2.0.0-alpha0
+#     - _TF_VERSION=1.12.0 # Remove on Oct 22, 2019
+#     - _TF_VERSION=1.11.0 # Remove on Sep 28, 2019
+#     - _TF_VERSION=1.10.1 # Remove on Aug 24, 2019
+#     - _TF_VERSION=1.9.0  # Remove on Jul 10, 2019
+#     - _TF_VERSION=1.8.0  # Remove on Apr 28, 2019
+#     - _TF_VERSION=1.7.1  # Remove on May 08, 2019
+#     - _TF_VERSION=1.7.0  # Remove on Mar 29, 2019
+#     - _TF_VERSION=1.6.0  # Remove on Mar 01, 2019
 
   global:
 
@@ -100,7 +101,8 @@ deploy:
   on:
     tags: true
     python: '3.6'
-    condition: '$_TF_VERSION = 1.11.0'
+    condition: '$_TF_VERSION = 2.0.0-alpha0'
+#     condition: '$_TF_VERSION = 1.11.0'
 
 # Documentation: https://docs.travis-ci.com/user/deployment/releases/
 - provider: releases
@@ -113,4 +115,5 @@ deploy:
   on:
     tags: true
     python: '3.6'
-    condition: '$_TF_VERSION = 1.11.0'
+    condition: '$_TF_VERSION = 2.0.0-alpha0'
+#     condition: '$_TF_VERSION = 1.11.0'
