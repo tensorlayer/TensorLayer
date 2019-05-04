@@ -19,7 +19,7 @@ e.g. ``tf.initializers.he_normal``, please refer to TensorFlow provided initiali
    deconv2d_bilinear_upsampling_initializer
 
 Initializer
-------
+------------
 .. autoclass:: Initializer
 
 Zeros
@@ -35,7 +35,7 @@ Constant
 .. autoclass:: Constant
 
 RandomUniform
-------------
+--------------
 .. autoclass:: RandomUniform
 
 RandomNormal
@@ -47,5 +47,5 @@ TruncatedNormal
 .. autoclass:: TruncatedNormal
 
 deconv2d_bilinear_upsampling_initializer
---------------------
+------------------------------------------
 .. autofunction:: deconv2d_bilinear_upsampling_initializer
