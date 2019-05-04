@@ -188,7 +188,7 @@ Load network from dict (npz)
 .. autofunction:: load_and_assign_npz_dict
 
 Save network into OrderedDict (hdf5)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: save_weights_to_hdf5
 
 Load network from hdf5 in order
