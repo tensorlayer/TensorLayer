@@ -317,6 +317,7 @@ def vgg19(pretrained=False, end_with='outputs', mode='dynamic', name=None):
         restore_model(model, layer_type='vgg19')
     return model
 
+
 VGG16 = vgg16
 VGG19 = vgg19
 
