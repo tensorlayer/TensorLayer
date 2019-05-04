@@ -24,13 +24,9 @@ class Layer_Convolution_1D_Test(CustomTestCase):
         cls.inputs_shape = [cls.batch_size, 100, 1]
         cls.input_layer = Input(cls.inputs_shape, name='input_layer')
 
-        cls.n1 = tl.layers.Conv1dLayer(
-            shape=(5, 1, 32), stride=2
-        )(cls.input_layer)
+        cls.n1 = tl.layers.Conv1dLayer(shape=(5, 1, 32), stride=2)(cls.input_layer)
 
-        cls.n2 = tl.layers.Conv1d(
-            n_filter=32, filter_size=5, stride=2
-        )(cls.n1)
+        cls.n2 = tl.layers.Conv1d(n_filter=32, filter_size=5, stride=2)(cls.n1)
 
         cls.n3 = tl.layers.DeConv1dLayer(
             shape=(5, 64, 32), outputs_shape=(cls.batch_size, 50, 64), strides=(1, 2, 1), name='deconv1dlayer'
@@ -40,13 +36,9 @@ class Layer_Convolution_1D_Test(CustomTestCase):
             n_filter=32, filter_size=3, strides=2, padding='SAME', act=tf.nn.relu, name='separable_1d'
         )(cls.n3)
 
-        cls.n5 = tl.layers.SubpixelConv1d(
-            scale=2, act=tf.nn.relu, in_channels=32, name='subpixel_1d'
-        )(cls.n4)
+        cls.n5 = tl.layers.SubpixelConv1d(scale=2, act=tf.nn.relu, in_channels=32, name='subpixel_1d')(cls.n4)
 
-        cls.model = Model(
-            inputs=cls.input_layer, outputs=cls.n5
-        )
+        cls.model = Model(inputs=cls.input_layer, outputs=cls.n5)
         print("Testing Conv1d model: \n", cls.model)
 
     @classmethod
@@ -99,6 +91,7 @@ class Layer_Convolution_1D_Test(CustomTestCase):
     #     self.assertEqual(len(self.n3.all_params), 7)
     #     self.assertEqual(self.n3.count_params(), 6496)
     #     self.assertEqual(self.n3.outputs.get_shape().as_list()[1:], [23, 32])
+
 
 # FIXME: TF2.0 only supports NHWC now
 # class Layer_Convolution_1D_NCW_Test(CustomTestCase):
@@ -165,28 +158,25 @@ class Layer_Convolution_2D_Test(CustomTestCase):
 
         cls.n1 = tl.layers.Conv2dLayer(
             act=tf.nn.relu, shape=(5, 5, 3, 32), strides=(1, 2, 2, 1), padding='SAME',
-            b_init=tf.constant_initializer(value=0.0),
-            name='conv2dlayer'
+            b_init=tf.constant_initializer(value=0.0), name='conv2dlayer'
         )(cls.input_layer)
 
-        cls.n2 = tl.layers.Conv2d(
-            n_filter=32, filter_size=(3, 3), strides=(2, 2), act=None, name='conv2d'
-        )(cls.n1)
+        cls.n2 = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act=None, name='conv2d')(cls.n1)
 
         cls.n3 = tl.layers.Conv2d(
             n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, b_init=None, name='conv2d_no_bias'
         )(cls.n2)
 
         cls.n4 = tl.layers.DeConv2dLayer(
-            shape=(5, 5, 32, 32), outputs_shape=(cls.batch_size, 100, 100, 32), strides=(1, 2, 2, 1), name='deconv2dlayer'
+            shape=(5, 5, 32, 32), outputs_shape=(cls.batch_size, 100, 100, 32), strides=(1, 2, 2, 1),
+            name='deconv2dlayer'
         )(cls.n3)
 
-        cls.n5 = tl.layers.DeConv2d(
-            n_filter=32, filter_size=(3, 3), strides=(2, 2), name='DeConv2d'
-        )(cls.n4)
+        cls.n5 = tl.layers.DeConv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), name='DeConv2d')(cls.n4)
 
         cls.n6 = tl.layers.DepthwiseConv2d(
-            filter_size=(3, 3), strides=(1, 1), dilation_rate=(2, 2), act=tf.nn.relu, depth_multiplier=2, name='depthwise'
+            filter_size=(3, 3), strides=(1, 1), dilation_rate=(2, 2), act=tf.nn.relu, depth_multiplier=2,
+            name='depthwise'
         )(cls.n5)
 
         cls.n7 = tl.layers.Conv2d(
@@ -201,9 +191,8 @@ class Layer_Convolution_2D_Test(CustomTestCase):
             n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, name='separableconv2d'
         )(cls.n8)
 
-        cls.n10 = tl.layers.GroupConv2d(
-            n_filter=64, filter_size=(3, 3), strides=(2, 2), n_group=2, name='group'
-        )(cls.n9)
+        cls.n10 = tl.layers.GroupConv2d(n_filter=64, filter_size=(3, 3), strides=(2, 2), n_group=2,
+                                        name='group')(cls.n9)
 
         cls.n11 = tl.layers.DorefaConv2d(
             n_filter=32, filter_size=(5, 5), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='dorefaconv2d'
@@ -217,9 +206,7 @@ class Layer_Convolution_2D_Test(CustomTestCase):
             n_filter=32, filter_size=(5, 5), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='quancnn2d'
         )(cls.n12)
 
-        cls.n14 = tl.layers.SubpixelConv2d(
-            scale=2, act=tf.nn.relu, name='subpixelconv2d'
-        )(cls.n13)
+        cls.n14 = tl.layers.SubpixelConv2d(scale=2, act=tf.nn.relu, name='subpixelconv2d')(cls.n13)
 
         cls.model = Model(cls.input_layer, cls.n14)
         print("Testing Conv2d model: \n", cls.model)
@@ -252,7 +239,7 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         # self.assertEqual(len(self.n3.all_layers), 4)
         # self.assertEqual(len(self.n3.all_params), 5)
         # self.assertEqual(self.n3.count_params(), 20896)
-        self.assertEqual(len(self.n3._info[0].layer.weights), 1) # b_init is None
+        self.assertEqual(len(self.n3._info[0].layer.weights), 1)  # b_init is None
         self.assertEqual(self.n3.get_shape().as_list()[1:], [50, 50, 32])
 
     def test_layer_n4(self):
@@ -380,21 +367,18 @@ class Layer_Convolution_3D_Test(CustomTestCase):
         cls.inputs_shape = [cls.batch_size, 20, 20, 20, 3]
         cls.input_layer = Input(cls.inputs_shape, name='input_layer')
 
-        cls.n1 = tl.layers.Conv3dLayer(
-            shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1)
-        )(cls.input_layer)
+        cls.n1 = tl.layers.Conv3dLayer(shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1))(cls.input_layer)
 
         cls.n2 = tl.layers.DeConv3dLayer(
             shape=(2, 2, 2, 128, 32), outputs_shape=(cls.batch_size, 20, 20, 20, 128), strides=(1, 2, 2, 2, 1)
         )(cls.n1)
 
         cls.n3 = tl.layers.Conv3d(
-            n_filter=64, filter_size=(3, 3, 3), strides=(3, 3, 3), act=tf.nn.relu, b_init=None, in_channels=128, name='conv3d_no_bias'
+            n_filter=64, filter_size=(3, 3, 3), strides=(3, 3, 3), act=tf.nn.relu, b_init=None, in_channels=128,
+            name='conv3d_no_bias'
         )(cls.n2)
 
-        cls.n4 = tl.layers.DeConv3d(
-            n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2)
-        )(cls.n3)
+        cls.n4 = tl.layers.DeConv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2))(cls.n3)
 
         cls.model = Model(inputs=cls.input_layer, outputs=cls.n4)
         print("Testing Conv3d model: \n", cls.model)
@@ -425,7 +409,7 @@ class Layer_Convolution_3D_Test(CustomTestCase):
         # self.assertEqual(len(self.n3.all_layers), 4)
         # self.assertEqual(len(self.n3.all_params), 6)
         # self.assertEqual(self.n3.count_params(), 144320)
-        self.assertEqual(len(self.n3._info[0].layer.weights), 1) # b_init is None
+        self.assertEqual(len(self.n3._info[0].layer.weights), 1)  # b_init is None
         self.assertEqual(self.n3.get_shape().as_list()[1:], [7, 7, 7, 64])
 
     def test_layer_n4(self):
@@ -435,6 +419,7 @@ class Layer_Convolution_3D_Test(CustomTestCase):
         # self.assertEqual(self.n3.count_params(), 144320)
         self.assertEqual(len(self.n4._info[0].layer.weights), 2)
         self.assertEqual(self.n4.get_shape().as_list()[1:], [14, 14, 14, 32])
+
 
 # class Layer_DeformableConvolution_Test(CustomTestCase):
 #
@@ -476,7 +461,6 @@ class Layer_Convolution_3D_Test(CustomTestCase):
 #         self.assertEqual(len(self.net2.all_params), 4)
 #         self.assertEqual(self.net2.count_params(), 19392)
 #         self.assertEqual(self.net2.outputs.get_shape().as_list()[1:], [299, 299, 64])
-
 
 if __name__ == '__main__':
 

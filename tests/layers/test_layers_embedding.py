@@ -59,7 +59,7 @@ class Layer_Embed_Test(CustomTestCase):
             vocabulary_size=10000,
             embedding_size=embedding_size,
             num_sampled=100,
-            activate_nce_loss=True, # the nce loss is activated
+            activate_nce_loss=True,  # the nce loss is activated
             nce_loss_args={},
             E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
             nce_W_init=tl.initializers.truncated_normal(stddev=float(1.0 / np.sqrt(embedding_size))),
@@ -83,8 +83,9 @@ class Layer_Embed_Test(CustomTestCase):
         outputs = tl.layers.Dense(n_units=10)(embed_tensor)
         model = tl.models.Model(inputs=[inputs, labels], outputs=[outputs, embed_nce_loss])
         out, nce = model(
-            [np.random.randint(0, 1, size=[batch_size]), np.random.randint(0, 1, size=[batch_size, 1])],
-            is_train=True)
+            [np.random.randint(0, 1, size=[batch_size]),
+             np.random.randint(0, 1, size=[batch_size, 1])], is_train=True
+        )
         self.assertEqual(out.get_shape().as_list(), [batch_size, 10])
         print(nce)
 
@@ -96,7 +97,7 @@ class Layer_Embed_Test(CustomTestCase):
             vocabulary_size=10000,
             embedding_size=embedding_size,
             num_sampled=100,
-            activate_nce_loss=False, # the nce loss is activated
+            activate_nce_loss=False,  # the nce loss is activated
             nce_loss_args={},
             E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
             nce_W_init=tl.initializers.truncated_normal(stddev=float(1.0 / np.sqrt(embedding_size))),

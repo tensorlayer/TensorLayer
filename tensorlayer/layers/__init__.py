@@ -24,7 +24,6 @@ from .lambda_layers import *
 from .merge import *
 from .noise import *
 from .normalization import *
-from .object_detection import *
 from .padding import *
 from .pooling import *
 from .quantize import *

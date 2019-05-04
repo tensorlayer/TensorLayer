@@ -34,6 +34,7 @@ def nested_static_model(name=None, inner_model_name=None):
 
 
 class basic_dynamic_model(Model):
+
     def __init__(self, name=None, conv1_name="conv1", conv2_name="conv2"):
         super(basic_dynamic_model, self).__init__(name=name)
         self.conv1 = Conv2d(16, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, in_channels=3, name=conv1_name)
@@ -51,6 +52,7 @@ class basic_dynamic_model(Model):
 
 
 class nested_dynamic_model(Model):
+
     def __init__(self, name=None, inner_model_name_1=None, inner_model_name_2=None):
         super(nested_dynamic_model, self).__init__(name=name)
 
@@ -224,10 +226,10 @@ class Auto_Naming_Test(CustomTestCase):
 
         try:
             inputs = tl.layers.Input([10, 5])
-            layer1 = tl.layers.LayerList([
-                tl.layers.Dense(n_units=4, name='dense1'),
-                tl.layers.Dense(n_units=3, name='dense1')
-            ])(inputs)
+            layer1 = tl.layers.LayerList(
+                [tl.layers.Dense(n_units=4, name='dense1'),
+                 tl.layers.Dense(n_units=3, name='dense1')]
+            )(inputs)
             model = tl.models.Model(inputs=inputs, outputs=layer1, name='layerlistmodel')
             print([w.name for w in model.weights])
             test_flag = False
@@ -241,7 +243,9 @@ class Auto_Naming_Test(CustomTestCase):
         test_flag = True
 
         try:
+
             class inner_model(Model):
+
                 def __init__(self):
                     super(inner_model, self).__init__()
                     self.layer1 = tl.layers.Dense(n_units=4, in_channels=5, name='dense1')
@@ -264,10 +268,10 @@ class Auto_Naming_Test(CustomTestCase):
     def test_layerlist(self):
         try:
             inputs = tl.layers.Input([10, 5])
-            layer1 = tl.layers.LayerList([
-                tl.layers.Dense(n_units=4, name='dense1'),
-                tl.layers.Dense(n_units=3, name='dense1')
-            ])(inputs)
+            layer1 = tl.layers.LayerList(
+                [tl.layers.Dense(n_units=4, name='dense1'),
+                 tl.layers.Dense(n_units=3, name='dense1')]
+            )(inputs)
             model = tl.models.Model(inputs=inputs, outputs=layer1, name='layerlistmodel')
             print([w.name for w in model.weights])
             self.fail("Fail to detect duplicate name in layerlist")

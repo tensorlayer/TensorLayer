@@ -10,8 +10,6 @@ from tensorlayer.layers.core import Layer
 
 # from tensorlayer.layers.core import LayersConfig
 
-
-
 __all__ = [
     'DepthwiseConv2d',
 ]
@@ -109,9 +107,11 @@ class DepthwiseConv2d(Layer):
 
     def __repr__(self):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
-        s = ('{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
-             ', strides={strides}, padding={padding}')
-        if self.dilation_rate != (1,) * len(self.dilation_rate):
+        s = (
+            '{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
+            ', strides={strides}, padding={padding}'
+        )
+        if self.dilation_rate != (1, ) * len(self.dilation_rate):
             s += ', dilation={dilation_rate}'
         if self.b_init is None:
             s += ', bias=False'
@@ -119,7 +119,9 @@ class DepthwiseConv2d(Layer):
         if self.name is not None:
             s += ', name=\'{name}\''
         s += ')'
-        return s.format(classname=self.__class__.__name__, n_filter=self.in_channels * self.depth_multiplier, **self.__dict__)
+        return s.format(
+            classname=self.__class__.__name__, n_filter=self.in_channels * self.depth_multiplier, **self.__dict__
+        )
 
     def build(self, inputs_shape):
         if self.data_format == 'channels_last':
@@ -137,18 +139,12 @@ class DepthwiseConv2d(Layer):
         else:
             raise Exception("data_format should be either channels_last or channels_first")
 
-        self.filter_shape = (
-            self.filter_size[0], self.filter_size[1], self.in_channels, self.depth_multiplier
-        )
+        self.filter_shape = (self.filter_size[0], self.filter_size[1], self.in_channels, self.depth_multiplier)
 
-        self.W = self._get_weights(
-            "filters", shape=self.filter_shape, init=self.W_init
-        )
+        self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init)
 
         if self.b_init:
-            self.b = self._get_weights(
-                "biases", shape=(self.in_channels * self.depth_multiplier), init=self.b_init
-            )
+            self.b = self._get_weights("biases", shape=(self.in_channels * self.depth_multiplier), init=self.b_init)
 
     def forward(self, inputs):
         outputs = tf.nn.depthwise_conv2d(

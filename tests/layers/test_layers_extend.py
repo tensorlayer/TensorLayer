@@ -31,10 +31,11 @@ class Layer_Extend_Test(CustomTestCase):
 
     def test_tile(self):
         x = tl.layers.Input([8, 3])
-        tilelayer = tl.layers.Tile(multiples=[2,3])
+        tilelayer = tl.layers.Tile(multiples=[2, 3])
         y = tilelayer(x)
         print(tilelayer)
         self.assertEqual(y.get_shape().as_list(), [16, 9])
+
 
 if __name__ == '__main__':
 

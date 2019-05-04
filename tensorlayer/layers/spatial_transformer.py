@@ -241,9 +241,7 @@ class SpatialTransformer2dAffine(Layer):
             self.build(self.in_channels)
             self._built = True
 
-        logging.info(
-            "SpatialTransformer2dAffine %s" % self.name
-        )
+        logging.info("SpatialTransformer2dAffine %s" % self.name)
 
     def __repr__(self):
         s = '{classname}(out_size={out_size}, '
@@ -264,7 +262,7 @@ class SpatialTransformer2dAffine(Layer):
             shape = [inputs_shape[1], 6]
         self.W = self._get_weights("weights", shape=tuple(shape), init=tl.initializers.Zeros())
         identity = np.reshape(np.array([[1, 0, 0], [0, 1, 0]], dtype=np.float32), newshape=(6, ))
-        self.b = self._get_weights("biases", shape=(6,), init=tl.initializers.Constant(identity))
+        self.b = self._get_weights("biases", shape=(6, ), init=tl.initializers.Constant(identity))
 
     def forward(self, inputs):
         """

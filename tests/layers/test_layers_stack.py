@@ -17,7 +17,7 @@ class Layer_Stack_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("-" * 20, "Layer_Stack_Test", "-"*20)
+        print("-" * 20, "Layer_Stack_Test", "-" * 20)
         cls.batch_size = 4
         cls.inputs_shape = [cls.batch_size, 10]
 
@@ -48,7 +48,7 @@ class Layer_UnStack_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("-" * 20, "Layer_UnStack_Test", "-"*20)
+        print("-" * 20, "Layer_UnStack_Test", "-" * 20)
         cls.batch_size = 4
         cls.inputs_shape = [cls.batch_size, 10]
 
@@ -69,11 +69,11 @@ class Layer_UnStack_Test(CustomTestCase):
 
     def test_layer_n1(self):
         self.assertEqual(len(self.n1), 5)
-        self.assertEqual(self.n1[0].shape, (self.batch_size,))
+        self.assertEqual(self.n1[0].shape, (self.batch_size, ))
 
     def test_layer_n2(self):
         self.assertEqual(len(self.n2), 5)
-        self.assertEqual(self.n1[0].shape, (self.batch_size,))
+        self.assertEqual(self.n1[0].shape, (self.batch_size, ))
 
 
 if __name__ == '__main__':

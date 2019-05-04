@@ -129,12 +129,11 @@ def save_keras_model(model):
     # f.flush()
 
     return json.dumps(
-    {
-        'class_name': model.__class__.__name__,
-        'config': model.get_config()
-    },
-    default=serialization.get_json_type).encode('utf8')
-
+        {
+            'class_name': model.__class__.__name__,
+            'config': model.get_config()
+        }, default=serialization.get_json_type
+    ).encode('utf8')
 
 
 @keras_export('keras.models.load_model')
@@ -145,8 +144,7 @@ def load_keras_model(model_config):
     if model_config is None:
         raise ValueError('No model found in config.')
     model_config = json.loads(model_config.decode('utf-8'))
-    model = model_config_lib.model_from_config(model_config,
-                                               custom_objects=custom_objects)
+    model = model_config_lib.model_from_config(model_config, custom_objects=custom_objects)
 
     return model
 
@@ -249,11 +247,15 @@ def static_graph2net(saved_file):
     tl_version = saved_file['config'].pop(0)['tl_version']
     if tf_version != tf.__version__:
         logging.warning(
-            "Saved model uses tensorflow version {}, but now you are using tensorflow version {}".format(tf_version, tf.__version__)
+            "Saved model uses tensorflow version {}, but now you are using tensorflow version {}".format(
+                tf_version, tf.__version__
+            )
         )
     if tl_version != tl.__version__:
         logging.warning(
-            "Saved model uses tensorlayer version {}, but now you are using tensorlayer version {}".format(tl_version, tl.__version__)
+            "Saved model uses tensorlayer version {}, but now you are using tensorlayer version {}".format(
+                tl_version, tl.__version__
+            )
         )
     for idx, layer_kwargs in enumerate(all_args):
         layer_class = layer_kwargs['class']  # class of current layer

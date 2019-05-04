@@ -48,11 +48,14 @@ class Model_Save_and_Load_without_weights(CustomTestCase):
 def get_model(inputs_shape):
     ni = Input(inputs_shape)
     nn = Dropout(keep=0.8)(ni)
-    nn = Dense(n_units=800, act=tf.nn.relu, in_channels=784)(nn) # in_channels is optional in this case as it can be inferred by the previous layer
+    nn = Dense(n_units=800, act=tf.nn.relu,
+               in_channels=784)(nn)  # in_channels is optional in this case as it can be inferred by the previous layer
     nn = Dropout(keep=0.8)(nn)
-    nn = Dense(n_units=800, act=tf.nn.relu, in_channels=800)(nn) # in_channels is optional in this case as it can be inferred by the previous layer
+    nn = Dense(n_units=800, act=tf.nn.relu,
+               in_channels=800)(nn)  # in_channels is optional in this case as it can be inferred by the previous layer
     nn = Dropout(keep=0.8)(nn)
-    nn = Dense(n_units=10, act=tf.nn.relu, in_channels=800)(nn) # in_channels is optional in this case as it can be inferred by the previous layer
+    nn = Dense(n_units=10, act=tf.nn.relu,
+               in_channels=800)(nn)  # in_channels is optional in this case as it can be inferred by the previous layer
     M = Model(inputs=ni, outputs=nn)
     return M
 
@@ -109,7 +112,7 @@ class Model_Load_with_weights_and_train(CustomTestCase):
         print("##### begin testing load_graph, after training, with weights, and train again #####")
 
     def test_save(self):
-        MLP = Model.load("MLP.hdf5",)
+        MLP = Model.load("MLP.hdf5", )
 
         MLP.eval()
 
@@ -236,7 +239,7 @@ class Lambda_layer_test(CustomTestCase):
 
     def test_lambda_layer_no_para_no_args(self):
         x = tl.layers.Input([8, 3], name='input')
-        y = tl.layers.Lambda(lambda x: 2*x, name='lambda')(x)
+        y = tl.layers.Lambda(lambda x: 2 * x, name='lambda')(x)
         M1 = tl.models.Model(x, y)
         M1.save("lambda_no_para_no_args.hdf5")
         M2 = tl.models.Model.load("lambda_no_para_no_args.hdf5")
@@ -252,8 +255,10 @@ class Lambda_layer_test(CustomTestCase):
         self.assertEqual(M1.config, M2.config)
 
     def test_lambda_layer_no_para_with_args(self):
+
         def customize_func(x, foo=42):  # x is the inputs, foo is an argument
             return foo * x
+
         x = tl.layers.Input([8, 3], name='input')
         y = tl.layers.Lambda(customize_func, fn_args={'foo': 3}, name='lambda')(x)
         M1 = tl.models.Model(x, y)
@@ -390,20 +395,23 @@ class ElementWise_lambda_test(CustomTestCase):
         noise = tl.layers.Input([100, 1])
         mean = tl.layers.Input([100, 1])
         std = tl.layers.Input([100, 1])
-        out = tl.layers.ElementwiseLambda(fn=lambda x, y, z: x + y * tf.exp(z * 0.5), name='elementwiselambda')([noise, mean, std])
+        out = tl.layers.ElementwiseLambda(fn=lambda x, y, z: x + y * tf.exp(z * 0.5),
+                                          name='elementwiselambda')([noise, mean, std])
         M1 = Model(inputs=[noise, mean, std], outputs=out)
         M1.save("elementwise_lambda.hdf5")
         M2 = Model.load("elementwise_lambda.hdf5")
 
         M1.eval()
         M2.eval()
-        ipt = [(np.zeros((100, 1)) + 11).astype(np.float32), (np.zeros((100, 1)) + 21).astype(np.float32), (np.zeros((100, 1)) + 31).astype(np.float32)]
+        ipt = [
+            (np.zeros((100, 1)) + 11).astype(np.float32), (np.zeros((100, 1)) + 21).astype(np.float32),
+            (np.zeros((100, 1)) + 31).astype(np.float32)
+        ]
         output1 = M1(ipt).numpy()
         output2 = M2(ipt).numpy()
 
         self.assertEqual((output1 == output2).all(), True)
         self.assertEqual(M1.config, M2.config)
-
 
     # # ElementwiseLambda does not support keras layer/model func yet
     # def test_elementwise_keras_model(self):
@@ -431,6 +439,7 @@ class ElementWise_lambda_test(CustomTestCase):
 
 
 class basic_dynamic_model(Model):
+
     def __init__(self):
         super(basic_dynamic_model, self).__init__()
         self.conv1 = Conv2d(16, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, in_channels=3, name="conv1")

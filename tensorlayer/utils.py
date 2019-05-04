@@ -155,10 +155,11 @@ def fit(
                 if val_loss is None:
                     val_loss, val_acc, _ = run_epoch(network, X_val, y_val, cost=cost, acc=acc, batch_size=batch_size)
 
-                tl.logging.info("   val loss: %f" % val_loss)
+                # tl.logging.info("   val loss: %f" % val_loss)
 
                 if acc is not None:
-                    tl.logging.info("   val acc: %f" % val_acc)
+                    pass
+                    # tl.logging.info("   val acc: %f" % val_acc)
             else:
                 tl.logging.info(
                     "Epoch %d of %d took %fs, loss %f" % (epoch + 1, n_epoch, time.time() - start_time, loss_ep)
@@ -202,9 +203,9 @@ def test(network, acc, X_test, y_test, batch_size, cost=None):
         y_pred = network(X_test)
         if cost is not None:
             test_loss = cost(y_pred, y_test)
-            tl.logging.info("   test loss: %f" % test_loss)
+            # tl.logging.info("   test loss: %f" % test_loss)
         test_acc = acc(y_pred, y_test)
-        tl.logging.info("   test acc: %f" % (test_acc / test_acc))
+        # tl.logging.info("   test acc: %f" % (test_acc / test_acc))
         return test_acc
     else:
         test_loss, test_acc, n_batch = run_epoch(

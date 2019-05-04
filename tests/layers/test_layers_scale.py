@@ -39,6 +39,7 @@ class Layer_Scale_Test(CustomTestCase):
             for j in range(len(dout[i])):
                 self.assertEqual(dout[i][j].numpy() * 0.5, fout[i][j].numpy())
 
+
 if __name__ == '__main__':
 
     unittest.main()

@@ -82,9 +82,9 @@ class InceptionV4_Network(object):
 
                 with tf.variable_scope('Branch_1'):
                     branch_1, _ = conv_module(
-                        net, n_out_channel=96, filter_size=(3, 3), strides=(2,
-                                                                            2), padding='VALID', batch_norm_init=None,
-                        is_train=is_train, use_batchnorm=True, activation_fn='ReLU', name='Conv2d_0a_3x3'
+                        net, n_out_channel=96, filter_size=(3, 3), strides=(2, 2), padding='VALID',
+                        batch_norm_init=None, is_train=is_train, use_batchnorm=True, activation_fn='ReLU',
+                        name='Conv2d_0a_3x3'
                     )
 
                 net = tl.layers.ConcatLayer([branch_0, branch_1], concat_dim=3)
@@ -134,9 +134,9 @@ class InceptionV4_Network(object):
                 with tf.variable_scope('Branch_0'):
                     # 299 x 299 x 3
                     branch_0, _ = conv_module(
-                        net, n_out_channel=192, filter_size=(3, 3), strides=(2,
-                                                                             2), padding='VALID', batch_norm_init=None,
-                        is_train=is_train, use_batchnorm=True, activation_fn='ReLU', name='Conv2d_1a_3x3'
+                        net, n_out_channel=192, filter_size=(3, 3), strides=(2, 2), padding='VALID',
+                        batch_norm_init=None, is_train=is_train, use_batchnorm=True, activation_fn='ReLU',
+                        name='Conv2d_1a_3x3'
                     )
 
                 with tf.variable_scope('Branch_1'):

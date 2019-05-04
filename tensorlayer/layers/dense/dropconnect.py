@@ -9,7 +9,6 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
 import numbers
 
-
 __all__ = [
     'DropconnectDense',
 ]
@@ -69,8 +68,7 @@ class DropconnectDense(Layer):
         super().__init__(name)
 
         if isinstance(keep, numbers.Real) and not (keep > 0 and keep <= 1):
-            raise ValueError("keep must be a scalar tensor or a float in the "
-                             "range (0, 1], got %g" % keep)
+            raise ValueError("keep must be a scalar tensor or a float in the " "range (0, 1], got %g" % keep)
 
         self.keep = keep
         self.n_units = n_units

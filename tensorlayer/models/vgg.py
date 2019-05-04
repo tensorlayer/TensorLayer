@@ -85,6 +85,7 @@ model_saved_name = {'vgg16': 'vgg16_weights.npz', 'vgg19': 'vgg19.npy'}
 
 
 class VGG(Model):
+
     def __init__(self, layer_type, batch_norm=False, end_with='outputs', name=None):
         super(VGG, self).__init__(name=name)
         self.end_with = end_with
@@ -178,7 +179,9 @@ def restore_model(model, layer_type):
 
 def VGG_static(layer_type, batch_norm=False, end_with='outputs', name=None):
     ni = Input([None, 224, 224, 3])
-    n = Lambda(lambda x: x * 255 - np.array([123.68, 116.779, 103.939], dtype=np.float32).reshape([1, 1, 1, 3]), name='scale')(ni)
+    n = Lambda(
+        lambda x: x * 255 - np.array([123.68, 116.779, 103.939], dtype=np.float32).reshape([1, 1, 1, 3]), name='scale'
+    )(ni)
 
     config = cfg[mapped_cfg[layer_type]]
     layers = make_layers(config, batch_norm, end_with)

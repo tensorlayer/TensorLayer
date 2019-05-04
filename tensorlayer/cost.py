@@ -781,7 +781,9 @@ def maxnorm_i_regularizer(scale):
     return mn_i
 
 
-def huber_loss(output, target,is_mean=True, delta=1.0, dynamichuber=False, reverse=False, axis=-1, epsilon= 0.00001,name=None):
+def huber_loss(
+        output, target, is_mean=True, delta=1.0, dynamichuber=False, reverse=False, axis=-1, epsilon=0.00001, name=None
+):
     """Huber Loss operation, see ``https://en.wikipedia.org/wiki/Huber_loss`` .
     Reverse Huber Loss operation, see  ''https://statweb.stanford.edu/~owen/reports/hhu.pdf''.
     Dynamic Reverse Huber Loss operation, see  ''https://arxiv.org/pdf/1606.00373.pdf''.
@@ -814,19 +816,45 @@ def huber_loss(output, target,is_mean=True, delta=1.0, dynamichuber=False, rever
     """
     if reverse:
         if dynamichuber:
-            huber_c = 0.2*tf.reduce_max(tf.abs(output - target))
+            huber_c = 0.2 * tf.reduce_max(tf.abs(output - target))
         else:
-            huber_c=delta
+            huber_c = delta
         if is_mean:
-            loss=tf.reduce_mean(tf.where(tf.less_equal(tf.abs(output - target), huber_c), tf.abs(output - target),
-                     tf.multiply(tf.pow(output - target, 2.0) + tf.pow(huber_c, 2.0), tf.math.divide_no_nan(.5, huber_c + epsilon))),name=name)
+            loss = tf.reduce_mean(
+                tf.where(
+                    tf.less_equal(tf.abs(output - target), huber_c), tf.abs(output - target),
+                    tf.multiply(
+                        tf.pow(output - target, 2.0) + tf.pow(huber_c, 2.0),
+                        tf.math.divide_no_nan(.5, huber_c + epsilon)
+                    )
+                ), name=name
+            )
         else:
-            loss=tf.reduce_mean(tf.reduce_sum(tf.where(tf.less_equal(tf.abs(output - target), huber_c), tf.abs(output - target),
-                     tf.multiply(tf.pow(output - target, 2.0) + tf.pow(huber_c, 2.0), tf.math.divide_no_nan(.5, huber_c + epsilon))),axis),name=name)
+            loss = tf.reduce_mean(
+                tf.reduce_sum(
+                    tf.where(
+                        tf.less_equal(tf.abs(output - target), huber_c), tf.abs(output - target),
+                        tf.multiply(
+                            tf.pow(output - target, 2.0) + tf.pow(huber_c, 2.0),
+                            tf.math.divide_no_nan(.5, huber_c + epsilon)
+                        )
+                    ), axis
+                ), name=name
+            )
     elif is_mean:
-        loss = tf.reduce_mean(tf.where(tf.less_equal(tf.abs(output - target), delta), 0.5*tf.pow(output - target,2),
-                                       delta*(tf.abs(output - target)-0.5*delta)), name=name)
+        loss = tf.reduce_mean(
+            tf.where(
+                tf.less_equal(tf.abs(output - target), delta), 0.5 * tf.pow(output - target, 2),
+                delta * (tf.abs(output - target) - 0.5 * delta)
+            ), name=name
+        )
     else:
-        loss = tf.reduce_mean(tf.reduce_sum(tf.where(tf.less_equal(tf.abs(output - target), delta), 0.5*tf.pow(output - target,2),
-                                       delta*(tf.abs(output - target)-0.5*delta)),axis), name=name)
+        loss = tf.reduce_mean(
+            tf.reduce_sum(
+                tf.where(
+                    tf.less_equal(tf.abs(output - target), delta), 0.5 * tf.pow(output - target, 2),
+                    delta * (tf.abs(output - target) - 0.5 * delta)
+                ), axis
+            ), name=name
+        )
     return loss

@@ -11,8 +11,6 @@ from tensorlayer.layers.core import Layer
 
 # from tensorlayer.layers.core import LayersConfig
 
-
-
 __all__ = [
     'Dense',
 ]

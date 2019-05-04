@@ -7,9 +7,7 @@ import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.utils import (quantize_active_overflow,
-                                      quantize_weight_overflow)
-
+from tensorlayer.layers.utils import (quantize_active_overflow, quantize_weight_overflow)
 
 __all__ = [
     'QuanDense',

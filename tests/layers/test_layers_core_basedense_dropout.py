@@ -38,7 +38,6 @@ class Layer_Core_Test(CustomTestCase):
 
         cls.model = Model(inputs=cls.innet, outputs=cls.dense2)
 
-
     @classmethod
     def tearDownClass(cls):
         pass
@@ -67,7 +66,7 @@ class Layer_Core_Test(CustomTestCase):
             print(e)
 
         try:
-            Layer(what = 1)
+            Layer(what=1)
         except Exception as e:
             print(e)
 
@@ -77,7 +76,9 @@ class Layer_Core_Test(CustomTestCase):
         self.assertEqual(self.innet._info[0].layer.weights, None)
         self.assertEqual(self.dropout1._info[0].layer.weights, None)
         self.assertEqual(self.dense1._info[0].layer.weights[0].get_shape().as_list(), [784, 800])
-        self.assertEqual(self.dense1._info[0].layer.weights[1].get_shape().as_list(), [800,])
+        self.assertEqual(self.dense1._info[0].layer.weights[1].get_shape().as_list(), [
+            800,
+        ])
         self.assertEqual(self.dense2._info[0].layer.weights[0].get_shape().as_list(), [800, 10])
         self.assertEqual(len(self.dense1._info[0].layer.weights), 2)
         self.assertEqual(len(self.dense2._info[0].layer.weights), 1)
@@ -123,17 +124,14 @@ class Layer_Core_Test(CustomTestCase):
 
     def test_layerlist(self):
         innet = Input(self.inputs_shape)
-        hlayer = LayerList([
-            ModelLayer(
-                self.model
-            ),
-            LayerList([
-                Dense(n_units=100),
-                Dense(n_units=10)
-            ]),
-            Dense(n_units=5),
-            Dense(n_units=4)
-        ])(innet)
+        hlayer = LayerList(
+            [
+                ModelLayer(self.model),
+                LayerList([Dense(n_units=100), Dense(n_units=10)]),
+                Dense(n_units=5),
+                Dense(n_units=4)
+            ]
+        )(innet)
         model = Model(inputs=innet, outputs=hlayer)
 
         # for w in model.weights:

@@ -27,15 +27,10 @@ class Lambda(Layer):
     ----------
     fn : function
         The function that applies to the inputs (e.g. tensor from the previous layer).
-    fn_weights: a list of trainable weights (e.g. tf.Variable)
-        Optional. If the function has trainable weights, the weights should be explicitly provided.
-        Remember to make sure the weights provided when the layer is constructed are SAME as
-        the weights used when the layer is forwarded.
-    fn_args: a dict
-        Optional, the arguments for the function if any.
-        In a dynamic model, fn_args can be given via **kwargs when the layer is called.
-        Note that the arguments should not be inputs.
-        For multiple inputs, see :class:`ElementwiseLambda`.
+    fn_weights : list
+        The trainable weights for the function if any. Optional.
+    fn_args : dict
+        The arguments for the function if any. Optional.
     name : str or None
         A unique layer name.
 
@@ -111,7 +106,7 @@ class Lambda(Layer):
             fn,
             fn_weights=None,
             fn_args=None,
-            name=None,  #'lambda',
+            name=None,
     ):
 
         super(Lambda, self).__init__(name=name)
@@ -143,11 +138,8 @@ class Lambda(Layer):
         )
 
     def build(self, inputs_shape=None):
-        # do nothing
-        # the weights of the function are provided when the Lambda layer is constructed
         pass
 
-    # @tf.function
     def forward(self, inputs, **kwargs):
 
         if len(kwargs) == 0:
@@ -182,14 +174,10 @@ class ElementwiseLambda(Layer):
     ----------
     fn : function
         The function that applies to the inputs (e.g. tensor from the previous layer).
-    fn_weights: a list of trainable weights (e.g. tf.Variable)
-        Optional. If the function has trainable weights, the weights should be explicitly provided.
-        Remember to make sure the weights provided when the layer is constructed are SAME as
-        the weights used when the layer is forwarded.
-    fn_args: a dict
-        Optional, the arguments for the function if any.
-        In a dynamic model, fn_args can be given via **kwargs when the layer is called.
-        Note that the arguments should not be inputs.
+    fn_weights : list
+        The trainable weights for the function if any. Optional.
+    fn_args : dict
+        The arguments for the function if any. Optional.
     name : str or None
         A unique layer name.
 

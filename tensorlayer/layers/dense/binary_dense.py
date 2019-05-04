@@ -9,7 +9,6 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.utils import quantize
 
-
 __all__ = [
     'BinaryDense',
 ]

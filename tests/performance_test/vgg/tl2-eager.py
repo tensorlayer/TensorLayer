@@ -61,8 +61,11 @@ for idx, data in enumerate(gen):
         max_mem_usage = max(cur_usage, max_mem_usage)
         avg_mem_usage += cur_usage
         count += 1
-        tl.logging.info("[*] {} iteration: memory usage {:.2f}MB, consume time {:.4f}s".format(
-            idx, cur_usage / (1024 * 1024), consume_time))
+        tl.logging.info(
+            "[*] {} iteration: memory usage {:.2f}MB, consume time {:.4f}s".format(
+                idx, cur_usage / (1024 * 1024), consume_time
+            )
+        )
 
 print('consumed time:', total_time)
 
