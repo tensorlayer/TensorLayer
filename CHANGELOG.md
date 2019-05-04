@@ -90,6 +90,26 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 @zsdonghao: #931
 
+
+## [2.0.0-alpha] - 2019-05-04
+
+### Changed
+* update for TensorLayer 2.0.0 alpha version (PR #952)
+* support TensorFlow 2.0.0-alpha
+* support both static and dynamic model building
+
+### Dependencies Update
+- tensorflow>=1.6,<1.13 => tensorflow>=2.0.0-alpha (PR #952)
+- h5py>=2.9 (PR #952)
+- cloudpickle>=0.8.1 (PR #952)
+- remove matplotlib
+
+### Contributors
+- @zsdonghao
+- @JingqingZ
+- @ChrisWu1997
+- @warshallrho
+
 ## [1.11.1] - 2018-11-15
 
 ### Changed

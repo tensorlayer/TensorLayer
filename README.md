@@ -12,14 +12,14 @@
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/zsdonghao/tensorlayer2/master.svg)
 [![Supported TF Version](https://img.shields.io/badge/TensorFlow-2.0.0%2B-brightgreen.svg)](https://github.com/tensorflow/tensorflow/releases)
 [![Documentation Status](https://readthedocs.org/projects/tensorlayer2/badge/)](https://tensorlayer2.readthedocs.io/)
-<!---  ([![Downloads](http://pepy.tech/badge/tensorlayer)](http://pepy.tech/project/tensorlayer)) --->
+[![Downloads](http://pepy.tech/badge/tensorlayer)](http://pepy.tech/project/tensorlayer)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d6b118784e25435498e7310745adb848)](https://www.codacy.com/app/tensorlayer/tensorlayer)
 <!---  ([![Build Status](https://travis-ci.org/tensorlayer/tensorlayer.svg?branch=master)](https://travis-ci.org/tensorlayer/tensorlayer)) --->
 <!---  [![CircleCI](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master.svg?style=svg)](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master) --->
 
 <!---  [![Documentation Status](https://readthedocs.org/projects/tensorlayercn/badge/)](https://tensorlayercn.readthedocs.io/) --->
 <!---  [![PyUP Updates](https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg)](https://pyup.io/repos/github/tensorlayer/tensorlayer/) --->
 <!---  [![Docker Pulls](https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg)](https://hub.docker.com/r/tensorlayer/tensorlayer/) --->
-<!---  [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d6b118784e25435498e7310745adb848)](https://www.codacy.com/app/tensorlayer/tensorlayer) --->
 
 
 <br/>
@@ -31,11 +31,6 @@
 </a>
 
 <br/>
-
-
-🚀🚀🚀🚀 Welcome to TensorLayer 2.0 !
-
-We are working hard on updating TensorLayer 2.0 to support TensorFlow 2.0. Latest progress can be found [here](https://github.com/tensorlayer/tensorlayer/issues/900) and latest [doc](https://tensorlayer2.readthedocs.io). Feel free to discuss and [contribute](CONTRIBUTING.md)! Note that TensorLayer 2.0 is still under construction and not everything in this repository is ready yet.
 
 TensorLayer is a novel TensorFlow-based deep learning and reinforcement learning library designed for researchers and engineers. It provides a large collection of customizable neural layers / functions that are key to build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software by the [ACM Multimedia Society](https://twitter.com/ImperialDSI/status/923928895325442049).
 
@@ -57,7 +52,6 @@ Also, it allow users to easily fine-tune TensorFlow; while being suitable for pr
     |   Graph   |      Keras      | channel last  | 8677 |      2580         |        2576         |      101       |
     |   Eager   | TensorFlow 2.0  | channel last  | 8723 |      2052         |        2024         |      97       |
     |           | TensorLayer 2.0 | channel last  | 8723 |      2010         |        2007         |      95       |
-    |           |     PyTorch     | channel first | 9321 |      1938         |        1935         |      53       |
 
 
 
@@ -66,7 +60,7 @@ TensorLayer stands at a unique spot in the library landscape. Other wrapper libr
 hide the underlying engine from users, which make them hard to customize
 and fine-tune. On the contrary, TensorLayer APIs are generally lightweight, flexible and transparent.
 Users often find it easy to start with the examples and tutorials, and then dive
-into TensorFlow seamlessly. In addition, TensorLayer does not create library lock-in through native supports for importing components from Keras, TFSlim and TFLearn.
+into TensorFlow seamlessly. In addition, TensorLayer does not create library lock-in through native supports for importing components from Keras.
 
 TensorLayer has a fast growing usage among top researchers and engineers, from universities like
 Imperial College London, UC Berkeley, Carnegie Mellon University, Stanford University, and
@@ -97,61 +91,43 @@ If you want to try the experimental features on the the master branch, you can f
 # Install
 
 
-
 For latest code for TensorLayer 2.0, please build from the source. TensorLayer 2.0 has pre-requisites including TensorFlow 2, numpy, and others. For GPU support, CUDA and cuDNN are required.
 
+
+Install the stable version:
+
 ```bash
-# First clone the repository and change the current directory to the newly cloned repository
-git clone https://github.com/zsdonghao/tensorlayer2.git
-cd tensorlayer2
+pip3 install tensorflow-gpu
+pip3 install tensorlayer
+```
 
-# Install virtualenv if necessary
-pip install virtualenv
-# Then create a virtualenv called `venv`
-virtualenv venv
+Install the latest version:
 
-# Activate the virtualenv
-
-## Linux:
-source venv/bin/activate
-
-## Windows:
-venv\Scripts\activate.bat
-
-# basic installation
-pip install .
-
-# ============= IF TENSORFLOW IS NOT ALREADY INSTALLED ============= #
-
-# for a machine **without** an NVIDIA GPU
-pip install -e ".[all_cpu_dev]"
-
-# for a machine **with** an NVIDIA GPU
-pip install -e ".[all_gpu_dev]"
-
+```bash
+pip3 install https://github.com/tensorlayer/tensorlayer/archive/master.zip
 ```
 
 If you want install TensorLayer 1.X, the simplest way to install TensorLayer 1.X is to use the **Py**thon **P**ackage **I**ndex (PyPI):
 
 ```bash
 # for last stable version of TensorLayer 1.X
-pip install --upgrade tensorlayer
+pip3 install --upgrade tensorlayer==1.X
 
 # for latest release candidate of TensorLayer 1.X
-pip install --upgrade --pre tensorlayer
+pip3 install --upgrade --pre tensorlayer
 
 # if you want to install the additional dependencies, you can also run
-pip install --upgrade tensorlayer[all]              # all additional dependencies
-pip install --upgrade tensorlayer[extra]            # only the `extra` dependencies
-pip install --upgrade tensorlayer[contrib_loggers]  # only the `contrib_loggers` dependencies
+pip3 install --upgrade tensorlayer[all]              # all additional dependencies
+pip3 install --upgrade tensorlayer[extra]            # only the `extra` dependencies
+pip3 install --upgrade tensorlayer[contrib_loggers]  # only the `contrib_loggers` dependencies
 ```
 <!---
 Alternatively, you can install the latest or development version by directly pulling from github:
 
 ```bash
-pip install https://github.com/tensorlayer/tensorlayer/archive/master.zip
+pip3 install https://github.com/tensorlayer/tensorlayer/archive/master.zip
 # or
-# pip install https://github.com/tensorlayer/tensorlayer/archive/<branch-name>.zip
+# pip3 install https://github.com/tensorlayer/tensorlayer/archive/<branch-name>.zip
 ```
 --->
 
