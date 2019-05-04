@@ -3,94 +3,105 @@
 
 import tensorflow as tf
 
+from tensorlayer import logging
+from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import logging
-
-from tensorlayer.decorators import deprecated_alias
-
 __all__ = [
-    'ExpandDimsLayer',
-    'TileLayer',
+    'ExpandDims',
+    'Tile',
 ]
 
 
-class ExpandDimsLayer(Layer):
+class ExpandDims(Layer):
     """
-    The :class:`ExpandDimsLayer` class inserts a dimension of 1 into a tensor's shape,
+    The :class:`ExpandDims` class inserts a dimension of 1 into a tensor's shape,
     see `tf.expand_dims() <https://www.tensorflow.org/api_docs/python/tf/expand_dims>`__ .
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     axis : int
         The dimension index at which to expand the shape of input.
     name : str
-        A unique layer name.
+        A unique layer name. If None, a unique name will be automatically assigned.
 
     Examples
     --------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder(tf.float32, (None, 100))
-    >>> n = tl.layers.InputLayer(x, name='in')
-    >>> n = tl.layers.ExpandDimsLayer(n, 2)
-    [None, 100, 1]
+    >>> x = tl.layers.Input([10, 3], name='in')
+    >>> y = tl.layers.ExpandDims(axis=-1)(x)
+    [10, 3, 1]
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             axis,
-            name='expand_dims',
+            name=None  # 'expand_dims',
     ):
-        super(ExpandDimsLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(ExpandDims, self).__init__(name)
+        self.axis = axis
 
-        logging.info("ExpandDimsLayer  %s: axis: %d" % (self.name, axis))
+        self.build((None, ))
+        self._built = True
 
-        with tf.variable_scope(name):
-            self.outputs = tf.expand_dims(self.inputs, axis=axis)
+        logging.info("ExpandDims  %s: axis: %d" % (self.name, self.axis))
 
-        self._add_layers(self.outputs)
+    def __repr__(self):
+        s = '{classname}('
+        s += 'axis={axis},'
+        s += 'name={name}'
+        s += ")"
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape):
+        pass
+
+    # @tf.function
+    def forward(self, inputs):
+        outputs = tf.expand_dims(inputs, axis=self.axis, name=self.name)
+        return outputs
 
 
-class TileLayer(Layer):
+class Tile(Layer):
     """
-    The :class:`TileLayer` class constructs a tensor by tiling a given tensor,
+    The :class:`Tile` class constructs a tensor by tiling a given tensor,
     see `tf.tile() <https://www.tensorflow.org/api_docs/python/tf/tile>`__ .
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        The previous layer.
     multiples: tensor
         Must be one of the following types: int32, int64.
         1-D Length must be the same as the number of dimensions in input.
-    name : str
+    name : None or str
         A unique layer name.
-
 
     Examples
     --------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder(tf.float32, (None, 100))
-    >>> n = tl.layers.InputLayer(x, name='in')
-    >>> n = tl.layers.ExpandDimsLayer(n, 2)
-    >>> n = tl.layers.TileLayer(n, [-1, 1, 3])
-    [None, 100, 3]
+    >>> x = tl.layers.Input([10, 3], name='in')
+    >>> y = tl.layers.Tile(multiples=[2, 3])(x)
+    [20, 9]
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, multiples=None, name='tile'):
+    def __init__(self, multiples=None, name=None):  #'tile'):
 
-        super(TileLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(Tile, self).__init__(name)
+        self.multiples = multiples
 
-        logging.info("TileLayer  %s: multiples: %s" % (self.name, multiples))
+        self.build((None, ))
+        self._built = True
 
-        with tf.variable_scope(name):
-            self.outputs = tf.tile(self.inputs, multiples=multiples)
+        logging.info("Tile  %s: multiples: %s" % (self.name, self.multiples))
 
-        self._add_layers(self.outputs)
+    def __repr__(self):
+        s = '{classname}('
+        s += 'multiples={multiples},'
+        s += 'name={name}'
+        s += ")"
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape):
+        pass
+
+    # @tf.function
+    def forward(self, inputs):
+        outputs = tf.tile(inputs, multiples=self.multiples, name=self.name)
+        return outputs

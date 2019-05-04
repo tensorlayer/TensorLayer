@@ -1,245 +1,258 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import inspect
-import six
-
-from abc import ABCMeta, abstractmethod
-
-import numpy as np
+from abc import abstractmethod
 
 import tensorflow as tf
 
-from tensorlayer.layers.utils import list_remove_repeat
-
+import tensorlayer as tl
 from tensorlayer import logging
+from tensorlayer.decorators import (deprecated_alias, private_method, protected_method)
+from tensorlayer.layers.utils import (get_variable_with_initializer, list_remove_repeat)
+from tensorlayer.files import utils
 
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.decorators import protected_method
-from tensorlayer.decorators import private_method
+import inspect
 
-__all__ = [
-    'LayersConfig',
-    'TF_GRAPHKEYS_VARIABLES',
-    'Layer',
-]
+__all__ = ['Layer', 'ModelLayer', 'LayerList']
 
-
-@six.add_metaclass(ABCMeta)
-class LayersConfig(object):
-
-    tf_dtype = tf.float32  # TensorFlow DType
-    set_keep = {}  # A dictionary for holding tf.placeholders
-
-    @abstractmethod
-    def __init__(self):
-        pass
-
-
-TF_GRAPHKEYS_VARIABLES = tf.GraphKeys.GLOBAL_VARIABLES
+_global_layer_name_dict = {}  # TODO: better implementation?
 
 
 class Layer(object):
     """The basic :class:`Layer` class represents a single layer of a neural network.
 
     It should be subclassed when implementing new types of layers.
-    Because each layer can keep track of the layer(s) feeding into it, a
-    network's output :class:`Layer` instance can double as a handle to the full
-    network.
 
     Parameters
     ----------
-    prev_layer : :class:`Layer` or None
-        Previous layer (optional), for adding all properties of previous layer(s) to this layer.
-    act : activation function (None by default)
-        The activation function of this layer.
     name : str or None
-        A unique layer name.
+        A unique layer name. If None, a unique name will be automatically assigned.
 
     Methods
     ---------
-    print_params(details=True, session=None)
-        Print all parameters of this network.
-    print_layers()
-        Print all outputs of all layers of this network.
-    count_params()
-        Return the number of parameters of this network.
-    get_all_params()
-        Return the parameters in a list of array.
-
-    Examples
-    ---------
-    - Define model
-
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> x = tf.placeholder("float32", [None, 100])
-    >>> n = tl.layers.InputLayer(x, name='in')
-    >>> n = tl.layers.DenseLayer(n, 80, name='d1')
-    >>> n = tl.layers.DenseLayer(n, 80, name='d2')
-
-    - Get information
-
-    >>> print(n)
-    Last layer is: DenseLayer (d2) [None, 80]
-    >>> n.print_layers()
-    [TL]   layer   0: d1/Identity:0        (?, 80)            float32
-    [TL]   layer   1: d2/Identity:0        (?, 80)            float32
-    >>> n.print_params(False)
-    [TL]   param   0: d1/W:0               (100, 80)          float32_ref
-    [TL]   param   1: d1/b:0               (80,)              float32_ref
-    [TL]   param   2: d2/W:0               (80, 80)           float32_ref
-    [TL]   param   3: d2/b:0               (80,)              float32_ref
-    [TL]   num of params: 14560
-    >>> n.count_params()
-    14560
-
-    - Slicing the outputs
-
-    >>> n2 = n[:, :30]
-    >>> print(n2)
-    Last layer is: Layer (d2) [None, 30]
-
-    - Iterating the outputs
-
-    >>> for l in n:
-    >>>    print(l)
-    Tensor("d1/Identity:0", shape=(?, 80), dtype=float32)
-    Tensor("d2/Identity:0", shape=(?, 80), dtype=float32)
+    __init__()
+        Initializing the Layer.
+    __call__()
+        (1) Building the Layer if necessary. (2) Forwarding the computation.
+    weights()
+        Return a list of Tensor which are all trainable weights of this Layer.
+    build()
+        Abstract method. Build the Layer. All trainable weights should be defined in this function.
+    forward()
+        Abstract method. Forward computation and return computation results.
 
     """
 
-    # Added to allow auto-completion
+    def __init__(self, name=None, *args, **kwargs):
+        """
+        Initializing the Layer.
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, act=None, name=None, *args, **kwargs):
+        :param name: str or None
+        """
 
-        self.inputs = None
-        self.outputs = None
-        self.all_layers = list()
-        self.all_params = list()
-        self.all_drop = dict()
+        # Layer constants
+        # for key in kwargs.keys():
+        #     setattr(self, key, self._argument_dict_checkup(kwargs[key]))
 
+        # Auto naming if the name is not given
+        global _global_layer_name_dict
         if name is None:
-            raise ValueError('Layer must have a name.')
+            prefix = self.__class__.__name__.lower()
 
-        for key in kwargs.keys():
-            setattr(self, key, self._argument_dict_checkup(kwargs[key]))
-
-        self.act = act if act not in [None, tf.identity] else None
-
-        scope_name = tf.get_variable_scope().name
-
-        self.name = scope_name + '/' + name if scope_name else name
-
-        if isinstance(prev_layer, Layer):
-            # 1. for normal layer have only 1 input i.e. DenseLayer
-            # Hint : list(), dict() is pass by value (shallow), without them,
-            # it is pass by reference.
-
-            self.inputs = prev_layer.outputs
-
-            self._add_layers(prev_layer.all_layers)
-            self._add_params(prev_layer.all_params)
-            self._add_dropout_layers(prev_layer.all_drop)
-
-        elif isinstance(prev_layer, list):
-            # 2. for layer have multiply inputs i.e. ConcatLayer
-
-            self.inputs = [layer.outputs for layer in prev_layer]
-
-            self._add_layers(sum([l.all_layers for l in prev_layer], []))
-            self._add_params(sum([l.all_params for l in prev_layer], []))
-            self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
-
-        elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
-            if self.__class__.__name__ not in ['InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer',
-                                               'EmbeddingInputlayer', 'AverageEmbeddingInputlayer']:
-                raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
-
-            self.inputs = prev_layer
-
-        elif prev_layer is not None:
-            # 4. tl.models
-            self._add_layers(prev_layer.all_layers)
-            self._add_params(prev_layer.all_params)
-            self._add_dropout_layers(prev_layer.all_drop)
-
-            if hasattr(prev_layer, "outputs"):
-                self.inputs = prev_layer.outputs
-
-    def print_params(self, details=True, session=None):
-        """Print all info of parameters in the network"""
-        for i, p in enumerate(self.all_params):
-            if details:
-                try:
-                    val = p.eval(session=session)
-                    logging.info(
-                        "  param {:3}: {:20} {:15}    {} (mean: {:<18}, median: {:<18}, std: {:<18})   ".
-                        format(i, p.name, str(val.shape), p.dtype.name, val.mean(), np.median(val), val.std())
-                    )
-                except Exception as e:
-                    logging.info(str(e))
-                    raise Exception(
-                        "Hint: print params details after tl.layers.initialize_global_variables(sess) "
-                        "or use network.print_params(False)."
-                    )
+            if _global_layer_name_dict.get(prefix) is not None:
+                _global_layer_name_dict[prefix] += 1
+                name = prefix + '_' + str(_global_layer_name_dict[prefix])
             else:
-                logging.info("  param {:3}: {:20} {:15}    {}".format(i, p.name, str(p.get_shape()), p.dtype.name))
-        logging.info("  num of params: %d" % self.count_params())
-
-    def print_layers(self):
-        """Print all info of layers in the network."""
-        for i, layer in enumerate(self.all_layers):
-            # logging.info("  layer %d: %s" % (i, str(layer)))
-            logging.info(
-                "  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name)
-            )
-
-    def count_params(self):
-        """Returns the number of parameters in the network."""
-        n_params = 0
-        for _i, p in enumerate(self.all_params):
-            n = 1
-            # for s in p.eval().shape:
-            for s in p.get_shape():
-                try:
-                    s = int(s)
-                except Exception:
-                    s = 1
-                if s:
-                    n = n * s
-            n_params = n_params + n
-        return n_params
-
-    def get_all_params(self, session=None):
-        """Return the parameters in a list of array."""
-        _params = []
-        for p in self.all_params:
-            if session is None:
-                _params.append(p.eval())
+                _global_layer_name_dict[prefix] = 0
+                name = prefix
+            while True:
+                if _global_layer_name_dict.get(name) is None:
+                    break
+                _global_layer_name_dict[prefix] += 1
+                name = prefix + '_' + str(_global_layer_name_dict[prefix])
+        else:
+            if _global_layer_name_dict.get(name) is not None:
+                pass
+                # raise ValueError(
+                #     'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % name
+                # )
             else:
-                _params.append(session.run(p))
-        return _params
+                _global_layer_name_dict[name] = 0
 
-    def __str__(self):
-        return "  Last layer is: %s (%s) %s" % (self.__class__.__name__, self.name, self.outputs.get_shape().as_list())
+        self.name = name
 
-    def __getitem__(self, key):
+        # Layer building state
+        self._built = False
 
-        net_new = Layer(prev_layer=None, name=self.name)
+        # Layer nodes state
+        self._nodes = []
+        self._nodes_fixed = False
 
-        net_new.name = self.name + '_indexing'
-        net_new.inputs = self.inputs
-        net_new.outputs = self.outputs[key]
+        # Layer weight state
+        self._weights = None
 
-        net_new._add_layers(self.all_layers[:-1])
-        net_new._add_layers(net_new.outputs)
+        # Layer training state
+        self.is_train = True
 
-        net_new._add_params(self.all_params)
-        net_new._add_dropout_layers(self.all_drop)
+        # layer config and init_args
+        self._config = None
+        self.layer_args = self._get_init_args(skip=3)
 
-        return net_new
+    @staticmethod
+    def _compute_shape(tensors):
+        if isinstance(tensors, list):
+            shape_mem = [t.get_shape().as_list() for t in tensors]
+        else:
+            shape_mem = tensors.get_shape().as_list()
+        return shape_mem
+
+    @property
+    def config(self):
+        # if not self._nodes_fixed:
+        #     raise RuntimeError("Model can not be saved when nodes are not fixed.")
+        if self._config is not None:
+            return self._config
+        else:
+            _config = {}
+            _config.update({'class': self.__class__.__name__.split('.')[-1]})
+            self.layer_args.update(self.get_args())
+            self.layer_args["name"] = self.name
+            _config.update({"args": self.layer_args})
+            if self.__class__.__name__ in tl.layers.inputs.__all__:
+                _config.update({'prev_layer': None})
+            else:
+                _config.update({'prev_layer': []})
+                for node in self._nodes:
+                    in_nodes = node.in_nodes
+                    if not isinstance(in_nodes, list):
+                        prev_name = in_nodes.name
+                    else:
+                        prev_name = [in_node.name for in_node in in_nodes]
+                        if len(prev_name) == 1:
+                            prev_name = prev_name[0]
+                    _config['prev_layer'].append(prev_name)
+            if self._nodes_fixed:
+                self._config = _config
+            return _config
+
+    @property
+    def weights(self):
+        return self._weights
+
+    def __call__(self, inputs, *args, **kwargs):
+        """
+        (1) Build the Layer if necessary.
+        (2) Forward the computation and return results.
+        (3) Add LayerNode if necessary
+
+        :param prev_layer: np.ndarray, Tensor, Layer, list of Layers
+        :param kwargs:
+        :return: Layer
+        """
+        if self.__class__.__name__ in tl.layers.inputs.__all__:
+            input_tensors = tf.convert_to_tensor(inputs)
+        else:
+            input_tensors = inputs
+
+        if not self._built:
+            if isinstance(self, LayerList):
+                self._input_tensors = input_tensors
+            inputs_shape = self._compute_shape(input_tensors)
+            self.build(inputs_shape)
+            self._built = True
+
+        outputs = self.forward(input_tensors, *args, **kwargs)
+
+        if not self._nodes_fixed:
+            self._add_node(input_tensors, outputs)
+
+        return outputs
+
+    def _add_node(self, input_tensors, output_tensors):
+        """Add a LayerNode for this layer given input_tensors, output_tensors.
+
+        WARINING: This function should not be called from outside, it should only be called
+        in layer.__call__ when building static model.
+
+        Parameters
+        ----------
+        input_tensors : Tensor or a list of tensors
+            Input tensors to this layer.
+        output_tensors : Tensor or a list of tensors
+            Output tensors to this layer.
+
+        """
+        inputs_list = tolist(input_tensors)
+        outputs_list = tolist(output_tensors)
+
+        if self.__class__.__name__ in tl.layers.inputs.__all__:
+            # for InputLayer, there should be no in_nodes
+            in_nodes = []
+            in_tensor_idxes = [0]
+        else:
+            in_nodes = [tensor._info[0] for tensor in inputs_list]
+            in_tensor_idxes = [tensor._info[1] for tensor in inputs_list]
+        node_index = len(self._nodes)
+
+        new_node = LayerNode(self, node_index, in_nodes, inputs_list, outputs_list, in_tensor_idxes)
+        self._nodes.append(new_node)
+        for idx, tensor in enumerate(outputs_list):
+            tensor._info = (new_node, idx)  # FIXME : modify tensor outside layers? how to deal?
+
+    def _release_memory(self):
+        """
+        WARINING: This function should be called with great caution.
+
+        self.inputs and self.outputs will be set as None but not deleted in order to release memory.
+        """
+        # FIXME : not understand why saving inputs/outputs shape
+        for node in self._nodes:
+            node.in_tensors = None
+            node.out_tensors = None
+
+    def _set_mode_for_layers(self, is_train):
+        """ Set training/evaluation mode for the Layer"""
+        self.is_train = is_train
+
+    def _fix_nodes_for_layers(self):
+        """ fix LayerNodes to stop growing for this layer"""
+        self._nodes_fixed = True
+
+    def _get_weights(self, var_name, shape, init=tl.initializers.random_normal()):
+        """ Get trainable variables. """
+        weight = get_variable_with_initializer(scope_name=self.name, var_name=var_name, shape=shape, init=init)
+        if self._weights is None:
+            self._weights = list()
+        self._weights.append(weight)  # Add into the weight collection
+        return weight
+
+    @abstractmethod
+    def build(self, inputs_shape):
+        """
+        An abstract method which should be overwritten in derived classes
+        to define all necessary trainable weights of the layer.
+
+        self.built should be set as True after self.build() is called.
+
+        :param inputs_shape: tuple
+        """
+        raise Exception("The build(self, inputs_shape) method must be implemented by inherited class")
+
+    @abstractmethod
+    def forward(self, inputs):
+        """
+        An abstract method which should be overwritten in derived classes
+        to define forward feeding operations of the layer.
+
+        :param inputs: Tensor
+        :return: Tensor
+        """
+        raise Exception("The forward method must be implemented by inherited class")
+
+    @abstractmethod
+    def __repr__(self):
+        reprstr = "Layer"
+        return reprstr
 
     def __setitem__(self, key, item):
         raise TypeError("The Layer API does not allow to use the method: `__setitem__`")
@@ -247,15 +260,13 @@ class Layer(object):
     def __delitem__(self, key):
         raise TypeError("The Layer API does not allow to use the method: `__delitem__`")
 
-    def __iter__(self):
-        for x in self.all_layers:
-            yield x
-
-    def __len__(self):
-        return len(self.all_layers)
+    @protected_method
+    def get_args(self):
+        init_args = {"layer_type": "normal"}
+        return init_args
 
     @protected_method
-    def _get_init_args(self, skip=4):
+    def _get_init_args(self, skip=3):
         """Get all arguments of current layer for saving the graph."""
         stack = inspect.stack()
 
@@ -275,8 +286,12 @@ class Layer(object):
 
                 # change function (e.g. act) into dictionary of module path and function name
                 if inspect.isfunction(val):
-                    params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
-                # ignore more args e.g. TF class
+                    params[arg] = ('is_Func', utils.func2str(val))
+                    # if val.__name__ == "<lambda>":
+                    #     params[arg] = utils.lambda2str(val)
+                    # else:
+                    #     params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
+                # ignore more args e.g. TL initializer
                 elif arg.endswith('init'):
                     continue
                 # for other data type, save them directly
@@ -285,63 +300,325 @@ class Layer(object):
 
         return params
 
-    @protected_method
-    def _add_layers(self, layers):
-        if isinstance(layers, list):
-            try:  # list of class Layer
-                new_layers = [layer.outputs for layer in layers]
-                self.all_layers.extend(list(new_layers))
 
-            except AttributeError:  # list of tf.Tensor
-                self.all_layers.extend(list(layers))
+class LayerNode(object):
+    """
+    The class :class:`LayerNode` class represents a conceptional node for a layer.
 
+    LayerNode is used for building static model and it is actually a light weighted
+    wrapper over Layer. Specifically, it is used for building static computational graph
+    (see _construct_graph() in tl.models.Model). In static model, each layer relates to
+    one or more LayerNode, and the connection relationship between layers is built upon
+    LayerNode. In addition, LayerNode eases layer reuse and weights sharing.
+
+    Parameters
+    ----------
+    layer : tl.layers.Layer
+        A tl layer that wants to create a node.
+    node_index : int
+        Index of this node in layer._nodes.
+    in_nodes ：a list of LayerNode
+        Father nodes to this node.
+    in_tensors : a list of tensors
+        Input tensors to this node.
+    out_tensors : a list of tensors
+        Output tensors to this node.
+    in_tensor_idxes : a list of int
+        Indexes of each input tensor in its corresponding node's out_tensors.
+
+    Methods
+    ---------
+    __init__()
+        Initializing the LayerNode.
+    __call__()
+        (1) Forwarding through the layer. (2) Update its input/output tensors.
+    """
+
+    def __init__(self, layer, node_index, in_nodes, in_tensors, out_tensors, in_tensor_idxes):
+        """
+
+        Parameters
+        ----------
+        layer
+        node_index
+        in_nodes
+        in_tensors
+        out_tensors
+        in_tensor_idxes
+        """
+        self.layer = layer
+        self.node_index = node_index
+        self.in_nodes = in_nodes
+        self.out_nodes = []
+        self.in_tensors = in_tensors
+        self.out_tensors = out_tensors
+        self.name = layer.name + "_node_{}".format(node_index)
+
+        self.in_tensors_idxes = in_tensor_idxes
+
+        self.visited = False
+
+    def __call__(self, inputs, **kwargs):
+        """(1) Forwarding through the layer. (2) Update its input/output tensors."""
+        outputs = self.layer.forward(inputs, **kwargs)
+        self.in_tensors = tolist(inputs)
+        self.out_tensors = tolist(outputs)
+        return self.out_tensors
+
+
+class ModelLayer(Layer):
+    """
+    The class :class:`ModelLayer` converts a :class:`Model` to a :class:`Layer` instance.
+
+    Note that only a :class:`Model` with specified inputs and outputs can be converted to a :class:`ModelLayer`.
+    For example, a customized model in dynamic eager mode normally does NOT have specified inputs and outputs so the
+    customized model in dynamic eager mode can NOT be converted to a :class:`ModelLayer`.
+
+    Parameters
+    ----------
+    model: tl.models.Model
+        A model.
+    name : str or None
+        A unique layer name. If None, a unique name will be automatically assigned.
+
+    Methods
+    ---------
+    __init__()
+        Initializing the ModelLayer.
+    weights()
+        Same as the weights of the given model.
+    build()
+        Do nothing because the given model has already been built.
+    forward()
+        Forward the computation. Simply call the forward() of the given model.
+    """
+
+    def __init__(self, model, name=None):
+        """
+        Initializing the ModelLayer given a instance of Model.
+
+        :param model:  tl.models.Model
+        """
+        super(ModelLayer, self).__init__(name=name)
+
+        self.model = model
+
+        # Layer building state
+        self._built = True
+
+        # Layer weight state
+        self._weights = model.weights
+
+        # Layer training state
+        self.is_train = True
+
+        logging.info("ModelLayer %s from Model: %s" % (self.name, self.model.name))
+
+    def __repr__(self):
+        tmpstr = 'ModelLayer' + '(\n'
+
+        modstr = self.model.__repr__()
+        modstr = _addindent(modstr, 2)
+
+        tmpstr += modstr + ')'
+        return tmpstr
+
+    def build(self, inputs_shape):
+        pass
+
+    def forward(self, inputs):
+        return self.model.forward(inputs)
+
+    def _set_mode_for_layers(self, is_train):
+        """ Set training/evaluation mode for the ModelLayer."""
+        self.is_train = is_train
+        return self.model._set_mode_for_layers(is_train)
+
+    def _fix_nodes_for_layers(self):
+        """ fix LayerNodes to stop growing for this ModelLayer."""
+        self._nodes_fixed = True
+        self.model._fix_nodes_for_layers()
+
+    def _release_memory(self):
+        """
+        WARINING: This function should be called with great caution.
+
+        self.inputs and self.outputs will be set as None but not deleted in order to release memory.
+        """
+
+        super(ModelLayer, self)._release_memory()
+        self.model.release_memory()
+
+    def get_args(self):
+        init_args = {}
+        init_args.update({"layer_type": "modellayer"})
+        init_args["model"] = utils.net2static_graph(self.layer_args["model"])
+        return init_args
+
+
+class LayerList(Layer):
+    """
+    The class :class:`LayerList` is a linear stack of layers.
+
+    The :class:`LayerList` can be created by passing a list of layer instances.
+    The given layer instances will be automatically connected one by one.
+
+    Parameters
+    ----------
+    layers: list of Layer
+        A list of layers.
+    name : str or None
+        A unique layer name. If None, a unique name will be automatically assigned.
+
+    Methods
+    ---------
+    __init__()
+        Initializing the LayerList.
+    weights()
+        A collection of weights of all the layer instances.
+    build()
+        Build the LayerList. The layer instances will be connected automatically one by one.
+    forward()
+        Forward the computation. The computation will go through all layer instances.
+    """
+
+    def __init__(self, layers, name=None):
+        """
+        Initializing the LayerList given a list of Layer.
+
+        :param layers: list of Layer
+        :param name: str or None
+        """
+
+        super(LayerList, self).__init__(name=name)
+        self.layers = layers
+
+        is_built = True
+        for layer in self.layers:
+            if layer._built is False:
+                is_built = False
+            if layer._built and layer.weights is not None:
+                # some layers in the list passed in have already been built
+                # e.g. using input shape to construct layers in dynamic eager
+                if self._weights is None:
+                    self._weights = list()
+                self._weights.extend(layer.weights)
+        if is_built:
+            self._built = True
+
+        logging.info(
+            "LayerList %s including layers [%s]" % (self.name, ', '.join([layer.name for layer in self.layers]))
+        )
+
+        # check layer name uniqueness in LayerList
+        local_layer_name_set = set()
+        for layer in self.layers:
+            if layer.name not in local_layer_name_set:
+                local_layer_name_set.add(layer.name)
+            else:
+                raise ValueError(
+                    'Layer name \'%s\' has already been used by another layer. Please change the layer name.' %
+                    layer.name
+                )
+
+    def __getitem__(self, idx):
+        if isinstance(idx, slice):
+            return LayerList(list(self.layers)[idx])
         else:
-            self.all_layers.append(layers)
+            return self.layers[idx]
 
-        self.all_layers = list_remove_repeat(self.all_layers)
+    def __len__(self):
+        return len(self.layers)
 
-    @protected_method
-    def _add_params(self, params):
+    def __repr__(self):
+        tmpstr = 'LayerList' + '(\n'
+        for idx, layer in enumerate(self.layers):
+            modstr = layer.__repr__()
+            modstr = _addindent(modstr, 2)
+            tmpstr = tmpstr + '  (' + str(idx) + '): ' + modstr + '\n'
 
-        if isinstance(params, list):
-            self.all_params.extend(list(params))
+        tmpstr = tmpstr + ')'
+        return tmpstr
 
-        else:
-            self.all_params.append(params)
+    def build(self, inputs_shape):
+        """
+        Build the LayerList. The layer instances will be connected automatically one by one.
+        """
+        in_tensor = self._input_tensors
+        # in_layer = self._input_layer
+        for layer in self.layers:
+            is_build = layer._built
+            out_tensor = layer(in_tensor)
+            # nlayer = layer(in_layer)
+            if is_build == False and layer.weights is not None:
+                if self._weights is None:
+                    self._weights = list()
+                self._weights.extend(layer.weights)
+            layer._built = True
+            in_tensor = out_tensor
+            # in_layer = nlayer
 
-        self.all_params = list_remove_repeat(self.all_params)
+    def forward(self, inputs):
+        """
+        Forward the computation. The computation will go through all layer instances.
+        """
+        z = inputs
+        for layer in self.layers:
+            z = layer.forward(z)
+        return z
 
-    @protected_method
-    def _add_dropout_layers(self, drop_layers):
-        if isinstance(drop_layers, dict) or isinstance(drop_layers, list):
-            self.all_drop.update(dict(drop_layers))
+    def _set_mode_for_layers(self, is_train):
+        """Set training/evaluation mode for all layer instances."""
+        self.is_train = is_train
+        for layer in self.layers:
+            if isinstance(layer, ModelLayer):
+                layer._set_mode_for_layers(is_train)
+            elif isinstance(layer, LayerList):
+                layer._set_mode_for_layers(is_train)
+            else:
+                layer.is_train = is_train
 
-        elif isinstance(drop_layers, tuple):
-            self.all_drop.update(list(drop_layers))
+    def _fix_nodes_for_layers(self):
+        """ fix LayerNodes to stop growing for this LayerList."""
+        self._nodes_fixed = True
+        for layer in self.layers:
+            layer._fix_nodes_for_layers()
 
-        else:
-            raise ValueError()
+    def _release_memory(self):
+        """
+        WARINING: This function should be called with great caution.
 
-    @private_method
-    def _apply_activation(self, logits, **kwargs):
-        if not kwargs:
-            kwargs = {}
-        return self.act(logits, **kwargs) if self.act is not None else logits
+        self.inputs and self.outputs will be set as None but not deleted.
+        """
+        super(LayerList, self)._release_memory()
+        for layer in self.layers:
+            layer._release_memory()
 
-    @private_method
-    def _argument_dict_checkup(self, args):
+    def get_args(self):
+        init_args = {}
+        layers = self.layer_args["layers"]
+        init_args["layers"] = [layer.config for layer in layers]
+        init_args.update({"layer_type": "layerlist"})
+        return init_args
 
-        if not isinstance(args, dict) and args is not None:
-            raise AssertionError(
-                "One of the argument given to %s should be formatted as a dictionary" % self.__class__.__name__
-            )
 
-        return args if args is not None else {}
+def _addindent(s_, numSpaces):
+    s = s_.split('\n')
+    # don't do anything for single-line stuff
+    if len(s) == 1:
+        return s_
+    first = s.pop(0)
+    s = [(numSpaces * ' ') + line for line in s]
+    s = '\n'.join(s)
+    s = first + '\n' + s
+    return s
 
-    # def __getstate__(self): # pickle save
-    #     return {'version': 0.1,
-    #             # 'outputs': self.outputs,
-    #             }
-    #
-    # def __setstate__(self, state): # pickle restore
-    #     self.outputs = state['outputs']
+
+def tolist(tensors):
+    if isinstance(tensors, list) or isinstance(tensors, tuple):
+        ntensors = list()
+        for t in tensors:
+            ntensors += tolist(t)
+        return ntensors
+    else:
+        return [tensors]

@@ -80,14 +80,46 @@ supports GPU acceleration for Linux, Mac OX and Windows at present.
 Step 3 : TensorLayer
 =========================
 
-The simplest way to install TensorLayer is as follow, it will also install the numpy and matplotlib automatically.
+For latest code for TensorLayer 2.0, please build from the source.
+
+.. code-block:: bash
+
+  # First clone the repository and change the current directory to the newly cloned repository
+  git clone https://github.com/zsdonghao/tensorlayer2.git
+  cd tensorlayer2
+
+  # Install virtualenv if necessary
+  pip install virtualenv
+  # Then create a virtualenv called `venv`
+  virtualenv venv
+
+  # Activate the virtualenv
+
+  ## Linux:
+  source venv/bin/activate
+
+  ## Windows:
+  venv\Scripts\activate.bat
+
+  # basic installation
+  pip install .
+
+  # ============= IF TENSORFLOW IS NOT ALREADY INSTALLED ============= #
+
+  # for a machine **without** an NVIDIA GPU
+  pip install -e ".[all_cpu_dev]"
+
+  # for a machine **with** an NVIDIA GPU
+  pip install -e ".[all_gpu_dev]"
+
+If you want install TensorLayer 1.X, the simplest way to install TensorLayer 1.X is as follow. It will also install the numpy and matplotlib automatically.
 
 .. code-block:: bash
 
   [stable version] pip install tensorlayer
   [master version] pip install git+https://github.com/tensorlayer/tensorlayer.git
 
-However, if you want to modify or extend TensorLayer, you can download the repository from
+However, if you want to modify or extend TensorLayer 1.X, you can download the repository from
 `Github`_ and install it as follow.
 
 .. code-block:: bash
@@ -188,7 +220,9 @@ After extracting cuDNN, you will get three folders (bin, lib, include). Then the
 
 Installing TensorLayer
 ------------------------
-You can easily install Tensorlayer using pip in CMD：
+For TensorLayer 2.0, please refer to the steps mentioned above.
+
+For TensorLayer 1.X, you can easily install Tensorlayer 1.X using pip in CMD：
 
 .. code-block:: bash
 

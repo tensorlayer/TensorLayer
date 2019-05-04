@@ -2,29 +2,26 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-
-from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
+import tensorlayer as tl
 
 from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.layers.core import Layer
+import numbers
 
 __all__ = [
-    'DropconnectDenseLayer',
+    'DropconnectDense',
 ]
 
 
-class DropconnectDenseLayer(Layer):
+class DropconnectDense(Layer):
     """
-    The :class:`DropconnectDenseLayer` class is :class:`DenseLayer` with DropConnect
+    The :class:`DropconnectDense` class is :class:`Dense` with DropConnect
     behaviour which randomly removes connections between this layer and the previous
     layer according to a keeping probability.
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     keep : float
         The keeping probability.
         The lower the probability it is, the more activations are set to zero.
@@ -36,22 +33,21 @@ class DropconnectDenseLayer(Layer):
         The initializer for the weight matrix.
     b_init : biases initializer
         The initializer for the bias vector.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer.
-    b_init_args : dictionary
-        The arguments for the bias vector initializer.
+    in_channels: int
+        The number of channels of the previous layer.
+        If None, it will be automatically detected when the layer is forwarded for the first time.
     name : str
         A unique layer name.
 
     Examples
     --------
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
-    >>> net = tl.layers.DropconnectDenseLayer(net, keep=0.8,
-    ...         n_units=800, act=tf.nn.relu, name='relu1')
-    >>> net = tl.layers.DropconnectDenseLayer(net, keep=0.5,
-    ...         n_units=800, act=tf.nn.relu, name='relu2')
-    >>> net = tl.layers.DropconnectDenseLayer(net, keep=0.5,
-    ...         n_units=10, name='output')
+    >>> net = tl.layers.Input([None, 784], name='input')
+    >>> net = tl.layers.DropconnectDense(keep=0.8,
+    ...         n_units=800, act=tf.nn.relu, name='relu1')(net)
+    >>> net = tl.layers.DropconnectDense(keep=0.5,
+    ...         n_units=800, act=tf.nn.relu, name='relu2')(net)
+    >>> net = tl.layers.DropconnectDense(keep=0.5,
+    ...         n_units=10, name='output')(net)
 
     References
     ----------
@@ -59,48 +55,65 @@ class DropconnectDenseLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             keep=0.5,
             n_units=100,
             act=None,
-            W_init=tf.truncated_normal_initializer(stddev=0.1),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            name='dropconnect_layer',
+            W_init=tl.initializers.truncated_normal(stddev=0.1),
+            b_init=tl.initializers.constant(value=0.0),
+            in_channels=None,
+            name=None,  # 'dropconnect',
     ):
-        super(DropconnectDenseLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super().__init__(name)
+
+        if isinstance(keep, numbers.Real) and not (keep > 0 and keep <= 1):
+            raise ValueError("keep must be a scalar tensor or a float in the " "range (0, 1], got %g" % keep)
+
+        self.keep = keep
+        self.n_units = n_units
+        self.act = act
+        self.W_init = W_init
+        self.b_init = b_init
+        self.in_channels = in_channels
+
+        if self.in_channels is not None:
+            self.build((None, self.in_channels))
+            self._built = True
 
         logging.info(
-            "DropconnectDenseLayer %s: %d %s" %
+            "DropconnectDense %s: %d %s" %
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
-        if self.inputs.get_shape().ndims != 2:
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(n_units={n_units}, ' + actstr)
+        s += ', keep={keep}'
+        if self.in_channels is not None:
+            s += ', in_channels=\'{in_channels}\''
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape):
+        if len(inputs_shape) != 2:
             raise Exception("The input dimension must be rank 2")
 
-        n_in = int(self.inputs.get_shape()[-1])
-        self.n_units = n_units
+        if self.in_channels is None:
+            self.in_channels = inputs_shape[1]
 
-        with tf.variable_scope(name):
-            W = tf.get_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
-            )
-            b = tf.get_variable(
-                name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
-            )
-            # self.outputs = tf.matmul(self.inputs, W) + b
+        n_in = inputs_shape[-1]
+        self.W = self._get_weights("weights", shape=(n_in, self.n_units), init=self.W_init)
+        if self.b_init:
+            self.b = self._get_weights("biases", shape=(self.n_units), init=self.b_init)
 
-            LayersConfig.set_keep[name] = tf.placeholder(tf.float32)
-
-            W_dropcon = tf.nn.dropout(W, LayersConfig.set_keep[name])
-
-            self.outputs = self._apply_activation(tf.matmul(self.inputs, W_dropcon) + b)
-
-        self.all_drop.update({LayersConfig.set_keep[name]: keep})
-        self._add_layers(self.outputs)
-        self._add_params([W, b])
+    def forward(self, inputs):
+        W_dropcon = tf.nn.dropout(self.W, 1 - (self.keep))
+        outputs = tf.matmul(inputs, W_dropcon)
+        if self.b_init:
+            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+        if self.act:
+            outputs = self.act(outputs)
+        return outputs

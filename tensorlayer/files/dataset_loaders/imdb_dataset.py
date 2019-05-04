@@ -5,8 +5,8 @@ import gzip
 import os
 
 import numpy as np
-
 import six.moves.cPickle as pickle
+
 from tensorlayer.files.utils import maybe_download_and_extract
 
 __all__ = ['load_imdb_dataset']

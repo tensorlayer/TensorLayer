@@ -3,43 +3,50 @@
 
 import tensorflow as tf
 
+from tensorlayer import logging
+from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
-
 from tensorlayer.layers.utils import quantize
 
-from tensorlayer import logging
-
-from tensorlayer.decorators import deprecated_alias
-
 __all__ = [
-    'SignLayer',
+    'Sign',
 ]
 
 
-class SignLayer(Layer):
+class Sign(Layer):
     """The :class:`SignLayer` class is for quantizing the layer outputs to -1 or 1 while inferencing.
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     name : a str
         A unique layer name.
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    # @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
-            name='sign',
+            name=None  # 'sign',
     ):
-        super(SignLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super().__init__(name)
+        logging.info("Sign  %s" % self.name)
 
-        logging.info("SignLayer  %s" % self.name)
+        self.build()
+        self._built = True
 
-        with tf.variable_scope(name):
-            # self.outputs = tl.act.sign(self.inputs)
-            self.outputs = quantize(self.inputs)
+    def build(self, inputs_shape=None):
+        pass
 
-        self._add_layers(self.outputs)
+    def __repr__(self):
+        s = ('{classname}(')
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def forward(self, inputs):
+        # with tf.variable_scope(name):
+        ## self.outputs = tl.act.sign(self.inputs)
+        # self.outputs = quantize(self.inputs)
+        outputs = quantize(inputs)
+        return outputs

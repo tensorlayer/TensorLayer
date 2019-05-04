@@ -31,9 +31,9 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
         )
 
     if ("SPHINXBUILD" not in os.environ and "READTHEDOCS" not in os.environ and
-            LooseVersion(tensorflow.__version__) < LooseVersion("1.6.0")):
+            LooseVersion(tensorflow.__version__) < LooseVersion("2.0.0")):
         raise RuntimeError(
-            "TensorLayer does not support Tensorflow version older than 1.6.0.\n"
+            "TensorLayer does not support Tensorflow version older than 2.0.0.\n"
             "Please update Tensorflow with:\n"
             " - `pip install --upgrade tensorflow`\n"
             " - `pip install --upgrade tensorflow-gpu`"
@@ -52,6 +52,7 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     from tensorlayer import models
     from tensorlayer import optimizers
     from tensorlayer import rein
+    from tensorlayer import utils
 
     from tensorlayer.lazy_imports import LazyImport
 

@@ -3,19 +3,10 @@
 
 import os
 
-from lxml import etree
-
 import tensorflow as tf
 
-from tensorlayer import logging
-
-from tensorlayer.files.utils import del_file
-from tensorlayer.files.utils import del_folder
-from tensorlayer.files.utils import folder_exists
-from tensorlayer.files.utils import load_file_list
-from tensorlayer.files.utils import maybe_download_and_extract
-
-from tensorlayer import utils
+from tensorlayer import logging, utils
+from tensorlayer.files.utils import (del_file, del_folder, folder_exists, load_file_list, maybe_download_and_extract)
 
 __all__ = ['load_voc_dataset']
 
@@ -92,6 +83,12 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     - `Pascal VOC2007 Website <https://pjreddie.com/projects/pascal-voc-dataset-mirror/>`__.
 
     """
+    try:
+        import lxml.etree as etree
+    except ImportError as e:
+        print(e)
+        raise ImportError("Module lxml not found. Please install lxml via pip or other package managers.")
+
     path = os.path.join(path, 'VOC')
 
     def _recursive_parse_xml_to_dict(xml):
@@ -329,7 +326,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         n_objs, objs_info = convert_annotation(ann_file)
         n_objs_list.append(n_objs)
         objs_info_list.append(objs_info)
-        with tf.gfile.GFile(ann_file, 'r') as fid:
+        with tf.io.gfile.GFile(ann_file, 'r') as fid:
             xml_str = fid.read()
         xml = etree.fromstring(xml_str)
         data = _recursive_parse_xml_to_dict(xml)['annotation']

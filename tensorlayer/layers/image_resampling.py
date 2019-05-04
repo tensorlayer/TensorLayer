@@ -3,185 +3,173 @@
 
 import tensorflow as tf
 
+from tensorlayer import logging
+from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import logging
-
-from tensorlayer.decorators import deprecated_alias
-
 __all__ = [
-    'UpSampling2dLayer',
-    'DownSampling2dLayer',
+    'UpSampling2d',
+    'DownSampling2d',
 ]
 
 
-class UpSampling2dLayer(Layer):
-    """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer.
+class UpSampling2d(Layer):
+    """The :class:`UpSampling2d` class is a up-sampling 2D layer.
 
     See `tf.image.resize_images <https://www.tensorflow.org/api_docs/python/tf/image/resize_images>`__.
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer with 4-D Tensor of the shape (batch, height, width, channels) or 3-D Tensor of the shape (height, width, channels).
-    size : tuple of int/float
-        (height, width) scale factor or new size of height and width.
-    is_scale : boolean
-        If True (default), the `size` is a scale factor; otherwise, the `size` is the numbers of pixels of height and width.
-    method : int
-        The resize method selected through the index. Defaults index is 0 which is ResizeMethod.BILINEAR.
-            - Index 0 is ResizeMethod.BILINEAR, Bilinear interpolation.
-            - Index 1 is ResizeMethod.NEAREST_NEIGHBOR, Nearest neighbor interpolation.
-            - Index 2 is ResizeMethod.BICUBIC, Bicubic interpolation.
-            - Index 3 ResizeMethod.AREA, Area interpolation.
-    align_corners : boolean
-        If True, align the corners of the input and output. Default is False.
-    name : str
+    scale : int/float or tuple of int/float
+        (height, width) scale factor.
+    method : str
+        The resize method selected through the given string. Default 'bilinear'.
+            - 'bilinear', Bilinear interpolation.
+            - 'nearest', Nearest neighbor interpolation.
+            - 'bicubic', Bicubic interpolation.
+            - 'area', Area interpolation.
+    antialias : boolean
+        Whether to use an anti-aliasing filter when downsampling an image.
+    data_format : str
+        channels_last 'channel_last' (default) or channels_first.
+    name : None or str
         A unique layer name.
+
+    Examples
+    ---------
+    With TensorLayer
+
+    >>> ni = tl.layers.Input([None, 50, 50, 32], name='input')
+    >>> ni = tl.layers.UpSampling2d(scale=(2, 2))(ni)
+    >>> output shape : [None, 100, 100, 32]
+
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
-            size,
-            is_scale=True,
-            method=0,
-            align_corners=False,
-            name='upsample2d_layer',
+            scale,
+            method='bilinear',
+            antialias=False,
+            data_format='channel_last',
+            name=None,
     ):
-        super(UpSampling2dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(UpSampling2d, self).__init__(name)
+        self.method = method
+        self.antialias = antialias
+        self.data_format = data_format
 
         logging.info(
-            "UpSampling2dLayer %s: is_scale: %s size: %s method: %d align_corners: %s" %
-            (self.name, is_scale, size, method, align_corners)
+            "UpSampling2d %s: scale: %s method: %s antialias: %s" % (self.name, scale, self.method, self.antialias)
         )
 
-        if not isinstance(size, (list, tuple)) and len(size) == 2:
-            raise AssertionError()
-        if len(self.inputs.get_shape()) == 3:
-            if is_scale:
-                input_shape = self.inputs.shape.as_list()
-                if input_shape[0] is not None:
-                    size_h = size[0] * input_shape[0]
-                else:
-                    size_h = size[0] * tf.shape(self.inputs)[0]
-                if input_shape[1] is not None:
-                    size_w = size[1] * input_shape[1]
-                else:
-                    size_w = size[1] * tf.shape(self.inputs)[1]
-                size = [size_h, size_w]
+        self.build(None)
+        self._built = True
 
-        elif len(self.inputs.get_shape()) == 4:
-            if is_scale:
-                input_shape = self.inputs.shape.as_list()
-                if input_shape[1] is not None:
-                    size_h = size[0] * input_shape[1]
-                else:
-                    size_h = size[0] * tf.shape(self.inputs)[1]
-                if input_shape[2] is not None:
-                    size_w = size[1] * input_shape[2]
-                else:
-                    size_w = size[1] * tf.shape(self.inputs)[2]
-                size = [size_h, size_w]
-        else:
-            raise Exception("Donot support shape %s" % tf.shape(self.inputs))
+        if isinstance(scale, (list, tuple)) and len(scale) != 2:
+            raise ValueError("scale must be int or tuple/list of length 2")
 
-        with tf.variable_scope(name):
-            try:
-                self.outputs = tf.image.resize_images(
-                    self.inputs, size=size, method=method, align_corners=align_corners
-                )
-            except Exception:  # for TF 0.10
-                self.outputs = tf.image.resize_images(
-                    self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners
-                )
+        self.scale = (scale, scale) if isinstance(scale, int) else scale
 
-        self._add_layers(self.outputs)
+    def __repr__(self):
+        s = '{classname}(scale={scale}, method={method}'
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, scale=self.scale, method=self.method, name=self.name)
+
+    def build(self, inputs_shape):
+        if self.data_format != 'channel_last':
+            raise Exception("UpSampling2d tf.image.resize_images only support channel_last")
+
+    def forward(self, inputs):
+        """
+
+        Parameters
+        ------------
+        inputs : :class:`Tensor`
+            Inputs tensors with 4-D Tensor of the shape (batch, height, width, channels)
+        """
+        output_size = [inputs.shape[1] * self.scale[0], inputs.shape[2] * self.scale[1]]
+        outputs = tf.image.resize(inputs, size=output_size, method=self.method, antialias=self.antialias)
+        return outputs
 
 
-class DownSampling2dLayer(Layer):
-    """The :class:`DownSampling2dLayer` class is down-sampling 2D layer.
+class DownSampling2d(Layer):
+    """The :class:`DownSampling2d` class is down-sampling 2D layer.
 
     See `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer with 4-D Tensor in the shape of (batch, height, width, channels) or 3-D Tensor in the shape of (height, width, channels).
-    size : tuple of int/float
-        (height, width) scale factor or new size of height and width.
-    is_scale : boolean
-        If True (default), the `size` is the scale factor; otherwise, the `size` are numbers of pixels of height and width.
-    method : int
-        The resize method selected through the index. Defaults index is 0 which is ResizeMethod.BILINEAR.
-            - Index 0 is ResizeMethod.BILINEAR, Bilinear interpolation.
-            - Index 1 is ResizeMethod.NEAREST_NEIGHBOR, Nearest neighbor interpolation.
-            - Index 2 is ResizeMethod.BICUBIC, Bicubic interpolation.
-            - Index 3 ResizeMethod.AREA, Area interpolation.
-    align_corners : boolean
-        If True, exactly align all 4 corners of the input and output. Default is False.
-    name : str
+    scale : int/float or tuple of int/float
+        (height, width) scale factor.
+    method : str
+        The resize method selected through the given string. Default 'bilinear'.
+            - 'bilinear', Bilinear interpolation.
+            - 'nearest', Nearest neighbor interpolation.
+            - 'bicubic', Bicubic interpolation.
+            - 'area', Area interpolation.
+    antialias : boolean
+        Whether to use an anti-aliasing filter when downsampling an image.
+    data_format : str
+        channels_last 'channel_last' (default) or channels_first.
+    name : None or str
         A unique layer name.
+
+    Examples
+    ---------
+    With TensorLayer
+
+    >>> ni = tl.layers.Input([None, 50, 50, 32], name='input')
+    >>> ni = tl.layers.DownSampling2d(scale=(2, 2))(ni)
+    >>> output shape : [None, 25, 25, 32]
+
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
-            size,
-            is_scale=True,
-            method=0,
-            align_corners=False,
-            name='downsample2d_layer',
+            scale,
+            method='bilinear',
+            antialias=False,
+            data_format='channel_last',
+            name=None,
     ):
-        super(DownSampling2dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(DownSampling2d, self).__init__(name)
+        self.method = method
+        self.antialias = antialias
+        self.data_format = data_format
 
         logging.info(
-            "DownSampling2dLayer %s: is_scale: %s size: %s method: %d, align_corners: %s" %
-            (self.name, is_scale, size, method, align_corners)
+            "DownSampling2d %s: scale: %s method: %s antialias: %s" % (self.name, scale, self.method, self.antialias)
         )
 
-        if not isinstance(size, (list, tuple)) and len(size) == 2:
-            raise AssertionError()
+        self.build(None)
+        self._built = True
 
-        if len(self.inputs.get_shape()) == 3:
-            if is_scale:
-                input_shape = self.inputs.shape.as_list()
-                if input_shape[0] is not None:
-                    size_h = size[0] * input_shape[0]
-                else:
-                    size_h = size[0] * tf.shape(self.inputs)[0]
-                if input_shape[1] is not None:
-                    size_w = size[1] * input_shape[1]
-                else:
-                    size_w = size[1] * tf.shape(self.inputs)[1]
-                size = [size_h, size_w]
+        if isinstance(scale, (list, tuple)) and len(scale) != 2:
+            raise ValueError("scale must be int or tuple/list of length 2")
 
-        elif len(self.inputs.get_shape()) == 4:
-            if is_scale:
-                input_shape = self.inputs.shape.as_list()
-                if input_shape[1] is not None:
-                    size_h = size[0] * input_shape[1]
-                else:
-                    size_h = size[0] * tf.shape(self.inputs)[1]
-                if input_shape[2] is not None:
-                    size_w = size[1] * input_shape[2]
-                else:
-                    size_w = size[1] * tf.shape(self.inputs)[2]
-                size = [size_h, size_w]
+        self.scale = (scale, scale) if isinstance(scale, int) else scale
 
-        else:
-            raise Exception("Do not support shape %s" % tf.shape(self.inputs))
+    def __repr__(self):
+        s = '{classname}(scale={scale}, method={method}'
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, scale=self.scale, method=self.method, name=self.name)
 
-        with tf.variable_scope(name):
-            try:
-                self.outputs = tf.image.resize_images(
-                    self.inputs, size=size, method=method, align_corners=align_corners
-                )
-            except Exception:  # for TF 0.10
-                self.outputs = tf.image.resize_images(
-                    self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners
-                )
+    def build(self, inputs_shape):
+        if self.data_format != 'channel_last':
+            raise Exception("DownSampling2d tf.image.resize_images only support channel_last")
 
-        self._add_layers(self.outputs)
+    def forward(self, inputs):
+        """
+
+        Parameters
+        ------------
+        inputs : :class:`Tensor`
+            Inputs tensors with 4-D Tensor of the shape (batch, height, width, channels)
+        """
+        output_size = [int(inputs.shape[1] * 1.0 / self.scale[0]), int(inputs.shape[2] * 1.0 / self.scale[1])]
+        outputs = tf.image.resize(inputs, size=output_size, method=self.method, antialias=self.antialias)
+        return outputs

@@ -18,11 +18,11 @@ from .quan_dense import *
 from .quan_dense_bn import *
 
 __all__ = [
-    'BinaryDenseLayer',
-    'DenseLayer',
-    'DorefaDenseLayer',
-    'DropconnectDenseLayer',
-    'TernaryDenseLayer',
-    'QuanDenseLayer',
+    'BinaryDense',
+    'Dense',
+    'DorefaDense',
+    'DropconnectDense',
+    'TernaryDense',
+    'QuanDense',
     'QuanDenseLayerWithBN',
 ]

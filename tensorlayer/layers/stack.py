@@ -3,28 +3,24 @@
 
 import tensorflow as tf
 
+from tensorlayer import logging
+from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import logging
-
-from tensorlayer.decorators import deprecated_alias
-
 __all__ = [
-    'StackLayer',
-    'UnStackLayer',
+    'Stack',
+    'UnStack',
 ]
 
 
-class StackLayer(Layer):
+class Stack(Layer):
     """
-    The :class:`StackLayer` class is a layer for stacking a list of rank-R tensors into one rank-(R+1) tensor, see `tf.stack() <https://www.tensorflow.org/api_docs/python/tf/stack>`__.
+    The :class:`Stack` class is a layer for stacking a list of rank-R tensors into one rank-(R+1) tensor, see `tf.stack() <https://www.tensorflow.org/api_docs/python/tf/stack>`__.
 
     Parameters
     ----------
-    layers : list of :class:`Layer`
-        Previous layers to stack.
     axis : int
-        Dimension along which to concatenate.
+        New dimension along which to stack.
     name : str
         A unique layer name.
 
@@ -32,45 +28,48 @@ class StackLayer(Layer):
     ---------
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
-    >>> x = tf.placeholder(tf.float32, shape=[None, 30])
-    >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net1 = tl.layers.DenseLayer(net, 10, name='dense1')
-    >>> net2 = tl.layers.DenseLayer(net, 10, name='dense2')
-    >>> net3 = tl.layers.DenseLayer(net, 10, name='dense3')
-    >>> net = tl.layers.StackLayer([net1, net2, net3], axis=1, name='stack')
+    >>> ni = tl.layers.Input([None, 784], name='input')
+    >>> net1 = tl.layers.Dense(10, name='dense1')(ni)
+    >>> net2 = tl.layers.Dense(10, name='dense2')(ni)
+    >>> net3 = tl.layers.Dense(10, name='dense3')(ni)
+    >>> net = tl.layers.Stack(axis=1, name='stack')([net1, net2, net3])
     (?, 3, 10)
 
     """
 
     def __init__(
             self,
-            layers,
             axis=1,
-            name='stack',
+            name=None,  #'stack',
     ):
+        super().__init__(name)
+        self.axis = axis
 
-        super(StackLayer, self).__init__(prev_layer=layers, name=name)
+        self.build(None)
+        self._built = True
+        logging.info("Stack %s: axis: %d" % (self.name, self.axis))
 
-        logging.info("StackLayer %s: axis: %d" % (self.name, axis))
+    def __repr__(self):
+        s = '{classname}(axis={axis}'
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
-        self.outputs = tf.stack(self.inputs, axis=axis, name=name)
+    def build(self, inputs_shape):
+        pass
 
-        # for i in range(1, len(layers)):
-        #     self._add_layers(list(layers[i].all_layers))
-        #     self._add_params(list(layers[i].all_params))
-        #     self.all_drop.update(dict(layers[i].all_drop))
-
-        self._add_layers(self.outputs)
+    def forward(self, inputs):
+        outputs = tf.stack(inputs, axis=self.axis, name=self.name)
+        return outputs
 
 
-class UnStackLayer(Layer):
+class UnStack(Layer):
     """
-    The :class:`UnStackLayer` class is a layer for unstacking the given dimension of a rank-R tensor into rank-(R-1) tensors., see `tf.unstack() <https://www.tensorflow.org/api_docs/python/tf/unstack>`__.
+    The :class:`UnStack` class is a layer for unstacking the given dimension of a rank-R tensor into rank-(R-1) tensors., see `tf.unstack() <https://www.tensorflow.org/api_docs/python/tf/unstack>`__.
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer
     num : int or None
         The length of the dimension axis. Automatically inferred if None (the default).
     axis : int
@@ -83,25 +82,35 @@ class UnStackLayer(Layer):
     list of :class:`Layer`
         The list of layer objects unstacked from the input.
 
+    Examples
+    --------
+    >>> ni = Input([4, 10], name='input')
+    >>> nn = Dense(n_units=5)(ni)
+    >>> nn = UnStack(axis=1)(nn)  # unstack in channel axis
+    >>> len(nn)  # 5
+    >>> nn[0].shape  # (4,)
+
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, num=None, axis=0, name='unstack'):
+    def __init__(self, num=None, axis=0, name=None):  #'unstack'):
+        super().__init__(name)
+        self.num = num
+        self.axis = axis
 
-        super(UnStackLayer, self).__init__(prev_layer=prev_layer, name=name)
+        self.build(None)
+        self._built = True
+        logging.info("UnStack %s: num: %s axis: %d" % (self.name, self.num, self.axis))
 
-        outputs = tf.unstack(self.inputs, num=num, axis=axis, name=name)
+    def __repr__(self):
+        s = '{classname}(num={num}, axis={axis}'
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
-        logging.info("UnStackLayer %s: num: %s axis: %d, n_outputs: %d" % (self.name, num, axis, len(outputs)))
+    def build(self, inputs_shape):
+        pass
 
-        net_new = []
-
-        for i, unstacked_dim in enumerate(outputs):
-            layer = Layer(prev_layer=self, name=name + str(i))
-            layer.outputs = unstacked_dim
-
-            net_new.append(layer)
-
-        self.outputs = net_new
-
-        self._add_layers(net_new)
+    def forward(self, inputs):
+        outputs = tf.unstack(inputs, num=self.num, axis=self.axis, name=self.name)
+        return outputs

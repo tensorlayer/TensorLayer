@@ -3,13 +3,10 @@
 
 import tensorflow as tf
 
-from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
-
+import tensorlayer as tl
 from tensorlayer import logging
-
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.decorators import private_method
+from tensorlayer.decorators import deprecated_alias, private_method
+from tensorlayer.layers.core import Layer
 
 __all__ = [
     'DeformableConv2d',
@@ -22,11 +19,9 @@ class DeformableConv2d(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
-    offset_layer : :class:`Layer`
+    offset_layer : tf.Tensor
         To predict the offset of convolution operations.
-        The output shape is (batchsize, input height, input width, 2*(number of element in the convolution kernel))
+        The shape is (batchsize, input height, input width, 2*(number of element in the convolution kernel))
         e.g. if apply a 3*3 kernel, the number of the last dimension should be 18 (2*3*3)
     n_filter : int
         The number of filters.
@@ -34,28 +29,38 @@ class DeformableConv2d(Layer):
         The filter size (height, width).
     act : activation function
         The activation function of this layer.
+    padding : str
+        The padding algorithm type: "SAME" or "VALID".
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
         The initializer for the bias vector. If None, skip biases.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer.
-    b_init_args : dictionary
-        The arguments for the bias vector initializer.
+    in_channels : int
+        The number of in channels.
     name : str
         A unique layer name.
 
     Examples
     --------
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
-    >>> offset1 = tl.layers.Conv2d(net, 18, (3, 3), (1, 1), act=act, padding='SAME', name='offset1')
-    >>> net = tl.layers.DeformableConv2d(net, offset1, 32, (3, 3), act=act, name='deformable1')
-    >>> offset2 = tl.layers.Conv2d(net, 18, (3, 3), (1, 1), act=act, padding='SAME', name='offset2')
-    >>> net = tl.layers.DeformableConv2d(net, offset2, 64, (3, 3), act=act, name='deformable2')
+    With TensorLayer
+
+    >>> net = tl.layers.InputLayer([5, 10, 10, 16], name='input')
+    >>> offset1 = tl.layers.Conv2d(
+    ...     n_filter=18, filter_size=(3, 3), strides=(1, 1), padding='SAME', name='offset1'
+    ... )(net)
+    >>> deformconv1 = tl.layers.DeformableConv2d(
+    ...     offset_layer=offset1, n_filter=32, filter_size=(3, 3), name='deformable1'
+    ... )(net)
+    >>> offset2 = tl.layers.Conv2d(
+    ...     n_filter=18, filter_size=(3, 3), strides=(1, 1), padding='SAME', name='offset2'
+    ... )(deformconv1)
+    >>> deformconv2 = tl.layers.DeformableConv2d(
+    ...     offset_layer=offset2, n_filter=64, filter_size=(3, 3), name='deformable2'
+    ... )(deformconv1)
 
     References
     ----------
-    - The deformation operation was adapted from the implementation in `here <https://github.com/felixlaumon/deform-conv>`__
+    - The deformation operation was adapted from the implementation in `here <https://github.com/kastnerkyle/deform-conv>`__
 
     Notes
     -----
@@ -64,100 +69,178 @@ class DeformableConv2d(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    # @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             offset_layer=None,
             # shape=(3, 3, 1, 100),
             n_filter=32,
             filter_size=(3, 3),
             act=None,
-            name='deformable_conv_2d',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None
+            padding='SAME',
+            W_init=tl.initializers.truncated_normal(stddev=0.02),
+            b_init=tl.initializers.constant(value=0.0),
+            in_channels=None,
+            name=None  # 'deformable_conv_2d',
     ):
-
-        super(DeformableConv2d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
-
-        logging.info(
-            "DeformableConv2d %s: n_filter: %d, filter_size: %s act: %s" %
-            (self.name, n_filter, str(filter_size), self.act.__name__ if self.act is not None else 'No Activation')
-        )
+        super().__init__(name)
 
         self.offset_layer = offset_layer
+        self.n_filter = n_filter
+        self.filter_size = filter_size
+        self.act = act
+        self.padding = padding
+        self.W_init = W_init
+        self.b_init = b_init
+        self.in_channels = in_channels
 
-        try:
-            pre_channel = int(prev_layer.outputs.get_shape()[-1])
-        except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
-            pre_channel = 1
-            logging.info("[warnings] unknow input channels, set to 1")
-        shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
+        self.kernel_n = filter_size[0] * filter_size[1]
+        if self.offset_layer.get_shape()[-1] != 2 * self.kernel_n:
+            raise AssertionError("offset.get_shape()[-1] is not equal to: %d" % 2 * self.kernel_n)
 
-        with tf.variable_scope(name):
-            offset = self.offset_layer.outputs
-
-            if offset.get_shape()[-1] != 2 * shape[0] * shape[1]:
-                raise AssertionError("offset.get_shape()[-1] is not equal to: %d" % 2 * shape[0] * shape[1])
-
-            # Grid initialisation
-            input_h = int(self.inputs.get_shape()[1])
-            input_w = int(self.inputs.get_shape()[2])
-            kernel_n = shape[0] * shape[1]
-            initial_offsets = tf.stack(
-                tf.meshgrid(tf.range(shape[0]), tf.range(shape[1]), indexing='ij')
-            )  # initial_offsets --> (kh, kw, 2)
-            initial_offsets = tf.reshape(initial_offsets, (-1, 2))  # initial_offsets --> (n, 2)
-            initial_offsets = tf.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, n, 2)
-            initial_offsets = tf.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, 1, n, 2)
-            initial_offsets = tf.tile(initial_offsets, [input_h, input_w, 1, 1])  # initial_offsets --> (h, w, n, 2)
-            initial_offsets = tf.cast(initial_offsets, 'float32')
-            grid = tf.meshgrid(
-                tf.range(-int((shape[0] - 1) / 2.0), int(input_h - int((shape[0] - 1) / 2.0)), 1),
-                tf.range(-int((shape[1] - 1) / 2.0), int(input_w - int((shape[1] - 1) / 2.0)), 1), indexing='ij'
+        logging.info(
+            "DeformableConv2d %s: n_filter: %d, filter_size: %s act: %s" % (
+                self.name, self.n_filter, str(self.filter_size
+                                             ), self.act.__name__ if self.act is not None else 'No Activation'
             )
+        )
 
-            grid = tf.stack(grid, axis=-1)
-            grid = tf.cast(grid, 'float32')  # grid --> (h, w, 2)
-            grid = tf.expand_dims(grid, 2)  # grid --> (h, w, 1, 2)
-            grid = tf.tile(grid, [1, 1, kernel_n, 1])  # grid --> (h, w, n, 2)
-            grid_offset = grid + initial_offsets  # grid_offset --> (h, w, n, 2)
+        # try:
+        #     pre_channel = int(prev_layer.outputs.get_shape()[-1])
+        # except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
+        #     pre_channel = 1
+        #     logging.info("[warnings] unknow input channels, set to 1")
+        # shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
 
-            input_deform = self._tf_batch_map_offsets(self.inputs, offset, grid_offset)
+        # with tf.compat.v1.variable_scope(name):
+        #     offset = self.offset_layer # .outputs
+        #
+        #     # if offset.get_shape()[-1] != 2 * shape[0] * shape[1]:
+        #     #     raise AssertionError("offset.get_shape()[-1] is not equal to: %d" % 2 * shape[0] * shape[1])
+        #
+        #     # Grid initialisation
+        #     input_h = int(self.inputs.get_shape()[1])
+        #     input_w = int(self.inputs.get_shape()[2])
+        #     # kernel_n = shape[0] * shape[1]
+        #     initial_offsets = tf.stack(
+        #         tf.meshgrid(tf.range(shape[0]), tf.range(shape[1]), indexing='ij')
+        #     )  # initial_offsets --> (kh, kw, 2)
+        #     initial_offsets = tf.reshape(initial_offsets, (-1, 2))  # initial_offsets --> (n, 2)
+        #     initial_offsets = tf.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, n, 2)
+        #     initial_offsets = tf.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, 1, n, 2)
+        #     initial_offsets = tf.tile(initial_offsets, [input_h, input_w, 1, 1])  # initial_offsets --> (h, w, n, 2)
+        #     initial_offsets = tf.cast(initial_offsets, 'float32')
+        #     grid = tf.meshgrid(
+        #         tf.range(-int((shape[0] - 1) / 2.0), int(input_h - int((shape[0] - 1) / 2.0)), 1),
+        #         tf.range(-int((shape[1] - 1) / 2.0), int(input_w - int((shape[1] - 1) / 2.0)), 1), indexing='ij'
+        #     )
+        #
+        #     grid = tf.stack(grid, axis=-1)
+        #     grid = tf.cast(grid, 'float32')  # grid --> (h, w, 2)
+        #     grid = tf.expand_dims(grid, 2)  # grid --> (h, w, 1, 2)
+        #     grid = tf.tile(grid, [1, 1, self.kernel_n, 1])  # grid --> (h, w, n, 2)
+        #     grid_offset = grid + initial_offsets  # grid_offset --> (h, w, n, 2)
+        #
+        #     input_deform = self._tf_batch_map_offsets(self.inputs, offset, grid_offset)
+        #
+        #     # W = tf.compat.v1.get_variable(
+        #     #     name='W_deformableconv2d', shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]], initializer=W_init,
+        #     #     dtype=LayersConfig.tf_dtype,
+        #     # )
+        #
+        #     # _tensor = tf.nn.conv3d(input_deform, W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None)
+        #     # _tensor = tf.nn.conv3d(
+        #     #     input=input_deform,
+        #     #     filters=W,
+        #     #     strides=[1, 1, 1, 1, 1],
+        #     #     padding='VALID',
+        #     #     name=None
+        #     # )
+        #
+        #     # if b_init:
+        #     #     b = tf.compat.v1.get_variable(
+        #     #         name='b_deformableconv2d', shape=(shape[-1]), initializer=b_init, # dtype=LayersConfig.tf_dtype,
+        #     #     )
+        #     #
+        #     #     _tensor = tf.nn.bias_add(_tensor, b, name='bias_add')
+        #
+        #     # self.outputs = tf.reshape(
+        #     #     tensor=self._apply_activation(_tensor),
+        #     #     shape=[tf.shape(input=self.inputs)[0], input_h, input_w, shape[-1]]
+        #     # )
+        #
+        # # self._add_layers(self.outputs)
 
-            W = tf.get_variable(
-                name='W_deformableconv2d', shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]], initializer=W_init,
-                dtype=LayersConfig.tf_dtype, **self.W_init_args
-            )
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = (
+            '{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
+            ', padding={padding}'
+        )
+        if self.b_init is None:
+            s += ', bias=False'
+        s += (', ' + actstr)
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
 
-            _tensor = tf.nn.conv3d(input_deform, W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None)
+    def build(self, inputs_shape):
 
-            if b_init:
-                b = tf.get_variable(
-                    name='b_deformableconv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
-                    **self.b_init_args
-                )
+        self.in_channels = inputs_shape[-1]
 
-                _tensor = tf.nn.bias_add(_tensor, b, name='bias_add')
+        self.input_h = int(inputs_shape[1])
+        self.input_w = int(inputs_shape[2])
+        initial_offsets = tf.stack(
+            tf.meshgrid(tf.range(self.filter_size[0]), tf.range(self.filter_size[1]), indexing='ij')
+        )  # initial_offsets --> (kh, kw, 2)
+        initial_offsets = tf.reshape(initial_offsets, (-1, 2))  # initial_offsets --> (n, 2)
+        initial_offsets = tf.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, n, 2)
+        initial_offsets = tf.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, 1, n, 2)
+        initial_offsets = tf.tile(
+            initial_offsets, [self.input_h, self.input_w, 1, 1]
+        )  # initial_offsets --> (h, w, n, 2)
+        initial_offsets = tf.cast(initial_offsets, 'float32')
+        grid = tf.meshgrid(
+            tf.range(
+                -int((self.filter_size[0] - 1) / 2.0), int(self.input_h - int((self.filter_size[0] - 1) / 2.0)), 1
+            ),
+            tf.range(
+                -int((self.filter_size[1] - 1) / 2.0), int(self.input_w - int((self.filter_size[1] - 1) / 2.0)), 1
+            ), indexing='ij'
+        )
 
-            self.outputs = tf.reshape(
-                tensor=self._apply_activation(_tensor), shape=[tf.shape(self.inputs)[0], input_h, input_w, shape[-1]]
-            )
+        grid = tf.stack(grid, axis=-1)
+        grid = tf.cast(grid, 'float32')  # grid --> (h, w, 2)
+        grid = tf.expand_dims(grid, 2)  # grid --> (h, w, 1, 2)
+        grid = tf.tile(grid, [1, 1, self.kernel_n, 1])  # grid --> (h, w, n, 2)
+        self.grid_offset = grid + initial_offsets  # grid_offset --> (h, w, n, 2)
 
-        self._add_layers(self.outputs)
+        self.filter_shape = (1, 1, self.kernel_n, self.in_channels, self.n_filter)
 
-        if b_init:
-            self._add_params([W, b])
-        else:
-            self._add_params(W)
+        self.W = self._get_weights("W_deformableconv2d", shape=self.filter_shape, init=self.W_init)
+
+        if self.b_init:
+            self.b = self._get_weights("b_deformableconv2d", shape=(self.n_filter, ), init=self.b_init)
+
+    def forward(self, inputs):
+        # shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
+        offset = self.offset_layer
+        grid_offset = self.grid_offset
+
+        input_deform = self._tf_batch_map_offsets(inputs, offset, grid_offset)
+        outputs = tf.nn.conv3d(input=input_deform, filters=self.W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None)
+        outputs = tf.reshape(tensor=outputs, shape=[outputs.get_shape()[0], self.input_h, self.input_w, self.n_filter])
+        if self.b_init:
+            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+        if self.act:
+            outputs = self.act(outputs)
+        return outputs
 
     @private_method
     def _to_bc_h_w(self, x, x_shape):
         """(b, h, w, c) -> (b*c, h, w)"""
-        x = tf.transpose(x, [0, 3, 1, 2])
+        x = tf.transpose(a=x, perm=[0, 3, 1, 2])
         x = tf.reshape(x, (-1, x_shape[1], x_shape[2]))
         return x
 
@@ -165,7 +248,7 @@ class DeformableConv2d(Layer):
     def _to_b_h_w_n_c(self, x, x_shape):
         """(b*c, h, w, n) -> (b, h, w, n, c)"""
         x = tf.reshape(x, (-1, x_shape[4], x_shape[1], x_shape[2], x_shape[3]))
-        x = tf.transpose(x, [0, 2, 3, 4, 1])
+        x = tf.transpose(a=x, perm=[0, 2, 3, 4, 1])
         return x
 
     @private_method
@@ -215,16 +298,16 @@ class DeformableConv2d(Layer):
             A Tensor with the shape as (b*c, h, w, n)
 
         """
-        input_shape = inputs.get_shape()
+        inputs_shape = inputs.get_shape()
         coords_shape = coords.get_shape()
-        batch_channel = tf.shape(inputs)[0]
-        input_h = int(input_shape[1])
-        input_w = int(input_shape[2])
+        batch_channel = tf.shape(input=inputs)[0]
+        input_h = int(inputs_shape[1])
+        input_w = int(inputs_shape[2])
         kernel_n = int(coords_shape[3])
         n_coords = input_h * input_w * kernel_n
 
         coords_lt = tf.cast(tf.floor(coords), 'int32')
-        coords_rb = tf.cast(tf.ceil(coords), 'int32')
+        coords_rb = tf.cast(tf.math.ceil(coords), 'int32')
         coords_lb = tf.stack([coords_lt[:, :, :, :, 0], coords_rb[:, :, :, :, 1]], axis=-1)
         coords_rt = tf.stack([coords_rb[:, :, :, :, 0], coords_lt[:, :, :, :, 1]], axis=-1)
 
@@ -262,15 +345,15 @@ class DeformableConv2d(Layer):
             A Tensor with the shape as (b, h, w, c)
 
         """
-        input_shape = inputs.get_shape()
-        batch_size = tf.shape(inputs)[0]
+        inputs_shape = inputs.get_shape()
+        batch_size = tf.shape(input=inputs)[0]
         kernel_n = int(int(offsets.get_shape()[3]) / 2)
-        input_h = input_shape[1]
-        input_w = input_shape[2]
-        channel = input_shape[3]
+        input_h = inputs_shape[1]
+        input_w = inputs_shape[2]
+        channel = inputs_shape[3]
 
         # inputs (b, h, w, c) --> (b*c, h, w)
-        inputs = self._to_bc_h_w(inputs, input_shape)
+        inputs = self._to_bc_h_w(inputs, inputs_shape)
 
         # offsets (b, h, w, 2*n) --> (b, h, w, n, 2)
         offsets = tf.reshape(offsets, (batch_size, input_h, input_w, kernel_n, 2))

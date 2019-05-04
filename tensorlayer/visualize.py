@@ -4,11 +4,11 @@
 import os
 
 import imageio
-
 import numpy as np
 
 import tensorlayer as tl
 from tensorlayer.lazy_imports import LazyImport
+
 cv2 = LazyImport("cv2")
 
 # Uncomment the following line if you got: _tkinter.TclError: no display name and no $DISPLAY environment variable

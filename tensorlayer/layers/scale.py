@@ -3,46 +3,59 @@
 
 import tensorflow as tf
 
+from tensorlayer import logging
+from tensorlayer.initializers import constant
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import logging
-
-from tensorlayer.decorators import deprecated_alias
-
 __all__ = [
-    'ScaleLayer',
+    'Scale',
 ]
 
 
-class ScaleLayer(Layer):
-    """The :class:`AddScaleLayer` class is for multipling a trainble scale value to the layer outputs. Usually be used on the output of binary net.
+class Scale(Layer):
+    """The :class:`Scale` class is to multiple a trainable scale value to the layer outputs. Usually be used on the output of binary net.
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     init_scale : float
         The initial value for the scale factor.
     name : a str
         A unique layer name.
 
+    Examples:
+    ----------
+    >>> inputs = tl.layers.Input([8, 3])
+    >>> dense = tl.layers.Dense(n_units=10)(inputs)
+    >>> outputs = tl.layers.Scale(init_scale=0.5)(dense)
+    >>> model = tl.models.Model(inputs=inputs, outputs=[dense, outputs])
+    >>> dense_out, scale_out = model(data, is_train=True)
+
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
             init_scale=0.05,
             name='scale',
     ):
-        super(ScaleLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(Scale, self).__init__(name)
+        self.init_scale = init_scale
 
-        logging.info("ScaleLayer  %s: init_scale: %f" % (self.name, init_scale))
+        self.build((None, ))
+        self._built = True
 
-        with tf.variable_scope(name):
-            # scale = tf.get_variable(name='scale_factor', init, trainable=True, )
-            scale = tf.get_variable("scale", shape=[1], initializer=tf.constant_initializer(value=init_scale))
-            self.outputs = self.inputs * scale
+        logging.info("Scale  %s: init_scale: %f" % (self.name, self.init_scale))
 
-        self._add_layers(self.outputs)
-        self._add_params(scale)
+    def __repr__(self):
+        s = '{classname}('
+        s += 'init_scale={init_scale},'
+        s += 'name={name}'
+        s += ")"
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape):
+        self.scale = self._get_weights("scale", shape=[1], init=constant(value=self.init_scale))
+
+    # @tf.function
+    def forward(self, inputs):
+        outputs = inputs * self.scale
+        return outputs

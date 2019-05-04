@@ -3,7 +3,6 @@
 import json
 import os
 import time
-import math
 
 import tensorflow as tf
 from tensorflow.python.training import session_run_hook

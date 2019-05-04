@@ -2,37 +2,30 @@
 # -*- coding: utf-8 -*-
 
 import copy
-
+import math
+import random
 import threading
 import time
 
 import numpy as np
-
-import tensorlayer as tl
-
+import PIL
 import scipy
 import scipy.ndimage as ndi
-
+import skimage
 from scipy import linalg
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
-
-import skimage
-
-from skimage import exposure
-from skimage import transform
-
-from skimage.morphology import disk
-from skimage.morphology import erosion as _erosion
+from six.moves import range
+from skimage import exposure, transform
 from skimage.morphology import binary_dilation as _binary_dilation
 from skimage.morphology import binary_erosion as _binary_erosion
+from skimage.morphology import disk
+from skimage.morphology import erosion as _erosion
 
-from six.moves import range
+import tensorlayer as tl
 from tensorlayer.lazy_imports import LazyImport
-import PIL
+
 cv2 = LazyImport("cv2")
-import math
-import random
 
 # linalg https://docs.scipy.org/doc/scipy/reference/linalg.html
 # ndimage https://docs.scipy.org/doc/scipy/reference/ndimage.html
@@ -539,9 +532,9 @@ def affine_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', 
     final_affine_matrix = transform_matrix[:2, :2]
     final_offset = transform_matrix[:2, 2]
     channel_images = [
-        ndi.interpolation.
-        affine_transform(x_channel, final_affine_matrix, final_offset, order=order, mode=fill_mode, cval=cval)
-        for x_channel in x
+        ndi.interpolation.affine_transform(
+            x_channel, final_affine_matrix, final_offset, order=order, mode=fill_mode, cval=cval
+        ) for x_channel in x
     ]
     x = np.stack(channel_images, axis=0)
     x = np.rollaxis(x, 0, channel_index + 1)
@@ -869,8 +862,8 @@ def crop_multi(x, wrg, hrg, is_random=False, row_index=0, col_index=1):
         return np.asarray(results)
     else:
         # central crop
-        h_offset = (h - hrg) / 2
-        w_offset = (w - wrg) / 2
+        h_offset = int(np.floor((h - hrg) / 2.))
+        w_offset = int(np.floor((w - wrg) / 2.))
         results = []
         for data in x:
             results.append(data[h_offset:h - h_offset, w_offset:w - w_offset])
@@ -1537,7 +1530,7 @@ def zoom_multi(x, zoom_range=(0.9, 1.1), flags=None, border_mode='constant'):
         h, w = x.shape[0], x.shape[1]
         transform_matrix = transform_matrix_offset_center(zoom_matrix, h, w)
         results.append(affine_transform_cv2(x, transform_matrix, flags=flags, border_mode=border_mode))
-    return result
+    return results
 
 
 # image = tf.image.random_brightness(image, max_delta=32. / 255.)
@@ -3145,9 +3138,9 @@ def obj_box_shift(
 
 
 def obj_box_zoom(
-        im, classes=None, coords=None, zoom_range=(0.9,
-                                                   1.1), row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
-        cval=0., order=1, is_rescale=False, is_center=False, is_random=False, thresh_wh=0.02, thresh_wh2=12.
+        im, classes=None, coords=None, zoom_range=(0.9, 1.1), row_index=0, col_index=1, channel_index=2,
+        fill_mode='nearest', cval=0., order=1, is_rescale=False, is_center=False, is_random=False, thresh_wh=0.02,
+        thresh_wh2=12.
 ):
     """Zoom in and out of a single image, randomly or non-randomly, and compute the new bounding box coordinates.
     Objects outside the cropped image will be removed.

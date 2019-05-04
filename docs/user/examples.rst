@@ -7,20 +7,23 @@ Examples
 Basics
 ============
 
- - Multi-layer perceptron (MNIST). Classification task, see `tutorial_mnist_simple.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_simple.py>`__.
- - Multi-layer perceptron (MNIST). Classification with dropout using iterator, see `method1 <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mlp_dropout1.py>`__ (**use placeholder**) and `method2 <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mlp_dropout2.py>`__ (**use reuse**).
- - Denoising Autoencoder (MNIST). Classification task, see `tutorial_mnist_autoencoder_cnn.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_autoencoder_cnn.py>`__.
- - Stacked Denoising Autoencoder and Fine-Tuning (MNIST). A MLP classification task, see `tutorial_mnist_autoencoder_cnn.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_autoencoder_cnn.py>`__.
- - Convolutional Network (MNIST). Classification task, see `tutorial_mnist_autoencoder_cnn.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_autoencoder_cnn.py>`__.
- - Convolutional Network (CIFAR-10). Classification task, see `tutorial_cifar10.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_cifar10.py>`_ and `tutorial_cifar10_tfrecord.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_cifar10_tfrecord.py>`__.
+ - Multi-layer perceptron (MNIST), simple usage. Classification task, see `tutorial_mnist_simple.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_simple.py>`__.
+ - Multi-layer perceptron (MNIST), dynamic model. Classification with dropout using iterator, see `tutorial_mnist_mlp_dynamic.py method2 <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_mlp_dynamic.py>`__.
+ - Multi-layer perceptron (MNIST), static model. Classification with dropout using iterator, see `tutorial_mnist_mlp_static.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_mlp_static.py>`__.
+ - Convolutional Network (CIFAR-10). Classification task, see `tutorial_cifar10_cnn_static.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_cifar10_cnn_static.py>`_.
  - TensorFlow dataset API for object detection see `here <https://github.com/tensorlayer/tensorlayer/blob/master/examples/data_process/tutorial_tf_dataset_voc.py>`__.
- - Merge TF-Slim into TensorLayer. `tutorial_inceptionV3_tfslim.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/pretrained_cnn/tutorial_inceptionV3_tfslim.py>`__.
  - Merge Keras into TensorLayer. `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/keras_tfslim/tutorial_keras.py>`__.
- - Data augmentation with TFRecord. Effective way to load and pre-process data, see `tutorial_tfrecord*.py <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process>`__ and `tutorial_cifar10_tfrecord.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_cifar10_tfrecord.py>`__.
- - Data augmentation with Dataset API. Effective way to load and pre-process data, see `tutorial_cifar10_datasetapi.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_cifar10_datasetapi.py>`__.
- - Data augmentation with TensorLayer. See `tutorial_image_preprocess.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/tutorial_image_preprocess.py>`__ (for quick test only).
- - Float 16 half-precision model, see `tutorial_mnist_float16.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_float16.py>`__.
- - Transparent distributed training. `mnist <https://github.com/tensorlayer/tensorlayer/blob/master/examples/distributed_training/tutorial_mnist_distributed_trainer.py>`__ by `luomai <https://github.com/luomai>`__.
+ - Data augmentation with TFRecord. Effective way to load and pre-process data, see `tutorial_tfrecord*.py <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process>`__ and `tutorial_cifar10_tfrecord.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/data_process/tutorial_tfrecord.py>`__.
+ - Data augmentation with TensorLayer. See `tutorial_fast_affine_transform.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/data_process/tutorial_fast_affine_transform.py>`__ (for quick test only).
+
+Pretrained Models
+==================
+
+ - VGG 16 (ImageNet). Classification task, see `tutorial_models_vgg16 <https://github.com/tensorlayer/tensorlayer/blob/master/examples/pretrained_cnn/tutorial_models_vgg16.py>`__.
+ - VGG 19 (ImageNet). Classification task, see `tutorial_models_vgg19.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/pretrained_cnn/tutorial_vgg19.py>`__.
+ - SqueezeNet (ImageNet). Model compression, see `tutorial_models_squeezenetv1.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/pretrained_cnn/tutorial_models_squeezenetv1.py>`__.
+ - MobileNet (ImageNet). Model compression, see `tutorial_models_mobilenetv1.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/pretrained_cnn/tutorial_models_mobilenetv1.py>`__.
+ - All pretrained models in `pretrained-models <https://github.com/tensorlayer/pretrained-models>`__.
 
 Vision
 ==================
@@ -70,17 +73,6 @@ Reinforcement Learning
  - A3C for continuous action space (Bipedal Walker), see `tutorial_bipedalwalker_a3c*.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/reinforcement_learning/tutorial_bipedalwalker_a3c_continuous_action.py>`__.
  - `DAGGER <https://www.cs.cmu.edu/%7Esross1/publications/Ross-AIStats11-NoRegret.pdf>`__ for (`Gym Torcs <https://github.com/ugo-nama-kun/gym_torcs>`__) by `zsdonghao <https://github.com/zsdonghao/Imitation-Learning-Dagger-Torcs>`__.
  - `TRPO <https://arxiv.org/abs/1502.05477>`__ for continuous and discrete action space by `jjkke88 <https://github.com/jjkke88/RL_toolbox>`__.
-
-Pretrained Models
-==================
-
- - VGG 16 (ImageNet). Classification task, see `tl.models.VGG16 <https://github.com/tensorlayer/tensorlayer/blob/master/examples/pretrained_cnn/tutorial_models_vgg16.py>`__ or `tutorial_vgg16.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/pretrained_cnn/tutorial_vgg16.py>`__.
- - VGG 19 (ImageNet). Classification task, see `tutorial_vgg19.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/pretrained_cnn/tutorial_vgg19.py>`__.
- - InceptionV3 (ImageNet). Classification task, see `tutorial_inceptionV3_tfslim.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/pretrained_cnn/tutorial_inceptionV3_tfslim.py>`__.
- - SqueezeNet (ImageNet). Model compression, see `tl.models.SqueezeNetV1 <https://github.com/tensorlayer/tensorlayer/blob/master/examples/pretrained_cnn/tutorial_models_squeezenetv1.py>`__ or `tutorial_squeezenet.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/pretrained_cnn/tutorial_squeezenet.py>`__.
- - MobileNet (ImageNet). Model compression, see `tl.models.MobileNetV1 <https://github.com/tensorlayer/tensorlayer/blob/master/examples/pretrained_cnn/tutorial_models_mobilenetv1.py>`__ or `tutorial_mobilenet.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/pretrained_cnn/tutorial_mobilenet.py>`__.
- - More CNN implementations of `TF-Slim <https://github.com/tensorflow/models/tree/master/research/slim>`__ can be connected to TensorLayer via SlimNetsLayer.
- - All pretrained models in `pretrained-models <https://github.com/tensorlayer/pretrained-models>`__.
 
 Miscellaneous
 =================

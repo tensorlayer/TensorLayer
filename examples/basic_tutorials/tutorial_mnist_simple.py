@@ -3,55 +3,58 @@
 
 import tensorflow as tf
 import tensorlayer as tl
+import numpy as np
 
-tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
-sess = tf.InteractiveSession()
+# set gpu mem fraction or allow growth
+# tl.utils.set_gpu_fraction()
 
 # prepare data
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
-# define placeholder
-x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
-y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 
 # define the network
-network = tl.layers.InputLayer(x, name='input')
-network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
-network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu1')
-network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
-network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu2')
-network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
-# the softmax is implemented internally in tl.cost.cross_entropy(y, y_) to
-# speed up computation, so we use identity here.
-# see tf.nn.sparse_softmax_cross_entropy_with_logits()
-network = tl.layers.DenseLayer(network, n_units=10, act=None, name='output')
+ni = tl.layers.Input([None, 784])
+nn = tl.layers.Dropout(keep=0.8)(ni)
+nn = tl.layers.Dense(n_units=800, act=tf.nn.relu)(nn)
+nn = tl.layers.Dropout(keep=0.5)(nn)
+nn = tl.layers.Dense(n_units=800, act=tf.nn.relu)(nn)
+nn = tl.layers.Dropout(keep=0.5)(nn)
+nn = tl.layers.Dense(n_units=10, act=None)(nn)
+network = tl.models.Model(inputs=ni, outputs=nn, name="mlp")
 
-# define cost function and metric.
-y = network.outputs
-cost = tl.cost.cross_entropy(y, y_, name='cost')
-correct_prediction = tf.equal(tf.argmax(y, 1), y_)
-acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-y_op = tf.argmax(tf.nn.softmax(y), 1)
 
-# define the optimizer
-train_params = network.all_params
-train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_params)
+# define metric.
+def acc(_logits, y_batch):
+    # return np.mean(np.equal(np.argmax(_logits, 1), y_batch))
+    return tf.reduce_mean(
+        tf.cast(tf.equal(tf.argmax(_logits, 1), tf.convert_to_tensor(y_batch, tf.int64)), tf.float32), name='accuracy'
+    )
 
-# initialize all variables in the session
-sess.run(tf.global_variables_initializer())
 
 # print network information
-network.print_params()
-network.print_layers()
+print(network)
+
+# open tensorboard
+# tl.utils.open_tensorboard('./tb_log', port=6006)
 
 # train the network
-tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=acc, batch_size=500, \
-    n_epoch=500, print_freq=5, X_val=X_val, y_val=y_val, eval_train=False)
+tl.utils.fit(
+    network, train_op=tf.optimizers.Adam(learning_rate=0.0001), cost=tl.cost.cross_entropy, X_train=X_train,
+    y_train=y_train, acc=acc, batch_size=256, n_epoch=20, X_val=X_val, y_val=y_val, eval_train=True,
+    tensorboard_dir='./tb_log'
+)
+
+# test
+tl.utils.test(network, acc, X_test, y_test, batch_size=None, cost=tl.cost.cross_entropy)
 
 # evaluation
-tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)
+_logits = tl.utils.predict(network, X_test)
+y_pred = np.argmax(_logits, 1)
+tl.utils.evaluation(y_test, y_pred, n_classes=10)
 
-# save the network to .npz file
-tl.files.save_npz(network.all_params, name='model.npz')
-sess.close()
+# save network weights
+network.save_weights('model.h5')
+
+# close tensorboard
+# tl.utils.exit_tensorflow(port=6006)

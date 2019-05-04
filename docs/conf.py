@@ -71,6 +71,7 @@ autodoc_mock_imports = [
     'sklearn',
     'tensorflow',
     'tqdm',
+    'h5py',
 
     # TL C++ Packages
     'tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops',
@@ -460,7 +461,7 @@ epub_exclude_files = ['search.html']
 # If false, no index is generated.
 #
 # epub_use_index = True
-              
+
 pygments_style = 'sphinx'
 
 html_theme = "sphinx_rtd_theme"

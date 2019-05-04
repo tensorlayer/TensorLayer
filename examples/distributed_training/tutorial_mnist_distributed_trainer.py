@@ -3,6 +3,7 @@
 
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
 
 tf.logging.set_verbosity(tf.logging.DEBUG)

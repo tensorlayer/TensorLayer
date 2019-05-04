@@ -15,11 +15,13 @@ Reference
 
 """
 
-import os
 import json
+import os
+
 import numpy as np
-from PIL import Image
 import tensorflow as tf
+from PIL import Image
+
 import tensorlayer as tl
 
 

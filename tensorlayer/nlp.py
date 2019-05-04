@@ -2,20 +2,17 @@
 # -*- coding: utf-8 -*-
 
 import collections
-from collections import Counter
 import os
 import random
 import re
 import subprocess
 import tempfile
 import warnings
-
-from six.moves import urllib
-from six.moves import xrange
+from collections import Counter
 
 import numpy as np
-
 import tensorflow as tf
+from six.moves import urllib, xrange
 from tensorflow.python.platform import gfile
 
 import tensorlayer as tl
@@ -559,12 +556,13 @@ def read_analogies_file(eval_file='questions-words.txt', word2id=None):
 
     questions = []
     questions_skipped = 0
+
     with open(eval_file, "rb") as analogy_f:
         for line in analogy_f:
             if line.startswith(b":"):  # Skip comments.
                 continue
             words = line.strip().lower().split(b" ")  # lowercase
-            ids = [word2id.get(w.strip()) for w in words]
+            ids = [word2id.get(w.strip().decode()) for w in words]
             if None in ids or len(ids) != 4:
                 questions_skipped += 1
             else:
