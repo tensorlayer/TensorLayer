@@ -7,7 +7,6 @@ This test compares performance of the following libraries:
 1. TensorLayer v. 2.0
 2. TensorFlow ([tf.keras](https://www.tensorflow.org/api_docs/python/tf/keras)) v. 2.0.0-alpha
 3. [Keras](https://keras.io/) v. 2.2.4
-4. [PyTorch](https://pytorch.org) v. 1.0.1
 
 
 
@@ -32,5 +31,4 @@ __Results:__
 |   Graph   |      Keras      | channel last  | 8677 |      2580         |        2576         |      101       |
 |   Eager   | TensorFlow 2.0  | channel last  | 8723 |      2052         |        2024         |      97       |
 |           | TensorLayer 2.0 | channel last  | 8723 |      2010         |        2007         |      95       |
-|           |     PyTorch     | channel first | 9321 |      1938         |        1935         |      53       |
 
