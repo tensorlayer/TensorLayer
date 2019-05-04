@@ -74,14 +74,13 @@ class Model(object):
     >>> from tensorlayer.layers import Input, Dense, Dropout
     >>> from tensorlayer.models import Model
 
-    - Define static model
+    Define static model
     >>> class CustomModel(Model):
     >>>     def __init__(self):
     >>>         super(CustomModel, self).__init__()
     >>>         self.dense1 = Dense(n_units=800, act=tf.nn.relu, in_channels=784)
     >>>         self.dropout1 = Dropout(keep=0.8)
     >>>         self.dense2 = Dense(n_units=10, in_channels=800)
-
     >>>     def forward(self, x):
     >>>         z = self.dense1(x)
     >>>         z = self.dropout1(z)
@@ -89,7 +88,7 @@ class Model(object):
     >>>         return z
     >>> M_dynamic = CustomModel()
 
-    - Define static model
+    Define static model
 
     >>> ni = Input([None, 784])
     >>> nn = Dense(n_units=800, act=tf.nn.relu)(ni)
@@ -97,32 +96,31 @@ class Model(object):
     >>> nn = Dense(n_units=10, act=tf.nn.relu)(nn)
     >>> M_static = Model(inputs=ni, outputs=nn, name="mlp")
 
-    - Get network information
+    Get network information
     >>> print(M_static)
-    Model(
-      (_inputlayer): Input(shape=[None, 784], name='_inputlayer')
-      (dense): Dense(n_units=800, relu, in_channels='784', name='dense')
-      (dropout): Dropout(keep=0.8, name='dropout')
-      (dense_1): Dense(n_units=10, relu, in_channels='800', name='dense_1')
-    )
+    ... Model(
+    ...  (_inputlayer): Input(shape=[None, 784], name='_inputlayer')
+    ...  (dense): Dense(n_units=800, relu, in_channels='784', name='dense')
+    ...  (dropout): Dropout(keep=0.8, name='dropout')
+    ...  (dense_1): Dense(n_units=10, relu, in_channels='800', name='dense_1')
+    ... )
 
-    - Forwarding through this network
+    Forwarding through this network
     >>> data = np.random.normal(size=[16, 784]).astype(np.float32)
     >>> outputs_d = M_dynamic(data)
     >>> outputs_s = M_static(data)
 
-    - Save and load weights
+    Save and load weights
     >>> M_static.save_weights('./model_weights.h5')
     >>> M_static.load_weights('./model_weights.h5')
 
-    - Save and load the model
+    Save and load the model
     >>> M_static.save('./model.h5')
     >>> M = Model.load('./model.h5')
 
-    - Convert model to layer
+    Convert model to layer
     >>> M_layer = M_static.as_layer()
-
-    -----
+    
     """
 
     @property
@@ -253,9 +251,7 @@ class Model(object):
             If 'is_train' == False, this network is set as evaluation mode
         kwargs :
             For other keyword-only arguments.
-        Returns
-        -------
-
+        
         """
 
         self._check_mode(is_train)
@@ -426,10 +422,6 @@ class Model(object):
         >>> import tensorlayer as tl
         >>> net = tl.models.vgg16()
         >>> net.train()
-        # do training
-
-        Returns
-        -------
 
         """
         if self.is_train !=True:
@@ -446,9 +438,6 @@ class Model(object):
         >>> net = tl.models.vgg16()
         >>> net.eval()
         # do evaluation
-
-        Returns
-        -------
 
         """
         if self.is_train != False:
@@ -480,9 +469,6 @@ class Model(object):
         >>> nn = Dense(n_units=10, act=tf.nn.relu)(nn)
         >>> M_full = Model(inputs=ni, outputs=nn, name="mlp")
 
-        Returns
-        -------
-
         """
         if self._outputs is None:
             raise AttributeError("Dynamic network cannot be converted to Layer.")
@@ -499,9 +485,6 @@ class Model(object):
         ----------
         is_train : boolean
             Network's mode. True means training mode while False means evaluation mode.
-
-        Returns
-        -------
 
         """
         # contradiction test
@@ -529,9 +512,6 @@ class Model(object):
         ----------
         is_train : boolean
             Network's mode. True means training mode while False means evaluation mode.
-
-        Returns
-        -------
 
         """
         for layer in self.all_layers:
@@ -680,16 +660,16 @@ class Model(object):
         --------
         >>> import tensorlayer as tl
         >>> vgg = tl.models.vgg16()
-        # training preparation
-        # ...
-        # back propagation
+        ... # training preparation
+        ... # ...
+        ... # back propagation
         >>> with tf.GradientTape() as tape:
         >>>     _logits = vgg(x_batch)
-                ## compute loss and update model
+        >>>     ## compute loss and update model
         >>>     _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
-                ## release unnecessary objects (layer.inputs, layer.outputs)
-                ## this function should be called with great caution
-                ## within the scope of tf.GradientTape(), using this function should be fine
+        >>>     ## release unnecessary objects (layer.inputs, layer.outputs)
+        >>>     ## this function should be called with great caution
+        >>>     ## within the scope of tf.GradientTape(), using this function should be fine
         >>>     vgg.release_memory()
 
         '''
@@ -701,7 +681,6 @@ class Model(object):
         Save model into a given file.
         This function save can save both the architecture of neural networks and weights (optional).
         WARNING: If the model contains Lambda / ElementwiseLambda layer, please check the documentation of Lambda / ElementwiseLambda layer and find out the cases that have / have not been supported by Model.save().
-
 
         Parameters
         ----------
@@ -715,6 +694,7 @@ class Model(object):
         >>> net = tl.models.vgg16()
         >>> net.save('./model.h5', save_weights=True)
         >>> new_net = Model.load('./model.h5', load_weights=True)
+        
         """
         # TODO: support saving LambdaLayer that includes parametric self defined function with outside variables
         if self.outputs is None:
@@ -730,7 +710,6 @@ class Model(object):
         This function load can load both the architecture of neural networks and weights (optional, and needs to be saved in Model.save()).
         When a model is loaded by this function load, there is no need to reimplement or declare the architecture of the model explicitly in code.
         WARNING: If the model contains Lambda / ElementwiseLambda layer, please check the documentation of Lambda / ElementwiseLambda layer and find out the cases that have / have not been supported by Model.load().
-
 
         Parameters
         ----------
@@ -782,9 +761,6 @@ class Model(object):
         >>> net = tl.models.vgg16()
         >>> net.save_weights('./model.npz')
         >>> net.save_weights('./model.npz', format='npz_dict')
-
-        Returns
-        -------
 
         """
         if self.weights is None or len(self.weights) == 0:
@@ -858,9 +834,6 @@ class Model(object):
            saved in a different mode, it is recommended to set 'in_order' be True.
         2) 'skip' is useful when 'format' is 'hdf5' or 'npz_dict'. If 'skip' is True,
            'in_order' argument will be ignored.
-
-        Returns
-        -------
 
         """
         if not os.path.exists(filepath):
