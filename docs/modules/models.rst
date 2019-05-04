@@ -22,12 +22,12 @@ Base Model
 VGG16
 ----------------------
 
-.. autofunction:: vgg16
+.. autofunction:: VGG16
 
 VGG19
 ----------------------
 
-.. autofunction:: vgg19
+.. autofunction:: VGG19
 
 SqueezeNetV1
 ----------------
