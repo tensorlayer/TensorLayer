@@ -118,6 +118,3 @@ deploy:
     condition: '$_TF_VERSION = 2.0.0-alpha0'
 #     condition: '$_TF_VERSION = 1.11.0'
 
-- ignore:
-    - tests/pending/*
-    - tests/performance_test/*
