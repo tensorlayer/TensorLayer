@@ -18,7 +18,7 @@ _global_model_name_dict = {}  # TODO: better implementation?
 _global_model_name_set = set()
 
 
-class Model():
+class Model(object):
     """The :class:`Model` class represents a neural network.
 
     It should be subclassed when implementing a dynamic model,
