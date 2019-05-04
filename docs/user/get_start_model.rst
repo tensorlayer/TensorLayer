@@ -5,8 +5,7 @@ Define a model
 ===============
 
 TensorLayer provides two ways to define a model.
-Static model
-Dynamic model allows you to control the forward process
+Static model allows you to build model in a fluent way while dynamic model allows you to fully control the forward process.
 
 Static model
 ===============
@@ -37,7 +36,6 @@ Dynamic model
 
 
 In this case, you need to manually input the output shape of the previous layer to the new layer.
-For example,
 
 .. code-block:: python
 
