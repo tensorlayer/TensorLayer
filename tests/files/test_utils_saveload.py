@@ -31,6 +31,7 @@ def basic_static_model():
 
 
 class basic_dynamic_model(Model):
+
     def __init__(self):
         super(basic_dynamic_model, self).__init__(name="basic_dynamic")
         self.conv1 = Conv2d(16, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, in_channels=3, name="conv1")
@@ -109,6 +110,7 @@ class Model_Core_Test(CustomTestCase):
         tl.files.load_and_assign_npz_dict("./model_basic.npz", self.dynamic_model, skip=True)
         self.assertLess(np.max(np.abs(ori_val - self.dynamic_model.weights[-2].numpy())), 1e-7)
         self.dynamic_model._weights = ori_weights
+
 
 if __name__ == '__main__':
 

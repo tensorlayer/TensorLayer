@@ -52,13 +52,13 @@ class SubpixelConv1d(Layer):
             act=None,
             in_channels=None,
             name=None  # 'subpixel_conv1d'
-            ):
+    ):
         super().__init__(name)
         self.scale = scale
         self.act = act
         self.in_channels = in_channels
         self.out_channels = int(self.in_channels / self.scale)
-        
+
         if self.in_channels is not None:
             self.build(None)
             self._built = True
@@ -92,11 +92,7 @@ class SubpixelConv1d(Layer):
     @private_method
     def _PS(self, I, r):
         X = tf.transpose(a=I, perm=[2, 1, 0])  # (r, w, b)
-        X = tf.batch_to_space(
-            input=X,
-            block_shape=[r],
-            crops=[[0, 0]]
-        )  # (1, r*w, b)
+        X = tf.batch_to_space(input=X, block_shape=[r], crops=[[0, 0]])  # (1, r*w, b)
         X = tf.transpose(a=X, perm=[2, 1, 0])
         return X
 
@@ -154,13 +150,13 @@ class SubpixelConv2d(Layer):
             act=None,
             in_channels=None,
             name=None  # 'subpixel_conv2d'
-            ):
+    ):
         super().__init__(name)
         self.scale = scale
         self.n_out_channels = n_out_channels
         self.act = act
         self.in_channels = in_channels
-        
+
         if self.in_channels is not None:
             self.build(None)
             self._built = True
@@ -190,11 +186,7 @@ class SubpixelConv2d(Layer):
         self.n_out_channels = int(self.in_channels / (self.scale**2))
 
     def forward(self, inputs):
-        outputs = self._PS(
-            X=inputs,
-            r=self.scale,
-            n_out_channels=self.n_out_channels
-        )
+        outputs = self._PS(X=inputs, r=self.scale, n_out_channels=self.n_out_channels)
         if self.act is not None:
             outputs = self.act(outputs)
         return outputs
@@ -208,9 +200,7 @@ class SubpixelConv2d(Layer):
             if int(X.get_shape()[-1]) != (r**2) * n_out_channels:
                 raise Exception(_err_log)
 
-            X = tf.compat.v1.depth_to_space(
-                input=X, block_size=r
-            )
+            X = tf.compat.v1.depth_to_space(input=X, block_size=r)
         else:
             raise RuntimeError(_err_log)
 

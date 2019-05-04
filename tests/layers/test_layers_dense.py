@@ -18,7 +18,7 @@ class Layer_BinaryDense_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("-" * 20, "Layer_BinaryDense_Test", "-"*20)
+        print("-" * 20, "Layer_BinaryDense_Test", "-" * 20)
         cls.batch_size = 4
         cls.inputs_shape = [cls.batch_size, 10]
 
@@ -76,7 +76,7 @@ class Layer_DorefaDense_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("-" * 20, "Layer_DorefaDense_Test", "-"*20)
+        print("-" * 20, "Layer_DorefaDense_Test", "-" * 20)
         cls.batch_size = 4
         cls.inputs_shape = [cls.batch_size, 10]
 
@@ -134,7 +134,7 @@ class Layer_DropconnectDense_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("-" * 20, "Layer_DropconnectDense_Test", "-"*20)
+        print("-" * 20, "Layer_DropconnectDense_Test", "-" * 20)
         cls.batch_size = 4
         cls.inputs_shape = [cls.batch_size, 10]
 
@@ -192,7 +192,7 @@ class Layer_QuanDense_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("-" * 20, "Layer_QuanDense_Test", "-"*20)
+        print("-" * 20, "Layer_QuanDense_Test", "-" * 20)
         cls.batch_size = 4
         cls.inputs_shape = [cls.batch_size, 10]
 
@@ -247,7 +247,7 @@ class Layer_TernaryDense_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("-" * 20, "Layer_BinaryDense_Test", "-"*20)
+        print("-" * 20, "Layer_BinaryDense_Test", "-" * 20)
         cls.batch_size = 4
         cls.inputs_shape = [cls.batch_size, 10]
 

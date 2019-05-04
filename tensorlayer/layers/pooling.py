@@ -938,10 +938,7 @@ class CornerPool2d(Layer):
         self.build()
         self._built = True
 
-        logging.info(
-            "CornerPool2d %s : mode: %s" %
-            (self.name,str(mode))
-        )
+        logging.info("CornerPool2d %s : mode: %s" % (self.name, str(mode)))
 
     def __repr__(self):
         s = ('{classname}(mode={mode}')
@@ -954,21 +951,29 @@ class CornerPool2d(Layer):
         pass
 
     def forward(self, inputs):
-        input_width=inputs.shape[2]
-        input_height=inputs.shape[1]
-        batch_min=tf.reduce_min(inputs)
+        input_width = inputs.shape[2]
+        input_height = inputs.shape[1]
+        batch_min = tf.reduce_min(inputs)
         if self.mode == 'TopLeft':
-            temp_bottom = tf.pad(inputs,tf.constant([[0,0],[0,input_height-1],[0,0],[0,0]]),constant_values=batch_min)
-            temp_right =tf.pad(inputs,tf.constant([[0,0],[0,0],[0,input_width-1],[0,0]]),constant_values=batch_min)
-            temp_bottom = tf.nn.max_pool(temp_bottom, ksize=(input_height,1), strides=(1,1), padding='VALID')
-            temp_right = tf.nn.max_pool(temp_right, ksize=(1,input_width), strides=(1,1), padding='VALID')
+            temp_bottom = tf.pad(
+                inputs, tf.constant([[0, 0], [0, input_height - 1], [0, 0], [0, 0]]), constant_values=batch_min
+            )
+            temp_right = tf.pad(
+                inputs, tf.constant([[0, 0], [0, 0], [0, input_width - 1], [0, 0]]), constant_values=batch_min
+            )
+            temp_bottom = tf.nn.max_pool(temp_bottom, ksize=(input_height, 1), strides=(1, 1), padding='VALID')
+            temp_right = tf.nn.max_pool(temp_right, ksize=(1, input_width), strides=(1, 1), padding='VALID')
             outputs = tf.add(temp_bottom, temp_right, name=self.name)
         elif self.mode == 'BottomRight':
-            temp_top = tf.pad(inputs,tf.constant([[0,0],[input_height-1,0],[0,0],[0,0]]),constant_values=batch_min)
-            temp_left =tf.pad(inputs,tf.constant([[0,0],[0,0],[input_width-1,0],[0,0]]),constant_values=batch_min)
-            temp_top = tf.nn.max_pool(temp_top, ksize=(input_height,1), strides=(1,1), padding='VALID')
-            temp_left = tf.nn.max_pool(temp_left, ksize=(1,input_width), strides=(1,1), padding='VALID')
+            temp_top = tf.pad(
+                inputs, tf.constant([[0, 0], [input_height - 1, 0], [0, 0], [0, 0]]), constant_values=batch_min
+            )
+            temp_left = tf.pad(
+                inputs, tf.constant([[0, 0], [0, 0], [input_width - 1, 0], [0, 0]]), constant_values=batch_min
+            )
+            temp_top = tf.nn.max_pool(temp_top, ksize=(input_height, 1), strides=(1, 1), padding='VALID')
+            temp_left = tf.nn.max_pool(temp_left, ksize=(1, input_width), strides=(1, 1), padding='VALID')
             outputs = tf.add(temp_top, temp_left, name=self.name)
         else:
-            outputs=tf.identity(inputs,name=self.name)
+            outputs = tf.identity(inputs, name=self.name)
         return outputs

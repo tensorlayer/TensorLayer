@@ -24,29 +24,18 @@ class Layer_Pooling_Test(CustomTestCase):
 
         ## 2D ========================================================================
 
-        x_2_input_shape =[None, 100, 100, 3]
+        x_2_input_shape = [None, 100, 100, 3]
         nin_2 = Input(x_2_input_shape)
 
-        n6 = tl.layers.Conv2d(
-            n_filter=32, filter_size=(3, 3), strides=(2, 2), name='test_conv2d'
-        )(nin_2)
+        n6 = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), name='test_conv2d')(nin_2)
 
-        n7 = tl.layers.UpSampling2d(
-            scale=(2, 2), name='test_UpSampling2d_1'
-        )(n6)
+        n7 = tl.layers.UpSampling2d(scale=(2, 2), name='test_UpSampling2d_1')(n6)
 
-        n8 = tl.layers.UpSampling2d(
-            scale=3, name='test_UpSampling2d_2'
-        )(n6)
+        n8 = tl.layers.UpSampling2d(scale=3, name='test_UpSampling2d_2')(n6)
 
+        n9 = tl.layers.DownSampling2d(scale=(2, 2), name='test_DownSampling2d_1')(n6)
 
-        n9 = tl.layers.DownSampling2d(
-            scale=(2, 2), name='test_DownSampling2d_1'
-        )(n6)
-
-        n10 = tl.layers.DownSampling2d(
-            scale=5, name='test_DownSampling2d_2'
-        )(n6)
+        n10 = tl.layers.DownSampling2d(scale=5, name='test_DownSampling2d_2')(n6)
 
         cls.n6_shape = n6.get_shape().as_list()
         cls.n7_shape = n7.get_shape().as_list()
@@ -84,6 +73,7 @@ class Layer_Pooling_Test(CustomTestCase):
             layer = tl.layers.DownSampling2d(scale=(2, 2, 2))
         except Exception as e:
             print(e)
+
 
 if __name__ == '__main__':
 

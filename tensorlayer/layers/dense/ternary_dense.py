@@ -9,7 +9,6 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.utils import compute_alpha, ternary_operation
 
-
 __all__ = [
     'TernaryDense',
 ]
@@ -89,11 +88,9 @@ class TernaryDense(Layer):
 
         n_in = inputs_shape[-1]
 
-        self.W = self._get_weights(var_name="weights", shape=(n_in, self.n_units), init=self.W_init
-        )
+        self.W = self._get_weights(var_name="weights", shape=(n_in, self.n_units), init=self.W_init)
         if self.b_init is not None:
-            self.b = self._get_weights(var_name="biases", shape=(self.n_units), init=self.b_init
-            )
+            self.b = self._get_weights(var_name="biases", shape=(self.n_units), init=self.b_init)
 
     def forward(self, inputs):
         # W = tl.act.sign(W)    # dont update ...

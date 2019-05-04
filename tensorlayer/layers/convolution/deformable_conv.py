@@ -99,8 +99,10 @@ class DeformableConv2d(Layer):
             raise AssertionError("offset.get_shape()[-1] is not equal to: %d" % 2 * self.kernel_n)
 
         logging.info(
-            "DeformableConv2d %s: n_filter: %d, filter_size: %s act: %s" %
-            (self.name, self.n_filter, str(self.filter_size), self.act.__name__ if self.act is not None else 'No Activation')
+            "DeformableConv2d %s: n_filter: %d, filter_size: %s act: %s" % (
+                self.name, self.n_filter, str(self.filter_size
+                                             ), self.act.__name__ if self.act is not None else 'No Activation'
+            )
         )
 
         # try:
@@ -169,11 +171,12 @@ class DeformableConv2d(Layer):
         #
         # # self._add_layers(self.outputs)
 
-
     def __repr__(self):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
-        s = ('{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
-             ', padding={padding}')
+        s = (
+            '{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
+            ', padding={padding}'
+        )
         if self.b_init is None:
             s += ', bias=False'
         s += (', ' + actstr)
@@ -194,11 +197,17 @@ class DeformableConv2d(Layer):
         initial_offsets = tf.reshape(initial_offsets, (-1, 2))  # initial_offsets --> (n, 2)
         initial_offsets = tf.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, n, 2)
         initial_offsets = tf.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, 1, n, 2)
-        initial_offsets = tf.tile(initial_offsets, [self.input_h, self.input_w, 1, 1])  # initial_offsets --> (h, w, n, 2)
+        initial_offsets = tf.tile(
+            initial_offsets, [self.input_h, self.input_w, 1, 1]
+        )  # initial_offsets --> (h, w, n, 2)
         initial_offsets = tf.cast(initial_offsets, 'float32')
         grid = tf.meshgrid(
-            tf.range(-int((self.filter_size[0] - 1) / 2.0), int(self.input_h - int((self.filter_size[0] - 1) / 2.0)), 1),
-            tf.range(-int((self.filter_size[1] - 1) / 2.0), int(self.input_w - int((self.filter_size[1] - 1) / 2.0)), 1), indexing='ij'
+            tf.range(
+                -int((self.filter_size[0] - 1) / 2.0), int(self.input_h - int((self.filter_size[0] - 1) / 2.0)), 1
+            ),
+            tf.range(
+                -int((self.filter_size[1] - 1) / 2.0), int(self.input_w - int((self.filter_size[1] - 1) / 2.0)), 1
+            ), indexing='ij'
         )
 
         grid = tf.stack(grid, axis=-1)
@@ -207,18 +216,12 @@ class DeformableConv2d(Layer):
         grid = tf.tile(grid, [1, 1, self.kernel_n, 1])  # grid --> (h, w, n, 2)
         self.grid_offset = grid + initial_offsets  # grid_offset --> (h, w, n, 2)
 
-        self.filter_shape = (
-            1, 1, self.kernel_n, self.in_channels, self.n_filter
-        )
+        self.filter_shape = (1, 1, self.kernel_n, self.in_channels, self.n_filter)
 
-        self.W = self._get_weights(
-            "W_deformableconv2d", shape=self.filter_shape, init=self.W_init
-        )
+        self.W = self._get_weights("W_deformableconv2d", shape=self.filter_shape, init=self.W_init)
 
         if self.b_init:
-            self.b = self._get_weights(
-                "b_deformableconv2d", shape=(self.n_filter,), init=self.b_init
-            )
+            self.b = self._get_weights("b_deformableconv2d", shape=(self.n_filter, ), init=self.b_init)
 
     def forward(self, inputs):
         # shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
@@ -226,17 +229,8 @@ class DeformableConv2d(Layer):
         grid_offset = self.grid_offset
 
         input_deform = self._tf_batch_map_offsets(inputs, offset, grid_offset)
-        outputs = tf.nn.conv3d(
-            input=input_deform,
-            filters=self.W,
-            strides=[1, 1, 1, 1, 1],
-            padding='VALID',
-            name=None
-        )
-        outputs = tf.reshape(
-            tensor=outputs,
-            shape=[outputs.get_shape()[0], self.input_h, self.input_w, self.n_filter]
-        )
+        outputs = tf.nn.conv3d(input=input_deform, filters=self.W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None)
+        outputs = tf.reshape(tensor=outputs, shape=[outputs.get_shape()[0], self.input_h, self.input_w, self.n_filter])
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
         if self.act:

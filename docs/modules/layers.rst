@@ -73,21 +73,12 @@ Layer list
    GroupNorm
    SwitchNorm
 
-   ROIPoolingLayer
-
    RNN
    BiRNN
-
-   ConvRNNCell
-   BasicConvLSTMCell
-   ConvLSTM
 
    retrieve_seq_length_op
    retrieve_seq_length_op2
    retrieve_seq_length_op3
-   target_mask_op
-
-   Seq2Seq
 
    Flatten
    Reshape
@@ -106,8 +97,6 @@ Layer list
    Stack
    UnStack
 
-   SlimNets
-
    Sign
    Scale
    BinaryDense
@@ -116,10 +105,6 @@ Layer list
    TernaryConv2d
    DorefaDense
    DorefaConv2d
-   QuantizedDense
-   QuantizedDenseWithBN
-   QuantizedConv2d
-   QuantizedConv2dWithBN
 
    PRelu
    PRelu6
@@ -548,28 +533,6 @@ DorefaConv2d
 """""""""""""""""""""
 .. autoclass:: DorefaConv2d
 
-Quantization Dense Layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-QuantizedDense
-"""""""""""""""""""""
-.. autoclass:: QuantizedDense
-
-QuantizedDenseWithBN
-""""""""""""""""""""""""""""""""""""
-.. autoclass:: QuantizedDenseWithBN
-
-Quantization Convolutions
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Quantization
-"""""""""""""""""""""
-.. autoclass:: QuantizedConv2d
-
-QuantizedConv2dWithBN
-"""""""""""""""""""""
-.. autoclass:: QuantizedConv2dWithBN
-
 
 .. -----------------------------------------------------------
 ..                  Recurrent Layers
@@ -590,26 +553,6 @@ Bidirectional layer
 """""""""""""""""""""""""""""""""
 .. autoclass:: BiRNN
 
-
-Recurrent Convolution
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Conv RNN Cell
-"""""""""""""""""""""""""""""""""
-.. autoclass:: ConvRNNCell
-
-Basic Conv LSTM Cell
-"""""""""""""""""""""""""""""""""
-.. autoclass:: BasicConvLSTMCell
-
-Conv LSTM layer
-"""""""""""""""""""""""""""""""""
-.. autoclass:: ConvLSTM
-
-Simple Seq2Seq
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: Seq2Seq
-
 Advanced Ops for Dynamic RNN
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 These operations usually be used inside Dynamic RNN layer, they can
@@ -627,9 +570,6 @@ Compute Sequence length 3
 """"""""""""""""""""""""""
 .. autofunction:: retrieve_seq_length_op3
 
-Get Mask
-""""""""""""""""""""""""""
-.. autofunction:: target_mask_op
 
 
 
