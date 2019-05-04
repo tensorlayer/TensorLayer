@@ -172,16 +172,17 @@ class Model():
                             "It should be either Tensor or a list of Tensor."
                         )
                     for idx in range(len(check_argu)):
-                        if not isinstance(check_argu[idx], tf_ops._TensorLike) or not tf_ops.is_dense_tensor_like(check_argu[idx]):
+                        if not isinstance(check_argu[idx], tf_ops._TensorLike) or not tf_ops.is_dense_tensor_like(
+                                check_argu[idx]):
                             raise TypeError(
-                                "The argument `%s` should be either Tensor or a list of Tensor "
-                                % (check_order[co]) +
-                                "but the %s[%d] is detected as %s"
-                                % (check_order[co], idx, type(check_argu[idx]))
+                                "The argument `%s` should be either Tensor or a list of Tensor " % (check_order[co]) +
+                                "but the %s[%d] is detected as %s" % (check_order[co], idx, type(check_argu[idx]))
                             )
                 else:
-                    raise TypeError("The argument `%s` should be either Tensor or a list of Tensor but received %s" %
-                                    (check_order[co], type(check_argu)))
+                    raise TypeError(
+                        "The argument `%s` should be either Tensor or a list of Tensor but received %s" %
+                        (check_order[co], type(check_argu))
+                    )
 
             if not _check_tl_layer_tensors(inputs):
                 raise TypeError(
@@ -234,8 +235,10 @@ class Model():
             if not isinstance(inputs, list):
                 raise ValueError("The argument `inputs` should be a list of values but detected as %s." % type(inputs))
             elif len(inputs) != len(self._inputs):
-                raise ValueError("The argument `inputs` should be a list with len=%d but detected as len=%d."
-                                 % (len(self._inputs), len(inputs)))
+                raise ValueError(
+                    "The argument `inputs` should be a list with len=%d but detected as len=%d." %
+                    (len(self._inputs), len(inputs))
+                )
 
         # convert inputs to tensor if it is originally not
         # FIXME: not sure convert_to_tensor here or ask user to do it
@@ -265,7 +268,9 @@ class Model():
         """
         # FIXME: currently using self._outputs to judge static network or dynamic network
         if self._outputs is None:
-            raise ValueError("Outputs not defined. Please define inputs and outputs when the model is created. Or overwrite forward() function.")
+            raise ValueError(
+                "Outputs not defined. Please define inputs and outputs when the model is created. Or overwrite forward() function."
+            )
 
         memory = dict()
 
@@ -313,9 +318,7 @@ class Model():
                     if isinstance(getattr(self, attr), Layer):
                         nowlayer = getattr(self, attr)
                         if not nowlayer._built:
-                            raise AttributeError(
-                                "Layer %s not built yet." % repr(nowlayer)
-                            )
+                            raise AttributeError("Layer %s not built yet." % repr(nowlayer))
                         self._all_layers.append(nowlayer)
                     elif isinstance(getattr(self, attr), Model):
                         nowmodel = getattr(self, attr)
@@ -356,7 +359,7 @@ class Model():
         -------
 
         """
-        if self.is_train != True:
+        if self.is_train !=True:
             self.is_train = True
             self._set_mode_for_layers(True)
 
@@ -409,9 +412,7 @@ class Model():
 
         """
         if self._outputs is None:
-            raise AttributeError(
-                "Dynamic network cannot be converted to Layer."
-            )
+            raise AttributeError("Dynamic network cannot be converted to Layer.")
 
         if self._model_layer is None:
             self._model_layer = ModelLayer(self)
@@ -432,14 +433,21 @@ class Model():
         """
         # contradiction test
         if is_train is None and self.is_train is None:
-            raise ValueError("Training / inference mode not defined. Argument `is_train` should be set as True / False. Otherwise please use `Model.train()` / `Model.eval()` to switch the mode.")
+            raise ValueError(
+                "Training / inference mode not defined. Argument `is_train` should be set as True / False. Otherwise please use `Model.train()` / `Model.eval()` to switch the mode."
+            )
         elif is_train is not None and self.is_train is not None:
             if is_train == self.is_train:
-                logging.warning("Training / inference mode redefined redundantly. Please EITHER use the argument `is_train` OR `Model.train()` / `Model.eval()` to define the mode.")
+                logging.warning(
+                    "Training / inference mode redefined redundantly. Please EITHER use the argument `is_train` OR `Model.train()` / `Model.eval()` to define the mode."
+                )
             else:
-                raise AttributeError("Training / inference mode mismatch. The argument `is_train` is set as %s, " % is_train +
-                                     "but the mode is currently set as %s. " % ('Training by Model.train()' if self.is_train else 'Inference by Model.eval()') +
-                                     "Please EITHER use the argument `is_train` OR `Model.train()` / `Model.eval()` to define the mode.")
+                raise AttributeError(
+                    "Training / inference mode mismatch. The argument `is_train` is set as %s, " % is_train +
+                    "but the mode is currently set as %s. " %
+                    ('Training by Model.train()' if self.is_train else 'Inference by Model.eval()') +
+                    "Please EITHER use the argument `is_train` OR `Model.train()` / `Model.eval()` to define the mode."
+                )
 
     def _set_mode_for_layers(self, is_train):
         """Set all layers of this network to a given mode.
@@ -642,8 +650,10 @@ class Model():
             # TODO: enable this when tf save ckpt is enabled
             raise NotImplementedError("ckpt load/save is not supported now.")
         else:
-            raise ValueError("Save format must be 'hdf5', 'npz', 'npz_dict' or 'ckpt'."
-                             "Other format is not supported now.")
+            raise ValueError(
+                "Save format must be 'hdf5', 'npz', 'npz_dict' or 'ckpt'."
+                "Other format is not supported now."
+            )
 
     def load_weights(self, filepath, format=None, in_order=True, skip=False):
         """Load model weights from a given file, which should be previously saved by self.save_weights().
@@ -702,7 +712,7 @@ class Model():
             format = filepath.split('.')[-1]
 
         if format == 'hdf5' or format == 'h5':
-            if skip == True or in_order == False:
+            if skip ==True or in_order == False:
                 # load by weights name
                 utils.load_hdf5_to_weights(filepath, self.weights, skip)
             else:
@@ -716,8 +726,10 @@ class Model():
             # TODO: enable this when tf save ckpt is enabled
             raise NotImplementedError("ckpt load/save is not supported now.")
         else:
-            raise ValueError("File format must be 'hdf5', 'npz', 'npz_dict' or 'ckpt'. "
-                             "Other format is not supported now.")
+            raise ValueError(
+                "File format must be 'hdf5', 'npz', 'npz_dict' or 'ckpt'. "
+                "Other format is not supported now."
+            )
 
     # TODO: not supported now
     # def save_ckpt(self, sess=None, mode_name='model.ckpt', save_dir='checkpoint', global_step=None, printable=False):
@@ -753,4 +765,3 @@ def _check_tl_layer_tensors(tensors):
             if not hasattr(t, '_info'):
                 return False
         return True
-

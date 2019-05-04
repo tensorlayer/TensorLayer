@@ -105,9 +105,11 @@ class DeConv1dLayer(Layer):
 
     def __repr__(self):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
-        s = ('{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
-             ', strides={strides}, padding={padding}')
-        if self.dilation_rate != (1,) * len(self.dilation_rate):
+        s = (
+            '{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
+            ', strides={strides}, padding={padding}'
+        )
+        if self.dilation_rate != (1, ) * len(self.dilation_rate):
             s += ', dilation={dilation_rate}'
         if self.b_init is None:
             s += ', bias=False'
@@ -115,16 +117,14 @@ class DeConv1dLayer(Layer):
         if self.name is not None:
             s += ', name=\'{name}\''
         s += ')'
-        return s.format(classname=self.__class__.__name__, n_filter=self.shape[-2], filter_size=self.shape[0], **self.__dict__)
+        return s.format(
+            classname=self.__class__.__name__, n_filter=self.shape[-2], filter_size=self.shape[0], **self.__dict__
+        )
 
     def build(self, inputs):
-        self.W = self._get_weights(
-            "filters", shape=self.shape, init=self.W_init
-        )
+        self.W = self._get_weights("filters", shape=self.shape, init=self.W_init)
         if self.b_init:
-            self.b = self._get_weights(
-                "biases", shape=(self.shape[-2]), init=self.b_init
-            )
+            self.b = self._get_weights("biases", shape=(self.shape[-2]), init=self.b_init)
 
     def forward(self, inputs):
         outputs = tf.nn.conv1d_transpose(
@@ -240,9 +240,11 @@ class DeConv2dLayer(Layer):
 
     def __repr__(self):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
-        s = ('{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
-             ', strides={strides}, padding={padding}')
-        if self.dilation_rate != (1,) * len(self.dilation_rate):
+        s = (
+            '{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
+            ', strides={strides}, padding={padding}'
+        )
+        if self.dilation_rate != (1, ) * len(self.dilation_rate):
             s += ', dilation={dilation_rate}'
         if self.b_init is None:
             s += ', bias=False'
@@ -250,16 +252,15 @@ class DeConv2dLayer(Layer):
         if self.name is not None:
             s += ', name=\'{name}\''
         s += ')'
-        return s.format(classname=self.__class__.__name__, n_filter=self.shape[-2], filter_size=(self.shape[0], self.shape[1]), **self.__dict__)
+        return s.format(
+            classname=self.__class__.__name__, n_filter=self.shape[-2], filter_size=(self.shape[0], self.shape[1]),
+            **self.__dict__
+        )
 
     def build(self, inputs):
-        self.W = self._get_weights(
-            "filters", shape=self.shape, init=self.W_init
-        )
+        self.W = self._get_weights("filters", shape=self.shape, init=self.W_init)
         if self.b_init:
-            self.b = self._get_weights(
-                "biases", shape=(self.shape[-2]), init=self.b_init
-            )
+            self.b = self._get_weights("biases", shape=(self.shape[-2]), init=self.b_init)
 
     def forward(self, inputs):
         outputs = tf.nn.conv2d_transpose(
@@ -366,9 +367,11 @@ class DeConv3dLayer(Layer):
 
     def __repr__(self):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
-        s = ('{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
-             ', strides={strides}, padding={padding}')
-        if self.dilation_rate != (1,) * len(self.dilation_rate):
+        s = (
+            '{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
+            ', strides={strides}, padding={padding}'
+        )
+        if self.dilation_rate != (1, ) * len(self.dilation_rate):
             s += ', dilation={dilation_rate}'
         if self.b_init is None:
             s += ', bias=False'
@@ -376,27 +379,20 @@ class DeConv3dLayer(Layer):
         if self.name is not None:
             s += ', name=\'{name}\''
         s += ')'
-        return s.format(classname=self.__class__.__name__, n_filter=self.shape[-2], filter_size=(self.shape[0], self.shape[1], self.shape[2]), **self.__dict__)
+        return s.format(
+            classname=self.__class__.__name__, n_filter=self.shape[-2],
+            filter_size=(self.shape[0], self.shape[1], self.shape[2]), **self.__dict__
+        )
 
     def build(self, inputs):
-        self.W = self._get_weights(
-            "filters", shape=self.shape, init=self.W_init
-        )
+        self.W = self._get_weights("filters", shape=self.shape, init=self.W_init)
         if self.b_init:
-            self.b = self._get_weights(
-                "biases", shape=(self.shape[-2]), init=self.b_init
-            )
+            self.b = self._get_weights("biases", shape=(self.shape[-2]), init=self.b_init)
 
     def forward(self, inputs):
         outputs = tf.nn.conv3d_transpose(
-            input=inputs,
-            filters=self.W,
-            output_shape=self.outputs_shape,
-            strides=self.strides,
-            padding=self.padding,
-            data_format=self.data_format,
-            dilations=list(self.dilation_rate),
-            name=self.name
+            input=inputs, filters=self.W, output_shape=self.outputs_shape, strides=self.strides, padding=self.padding,
+            data_format=self.data_format, dilations=list(self.dilation_rate), name=self.name
         )
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')

@@ -14,11 +14,7 @@ from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import protected_method
 from tensorlayer.decorators import private_method
 
-__all__ = [
-    'Layer',
-    'ModelLayer',
-    'LayerList'
-]
+__all__ = ['Layer', 'ModelLayer', 'LayerList']
 
 _global_layer_name_dict = {}  # TODO: better implementation?
 
@@ -72,7 +68,9 @@ class Layer(object):
                 name = prefix
         else:
             if _global_layer_name_dict.get(name) is not None:
-                raise ValueError('Layer name \'%s\' has already been used by another layer. Please change the layer name.' % name)
+                raise ValueError(
+                    'Layer name \'%s\' has already been used by another layer. Please change the layer name.' % name
+                )
 
         self.name = name
 
@@ -170,7 +168,7 @@ class Layer(object):
         new_node = LayerNode(self, node_index, in_nodes, inputs_list, outputs_list, in_tensor_idxes)
         self._nodes.append(new_node)
         for idx, tensor in enumerate(outputs_list):
-            tensor._info = (new_node, idx) # FIXME : modify tensor outside layers? how to deal?
+            tensor._info = (new_node, idx)  # FIXME : modify tensor outside layers? how to deal?
 
     def _release_memory(self):
         """
@@ -193,9 +191,7 @@ class Layer(object):
 
     def _get_weights(self, var_name, shape, init=tl.initializers.random_normal()):
         """ Get trainable variables. """
-        weight = get_variable_with_initializer(
-            scope_name=self.name, var_name=var_name, shape=shape, init=init
-        )
+        weight = get_variable_with_initializer(scope_name=self.name, var_name=var_name, shape=shape, init=init)
         if self._weights is None:
             self._weights = list()
         self._weights.append(weight)  # Add into the weight collection
@@ -284,6 +280,7 @@ class Layer(object):
     #
     #     return args if args is not None else {}
 
+
 class LayerNode(object):
     """
     The class :class:`LayerNode` class represents a conceptional node for a layer.
@@ -316,6 +313,7 @@ class LayerNode(object):
     __call__()
         (1) Forwarding through the layer. (2) Update its input/output tensors.
     """
+
     def __init__(self, layer, node_index, in_nodes, in_tensors, out_tensors, in_tensor_idxes):
         """
 
@@ -392,10 +390,7 @@ class ModelLayer(Layer):
         # Layer training state
         self.is_train = True
 
-        logging.info(
-            "ModelLayer %s from Model: %s" %
-            (self.name, self.model.name)
-        )
+        logging.info("ModelLayer %s from Model: %s" % (self.name, self.model.name))
 
     def __repr__(self):
         tmpstr = 'ModelLayer' + '(\n'
@@ -459,7 +454,7 @@ class LayerList(Layer):
         Forward the computation. The computation will go through all layer instances.
     """
 
-    def __init__(self, layers:list, name=None):
+    def __init__(self, layers: list, name=None):
         """
         Initializing the LayerList given a list of Layer.
 
@@ -474,18 +469,17 @@ class LayerList(Layer):
         for layer in self.layers:
             if layer._built == False:
                 is_built = False
-            if layer._built == True and layer.weights is not None:
+            if layer._built ==True and layer.weights is not None:
                 # some layers in the list passed in have already been built
                 # e.g. using input shape to construct layers in dynamic eager
                 if self._weights == None:
                     self._weights = list()
                 self._weights.extend(layer.weights)
-        if is_built == True:
+        if is_built ==True:
             self._built = True
 
         logging.info(
-            "LayerList %s including layers [%s]" %
-            (self.name, ', '.join([layer.name for layer in self.layers]))
+            "LayerList %s including layers [%s]" % (self.name, ', '.join([layer.name for layer in self.layers]))
         )
 
     def __getitem__(self, idx):

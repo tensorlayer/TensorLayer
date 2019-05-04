@@ -5,8 +5,8 @@ Define a model
 ===============
 
 TensorLayer provides two ways to define a model.
-Static model
-Dynamic model allows you to control the forward process
+Static model allows you to define layer-by-layer.
+While, dynamic model allows you to seamless control the forward process.
 
 Static model
 ===============
@@ -35,9 +35,8 @@ Static model
 Dynamic model
 =======================
 
-
 In this case, you need to manually input the output shape of the previous layer to the new layer.
-For example,
+For example:
 
 .. code-block:: python
 
@@ -72,7 +71,7 @@ For example,
 Reuse weights
 =======================
 
-For static model, call the layer multiple time in model creation
+For static model, you can call the layer multiple time in the model creation.
 
 .. code-block:: python
 
@@ -104,7 +103,7 @@ For static model, call the layer multiple time in model creation
 
   siamese_net = get_siamese_network([None, 784])
 
-For dynamic model, call the layer multiple time in forward function
+For dynamic model, you can call the layer multiple time in the forward function.
 
 .. code-block:: python
 
@@ -145,7 +144,7 @@ Print model information
 Get specific weights
 =======================
 
-We can get the specific weights by indexing or naming.
+You can get the specific weights by indexing or naming.
 
 .. code-block:: python
 
@@ -160,8 +159,7 @@ We can get the specific weights by indexing or naming.
 Save and restore model
 =======================
 
-We provide two ways to save and restore models
-
+We provide two ways to save and restore models.
 
 Save weights only
 ------------------
@@ -181,9 +179,8 @@ Save weights and config
 Customizing layer
 ==================
 
-The fully-connected layer is
+The fully-connected layer is represented by ``z = f(x*W+b)``, the build function
 
-z = f(x*W+b)
 
 .. code-block:: python
 

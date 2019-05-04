@@ -18,10 +18,15 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os, sys, datetime
+
 sys.path.insert(0, os.path.abspath("../"))  # Important
 sys.path.insert(0, os.path.abspath(os.path.join("..", "tensorlayer"))) # Important
-sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "tensorlayer"))) # Important for local docs
+# sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "tensorlayer"))) # Important for local docs
 
+# print(os.path.abspath(".."))
+# print(os.path.abspath(os.path.join("..", "tensorlayer")))
+# print(os.path.abspath(os.path.join("..", "..", "tensorlayer")))
+# exit()
 from package_info import __shortversion__
 from package_info import __version__
 
@@ -42,7 +47,7 @@ from package_info import __version__
 # ]
 
 extensions = [
-    'sphinx.ext.autodoc',
+    # 'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
     'sphinx.ext.ifconfig',

@@ -13,7 +13,7 @@ from tensorlayer import logging
 
 __all__ = [
     'LocalResponseNorm',
-    'BatchNorm', # FIXME: wthether to keep BatchNorm
+    'BatchNorm',  # FIXME: wthether to keep BatchNorm
     'BatchNorm1d',
     'BatchNorm2d',
     'BatchNorm3d',
@@ -205,9 +205,12 @@ class BatchNorm(Layer):
         self.num_features = num_features
 
         if num_features is not None:
-            if not isinstance(self, BatchNorm1d) and not isinstance(self, BatchNorm2d) and not isinstance(self, BatchNorm3d):
-                raise ValueError("Please use BatchNorm1d or BatchNorm2d or BatchNorm3d instead of BatchNorm "
-                                 "if you want to specify 'num_features'.")
+            if not isinstance(self, BatchNorm1d) and not isinstance(self, BatchNorm2d) and not isinstance(self,
+                                                                                                          BatchNorm3d):
+                raise ValueError(
+                    "Please use BatchNorm1d or BatchNorm2d or BatchNorm3d instead of BatchNorm "
+                    "if you want to specify 'num_features'."
+                )
             self.build(None)
             self._built = True
 
@@ -221,8 +224,7 @@ class BatchNorm(Layer):
 
     def __repr__(self):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
-        s = ('{classname}(num_features={num_features}, decay={decay}'
-             ', epsilon={epsilon}')
+        s = ('{classname}(num_features={num_features}, decay={decay}' ', epsilon={epsilon}')
         s += (', ' + actstr)
         if self.name is not None:
             s += ', name="{name}"'
@@ -261,15 +263,15 @@ class BatchNorm(Layer):
         mean, var = tf.nn.moments(inputs, self.axes)
         if self.is_train:
             # update moving_mean and moving_var
-            self.moving_mean = moving_averages.assign_moving_average(self.moving_mean, mean,
-                                                                       self.decay, zero_debias=False)
-            self.moving_var = moving_averages.assign_moving_average(self.moving_var, var,
-                                                                      self.decay, zero_debias=False)
-            outputs = batch_normalization(inputs, mean, var, self.beta, self.gamma,
-                                          self.epsilon, self.data_format)
+            self.moving_mean = moving_averages.assign_moving_average(
+                self.moving_mean, mean, self.decay, zero_debias=False
+            )
+            self.moving_var = moving_averages.assign_moving_average(self.moving_var, var, self.decay, zero_debias=False)
+            outputs = batch_normalization(inputs, mean, var, self.beta, self.gamma, self.epsilon, self.data_format)
         else:
-            outputs = batch_normalization(inputs, self.moving_mean, self.moving_var, self.beta, self.gamma,
-                                          self.epsilon, self.data_format)
+            outputs = batch_normalization(
+                inputs, self.moving_mean, self.moving_var, self.beta, self.gamma, self.epsilon, self.data_format
+            )
         if self.act:
             outputs = self.act(outputs)
         return outputs
@@ -292,6 +294,7 @@ class BatchNorm1d(BatchNorm):
     >>> bn = tl.layers.BatchNorm1d(num_features=32)
 
     """
+
     def _get_param_shape(self, inputs_shape):
         if self.data_format == 'channels_last':
             axis = 2
@@ -328,6 +331,7 @@ class BatchNorm2d(BatchNorm):
     >>> bn = tl.layers.BatchNorm2d(num_features=32)
 
     """
+
     def _get_param_shape(self, inputs_shape):
         if self.data_format == 'channels_last':
             axis = 3
@@ -364,6 +368,7 @@ class BatchNorm3d(BatchNorm):
     >>> bn = tl.layers.BatchNorm3d(num_features=32)
 
     """
+
     def _get_param_shape(self, inputs_shape):
         if self.data_format == 'channels_last':
             axis = 4
@@ -524,11 +529,13 @@ class LayerNorm(Layer):
     def forward(self, inputs):
         mean, var = tf.nn.moments(inputs, self.norm_axes, keepdims=True)
         # compute layer normalization using batch_normalization function
-        outputs = batch_normalization(inputs, mean, var, self.beta, self.gamma,
-                                      self.epsilon, data_format=self.data_format)
+        outputs = batch_normalization(
+            inputs, mean, var, self.beta, self.gamma, self.epsilon, data_format=self.data_format
+        )
         if self.act:
             outputs = self.act(outputs)
         return outputs
+
     #     with tf.compat.v1.variable_scope(name) as vs:
     #         self.outputs = tf.contrib.layers.layer_norm(
     #             self.inputs,

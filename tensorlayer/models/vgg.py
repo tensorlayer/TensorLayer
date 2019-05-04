@@ -46,39 +46,42 @@ from tensorlayer.models import Model
 from tensorlayer.files import maybe_download_and_extract
 from tensorlayer.files import assign_weights
 
-
 __all__ = [
-    'VGG', 'vgg16', 'vgg19',
-#    'vgg11', 'vgg11_bn', 'vgg13', 'vgg13_bn', 'vgg16', 'vgg16_bn',
-#    'vgg19_bn', 'vgg19',
+    'VGG',
+    'vgg16',
+    'vgg19',
+    #    'vgg11', 'vgg11_bn', 'vgg13', 'vgg13_bn', 'vgg16', 'vgg16_bn',
+    #    'vgg19_bn', 'vgg19',
 ]
 
 layer_names = [
-    ['conv1_1', 'conv1_2'],
-    'pool1',
-    ['conv2_1', 'conv2_2'],
-    'pool2',
-    ['conv3_1', 'conv3_2', 'conv3_3', 'conv3_4'],
-    'pool3',
-    ['conv4_1', 'conv4_2', 'conv4_3', 'conv4_4'],
-    'pool4',
-    ['conv5_1', 'conv5_2', 'conv5_3', 'conv5_4'],
-    'pool5',
-    'flatten', 'fc1_relu', 'fc2_relu', 'outputs'
+    ['conv1_1', 'conv1_2'], 'pool1', ['conv2_1', 'conv2_2'], 'pool2',
+    ['conv3_1', 'conv3_2', 'conv3_3', 'conv3_4'], 'pool3', ['conv4_1', 'conv4_2', 'conv4_3', 'conv4_4'], 'pool4',
+    ['conv5_1', 'conv5_2', 'conv5_3', 'conv5_4'], 'pool5', 'flatten', 'fc1_relu', 'fc2_relu', 'outputs'
 ]
 
 cfg = {
     'A': [[64], 'M', [128], 'M', [256, 256], 'M', [512, 512], 'M', [512, 512], 'M', 'F', 'fc1', 'fc2', 'O'],
     'B': [[64, 64], 'M', [128, 128], 'M', [256, 256], 'M', [512, 512], 'M', [512, 512], 'M', 'F', 'fc1', 'fc2', 'O'],
-    'D': [[64, 64], 'M', [128, 128], 'M', [256, 256, 256], 'M', [512, 512, 512], 'M', [512, 512, 512], 'M', 'F', 'fc1', 'fc2', 'O'],
-    'E': [[64, 64], 'M', [128, 128], 'M', [256, 256, 256, 256], 'M', [512, 512, 512, 512], 'M', [512, 512, 512, 512], 'M', 'F', 'fc1', 'fc2', 'O'],
+    'D': [
+        [64, 64], 'M', [128, 128], 'M', [256, 256, 256], 'M', [512, 512, 512], 'M', [512, 512, 512], 'M', 'F', 'fc1',
+        'fc2', 'O'
+    ],
+    'E': [
+        [64, 64], 'M', [128, 128], 'M', [256, 256, 256, 256], 'M', [512, 512, 512, 512], 'M', [512, 512, 512, 512], 'M',
+        'F', 'fc1', 'fc2', 'O'
+    ],
 }
 
 mapped_cfg = {
-    'vgg11': 'A', 'vgg11_bn': 'A',
-    'vgg13': 'B', 'vgg13_bn': 'B',
-    'vgg16': 'D', 'vgg16_bn': 'D',
-    'vgg19': 'E', 'vgg19_bn': 'E'
+    'vgg11': 'A',
+    'vgg11_bn': 'A',
+    'vgg13': 'B',
+    'vgg13_bn': 'B',
+    'vgg16': 'D',
+    'vgg16_bn': 'D',
+    'vgg19': 'E',
+    'vgg19_bn': 'E'
 }
 
 model_urls = {
@@ -86,10 +89,8 @@ model_urls = {
     'vgg19': 'https://media.githubusercontent.com/media/tensorlayer/pretrained-models/master/models/'
 }
 
-model_saved_name = {
-    'vgg16': 'vgg16_weights.npz',
-    'vgg19': 'vgg19.npy'
-}
+model_saved_name = {'vgg16': 'vgg16_weights.npz', 'vgg19': 'vgg19.npy'}
+
 
 class VGG(Model):
     """Pre-trained VGG model.
@@ -169,8 +170,12 @@ def make_layers(config, batch_norm=False, end_with='outputs'):
                         in_channels = 3
                 else:
                     in_channels = layer
-                layer_list.append(Conv2d(n_filter=n_filter, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu,
-                                         padding='SAME', in_channels=in_channels, name=layer_name))
+                layer_list.append(
+                    Conv2d(
+                        n_filter=n_filter, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',
+                        in_channels=in_channels, name=layer_name
+                    )
+                )
                 if batch_norm:
                     layer_list.append(BatchNorm())
                 if layer_name == end_with:
@@ -198,9 +203,7 @@ def make_layers(config, batch_norm=False, end_with='outputs'):
 def restore_model(model, layer_type):
     logging.info("Restore pre-trained weights")
     # download weights
-    maybe_download_and_extract(
-        model_saved_name[layer_type], 'models', model_urls[layer_type]
-    )
+    maybe_download_and_extract(model_saved_name[layer_type], 'models', model_urls[layer_type])
     weights = []
     if layer_type == 'vgg16':
         npz = np.load(os.path.join('models', model_saved_name[layer_type]))
@@ -259,6 +262,7 @@ def vgg19(pretrained=False, end_with='outputs', mode='dynamic', name=None):
         restore_model(model, layer_type='vgg19')
     return model
 
+
 # models without pretrained parameters
 # def vgg11(pretrained=False, end_with='outputs'):
 #     model = VGG(layer_type='vgg11', batch_norm=False, end_with=end_with)
@@ -300,5 +304,3 @@ def vgg19(pretrained=False, end_with='outputs', mode='dynamic', name=None):
 #     if pretrained:
 #         model.restore_weights()
 #     return model
-
-

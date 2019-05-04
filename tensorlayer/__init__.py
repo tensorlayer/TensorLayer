@@ -30,14 +30,14 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
             " - `pip install --upgrade tensorflow-gpu`"
         )
 
-    if ("SPHINXBUILD" not in os.environ and "READTHEDOCS" not in os.environ and
-            LooseVersion(tensorflow.__version__) < LooseVersion("2.0.0")):
-        raise RuntimeError(
-            "TensorLayer does not support Tensorflow version older than 2.0.0.\n"
-            "Please update Tensorflow with:\n"
-            " - `pip install --upgrade tensorflow`\n"
-            " - `pip install --upgrade tensorflow-gpu`"
-        )
+    # if ("SPHINXBUILD" not in os.environ and "READTHEDOCS" not in os.environ and
+    #         LooseVersion(tensorflow.__version__) < LooseVersion("2.0.0")):
+    #     raise RuntimeError(
+    #         "TensorLayer does not support Tensorflow version older than 2.0.0.\n"
+    #         "Please update Tensorflow with:\n"
+    #         " - `pip install --upgrade tensorflow`\n"
+    #         " - `pip install --upgrade tensorflow-gpu`"
+    #     )
 
     from tensorlayer import activation
     from tensorlayer import array_ops

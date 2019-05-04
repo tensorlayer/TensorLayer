@@ -93,9 +93,7 @@ def save_graph(network=None, name='graph.pkl'):
     >>> net = tl.files.load_graph('graph.pkl')
     """
     if network.outputs is None:
-        raise AssertionError(
-            "save_graph not support dynamic mode yet"
-        )
+        raise AssertionError("save_graph not support dynamic mode yet")
 
     logging.info("[*] Saving TL graph into {}".format(name))
     saved_file = dict()
@@ -217,6 +215,7 @@ def load_graph(name='graph.pkl'):
     from tensorlayer.models import Model
     M = Model(inputs=inputs, outputs=outputs, name=model_name)
     return M
+
 
 # Load dataset functions
 def load_mnist_dataset(shape=(-1, 784), path='data'):
@@ -1918,16 +1917,16 @@ def load_and_assign_npz_dict(name='model.npz', network=None, skip=False):
             if skip:
                 logging.warning("Weights named '%s' not found in network. Skip it." % key)
             else:
-                raise RuntimeError("Weights named '%s' not found in network. Hint: set argument skip=Ture "
-                                   "if you want to skip redundant or mismatch weights." % key)
+                raise RuntimeError(
+                    "Weights named '%s' not found in network. Hint: set argument skip=Ture "
+                    "if you want to skip redundant or mismatch weights." % key
+                )
         else:
             assign_tf_variable(network.weights[net_weights_name.index(key)], weights[key])
     logging.info("[*] Model restored from npz_dict %s" % name)
 
 
-def save_ckpt(
-        mode_name='model.ckpt', save_dir='checkpoint', var_list=None, global_step=None, printable=False
-):
+def save_ckpt(mode_name='model.ckpt', save_dir='checkpoint', var_list=None, global_step=None, printable=False):
     """Save parameters into `ckpt` file.
 
     Parameters
@@ -1952,8 +1951,10 @@ def save_ckpt(
     if var_list is None:
         if sess is None:
             # FIXME: not sure whether global variables can be accessed in eager mode
-            raise ValueError("If var_list is None, sess must be specified. "
-                             "In eager mode, can not access global variables easily. ")
+            raise ValueError(
+                "If var_list is None, sess must be specified. "
+                "In eager mode, can not access global variables easily. "
+            )
         var_list = []
 
     ckpt_file = os.path.join(save_dir, mode_name)
@@ -2020,8 +2021,10 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
     if var_list is None:
         if sess is None:
             # FIXME: not sure whether global variables can be accessed in eager mode
-            raise ValueError("If var_list is None, sess must be specified. "
-                             "In eager mode, can not access global variables easily. ")
+            raise ValueError(
+                "If var_list is None, sess must be specified. "
+                "In eager mode, can not access global variables easily. "
+            )
         var_list = []
 
     if is_latest:
@@ -2589,14 +2592,17 @@ def load_hdf5_to_weights_in_order(filepath, weights):
     try:
         weights_names = [n.decode('utf8') for n in f.attrs["weights_names"]]
     except Exception:
-        raise NameError("The loaded hdf5 file needs to have 'weights_names' as attributes. "
-                        "Please check whether this hdf5 file is saved from TL.")
+        raise NameError(
+            "The loaded hdf5 file needs to have 'weights_names' as attributes. "
+            "Please check whether this hdf5 file is saved from TL."
+        )
 
     if len(weights) != len(weights_names):
-        logging.warning("Number of weights mismatch."
-                     "Trying to load a weight file with " + str(len(weights)) +
-                     " weights into a model with " + str(len(weights_names)) +
-                     " weights.")
+        logging.warning(
+            "Number of weights mismatch."
+            "Trying to load a weight file with " + str(len(weights)) + " weights into a model with " +
+            str(len(weights_names)) + " weights."
+        )
 
     for idx, name in enumerate(weights_names):
         weights_val = np.asarray(f[name])
@@ -2629,12 +2635,16 @@ def load_hdf5_to_weights(filepath, weights, skip=False):
     try:
         weights_names = [n.decode('utf8') for n in f.attrs["weights_names"]]
     except Exception:
-        raise NameError("The loaded hdf5 file needs to have 'weights_names' as attributes. "
-                        "Please check whether this hdf5 file is saved from TL.")
+        raise NameError(
+            "The loaded hdf5 file needs to have 'weights_names' as attributes. "
+            "Please check whether this hdf5 file is saved from TL."
+        )
 
     if len(weights) != len(weights_names):
-        logging.warning("Number of weights mismatch. Trying to load a hdf5 file with {} weights elements"
-                        " into a model with {} weights elements.".format(len(weights_names), len(weights)))
+        logging.warning(
+            "Number of weights mismatch. Trying to load a hdf5 file with {} weights elements"
+            " into a model with {} weights elements.".format(len(weights_names), len(weights))
+        )
 
     net_weights_name = [w.name for w in weights]
 
@@ -2649,8 +2659,10 @@ def load_hdf5_to_weights(filepath, weights, skip=False):
             if skip:
                 logging.warning("Weights named '%s' not found in network. Skip it." % name)
             else:
-                raise RuntimeError("Weights named '%s' not found in network. Hint: set argument skip=Ture "
-                                   "if you want to skip redundant or mismatch weights." % name)
+                raise RuntimeError(
+                    "Weights named '%s' not found in network. Hint: set argument skip=Ture "
+                    "if you want to skip redundant or mismatch weights." % name
+                )
         else:
             weights_val = np.asarray(f[name])
             assign_tf_variable(weights[net_weights_name.index(name)], weights_val)

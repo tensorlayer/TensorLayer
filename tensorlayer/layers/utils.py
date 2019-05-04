@@ -156,7 +156,7 @@ def get_variable_with_initializer(scope_name, var_name, shape, init=tf.compat.v1
     # var = tf.Variable(initial_value=initial_value, name=var_name)
     # FIXME: not sure whether this is correct?
     initial_value = init(shape=shape)
-    var = tf.Variable(initial_value=initial_value, name=var_name)#, **init_args)
+    var = tf.Variable(initial_value=initial_value, name=var_name)  #, **init_args)
 
     # else:
     #     with tf.variable_scope(scope_name, reuse=tf.AUTO_REUSE):

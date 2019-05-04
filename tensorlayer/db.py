@@ -219,8 +219,9 @@ class TensorHub(object):
 
             pc = self.db.Model.find(kwargs)
             print(
-                "[Database] Find one model SUCCESS. kwargs:{} sort:{} save time:{} took: {}s".
-                format(kwargs, sort, _datetime, round(time.time() - s, 2))
+                "[Database] Find one model SUCCESS. kwargs:{} sort:{} save time:{} took: {}s".format(
+                    kwargs, sort, _datetime, round(time.time() - s, 2)
+                )
             )
 
             # put all informations of model into the TL layer
@@ -648,16 +649,15 @@ class TensorHub(object):
                 logging.info("  result: {}={} {}".format(_key, globals()[_key], type(globals()[_key])))
                 __result.update({"%s" % _key: globals()[_key]})
             _ = self.db.Task.find_one_and_update(
-                {
-                    '_id': _id
-                }, {'$set': {
+                {'_id': _id}, {'$set': {
                     'result': __result
                 }}, return_document=pymongo.ReturnDocument.AFTER
             )
             logging.info(
-                "[Database] Finished Task: task_name - {} sort: {} push time: {} took: {}s".
-                format(task_name, sort, _datetime,
-                       time.time() - s)
+                "[Database] Finished Task: task_name - {} sort: {} push time: {} took: {}s".format(
+                    task_name, sort, _datetime,
+                    time.time() - s
+                )
             )
             return True
         except Exception as e:

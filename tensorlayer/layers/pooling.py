@@ -92,13 +92,7 @@ class PoolLayer(Layer):
         pass
 
     def forward(self, inputs):
-        outputs = self.pool(
-            inputs,
-            ksize=self.filter_size,
-            strides=self.strides,
-            padding=self.padding,
-            name=self.name
-        )
+        outputs = self.pool(inputs, ksize=self.filter_size, strides=self.strides, padding=self.padding, name=self.name)
         return outputs
 
 
@@ -153,8 +147,7 @@ class MaxPool1d(Layer):
         )
 
     def __repr__(self):
-        s = ('{classname}(filter_size={filter_size}'
-             ', strides={strides}, padding={padding}')
+        s = ('{classname}(filter_size={filter_size}' ', strides={strides}, padding={padding}')
         if self.dilation_rate != 1:
             s += ', dilation={dilation_rate}'
         if self.name is not None:
@@ -239,8 +232,7 @@ class MeanPool1d(Layer):
         )
 
     def __repr__(self):
-        s = ('{classname}(filter_size={filter_size}'
-             ', strides={strides}, padding={padding}')
+        s = ('{classname}(filter_size={filter_size}' ', strides={strides}, padding={padding}')
         if self.dilation_rate != 1:
             s += ', dilation={dilation_rate}'
         if self.name is not None:
@@ -267,7 +259,7 @@ class MeanPool1d(Layer):
             window_shape=self._filter_size,
             pooling_type="AVG",
             padding=self.padding,
-            dilations=None, # TODO: support dilations
+            dilations=None,  # TODO: support dilations
             strides=self._strides,
             name=self.name,
             data_format=self.data_format
@@ -326,8 +318,7 @@ class MaxPool2d(Layer):
         )
 
     def __repr__(self):
-        s = ('{classname}(filter_size={filter_size}'
-             ', strides={strides}, padding={padding}')
+        s = ('{classname}(filter_size={filter_size}' ', strides={strides}, padding={padding}')
         if self.name is not None:
             s += ', name=\'{name}\''
         s += ')'
@@ -344,11 +335,7 @@ class MaxPool2d(Layer):
 
     def forward(self, inputs):
         outputs = tf.nn.max_pool(
-            input=inputs,
-            ksize=self.filter_size,
-            strides=self._strides,
-            padding=self.padding,
-            name=self.name
+            input=inputs, ksize=self.filter_size, strides=self._strides, padding=self.padding, name=self.name
         )
         return outputs
 
@@ -404,8 +391,7 @@ class MeanPool2d(Layer):
         )
 
     def __repr__(self):
-        s = ('{classname}(filter_size={filter_size}'
-             ', strides={strides}, padding={padding}')
+        s = ('{classname}(filter_size={filter_size}' ', strides={strides}, padding={padding}')
         if self.name is not None:
             s += ', name=\'{name}\''
         s += ')'
@@ -422,11 +408,7 @@ class MeanPool2d(Layer):
 
     def forward(self, inputs):
         outputs = tf.nn.avg_pool(
-            input=inputs,
-            ksize=self.filter_size,
-            strides=self._strides,
-            padding=self.padding,
-            name=self.name
+            input=inputs, ksize=self.filter_size, strides=self._strides, padding=self.padding, name=self.name
         )
         return outputs
 
@@ -463,7 +445,7 @@ class MaxPool3d(Layer):
     """
 
     def __init__(
-            self,  
+            self,
             filter_size=(3, 3, 3),
             strides=(2, 2, 2),
             padding='VALID',
@@ -485,8 +467,7 @@ class MaxPool3d(Layer):
         )
 
     def __repr__(self):
-        s = ('{classname}(filter_size={filter_size}'
-             ', strides={strides}, padding={padding}')
+        s = ('{classname}(filter_size={filter_size}' ', strides={strides}, padding={padding}')
         if self.name is not None:
             s += ', name=\'{name}\''
         s += ')'
@@ -545,7 +526,7 @@ class MeanPool3d(Layer):
     """
 
     def __init__(
-            self,  
+            self,
             filter_size=(3, 3, 3),
             strides=(2, 2, 2),
             padding='VALID',
@@ -567,8 +548,7 @@ class MeanPool3d(Layer):
         )
 
     def __repr__(self):
-        s = ('{classname}(filter_size={filter_size}'
-             ', strides={strides}, padding={padding}')
+        s = ('{classname}(filter_size={filter_size}' ', strides={strides}, padding={padding}')
         if self.name is not None:
             s += ', name=\'{name}\''
         s += ')'

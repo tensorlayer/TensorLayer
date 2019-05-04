@@ -100,9 +100,11 @@ class GroupConv2d(Layer):
 
     def __repr__(self):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
-        s = ('{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
-             ', strides={strides}, padding={padding}')
-        if self.dilation_rate != (1,) * len(self.dilation_rate):
+        s = (
+            '{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
+            ', strides={strides}, padding={padding}'
+        )
+        if self.dilation_rate != (1, ) * len(self.dilation_rate):
             s += ', dilation={dilation_rate}'
         if self.b_init is None:
             s += ', bias=False'
@@ -130,26 +132,17 @@ class GroupConv2d(Layer):
             raise Exception("data_format should be either channels_last or channels_first")
 
         self.groupConv = lambda i, k: tf.nn.conv2d(
-            i,
-            k,
-            strides=self._strides,
-            padding=self.padding,
-            data_format=self.data_format,
-            dilations=self._dilation_rate,
-            name=self.name
+            i, k, strides=self._strides, padding=self.padding, data_format=self.data_format, dilations=self.
+            _dilation_rate, name=self.name
         )
 
         self.filter_shape = (
             self.filter_size[0], self.filter_size[1], int(self.in_channels / self.n_group), self.n_filter
         )
 
-        self.We = self._get_weights(
-            "filters", shape=self.filter_shape, init=self.W_init
-        )
+        self.We = self._get_weights("filters", shape=self.filter_shape, init=self.W_init)
         if self.b_init:
-            self.b = self._get_weights(
-                "biases", shape=self.n_filter, init=self.b_init
-            )
+            self.b = self._get_weights("biases", shape=self.n_filter, init=self.b_init)
 
     def forward(self, inputs):
         if self.n_group == 1:
@@ -157,9 +150,7 @@ class GroupConv2d(Layer):
         else:
             inputGroups = tf.split(axis=3, num_or_size_splits=self.n_group, value=inputs)
             weightsGroups = tf.split(axis=3, num_or_size_splits=self.n_group, value=self.We)
-            convGroups = [
-                self.groupConv(i, k) for i, k in zip(inputGroups, weightsGroups)
-            ]
+            convGroups = [self.groupConv(i, k) for i, k in zip(inputGroups, weightsGroups)]
             outputs = tf.concat(axis=3, values=convGroups)
         if self.b_init:
             outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')

@@ -129,7 +129,7 @@ class Transpose(Layer):
     def __init__(self, perm=None, conjugate=False, name=None):  #'transpose'):
         super(Transpose, self).__init__(name)
         self.perm = perm
-        self.conjugate  = conjugate
+        self.conjugate = conjugate
 
         logging.info("Transpose  %s: perm: %s, conjugate: %s" % (self.name, self.perm, self.conjugate))
 

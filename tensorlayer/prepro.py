@@ -539,9 +539,9 @@ def affine_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', 
     final_affine_matrix = transform_matrix[:2, :2]
     final_offset = transform_matrix[:2, 2]
     channel_images = [
-        ndi.interpolation.
-        affine_transform(x_channel, final_affine_matrix, final_offset, order=order, mode=fill_mode, cval=cval)
-        for x_channel in x
+        ndi.interpolation.affine_transform(
+            x_channel, final_affine_matrix, final_offset, order=order, mode=fill_mode, cval=cval
+        ) for x_channel in x
     ]
     x = np.stack(channel_images, axis=0)
     x = np.rollaxis(x, 0, channel_index + 1)
@@ -3175,9 +3175,9 @@ def obj_box_shift(
 
 
 def obj_box_zoom(
-        im, classes=None, coords=None, zoom_range=(0.9,
-                                                   1.1), row_index=0, col_index=1, channel_index=2, fill_mode='nearest',
-        cval=0., order=1, is_rescale=False, is_center=False, is_random=False, thresh_wh=0.02, thresh_wh2=12.
+        im, classes=None, coords=None, zoom_range=(0.9, 1.1), row_index=0, col_index=1, channel_index=2,
+        fill_mode='nearest', cval=0., order=1, is_rescale=False, is_center=False, is_random=False, thresh_wh=0.02,
+        thresh_wh2=12.
 ):
     """Zoom in and out of a single image, randomly or non-randomly, and compute the new bounding box coordinates.
     Objects outside the cropped image will be removed.

@@ -62,9 +62,7 @@ class GaussianNoise(Layer):
         self.build()
         self._built = True
 
-        logging.info(
-            "GaussianNoise %s: mean: %f stddev: %f" % (self.name, self.mean, self.stddev)
-        )
+        logging.info("GaussianNoise %s: mean: %f stddev: %f" % (self.name, self.mean, self.stddev))
 
     def __repr__(self):
         s = '{classname}(mean={mean}, stddev={stddev}'

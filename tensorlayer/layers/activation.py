@@ -70,7 +70,7 @@ class PRelu(Layer):
         self.a_init = a_init
 
         if self.channel_shared:
-            self.build((None,))
+            self.build((None, ))
             self._built = True
         elif self.in_channels is not None:
             self.build((None, self.in_channels))
@@ -156,7 +156,7 @@ class PRelu6(Layer):
         self.a_init = a_init
 
         if self.channel_shared:
-            self.build((None,))
+            self.build((None, ))
             self._built = True
         elif self.in_channels is not None:
             self.build((None, self.in_channels))
@@ -244,7 +244,7 @@ class PTRelu6(Layer):
         self.a_init = a_init
 
         if self.channel_shared:
-            self.build((None,))
+            self.build((None, ))
             self._built = True
         elif self.in_channels:
             self.build((None, self.in_channels))

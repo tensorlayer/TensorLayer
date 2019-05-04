@@ -7,13 +7,7 @@ import tensorflow as tf
 # from tensorlayer.layers.core import LayersConfig
 
 __all__ = [
-    'Initializer',
-    'Zeros',
-    'Ones',
-    'Constant',
-    'RandomUniform',
-    'RandomNormal',
-    'TruncatedNormal',
+    'Initializer', 'Zeros', 'Ones', 'Constant', 'RandomUniform', 'RandomNormal', 'TruncatedNormal',
     'deconv2d_bilinear_upsampling_initializer'
 ]
 
@@ -88,6 +82,7 @@ class Constant(Initializer):
     ----------
         value : A python scalar, the value of the generated tensor.
     """
+
     def __init__(self, value=0):
         self.value = value
 
@@ -117,15 +112,10 @@ class RandomUniform(Initializer):
         self.seed = seed
 
     def __call__(self, shape, dtype=tf.float32):
-        return tf.random.uniform(shape, self.minval, self.maxval,
-                                 dtype=dtype, seed=self.seed)
+        return tf.random.uniform(shape, self.minval, self.maxval, dtype=dtype, seed=self.seed)
 
     def get_config(self):
-        return {
-            "minval": self.minval,
-            "maxval": self.maxval,
-            "seed": self.seed
-        }
+        return {"minval": self.minval, "maxval": self.maxval, "seed": self.seed}
 
 
 class RandomNormal(Initializer):
@@ -146,15 +136,10 @@ class RandomNormal(Initializer):
         self.seed = seed
 
     def __call__(self, shape, dtype=tf.float32):
-        return tf.random.normal(shape, self.mean, self.stddev,
-                                dtype=dtype, seed=self.seed)
+        return tf.random.normal(shape, self.mean, self.stddev, dtype=dtype, seed=self.seed)
 
     def get_config(self):
-        return {
-            "mean": self.mean,
-            "stddev": self.stddev,
-            "seed": self.seed
-        }
+        return {"mean": self.mean, "stddev": self.stddev, "seed": self.seed}
 
 
 class TruncatedNormal(Initializer):
@@ -181,16 +166,10 @@ class TruncatedNormal(Initializer):
         self.seed = seed
 
     def __call__(self, shape, dtype=tf.float32):
-        return tf.random.truncated_normal(shape, self.mean, self.stddev,
-                                          dtype=dtype, seed=self.seed)
+        return tf.random.truncated_normal(shape, self.mean, self.stddev, dtype=dtype, seed=self.seed)
 
     def get_config(self):
-        return {
-            "mean": self.mean,
-            "stddev": self.stddev,
-            "seed": self.seed
-        }
-
+        return {"mean": self.mean, "stddev": self.stddev, "seed": self.seed}
 
 
 def deconv2d_bilinear_upsampling_initializer(shape):
