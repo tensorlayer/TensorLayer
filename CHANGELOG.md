@@ -72,7 +72,7 @@ To release a new version, please update the changelog as followed:
 ### Added
 
 ### Changed
-- remove `tl.layers.initialize_global_variables(sess)` (PR #931)
+- update readme
 
 ### Dependencies Update
 - nltk>=3.3,<3.4 => nltk>=3.3,<3.5 (PR #892)
