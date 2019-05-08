@@ -158,17 +158,19 @@ def main_restore_embedding_layer():
 
     del all_var, data, count
 
-    x = tf.placeholder(tf.int32, shape=[batch_size])
+    class Embedding_Model(Model):
+        def __init__(self):
+            super(Embedding_Model, self).__init__()
+            self.embedding = Embedding(vocabulary_size, embedding_size)
 
-    net_in = tl.layers.Input([batch_size], dtype=tf.int32)
-    emb_net = tl.layers.Embedding(vocabulary_size, embedding_size, name='emb')(net_in)
+        def forward(self, inputs):
+            return self.embedding(inputs)
 
-    model = tl.models.Model(inputs=net_in, outputs=emb_net, name="model")
-
-    sess.run(tf.global_variables_initializer())
+    model = Embedding_Model()
+    model.eval()
 
     # TODO: assign certain parameters to model
-    model.load_weights(model_file_name + ".hdf5", sess=sess, skip=True, in_order=False)
+    model.load_weights(model_file_name + ".hdf5", skip=True, in_order=False)
 
     # Step 2: Input word(s), output the word vector(s).
     word = 'hello'
@@ -181,11 +183,11 @@ def main_restore_embedding_layer():
     print('word_ids:', word_ids)
     print('context:', context)
 
-    vector = sess.run(emb_net.outputs, feed_dict={x: [word_id]})
+    vector = model(word_id)
     print('vector:', vector.shape)
     print(vector)
 
-    vectors = sess.run(emb_net.outputs, feed_dict={x: word_ids})
+    vectors = model(word_ids)
     print('vectors:', vectors.shape)
     print(vectors)
 
@@ -216,12 +218,9 @@ def main_lstm_generate_text():
     # rnn model and update  (describtion: see tutorial_ptb_lstm.py)
     init_scale = 0.1
     learning_rate = 1e-3
-    max_grad_norm = 5
     sequence_length = 20
     hidden_size = 200
-    max_epoch = 4
-    max_max_epoch = 100
-    lr_decay = 0.9
+    max_epoch = 100
     batch_size = 16
 
     top_k_list = [1, 3, 5, 10]
@@ -243,9 +242,6 @@ def main_lstm_generate_text():
     seed = nltk.tokenize.word_tokenize(seed)
     print('seed : %s' % seed)
 
-    # ===== Define model
-    # Testing (Evaluation), for generate text
-
     rnn_init = tl.initializers.random_uniform(-init_scale, init_scale)
 
     net = Text_Generation_Net(vocab_size, hidden_size, rnn_init)
@@ -256,9 +252,9 @@ def main_lstm_generate_text():
     # ===== Training
 
     print("\nStart learning a model to generate text")
-    for i in range(max_max_epoch):
+    for i in range(max_epoch):
 
-        print("Epoch: %d/%d" % (i + 1, max_max_epoch))
+        print("Epoch: %d/%d" % (i + 1, max_epoch))
         epoch_size = ((len(train_data) // batch_size) - 1) // sequence_length
 
         start_time = time.time()
@@ -290,7 +286,7 @@ def main_lstm_generate_text():
                 )
         train_perplexity = np.exp(costs / iters)
         # print("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
-        print("Epoch: %d/%d Train Perplexity: %.3f" % (i + 1, max_max_epoch, train_perplexity))
+        print("Epoch: %d/%d Train Perplexity: %.3f" % (i + 1, max_epoch, train_perplexity))
 
         net.eval()
         # for diversity in diversity_list:
