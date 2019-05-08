@@ -3,7 +3,7 @@ numpy==1.16.3
 progressbar2==3.39.3
 requests==2.21.0
 scikit-learn>=0.19,<0.21
-scikit-image>=0.14,<0.15
+scikit-image==0.15.0
 scipy>=1.1,<1.2
 wrapt>=1.10,<1.11
 h5py>=2.9
