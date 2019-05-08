@@ -99,7 +99,7 @@ B) for an rnn, all time steps share weights. We use one matrix to keep all
 gate weights. Split by column into 4 parts to get the 4 gate weight matrices.
 
 """
-
+import argparse
 import sys
 import time
 
@@ -107,25 +107,55 @@ import numpy as np
 import tensorflow as tf
 
 import tensorlayer as tl
+from tensorlayer.models import Model
 
-tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
-flags = tf.app.flags
 
-flags.DEFINE_string("model", "small", "A type of model. Possible options are: small, medium, large.")
+def process_args(args):
+    parser = argparse.ArgumentParser()
 
-if (tf.VERSION >= '1.5'):
-    # parse flags
-    flags.FLAGS(sys.argv, known_only=True)
-    flags.ArgumentParser()
-
-FLAGS = flags.FLAGS
-
-tf.logging.set_verbosity(tf.logging.DEBUG)
+    parser.add_argument('--model',
+                        default='small',
+                        choices=['small', 'medium', 'large'],
+                        help="A type of model. Possible options are: small, medium, large.")
+    parameters = parser.parse_args(args)
+    return parameters
 
 
-def main(_):
+class PTB_Net(Model):
+
+    def __init__(self, vocab_size, hidden_size, init, keep):
+        super(PTB_Net, self).__init__()
+
+        self.embedding = tl.layers.Embedding(vocab_size, hidden_size, init)
+        self.dropout1 = tl.layers.Dropout(keep=keep)
+        self.lstm1 = tl.layers.RNN(cell=tf.keras.layers.LSTMCell(hidden_size),
+                                   return_last=False,
+                                   return_state=True,
+                                   return_seq_2d=False,
+                                   in_channels=hidden_size)
+        self.dropout2 = tl.layers.Dropout(keep=keep)
+        self.lstm2 = tl.layers.RNN(cell=tf.keras.layers.LSTMCell(hidden_size),
+                                   return_last=False,
+                                   return_state=True,
+                                   return_seq_2d=True,
+                                   in_channels=hidden_size)
+        self.dropout3 = tl.layers.Dropout(keep=keep)
+        self.out_dense = tl.layers.Dense(vocab_size, in_channels=hidden_size, W_init=init, b_init=init, act=None)
+
+    def forward(self, inputs, lstm1_initial_state=None, lstm2_initial_state=None):
+        inputs = self.embedding(inputs)
+        inputs = self.dropout1(inputs)
+        lstm1_out, lstm1_state = self.lstm1(inputs, initial_state=lstm1_initial_state)
+        inputs = self.dropout2(lstm1_out)
+        lstm2_out, lstm2_state = self.lstm2(inputs, initial_state=lstm2_initial_state)
+        inputs = self.dropout3(lstm2_out)
+        logits = self.out_dense(inputs)
+        return logits, lstm1_state, lstm2_state
+
+
+def main():
     """
     The core of the model consists of an LSTM cell that processes one word at
     a time and computes probabilities of the possible continuations of the
@@ -134,7 +164,9 @@ def main(_):
     reasons, we will process data in mini-batches of size batch_size.
 
     """
-    if FLAGS.model == "small":
+    param = process_args(sys.argv[1:])
+
+    if param.model == "small":
         init_scale = 0.1
         learning_rate = 1.0
         max_grad_norm = 5
@@ -146,7 +178,7 @@ def main(_):
         lr_decay = 0.5
         batch_size = 20
         vocab_size = 10000
-    elif FLAGS.model == "medium":
+    elif param.model == "medium":
         init_scale = 0.05
         learning_rate = 1.0
         max_grad_norm = 5
@@ -159,7 +191,7 @@ def main(_):
         lr_decay = 0.8
         batch_size = 20
         vocab_size = 10000
-    elif FLAGS.model == "large":
+    elif param.model == "large":
         init_scale = 0.04
         learning_rate = 1.0
         max_grad_norm = 10
@@ -173,7 +205,7 @@ def main(_):
         batch_size = 20
         vocab_size = 10000
     else:
-        raise ValueError("Invalid model: %s", FLAGS.model)
+        raise ValueError("Invalid model: %s", param.model)
 
     # Load PTB dataset
     train_data, valid_data, test_data, vocab_size = tl.files.load_ptb_dataset()
@@ -183,141 +215,55 @@ def main(_):
     print('len(test_data)  {}'.format(len(test_data)))  # 82430  a list of int
     print('vocab_size      {}'.format(vocab_size))  # 10000
 
-    sess = tf.InteractiveSession()
-
     # One int represents one word, the meaning of batch_size here is not the
     # same with MNIST example, it is the number of concurrent processes for
     # computational reasons.
 
-    # Training and Validing
-    input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
-    targets = tf.placeholder(tf.int32, [batch_size, num_steps])
-    # Testing (Evaluation)
-    input_data_test = tf.placeholder(tf.int32, [1, 1])
-    targets_test = tf.placeholder(tf.int32, [1, 1])
-
-    def inference(x, is_training, num_steps, reuse=None):
-        """If reuse is True, the inferences use the existing parameters,
-        then different inferences share the same parameters.
-
-        Note :
-        - For DynamicRNNLayer, you can set dropout and the number of RNN layer internally.
-        """
-        print("\nnum_steps : %d, is_training : %s, reuse : %s" % (num_steps, is_training, reuse))
-        init = tf.random_uniform_initializer(-init_scale, init_scale)
-        with tf.variable_scope("model", reuse=reuse):
-            net = tl.layers.EmbeddingInputlayer(x, vocab_size, hidden_size, init, name='embedding')
-            net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
-            net = tl.layers.RNNLayer(
-                net,
-                cell_fn=tf.contrib.rnn.BasicLSTMCell,  # tf.nn.rnn_cell.BasicLSTMCell,
-                cell_init_args={'forget_bias': 0.0},  # 'state_is_tuple': True},
-                n_hidden=hidden_size,
-                initializer=init,
-                n_steps=num_steps,
-                return_last=False,
-                name='basic_lstm_layer1'
-            )
-            lstm1 = net
-            net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop2')
-            net = tl.layers.RNNLayer(
-                net,
-                cell_fn=tf.contrib.rnn.BasicLSTMCell,  # tf.nn.rnn_cell.BasicLSTMCell,
-                cell_init_args={'forget_bias': 0.0},  # 'state_is_tuple': True},
-                n_hidden=hidden_size,
-                initializer=init,
-                n_steps=num_steps,
-                return_last=False,
-                return_seq_2d=True,
-                name='basic_lstm_layer2'
-            )
-            lstm2 = net
-            # Alternatively, if return_seq_2d=False, in the above RNN layer,
-            # you can reshape the outputs as follow:
-            # net = tl.layers.ReshapeLayer(net,
-            #       shape=[-1, int(net.outputs._shape[-1])], name='reshape')
-            net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop3')
-            net = tl.layers.DenseLayer(net, vocab_size, W_init=init, b_init=init, act=None, name='output')
-        return net, lstm1, lstm2
-
-    # Inference for Training
-    net, lstm1, lstm2 = inference(input_data, is_training=True, num_steps=num_steps, reuse=None)
-    # Inference for Validating
-    net_val, lstm1_val, lstm2_val = inference(input_data, is_training=False, num_steps=num_steps, reuse=True)
-    # Inference for Testing (Evaluation)
-    net_test, lstm1_test, lstm2_test = inference(input_data_test, is_training=False, num_steps=1, reuse=True)
-
-    # sess.run(tf.global_variables_initializer())
-    sess.run(tf.global_variables_initializer())
-
-    def loss_fn(outputs, targets):  # , batch_size, num_steps):
-        # See tl.cost.cross_entropy_seq()
-        # Returns the cost function of Cross-entropy of two sequences, implement
-        # softmax internally.
-        # outputs : 2D tensor [batch_size*num_steps, n_units of output layer]
-        # targets : 2D tensor [batch_size, num_steps], need to be reshaped.
-        # batch_size : RNN batch_size, number of concurrent processes.
-        # n_examples = batch_size * num_steps
-        # so
-        # cost is the averaged cost of each mini-batch (concurrent process).
-        loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example(
-            [outputs], [tf.reshape(targets, [-1])], [tf.ones_like(tf.reshape(targets, [-1]), dtype=tf.float32)]
-        )
-        # [tf.ones([batch_size * num_steps])])
-        cost = tf.reduce_sum(loss) / batch_size
-        return cost
-
-    # Cost for Training
-    cost = loss_fn(net.outputs, targets)  # , batch_size, num_steps)
-    # Cost for Validating
-    cost_val = loss_fn(net_val.outputs, targets)  # , batch_size, num_steps)
-    # Cost for Testing (Evaluation)
-    cost_test = loss_fn(net_test.outputs, targets_test)  # , 1, 1)
+    init = tf.random_uniform_initializer(-init_scale, init_scale)
+    net = PTB_Net(hidden_size=hidden_size, vocab_size=vocab_size, init=init, keep=keep_prob)
 
     # Truncated Backpropagation for training
-    with tf.variable_scope('learning_rate'):
-        lr = tf.Variable(0.0, trainable=False)
-    tvars = tf.trainable_variables()
-    grads, _ = tf.clip_by_global_norm(tf.gradients(cost, tvars), max_grad_norm)
-    optimizer = tf.train.GradientDescentOptimizer(lr)
-    train_op = optimizer.apply_gradients(zip(grads, tvars))
+    lr = tf.Variable(0.0, trainable=False)
+    train_weights = net.weights
+    optimizer = tf.optimizers.Adam(lr)
 
-    sess.run(tf.global_variables_initializer())
-
-    net.print_params()
-    net.print_layers()
-    tl.layers.print_all_variables()
+    print(net)
 
     print("\nStart learning a language model by using PTB dataset")
     for i in range(max_max_epoch):
         # decreases the initial learning rate after several
         # epoachs (defined by ``max_epoch``), by multipling a ``lr_decay``.
-        new_lr_decay = lr_decay**max(i - max_epoch, 0.0)
-        sess.run(tf.assign(lr, learning_rate * new_lr_decay))
+        new_lr_decay = lr_decay ** max(i - max_epoch, 0.0)
+        lr.assign(learning_rate * new_lr_decay)
 
         # Training
-        print("Epoch: %d/%d Learning rate: %.3f" % (i + 1, max_max_epoch, sess.run(lr)))
+        net.train()
+        print("Epoch: %d/%d Learning rate: %.3f" % (i + 1, max_max_epoch, lr.value()))
         epoch_size = ((len(train_data) // batch_size) - 1) // num_steps
         start_time = time.time()
         costs = 0.0
         iters = 0
         # reset all states at the begining of every epoch
-        state1 = tl.layers.initialize_rnn_state(lstm1.initial_state)
-        state2 = tl.layers.initialize_rnn_state(lstm2.initial_state)
+        lstm1_state = None
+        lstm2_state = None
+
         for step, (x, y) in enumerate(tl.iterate.ptb_iterator(train_data, batch_size, num_steps)):
-            feed_dict = {
-                input_data: x,
-                targets: y,
-                lstm1.initial_state: state1,
-                lstm2.initial_state: state2,
-            }
-            # For training, enable dropout
-            feed_dict.update(net.all_drop)
-            _cost, state1, state2, _ = sess.run(
-                [cost, lstm1.final_state, lstm2.final_state, train_op], feed_dict=feed_dict
-            )
-            costs += _cost
+
+            with tf.GradientTape() as tape:
+                ## compute outputs
+                logits, lstm1_state, lstm2_state = net(
+                    x, lstm1_initial_state=lstm1_state, lstm2_initial_state=lstm2_state)
+                ## compute loss and update model
+                cost = tl.cost.cross_entropy(
+                    logits, tf.reshape(y, [-1]), name='train_loss') / batch_size
+
+            grad, _ = tf.clip_by_global_norm(tape.gradient(cost, train_weights), max_grad_norm)
+            optimizer.apply_gradients(zip(grad, train_weights))
+
+            costs += cost
             iters += num_steps
+
+            print(cost)
 
             if step % (epoch_size // 10) == 10:
                 print(
@@ -328,48 +274,43 @@ def main(_):
         print("Epoch: %d/%d Train Perplexity: %.3f" % (i + 1, max_max_epoch, train_perplexity))
 
         # Validing
+        net.eval()
         start_time = time.time()
         costs = 0.0
         iters = 0
         # reset all states at the begining of every epoch
-        state1 = tl.layers.initialize_rnn_state(lstm1_val.initial_state)
-        state2 = tl.layers.initialize_rnn_state(lstm2_val.initial_state)
+        lstm1_state = None
+        lstm2_state = None
         for step, (x, y) in enumerate(tl.iterate.ptb_iterator(valid_data, batch_size, num_steps)):
-            feed_dict = {
-                input_data: x,
-                targets: y,
-                lstm1_val.initial_state: state1,
-                lstm2_val.initial_state: state2,
-            }
-            _cost, state1, state2, _ = sess.run(
-                [cost_val, lstm1_val.final_state, lstm2_val.final_state,
-                 tf.no_op()], feed_dict=feed_dict
-            )
-            costs += _cost
+            ## compute outputs
+            logits, lstm1_state, lstm2_state = net(
+                x, lstm1_initial_state=lstm1_state, lstm2_initial_state=lstm2_state)
+            ## compute loss and update model
+            cost = tl.cost.cross_entropy(
+                logits, tf.reshape(y, [-1]), name='train_loss') / batch_size
+            costs += cost
             iters += num_steps
         valid_perplexity = np.exp(costs / iters)
         print("Epoch: %d/%d Valid Perplexity: %.3f" % (i + 1, max_max_epoch, valid_perplexity))
 
     print("Evaluation")
     # Testing
+    net.eval()
     # go through the test set step by step, it will take a while.
     start_time = time.time()
     costs = 0.0
     iters = 0
     # reset all states at the begining
-    state1 = tl.layers.initialize_rnn_state(lstm1_test.initial_state)
-    state2 = tl.layers.initialize_rnn_state(lstm2_test.initial_state)
+    lstm1_state = None
+    lstm2_state = None
     for step, (x, y) in enumerate(tl.iterate.ptb_iterator(test_data, batch_size=1, num_steps=1)):
-        feed_dict = {
-            input_data_test: x,
-            targets_test: y,
-            lstm1_test.initial_state: state1,
-            lstm2_test.initial_state: state2,
-        }
-        _cost, state1, state2 = sess.run(
-            [cost_test, lstm1_test.final_state, lstm2_test.final_state], feed_dict=feed_dict
-        )
-        costs += _cost
+        ## compute outputs
+        logits, lstm1_state, lstm2_state = net(
+            x, lstm1_initial_state=lstm1_state, lstm2_initial_state=lstm2_state)
+        ## compute loss and update model
+        cost = tl.cost.cross_entropy(
+            logits, tf.reshape(y, [-1]), name='train_loss') / batch_size
+        costs += cost
         iters += 1
     test_perplexity = np.exp(costs / iters)
     print("Test Perplexity: %.3f took %.2fs" % (test_perplexity, time.time() - start_time))
@@ -380,7 +321,7 @@ def main(_):
 
 
 if __name__ == "__main__":
-    tf.app.run()
+    main()
 
 # log of SmallConfig
 # Start learning a language model by using PTB dataset
