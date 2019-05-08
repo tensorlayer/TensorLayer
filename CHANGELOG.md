@@ -82,6 +82,7 @@ To release a new version, please update the changelog as followed:
 ### Deprecated
 
 ### Fixed
+- fix docs of models @zsdonghao #957
 
 ### Removed
 
