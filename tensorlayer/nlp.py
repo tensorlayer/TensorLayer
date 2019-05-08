@@ -314,7 +314,7 @@ class Vocabulary(object):
     """
 
     def __init__(self, vocab_file, start_word="<S>", end_word="</S>", unk_word="<UNK>", pad_word="<PAD>"):
-        if not tf.io.gfile.Exists(vocab_file):
+        if not tf.io.gfile.exists(vocab_file):
             tl.logging.fatal("Vocab file %s not found." % vocab_file)
         tl.logging.info("Initializing vocabulary from file: %s" % vocab_file)
 
