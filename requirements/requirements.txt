@@ -1,5 +1,5 @@
 imageio>=2.3,<2.5
-numpy>=1.14,<1.16
+numpy>=1.16,<1.17
 progressbar2>=3.38,<3.39
 requests==2.21.0
 scikit-learn>=0.19,<0.21
