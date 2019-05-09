@@ -194,17 +194,16 @@ def main_restore_embedding_layer():
 
 class Text_Generation_Net(Model):
 
-    def __init__(self, vocab_size, hidden_size, rnn_init):
+    def __init__(self, vocab_size, hidden_size, init):
         super(Text_Generation_Net, self).__init__()
 
-        self.embedding = Embedding(vocab_size, hidden_size, rnn_init, name='embedding')
+        self.embedding = Embedding(vocab_size, hidden_size, init, name='embedding')
         self.lstm = tl.layers.RNN(cell=tf.keras.layers.LSTMCell(hidden_size),
                         return_last=False,
                         return_state=True,
                         return_seq_2d=True,
-                        in_channels=hidden_size,
-                        name="lstm1")
-        self.out_dense = Dense(vocab_size, in_channels=hidden_size, W_init=rnn_init, b_init=rnn_init, act=None, name='output')
+                        in_channels=hidden_size)
+        self.out_dense = Dense(vocab_size, in_channels=hidden_size, W_init=init, b_init=init, act=None, name='output')
 
     def forward(self, inputs, initial_state=None):
         embedding_vector = self.embedding(inputs)
@@ -242,9 +241,9 @@ def main_lstm_generate_text():
     seed = nltk.tokenize.word_tokenize(seed)
     print('seed : %s' % seed)
 
-    rnn_init = tl.initializers.random_uniform(-init_scale, init_scale)
+    nit = tl.initializers.random_uniform(-init_scale, init_scale)
 
-    net = Text_Generation_Net(vocab_size, hidden_size, rnn_init)
+    net = Text_Generation_Net(vocab_size, hidden_size, init)
 
     train_weights = net.weights
     optimizer = tf.optimizers.Adam(lr=learning_rate)
@@ -270,19 +269,18 @@ def main_lstm_generate_text():
                 logits, lstm_state = net(x, initial_state=lstm_state)
                 ## compute loss and update model
                 cost = tl.cost.cross_entropy(
-                    logits, tf.reshape(y, [-1]), name='train_loss') / batch_size
+                    logits, tf.reshape(y, [-1]), name='train_loss')
 
             grad = tape.gradient(cost, train_weights)
             optimizer.apply_gradients(zip(grad, train_weights))
 
             costs += cost
-            iters += sequence_length
+            iters += 1
 
             if step % (epoch_size // 10) == 1:
-                print("loss: ", cost)
                 print(
                     "%.3f perplexity: %.3f speed: %.0f wps" %
-                    (step * 1.0 / epoch_size, np.exp(costs / iters), iters * batch_size / (time.time() - start_time))
+                    (step * 1.0 / epoch_size, np.exp(costs / iters), iters * batch_size * sequence_length * batch_size / (time.time() - start_time))
                 )
         train_perplexity = np.exp(costs / iters)
         # print("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))

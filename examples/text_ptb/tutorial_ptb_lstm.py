@@ -168,7 +168,7 @@ def main():
 
     if param.model == "small":
         init_scale = 0.1
-        learning_rate = 1.0
+        learning_rate = 1e-3
         max_grad_norm = 5
         num_steps = 20
         hidden_size = 200
@@ -180,7 +180,7 @@ def main():
         vocab_size = 10000
     elif param.model == "medium":
         init_scale = 0.05
-        learning_rate = 1.0
+        learning_rate = 1e-3
         max_grad_norm = 5
         # num_layers = 2
         num_steps = 35
@@ -193,7 +193,7 @@ def main():
         vocab_size = 10000
     elif param.model == "large":
         init_scale = 0.04
-        learning_rate = 1.0
+        learning_rate = 1e-3
         max_grad_norm = 10
         # num_layers = 2
         num_steps = 35
@@ -225,7 +225,7 @@ def main():
     # Truncated Backpropagation for training
     lr = tf.Variable(0.0, trainable=False)
     train_weights = net.weights
-    optimizer = tf.optimizers.Adam(lr)
+    optimizer = tf.optimizers.Adam(lr=lr)
 
     print(net)
 
@@ -255,20 +255,20 @@ def main():
                     x, lstm1_initial_state=lstm1_state, lstm2_initial_state=lstm2_state)
                 ## compute loss and update model
                 cost = tl.cost.cross_entropy(
-                    logits, tf.reshape(y, [-1]), name='train_loss') / batch_size
+                    logits, tf.reshape(y, [-1]), name='train_loss')
 
             grad, _ = tf.clip_by_global_norm(tape.gradient(cost, train_weights), max_grad_norm)
+            # grad = tape.gradient(cost, train_weights)
             optimizer.apply_gradients(zip(grad, train_weights))
 
             costs += cost
-            iters += num_steps
-
+            iters += 1
             print(cost)
 
             if step % (epoch_size // 10) == 10:
                 print(
                     "%.3f perplexity: %.3f speed: %.0f wps" %
-                    (step * 1.0 / epoch_size, np.exp(costs / iters), iters * batch_size / (time.time() - start_time))
+                    (step * 1.0 / epoch_size, np.exp(costs / iters), iters * batch_size * num_steps / (time.time() - start_time))
                 )
         train_perplexity = np.exp(costs / iters)
         print("Epoch: %d/%d Train Perplexity: %.3f" % (i + 1, max_max_epoch, train_perplexity))
@@ -287,9 +287,9 @@ def main():
                 x, lstm1_initial_state=lstm1_state, lstm2_initial_state=lstm2_state)
             ## compute loss and update model
             cost = tl.cost.cross_entropy(
-                logits, tf.reshape(y, [-1]), name='train_loss') / batch_size
+                logits, tf.reshape(y, [-1]), name='train_loss')
             costs += cost
-            iters += num_steps
+            iters += 1
         valid_perplexity = np.exp(costs / iters)
         print("Epoch: %d/%d Valid Perplexity: %.3f" % (i + 1, max_max_epoch, valid_perplexity))
 
@@ -309,7 +309,7 @@ def main():
             x, lstm1_initial_state=lstm1_state, lstm2_initial_state=lstm2_state)
         ## compute loss and update model
         cost = tl.cost.cross_entropy(
-            logits, tf.reshape(y, [-1]), name='train_loss') / batch_size
+            logits, tf.reshape(y, [-1]), name='train_loss')
         costs += cost
         iters += 1
     test_perplexity = np.exp(costs / iters)
