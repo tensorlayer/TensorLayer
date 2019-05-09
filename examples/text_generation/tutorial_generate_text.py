@@ -199,10 +199,10 @@ class Text_Generation_Net(Model):
 
         self.embedding = Embedding(vocab_size, hidden_size, init, name='embedding')
         self.lstm = tl.layers.RNN(cell=tf.keras.layers.LSTMCell(hidden_size),
-                        return_last=False,
-                        return_state=True,
-                        return_seq_2d=True,
-                        in_channels=hidden_size)
+                                  return_last_output=False,
+                                  return_last_state=True,
+                                  return_seq_2d=True,
+                                  in_channels=hidden_size)
         self.out_dense = Dense(vocab_size, in_channels=hidden_size, W_init=init, b_init=init, act=None, name='output')
 
     def forward(self, inputs, initial_state=None):
@@ -241,7 +241,7 @@ def main_lstm_generate_text():
     seed = nltk.tokenize.word_tokenize(seed)
     print('seed : %s' % seed)
 
-    nit = tl.initializers.random_uniform(-init_scale, init_scale)
+    init = tl.initializers.random_uniform(-init_scale, init_scale)
 
     net = Text_Generation_Net(vocab_size, hidden_size, init)
 

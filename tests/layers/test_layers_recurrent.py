@@ -45,7 +45,7 @@ class Layer_RNN_Test(CustomTestCase):
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
         rnnlayer = tl.layers.RNN(
             cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.1),
-            return_last=True, return_seq_2d=False, return_state=True
+            return_last_output=True, return_seq_2d=False, return_last_state=True
         )
         rnn, rnn_state = rnnlayer(inputs)
         outputs = tl.layers.Dense(n_units=1)(rnn)
@@ -73,7 +73,7 @@ class Layer_RNN_Test(CustomTestCase):
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
         rnnlayer = tl.layers.RNN(
             cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.1),
-            return_last=False, return_seq_2d=True, return_state=False
+            return_last_output=False, return_seq_2d=True, return_last_state=False
         )
         rnn = rnnlayer(inputs)
         outputs = tl.layers.Dense(n_units=1)(rnn)
@@ -92,7 +92,7 @@ class Layer_RNN_Test(CustomTestCase):
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
         rnnlayer = tl.layers.RNN(
             cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.1),
-            return_last=False, return_seq_2d=False, return_state=False
+            return_last_output=False, return_seq_2d=False, return_last_state=False
         )
         rnn = rnnlayer(inputs)
         rnn_model = tl.models.Model(inputs=inputs, outputs=rnn)
@@ -112,7 +112,7 @@ class Layer_RNN_Test(CustomTestCase):
                 self.rnnlayer = tl.layers.RNN(
                     cell=tf.keras.layers.SimpleRNNCell(units=8, dropout=0.1),
                     in_channels=4,
-                    return_last=False, return_seq_2d=False, return_state=False
+                    return_last_output=False, return_seq_2d=False, return_last_state=False
                 )
                 self.dense = tl.layers.Dense(in_channels=8, n_units=1)
 
@@ -145,7 +145,7 @@ class Layer_RNN_Test(CustomTestCase):
                 self.rnnlayer = tl.layers.RNN(
                     cell=tf.keras.layers.SimpleRNNCell(units=8, dropout=0.1),
                     in_channels=4,
-                    return_last=False, return_seq_2d=False, return_state=False
+                    return_last_output=False, return_seq_2d=False, return_last_state=False
                 )
                 self.dense = tl.layers.Dense(in_channels=8, n_units=1)
 
@@ -179,12 +179,12 @@ class Layer_RNN_Test(CustomTestCase):
                 self.rnnlayer1 = tl.layers.RNN(
                     cell=tf.keras.layers.SimpleRNNCell(units=8, dropout=0.1),
                     in_channels=4,
-                    return_last=True, return_state=True
+                    return_last_output=True, return_last_state=True
                 )
                 self.rnnlayer2 = tl.layers.RNN(
                     cell=tf.keras.layers.SimpleRNNCell(units=8, dropout=0.1),
                     in_channels=4,
-                    return_last=True, return_state=False
+                    return_last_output=True, return_last_state=False
                 )
                 self.dense = tl.layers.Dense(in_channels=8, n_units=1)
 
@@ -217,7 +217,7 @@ class Layer_RNN_Test(CustomTestCase):
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
         rnnlayer = tl.layers.RNN(
             cell=tf.keras.layers.LSTMCell(units=self.hidden_size, dropout=0.1),
-            return_last=True, return_seq_2d=False, return_state=True
+            return_last_output=True, return_seq_2d=False, return_last_state=True
         )
         rnn, rnn_state = rnnlayer(inputs)
         outputs = tl.layers.Dense(n_units=1)(rnn)
@@ -244,7 +244,7 @@ class Layer_RNN_Test(CustomTestCase):
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
         rnnlayer = tl.layers.RNN(
             cell=tf.keras.layers.GRUCell(units=self.hidden_size, dropout=0.1),
-            return_last=True, return_seq_2d=False, return_state=True
+            return_last_output=True, return_seq_2d=False, return_last_state=True
         )
         rnn, rnn_state = rnnlayer(inputs)
         outputs = tl.layers.Dense(n_units=1)(rnn)
@@ -272,7 +272,7 @@ class Layer_RNN_Test(CustomTestCase):
         rnnlayer = tl.layers.BiRNN(
             fw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.1),
             bw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size + 1, dropout=0.1),
-            return_seq_2d=True, return_state=True
+            return_seq_2d=True, return_last_state=True
         )
         rnn, rnn_fw_state, rnn_bw_state = rnnlayer(inputs)
         dense = tl.layers.Dense(n_units=1)(rnn)
@@ -303,7 +303,7 @@ class Layer_RNN_Test(CustomTestCase):
         rnnlayer = tl.layers.BiRNN(
             fw_cell=tf.keras.layers.LSTMCell(units=self.hidden_size, dropout=0.1),
             bw_cell=tf.keras.layers.LSTMCell(units=self.hidden_size + 1, dropout=0.1),
-            return_seq_2d=False, return_state=True
+            return_seq_2d=False, return_last_state=True
         )
         rnn, rnn_fw_state, rnn_bw_state = rnnlayer(inputs)
         din = tl.layers.Reshape([-1, self.hidden_size + self.hidden_size + 1])(rnn)
@@ -338,7 +338,7 @@ class Layer_RNN_Test(CustomTestCase):
                     fw_cell=tf.keras.layers.GRUCell(units=8, dropout=0.1),
                     bw_cell=tf.keras.layers.GRUCell(units=8, dropout=0.1),
                     in_channels=4,
-                    return_seq_2d=False, return_state=False
+                    return_seq_2d=False, return_last_state=False
                 )
                 self.dense = tl.layers.Dense(in_channels=16, n_units=1)
                 self.reshape = tl.layers.Reshape([-1, 6])
@@ -370,12 +370,12 @@ class Layer_RNN_Test(CustomTestCase):
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
         rnnlayer1 = tl.layers.RNN(
             cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.1),
-            return_last=False, return_seq_2d=False, return_state=False
+            return_last_output=False, return_seq_2d=False, return_last_state=False
         )
         rnn1 = rnnlayer1(inputs)
         rnnlayer2 = tl.layers.RNN(
             cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.1),
-            return_last=True, return_seq_2d=False, return_state=False
+            return_last_output=True, return_seq_2d=False, return_last_state=False
         )
         rnn2 = rnnlayer2(rnn1)
         outputs = tl.layers.Dense(n_units=1)(rnn2)
@@ -405,13 +405,13 @@ class Layer_RNN_Test(CustomTestCase):
         rnnlayer = tl.layers.BiRNN(
             fw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.1),
             bw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size + 1, dropout=0.1),
-            return_seq_2d=False, return_state=False
+            return_seq_2d=False, return_last_state=False
         )
         rnn = rnnlayer(inputs)
         rnnlayer2 = tl.layers.BiRNN(
             fw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.1),
             bw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size + 1, dropout=0.1),
-            return_seq_2d=True, return_state=False
+            return_seq_2d=True, return_last_state=False
         )
         rnn2 = rnnlayer2(rnn)
         dense = tl.layers.Dense(n_units=1)(rnn2)
@@ -441,7 +441,7 @@ class Layer_RNN_Test(CustomTestCase):
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
         rnnlayer = tl.layers.RNN(
             cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.5),
-            return_last=True, return_seq_2d=False, return_state=False
+            return_last_output=True, return_seq_2d=False, return_last_state=False
         )
         rnn = rnnlayer(inputs)
         outputs = tl.layers.Dense(n_units=1)(rnn)
@@ -467,7 +467,7 @@ class Layer_RNN_Test(CustomTestCase):
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
         rnnlayer = tl.layers.RNN(
             cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, recurrent_dropout=0.5),
-            return_last=True, return_seq_2d=False, return_state=False
+            return_last_output=True, return_seq_2d=False, return_last_state=False
         )
         rnn = rnnlayer(inputs)
         outputs = tl.layers.Dense(n_units=1)(rnn)
@@ -494,7 +494,7 @@ class Layer_RNN_Test(CustomTestCase):
         rnnlayer = tl.layers.BiRNN(
             fw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.5),
             bw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, dropout=0.5),
-            return_seq_2d=True, return_state=False
+            return_seq_2d=True, return_last_state=False
         )
         rnn = rnnlayer(inputs)
         outputs = tl.layers.Dense(n_units=1)(rnn)
@@ -521,7 +521,7 @@ class Layer_RNN_Test(CustomTestCase):
         rnnlayer = tl.layers.BiRNN(
             fw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, recurrent_dropout=0.5),
             bw_cell=tf.keras.layers.SimpleRNNCell(units=self.hidden_size, recurrent_dropout=0.5),
-            return_seq_2d=True, return_state=False
+            return_seq_2d=True, return_last_state=False
         )
         rnn = rnnlayer(inputs)
         outputs = tl.layers.Dense(n_units=1)(rnn)

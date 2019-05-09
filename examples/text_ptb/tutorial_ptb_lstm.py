@@ -131,14 +131,14 @@ class PTB_Net(Model):
         self.embedding = tl.layers.Embedding(vocab_size, hidden_size, init)
         self.dropout1 = tl.layers.Dropout(keep=keep)
         self.lstm1 = tl.layers.RNN(cell=tf.keras.layers.LSTMCell(hidden_size),
-                                   return_last=False,
-                                   return_state=True,
+                                   return_last_output=False,
+                                   return_last_state=True,
                                    return_seq_2d=False,
                                    in_channels=hidden_size)
         self.dropout2 = tl.layers.Dropout(keep=keep)
         self.lstm2 = tl.layers.RNN(cell=tf.keras.layers.LSTMCell(hidden_size),
-                                   return_last=False,
-                                   return_state=True,
+                                   return_last_output=False,
+                                   return_last_state=True,
                                    return_seq_2d=True,
                                    in_channels=hidden_size)
         self.dropout3 = tl.layers.Dropout(keep=keep)
