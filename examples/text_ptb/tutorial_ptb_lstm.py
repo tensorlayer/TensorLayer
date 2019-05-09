@@ -258,12 +258,10 @@ def main():
                     logits, tf.reshape(y, [-1]), name='train_loss')
 
             grad, _ = tf.clip_by_global_norm(tape.gradient(cost, train_weights), max_grad_norm)
-            # grad = tape.gradient(cost, train_weights)
             optimizer.apply_gradients(zip(grad, train_weights))
 
             costs += cost
             iters += 1
-            print(cost)
 
             if step % (epoch_size // 10) == 10:
                 print(
