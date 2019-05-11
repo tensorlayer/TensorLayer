@@ -70,6 +70,8 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
+ - Layer
+    - `InstanceNorm`, `InstanceNorm1d`, `InstanceNorm2d`, `InstanceNorm3d` (PR #963)
 
 ### Changed
 - remove `tl.layers.initialize_global_variables(sess)` (PR #931)
@@ -83,13 +85,16 @@ To release a new version, please update the changelog as followed:
 
 ### Fixed
 - fix docs of models @zsdonghao #957
+- In `BatchNorm`, keep dimensions of mean and variance to suit `channels first` (PR #963)
+
 
 ### Removed
 
 ### Security
 
 ### Contributors
-@zsdonghao: #931
+- @zsdonghao: #931
+- @yd-yin: #963
 
 
 ## [2.0.0-alpha] - 2019-05-04
