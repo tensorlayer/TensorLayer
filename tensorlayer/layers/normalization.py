@@ -391,7 +391,9 @@ class BatchNorm3d(BatchNorm):
 
 
 class InstanceNorm(Layer):
-    """The :class:`InstanceNorm` class is a for instance normalization.
+    """
+    The :class:`InstanceNorm` is an instance normalization layer for both fully-connected and convolution outputs.
+    See ``tf.nn.batch_normalization`` and  ``tf.nn.moments``.
 
     Parameters
     -----------
@@ -405,7 +407,7 @@ class InstanceNorm(Layer):
     gamma_init : initializer or None
         The initializer for initializing gamma, if None, skip gamma.
         When the instance normalization layer is use instead of 'biases', or the next layer is linear, this can be
-        disabled since the scaling can be done by the next layer. see `Inception-ResNet-v2 `
+        disabled since the scaling can be done by the next layer. see `Inception-ResNet-v2 <https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_resnet_v2.py>`__
     num_features: int
         Number of features for input tensor. Useful to build layer if using InstanceNorm1d, InstanceNorm2d or InstanceNorm3d,
         but should be left as None if using InstanceNorm. Default None.
