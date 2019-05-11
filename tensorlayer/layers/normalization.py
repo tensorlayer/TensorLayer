@@ -431,16 +431,12 @@ class InstanceNorm(Layer):
     for subclasses :class:`InstanceNorm1d`, :class:`InstanceNorm2d` and :class:`InstanceNorm3d`. All the three subclasses are
     suitable under all kinds of conditions.
     """
-    
+
     def __init__(
-            self,
-            act=None,
-            epsilon=0.00001,
-            beta_init=tl.initializers.zeros(),
-            gamma_init=tl.initializers.random_normal(mean=1.0, stddev=0.002),
-            num_features=None,
-            data_format='channels_last',
-            name=None):
+            self, act=None, epsilon=0.00001, beta_init=tl.initializers.zeros(),
+            gamma_init=tl.initializers.random_normal(mean=1.0, stddev=0.002), num_features=None,
+            data_format='channels_last', name=None
+    ):
         super(InstanceNorm, self).__init__(name=name)
         self.act = act
         self.epsilon = epsilon
@@ -450,7 +446,8 @@ class InstanceNorm(Layer):
         self.data_format = data_format
 
         if num_features is not None:
-            if not isinstance(self, InstanceNorm1d) and not isinstance(self, InstanceNorm2d) and not isinstance(self, InstanceNorm3d):
+            if not isinstance(self, InstanceNorm1d) and not isinstance(self, InstanceNorm2d) and not isinstance(
+                    self, InstanceNorm3d):
                 raise ValueError(
                     "Please use InstanceNorm1d or InstanceNorm2d or InstanceNorm3d instead of InstanceNorm "
                     "if you want to specify 'num_features'."
@@ -495,7 +492,7 @@ class InstanceNorm(Layer):
 
         if self.gamma_init:
             self.gamma = self._get_weights("gamma", shape=params_shape, init=self.gamma_init)
-    
+
     def forward(self, inputs):
         mean, var = tf.nn.moments(inputs, self.axes, keepdims=True)
         outputs = batch_normalization(inputs, mean, var, self.beta, self.gamma, self.epsilon, self.data_format)
@@ -521,6 +518,7 @@ class InstanceNorm1d(InstanceNorm):
     >>> bn = tl.layers.InstanceNorm1d(num_features=32)
 
     """
+
     def _get_param_shape(self, inputs_shape):
         if self.data_format == 'channels_last':
             axis = 2
