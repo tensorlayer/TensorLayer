@@ -2,7 +2,7 @@ imageio==2.5.0
 numpy>=1.16,<1.17
 progressbar2==3.39.3
 requests==2.21.0
-scikit-learn>=0.19,<0.21
+scikit-learn==0.21.0
 scikit-image>=0.14,<0.15
 scipy>=1.1,<1.2
 wrapt>=1.10,<1.11
