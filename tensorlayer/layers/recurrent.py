@@ -71,7 +71,7 @@ class RNN(Layer):
 
     Examples
     --------
-    For synced sequence input and output, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__
+    For synced sequence input and output, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm.py>`__
 
     A simple regression model below.
     >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
