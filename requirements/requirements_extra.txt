@@ -1,4 +1,4 @@
-opencv-python>=3.4,<3.5
+opencv-python==4.1.0.25
 nltk>=3.3,<3.5
 matplotlib>=2.2,<3.1
 requests>=2.19,<2.21
