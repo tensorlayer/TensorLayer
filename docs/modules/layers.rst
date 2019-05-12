@@ -67,8 +67,14 @@ Layer list
    batch_transformer
 
    BatchNorm
+   BatchNorm1d
+   BatchNorm2d
+   BatchNorm3d
    LocalResponseNorm
    InstanceNorm
+   InstanceNorm1d
+   InstanceNorm2d
+   InstanceNorm3d
    LayerNorm
    GroupNorm
    SwitchNorm
@@ -364,6 +370,18 @@ Batch Normalization
 ^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: BatchNorm
 
+Batch Normalization 1D
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: BatchNorm1d
+
+Batch Normalization 2D
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: BatchNorm2d
+
+Batch Normalization 3D
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: BatchNorm3d
+
 Local Response Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: LocalResponseNorm
@@ -371,6 +389,18 @@ Local Response Normalization
 Instance Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: InstanceNorm
+
+Instance Normalization 1D
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: InstanceNorm1d
+
+Instance Normalization 2D
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: InstanceNorm2d
+
+Instance Normalization 3D
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: InstanceNorm3d
 
 Layer Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
