@@ -109,7 +109,7 @@ class RNN(Layer):
             cell,
             return_last_output=False,
             return_seq_2d=False,
-            return_last_state=False,
+            return_last_state=True,
             in_channels=None,
             name=None,  # 'rnn'
     ):

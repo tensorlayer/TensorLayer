@@ -115,10 +115,10 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 def process_args(args):
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--model',
-                        default='small',
-                        choices=['small', 'medium', 'large'],
-                        help="A type of model. Possible options are: small, medium, large.")
+    parser.add_argument(
+        '--model', default='small', choices=['small', 'medium', 'large'],
+        help="A type of model. Possible options are: small, medium, large."
+    )
     parameters = parser.parse_args(args)
     return parameters
 
@@ -130,17 +130,15 @@ class PTB_Net(Model):
 
         self.embedding = tl.layers.Embedding(vocab_size, hidden_size, init)
         self.dropout1 = tl.layers.Dropout(keep=keep)
-        self.lstm1 = tl.layers.RNN(cell=tf.keras.layers.LSTMCell(hidden_size),
-                                   return_last_output=False,
-                                   return_last_state=True,
-                                   return_seq_2d=False,
-                                   in_channels=hidden_size)
+        self.lstm1 = tl.layers.RNN(
+            cell=tf.keras.layers.LSTMCell(hidden_size), return_last_output=False, return_last_state=True,
+            return_seq_2d=False, in_channels=hidden_size
+        )
         self.dropout2 = tl.layers.Dropout(keep=keep)
-        self.lstm2 = tl.layers.RNN(cell=tf.keras.layers.LSTMCell(hidden_size),
-                                   return_last_output=False,
-                                   return_last_state=True,
-                                   return_seq_2d=True,
-                                   in_channels=hidden_size)
+        self.lstm2 = tl.layers.RNN(
+            cell=tf.keras.layers.LSTMCell(hidden_size), return_last_output=False, return_last_state=True,
+            return_seq_2d=True, in_channels=hidden_size
+        )
         self.dropout3 = tl.layers.Dropout(keep=keep)
         self.out_dense = tl.layers.Dense(vocab_size, in_channels=hidden_size, W_init=init, b_init=init, act=None)
 
@@ -233,7 +231,7 @@ def main():
     for i in range(max_max_epoch):
         # decreases the initial learning rate after several
         # epoachs (defined by ``max_epoch``), by multipling a ``lr_decay``.
-        new_lr_decay = lr_decay ** max(i - max_epoch, 0.0)
+        new_lr_decay = lr_decay**max(i - max_epoch, 0.0)
         lr.assign(learning_rate * new_lr_decay)
 
         # Training
@@ -252,10 +250,10 @@ def main():
             with tf.GradientTape() as tape:
                 ## compute outputs
                 logits, lstm1_state, lstm2_state = net(
-                    x, lstm1_initial_state=lstm1_state, lstm2_initial_state=lstm2_state)
+                    x, lstm1_initial_state=lstm1_state, lstm2_initial_state=lstm2_state
+                )
                 ## compute loss and update model
-                cost = tl.cost.cross_entropy(
-                    logits, tf.reshape(y, [-1]), name='train_loss')
+                cost = tl.cost.cross_entropy(logits, tf.reshape(y, [-1]), name='train_loss')
 
             grad, _ = tf.clip_by_global_norm(tape.gradient(cost, train_weights), max_grad_norm)
             optimizer.apply_gradients(zip(grad, train_weights))
@@ -265,8 +263,10 @@ def main():
 
             if step % (epoch_size // 10) == 10:
                 print(
-                    "%.3f perplexity: %.3f speed: %.0f wps" %
-                    (step * 1.0 / epoch_size, np.exp(costs / iters), iters * batch_size * num_steps / (time.time() - start_time))
+                    "%.3f perplexity: %.3f speed: %.0f wps" % (
+                        step * 1.0 / epoch_size, np.exp(costs / iters), iters * batch_size * num_steps /
+                        (time.time() - start_time)
+                    )
                 )
         train_perplexity = np.exp(costs / iters)
         print("Epoch: %d/%d Train Perplexity: %.3f" % (i + 1, max_max_epoch, train_perplexity))
@@ -281,11 +281,9 @@ def main():
         lstm2_state = None
         for step, (x, y) in enumerate(tl.iterate.ptb_iterator(valid_data, batch_size, num_steps)):
             ## compute outputs
-            logits, lstm1_state, lstm2_state = net(
-                x, lstm1_initial_state=lstm1_state, lstm2_initial_state=lstm2_state)
+            logits, lstm1_state, lstm2_state = net(x, lstm1_initial_state=lstm1_state, lstm2_initial_state=lstm2_state)
             ## compute loss and update model
-            cost = tl.cost.cross_entropy(
-                logits, tf.reshape(y, [-1]), name='train_loss')
+            cost = tl.cost.cross_entropy(logits, tf.reshape(y, [-1]), name='train_loss')
             costs += cost
             iters += 1
         valid_perplexity = np.exp(costs / iters)
@@ -303,11 +301,9 @@ def main():
     lstm2_state = None
     for step, (x, y) in enumerate(tl.iterate.ptb_iterator(test_data, batch_size=1, num_steps=1)):
         ## compute outputs
-        logits, lstm1_state, lstm2_state = net(
-            x, lstm1_initial_state=lstm1_state, lstm2_initial_state=lstm2_state)
+        logits, lstm1_state, lstm2_state = net(x, lstm1_initial_state=lstm1_state, lstm2_initial_state=lstm2_state)
         ## compute loss and update model
-        cost = tl.cost.cross_entropy(
-            logits, tf.reshape(y, [-1]), name='train_loss')
+        cost = tl.cost.cross_entropy(logits, tf.reshape(y, [-1]), name='train_loss')
         costs += cost
         iters += 1
     test_perplexity = np.exp(costs / iters)

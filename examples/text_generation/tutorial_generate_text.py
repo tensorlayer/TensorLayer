@@ -143,9 +143,11 @@ def main_restore_embedding_layer():
     batch_size = None
 
     if not os.path.exists(model_file_name + ".npy"):
-        raise Exception("Pretrained embedding matrix not found. "
-              "Hint: Please pre-train the default model in "
-              "`examples/text_word_embedding/tutorial_word2vec_basic.py`.")
+        raise Exception(
+            "Pretrained embedding matrix not found. "
+            "Hint: Please pre-train the default model in "
+            "`examples/text_word_embedding/tutorial_word2vec_basic.py`."
+        )
 
     print("Load existing embedding matrix and dictionaries")
     all_var = tl.files.load_npy_to_any(name=model_file_name + '.npy')
@@ -159,6 +161,7 @@ def main_restore_embedding_layer():
     del all_var, data, count
 
     class Embedding_Model(Model):
+
         def __init__(self):
             super(Embedding_Model, self).__init__()
             self.embedding = Embedding(vocabulary_size, embedding_size)
@@ -198,11 +201,10 @@ class Text_Generation_Net(Model):
         super(Text_Generation_Net, self).__init__()
 
         self.embedding = Embedding(vocab_size, hidden_size, init, name='embedding')
-        self.lstm = tl.layers.RNN(cell=tf.keras.layers.LSTMCell(hidden_size),
-                                  return_last_output=False,
-                                  return_last_state=True,
-                                  return_seq_2d=True,
-                                  in_channels=hidden_size)
+        self.lstm = tl.layers.RNN(
+            cell=tf.keras.layers.LSTMCell(hidden_size), return_last_output=False, return_last_state=True,
+            return_seq_2d=True, in_channels=hidden_size
+        )
         self.out_dense = Dense(vocab_size, in_channels=hidden_size, W_init=init, b_init=init, act=None, name='output')
 
     def forward(self, inputs, initial_state=None):
@@ -268,8 +270,7 @@ def main_lstm_generate_text():
                 ## compute outputs
                 logits, lstm_state = net(x, initial_state=lstm_state)
                 ## compute loss and update model
-                cost = tl.cost.cross_entropy(
-                    logits, tf.reshape(y, [-1]), name='train_loss')
+                cost = tl.cost.cross_entropy(logits, tf.reshape(y, [-1]), name='train_loss')
 
             grad = tape.gradient(cost, train_weights)
             optimizer.apply_gradients(zip(grad, train_weights))
@@ -279,8 +280,10 @@ def main_lstm_generate_text():
 
             if step % (epoch_size // 10) == 1:
                 print(
-                    "%.3f perplexity: %.3f speed: %.0f wps" %
-                    (step * 1.0 / epoch_size, np.exp(costs / iters), iters * batch_size * sequence_length * batch_size / (time.time() - start_time))
+                    "%.3f perplexity: %.3f speed: %.0f wps" % (
+                        step * 1.0 / epoch_size, np.exp(costs / iters),
+                        iters * batch_size * sequence_length * batch_size / (time.time() - start_time)
+                    )
                 )
         train_perplexity = np.exp(costs / iters)
         # print("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
