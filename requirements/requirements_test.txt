@@ -6,4 +6,4 @@ pytest-cache>=1.0,<1.1
 pytest-cov==2.7.1
 pytest-xdist==1.28.0
 sphinx==2.0.1
-yapf==0.25.0
+yapf==0.27.0
