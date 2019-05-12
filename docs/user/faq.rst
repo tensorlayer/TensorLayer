@@ -46,13 +46,13 @@ To choose which variables to update, you can do as below.
 
 .. code-block:: python
 
-  train_params = network.weights[3:]
+  train_params = network.trainable_weights[3:]
 
 The second way is to get the variables by a given name. For example, if you want to get all variables which the layer name contain ``dense``, you can do as below.
 
 .. code-block:: python
 
-  train_params = network.get_layer('dense').weights
+  train_params = network.get_layer('dense').trainable_weights
 
 After you get the variable list, you can define your optimizer like that so as to update only a part of the variables.
 

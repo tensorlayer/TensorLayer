@@ -289,7 +289,7 @@ def main_lstm_generate_text():
     #  tvars = network.all_params      $ all parameters
     #  tvars = network.all_params[1:]  $ parameters except embedding matrix
     # Train the whole network.
-    tvars = rnn_model.weights
+    tvars = rnn_model.trainable_weights
     # grads, _ = tf.clip_by_global_norm(tf.gradients(cost, tvars), max_grad_norm)
     # optimizer = tf.train.GradientDescentOptimizer(lr)
     train_op = tf.train.GradientDescentOptimizer(lr).minimize(cost, var_list=tvars)

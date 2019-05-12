@@ -87,7 +87,7 @@ shuffle_buffer_size = 128 # 100
 # learning_rate_decay_factor = 0.1
 # num_epoch_decay = 350
 
-train_weights = net.weights
+train_weights = net.trainable_weights
 # learning_rate = tf.Variable(init_learning_rate)
 optimizer = tf.optimizers.Adam(learning_rate)
 

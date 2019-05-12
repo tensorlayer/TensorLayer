@@ -122,8 +122,8 @@ class Actor(object):
             _logits = self.model([s]).outputs
             # _probs = tf.nn.softmax(_logits)
             _exp_v = tl.rein.cross_entropy_reward_loss(logits=_logits, actions=[a], rewards=td[0])
-        grad = tape.gradient(_exp_v, self.model.weights)
-        self.optimizer.apply_gradients(zip(grad, self.model.weights))
+        grad = tape.gradient(_exp_v, self.model.trainable_weights)
+        self.optimizer.apply_gradients(zip(grad, self.model.trainable_weights))
         return _exp_v
 
     def choose_action(self, s):
@@ -178,8 +178,8 @@ class Critic(object):
             # TD_error = r + lambd * V(newS) - V(S)
             td_error = r + LAMBDA * v_ - v
             loss = tf.square(td_error)
-        grad = tape.gradient(loss, self.model.weights)
-        self.optimizer.apply_gradients(zip(grad, self.model.weights))
+        grad = tape.gradient(loss, self.model.trainable_weights)
+        self.optimizer.apply_gradients(zip(grad, self.model.trainable_weights))
 
         return td_error
 

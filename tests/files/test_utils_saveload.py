@@ -67,48 +67,48 @@ class Model_Core_Test(CustomTestCase):
         pass
 
     def test_hdf5(self):
-        modify_val = np.zeros_like(self.static_model.weights[-2].numpy())
-        ori_val = self.static_model.weights[-2].numpy()
+        modify_val = np.zeros_like(self.static_model.all_weights[-2].numpy())
+        ori_val = self.static_model.all_weights[-2].numpy()
         tl.files.save_weights_to_hdf5("./model_basic.h5", self.static_model)
 
-        self.static_model.weights[-2].assign(modify_val)
+        self.static_model.all_weights[-2].assign(modify_val)
         tl.files.load_hdf5_to_weights_in_order("./model_basic.h5", self.static_model)
-        self.assertLess(np.max(np.abs(ori_val - self.static_model.weights[-2].numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val - self.static_model.all_weights[-2].numpy())), 1e-7)
 
-        self.static_model.weights[-2].assign(modify_val)
+        self.static_model.all_weights[-2].assign(modify_val)
         tl.files.load_hdf5_to_weights("./model_basic.h5", self.static_model)
-        self.assertLess(np.max(np.abs(ori_val - self.static_model.weights[-2].numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val - self.static_model.all_weights[-2].numpy())), 1e-7)
 
         ori_weights = self.static_model._weights
         self.static_model._weights = self.static_model._weights[1:]
-        self.static_model.weights[-2].assign(modify_val)
+        self.static_model.all_weights[-2].assign(modify_val)
         tl.files.load_hdf5_to_weights("./model_basic.h5", self.static_model, skip=True)
-        self.assertLess(np.max(np.abs(ori_val - self.static_model.weights[-2].numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val - self.static_model.all_weights[-2].numpy())), 1e-7)
         self.static_model._weights = ori_weights
 
     def test_npz(self):
-        modify_val = np.zeros_like(self.dynamic_model.weights[-2].numpy())
-        ori_val = self.dynamic_model.weights[-2].numpy()
-        tl.files.save_npz(self.dynamic_model.weights, "./model_basic.npz")
+        modify_val = np.zeros_like(self.dynamic_model.all_weights[-2].numpy())
+        ori_val = self.dynamic_model.all_weights[-2].numpy()
+        tl.files.save_npz(self.dynamic_model.all_weights, "./model_basic.npz")
 
-        self.dynamic_model.weights[-2].assign(modify_val)
+        self.dynamic_model.all_weights[-2].assign(modify_val)
         tl.files.load_and_assign_npz("./model_basic.npz", self.dynamic_model)
-        self.assertLess(np.max(np.abs(ori_val - self.dynamic_model.weights[-2].numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val - self.dynamic_model.all_weights[-2].numpy())), 1e-7)
 
     def test_npz_dict(self):
-        modify_val = np.zeros_like(self.dynamic_model.weights[-2].numpy())
-        ori_val = self.dynamic_model.weights[-2].numpy()
-        tl.files.save_npz_dict(self.dynamic_model.weights, "./model_basic.npz")
+        modify_val = np.zeros_like(self.dynamic_model.all_weights[-2].numpy())
+        ori_val = self.dynamic_model.all_weights[-2].numpy()
+        tl.files.save_npz_dict(self.dynamic_model.all_weights, "./model_basic.npz")
 
-        self.dynamic_model.weights[-2].assign(modify_val)
+        self.dynamic_model.all_weights[-2].assign(modify_val)
         tl.files.load_and_assign_npz_dict("./model_basic.npz", self.dynamic_model)
-        self.assertLess(np.max(np.abs(ori_val - self.dynamic_model.weights[-2].numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val - self.dynamic_model.all_weights[-2].numpy())), 1e-7)
 
         ori_weights = self.dynamic_model._weights
         self.dynamic_model._weights = self.static_model._weights[1:]
-        self.dynamic_model.weights[-2].assign(modify_val)
+        self.dynamic_model.all_weights[-2].assign(modify_val)
         tl.files.load_and_assign_npz_dict("./model_basic.npz", self.dynamic_model, skip=True)
-        self.assertLess(np.max(np.abs(ori_val - self.dynamic_model.weights[-2].numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val - self.dynamic_model.all_weights[-2].numpy())), 1e-7)
         self.dynamic_model._weights = ori_weights
 
 

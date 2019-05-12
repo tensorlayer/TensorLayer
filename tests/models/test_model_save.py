@@ -92,38 +92,38 @@ class Model_Save_Test(CustomTestCase):
 
         # hdf5
         print('testing hdf5 saving...')
-        modify_val = np.zeros_like(model_basic.weights[-2].numpy())
-        ori_val = model_basic.weights[-2].numpy()
+        modify_val = np.zeros_like(model_basic.all_weights[-2].numpy())
+        ori_val = model_basic.all_weights[-2].numpy()
         model_basic.save_weights("./model_basic.h5")
-        model_basic.weights[-2].assign(modify_val)
+        model_basic.all_weights[-2].assign(modify_val)
         model_basic.load_weights("./model_basic.h5")
-        self.assertLess(np.max(np.abs(ori_val - model_basic.weights[-2].numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val - model_basic.all_weights[-2].numpy())), 1e-7)
 
-        model_basic.weights[-2].assign(modify_val)
+        model_basic.all_weights[-2].assign(modify_val)
         model_basic.load_weights("./model_basic.h5", format="hdf5")
-        self.assertLess(np.max(np.abs(ori_val - model_basic.weights[-2].numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val - model_basic.all_weights[-2].numpy())), 1e-7)
 
-        model_basic.weights[-2].assign(modify_val)
+        model_basic.all_weights[-2].assign(modify_val)
         model_basic.load_weights("./model_basic.h5", format="hdf5", in_order=False)
-        self.assertLess(np.max(np.abs(ori_val - model_basic.weights[-2].numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val - model_basic.all_weights[-2].numpy())), 1e-7)
 
         # npz
         print('testing npz saving...')
         model_basic.save_weights("./model_basic.npz", format='npz')
-        model_basic.weights[-2].assign(modify_val)
+        model_basic.all_weights[-2].assign(modify_val)
         model_basic.load_weights("./model_basic.npz")
 
-        model_basic.weights[-2].assign(modify_val)
+        model_basic.all_weights[-2].assign(modify_val)
         model_basic.load_weights("./model_basic.npz", format='npz')
         model_basic.save_weights("./model_basic.npz")
-        self.assertLess(np.max(np.abs(ori_val - model_basic.weights[-2].numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val - model_basic.all_weights[-2].numpy())), 1e-7)
 
         # npz_dict
         print('testing npz_dict saving...')
         model_basic.save_weights("./model_basic.npz", format='npz_dict')
-        model_basic.weights[-2].assign(modify_val)
+        model_basic.all_weights[-2].assign(modify_val)
         model_basic.load_weights("./model_basic.npz", format='npz_dict')
-        self.assertLess(np.max(np.abs(ori_val - model_basic.weights[-2].numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val - model_basic.all_weights[-2].numpy())), 1e-7)
 
         # ckpt
         try:
@@ -163,12 +163,12 @@ class Model_Save_Test(CustomTestCase):
 
         print("testing dynamic skip load...")
         self.dynamic_basic.save_weights("./model_basic.h5")
-        ori_weights = self.dynamic_basic_skip.weights
+        ori_weights = self.dynamic_basic_skip.all_weights
         ori_val = ori_weights[1].numpy()
         modify_val = np.zeros_like(ori_val)
-        self.dynamic_basic_skip.weights[1].assign(modify_val)
+        self.dynamic_basic_skip.all_weights[1].assign(modify_val)
         self.dynamic_basic_skip.load_weights("./model_basic.h5", skip=True)
-        self.assertLess(np.max(np.abs(ori_val - self.dynamic_basic_skip.weights[1].numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val - self.dynamic_basic_skip.all_weights[1].numpy())), 1e-7)
 
         try:
             self.dynamic_basic_skip.load_weights("./model_basic.h5", in_order=False, skip=False)
@@ -177,12 +177,12 @@ class Model_Save_Test(CustomTestCase):
 
         print("testing static skip load...")
         self.static_basic.save_weights("./model_basic.h5")
-        ori_weights = self.static_basic_skip.weights
+        ori_weights = self.static_basic_skip.all_weights
         ori_val = ori_weights[1].numpy()
         modify_val = np.zeros_like(ori_val)
-        self.static_basic_skip.weights[1].assign(modify_val)
+        self.static_basic_skip.all_weights[1].assign(modify_val)
         self.static_basic_skip.load_weights("./model_basic.h5", skip=True)
-        self.assertLess(np.max(np.abs(ori_val - self.static_basic_skip.weights[1].numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val - self.static_basic_skip.all_weights[1].numpy())), 1e-7)
 
         try:
             self.static_basic_skip.load_weights("./model_basic.h5", in_order=False, skip=False)
@@ -264,7 +264,7 @@ class Model_Save_Test(CustomTestCase):
         model = tl.models.Model(inputs=inputs, outputs=layer1, name='layerlistmodel')
 
         model.save_weights("layerlist.h5")
-        tar_weight = model.get_layer(index=-1)[0].weights[0]
+        tar_weight = model.get_layer(index=-1)[0].all_weights[0]
         print(tar_weight.name)
         ori_val = tar_weight.numpy()
         modify_val = np.zeros_like(ori_val)

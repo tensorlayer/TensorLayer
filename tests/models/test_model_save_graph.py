@@ -73,7 +73,7 @@ class Model_Save_with_weights(CustomTestCase):
         print(MLP)
         n_epoch = 3
         batch_size = 500
-        train_weights = MLP.weights
+        train_weights = MLP.trainable_weights
         optimizer = tf.optimizers.Adam(lr=0.0001)
 
         for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
@@ -118,7 +118,7 @@ class Model_Load_with_weights_and_train(CustomTestCase):
 
         n_epoch = 3
         batch_size = 500
-        train_weights = MLP.weights
+        train_weights = MLP.trainable_weights
         optimizer = tf.optimizers.Adam(lr=0.0001)
         X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
         val_loss, val_acc, n_iter = 0, 0, 0
@@ -302,13 +302,13 @@ class Lambda_layer_test(CustomTestCase):
         self.assertEqual((output2 == output4).all(), True)
         self.assertEqual(M2.config, M4.config)
 
-        ori_weights = M4.weights
+        ori_weights = M4.all_weights
         ori_val = ori_weights[1].numpy()
         modify_val = np.zeros_like(ori_val) + 10
-        M4.weights[1].assign(modify_val)
+        M4.all_weights[1].assign(modify_val)
         M4 = Model.load('M2_keras.hdf5')
 
-        self.assertLess(np.max(np.abs(ori_val - M4.weights[1].numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val - M4.all_weights[1].numpy())), 1e-7)
 
     def test_lambda_layer_keras_layer(self):
         input_shape = [100, 5]
@@ -331,13 +331,13 @@ class Lambda_layer_test(CustomTestCase):
         self.assertEqual((output1 == output3).all(), True)
         self.assertEqual(M1.config, M3.config)
 
-        ori_weights = M3.weights
+        ori_weights = M3.all_weights
         ori_val = ori_weights[1].numpy()
         modify_val = np.zeros_like(ori_val) + 10
-        M3.weights[1].assign(modify_val)
+        M3.all_weights[1].assign(modify_val)
         M3 = Model.load('M1_keras.hdf5')
 
-        self.assertLess(np.max(np.abs(ori_val - M3.weights[1].numpy())), 1e-7)
+        self.assertLess(np.max(np.abs(ori_val - M3.all_weights[1].numpy())), 1e-7)
 
 
 class ElementWise_lambda_test(CustomTestCase):

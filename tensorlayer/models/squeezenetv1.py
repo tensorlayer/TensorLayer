@@ -38,7 +38,7 @@ def restore_params(network, path='models'):
         expected_bytes=7405613
     )  # ls -al
     params = load_npz(name=os.path.join(path, 'squeezenet.npz'))
-    assign_weights(params[:len(network.weights)], network)
+    assign_weights(params[:len(network.all_weights)], network)
     del params
 
 

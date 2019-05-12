@@ -661,8 +661,8 @@ def _train_step(network, X_batch, y_batch, cost, train_op=tf.optimizers.Adam(lea
         y_pred = network(X_batch)
         _loss = cost(y_pred, y_batch)
 
-    grad = tape.gradient(_loss, network.weights)
-    train_op.apply_gradients(zip(grad, network.weights))
+    grad = tape.gradient(_loss, network.trainable_weights)
+    train_op.apply_gradients(zip(grad, network.trainable_weights))
 
     if acc is not None:
         _acc = acc(y_pred, y_batch)

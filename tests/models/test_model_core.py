@@ -82,8 +82,8 @@ class Model_Core_Test(CustomTestCase):
         self.assertEqual(len(model_basic.all_layers), 7)
         self.assertEqual(model_basic._weights, None)
 
-        self.assertIsNotNone(model_basic.weights)
-        print([w.name for w in model_basic.weights])
+        self.assertIsNotNone(model_basic.all_weights)
+        print([w.name for w in model_basic.all_weights])
 
         # test model mode
         model_basic.train()
@@ -151,8 +151,8 @@ class Model_Core_Test(CustomTestCase):
         self.assertEqual(len(model_basic.all_layers), 8)
         self.assertEqual(model_basic._weights, None)
 
-        self.assertIsNotNone(model_basic.weights)
-        print([w.name for w in model_basic.weights])
+        self.assertIsNotNone(model_basic.all_weights)
+        print([w.name for w in model_basic.all_weights])
 
         # test model mode
         model_basic.train()
@@ -283,7 +283,7 @@ class Model_Core_Test(CustomTestCase):
                     return x
 
             model = ill_model()
-            weights = model.weights
+            weights = model.all_weights
         except Exception as e:
             self.assertIsInstance(e, AttributeError)
             print(e)
@@ -360,7 +360,7 @@ class Model_Core_Test(CustomTestCase):
                 return x
 
         model = my_model()
-        weights = model.weights
+        weights = model.all_weights
         self.assertGreater(len(weights), 2)
         print(len(weights))
 

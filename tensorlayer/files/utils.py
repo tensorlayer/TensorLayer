@@ -1907,7 +1907,7 @@ def save_npz(save_list=None, name='model.npz'):
     --------
     Save model to npz
 
-    >>> tl.files.save_npz(network.weights, name='model.npz')
+    >>> tl.files.save_npz(network.all_weights, name='model.npz')
 
     Load model from npz (Method 1)
 
@@ -1993,7 +1993,7 @@ def assign_weights(weights, network):
     """
     ops = []
     for idx, param in enumerate(weights):
-        ops.append(network.weights[idx].assign(param))
+        ops.append(network.all_weights[idx].assign(param))
     return ops
 
 
@@ -2073,7 +2073,7 @@ def load_and_assign_npz_dict(name='model.npz', network=None, skip=False):
     if len(weights.keys()) != len(set(weights.keys())):
         raise Exception("Duplication in model npz_dict %s" % name)
 
-    net_weights_name = [w.name for w in network.weights]
+    net_weights_name = [w.name for w in network.all_weights]
 
     for key in weights.keys():
         if key not in net_weights_name:
@@ -2085,7 +2085,7 @@ def load_and_assign_npz_dict(name='model.npz', network=None, skip=False):
                     "if you want to skip redundant or mismatch weights." % key
                 )
         else:
-            assign_tf_variable(network.weights[net_weights_name.index(key)], weights[key])
+            assign_tf_variable(network.all_weights[net_weights_name.index(key)], weights[key])
     logging.info("[*] Model restored from npz_dict %s" % name)
 
 

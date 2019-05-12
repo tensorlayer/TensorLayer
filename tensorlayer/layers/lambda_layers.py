@@ -96,8 +96,8 @@ class Lambda(Layer):
     >>>         pred_y = model(data_x)
     >>>         loss = tl.cost.mean_squared_error(pred_y, data_y)
 
-    >>>     gradients = tape.gradient(loss, model.weights)
-    >>>     optimizer.apply_gradients(zip(gradients, model.weights))
+    >>>     gradients = tape.gradient(loss, model.trainable_weights)
+    >>>     optimizer.apply_gradients(zip(gradients, model.trainable_weights))
 
     """
 

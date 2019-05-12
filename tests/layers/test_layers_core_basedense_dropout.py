@@ -83,7 +83,7 @@ class Layer_Core_Test(CustomTestCase):
         self.assertEqual(len(self.dense1._info[0].layer.all_weights), 2)
         self.assertEqual(len(self.dense2._info[0].layer.all_weights), 1)
 
-        self.assertEqual(len(self.model.weights), 3)
+        self.assertEqual(len(self.model.all_weights), 3)
 
         # a special case
         self.model.release_memory()

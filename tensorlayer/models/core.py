@@ -411,7 +411,7 @@ class Model(object):
         return self._nontrainable_weights
 
     @property
-    def weights(self):
+    def all_weights(self):
         """Return all weights of this network in a list."""
         if self._all_weights is not None and len(self._all_weights) > 0:
             # self._all_weights already extracted, so do nothing
@@ -793,7 +793,7 @@ class Model(object):
         >>> net.save_weights('./model.npz', format='npz_dict')
 
         """
-        if self.weights is None or len(self.weights) == 0:
+        if self.all_weights is None or len(self.all_weights) == 0:
             logging.warning("Model contains no weights or layers haven't been built, nothing will be saved")
             return
 
@@ -807,9 +807,9 @@ class Model(object):
         if format == 'hdf5' or format == 'h5':
             utils.save_weights_to_hdf5(filepath, self)
         elif format == 'npz':
-            utils.save_npz(self.weights, filepath)
+            utils.save_npz(self.all_weights, filepath)
         elif format == 'npz_dict':
-            utils.save_npz_dict(self.weights, filepath)
+            utils.save_npz_dict(self.all_weights, filepath)
         elif format == 'ckpt':
             # TODO: enable this when tf save ckpt is enabled
             raise NotImplementedError("ckpt load/save is not supported now.")
