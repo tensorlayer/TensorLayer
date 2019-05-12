@@ -35,6 +35,7 @@ class Layer_Lambda_Test(CustomTestCase):
         _ = perceptron(np.random.random([100, 5]).astype(np.float32))
 
         class CustomizeModel(tl.models.Model):
+
             def __init__(self):
                 super(CustomizeModel, self).__init__()
                 self.dense = tl.layers.Dense(in_channels=1, n_units=5)
@@ -63,6 +64,7 @@ class Layer_Lambda_Test(CustomTestCase):
             print("epoch %d, loss %f" % (epoch, loss))
 
     def test_lambda_func_with_args(self):
+
         def customize_func(x, foo=42):
             if foo == 0:
                 return tf.nn.relu(x)
@@ -72,6 +74,7 @@ class Layer_Lambda_Test(CustomTestCase):
                 return tf.identity(x)
 
         class CustomizeModel(tl.models.Model):
+
             def __init__(self):
                 super(CustomizeModel, self).__init__()
                 self.dense = tl.layers.Dense(in_channels=1, n_units=5)
@@ -101,10 +104,11 @@ class Layer_Lambda_Test(CustomTestCase):
     def test_lambda_func_without_args(self):
 
         class CustomizeModel(tl.models.Model):
+
             def __init__(self):
                 super(CustomizeModel, self).__init__()
                 self.dense = tl.layers.Dense(in_channels=1, n_units=5)
-                self.lambdalayer = tl.layers.Lambda(lambda x: 2*x)
+                self.lambdalayer = tl.layers.Lambda(lambda x: 2 * x)
 
             def forward(self, x):
                 z = self.dense(x)
@@ -116,7 +120,7 @@ class Layer_Lambda_Test(CustomTestCase):
         model.train()
 
         out, out2 = model(self.data_x)
-        self.assertTrue(np.array_equal(out2.numpy(), out.numpy()*2))
+        self.assertTrue(np.array_equal(out2.numpy(), out.numpy() * 2))
 
     def test_elementwiselambda_func_with_args(self):
 
@@ -124,6 +128,7 @@ class Layer_Lambda_Test(CustomTestCase):
             return mean + noise * tf.exp(std * 0.5) + foo
 
         class CustomizeModel(tl.models.Model):
+
             def __init__(self):
                 super(CustomizeModel, self).__init__()
                 self.dense1 = tl.layers.Dense(in_channels=1, n_units=5)
@@ -156,6 +161,7 @@ class Layer_Lambda_Test(CustomTestCase):
             return mean + noise * tf.exp(std * 0.5)
 
         class CustomizeModel(tl.models.Model):
+
             def __init__(self):
                 super(CustomizeModel, self).__init__()
                 self.dense1 = tl.layers.Dense(in_channels=1, n_units=5)

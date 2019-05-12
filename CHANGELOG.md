@@ -70,6 +70,8 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
+ - Layer
+    - `InstanceNorm`, `InstanceNorm1d`, `InstanceNorm2d`, `InstanceNorm3d` (PR #963)
 
 ### Changed
 - remove `tl.layers.initialize_global_variables(sess)` (PR #931)
@@ -82,13 +84,37 @@ To release a new version, please update the changelog as followed:
 ### Deprecated
 
 ### Fixed
+- fix docs of models @zsdonghao #957
+- In `BatchNorm`, keep dimensions of mean and variance to suit `channels first` (PR #963)
+
 
 ### Removed
 
 ### Security
 
 ### Contributors
-@zsdonghao: #931
+- @zsdonghao: #931
+- @yd-yin: #963
+
+
+## [2.0.0-alpha] - 2019-05-04
+
+### Changed
+* update for TensorLayer 2.0.0 alpha version (PR #952)
+* support TensorFlow 2.0.0-alpha
+* support both static and dynamic model building
+
+### Dependencies Update
+- tensorflow>=1.6,<1.13 => tensorflow>=2.0.0-alpha (PR #952)
+- h5py>=2.9 (PR #952)
+- cloudpickle>=0.8.1 (PR #952)
+- remove matplotlib
+
+### Contributors
+- @zsdonghao
+- @JingqingZ
+- @ChrisWu1997
+- @warshallrho
 
 ## [1.11.1] - 2018-11-15
 

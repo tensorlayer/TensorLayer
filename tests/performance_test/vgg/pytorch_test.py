@@ -37,11 +37,11 @@ gen = random_input_generator(num_iter, batch_size, format='NCHW')
 # begin training
 
 for idx, data in enumerate(gen):
-    x_batch = torch.Tensor(data[0])
-    y_batch = torch.Tensor(data[1]).long()
 
     start_time = time.time()
 
+    x_batch = torch.Tensor(data[0])
+    y_batch = torch.Tensor(data[1]).long()
     x_batch = x_batch.to(device)
     y_batch = y_batch.to(device)
 
@@ -61,8 +61,11 @@ for idx, data in enumerate(gen):
         max_mem_usage = max(cur_usage, max_mem_usage)
         avg_mem_usage += cur_usage
         count += 1
-        print("[*] {} iteration: memory usage {:.2f}MB, consume time {:.4f}s".format(
-            idx, cur_usage / (1024 * 1024), consume_time))
+        print(
+            "[*] {} iteration: memory usage {:.2f}MB, consume time {:.4f}s".format(
+                idx, cur_usage / (1024 * 1024), consume_time
+            )
+        )
 
 print('consumed time:', total_time)
 

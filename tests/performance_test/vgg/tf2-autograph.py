@@ -1,10 +1,11 @@
 import time
 import os
 import psutil
-import numpy as np
 from tensorflow.python.keras.applications import VGG16
 import tensorflow as tf
 from exp_config import random_input_generator, MONITOR_INTERVAL, NUM_ITERS, BATCH_SIZE, LERANING_RATE
+
+tf.config.gpu.set_per_process_memory_growth(True)
 
 # get the whole model
 vgg = VGG16(weights=None)
@@ -21,7 +22,7 @@ total_time = 0
 num_iter = NUM_ITERS
 batch_size = BATCH_SIZE
 train_weights = vgg.trainable_variables
-optimizer = tf.keras.optimizers.Adam(lr=LERANING_RATE)
+optimizer = tf.optimizers.Adam(learning_rate=LERANING_RATE)
 loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
 # data generator
@@ -44,11 +45,10 @@ def train_step(x_batch, y_batch):
 
 # begin training
 for idx, data in enumerate(gen):
-    x_batch = tf.convert_to_tensor(data[0])
-    y_batch = tf.convert_to_tensor(data[1])
-
     start_time = time.time()
 
+    x_batch = tf.convert_to_tensor(data[0])
+    y_batch = tf.convert_to_tensor(data[1])
     train_step(x_batch, y_batch)
 
     end_time = time.time()
@@ -60,8 +60,11 @@ for idx, data in enumerate(gen):
         max_mem_usage = max(cur_usage, max_mem_usage)
         avg_mem_usage += cur_usage
         count += 1
-        tf.print("[*] {} iteration: memory usage {:.2f}MB, consume time {:.4f}s".format(
-            idx, cur_usage / (1024 * 1024), consume_time))
+        tf.print(
+            "[*] {} iteration: memory usage {:.2f}MB, consume time {:.4f}s".format(
+                idx, cur_usage / (1024 * 1024), consume_time
+            )
+        )
 
 print('consumed time:', total_time)
 

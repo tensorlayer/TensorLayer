@@ -30,6 +30,7 @@ def basic_static_model():
 
 
 class basic_dynamic_model(Model):
+
     def __init__(self):
         super(basic_dynamic_model, self).__init__()
         self.conv1 = Conv2d(16, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, in_channels=3, name="conv1")
@@ -270,7 +271,9 @@ class Model_Core_Test(CustomTestCase):
             print(e)
 
         try:
+
             class ill_model(Model):
+
                 def __init__(self):
                     super(ill_model, self).__init__()
                     self.dense2 = Dense(10, act=None)
@@ -278,6 +281,7 @@ class Model_Core_Test(CustomTestCase):
                 def forward(self, x):
                     x = self.dense2(x)
                     return x
+
             model = ill_model()
             weights = model.weights
         except Exception as e:
@@ -346,6 +350,7 @@ class Model_Core_Test(CustomTestCase):
         print('-' * 20, 'test_special_case', '-' * 20)
 
         class my_model(Model):
+
             def __init__(self):
                 super(my_model, self).__init__()
                 self.dense = Dense(64, in_channels=3)
@@ -386,6 +391,7 @@ class Model_Core_Test(CustomTestCase):
             model_basic.get_layer(index=99)
         except Exception as e:
             print(e)
+
 
 if __name__ == '__main__':
 

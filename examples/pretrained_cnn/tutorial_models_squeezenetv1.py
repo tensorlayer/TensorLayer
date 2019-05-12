@@ -10,31 +10,20 @@ import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.models.imagenet_classes import class_names
 
-tf.logging.set_verbosity(tf.logging.DEBUG)
+# tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
-x = tf.placeholder(tf.float32, [None, 224, 224, 3])
-
 # get the whole model
-squeezenet = tl.models.SqueezeNetV1(x)
-
-# restore pre-trained parameters
-sess = tf.InteractiveSession()
-
-squeezenet.restore_params(sess)
-
-probs = tf.nn.softmax(squeezenet.outputs)
-
-squeezenet.print_params(False)
-
-squeezenet.print_layers()
+squeezenet = tl.models.SqueezeNetV1(pretrained=True)
+print(squeezenet)
 
 img1 = tl.vis.read_image('data/tiger.jpeg')
-img1 = tl.prepro.imresize(img1, (224, 224))
+img1 = tl.prepro.imresize(img1, (224, 224)) / 255
+img1 = img1.astype(np.float32)[np.newaxis, ...]
 
-_ = sess.run(probs, feed_dict={x: [img1]})[0]  # 1st time takes time to compile
 start_time = time.time()
-prob = sess.run(probs, feed_dict={x: [img1]})[0]
+output = squeezenet(img1, is_train=False)
+prob = tf.nn.softmax(output)[0].numpy()
 print("  End time : %.5ss" % (time.time() - start_time))
 preds = (np.argsort(prob)[::-1])[0:5]
 for p in preds:

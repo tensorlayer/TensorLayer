@@ -31,6 +31,7 @@ def basic_static_model(include_top=True):
 
 
 class basic_dynamic_model(Model):
+
     def __init__(self, include_top=True):
         super(basic_dynamic_model, self).__init__()
         self.include_top = include_top
@@ -58,6 +59,7 @@ class basic_dynamic_model(Model):
 
 
 class Nested_VGG(Model):
+
     def __init__(self):
         super(Nested_VGG, self).__init__()
         self.vgg1 = tl.models.vgg16()
@@ -213,14 +215,18 @@ class Model_Save_Test(CustomTestCase):
 
     def test_double_nested_vgg(self):
         print('-' * 20, 'test_double_nested_vgg', '-' * 20)
+
         class mymodel(Model):
+
             def __init__(self):
                 super(mymodel, self).__init__()
                 self.inner = Nested_VGG()
-                self.list = LayerList([
-                    tl.layers.Dense(n_units=4, in_channels=10, name='dense1'),
-                    tl.layers.Dense(n_units=3, in_channels= 4, name='dense2')
-                ])
+                self.list = LayerList(
+                    [
+                        tl.layers.Dense(n_units=4, in_channels=10, name='dense1'),
+                        tl.layers.Dense(n_units=3, in_channels=4, name='dense2')
+                    ]
+                )
 
             def forward(self, *inputs, **kwargs):
                 pass
@@ -254,10 +260,7 @@ class Model_Save_Test(CustomTestCase):
 
         # nested layerlist with modellayer
         inputs = tl.layers.Input([10, 5])
-        layer1 = tl.layers.LayerList([
-            tl.layers.Dense(n_units=4, name='dense1'),
-            modellayer
-        ])(inputs)
+        layer1 = tl.layers.LayerList([tl.layers.Dense(n_units=4, name='dense1'), modellayer])(inputs)
         model = tl.models.Model(inputs=inputs, outputs=layer1, name='layerlistmodel')
 
         model.save_weights("layerlist.h5")
@@ -270,7 +273,6 @@ class Model_Save_Test(CustomTestCase):
         model.load_weights("layerlist.h5")
         self.assertLess(np.max(np.abs(ori_val - tar_weight.numpy())), 1e-7)
 
-
     def test_exceptions(self):
         print('-' * 20, 'test_exceptions', '-' * 20)
         try:
@@ -279,6 +281,7 @@ class Model_Save_Test(CustomTestCase):
             model.save_weights('./empty_model.h5')
         except Exception as e:
             print(e)
+
 
 if __name__ == '__main__':
 

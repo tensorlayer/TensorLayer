@@ -57,6 +57,7 @@ Layer list
    GlobalMeanPool2d
    GlobalMaxPool3d
    GlobalMeanPool3d
+   CornerPool2d
 
    SubpixelConv1d
    SubpixelConv2d
@@ -66,31 +67,29 @@ Layer list
    batch_transformer
 
    BatchNorm
+   BatchNorm1d
+   BatchNorm2d
+   BatchNorm3d
    LocalResponseNorm
    InstanceNorm
+   InstanceNorm1d
+   InstanceNorm2d
+   InstanceNorm3d
    LayerNorm
    GroupNorm
    SwitchNorm
 
-   ROIPoolingLayer
-
    RNN
    BiRNN
-
-   ConvRNNCell
-   BasicConvLSTMCell
-   ConvLSTM
 
    retrieve_seq_length_op
    retrieve_seq_length_op2
    retrieve_seq_length_op3
-   target_mask_op
-
-   Seq2Seq
 
    Flatten
    Reshape
    Transpose
+   Shuffle
 
    Lambda
 
@@ -104,8 +103,6 @@ Layer list
    Stack
    UnStack
 
-   SlimNets
-
    Sign
    Scale
    BinaryDense
@@ -114,26 +111,20 @@ Layer list
    TernaryConv2d
    DorefaDense
    DorefaConv2d
-   QuantizedDense
-   QuantizedDenseWithBN
-   QuantizedConv2d
-   QuantizedConv2dWithBN
 
    PRelu
    PRelu6
    PTRelu6
 
    flatten_reshape
-   clear_layers_name
    initialize_rnn_state
    list_remove_repeat
-   merge_networks
 
 .. -----------------------------------------------------------
 ..                        Basic Layers
 .. -----------------------------------------------------------
 
-Basic Layer
+Base Layer
 -----------
 
 .. autoclass:: Layer
@@ -315,24 +306,6 @@ Tile layer
 ^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: Tile
 
-
-.. -----------------------------------------------------------
-..                 External Libraries Layers
-.. -----------------------------------------------------------
-
-External Libraries Layers
-------------------------------
-
-TF-Slim Layer
-^^^^^^^^^^^^^^^^^^^
-TF-Slim models can be connected into TensorLayer. All Google's Pre-trained model can be used easily ,
-see `Slim-model <https://github.com/tensorflow/models/tree/master/research/slim>`__.
-
-.. autoclass:: SlimNets
-
-
-
-
 .. -----------------------------------------------------------
 ..                  Image Resampling Layers
 .. -----------------------------------------------------------
@@ -393,12 +366,21 @@ Noise Layer
 Normalization Layers
 --------------------
 
-For local response normalization as it does not have any weights and arguments,
-you can also apply ``tf.nn.lrn`` on ``network.outputs``.
-
 Batch Normalization
 ^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: BatchNorm
+
+Batch Normalization 1D
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: BatchNorm1d
+
+Batch Normalization 2D
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: BatchNorm2d
+
+Batch Normalization 3D
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: BatchNorm3d
 
 Local Response Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -407,6 +389,18 @@ Local Response Normalization
 Instance Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: InstanceNorm
+
+Instance Normalization 1D
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: InstanceNorm1d
+
+Instance Normalization 2D
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: InstanceNorm2d
+
+Instance Normalization 3D
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: InstanceNorm3d
 
 Layer Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -419,14 +413,6 @@ Group Normalization
 Switch Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: SwitchNorm
-
-.. -----------------------------------------------------------
-..                Object Detection Layers
-.. -----------------------------------------------------------
-
-Object Detection Layer
-------------------------
-.. autoclass:: ROIPoolingLayer
 
 .. -----------------------------------------------------------
 ..                     Padding Layers
@@ -514,6 +500,10 @@ Pooling layer for any dimensions and any pooling functions.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: GlobalMeanPool3d
 
+2D Corner pooling
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: CornerPool2d
+
 .. -----------------------------------------------------------
 ..                    Quantized Layers
 .. -----------------------------------------------------------
@@ -523,7 +513,7 @@ Quantized Nets
 
 This is an experimental API package for building Quantized Neural Networks. We are using matrix multiplication rather than add-minus and bit-count operation at the moment. Therefore, these APIs would not speed up the inferencing, for production, you can train model via TensorLayer and deploy the model into other customized C/C++ implementation (We probably provide users an extra C/C++ binary net framework that can load model from TensorLayer).
 
-Note that, these experimental APIs can be changed in the future
+Note that, these experimental APIs can be changed in the future.
 
 
 Sign
@@ -573,28 +563,6 @@ DorefaConv2d
 """""""""""""""""""""
 .. autoclass:: DorefaConv2d
 
-Quantization Dense Layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-QuantizedDense
-"""""""""""""""""""""
-.. autoclass:: QuantizedDense
-
-QuantizedDenseWithBN
-""""""""""""""""""""""""""""""""""""
-.. autoclass:: QuantizedDenseWithBN
-
-Quantization Convolutions
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Quantization
-"""""""""""""""""""""
-.. autoclass:: QuantizedConv2d
-
-QuantizedConv2dWithBN
-"""""""""""""""""""""
-.. autoclass:: QuantizedConv2dWithBN
-
 
 .. -----------------------------------------------------------
 ..                  Recurrent Layers
@@ -603,7 +571,7 @@ QuantizedConv2dWithBN
 Recurrent Layers
 ---------------------
 
-Fixed Length Recurrent layer
+Common Recurrent layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 All recurrent layers can implement any type of RNN cell by feeding different cell function (LSTM, GRU etc).
 
@@ -614,23 +582,6 @@ RNN layer
 Bidirectional layer
 """""""""""""""""""""""""""""""""
 .. autoclass:: BiRNN
-
-
-Recurrent Convolution
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Conv RNN Cell
-"""""""""""""""""""""""""""""""""
-.. autoclass:: ConvRNNCell
-
-Basic Conv LSTM Cell
-"""""""""""""""""""""""""""""""""
-.. autoclass:: BasicConvLSTMCell
-
-Conv LSTM layer
-"""""""""""""""""""""""""""""""""
-.. autoclass:: ConvLSTM
-
 
 Advanced Ops for Dynamic RNN
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -649,21 +600,7 @@ Compute Sequence length 3
 """"""""""""""""""""""""""
 .. autofunction:: retrieve_seq_length_op3
 
-Get Mask
-""""""""""""""""""""""""""
-.. autofunction:: target_mask_op
 
-
-Dynamic RNN Layer
-^^^^^^^^^^^^^^^^^^^^^^
-
-
-Sequence to Sequence
-^^^^^^^^^^^^^^^^^^^^^^
-
-Simple Seq2Seq
-"""""""""""""""""
-.. autoclass:: Seq2Seq
 
 
 .. -----------------------------------------------------------
@@ -684,6 +621,10 @@ Reshape Layer
 Transpose Layer
 ^^^^^^^^^^^^^^^^^
 .. autoclass:: Transpose
+
+Shuffle Layer
+^^^^^^^^^^^^^^^^^
+.. autoclass:: Shuffle
 
 .. -----------------------------------------------------------
 ..               Spatial Transformer Layers
@@ -731,10 +672,6 @@ Flatten tensor
 ^^^^^^^^^^^^^^^^^
 .. autofunction:: flatten_reshape
 
-Permanent clear existing layer names
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: clear_layers_name
-
 Initialize RNN state
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: initialize_rnn_state
@@ -743,6 +680,3 @@ Remove repeated items in a list
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: list_remove_repeat
 
-Merge networks attributes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: merge_networks

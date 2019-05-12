@@ -9,6 +9,9 @@ import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import (deprecated_alias, private_method, protected_method)
 from tensorlayer.layers.utils import (get_variable_with_initializer, list_remove_repeat)
+from tensorlayer.files import utils
+
+import inspect
 
 __all__ = ['Layer', 'ModelLayer', 'LayerList']
 
@@ -47,7 +50,6 @@ class Layer(object):
         :param name: str or None
         """
 
-        # FIXME : model save part @runhai
         # Layer constants
         # for key in kwargs.keys():
         #     setattr(self, key, self._argument_dict_checkup(kwargs[key]))
@@ -92,17 +94,9 @@ class Layer(object):
         # Layer training state
         self.is_train = True
 
-        # FIXME : model save part @ruihai
-        # self.add_prev = False
-        # self.graph = {}
-        # self.graph.update({'class': self.__class__.__name__.split('.')[-1]})
-        # self.all_graphs = list()
-        # self.layer_args = self._get_init_args(skip=3)
-        # self.graph.update(self.layer_args)
-        # if self.__class__.__name__ in tl.layers.inputs.__all__:
-        #     self.graph.update({'prev_layer': None})
-        #     self._add_graphs((self.name, self.graph))
-        #     self.add_prev = True
+        # layer config and init_args
+        self._config = None
+        self.layer_args = self._get_init_args(skip=3)
 
     @staticmethod
     def _compute_shape(tensors):
@@ -111,6 +105,35 @@ class Layer(object):
         else:
             shape_mem = tensors.get_shape().as_list()
         return shape_mem
+
+    @property
+    def config(self):
+        # if not self._nodes_fixed:
+        #     raise RuntimeError("Model can not be saved when nodes are not fixed.")
+        if self._config is not None:
+            return self._config
+        else:
+            _config = {}
+            _config.update({'class': self.__class__.__name__.split('.')[-1]})
+            self.layer_args.update(self.get_args())
+            self.layer_args["name"] = self.name
+            _config.update({"args": self.layer_args})
+            if self.__class__.__name__ in tl.layers.inputs.__all__:
+                _config.update({'prev_layer': None})
+            else:
+                _config.update({'prev_layer': []})
+                for node in self._nodes:
+                    in_nodes = node.in_nodes
+                    if not isinstance(in_nodes, list):
+                        prev_name = in_nodes.name
+                    else:
+                        prev_name = [in_node.name for in_node in in_nodes]
+                        if len(prev_name) == 1:
+                            prev_name = prev_name[0]
+                    _config['prev_layer'].append(prev_name)
+            if self._nodes_fixed:
+                self._config = _config
+            return _config
 
     @property
     def weights(self):
@@ -142,6 +165,7 @@ class Layer(object):
 
         if not self._nodes_fixed:
             self._add_node(input_tensors, outputs)
+
         return outputs
 
     def _add_node(self, input_tensors, output_tensors):
@@ -236,54 +260,45 @@ class Layer(object):
     def __delitem__(self, key):
         raise TypeError("The Layer API does not allow to use the method: `__delitem__`")
 
-    # FIXME : model save part @ruihai
-    # @protected_method
-    # def _get_init_args(self, skip=3):
-    #     """Get all arguments of current layer for saving the graph."""
-    #     stack = inspect.stack()
-    #
-    #     if len(stack) < skip + 1:
-    #         raise ValueError("The length of the inspection stack is shorter than the requested start position.")
-    #
-    #     args, _, _, values = inspect.getargvalues(stack[skip][0])
-    #
-    #     params = {}
-    #
-    #     for arg in args:
-    #
-    #         # some args dont need to be saved into the graph. e.g. the input placeholder
-    #         if values[arg] is not None and arg not in ['self', 'prev_layer', 'inputs']:
-    #
-    #             val = values[arg]
-    #
-    #             # change function (e.g. act) into dictionary of module path and function name
-    #             if inspect.isfunction(val):
-    #                 params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
-    #             # ignore more args e.g. TF class
-    #             elif arg.endswith('init'):
-    #                 continue
-    #             # for other data type, save them directly
-    #             else:
-    #                 params[arg] = val
-    #
-    #     return params
-    #
-    # @protected_method
-    # def _add_graphs(self, graphs):
-    #     if isinstance(graphs, list):
-    #         self.all_graphs.extend(list(graphs))
-    #     else:
-    #         self.all_graphs.append(graphs)
-    #
-    # @private_method
-    # def _argument_dict_checkup(self, args):
-    #
-    #     if not isinstance(args, dict) and args is not None:
-    #         raise AssertionError(
-    #             "One of the argument given to %s should be formatted as a dictionary" % self.__class__.__name__
-    #         )
-    #
-    #     return args if args is not None else {}
+    @protected_method
+    def get_args(self):
+        init_args = {"layer_type": "normal"}
+        return init_args
+
+    @protected_method
+    def _get_init_args(self, skip=3):
+        """Get all arguments of current layer for saving the graph."""
+        stack = inspect.stack()
+
+        if len(stack) < skip + 1:
+            raise ValueError("The length of the inspection stack is shorter than the requested start position.")
+
+        args, _, _, values = inspect.getargvalues(stack[skip][0])
+
+        params = {}
+
+        for arg in args:
+
+            # some args dont need to be saved into the graph. e.g. the input placeholder
+            if values[arg] is not None and arg not in ['self', 'prev_layer', 'inputs']:
+
+                val = values[arg]
+
+                # change function (e.g. act) into dictionary of module path and function name
+                if inspect.isfunction(val):
+                    params[arg] = ('is_Func', utils.func2str(val))
+                    # if val.__name__ == "<lambda>":
+                    #     params[arg] = utils.lambda2str(val)
+                    # else:
+                    #     params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
+                # ignore more args e.g. TL initializer
+                elif arg.endswith('init'):
+                    continue
+                # for other data type, save them directly
+                else:
+                    params[arg] = val
+
+        return params
 
 
 class LayerNode(object):
@@ -434,6 +449,12 @@ class ModelLayer(Layer):
         super(ModelLayer, self)._release_memory()
         self.model.release_memory()
 
+    def get_args(self):
+        init_args = {}
+        init_args.update({"layer_type": "modellayer"})
+        init_args["model"] = utils.net2static_graph(self.layer_args["model"])
+        return init_args
+
 
 class LayerList(Layer):
     """
@@ -461,7 +482,7 @@ class LayerList(Layer):
         Forward the computation. The computation will go through all layer instances.
     """
 
-    def __init__(self, layers: list, name=None):
+    def __init__(self, layers, name=None):
         """
         Initializing the LayerList given a list of Layer.
 
@@ -474,15 +495,15 @@ class LayerList(Layer):
 
         is_built = True
         for layer in self.layers:
-            if layer._built == False:
+            if layer._built is False:
                 is_built = False
-            if layer._built ==True and layer.weights is not None:
+            if layer._built and layer.weights is not None:
                 # some layers in the list passed in have already been built
                 # e.g. using input shape to construct layers in dynamic eager
-                if self._weights == None:
+                if self._weights is None:
                     self._weights = list()
                 self._weights.extend(layer.weights)
-        if is_built ==True:
+        if is_built:
             self._built = True
 
         logging.info(
@@ -530,7 +551,7 @@ class LayerList(Layer):
             out_tensor = layer(in_tensor)
             # nlayer = layer(in_layer)
             if is_build == False and layer.weights is not None:
-                if self._weights == None:
+                if self._weights is None:
                     self._weights = list()
                 self._weights.extend(layer.weights)
             layer._built = True
@@ -572,6 +593,13 @@ class LayerList(Layer):
         super(LayerList, self)._release_memory()
         for layer in self.layers:
             layer._release_memory()
+
+    def get_args(self):
+        init_args = {}
+        layers = self.layer_args["layers"]
+        init_args["layers"] = [layer.config for layer in layers]
+        init_args.update({"layer_type": "layerlist"})
+        return init_args
 
 
 def _addindent(s_, numSpaces):

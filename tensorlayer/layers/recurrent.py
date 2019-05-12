@@ -71,9 +71,9 @@ class RNN(Layer):
 
     Examples
     --------
-    - For synced sequence input and output, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__
+    For synced sequence input and output, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__
 
-    - A simple regression model below.
+    A simple regression model below.
     >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
     >>> rnn_out, lstm_state = tl.layers.RNN(
     >>>     cell=tf.keras.layers.LSTMCell(units=hidden_size, dropout=0.1),
@@ -84,7 +84,7 @@ class RNN(Layer):
     >>> rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0], rnn_state[1]], name='rnn_model')
     >>> # If LSTMCell is applied, the rnn_state is [h, c] where h the hidden state and c the cell state of LSTM.
 
-    - A stacked RNN model.
+    A stacked RNN model.
     >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
     >>> rnn_out1 = tl.layers.RNN(
     >>>     cell=tf.keras.layers.SimpleRNNCell(units=hidden_size, dropout=0.1),
@@ -225,13 +225,12 @@ class BiRNN(Layer):
     Parameters
     ----------
     fw_cell : TensorFlow cell function for forward direction
-        A RNN cell implemented by tf.keras
-            - E.g. tf.keras.layers.SimpleRNNCell, tf.keras.layers.LSTMCell, tf.keras.layers.GRUCell
-            - Note TF2.0+, TF1.0+ and TF1.0- are different
+        A RNN cell implemented by tf.keras, e.g. tf.keras.layers.SimpleRNNCell, tf.keras.layers.LSTMCell, tf.keras.layers.GRUCell.
+        Note TF2.0+, TF1.0+ and TF1.0- are different
     bw_cell: TensorFlow cell function for backward direction similar with `fw_cell`
-    return_seq_2d : boolean
-            - If True, return 2D Tensor [batch_size * n_steps, n_hidden], for stacking Dense layer after it.
-            - If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
+    return_seq_2d : boolean.
+        If True, return 2D Tensor [batch_size * n_steps, n_hidden], for stacking Dense layer after it.
+        If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
         In a dynamic model, `return_seq_2d` can be updated when it is called in customised forward().
         By default, `False`.
     return_last_state: boolean
@@ -249,7 +248,7 @@ class BiRNN(Layer):
 
     Examples
     --------
-    - A simple regression model below.
+    A simple regression model below.
     >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
     >>> # the fw_cell and bw_cell can be different
     >>> rnnlayer = tl.layers.BiRNN(
@@ -266,7 +265,7 @@ class BiRNN(Layer):
     >>> outputs = tl.layers.Reshape([-1, num_steps])(dense)
     >>> rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_out, rnn_fw_state[0], rnn_bw_state[0]])
 
-    - A stacked BiRNN model.
+    A stacked BiRNN model.
     >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
     >>> rnn_out1 = tl.layers.BiRNN(
     >>>     fw_cell=tf.keras.layers.SimpleRNNCell(units=hidden_size, dropout=0.1),
@@ -804,7 +803,7 @@ def retrieve_seq_length_op3(data, pad_val=0):
     If the data has type of tf.string and pad_val is assigned as empty string (''), this op will compute the
     length of the string sequence.
 
-    Parameters:
+    Parameters
     -----------
     data : tensor
         [batch_size, n_step(max)] or [batch_size, n_step(max), n_features] with zero padding on the right hand side.

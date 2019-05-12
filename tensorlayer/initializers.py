@@ -4,7 +4,6 @@
 import numpy as np
 import tensorflow as tf
 
-
 __all__ = [
     'Initializer', 'Zeros', 'Ones', 'Constant', 'RandomUniform', 'RandomNormal', 'TruncatedNormal',
     'deconv2d_bilinear_upsampling_initializer'
@@ -195,7 +194,7 @@ def deconv2d_bilinear_upsampling_initializer(shape):
 
     Examples
     --------
-    - Upsampling by a factor of 2, ie e.g 100->200
+    Upsampling by a factor of 2, ie e.g 100->200
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> rescale_factor = 2

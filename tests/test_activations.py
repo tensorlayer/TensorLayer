@@ -38,7 +38,7 @@ class Test_Leaky_ReLUs(CustomTestCase):
             self.assertAlmostEqual(computed_output.numpy(), good_output, places=5)
 
         net = tl.layers.Input([10, 2])
-        net = tl.layers.Dense(n_units=100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')(net)
+        net = tl.layers.Dense(n_units=100, act=lambda x: tl.act.lrelu(x, 0.2), name='dense')(net)
         print(net)
 
     def test_lrelu6(self):
@@ -54,7 +54,7 @@ class Test_Leaky_ReLUs(CustomTestCase):
             self.assertAlmostEqual(computed_output.numpy(), good_output, places=5)
 
         net = tl.layers.Input([10, 2])
-        net = tl.layers.Dense(n_units=100, act=lambda x : tl.act.leaky_relu6(x, 0.2), name='dense')(net)
+        net = tl.layers.Dense(n_units=100, act=lambda x: tl.act.leaky_relu6(x, 0.2), name='dense')(net)
         print(net)
 
     def test_ltrelu6(self):
@@ -72,7 +72,7 @@ class Test_Leaky_ReLUs(CustomTestCase):
             self.assertAlmostEqual(computed_output.numpy(), good_output, places=5)
 
         net = tl.layers.Input([10, 200])
-        net = tl.layers.Dense(n_units=100, act=lambda x : tl.act.leaky_twice_relu6(x, 0.2, 0.2), name='dense')(net)
+        net = tl.layers.Dense(n_units=100, act=lambda x: tl.act.leaky_twice_relu6(x, 0.2, 0.2), name='dense')(net)
         print(net)
 
     def test_ramp(self):
@@ -115,6 +115,7 @@ class Test_Leaky_ReLUs(CustomTestCase):
             computed_output = tl.act.swish(float(i))
 
             self.assertAlmostEqual(computed_output.numpy(), good_output, places=5)
+
 
 if __name__ == '__main__':
 

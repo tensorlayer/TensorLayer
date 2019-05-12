@@ -25,6 +25,13 @@ from tensorflow.python.platform import gfile
 import tensorlayer as tl
 from tensorlayer import logging, nlp, utils, visualize
 
+import cloudpickle
+import base64
+from tensorflow.python.keras.saving import model_config as model_config_lib
+from tensorflow.python.util.tf_export import keras_export
+from tensorflow.python.util import serialization
+import json
+
 # from six.moves import zip
 
 if sys.version_info[0] == 2:
@@ -64,128 +71,265 @@ __all__ = [
     'save_weights_to_hdf5',
     'load_hdf5_to_weights_in_order',
     'load_hdf5_to_weights',
-    'save_graph',
-    'load_graph',
-    #'save_graph_and_params',
-    #'load_graph_and_params',
+    'save_hdf5_graph',
+    'load_hdf5_graph',
+    'net2static_graph',
+    'static_graph2net',
+    # 'save_pkl_graph',
+    # 'load_pkl_graph',
 ]
 
 
-def save_graph(network=None, name='graph.pkl'):
-    """Save the architecture of TL model into a pickle file. No parameters be saved.
+def func2str(expr):
+    b = cloudpickle.dumps(expr)
+    s = base64.b64encode(b).decode()
+    return s
+
+
+def str2func(s):
+    b = base64.b64decode(s)
+    expr = cloudpickle.loads(b)
+    return expr
+
+
+def net2static_graph(network):
+    saved_file = dict()
+    if network._NameNone is True:
+        saved_file.update({"name": None})
+    else:
+        saved_file.update({"name": network.name})
+    if not isinstance(network.inputs, list):
+        saved_file.update({"inputs": network.inputs._info[0].name})
+    else:
+        saved_inputs = []
+        for saved_input in network.inputs:
+            saved_inputs.append(saved_input._info[0].name)
+        saved_file.update({"inputs": saved_inputs})
+    if not isinstance(network.outputs, list):
+        saved_file.update({"outputs": network.outputs._info[0].name})
+    else:
+        saved_outputs = []
+        for saved_output in network.outputs:
+            saved_outputs.append(saved_output._info[0].name)
+        saved_file.update({"outputs": saved_outputs})
+    saved_file.update({"config": network.config})
+
+    return saved_file
+
+
+@keras_export('keras.models.save_model')
+def save_keras_model(model):
+    # f.attrs['keras_model_config'] = json.dumps(
+    #     {
+    #         'class_name': model.__class__.__name__,
+    #         'config': model.get_config()
+    #     },
+    #     default=serialization.get_json_type).encode('utf8')
+    #
+    # f.flush()
+
+    return json.dumps(
+        {
+            'class_name': model.__class__.__name__,
+            'config': model.get_config()
+        }, default=serialization.get_json_type
+    ).encode('utf8')
+
+
+@keras_export('keras.models.load_model')
+def load_keras_model(model_config):
+
+    custom_objects = {}
+
+    if model_config is None:
+        raise ValueError('No model found in config.')
+    model_config = json.loads(model_config.decode('utf-8'))
+    model = model_config_lib.model_from_config(model_config, custom_objects=custom_objects)
+
+    return model
+
+
+def save_hdf5_graph(network, filepath='model.hdf5', save_weights=False):
+    """Save the architecture of TL model into a hdf5 file. Support saving model weights.
 
     Parameters
     -----------
-    network : TensorLayer layer
+    network : TensorLayer Model.
         The network to save.
-    name : str
-        The name of graph file.
+    filepath : str
+        The name of model file.
+    save_weights : bool
+        Whether to save model weights.
 
     Examples
     --------
-    Save the architecture
-    >>> tl.files.save_graph(net_test, 'graph.pkl')
-
-    Load the architecture in another script (no parameters restore)
-    >>> net = tl.files.load_graph('graph.pkl')
+    >>> # Save the architecture (with parameters)
+    >>> tl.files.save_hdf5_graph(network, filepath='model.hdf5', save_weights=True)
+    >>> # Save the architecture (without parameters)
+    >>> tl.files.save_hdf5_graph(network, filepath='model.hdf5', save_weights=False)
+    >>> # Load the architecture in another script (no parameters restore)
+    >>> net = tl.files.load_hdf5_graph(filepath='model.hdf5', load_weights=False)
+    >>> # Load the architecture in another script (restore parameters)
+    >>> net = tl.files.load_hdf5_graph(filepath='model.hdf5', load_weights=True)
     """
     if network.outputs is None:
-        raise AssertionError("save_graph not support dynamic mode yet")
+        raise RuntimeError("save_hdf5_graph not support dynamic mode yet")
 
-    logging.info("[*] Saving TL graph into {}".format(name))
-    saved_file = dict()
-    saved_file.update({"inputs": network.inputs.all_graphs})
-    saved_file.update({"outputs": network.outputs.all_graphs})
-    saved_file.update({"name": network.name})
-    with open(name, 'wb') as file:
-        # pickle.dumps(graphs, protocol=pickle.HIGHEST_PROTOCOL)
-        pickle.dump(saved_file, file, protocol=pickle.HIGHEST_PROTOCOL)
-    logging.info("[*] Saved graph")
+    logging.info("[*] Saving TL model into {}, saving weights={}".format(filepath, save_weights))
+
+    saved_file = net2static_graph(network)
+    saved_file_str = str(saved_file)
+
+    with h5py.File(filepath, 'w') as f:
+        f.attrs["model_structure"] = saved_file_str.encode('utf8')
+        if save_weights:
+            _save_weights_to_hdf5_group(f, network.all_layers)
+        f.flush()
+
+    logging.info("[*] Saved TL model into {}, saving weights={}".format(filepath, save_weights))
 
 
-def _graph2net(graphs):
-    """Inputs graphs, returns network."""
-    input_list = list()
-    layer_dict = dict()
-    # prev_layer_dict = dict()
-    # loop every layers
-    for graph in graphs:
-        # get current layer class
-        name, layer_kwargs = graph
-        layer_kwargs = dict(
-            layer_kwargs
-        )  # when InputLayer is used for twice, if we "pop" elements, the second time to use it will have error.
+def generate_func(args):
+    for key in args:
+        if isinstance(args[key], tuple) and args[key][0] == 'is_Func':
+            fn = str2func(args[key][1])
+            args[key] = fn
+        # if key in ['act']:
+        #     # fn_dict = args[key]
+        #     # module_path = fn_dict['module_path']
+        #     # func_name = fn_dict['func_name']
+        #     # lib = importlib.import_module(module_path)
+        #     # fn = getattr(lib, func_name)
+        #     # args[key] = fn
+        #     fn = str2func(args[key])
+        #     args[key] = fn
+        # elif key in ['fn']:
+        #     fn = str2func(args[key])
+        #     args[key] = fn
 
-        layer_class = layer_kwargs.pop('class')  # class of current layer
-        prev_layer = layer_kwargs.pop(
-            'prev_layer'
-        )  # name of previous layer : str =one layer   list of str = multiple layers
-        # prev_layer_dict.update({name: prev_layer})
 
-        # convert function dictionary into real function
-        for key in layer_kwargs:  # set input placeholder into the lastest layer
-            fn_dict = layer_kwargs[key]
-            if key in ['act']:
-                module_path = fn_dict['module_path']
-                func_name = fn_dict['func_name']
-                lib = importlib.import_module(module_path)
-                fn = getattr(lib, func_name)
-                layer_kwargs[key] = fn
-                # print(key, layer_kwargs[key])
-        # print(name, prev_layer, layer_class, layer_kwargs)
+def eval_layer(layer_kwargs):
+    layer_class = layer_kwargs.pop('class')
+    args = layer_kwargs['args']
+    layer_type = args.pop('layer_type')
+    if layer_type == "normal":
+        generate_func(args)
+        return eval('tl.layers.' + layer_class)(**args)
+    elif layer_type == "layerlist":
+        ret_layer = []
+        layers = args["layers"]
+        for layer_graph in layers:
+            ret_layer.append(eval_layer(layer_graph))
+        args['layers'] = ret_layer
+        return eval('tl.layers.' + layer_class)(**args)
+    elif layer_type == "modellayer":
+        M = static_graph2net(args['model'])
+        args['model'] = M
+        return eval('tl.layers.' + layer_class)(**args)
+    elif layer_type == "keraslayer":
+        M = load_keras_model(args['fn'])
+        input_shape = args.pop('keras_input_shape')
+        _ = M(np.random.random(input_shape).astype(np.float32))
+        args['fn'] = M
+        args['fn_weights'] = M.trainable_variables
+        return eval('tl.layers.' + layer_class)(**args)
+    else:
+        raise RuntimeError("Unknown layer type.")
 
-        # if layer_class == 'placeholder':  # create placeholder
-        #     if name not in input_list:  # if placeholder is not exist
-        #         dtype = layer_kwargs.pop('dtype')
-        #         shape = layer_kwargs.pop('shape')
-        #         _placeholder = tf.placeholder(eval('tf.' + dtype), shape,
-        #                                       name=name.split(':')[0])  # globals()['tf.'+dtype]
-        #         # _placeholder = tf.placeholder(ast.literal_eval('tf.' + dtype), shape, name=name.split(':')[0])
-        #         # input_dict.update({name: _placeholder})
-        #         input_list.append((name, _placeholder))
-        # else:  # create networkz
-        if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
-            raise NotImplementedError("TL graph does not support this layer at the moment: %s" % (layer_class))
-        else:  # normal layers e.g. Conv2d
-            # try:  # if previous layer is layer
-            #     net = layer_dict[prev_layer]
-            #     layer_kwargs.update({'prev_layer': net})
-            # except Exception:  # if previous layer is input placeholder
-            #     for n, t in input_list:
-            #         if n == prev_layer:
-            #             _placeholder = t
-            #     layer_kwargs.update({'inputs': _placeholder})
-            layer_kwargs.update({'name': name})
-            net = eval('tl.layers.' + layer_class)(**layer_kwargs)
-            if prev_layer is not None:
-                net(layer_dict[prev_layer])
-            else:
-                net._input_layer = None
-            layer_dict.update({name: net})
 
-    # rename placeholder e.g. x:0 --> x
-    # for i, (n, t) in enumerate(input_list):
-    #     n_new = n.replace(':', '')
-    #     if n_new[-1] == '0':
-    #         n_new = n_new[:-1]
-    #     input_list[i] = (n_new, t)
-    #     # print(n_new, t)
+def static_graph2net(saved_file):
+    layer_dict = {}
+    model_name = saved_file['name']
+    inputs_tensors = saved_file['inputs']
+    outputs_tensors = saved_file['outputs']
+    all_args = saved_file['config']
+    tf_version = saved_file['config'].pop(0)['tf_version']
+    tl_version = saved_file['config'].pop(0)['tl_version']
+    if tf_version != tf.__version__:
+        logging.warning(
+            "Saved model uses tensorflow version {}, but now you are using tensorflow version {}".format(
+                tf_version, tf.__version__
+            )
+        )
+    if tl_version != tl.__version__:
+        logging.warning(
+            "Saved model uses tensorlayer version {}, but now you are using tensorlayer version {}".format(
+                tl_version, tl.__version__
+            )
+        )
+    for idx, layer_kwargs in enumerate(all_args):
+        layer_class = layer_kwargs['class']  # class of current layer
+        prev_layers = layer_kwargs.pop('prev_layer')  # name of previous layers
+        net = eval_layer(layer_kwargs)
+        if layer_class in tl.layers.inputs.__all__:
+            net = net._nodes[0].out_tensors[0]
+        if prev_layers is not None:
+            for prev_layer in prev_layers:
+                if not isinstance(prev_layer, list):
+                    output = net(layer_dict[prev_layer])
+                    layer_dict[output._info[0].name] = output
+                else:
+                    list_layers = [layer_dict[layer] for layer in prev_layer]
+                    output = net(list_layers)
+                    layer_dict[output._info[0].name] = output
+        else:
+            layer_dict[net._info[0].name] = net
 
-    # put placeholder into network attributes
-    # for n, t in input_list:
-    #     # print(name, n, t)
-    #     layer_dict[name].__dict__.update({n: t})
-    #     logging.info("[*] attributes: {} {} {}".format(n, t.get_shape().as_list(), t.dtype.name))
-    # for key in input_dict: # set input placeholder into the lastest layer
-    #     layer_dict[name].globals()[key] = input_dict[key]
-    #     logging.info("  attributes: {:3} {:15} {:15}".format(n, input_dict[key].get_shape().as_list(), input_dict[key].dtype.name))
+    if not isinstance(inputs_tensors, list):
+        model_inputs = layer_dict[inputs_tensors]
+    else:
+        model_inputs = []
+        for inputs_tensor in inputs_tensors:
+            model_inputs.append(layer_dict[inputs_tensor])
+    if not isinstance(outputs_tensors, list):
+        model_outputs = layer_dict[outputs_tensors]
+    else:
+        model_outputs = []
+        for outputs_tensor in outputs_tensors:
+            model_outputs.append(layer_dict[outputs_tensor])
+    from tensorlayer.models import Model
+    M = Model(inputs=model_inputs, outputs=model_outputs, name=model_name)
     logging.info("[*] Load graph finished")
-    # return the lastest layer as network
-
-    return layer_dict[name]
+    return M
 
 
-def load_graph(name='graph.pkl'):
+def load_hdf5_graph(filepath='model.hdf5', load_weights=False):
+    """Restore TL model archtecture from a a pickle file. Support loading model weights.
+
+    Parameters
+    -----------
+    filepath : str
+        The name of model file.
+    load_weights : bool
+        Whether to load model weights.
+
+    Returns
+    --------
+    network : TensorLayer Model.
+
+    Examples
+    --------
+    - see ``tl.files.save_hdf5_graph``
+    """
+    logging.info("[*] Loading TL model from {}, loading weights={}".format(filepath, load_weights))
+    f = h5py.File(filepath, 'r')
+    saved_file_str = f.attrs["model_structure"].decode('utf8')
+    saved_file = eval(saved_file_str)
+
+    M = static_graph2net(saved_file)
+    if load_weights:
+        if not ('layer_names' in f.attrs.keys()):
+            raise RuntimeError("Saved model does not contain weights.")
+        M.load_weights(filepath=filepath)
+
+    f.close()
+
+    logging.info("[*] Loaded TL model from {}, loading weights={}".format(filepath, load_weights))
+
+    return M
+
+
+def load_pkl_graph(name='model.pkl'):
     """Restore TL model archtecture from a a pickle file. No parameters be restored.
 
     Parameters
@@ -195,23 +339,45 @@ def load_graph(name='graph.pkl'):
 
     Returns
     --------
-    network : TensorLayer layer
-        The input placeholder will become the attributes of the returned TL layer object.
+    network : TensorLayer Model.
 
     Examples
     --------
-    - see ``tl.files.save_graph``
+    >>> # It is better to use load_hdf5_graph
     """
     logging.info("[*] Loading TL graph from {}".format(name))
     with open(name, 'rb') as file:
         saved_file = pickle.load(file)
 
-    inputs = _graph2net(saved_file["inputs"])
-    outputs = _graph2net(saved_file["outputs"])
-    model_name = saved_file["name"]
-    from tensorlayer.models import Model
-    M = Model(inputs=inputs, outputs=outputs, name=model_name)
+    M = static_graph2net(saved_file)
+
     return M
+
+
+def save_pkl_graph(network, name='model.pkl'):
+    """Save the architecture of TL model into a pickle file. No parameters be saved.
+
+    Parameters
+    -----------
+    network : TensorLayer layer
+        The network to save.
+    name : str
+        The name of graph file.
+
+    Example
+    --------
+    >>> # It is better to use save_hdf5_graph
+    """
+    if network.outputs is None:
+        raise AssertionError("save_graph not support dynamic mode yet")
+
+    logging.info("[*] Saving TL graph into {}".format(name))
+
+    saved_file = net2static_graph(network)
+
+    with open(name, 'wb') as file:
+        pickle.dump(saved_file, file, protocol=pickle.HIGHEST_PROTOCOL)
+    logging.info("[*] Saved graph")
 
 
 # Load dataset functions
@@ -1792,7 +1958,7 @@ def load_npz(path='', name='model.npz'):
     - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
 
     """
-    d = np.load(os.path.join(path, name))
+    d = np.load(os.path.join(path, name), allow_pickle=True)
     return d['params']
 
 
@@ -2053,174 +2219,6 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
     except Exception as e:
         logging.info(e)
         logging.info("[*] load ckpt fail ...")
-
-
-'''
-def save_graph(network=None, name='graph.pkl'):
-    """Save the architecture of TL model into a pickle file. No parameters be saved.
-
-    Parameters
-    -----------
-    network : TensorLayer layer
-        The network to save.
-    name : str
-        The name of graph file.
-
-    Examples
-    --------
-    Save the architecture
-    >>> tl.files.save_graph(net_test, 'graph.pkl')
-
-    Load the architecture in another script (no parameters restore)
-    >>> net = tl.files.load_graph('graph.pkl')
-    """
-    logging.info("[*] Saving TL graph into {}".format(name))
-    graphs = network.all_graphs
-    with open(name, 'wb') as file:
-        # pickle.dumps(graphs, protocol=pickle.HIGHEST_PROTOCOL)
-        pickle.dump(graphs, file, protocol=pickle.HIGHEST_PROTOCOL)
-    logging.info("[*] Saved graph")
-
-
-def _graph2net(graphs):
-    """Inputs graphs, returns network."""
-    input_list = list()
-    layer_dict = dict()
-    # loop every layers
-    for graph in graphs:
-        # get current layer class
-        name, layer_kwargs = graph
-        layer_kwargs = dict(
-            layer_kwargs
-        )  # when InputLayer is used for twice, if we "pop" elements, the second time to use it will have error.
-
-        layer_class = layer_kwargs.pop('class')  # class of current layer
-        prev_layer = layer_kwargs.pop(
-            'prev_layer'
-        )  # name of previous layer : str =one layer   list of str = multiple layers
-
-        # convert function dictionary into real function
-        for key in layer_kwargs:  # set input placeholder into the lastest layer
-            fn_dict = layer_kwargs[key]
-            if key in ['act']:
-                module_path = fn_dict['module_path']
-                func_name = fn_dict['func_name']
-                lib = importlib.import_module(module_path)
-                fn = getattr(lib, func_name)
-                layer_kwargs[key] = fn
-                # print(key, layer_kwargs[key])
-        # print(name, prev_layer, layer_class, layer_kwargs)
-
-        if layer_class == 'placeholder':  # create placeholder
-            if name not in input_list:  # if placeholder is not exist
-                dtype = layer_kwargs.pop('dtype')
-                shape = layer_kwargs.pop('shape')
-                _placeholder = tf.placeholder(eval('tf.' + dtype), shape,
-                                              name=name.split(':')[0])  # globals()['tf.'+dtype]
-                # _placeholder = tf.placeholder(ast.literal_eval('tf.' + dtype), shape, name=name.split(':')[0])
-                # input_dict.update({name: _placeholder})
-                input_list.append((name, _placeholder))
-        else:  # create network
-            if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
-                raise NotImplementedError("TL graph does not support this layer at the moment: %s" % (layer_class))
-            else:  # normal layers e.g. Conv2d
-                try:  # if previous layer is layer
-                    net = layer_dict[prev_layer]
-                    layer_kwargs.update({'prev_layer': net})
-                except Exception:  # if previous layer is input placeholder
-                    for n, t in input_list:
-                        if n == prev_layer:
-                            _placeholder = t
-                    layer_kwargs.update({'inputs': _placeholder})
-                layer_kwargs.update({'name': name})
-                net = eval('tl.layers.' + layer_class)(**layer_kwargs)
-                layer_dict.update({name: net})
-
-    # rename placeholder e.g. x:0 --> x
-    for i, (n, t) in enumerate(input_list):
-        n_new = n.replace(':', '')
-        if n_new[-1] == '0':
-            n_new = n_new[:-1]
-        input_list[i] = (n_new, t)
-        # print(n_new, t)
-
-    # put placeholder into network attributes
-    for n, t in input_list:
-        # print(name, n, t)
-        layer_dict[name].__dict__.update({n: t})
-        logging.info("[*] attributes: {} {} {}".format(n, t.get_shape().as_list(), t.dtype.name))
-    # for key in input_dict: # set input placeholder into the lastest layer
-    #     layer_dict[name].globals()[key] = input_dict[key]
-    #     logging.info("  attributes: {:3} {:15} {:15}".format(n, input_dict[key].get_shape().as_list(), input_dict[key].dtype.name))
-    logging.info("[*] Load graph finished")
-    # return the lastest layer as network
-    return layer_dict[name]
-
-
-def load_graph(name='model.pkl'):
-    """Restore TL model archtecture from a a pickle file. No parameters be restored.
-
-    Parameters
-    -----------
-    name : str
-        The name of graph file.
-
-    Returns
-    --------
-    network : TensorLayer layer
-        The input placeholder will become the attributes of the returned TL layer object.
-
-    Examples
-    --------
-    - see ``tl.files.save_graph``
-    """
-    logging.info("[*] Loading TL graph from {}".format(name))
-    with open(name, 'rb') as file:
-        graphs = pickle.load(file)
-    return _graph2net(graphs)
-
-
-def save_graph_and_params(network=None, name='model', sess=None):
-    """Save TL model architecture and parameters (i.e. whole model) into graph file and npz file, respectively.
-
-    Parameters
-    -----------
-    network : TensorLayer layer
-        The network to save.
-    name : str
-        The folder name to save the graph and parameters.
-    sess : Session
-        TensorFlow Session.
-
-    Examples
-    ---------
-    Save architecture and parameters
-
-    >>> tl.files.save_graph_and_params(net, 'model', sess)
-
-    Load archtecture and parameters
-
-    >>> net = tl.files.load_graph_and_params('model', sess)
-    """
-    exists_or_mkdir(name, False)
-    save_graph(network, os.path.join(name, 'graph.pkl'))
-    save_npz(save_list=network.all_params, name=os.path.join(name, 'params.npz'), sess=sess)
-
-
-def load_graph_and_params(name='model', sess=None):
-    """Load TL model architecture and parameters from graph file and npz file, respectively.
-
-    Parameters
-    -----------
-    name : str
-        The folder name to load the graph and parameters.
-    sess : Session
-        TensorFlow Session.
-    """
-    network = load_graph(name=os.path.join(name, 'graph.pkl'))
-    load_and_assign_npz(sess=sess, name=os.path.join(name, 'params.npz'), network=network)
-    return network
-'''
 
 
 def save_any_to_npy(save_dict=None, name='file.npy'):

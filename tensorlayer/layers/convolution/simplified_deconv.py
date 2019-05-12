@@ -90,7 +90,10 @@ class DeConv2d(Layer):
 
         logging.info(
             "DeConv2d {}: n_filters: {} strides: {} padding: {} act: {} dilation: {}".format(
-                self.name, str(n_filter), str(strides), padding,
+                self.name,
+                str(n_filter),
+                str(strides),
+                padding,
                 self.act.__name__ if self.act is not None else 'No Activation',
                 dilation_rate,
             )
@@ -101,9 +104,11 @@ class DeConv2d(Layer):
 
     def __repr__(self):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
-        s = ('{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
-             ', strides={strides}, padding={padding}')
-        if self.dilation_rate != (1,) * len(self.dilation_rate):
+        s = (
+            '{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
+            ', strides={strides}, padding={padding}'
+        )
+        if self.dilation_rate != (1, ) * len(self.dilation_rate):
             s += ', dilation={dilation_rate}'
         if self.b_init is None:
             s += ', bias=False'
@@ -132,7 +137,9 @@ class DeConv2d(Layer):
             self.in_channels = inputs_shape[1]
         else:
             self.in_channels = inputs_shape[-1]
-        _out = self.layer(tf.convert_to_tensor(np.random.uniform(size=inputs_shape), dtype=np.float32))#np.random.uniform([1] + list(inputs_shape)))  # initialize weights
+        _out = self.layer(
+            tf.convert_to_tensor(np.random.uniform(size=inputs_shape), dtype=np.float32)
+        )  #np.random.uniform([1] + list(inputs_shape)))  # initialize weights
         outputs_shape = _out.shape
         self._weights = self.layer.weights
 
@@ -220,8 +227,10 @@ class DeConv3d(Layer):
 
     def __repr__(self):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
-        s = ('{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
-             ', strides={strides}, padding={padding}')
+        s = (
+            '{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
+            ', strides={strides}, padding={padding}'
+        )
         # if self.dilation_rate != (1,) * len(self.dilation_rate):
         #     s += ', dilation={dilation_rate}'
         if self.b_init is None:
@@ -250,7 +259,9 @@ class DeConv3d(Layer):
         else:
             self.in_channels = inputs_shape[-1]
 
-        _out = self.layer(tf.convert_to_tensor(np.random.uniform(size=inputs_shape), dtype=np.float32)) #self.layer(np.random.uniform([1] + list(inputs_shape)))  # initialize weights
+        _out = self.layer(
+            tf.convert_to_tensor(np.random.uniform(size=inputs_shape), dtype=np.float32)
+        )  #self.layer(np.random.uniform([1] + list(inputs_shape)))  # initialize weights
         outputs_shape = _out.shape
         # self._add_weights(self.layer.weights)
         self._weights = self.layer.weights

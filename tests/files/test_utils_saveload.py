@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys
-sys.path.append("/Users/wurundi/PycharmProjects/tensorlayer2")
+
 import os
 import unittest
 
@@ -32,6 +31,7 @@ def basic_static_model():
 
 
 class basic_dynamic_model(Model):
+
     def __init__(self):
         super(basic_dynamic_model, self).__init__(name="basic_dynamic")
         self.conv1 = Conv2d(16, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, in_channels=3, name="conv1")
@@ -69,20 +69,20 @@ class Model_Core_Test(CustomTestCase):
     def test_hdf5(self):
         modify_val = np.zeros_like(self.static_model.weights[-2].numpy())
         ori_val = self.static_model.weights[-2].numpy()
-        tl.files.save_weights_to_hdf5("./model_basic.h5", self.static_model.weights)
+        tl.files.save_weights_to_hdf5("./model_basic.h5", self.static_model)
 
         self.static_model.weights[-2].assign(modify_val)
-        tl.files.load_hdf5_to_weights_in_order("./model_basic.h5", self.static_model.weights)
+        tl.files.load_hdf5_to_weights_in_order("./model_basic.h5", self.static_model)
         self.assertLess(np.max(np.abs(ori_val - self.static_model.weights[-2].numpy())), 1e-7)
 
         self.static_model.weights[-2].assign(modify_val)
-        tl.files.load_hdf5_to_weights("./model_basic.h5", self.static_model.weights)
+        tl.files.load_hdf5_to_weights("./model_basic.h5", self.static_model)
         self.assertLess(np.max(np.abs(ori_val - self.static_model.weights[-2].numpy())), 1e-7)
 
         ori_weights = self.static_model._weights
         self.static_model._weights = self.static_model._weights[1:]
         self.static_model.weights[-2].assign(modify_val)
-        tl.files.load_hdf5_to_weights("./model_basic.h5", self.static_model.weights, skip=True)
+        tl.files.load_hdf5_to_weights("./model_basic.h5", self.static_model, skip=True)
         self.assertLess(np.max(np.abs(ori_val - self.static_model.weights[-2].numpy())), 1e-7)
         self.static_model._weights = ori_weights
 
@@ -110,6 +110,7 @@ class Model_Core_Test(CustomTestCase):
         tl.files.load_and_assign_npz_dict("./model_basic.npz", self.dynamic_model, skip=True)
         self.assertLess(np.max(np.abs(ori_val - self.dynamic_model.weights[-2].numpy())), 1e-7)
         self.dynamic_model._weights = ori_weights
+
 
 if __name__ == '__main__':
 

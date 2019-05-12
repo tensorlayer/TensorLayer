@@ -35,13 +35,15 @@ import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.files import assign_weights, maybe_download_and_extract
-from tensorlayer.layers import (BatchNorm, Conv2d, Dense, Flatten, Input, LayerList, MaxPool2d)
+from tensorlayer.layers import (BatchNorm, Conv2d, Dense, Flatten, Input, LayerList, MaxPool2d, Lambda)
 from tensorlayer.models import Model
 
 __all__ = [
     'VGG',
     'vgg16',
     'vgg19',
+    'VGG16',
+    'VGG19',
     #    'vgg11', 'vgg11_bn', 'vgg13', 'vgg13_bn', 'vgg16', 'vgg16_bn',
     #    'vgg19_bn', 'vgg19',
 ]
@@ -85,50 +87,6 @@ model_saved_name = {'vgg16': 'vgg16_weights.npz', 'vgg19': 'vgg19.npy'}
 
 
 class VGG(Model):
-    """Pre-trained VGG model.
-
-    Parameters
-    ------------
-    end_with : str
-        The end point of the model. Default ``fc3_relu`` i.e. the whole model.
-    name : None or str
-        A unique layer name.
-
-    Examples
-    ---------
-    Classify ImageNet classes with VGG16, see `tutorial_models_vgg.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_vgg.py>`__
-    With TensorLayer
-
-    >>> # get the whole model
-    >>> vgg = tl.models.vgg.vgg16()
-    >>> # restore pre-trained VGG parameters
-    >>> vgg.restore_weights()
-    >>> # use for inferencing
-    >>> probs = tf.nn.softmax(output)[0].numpy()
-
-    Extract features with VGG16 and Train a classifier with 100 classes
-
-    >>> # get VGG without the last layer
-    >>> vgg = tl.models.vgg.vgg16(end_with='fc2_relu')
-    >>> # add one more layer
-    >>> net = tl.layers.Dense(n_units=100, name='out')(vgg)
-    >>> # restore pre-trained VGG parameters
-    >>> vgg.restore_weights()
-    >>> # train your own classifier (only update the last layer)
-    >>> train_params = tl.layers.get_variables_with_name('out')
-
-    Reuse model
-
-    >>> # in dynamic mode, we can directly use the same model
-    >>> # in static mode
-    >>> vgg_layer = tl.models.vgg.vgg16.as_layer()
-    >>> ni_1 = tl.layers.Input([None, 224, 244, 3])
-    >>> ni_2 = tl.layers.Input([None, 224, 244, 3])
-    >>> a_1 = vgg_layer(ni_1)
-    >>> a_2 = vgg_layer(ni_2)
-    >>> M = Model(inputs=[ni_1, ni_2], outputs=[a_1, a_2])
-
-    """
 
     def __init__(self, layer_type, batch_norm=False, end_with='outputs', name=None):
         super(VGG, self).__init__(name=name)
@@ -140,8 +98,10 @@ class VGG(Model):
     def forward(self, inputs):
         """
         inputs : tensor
-            Shape [None, 224, 224, 3], value range [0, 255] - mean, mean = [123.68, 116.779, 103.939].
+            Shape [None, 224, 224, 3], value range [0, 1].
         """
+
+        inputs = inputs * 255 - np.array([123.68, 116.779, 103.939], dtype=np.float32).reshape([1, 1, 1, 3])
 
         out = self.layers(inputs)
         return out
@@ -221,17 +181,70 @@ def restore_model(model, layer_type):
 
 def VGG_static(layer_type, batch_norm=False, end_with='outputs', name=None):
     ni = Input([None, 224, 224, 3])
+    n = Lambda(
+        lambda x: x * 255 - np.array([123.68, 116.779, 103.939], dtype=np.float32).reshape([1, 1, 1, 3]), name='scale'
+    )(ni)
 
     config = cfg[mapped_cfg[layer_type]]
     layers = make_layers(config, batch_norm, end_with)
 
-    nn = layers(ni)
+    nn = layers(n)
 
     M = Model(inputs=ni, outputs=nn, name=name)
     return M
 
 
 def vgg16(pretrained=False, end_with='outputs', mode='dynamic', name=None):
+    """Pre-trained VGG16 model.
+
+    Parameters
+    ------------
+    pretrained : boolean
+        Whether to load pretrained weights. Default False.
+    end_with : str
+        The end point of the model. Default ``fc3_relu`` i.e. the whole model.
+    mode : str.
+        Model building mode, 'dynamic' or 'static'. Default 'dynamic'.
+    name : None or str
+        A unique layer name.
+
+    Examples
+    ---------
+    Classify ImageNet classes with VGG16, see `tutorial_models_vgg.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_vgg.py>`__
+    With TensorLayer
+
+    >>> # get the whole model, without pre-trained VGG parameters
+    >>> vgg = tl.models.vgg16()
+    >>> # get the whole model, restore pre-trained VGG parameters
+    >>> vgg = tl.models.vgg16(pretrained=True)
+    >>> # use for inferencing
+    >>> output = vgg(img, is_train=False)
+    >>> probs = tf.nn.softmax(output)[0].numpy()
+
+    Extract features with VGG16 and Train a classifier with 100 classes
+
+    >>> # get VGG without the last layer
+    >>> cnn = tl.models.vgg16(end_with='fc2_relu', mode='static').as_layer()
+    >>> # add one more layer and build a new model
+    >>> ni = Input([None, 224, 224, 3], name="inputs")
+    >>> nn = cnn(ni)
+    >>> nn = tl.layers.Dense(n_units=100, name='out')(nn)
+    >>> model = tl.models.Model(inputs=ni, outputs=nn)
+    >>> # train your own classifier (only update the last layer)
+    >>> train_params = model.get_layer('out').weights
+
+    Reuse model
+
+    >>> # in dynamic model, we can directly use the same model
+    >>> # in static model
+    >>> vgg_layer = tl.models.vgg16().as_layer()
+    >>> ni_1 = tl.layers.Input([None, 224, 244, 3])
+    >>> ni_2 = tl.layers.Input([None, 224, 244, 3])
+    >>> a_1 = vgg_layer(ni_1)
+    >>> a_2 = vgg_layer(ni_2)
+    >>> M = Model(inputs=[ni_1, ni_2], outputs=[a_1, a_2])
+
+    """
     if mode == 'dynamic':
         model = VGG(layer_type='vgg16', batch_norm=False, end_with=end_with, name=name)
     elif mode == 'static':
@@ -244,6 +257,56 @@ def vgg16(pretrained=False, end_with='outputs', mode='dynamic', name=None):
 
 
 def vgg19(pretrained=False, end_with='outputs', mode='dynamic', name=None):
+    """Pre-trained VGG19 model.
+
+    Parameters
+    ------------
+    pretrained : boolean
+        Whether to load pretrained weights. Default False.
+    end_with : str
+        The end point of the model. Default ``fc3_relu`` i.e. the whole model.
+    mode : str.
+        Model building mode, 'dynamic' or 'static'. Default 'dynamic'.
+    name : None or str
+        A unique layer name.
+
+    Examples
+    ---------
+    Classify ImageNet classes with VGG19, see `tutorial_models_vgg.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_vgg.py>`__
+    With TensorLayer
+
+    >>> # get the whole model, without pre-trained VGG parameters
+    >>> vgg = tl.models.vgg19()
+    >>> # get the whole model, restore pre-trained VGG parameters
+    >>> vgg = tl.models.vgg19(pretrained=True)
+    >>> # use for inferencing
+    >>> output = vgg(img, is_train=False)
+    >>> probs = tf.nn.softmax(output)[0].numpy()
+
+    Extract features with VGG19 and Train a classifier with 100 classes
+
+    >>> # get VGG without the last layer
+    >>> cnn = tl.models.vgg19(end_with='fc2_relu', mode='static').as_layer()
+    >>> # add one more layer and build a new model
+    >>> ni = Input([None, 224, 224, 3], name="inputs")
+    >>> nn = cnn(ni)
+    >>> nn = tl.layers.Dense(n_units=100, name='out')(nn)
+    >>> model = tl.models.Model(inputs=ni, outputs=nn)
+    >>> # train your own classifier (only update the last layer)
+    >>> train_params = model.get_layer('out').weights
+
+    Reuse model
+
+    >>> # in dynamic model, we can directly use the same model
+    >>> # in static model
+    >>> vgg_layer = tl.models.vgg19().as_layer()
+    >>> ni_1 = tl.layers.Input([None, 224, 244, 3])
+    >>> ni_2 = tl.layers.Input([None, 224, 244, 3])
+    >>> a_1 = vgg_layer(ni_1)
+    >>> a_2 = vgg_layer(ni_2)
+    >>> M = Model(inputs=[ni_1, ni_2], outputs=[a_1, a_2])
+
+    """
     if mode == 'dynamic':
         model = VGG(layer_type='vgg19', batch_norm=False, end_with=end_with, name=name)
     elif mode == 'static':
@@ -254,6 +317,9 @@ def vgg19(pretrained=False, end_with='outputs', mode='dynamic', name=None):
         restore_model(model, layer_type='vgg19')
     return model
 
+
+VGG16 = vgg16
+VGG19 = vgg19
 
 # models without pretrained parameters
 # def vgg11(pretrained=False, end_with='outputs'):

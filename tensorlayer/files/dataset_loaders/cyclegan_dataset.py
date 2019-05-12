@@ -6,8 +6,7 @@ import os
 import numpy as np
 
 from tensorlayer import logging, visualize
-from tensorlayer.files.utils import (del_file, folder_exists, load_file_list,
-                                     maybe_download_and_extract)
+from tensorlayer.files.utils import (del_file, folder_exists, load_file_list, maybe_download_and_extract)
 
 __all__ = ['load_cyclegan_dataset']
 

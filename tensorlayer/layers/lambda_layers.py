@@ -6,6 +6,7 @@ import tensorflow as tf
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
+from tensorlayer.files import utils
 
 # from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
@@ -20,37 +21,51 @@ class Lambda(Layer):
     If the function has trainable weights, the weights should be provided.
     Remember to make sure the weights provided when the layer is constructed are SAME as
     the weights used when the layer is forwarded.
-    For multiple inputs see :class:`ElementwiseLambdaLayer`.
+    For multiple inputs see :class:`ElementwiseLambda`.
 
     Parameters
     ----------
     fn : function
         The function that applies to the inputs (e.g. tensor from the previous layer).
-    fn_weights: a list of trainable weights (e.g. tf.Variable)
-        Optional. If the function has trainable weights, the weights should be explicitly provided.
-        Remember to make sure the weights provided when the layer is constructed are SAME as
-        the weights used when the layer is forwarded.
-    fn_args: a dict
-        Optional, the arguments for the function if any.
-        In a dynamic model, fn_args can be given via **kwargs when the layer is called.
-        Note that the arguments should not be inputs.
-        For multiple inputs, see :class:`ElementwiseLambdaLayer`.
+    fn_weights : list
+        The trainable weights for the function if any. Optional.
+    fn_args : dict
+        The arguments for the function if any. Optional.
     name : str or None
         A unique layer name.
 
     Examples
     ---------
-    Non-parametric case
+    Non-parametric and non-args case
+    This case is supported in the Model.save() / Model.load() to save / load the whole model architecture and weights(optional).
 
     >>> x = tl.layers.Input([8, 3], name='input')
     >>> y = tl.layers.Lambda(lambda x: 2*x, name='lambda')(x)
+
+
+    Non-parametric and with args case
+    This case is supported in the Model.save() / Model.load() to save / load the whole model architecture and weights(optional).
 
     >>> def customize_func(x, foo=42): # x is the inputs, foo is an argument
     >>>     return foo * x
     >>> x = tl.layers.Input([8, 3], name='input')
     >>> lambdalayer = tl.layers.Lambda(customize_func, fn_args={'foo': 2}, name='lambda')(x)
 
+
+    Any function with outside variables
+    This case has not been supported in Model.save() / Model.load() yet.
+    Please avoid using Model.save() / Model.load() to save / load models that contain such Lambda layer. Instead, you may use Model.save_weights() / Model.load_weights() to save / load model weights.
+    Note: In this case, fn_weights should be a list, and then the trainable weights in this Lambda layer can be added into the weights of the whole model.
+
+    >>> vara = [tf.Variable(1.0)]
+    >>> def func(x):
+    >>>     return x + vara
+    >>> x = tl.layers.Input([8, 3], name='input')
+    >>> y = tl.layers.Lambda(func, fn_weights=a, name='lambda')(x)
+
+
     Parametric case, merge other wrappers into TensorLayer
+    This case is supported in the Model.save() / Model.load() to save / load the whole model architecture and weights(optional).
 
     >>> layers = [
     >>>     tf.keras.layers.Dense(10, activation=tf.nn.relu),
@@ -91,7 +106,7 @@ class Lambda(Layer):
             fn,
             fn_weights=None,
             fn_args=None,
-            name=None,  #'lambda',
+            name=None,
     ):
 
         super(Lambda, self).__init__(name=name)
@@ -123,11 +138,8 @@ class Lambda(Layer):
         )
 
     def build(self, inputs_shape=None):
-        # do nothing
-        # the weights of the function are provided when the Lambda layer is constructed
         pass
 
-    # @tf.function
     def forward(self, inputs, **kwargs):
 
         if len(kwargs) == 0:
@@ -136,6 +148,20 @@ class Lambda(Layer):
             outputs = self.fn(inputs, **kwargs)
 
         return outputs
+
+    def get_args(self):
+        init_args = {}
+        if isinstance(self.fn, tf.keras.layers.Layer) or isinstance(self.fn, tf.keras.Model):
+            init_args.update({"layer_type": "keraslayer"})
+            init_args["fn"] = utils.save_keras_model(self.fn)
+            init_args["fn_weights"] = None
+            if len(self._nodes) == 0:
+                init_args["keras_input_shape"] = []
+            else:
+                init_args["keras_input_shape"] = self._nodes[0].in_tensors[0].get_shape().as_list()
+        else:
+            init_args = {"layer_type": "normal"}
+        return init_args
 
 
 class ElementwiseLambda(Layer):
@@ -148,21 +174,20 @@ class ElementwiseLambda(Layer):
     ----------
     fn : function
         The function that applies to the inputs (e.g. tensor from the previous layer).
-    fn_weights: a list of trainable weights (e.g. tf.Variable)
-        Optional. If the function has trainable weights, the weights should be explicitly provided.
-        Remember to make sure the weights provided when the layer is constructed are SAME as
-        the weights used when the layer is forwarded.
-    fn_args: a dict
-        Optional, the arguments for the function if any.
-        In a dynamic model, fn_args can be given via **kwargs when the layer is called.
-        Note that the arguments should not be inputs.
+    fn_weights : list
+        The trainable weights for the function if any. Optional.
+    fn_args : dict
+        The arguments for the function if any. Optional.
     name : str or None
         A unique layer name.
 
     Examples
     --------
-    z = mean + noise * tf.exp(std * 0.5) + foo
 
+    Non-parametric and with args case
+    This case is supported in the Model.save() / Model.load() to save / load the whole model architecture and weights(optional).
+
+    z = mean + noise * tf.exp(std * 0.5) + foo
     >>> def func(noise, mean, std, foo=42):
     >>>     return mean + noise * tf.exp(std * 0.5) + foo
 
@@ -170,6 +195,32 @@ class ElementwiseLambda(Layer):
     >>> mean = tl.layers.Input([100, 1])
     >>> std = tl.layers.Input([100, 1])
     >>> out = tl.layers.ElementwiseLambda(fn=func, fn_args={'foo': 84}, name='elementwiselambda')([noise, mean, std])
+
+
+    Non-parametric and non-args case
+    This case is supported in the Model.save() / Model.load() to save / load the whole model architecture and weights(optional).
+
+    z = mean + noise * tf.exp(std * 0.5)
+    >>> noise = tl.layers.Input([100, 1])
+    >>> mean = tl.layers.Input([100, 1])
+    >>> std = tl.layers.Input([100, 1])
+    >>> out = tl.layers.ElementwiseLambda(fn=lambda x, y, z: x + y * tf.exp(z * 0.5), name='elementwiselambda')([noise, mean, std])
+
+
+    Any function with outside variables
+    This case has not been supported in Model.save() / Model.load() yet.
+    Please avoid using Model.save() / Model.load() to save / load models that contain such ElementwiseLambda layer. Instead, you may use Model.save_weights() / Model.load_weights() to save / load model weights.
+    Note: In this case, fn_weights should be a list, and then the trainable weights in this ElementwiseLambda layer can be added into the weights of the whole model.
+
+    z = mean + noise * tf.exp(std * 0.5) + vara
+    >>> vara = [tf.Variable(1.0)]
+    >>> def func(noise, mean, std):
+    >>>     return mean + noise * tf.exp(std * 0.5) + vara
+    >>> noise = tl.layers.Input([100, 1])
+    >>> mean = tl.layers.Input([100, 1])
+    >>> std = tl.layers.Input([100, 1])
+    >>> out = tl.layers.ElementwiseLambda(fn=func, fn_weights=vara, name='elementwiselambda')([noise, mean, std])
+
     """
 
     def __init__(

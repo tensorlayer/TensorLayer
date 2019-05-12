@@ -28,6 +28,7 @@ class LayerNode_Test(CustomTestCase):
 
     def test_net1(self):
         print('-' * 20, 'test_net1', '-' * 20)
+
         def get_model(input_shape):
             ni = Input(input_shape)
 
@@ -52,6 +53,7 @@ class LayerNode_Test(CustomTestCase):
             gg = conv(nii)  # this node will not be added since model fixed
 
             return M
+
         net = get_model([None, 24, 24, 3])
 
         for k, v in enumerate(net._node_by_depth):
@@ -67,7 +69,6 @@ class LayerNode_Test(CustomTestCase):
         self.assertEqual(len(net.all_layers), 8)
         print(net.all_layers)
 
-
         data = np.random.normal(size=[2, 24, 24, 3]).astype(np.float32)
         out, nn, nb = net(data, is_train=True)
 
@@ -76,6 +77,7 @@ class LayerNode_Test(CustomTestCase):
 
     def test_net2(self):
         print('-' * 20, 'test_net2', '-' * 20)
+
         def get_unstack_model(input_shape):
             ni = Input(input_shape)
 
@@ -103,6 +105,7 @@ class LayerNode_Test(CustomTestCase):
 
     def test_word2vec(self):
         print('-' * 20, 'test_word2vec', '-' * 20)
+
         def get_word2vec():
             vocabulary_size = 800
             batch_size = 10
@@ -132,8 +135,8 @@ class LayerNode_Test(CustomTestCase):
         for k, v in enumerate(net._node_by_depth):
             print(k, [x.name for x in v], [x.in_tensors_idxes for x in v])
 
-        x = tf.ones(shape=(10,), dtype=tf.int32)
-        y = tf.ones(shape=(10,1), dtype=tf.int32)
+        x = tf.ones(shape=(10, ), dtype=tf.int32)
+        y = tf.ones(shape=(10, 1), dtype=tf.int32)
         out = net([x, y], is_train=True)
 
         self.assertEqual(len(out), 2)
@@ -142,13 +145,10 @@ class LayerNode_Test(CustomTestCase):
         print('-' * 20, 'layerlist', '-' * 20)
 
         class MyModel(Model):
+
             def __init__(self):
                 super(MyModel, self).__init__()
-                self.layers = LayerList([
-                    Dense(50, in_channels=100),
-                    Dropout(0.9),
-                    Dense(10, in_channels=50)
-                ])
+                self.layers = LayerList([Dense(50, in_channels=100), Dropout(0.9), Dense(10, in_channels=50)])
 
             def forward(self, x):
                 return self.layers(x)

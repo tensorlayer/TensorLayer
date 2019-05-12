@@ -56,13 +56,11 @@ method, this part of the documentation is for you.
   modules/array_ops
   modules/cost
   modules/prepro
-  modules/distributed
   modules/files
   modules/iterate
   modules/layers
   modules/models
   modules/nlp
-  modules/optimizers
   modules/initializers
   modules/rein
   modules/utils
@@ -73,8 +71,9 @@ method, this part of the documentation is for you.
   :caption: Alpha Version Functionalities
 
   modules/db
-
-
+  modules/optimizers
+  modules/distributed
+  
 Command-line Reference
 ----------------------
 

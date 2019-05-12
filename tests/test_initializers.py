@@ -73,13 +73,11 @@ class Test_Leaky_ReLUs(CustomTestCase):
         filter_shape = (5, 5, num_out_channels, num_in_channels)
         ni = tl.layers.Input(shape=(1, imsize, imsize, num_channels))
         bilinear_init = tl.initializers.deconv2d_bilinear_upsampling_initializer(shape=filter_shape)
-        deconv_layer = tl.layers.DeConv2dLayer(shape=filter_shape,
-                                               outputs_shape=(1, imsize * rescale_factor, imsize * rescale_factor,
-                                                              num_out_channels),
-                                               strides=(1, rescale_factor, rescale_factor, 1),
-                                               W_init=bilinear_init,
-                                               padding='SAME',
-                                               act=None, name='g/h1/decon2d')
+        deconv_layer = tl.layers.DeConv2dLayer(
+            shape=filter_shape, outputs_shape=(1, imsize * rescale_factor, imsize * rescale_factor, num_out_channels),
+            strides=(1, rescale_factor, rescale_factor, 1), W_init=bilinear_init, padding='SAME', act=None,
+            name='g/h1/decon2d'
+        )
         nn = deconv_layer(ni)
 
     def test_config(self):
