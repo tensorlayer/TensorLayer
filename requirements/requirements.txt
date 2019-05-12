@@ -1,4 +1,4 @@
-imageio>=2.3,<2.5
+imageio==2.5.0
 numpy>=1.16,<1.17
 progressbar2>=3.38,<3.39
 requests==2.21.0
