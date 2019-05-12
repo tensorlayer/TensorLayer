@@ -75,6 +75,7 @@ class Model(object):
     >>> from tensorlayer.models import Model
 
     Define static model
+
     >>> class CustomModel(Model):
     >>>     def __init__(self):
     >>>         super(CustomModel, self).__init__()
@@ -97,6 +98,7 @@ class Model(object):
     >>> M_static = Model(inputs=ni, outputs=nn, name="mlp")
 
     Get network information
+
     >>> print(M_static)
     ... Model(
     ...  (_inputlayer): Input(shape=[None, 784], name='_inputlayer')
@@ -106,21 +108,25 @@ class Model(object):
     ... )
 
     Forwarding through this network
+
     >>> data = np.random.normal(size=[16, 784]).astype(np.float32)
     >>> outputs_d = M_dynamic(data)
     >>> outputs_s = M_static(data)
 
     Save and load weights
+    
     >>> M_static.save_weights('./model_weights.h5')
     >>> M_static.load_weights('./model_weights.h5')
 
     Save and load the model
+
     >>> M_static.save('./model.h5')
     >>> M = Model.load('./model.h5')
 
     Convert model to layer
+
     >>> M_layer = M_static.as_layer()
-    
+
     """
 
     @property
@@ -251,7 +257,7 @@ class Model(object):
             If 'is_train' == False, this network is set as evaluation mode
         kwargs :
             For other keyword-only arguments.
-        
+
         """
 
         self._check_mode(is_train)
@@ -694,7 +700,7 @@ class Model(object):
         >>> net = tl.models.vgg16()
         >>> net.save('./model.h5', save_weights=True)
         >>> new_net = Model.load('./model.h5', load_weights=True)
-        
+
         """
         # TODO: support saving LambdaLayer that includes parametric self defined function with outside variables
         if self.outputs is None:

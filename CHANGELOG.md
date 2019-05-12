@@ -84,7 +84,9 @@ To release a new version, please update the changelog as followed:
 ### Deprecated
 
 ### Fixed
+- fix docs of models @zsdonghao #957
 - In `BatchNorm`, keep dimensions of mean and variance to suit `channels first` (PR #963)
+
 
 ### Removed
 
