@@ -58,7 +58,7 @@ After you get the variable list, you can define your optimizer like that so as t
 
 .. code-block:: python
 
-    train_weights = network.weights
+    train_weights = network.trainable_weights
     optimizer.apply_gradients(zip(grad, train_weights))
 
 Logging

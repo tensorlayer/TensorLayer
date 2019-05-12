@@ -114,7 +114,7 @@ class Model(object):
     >>> outputs_s = M_static(data)
 
     Save and load weights
-    
+
     >>> M_static.save_weights('./model_weights.h5')
     >>> M_static.load_weights('./model_weights.h5')
 
@@ -460,7 +460,7 @@ class Model(object):
         >>> net.train()
 
         """
-        if self.is_train !=True:
+        if self.is_train != True:
             self.is_train = True
             self._set_mode_for_layers(True)
 
@@ -847,7 +847,7 @@ class Model(object):
         skip : bool
             Allow skipping weights whose name is mismatched between the file and model. Only useful when 'format' is
             'hdf5' or 'npz_dict'. If 'skip' is True, 'in_order' argument will be ignored and those loaded weights
-            whose name is not found in model weights (self.weights) will be skipped. If 'skip' is False, error will
+            whose name is not found in model weights (self.all_weights) will be skipped. If 'skip' is False, error will
             occur when mismatch is found.
             Default is False.
 
@@ -879,7 +879,7 @@ class Model(object):
             format = filepath.split('.')[-1]
 
         if format == 'hdf5' or format == 'h5':
-            if skip ==True or in_order == False:
+            if skip == True or in_order == False:
                 # load by weights name
                 utils.load_hdf5_to_weights(filepath, self, skip)
             else:

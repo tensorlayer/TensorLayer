@@ -134,7 +134,7 @@ class Layer_Core_Test(CustomTestCase):
         )(innet)
         model = Model(inputs=innet, outputs=hlayer)
 
-        # for w in model.weights:
+        # for w in model.all_weights:
         #     print(w.name)
 
         data = np.random.normal(size=[self.batch_size, self.inputs_shape[1]]).astype(np.float32)

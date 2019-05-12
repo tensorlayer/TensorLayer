@@ -127,7 +127,7 @@ def fit(
                             tf.summary.scalar('acc', train_acc, step=epoch)
                     # FIXME : there seems to be an internal error in Tensorboard (misuse of tf.name_scope)
                     # if tensorboard_weight_histograms is not None:
-                    #     for param in network.weights:
+                    #     for param in network.all_weights:
                     #         tf.summary.histogram(param.name, param, step=epoch)
 
                 if (X_val is not None) and (y_val is not None):
@@ -138,7 +138,7 @@ def fit(
                             tf.summary.scalar('acc', val_acc, step=epoch)
                         # FIXME : there seems to be an internal error in Tensorboard (misuse of tf.name_scope)
                         # if tensorboard_weight_histograms is not None:
-                        #     for param in network.weights:
+                        #     for param in network.all_weights:
                         #         tf.summary.histogram(param.name, param, step=epoch)
 
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
