@@ -231,7 +231,7 @@ def vgg16(pretrained=False, end_with='outputs', mode='dynamic', name=None):
     >>> nn = tl.layers.Dense(n_units=100, name='out')(nn)
     >>> model = tl.models.Model(inputs=ni, outputs=nn)
     >>> # train your own classifier (only update the last layer)
-    >>> train_params = model.get_layer('out').weights
+    >>> train_params = model.get_layer('out').trainable_weights
 
     Reuse model
 
@@ -293,7 +293,7 @@ def vgg19(pretrained=False, end_with='outputs', mode='dynamic', name=None):
     >>> nn = tl.layers.Dense(n_units=100, name='out')(nn)
     >>> model = tl.models.Model(inputs=ni, outputs=nn)
     >>> # train your own classifier (only update the last layer)
-    >>> train_params = model.get_layer('out').weights
+    >>> train_params = model.get_layer('out').trainable_weights
 
     Reuse model
 

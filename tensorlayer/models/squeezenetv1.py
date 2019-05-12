@@ -75,7 +75,7 @@ def SqueezeNetV1(pretrained=False, end_with='out', name=None):
     >>> nn = GlobalMeanPool2d(name='globalmeanpool')(nn)
     >>> model = tl.models.Model(inputs=ni, outputs=nn)
     >>> # train your own classifier (only update the last layer)
-    >>> train_params = model.get_layer('conv10').weights
+    >>> train_params = model.get_layer('conv10').trainable_weights
 
     Returns
     -------

@@ -196,13 +196,13 @@ class Model_Save_Test(CustomTestCase):
         nested_vgg.save_weights("nested_vgg.h5")
 
         # modify vgg1 weight val
-        tar_weight1 = nested_vgg.vgg1.layers[0].weights[0]
+        tar_weight1 = nested_vgg.vgg1.layers[0].all_weights[0]
         print(tar_weight1.name)
         ori_val1 = tar_weight1.numpy()
         modify_val1 = np.zeros_like(ori_val1)
         tar_weight1.assign(modify_val1)
         # modify vgg2 weight val
-        tar_weight2 = nested_vgg.vgg2.layers[1].weights[0]
+        tar_weight2 = nested_vgg.vgg2.layers[1].all_weights[0]
         print(tar_weight2.name)
         ori_val2 = tar_weight2.numpy()
         modify_val2 = np.zeros_like(ori_val2)
@@ -236,12 +236,12 @@ class Model_Save_Test(CustomTestCase):
         print([x.name for x in net.all_layers])
 
         # modify vgg1 weight val
-        tar_weight1 = net.inner.vgg1.layers[0].weights[0]
+        tar_weight1 = net.inner.vgg1.layers[0].all_weights[0]
         ori_val1 = tar_weight1.numpy()
         modify_val1 = np.zeros_like(ori_val1)
         tar_weight1.assign(modify_val1)
         # modify vgg2 weight val
-        tar_weight2 = net.inner.vgg2.layers[1].weights[0]
+        tar_weight2 = net.inner.vgg2.layers[1].all_weights[0]
         ori_val2 = tar_weight2.numpy()
         modify_val2 = np.zeros_like(ori_val2)
         tar_weight2.assign(modify_val2)

@@ -381,7 +381,7 @@ class Model_Core_Test(CustomTestCase):
         model_basic = basic_static_model()
         self.assertIsInstance(model_basic.get_layer('conv2'), tl.layers.Conv2d)
         self.assertIsInstance(model_basic.get_layer(index=2), tl.layers.MaxPool2d)
-        print([w.name for w in model_basic.get_layer(index=-1).weights])
+        print([w.name for w in model_basic.get_layer(index=-1).all_weights])
         try:
             model_basic.get_layer('abc')
         except Exception as e:

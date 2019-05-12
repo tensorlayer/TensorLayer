@@ -141,7 +141,7 @@ class DeConv2d(Layer):
             tf.convert_to_tensor(np.random.uniform(size=inputs_shape), dtype=np.float32)
         )  #np.random.uniform([1] + list(inputs_shape)))  # initialize weights
         outputs_shape = _out.shape
-        self._weights = self.layer.weights
+        self._weights = self.layer.all_weights
 
     def forward(self, inputs):
         outputs = self.layer(inputs)
@@ -264,7 +264,7 @@ class DeConv3d(Layer):
         )  #self.layer(np.random.uniform([1] + list(inputs_shape)))  # initialize weights
         outputs_shape = _out.shape
         # self._add_weights(self.layer.weights)
-        self._weights = self.layer.weights
+        self._weights = self.layer.all_weights
 
     def forward(self, inputs):
         outputs = self.layer(inputs)

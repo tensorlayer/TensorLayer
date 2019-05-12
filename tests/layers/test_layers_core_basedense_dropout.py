@@ -73,15 +73,15 @@ class Layer_Core_Test(CustomTestCase):
     def test_net2(self):
 
         # test weights
-        self.assertEqual(self.innet._info[0].layer.weights, None)
-        self.assertEqual(self.dropout1._info[0].layer.weights, None)
-        self.assertEqual(self.dense1._info[0].layer.weights[0].get_shape().as_list(), [784, 800])
-        self.assertEqual(self.dense1._info[0].layer.weights[1].get_shape().as_list(), [
+        self.assertEqual(self.innet._info[0].layer.all_weights, None)
+        self.assertEqual(self.dropout1._info[0].layer.all_weights, None)
+        self.assertEqual(self.dense1._info[0].layer.all_weights[0].get_shape().as_list(), [784, 800])
+        self.assertEqual(self.dense1._info[0].layer.all_weights[1].get_shape().as_list(), [
             800,
         ])
-        self.assertEqual(self.dense2._info[0].layer.weights[0].get_shape().as_list(), [800, 10])
-        self.assertEqual(len(self.dense1._info[0].layer.weights), 2)
-        self.assertEqual(len(self.dense2._info[0].layer.weights), 1)
+        self.assertEqual(self.dense2._info[0].layer.all_weights[0].get_shape().as_list(), [800, 10])
+        self.assertEqual(len(self.dense1._info[0].layer.all_weights), 2)
+        self.assertEqual(len(self.dense2._info[0].layer.all_weights), 1)
 
         self.assertEqual(len(self.model.weights), 3)
 

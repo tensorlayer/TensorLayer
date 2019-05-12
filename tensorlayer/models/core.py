@@ -176,7 +176,9 @@ class Model(object):
         self.is_train = None
 
         # Model weights
-        self._weights = None
+        self._all_weights = None
+        self._trainable_weights = None
+        self._nontrainable_weights = None
 
         # Model args of all layers, ordered by all_layers
         self._config = None
@@ -381,18 +383,46 @@ class Model(object):
             return self._all_layers
 
     @property
-    def weights(self):
-        """Return all weights of this network in a list."""
-        if self._weights is not None and len(self._weights) > 0:
-            # self._weights already extracted, so do nothing
+    def trainable_weights(self):
+        """Return trainable weights of this network in a list."""
+        if self._trainable_weights is not None and len(self._trainable_weights) > 0:
+            # self._trainable_weights already extracted, so do nothing
             pass
         else:
-            self._weights = []
+            self._trainable_weights = []
             for layer in self.all_layers:
-                if layer.weights is not None:
-                    self._weights.extend(layer.weights)
+                if layer.trainable_weights is not None:
+                    self._trainable_weights.extend(layer.trainable_weights)
 
-        return self._weights
+        return self._trainable_weights
+
+    @property
+    def nontrainable_weights(self):
+        """Return nontrainable weights of this network in a list."""
+        if self._nontrainable_weights is not None and len(self._nontrainable_weights) > 0:
+            # self._nontrainable_weights already extracted, so do nothing
+            pass
+        else:
+            self._nontrainable_weights = []
+            for layer in self.all_layers:
+                if layer.nontrainable_weights is not None:
+                    self._nontrainable_weights.extend(layer.nontrainable_weights)
+
+        return self._nontrainable_weights
+
+    @property
+    def weights(self):
+        """Return all weights of this network in a list."""
+        if self._all_weights is not None and len(self._all_weights) > 0:
+            # self._all_weights already extracted, so do nothing
+            pass
+        else:
+            self._all_weights = []
+            for layer in self.all_layers:
+                if layer.all_weights is not None:
+                    self._all_weights.extend(layer.all_weights)
+
+        return self._all_weights
 
     @property
     def config(self):

@@ -84,7 +84,7 @@ def MobileNetV1(pretrained=False, end_with='out', name=None):
     >>> nn = Flatten(name='flatten')(nn)
     >>> model = tl.models.Model(inputs=ni, outputs=nn)
     >>> # train your own classifier (only update the last layer)
-    >>> train_params = model.get_layer('out').weights
+    >>> train_params = model.get_layer('out').trainable_weights
 
     Returns
     -------

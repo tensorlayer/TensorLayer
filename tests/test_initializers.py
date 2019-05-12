@@ -30,38 +30,38 @@ class Test_Leaky_ReLUs(CustomTestCase):
 
     def test_zeros(self):
         dense = self.init_dense(tl.initializers.zeros())
-        self.assertEqual(np.sum(dense.weights[0].numpy() - np.zeros(shape=self.w_shape)), self.eps)
+        self.assertEqual(np.sum(dense.all_weights[0].numpy() - np.zeros(shape=self.w_shape)), self.eps)
         nn = dense(self.ni)
 
     def test_ones(self):
         dense = self.init_dense(tl.initializers.ones())
-        self.assertEqual(np.sum(dense.weights[0].numpy() - np.ones(shape=self.w_shape)), self.eps)
+        self.assertEqual(np.sum(dense.all_weights[0].numpy() - np.ones(shape=self.w_shape)), self.eps)
         nn = dense(self.ni)
 
     def test_constant(self):
         dense = self.init_dense(tl.initializers.constant(value=5.0))
-        self.assertEqual(np.sum(dense.weights[0].numpy() - np.ones(shape=self.w_shape) * 5.0), self.eps)
+        self.assertEqual(np.sum(dense.all_weights[0].numpy() - np.ones(shape=self.w_shape) * 5.0), self.eps)
         nn = dense(self.ni)
 
         # test with numpy arr
         arr = np.random.uniform(size=self.w_shape).astype(np.float32)
         dense = self.init_dense(tl.initializers.constant(value=arr))
-        self.assertEqual(np.sum(dense.weights[0].numpy() - arr), self.eps)
+        self.assertEqual(np.sum(dense.all_weights[0].numpy() - arr), self.eps)
         nn = dense(self.ni)
 
     def test_RandomUniform(self):
         dense = self.init_dense(tl.initializers.random_uniform(minval=-0.1, maxval=0.1, seed=1234))
-        print(dense.weights[0].numpy())
+        print(dense.all_weights[0].numpy())
         nn = dense(self.ni)
 
     def test_RandomNormal(self):
         dense = self.init_dense(tl.initializers.random_normal(mean=0.0, stddev=0.1))
-        print(dense.weights[0].numpy())
+        print(dense.all_weights[0].numpy())
         nn = dense(self.ni)
 
     def test_TruncatedNormal(self):
         dense = self.init_dense(tl.initializers.truncated_normal(mean=0.0, stddev=0.1))
-        print(dense.weights[0].numpy())
+        print(dense.all_weights[0].numpy())
         nn = dense(self.ni)
 
     def test_deconv2d_bilinear_upsampling_initializer(self):

@@ -2549,9 +2549,9 @@ def _save_weights_to_hdf5_group(f, layers):
         elif isinstance(layer, tl.layers.LayerList):
             _save_weights_to_hdf5_group(g, layer.layers)
         elif isinstance(layer, tl.layers.Layer):
-            if layer.weights is not None:
-                weight_values = tf_variables_to_numpy(layer.weights)
-                weight_names = [w.name.encode('utf8') for w in layer.weights]
+            if layer.all_weights is not None:
+                weight_values = tf_variables_to_numpy(layer.all_weights)
+                weight_names = [w.name.encode('utf8') for w in layer.all_weights]
             else:
                 weight_values = []
                 weight_names = []
@@ -2593,7 +2593,7 @@ def _load_weights_from_hdf5_group_in_order(f, layers):
         elif isinstance(layer, tl.layers.Layer):
             weight_names = [n.decode('utf8') for n in g.attrs['weight_names']]
             for iid, w_name in enumerate(weight_names):
-                assign_tf_variable(layer.weights[iid], np.asarray(g[w_name]))
+                assign_tf_variable(layer.all_weights[iid], np.asarray(g[w_name]))
         else:
             raise Exception("Only layer or model can be saved into hdf5.")
         if idx == len(layers) - 1:
@@ -2639,7 +2639,7 @@ def _load_weights_from_hdf5_group(f, layers, skip=False):
             elif isinstance(layer, tl.layers.Layer):
                 weight_names = [n.decode('utf8') for n in g.attrs['weight_names']]
                 for iid, w_name in enumerate(weight_names):
-                    assign_tf_variable(layer.weights[iid], np.asarray(g[w_name]))
+                    assign_tf_variable(layer.all_weights[iid], np.asarray(g[w_name]))
             else:
                 raise Exception("Only layer or model can be saved into hdf5.")
 
