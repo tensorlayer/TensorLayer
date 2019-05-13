@@ -79,12 +79,12 @@ class Model_Core_Test(CustomTestCase):
         tl.files.load_hdf5_to_weights("./model_basic.h5", self.static_model)
         self.assertLess(np.max(np.abs(ori_val - self.static_model.all_weights[-2].numpy())), 1e-7)
 
-        ori_weights = self.static_model._weights
-        self.static_model._weights = self.static_model._weights[1:]
+        ori_weights = self.static_model._all_weights
+        self.static_model._all_weights = self.static_model._all_weights[1:]
         self.static_model.all_weights[-2].assign(modify_val)
         tl.files.load_hdf5_to_weights("./model_basic.h5", self.static_model, skip=True)
         self.assertLess(np.max(np.abs(ori_val - self.static_model.all_weights[-2].numpy())), 1e-7)
-        self.static_model._weights = ori_weights
+        self.static_model._all_weights = ori_weights
 
     def test_npz(self):
         modify_val = np.zeros_like(self.dynamic_model.all_weights[-2].numpy())
@@ -104,12 +104,12 @@ class Model_Core_Test(CustomTestCase):
         tl.files.load_and_assign_npz_dict("./model_basic.npz", self.dynamic_model)
         self.assertLess(np.max(np.abs(ori_val - self.dynamic_model.all_weights[-2].numpy())), 1e-7)
 
-        ori_weights = self.dynamic_model._weights
-        self.dynamic_model._weights = self.static_model._weights[1:]
+        ori_weights = self.dynamic_model._all_weights
+        self.dynamic_model._all_weights = self.static_model._all_weights[1:]
         self.dynamic_model.all_weights[-2].assign(modify_val)
         tl.files.load_and_assign_npz_dict("./model_basic.npz", self.dynamic_model, skip=True)
         self.assertLess(np.max(np.abs(ori_val - self.dynamic_model.all_weights[-2].numpy())), 1e-7)
-        self.dynamic_model._weights = ori_weights
+        self.dynamic_model._all_weights = ori_weights
 
 
 if __name__ == '__main__':

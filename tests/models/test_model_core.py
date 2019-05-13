@@ -70,7 +70,7 @@ class Model_Core_Test(CustomTestCase):
 
         # test empty model before calling
         self.assertEqual(model_basic.is_train, None)
-        self.assertEqual(model_basic._weights, None)
+        self.assertEqual(model_basic._all_weights, None)
         self.assertEqual(model_basic._inputs, None)
         self.assertEqual(model_basic._outputs, None)
         self.assertEqual(model_basic._model_layer, None)
@@ -80,7 +80,7 @@ class Model_Core_Test(CustomTestCase):
         # test layer and weights access
         all_layers = model_basic.all_layers
         self.assertEqual(len(model_basic.all_layers), 7)
-        self.assertEqual(model_basic._weights, None)
+        self.assertEqual(model_basic._all_weights, None)
 
         self.assertIsNotNone(model_basic.all_weights)
         print([w.name for w in model_basic.all_weights])
@@ -139,7 +139,7 @@ class Model_Core_Test(CustomTestCase):
 
         # test empty model before calling
         self.assertEqual(model_basic.is_train, None)
-        self.assertEqual(model_basic._weights, None)
+        self.assertEqual(model_basic._all_weights, None)
         self.assertIsNotNone(model_basic._inputs)
         self.assertIsNotNone(model_basic._outputs)
         self.assertEqual(model_basic._model_layer, None)
@@ -149,7 +149,7 @@ class Model_Core_Test(CustomTestCase):
         # test layer and weights access
         all_layers = model_basic.all_layers
         self.assertEqual(len(model_basic.all_layers), 8)
-        self.assertEqual(model_basic._weights, None)
+        self.assertEqual(model_basic._all_weights, None)
 
         self.assertIsNotNone(model_basic.all_weights)
         print([w.name for w in model_basic.all_weights])

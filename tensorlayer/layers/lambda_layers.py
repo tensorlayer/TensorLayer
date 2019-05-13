@@ -111,14 +111,14 @@ class Lambda(Layer):
 
         super(Lambda, self).__init__(name=name)
         self.fn = fn
-        self._weights = fn_weights if fn_weights is not None else []
+        self._trainable_weights = fn_weights if fn_weights is not None else []
         self.fn_args = fn_args if fn_args is not None else {}
 
         try:
             fn_name = repr(self.fn)
         except:
             fn_name = 'name not available'
-        logging.info("Lambda  %s: func: %s, len_weights: %s" % (self.name, fn_name, len(self._weights)))
+        logging.info("Lambda  %s: func: %s, len_weights: %s" % (self.name, fn_name, len(self._trainable_weights)))
 
         self.build()
         self._built = True
@@ -134,7 +134,7 @@ class Lambda(Layer):
         except:
             fn_name = 'name not available'
         return s.format(
-            classname=self.__class__.__name__, fn_name=fn_name, len_weights=len(self._weights), **self.__dict__
+            classname=self.__class__.__name__, fn_name=fn_name, len_weights=len(self._trainable_weights), **self.__dict__
         )
 
     def build(self, inputs_shape=None):
@@ -233,14 +233,14 @@ class ElementwiseLambda(Layer):
 
         super(ElementwiseLambda, self).__init__(name=name)
         self.fn = fn
-        self._weights = fn_weights if fn_weights is not None else []
+        self._trainable_weights = fn_weights if fn_weights is not None else []
         self.fn_args = fn_args if fn_args is not None else {}
 
         try:
             fn_name = repr(self.fn)
         except:
             fn_name = 'name not available'
-        logging.info("ElementwiseLambda  %s: func: %s, len_weights: %s" % (self.name, fn_name, len(self._weights)))
+        logging.info("ElementwiseLambda  %s: func: %s, len_weights: %s" % (self.name, fn_name, len(self._trainable_weights)))
 
         self.build()
         self._built = True
@@ -256,7 +256,7 @@ class ElementwiseLambda(Layer):
         except:
             fn_name = 'name not available'
         return s.format(
-            classname=self.__class__.__name__, fn_name=fn_name, len_weights=len(self._weights), **self.__dict__
+            classname=self.__class__.__name__, fn_name=fn_name, len_weights=len(self._trainable_weights), **self.__dict__
         )
 
     def build(self, inputs_shape=None):

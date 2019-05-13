@@ -156,7 +156,7 @@ class SeparableConv1d(Layer):
         )  # initialize weights
         outputs_shape = _out.shape
         # self._add_weights(self.layer.weights)
-        self._weights = self.layer.all_weights
+        self._trainable_weights = self.layer.weights
 
     def forward(self, inputs):
         outputs = self.layer(inputs)
@@ -302,7 +302,7 @@ class SeparableConv2d(Layer):
             tf.convert_to_tensor(np.random.uniform(size=list(inputs_shape)), dtype=np.float)
         )  # initialize weights
         outputs_shape = _out.shape
-        self._weights = self.layer.all_weights
+        self._trainable_weights = self.layer.weights
 
     def forward(self, inputs):
         outputs = self.layer(inputs)
