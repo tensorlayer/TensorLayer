@@ -63,7 +63,7 @@ Users often find it easy to start with the examples and tutorials, and then dive
 into TensorFlow seamlessly. In addition, TensorLayer does not create library lock-in through native supports for importing components from Keras.
 
 TensorLayer has a fast growing usage among top researchers and engineers, from universities like
-Imperial College London, UC Berkeley, Carnegie Mellon University, Stanford University, and
+Peking University, Imperial College London, UC Berkeley, Carnegie Mellon University, Stanford University, and
 University of Technology of Compiegne (UTC), and companies like Google, Microsoft, Alibaba, Tencent, Xiaomi, and Bloomberg.
 
 # Tutorials and Real-World Applications
