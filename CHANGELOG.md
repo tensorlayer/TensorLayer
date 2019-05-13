@@ -106,11 +106,6 @@ To release a new version, please update the changelog as followed:
 * support TensorFlow 2.0.0-alpha
 * support both static and dynamic model building
 
-### Dependencies Update
-- tensorflow>=1.6,<1.13 => tensorflow>=2.0.0-alpha (PR #952)
-- h5py>=2.9 (PR #952)
-- cloudpickle>=0.8.1 (PR #952)
-- remove matplotlib
 
 ### Contributors
 - @zsdonghao
@@ -123,6 +118,7 @@ To release a new version, please update the changelog as followed:
 ### Changed
 * guide for pose estimation - flipping (PR #884)
 * cv2 transform support 2 modes (PR #885)
+* fix docs (PR #968)
 
 ### Dependencies Update
 - pytest>=3.6,<3.9 => pytest>=3.6,<3.10 (PR #874)
@@ -131,6 +127,10 @@ To release a new version, please update the changelog as followed:
 - pytest>=3.6,<3.10 => pytest>=3.6,<3.11 (PR #886)
 - pytest-xdist>=1.22,<1.24 => pytest-xdist>=1.22,<1.25 (PR #883)
 - tensorflow>=1.6,<1.12 => tensorflow>=1.6,<1.13 (PR #886)
+- tensorflow>=1.6,<1.13 => tensorflow>=2.0.0-alpha (PR #952)
+- h5py>=2.9 (PR #952)
+- cloudpickle>=0.8.1 (PR #952)
+- remove matplotlib
 
 ### Contributors
 - @zsdonghao: #884 #885
