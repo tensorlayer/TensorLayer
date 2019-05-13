@@ -70,7 +70,7 @@ class Model_Core_Test(CustomTestCase):
 
         # test empty model before calling
         self.assertEqual(model_basic.is_train, None)
-        self.assertEqual(model_basic._weights, None)
+        self.assertEqual(model_basic._all_weights, None)
         self.assertEqual(model_basic._inputs, None)
         self.assertEqual(model_basic._outputs, None)
         self.assertEqual(model_basic._model_layer, None)
@@ -80,10 +80,10 @@ class Model_Core_Test(CustomTestCase):
         # test layer and weights access
         all_layers = model_basic.all_layers
         self.assertEqual(len(model_basic.all_layers), 7)
-        self.assertEqual(model_basic._weights, None)
+        self.assertEqual(model_basic._all_weights, None)
 
-        self.assertIsNotNone(model_basic.weights)
-        print([w.name for w in model_basic.weights])
+        self.assertIsNotNone(model_basic.all_weights)
+        print([w.name for w in model_basic.all_weights])
 
         # test model mode
         model_basic.train()
@@ -139,7 +139,7 @@ class Model_Core_Test(CustomTestCase):
 
         # test empty model before calling
         self.assertEqual(model_basic.is_train, None)
-        self.assertEqual(model_basic._weights, None)
+        self.assertEqual(model_basic._all_weights, None)
         self.assertIsNotNone(model_basic._inputs)
         self.assertIsNotNone(model_basic._outputs)
         self.assertEqual(model_basic._model_layer, None)
@@ -149,10 +149,10 @@ class Model_Core_Test(CustomTestCase):
         # test layer and weights access
         all_layers = model_basic.all_layers
         self.assertEqual(len(model_basic.all_layers), 8)
-        self.assertEqual(model_basic._weights, None)
+        self.assertEqual(model_basic._all_weights, None)
 
-        self.assertIsNotNone(model_basic.weights)
-        print([w.name for w in model_basic.weights])
+        self.assertIsNotNone(model_basic.all_weights)
+        print([w.name for w in model_basic.all_weights])
 
         # test model mode
         model_basic.train()
@@ -283,7 +283,7 @@ class Model_Core_Test(CustomTestCase):
                     return x
 
             model = ill_model()
-            weights = model.weights
+            weights = model.all_weights
         except Exception as e:
             self.assertIsInstance(e, AttributeError)
             print(e)
@@ -360,7 +360,7 @@ class Model_Core_Test(CustomTestCase):
                 return x
 
         model = my_model()
-        weights = model.weights
+        weights = model.all_weights
         self.assertGreater(len(weights), 2)
         print(len(weights))
 
@@ -381,7 +381,7 @@ class Model_Core_Test(CustomTestCase):
         model_basic = basic_static_model()
         self.assertIsInstance(model_basic.get_layer('conv2'), tl.layers.Conv2d)
         self.assertIsInstance(model_basic.get_layer(index=2), tl.layers.MaxPool2d)
-        print([w.name for w in model_basic.get_layer(index=-1).weights])
+        print([w.name for w in model_basic.get_layer(index=-1).all_weights])
         try:
             model_basic.get_layer('abc')
         except Exception as e:

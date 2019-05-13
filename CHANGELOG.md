@@ -75,6 +75,8 @@ To release a new version, please update the changelog as followed:
 
 ### Changed
 - remove `tl.layers.initialize_global_variables(sess)` (PR #931)
+- change `tl.layers.core`, `tl.models.core` (PR #966)
+   - change `weights` into `all_weights`, `trainable_weights`, `nontrainable_weights`
 
 ### Dependencies Update
 - nltk>=3.3,<3.4 => nltk>=3.3,<3.5 (PR #892)

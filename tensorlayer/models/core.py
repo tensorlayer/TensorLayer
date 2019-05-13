@@ -114,7 +114,7 @@ class Model(object):
     >>> outputs_s = M_static(data)
 
     Save and load weights
-    
+
     >>> M_static.save_weights('./model_weights.h5')
     >>> M_static.load_weights('./model_weights.h5')
 
@@ -182,7 +182,9 @@ class Model(object):
         self.is_train = None
 
         # Model weights
-        self._weights = None
+        self._all_weights = None
+        self._trainable_weights = None
+        self._nontrainable_weights = None
 
         # Model args of all layers, ordered by all_layers
         self._config = None
@@ -354,7 +356,9 @@ class Model(object):
             # dynamic model
             self._all_layers = list()
             attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
-            attr_list.remove("weights")
+            attr_list.remove("all_weights")
+            attr_list.remove("trainable_weights")
+            attr_list.remove("nontrainable_weights")
             attr_list.remove("all_layers")
             for idx, attr in enumerate(attr_list):
                 try:
@@ -387,18 +391,46 @@ class Model(object):
             return self._all_layers
 
     @property
-    def weights(self):
-        """Return all weights of this network in a list."""
-        if self._weights is not None and len(self._weights) > 0:
-            # self._weights already extracted, so do nothing
+    def trainable_weights(self):
+        """Return trainable weights of this network in a list."""
+        if self._trainable_weights is not None and len(self._trainable_weights) > 0:
+            # self._trainable_weights already extracted, so do nothing
             pass
         else:
-            self._weights = []
+            self._trainable_weights = []
             for layer in self.all_layers:
-                if layer.weights is not None:
-                    self._weights.extend(layer.weights)
+                if layer.trainable_weights is not None:
+                    self._trainable_weights.extend(layer.trainable_weights)
 
-        return self._weights
+        return self._trainable_weights
+
+    @property
+    def nontrainable_weights(self):
+        """Return nontrainable weights of this network in a list."""
+        if self._nontrainable_weights is not None and len(self._nontrainable_weights) > 0:
+            # self._nontrainable_weights already extracted, so do nothing
+            pass
+        else:
+            self._nontrainable_weights = []
+            for layer in self.all_layers:
+                if layer.nontrainable_weights is not None:
+                    self._nontrainable_weights.extend(layer.nontrainable_weights)
+
+        return self._nontrainable_weights
+
+    @property
+    def all_weights(self):
+        """Return all weights of this network in a list."""
+        if self._all_weights is not None and len(self._all_weights) > 0:
+            # self._all_weights already extracted, so do nothing
+            pass
+        else:
+            self._all_weights = []
+            for layer in self.all_layers:
+                if layer.all_weights is not None:
+                    self._all_weights.extend(layer.all_weights)
+
+        return self._all_weights
 
     @property
     def config(self):
@@ -769,7 +801,7 @@ class Model(object):
         >>> net.save_weights('./model.npz', format='npz_dict')
 
         """
-        if self.weights is None or len(self.weights) == 0:
+        if self.all_weights is None or len(self.all_weights) == 0:
             logging.warning("Model contains no weights or layers haven't been built, nothing will be saved")
             return
 
@@ -783,9 +815,9 @@ class Model(object):
         if format == 'hdf5' or format == 'h5':
             utils.save_weights_to_hdf5(filepath, self)
         elif format == 'npz':
-            utils.save_npz(self.weights, filepath)
+            utils.save_npz(self.all_weights, filepath)
         elif format == 'npz_dict':
-            utils.save_npz_dict(self.weights, filepath)
+            utils.save_npz_dict(self.all_weights, filepath)
         elif format == 'ckpt':
             # TODO: enable this when tf save ckpt is enabled
             raise NotImplementedError("ckpt load/save is not supported now.")
@@ -817,7 +849,7 @@ class Model(object):
         skip : bool
             Allow skipping weights whose name is mismatched between the file and model. Only useful when 'format' is
             'hdf5' or 'npz_dict'. If 'skip' is True, 'in_order' argument will be ignored and those loaded weights
-            whose name is not found in model weights (self.weights) will be skipped. If 'skip' is False, error will
+            whose name is not found in model weights (self.all_weights) will be skipped. If 'skip' is False, error will
             occur when mismatch is found.
             Default is False.
 

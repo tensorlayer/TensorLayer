@@ -44,7 +44,7 @@ class Simple_MNIST_Test(CustomTestCase):
         # y_op = tf.argmax(tf.nn.softmax(y), 1)
 
         # define the optimizer
-        train_params = cls.network.all_params
+        train_params = cls.network.trainable_weights
         cls.train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cls.cost, var_list=train_params)
 
     @classmethod
