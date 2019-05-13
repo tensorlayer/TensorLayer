@@ -34,8 +34,12 @@ class Layer(object):
         Initializing the Layer.
     __call__()
         (1) Building the Layer if necessary. (2) Forwarding the computation.
-    weights()
+    all_weights()
+        Return a list of Tensor which are all weights of this Layer.
+    trainable_weights()
         Return a list of Tensor which are all trainable weights of this Layer.
+    nontrainable_weights()
+        Return a list of Tensor which are all nontrainable weights of this Layer.
     build()
         Abstract method. Build the Layer. All trainable weights should be defined in this function.
     forward()
@@ -89,7 +93,9 @@ class Layer(object):
         self._nodes_fixed = False
 
         # Layer weight state
-        self._weights = None
+        self._all_weights = None
+        self._trainable_weights = None
+        self._nontrainable_weights = None
 
         # Layer training state
         self.is_train = True
@@ -136,8 +142,24 @@ class Layer(object):
             return _config
 
     @property
-    def weights(self):
-        return self._weights
+    def all_weights(self):
+        if self._all_weights is not None and len(self._all_weights) > 0:
+            pass
+        else:
+            self._all_weights = list()
+            if self._trainable_weights is not None:
+                self._all_weights.extend(self._trainable_weights)
+            if self._nontrainable_weights is not None:
+                self._all_weights.extend(self._nontrainable_weights)
+        return self._all_weights
+
+    @property
+    def trainable_weights(self):
+        return self._trainable_weights
+
+    @property
+    def nontrainable_weights(self):
+        return self._nontrainable_weights
 
     def __call__(self, inputs, *args, **kwargs):
         """
@@ -218,12 +240,17 @@ class Layer(object):
         """ fix LayerNodes to stop growing for this layer"""
         self._nodes_fixed = True
 
-    def _get_weights(self, var_name, shape, init=tl.initializers.random_normal()):
+    def _get_weights(self, var_name, shape, init=tl.initializers.random_normal(), trainable=True):
         """ Get trainable variables. """
         weight = get_variable_with_initializer(scope_name=self.name, var_name=var_name, shape=shape, init=init)
-        if self._weights is None:
-            self._weights = list()
-        self._weights.append(weight)  # Add into the weight collection
+        if trainable is True:
+            if self._trainable_weights is None:
+                self._trainable_weights = list()
+            self._trainable_weights.append(weight)
+        else:
+            if self._nontrainable_weights is None:
+                self._nontrainable_weights = list()
+            self._nontrainable_weights.append(weight)
         return weight
 
     @abstractmethod
@@ -407,7 +434,7 @@ class ModelLayer(Layer):
         self._built = True
 
         # Layer weight state
-        self._weights = model.weights
+        self._all_weights = model.all_weights
 
         # Layer training state
         self.is_train = True
@@ -497,12 +524,12 @@ class LayerList(Layer):
         for layer in self.layers:
             if layer._built is False:
                 is_built = False
-            if layer._built and layer.weights is not None:
+            if layer._built and layer.all_weights is not None:
                 # some layers in the list passed in have already been built
                 # e.g. using input shape to construct layers in dynamic eager
-                if self._weights is None:
-                    self._weights = list()
-                self._weights.extend(layer.weights)
+                if self._all_weights is None:
+                    self._all_weights = list()
+                self._all_weights.extend(layer.all_weights)
         if is_built:
             self._built = True
 
@@ -550,10 +577,10 @@ class LayerList(Layer):
             is_build = layer._built
             out_tensor = layer(in_tensor)
             # nlayer = layer(in_layer)
-            if is_build == False and layer.weights is not None:
-                if self._weights is None:
-                    self._weights = list()
-                self._weights.extend(layer.weights)
+            if is_build is False and layer.all_weights is not None:
+                if self._all_weights is None:
+                    self._all_weights = list()
+                self._all_weights.extend(layer.all_weights)
             layer._built = True
             in_tensor = out_tensor
             # in_layer = nlayer

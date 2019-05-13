@@ -231,7 +231,7 @@ class Auto_Naming_Test(CustomTestCase):
                  tl.layers.Dense(n_units=3, name='dense1')]
             )(inputs)
             model = tl.models.Model(inputs=inputs, outputs=layer1, name='layerlistmodel')
-            print([w.name for w in model.weights])
+            print([w.name for w in model.all_weights])
             test_flag = False
         except Exception as e:
             print(e)
@@ -258,7 +258,7 @@ class Auto_Naming_Test(CustomTestCase):
             model_layer = tl.layers.ModelLayer(inner_model())(inputs)
             model = tl.models.Model(inputs=inputs, outputs=model_layer, name='modellayermodel')
             print(model)
-            print([w.name for w in model.weights])
+            print([w.name for w in model.all_weights])
             test_flag = False
         except Exception as e:
             print(e)
@@ -273,7 +273,7 @@ class Auto_Naming_Test(CustomTestCase):
                  tl.layers.Dense(n_units=3, name='dense1')]
             )(inputs)
             model = tl.models.Model(inputs=inputs, outputs=layer1, name='layerlistmodel')
-            print([w.name for w in model.weights])
+            print([w.name for w in model.all_weights])
             self.fail("Fail to detect duplicate name in layerlist")
         except Exception as e:
             print(e)

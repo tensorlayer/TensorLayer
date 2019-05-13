@@ -163,7 +163,7 @@ def restore_model(model, layer_type):
         for val in sorted(npz.items()):
             logging.info("  Loading weights %s in %s" % (str(val[1].shape), val[0]))
             weights.append(val[1])
-            if len(model.weights) == len(weights):
+            if len(model.all_weights) == len(weights):
                 break
     elif layer_type == 'vgg19':
         npz = np.load(os.path.join('models', model_saved_name[layer_type]), encoding='latin1').item()
@@ -172,7 +172,7 @@ def restore_model(model, layer_type):
             logging.info("  Loading %s in %s" % (str(val[1][0].shape), val[0]))
             logging.info("  Loading %s in %s" % (str(val[1][1].shape), val[0]))
             weights.extend(val[1])
-            if len(model.weights) == len(weights):
+            if len(model.all_weights) == len(weights):
                 break
     # assign weight values
     assign_weights(weights, model)
@@ -231,7 +231,7 @@ def vgg16(pretrained=False, end_with='outputs', mode='dynamic', name=None):
     >>> nn = tl.layers.Dense(n_units=100, name='out')(nn)
     >>> model = tl.models.Model(inputs=ni, outputs=nn)
     >>> # train your own classifier (only update the last layer)
-    >>> train_params = model.get_layer('out').weights
+    >>> train_params = model.get_layer('out').trainable_weights
 
     Reuse model
 
@@ -293,7 +293,7 @@ def vgg19(pretrained=False, end_with='outputs', mode='dynamic', name=None):
     >>> nn = tl.layers.Dense(n_units=100, name='out')(nn)
     >>> model = tl.models.Model(inputs=ni, outputs=nn)
     >>> # train your own classifier (only update the last layer)
-    >>> train_params = model.get_layer('out').weights
+    >>> train_params = model.get_layer('out').trainable_weights
 
     Reuse model
 

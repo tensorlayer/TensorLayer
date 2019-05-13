@@ -38,7 +38,7 @@ def restore_params(network, path='models'):
         expected_bytes=7405613
     )  # ls -al
     params = load_npz(name=os.path.join(path, 'squeezenet.npz'))
-    assign_weights(params[:len(network.weights)], network)
+    assign_weights(params[:len(network.all_weights)], network)
     del params
 
 
@@ -75,7 +75,7 @@ def SqueezeNetV1(pretrained=False, end_with='out', name=None):
     >>> nn = GlobalMeanPool2d(name='globalmeanpool')(nn)
     >>> model = tl.models.Model(inputs=ni, outputs=nn)
     >>> # train your own classifier (only update the last layer)
-    >>> train_params = model.get_layer('conv10').weights
+    >>> train_params = model.get_layer('conv10').trainable_weights
 
     Returns
     -------

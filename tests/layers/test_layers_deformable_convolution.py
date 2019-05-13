@@ -44,12 +44,12 @@ class Layer_Convolution_2D_Test(CustomTestCase):
 
     def test_layer_n1(self):
 
-        self.assertEqual(len(self.deformconv1._info[0].layer.weights), 2)
+        self.assertEqual(len(self.deformconv1._info[0].layer.all_weights), 2)
         self.assertEqual(self.deformconv1.get_shape().as_list()[1:], [10, 10, 32])
 
     def test_layer_n2(self):
 
-        self.assertEqual(len(self.deformconv2._info[0].layer.weights), 2)
+        self.assertEqual(len(self.deformconv2._info[0].layer.all_weights), 2)
         self.assertEqual(self.deformconv2.get_shape().as_list()[1:], [10, 10, 64])
 
 

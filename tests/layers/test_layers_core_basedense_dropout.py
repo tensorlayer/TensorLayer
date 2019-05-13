@@ -73,17 +73,17 @@ class Layer_Core_Test(CustomTestCase):
     def test_net2(self):
 
         # test weights
-        self.assertEqual(self.innet._info[0].layer.weights, None)
-        self.assertEqual(self.dropout1._info[0].layer.weights, None)
-        self.assertEqual(self.dense1._info[0].layer.weights[0].get_shape().as_list(), [784, 800])
-        self.assertEqual(self.dense1._info[0].layer.weights[1].get_shape().as_list(), [
+        self.assertEqual(self.innet._info[0].layer.all_weights, [])
+        self.assertEqual(self.dropout1._info[0].layer.all_weights, [])
+        self.assertEqual(self.dense1._info[0].layer.all_weights[0].get_shape().as_list(), [784, 800])
+        self.assertEqual(self.dense1._info[0].layer.all_weights[1].get_shape().as_list(), [
             800,
         ])
-        self.assertEqual(self.dense2._info[0].layer.weights[0].get_shape().as_list(), [800, 10])
-        self.assertEqual(len(self.dense1._info[0].layer.weights), 2)
-        self.assertEqual(len(self.dense2._info[0].layer.weights), 1)
+        self.assertEqual(self.dense2._info[0].layer.all_weights[0].get_shape().as_list(), [800, 10])
+        self.assertEqual(len(self.dense1._info[0].layer.all_weights), 2)
+        self.assertEqual(len(self.dense2._info[0].layer.all_weights), 1)
 
-        self.assertEqual(len(self.model.weights), 3)
+        self.assertEqual(len(self.model.all_weights), 3)
 
         # a special case
         self.model.release_memory()
@@ -134,7 +134,7 @@ class Layer_Core_Test(CustomTestCase):
         )(innet)
         model = Model(inputs=innet, outputs=hlayer)
 
-        # for w in model.weights:
+        # for w in model.all_weights:
         #     print(w.name)
 
         data = np.random.normal(size=[self.batch_size, self.inputs_shape[1]]).astype(np.float32)

@@ -62,8 +62,8 @@ class Layer_RNN_Test(CustomTestCase):
                 pred_y, final_state = rnn_model(self.data_x)
                 loss = tl.cost.mean_squared_error(pred_y, self.data_y)
 
-            gradients = tape.gradient(loss, rnn_model.weights)
-            optimizer.apply_gradients(zip(gradients, rnn_model.weights))
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
 
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
@@ -131,8 +131,8 @@ class Layer_RNN_Test(CustomTestCase):
                 pred_y = rnn_model(self.data_x)
                 loss = tl.cost.mean_squared_error(pred_y, self.data_y)
 
-            gradients = tape.gradient(loss, rnn_model.weights)
-            optimizer.apply_gradients(zip(gradients, rnn_model.weights))
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
 
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
@@ -165,8 +165,8 @@ class Layer_RNN_Test(CustomTestCase):
                 pred_y = rnn_model(self.data_x)
                 loss = tl.cost.mean_squared_error(pred_y, self.data_y)
 
-            gradients = tape.gradient(loss, rnn_model.weights)
-            optimizer.apply_gradients(zip(gradients, rnn_model.weights))
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
 
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
@@ -205,8 +205,8 @@ class Layer_RNN_Test(CustomTestCase):
                 pred_y = rnn_model(self.data_x)
                 loss = tl.cost.mean_squared_error(pred_y, self.data_y)
 
-            gradients = tape.gradient(loss, rnn_model.weights)
-            optimizer.apply_gradients(zip(gradients, rnn_model.weights))
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
 
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
@@ -232,8 +232,8 @@ class Layer_RNN_Test(CustomTestCase):
                 pred_y, final_h, final_c = rnn_model(self.data_x)
                 loss = tl.cost.mean_squared_error(pred_y, self.data_y)
 
-            gradients = tape.gradient(loss, rnn_model.weights)
-            optimizer.apply_gradients(zip(gradients, rnn_model.weights))
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
 
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
@@ -259,8 +259,8 @@ class Layer_RNN_Test(CustomTestCase):
                 pred_y, final_h = rnn_model(self.data_x)
                 loss = tl.cost.mean_squared_error(pred_y, self.data_y)
 
-            gradients = tape.gradient(loss, rnn_model.weights)
-            optimizer.apply_gradients(zip(gradients, rnn_model.weights))
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
 
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
@@ -292,8 +292,8 @@ class Layer_RNN_Test(CustomTestCase):
             self.assertEqual(
                 r.get_shape().as_list(), [self.batch_size * self.num_steps, self.hidden_size + self.hidden_size + 1]
             )
-            gradients = tape.gradient(loss, rnn_model.weights)
-            optimizer.apply_gradients(zip(gradients, rnn_model.weights))
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
 
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
@@ -326,8 +326,8 @@ class Layer_RNN_Test(CustomTestCase):
             self.assertEqual(
                 r.get_shape().as_list(), [self.batch_size, self.num_steps, self.hidden_size + self.hidden_size + 1]
             )
-            gradients = tape.gradient(loss, rnn_model.weights)
-            optimizer.apply_gradients(zip(gradients, rnn_model.weights))
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
 
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
@@ -362,8 +362,8 @@ class Layer_RNN_Test(CustomTestCase):
                 pred_y = rnn_model(self.data_x)
                 loss = tl.cost.mean_squared_error(pred_y, self.data_y)
 
-            gradients = tape.gradient(loss, rnn_model.weights)
-            optimizer.apply_gradients(zip(gradients, rnn_model.weights))
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
 
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
@@ -396,8 +396,8 @@ class Layer_RNN_Test(CustomTestCase):
                 pred_y = rnn_model(self.data_x)
                 loss = tl.cost.mean_squared_error(pred_y, self.data_y)
 
-            gradients = tape.gradient(loss, rnn_model.weights)
-            optimizer.apply_gradients(zip(gradients, rnn_model.weights))
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
 
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
@@ -433,8 +433,8 @@ class Layer_RNN_Test(CustomTestCase):
                 pred_y = rnn_model(self.data_x)
                 loss = tl.cost.mean_squared_error(pred_y, self.data_y2)
 
-            gradients = tape.gradient(loss, rnn_model.weights)
-            optimizer.apply_gradients(zip(gradients, rnn_model.weights))
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
 
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))

@@ -148,7 +148,7 @@ class TensorHub(object):
         self._fill_project_info(kwargs)  # put project_name into kwargs
 
         # params = network.get_all_params()
-        params = network.weights
+        params = network.all_weights
 
         s = time.time()
 

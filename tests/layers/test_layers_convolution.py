@@ -51,7 +51,7 @@ class Layer_Convolution_1D_Test(CustomTestCase):
         # self.assertEqual(len(self.n1.all_layers), 2)
         # self.assertEqual(len(self.n1.all_params), 2)
         # self.assertEqual(self.n1.count_params(), 192)
-        self.assertEqual(len(self.n1._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n1._info[0].layer.all_weights), 2)
         self.assertEqual(self.n1.get_shape().as_list()[1:], [50, 32])
 
     def test_layer_n2(self):
@@ -59,7 +59,7 @@ class Layer_Convolution_1D_Test(CustomTestCase):
         # self.assertEqual(len(self.n2.all_layers), 3)
         # self.assertEqual(len(self.n2.all_params), 4)
         # self.assertEqual(self.n2.count_params(), 5344)
-        self.assertEqual(len(self.n2._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n2._info[0].layer.all_weights), 2)
         self.assertEqual(self.n2.get_shape().as_list()[1:], [25, 32])
 
     def test_layer_n3(self):
@@ -67,7 +67,7 @@ class Layer_Convolution_1D_Test(CustomTestCase):
         # self.assertEqual(len(self.n2.all_layers), 3)
         # self.assertEqual(len(self.n2.all_params), 4)
         # self.assertEqual(self.n2.count_params(), 5344)
-        self.assertEqual(len(self.n3._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n3._info[0].layer.all_weights), 2)
         self.assertEqual(self.n3.get_shape().as_list()[1:], [50, 64])
 
     def test_layer_n4(self):
@@ -75,7 +75,7 @@ class Layer_Convolution_1D_Test(CustomTestCase):
         # self.assertEqual(len(self.n2.all_layers), 3)
         # self.assertEqual(len(self.n2.all_params), 4)
         # self.assertEqual(self.n2.count_params(), 5344)
-        self.assertEqual(len(self.n4._info[0].layer.weights), 3)
+        self.assertEqual(len(self.n4._info[0].layer.all_weights), 3)
         self.assertEqual(self.n4.get_shape().as_list()[1:], [25, 32])
 
     def test_layer_n5(self):
@@ -127,7 +127,7 @@ class Layer_Convolution_1D_Test(CustomTestCase):
 #         # self.assertEqual(len(self.n1.all_layers), 2)
 #         # self.assertEqual(len(self.n1.all_params), 2)
 #         # self.assertEqual(self.n1.count_params(), 192)
-#         self.assertEqual(len(self.n1._info[0].layer.weights), 2)
+#         self.assertEqual(len(self.n1._info[0].layer.all_weights), 2)
 #         self.assertEqual(self.n1.get_shape().as_list()[1:], [50, 32])
 #
 #     def test_layer_n2(self):
@@ -135,7 +135,7 @@ class Layer_Convolution_1D_Test(CustomTestCase):
 #         # self.assertEqual(len(self.n2.all_layers), 3)
 #         # self.assertEqual(len(self.n2.all_params), 4)
 #         # self.assertEqual(self.n2.count_params(), 5344)
-#         self.assertEqual(len(self.n2._info[0].layer.weights), 2)
+#         self.assertEqual(len(self.n2._info[0].layer.all_weights), 2)
 #         self.assertEqual(self.n2.get_shape().as_list()[1:], [25, 32])
 #
 #     # def test_layer_n3(self):
@@ -223,7 +223,7 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         # self.assertEqual(len(self.n1.all_layers), 2)
         # self.assertEqual(len(self.n1.all_params), 2)
         # self.assertEqual(self.n1.count_params(), 2432)
-        self.assertEqual(len(self.n1._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n1._info[0].layer.all_weights), 2)
         self.assertEqual(self.n1.get_shape().as_list()[1:], [200, 200, 32])
 
     def test_layer_n2(self):
@@ -231,7 +231,7 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         # self.assertEqual(len(self.n2.all_layers), 3)
         # self.assertEqual(len(self.n2.all_params), 4)
         # self.assertEqual(self.n2.count_params(), 11680)
-        self.assertEqual(len(self.n2._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n2._info[0].layer.all_weights), 2)
         self.assertEqual(self.n2.get_shape().as_list()[1:], [100, 100, 32])
 
     def test_layer_n3(self):
@@ -239,7 +239,7 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         # self.assertEqual(len(self.n3.all_layers), 4)
         # self.assertEqual(len(self.n3.all_params), 5)
         # self.assertEqual(self.n3.count_params(), 20896)
-        self.assertEqual(len(self.n3._info[0].layer.weights), 1)  # b_init is None
+        self.assertEqual(len(self.n3._info[0].layer.all_weights), 1)  # b_init is None
         self.assertEqual(self.n3.get_shape().as_list()[1:], [50, 50, 32])
 
     def test_layer_n4(self):
@@ -247,7 +247,7 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         # self.assertEqual(len(self.n4.all_layers), 5)
         # self.assertEqual(len(self.n4.all_params), 7)
         # self.assertEqual(self.n4.count_params(), 46528)
-        self.assertEqual(len(self.n4._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n4._info[0].layer.all_weights), 2)
         self.assertEqual(self.n4.get_shape().as_list()[1:], [100, 100, 32])
 
     def test_layer_n5(self):
@@ -255,7 +255,7 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         # self.assertEqual(len(self.n5.all_layers), 6)
         # self.assertEqual(len(self.n5.all_params), 9)
         # self.assertEqual(self.n5.count_params(), 55776)
-        self.assertEqual(len(self.n5._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n5._info[0].layer.all_weights), 2)
         self.assertEqual(self.n5.get_shape().as_list()[1:], [200, 200, 32])
 
     def test_layer_n6(self):
@@ -263,7 +263,7 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         # self.assertEqual(len(self.n6.all_layers), 7)
         # self.assertEqual(len(self.n6.all_params), 11)
         # self.assertEqual(self.n6.count_params(), 56416)
-        self.assertEqual(len(self.n6._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n6._info[0].layer.all_weights), 2)
         self.assertEqual(self.n6.get_shape().as_list()[1:], [200, 200, 64])
 
     def test_layer_n7(self):
@@ -271,7 +271,7 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         # self.assertEqual(len(self.n7.all_layers), 8)
         # self.assertEqual(len(self.n7.all_params), 13)
         # self.assertEqual(self.n7.count_params(), 74880)
-        self.assertEqual(len(self.n7._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n7._info[0].layer.all_weights), 2)
         self.assertEqual(self.n7.get_shape().as_list()[1:], [100, 100, 32])
 
     def test_layer_n8(self):
@@ -279,7 +279,7 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         # self.assertEqual(len(self.n7.all_layers), 8)
         # self.assertEqual(len(self.n7.all_params), 13)
         # self.assertEqual(self.n7.count_params(), 74880)
-        self.assertEqual(len(self.n8._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n8._info[0].layer.all_weights), 2)
         self.assertEqual(self.n8.get_shape().as_list()[1:], [50, 50, 64])
 
     def test_layer_n9(self):
@@ -287,35 +287,35 @@ class Layer_Convolution_2D_Test(CustomTestCase):
         # self.assertEqual(len(self.n7.all_layers), 8)
         # self.assertEqual(len(self.n7.all_params), 13)
         # self.assertEqual(self.n7.count_params(), 74880)
-        self.assertEqual(len(self.n9._info[0].layer.weights), 3)
+        self.assertEqual(len(self.n9._info[0].layer.all_weights), 3)
         self.assertEqual(self.n9.get_shape().as_list()[1:], [24, 24, 32])
 
     def test_layer_n10(self):
         # self.assertEqual(len(self.n7.all_layers), 8)
         # self.assertEqual(len(self.n7.all_params), 13)
         # self.assertEqual(self.n7.count_params(), 74880)
-        self.assertEqual(len(self.n10._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n10._info[0].layer.all_weights), 2)
         self.assertEqual(self.n10.get_shape().as_list()[1:], [12, 12, 64])
 
     def test_layer_n11(self):
         # self.assertEqual(len(self.n7.all_layers), 8)
         # self.assertEqual(len(self.n7.all_params), 13)
         # self.assertEqual(self.n7.count_params(), 74880)
-        self.assertEqual(len(self.n11._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n11._info[0].layer.all_weights), 2)
         self.assertEqual(self.n11.get_shape().as_list()[1:], [12, 12, 32])
 
     def test_layer_n12(self):
         # self.assertEqual(len(self.n7.all_layers), 8)
         # self.assertEqual(len(self.n7.all_params), 13)
         # self.assertEqual(self.n7.count_params(), 74880)
-        self.assertEqual(len(self.n12._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n12._info[0].layer.all_weights), 2)
         self.assertEqual(self.n12.get_shape().as_list()[1:], [12, 12, 64])
 
     def test_layer_n13(self):
         # self.assertEqual(len(self.n7.all_layers), 8)
         # self.assertEqual(len(self.n7.all_params), 13)
         # self.assertEqual(self.n7.count_params(), 74880)
-        self.assertEqual(len(self.n13._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n13._info[0].layer.all_weights), 2)
         self.assertEqual(self.n13.get_shape().as_list()[1:], [12, 12, 32])
 
     def test_layer_n14(self):
@@ -393,7 +393,7 @@ class Layer_Convolution_3D_Test(CustomTestCase):
         # self.assertEqual(len(self.n1.all_layers), 2)
         # self.assertEqual(len(self.n1.all_params), 2)
         # self.assertEqual(self.n1.count_params(), 800)
-        self.assertEqual(len(self.n1._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n1._info[0].layer.all_weights), 2)
         self.assertEqual(self.n1.get_shape().as_list()[1:], [10, 10, 10, 32])
 
     def test_layer_n2(self):
@@ -401,7 +401,7 @@ class Layer_Convolution_3D_Test(CustomTestCase):
         # self.assertEqual(len(self.n2.all_layers), 3)
         # self.assertEqual(len(self.n2.all_params), 4)
         # self.assertEqual(self.n2.count_params(), 33696)
-        self.assertEqual(len(self.n2._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n2._info[0].layer.all_weights), 2)
         self.assertEqual(self.n2.get_shape().as_list()[1:], [20, 20, 20, 128])
 
     def test_layer_n3(self):
@@ -409,7 +409,7 @@ class Layer_Convolution_3D_Test(CustomTestCase):
         # self.assertEqual(len(self.n3.all_layers), 4)
         # self.assertEqual(len(self.n3.all_params), 6)
         # self.assertEqual(self.n3.count_params(), 144320)
-        self.assertEqual(len(self.n3._info[0].layer.weights), 1)  # b_init is None
+        self.assertEqual(len(self.n3._info[0].layer.all_weights), 1)  # b_init is None
         self.assertEqual(self.n3.get_shape().as_list()[1:], [7, 7, 7, 64])
 
     def test_layer_n4(self):
@@ -417,7 +417,7 @@ class Layer_Convolution_3D_Test(CustomTestCase):
         # self.assertEqual(len(self.n3.all_layers), 4)
         # self.assertEqual(len(self.n3.all_params), 6)
         # self.assertEqual(self.n3.count_params(), 144320)
-        self.assertEqual(len(self.n4._info[0].layer.weights), 2)
+        self.assertEqual(len(self.n4._info[0].layer.all_weights), 2)
         self.assertEqual(self.n4.get_shape().as_list()[1:], [14, 14, 14, 32])
 
 

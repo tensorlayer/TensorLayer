@@ -84,7 +84,7 @@ def get_model(inputs_shape):
     M = tl.models.Model(inputs=ni, outputs=nn, name="mlp")
     return M
 model = get_model([None, D])
-train_weights = model.weights
+train_weights = model.trainable_weights
 # probs = model(t_states, is_train=True).outputs
 # sampling_prob = tf.nn.softmax(probs)
 

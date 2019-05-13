@@ -138,8 +138,8 @@ def train_test_and_save_model():
                     cost = tl.cost.cross_entropy(y_pred, y_batch, name='cost')
 
                 # backward, calculate gradients and update the weights
-                grad = tape.gradient(cost, model.weights)
-                optimizer.apply_gradients(zip(grad, model.weights))
+                grad = tape.gradient(cost, model.trainable_weights)
+                optimizer.apply_gradients(zip(grad, model.trainable_weights))
 
                 # calculate the accuracy
                 predictions = tf.argmax(y_pred, axis=1, output_type=tf.int32)
