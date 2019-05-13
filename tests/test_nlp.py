@@ -14,6 +14,7 @@ from tests.utils import CustomTestCase
 import nltk
 nltk.download('punkt')
 
+
 class Test_Leaky_ReLUs(CustomTestCase):
 
     @classmethod
@@ -44,7 +45,7 @@ class Test_Leaky_ReLUs(CustomTestCase):
         words = tl.files.load_matt_mahoney_text8_dataset()
         vocabulary_size = 50000
         data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size, True)
-        tl.nlp.save_vocab(count, name='vocab_text8.txt')     
+        tl.nlp.save_vocab(count, name='vocab_text8.txt')
 
     def test_basic_tokenizer(self):
         c = "how are you?"
@@ -52,8 +53,10 @@ class Test_Leaky_ReLUs(CustomTestCase):
         print(tokens)
 
     def test_generate_skip_gram_batch(self):
-        data = [1,2,3,4,5,6,7,8,9,10,11]
-        batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data, batch_size=8, num_skips=2, skip_window=1, data_index=0)
+        data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        batch, labels, data_index = tl.nlp.generate_skip_gram_batch(
+            data=data, batch_size=8, num_skips=2, skip_window=1, data_index=0
+        )
         print(batch)
         print(labels)
 
