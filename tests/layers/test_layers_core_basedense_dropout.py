@@ -73,8 +73,8 @@ class Layer_Core_Test(CustomTestCase):
     def test_net2(self):
 
         # test weights
-        self.assertEqual(self.innet._info[0].layer.all_weights, None)
-        self.assertEqual(self.dropout1._info[0].layer.all_weights, None)
+        self.assertEqual(self.innet._info[0].layer.all_weights, [])
+        self.assertEqual(self.dropout1._info[0].layer.all_weights, [])
         self.assertEqual(self.dense1._info[0].layer.all_weights[0].get_shape().as_list(), [784, 800])
         self.assertEqual(self.dense1._info[0].layer.all_weights[1].get_shape().as_list(), [
             800,

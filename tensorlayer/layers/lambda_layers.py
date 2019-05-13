@@ -134,7 +134,8 @@ class Lambda(Layer):
         except:
             fn_name = 'name not available'
         return s.format(
-            classname=self.__class__.__name__, fn_name=fn_name, len_weights=len(self._trainable_weights), **self.__dict__
+            classname=self.__class__.__name__, fn_name=fn_name, len_weights=len(self._trainable_weights),
+            **self.__dict__
         )
 
     def build(self, inputs_shape=None):
@@ -240,7 +241,9 @@ class ElementwiseLambda(Layer):
             fn_name = repr(self.fn)
         except:
             fn_name = 'name not available'
-        logging.info("ElementwiseLambda  %s: func: %s, len_weights: %s" % (self.name, fn_name, len(self._trainable_weights)))
+        logging.info(
+            "ElementwiseLambda  %s: func: %s, len_weights: %s" % (self.name, fn_name, len(self._trainable_weights))
+        )
 
         self.build()
         self._built = True
@@ -256,7 +259,8 @@ class ElementwiseLambda(Layer):
         except:
             fn_name = 'name not available'
         return s.format(
-            classname=self.__class__.__name__, fn_name=fn_name, len_weights=len(self._trainable_weights), **self.__dict__
+            classname=self.__class__.__name__, fn_name=fn_name, len_weights=len(self._trainable_weights),
+            **self.__dict__
         )
 
     def build(self, inputs_shape=None):
