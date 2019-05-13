@@ -28,16 +28,16 @@ of 1 if you reach the goal, and zero otherwise.
 import time
 
 import numpy as np
-import tensorflow as tf
 
 import gym
+import tensorflow as tf
 import tensorlayer as tl
 
 ## enable eager mode
-tf.enable_eager_execution()
+# tf.enable_eager_execution()
 
 
-tf.logging.set_verbosity(tf.logging.DEBUG)
+# tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 env = gym.make('FrozenLake-v0')
@@ -61,7 +61,7 @@ def get_model(inputs_shape):
     ni = tl.layers.Input(inputs_shape, name='observation')
     nn = tl.layers.Dense(4, act=None, W_init=tf.random_uniform_initializer(0, 0.01), b_init=None, name='q_a_s')(ni)
     return tl.models.Model(inputs=ni, outputs=nn, name="Q-Network")
-qnetwork = get_model([1, 16])
+qnetwork = get_model([None, 16])
 qnetwork.train()
 train_weights = qnetwork.trainable_weights
 
@@ -72,7 +72,7 @@ train_weights = qnetwork.trainable_weights
     # nextQ = tf.placeholder(shape=[1, 4], dtype=tf.float32)
     # loss = tl.cost.mean_squared_error(nextQ, y, is_mean=False)  # tf.reduce_sum(tf.square(nextQ - y))
     # train_op = tf.train.GradientDescentOptimizer(learning_rate=0.1).minimize(loss)
-optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.1)
+optimizer = tf.optimizers.SGD(learning_rate=0.1)
 
 ## Set learning parameters
 lambd = .99  # decay factor
@@ -90,7 +90,7 @@ for i in range(num_episodes):
         if render: env.render()
         ## Choose an action by greedily (with e chance of random action) from the Q-network
             # a, allQ = sess.run([predict, y], feed_dict={inputs: [to_one_hot(s, 16)]})
-        allQ = qnetwork(np.asarray([to_one_hot(s, 16)], dtype=np.float32)).outputs.numpy()
+        allQ = qnetwork(np.asarray([to_one_hot(s, 16)], dtype=np.float32)).numpy()
         a = np.argmax(allQ, 1)
 
         ## e-Greedy Exploration !!! sample random action
@@ -100,7 +100,7 @@ for i in range(num_episodes):
         s1, r, d, _ = env.step(a[0])
         ## Obtain the Q' values by feeding the new state through our network
             # Q1 = sess.run(y, feed_dict={inputs: [to_one_hot(s1, 16)]})
-        Q1 = qnetwork(np.asarray([to_one_hot(s1, 16)], dtype=np.float32)).outputs.numpy()
+        Q1 = qnetwork(np.asarray([to_one_hot(s1, 16)], dtype=np.float32)).numpy()
 
         ## Obtain maxQ' and set our target value for chosen action.
         maxQ1 = np.max(Q1)  # in Q-Learning, policy is greedy, so we use "max" to select the next action.
@@ -114,7 +114,7 @@ for i in range(num_episodes):
         #   Q'(s,a) ≈ Q(s,a)
             # _ = sess.run(train_op, {inputs: [to_one_hot(s, 16)], nextQ: targetQ})
         with tf.GradientTape() as tape:
-            _qvalues = qnetwork(np.asarray([to_one_hot(s, 16)], dtype=np.float32)).outputs
+            _qvalues = qnetwork(np.asarray([to_one_hot(s, 16)], dtype=np.float32))
             _loss = tl.cost.mean_squared_error(targetQ, _qvalues, is_mean=False)
         grad = tape.gradient(_loss, train_weights)
         optimizer.apply_gradients(zip(grad, train_weights))

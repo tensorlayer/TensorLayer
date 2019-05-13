@@ -29,16 +29,16 @@ References
 import time
 
 import numpy as np
-import tensorflow as tf
 
 import gym
+import tensorflow as tf
 import tensorlayer as tl
 
 ## enable eager mode
-tf.enable_eager_execution()
+# tf.enable_eager_execution()
 
 
-tf.logging.set_verbosity(tf.logging.DEBUG) # enable logging
+# tf.logging.set_verbosity(tf.logging.DEBUG) # enable logging
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 # hyper-parameters
@@ -52,7 +52,7 @@ decay_rate = 0.99
 render = False  # display the game environment
 # resume = True         # load existing policy network
 model_file_name = "model_pong"
-np.set_printoptions(threshold=np.nan)
+np.set_printoptions(threshold=np.inf)
 
 
 def prepro(I):
@@ -91,7 +91,7 @@ train_weights = model.trainable_weights
 # t_actions = tf.placeholder(tf.int32, shape=[None])
 # t_discount_rewards = tf.placeholder(tf.float32, shape=[None])
 # loss = tl.rein.cross_entropy_reward_loss(probs, t_actions, t_discount_rewards)
-optimizer = tf.train.RMSPropOptimizer(learning_rate, decay_rate)#.minimize(loss)
+optimizer = tf.optimizers.RMSprop(lr=learning_rate, decay=decay_rate)#.minimize(loss)
 
 # with tf.Session() as sess:
 #     sess.run(tf.global_variables_initializer())
@@ -115,7 +115,7 @@ while True:
     prev_x = cur_x
 
     # prob = sess.run(sampling_prob, feed_dict={t_states: x})
-    _prob = model(x).outputs
+    _prob = model(x)
     prob = tf.nn.softmax(_prob)
 
     # action. 1: STOP  2: UP  3: DOWN
@@ -150,7 +150,7 @@ while True:
                 # t_discount_rewards = tf.placeholder(tf.float32, shape=[None])
                 # loss = tl.rein.cross_entropy_reward_loss(probs, t_actions, t_discount_rewards)
             with tf.GradientTape() as tape:
-                _prob = model(epx).outputs
+                _prob = model(epx)
                 _loss = tl.rein.cross_entropy_reward_loss(_prob, epy, disR)
             grad = tape.gradient(_loss, train_weights)
             optimizer.apply_gradients(zip(grad, train_weights))

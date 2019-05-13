@@ -5,7 +5,8 @@ import os
 import zipfile
 
 from tensorlayer import logging
-from tensorlayer.files.utils import (download_file_from_google_drive, exists_or_mkdir, load_file_list)
+from tensorlayer.files.utils import (download_file_from_google_drive,
+                                     exists_or_mkdir, load_file_list)
 
 __all__ = ['load_celebA_dataset']
 

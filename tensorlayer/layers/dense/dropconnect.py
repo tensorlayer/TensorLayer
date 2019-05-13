@@ -1,13 +1,13 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import numbers
+
 import tensorflow as tf
 import tensorlayer as tl
-
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
-import numbers
 
 __all__ = [
     'DropconnectDense',

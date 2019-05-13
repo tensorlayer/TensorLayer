@@ -34,20 +34,20 @@ cart moves more than 2.4 units from the center.
 import time
 
 import numpy as np
-import tensorflow as tf
 
 import gym
+import tensorflow as tf
 import tensorlayer as tl
 
 ## enable eager mode
-tf.enable_eager_execution()
+# tf.enable_eager_execution()
 
 
-tf.logging.set_verbosity(tf.logging.DEBUG)
+# tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 np.random.seed(2)
-tf.set_random_seed(2)  # reproducible
+tf.random.set_seed(2)  # reproducible
 
 # hyper-parameters
 OUTPUT_GRAPH = False
@@ -93,7 +93,7 @@ class Actor(object):
             nn = tl.layers.Dense(n_units=10, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')(nn)
             nn = tl.layers.Dense(n_units=n_actions, name='actions')(nn)
             return tl.models.Model(inputs=ni, outputs=nn, name="Actor")
-        self.model = get_model([1, n_features])
+        self.model = get_model([None, n_features])
         self.model.train()
             # self.acts_logits = n.outputs
             # self.acts_prob = tf.nn.softmax(self.acts_logits)
@@ -106,12 +106,12 @@ class Actor(object):
 
             # with tf.variable_scope('train'):
             #     self.train_op = tf.train.AdamOptimizer(lr).minimize(self.exp_v)
-        self.optimizer = tf.train.AdamOptimizer(lr)
+        self.optimizer = tf.optimizers.Adam(lr)
         # Morvan Zhou (the same)
         # with tf.variable_scope('exp_v'):
         #     # log_prob = tf.log(self.acts_prob[0, self.a[0]])
         #     # self.exp_v = tf.reduce_mean(log_prob * self.td_error[0])  # advantage (TD_error) guided loss
-        #     self.exp_v = tl.rein.log_weight(probs=self.acts_prob[0, self.a[0]], weights=self.td_error)
+        #     self.exp_v = tl.rein.log_weight(probs=self.acts_prob[0, self.a[0]], trainable_weights=self.td_error)
         #
         # with tf.variable_scope('train'):
         #     self.train_op = tf.train.AdamOptimizer(lr).minimize(-self.exp_v)  # minimize(-exp_v) = maximize(exp_v)
@@ -119,22 +119,25 @@ class Actor(object):
     def learn(self, s, a, td):
             # _, exp_v = self.sess.run([self.train_op, self.exp_v], {self.s: [s], self.a: [a], self.td_error: td[0]})
         with tf.GradientTape() as tape:
-            _logits = self.model([s]).outputs
+
+            # _logits = self.model([s]).outputs
+            _logits = self.model(np.array([s]))
             # _probs = tf.nn.softmax(_logits)
-            _exp_v = tl.rein.cross_entropy_reward_loss(logits=_logits, actions=[a], rewards=td[0])
+            _exp_v = tl.rein.cross_entropy_reward_loss(logits=_logits, actions=[a], rewards=td[0])  # cross-entropy loss weighted by rewards
         grad = tape.gradient(_exp_v, self.model.trainable_weights)
         self.optimizer.apply_gradients(zip(grad, self.model.trainable_weights))
         return _exp_v
 
     def choose_action(self, s):
             # probs = self.sess.run(self.acts_prob, {self.s: [s]})  # get probabilities of all actions
-        _logits = self.model([s]).outputs
+        # _logits = self.model(np.array([s])).outputs
+        _logits = self.model(np.array([s]))
         _probs = tf.nn.softmax(_logits).numpy()
         return tl.rein.choice_action_by_probs(_probs.ravel())
 
     def choose_action_greedy(self, s):
             # probs = self.sess.run(self.acts_prob, {self.s: [s]})  # get probabilities of all actions
-        _logits = self.model([s]).outputs
+        _logits = self.model(np.array([s]))
         _probs = tf.nn.softmax(_logits).numpy()
         return np.argmax(_probs.ravel())
 
@@ -167,14 +170,14 @@ class Critic(object):
             #     self.loss = tf.square(self.td_error)
             # with tf.variable_scope('train'):
                 # self.train_op = tf.train.AdamOptimizer(lr).minimize(self.loss)
-        self.optimizer = tf.train.AdamOptimizer(lr)
+        self.optimizer = tf.optimizers.Adam(lr)
 
     def learn(self, s, r, s_):
             # v_ = self.sess.run(self.v, {self.s: [s_]})
-        v_ = self.model([s_]).outputs
+        v_ = self.model(np.array([s_]))
             # td_error, _ = self.sess.run([self.td_error, self.train_op], {self.s: [s], self.v_: v_, self.r: r})
         with tf.GradientTape() as tape:
-            v = self.model([s]).outputs
+            v = self.model(np.array([s]))
             # TD_error = r + lambd * V(newS) - V(S)
             td_error = r + LAMBDA * v_ - v
             loss = tf.square(td_error)
