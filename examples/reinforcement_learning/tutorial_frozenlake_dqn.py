@@ -63,7 +63,7 @@ def get_model(inputs_shape):
     return tl.models.Model(inputs=ni, outputs=nn, name="Q-Network")
 qnetwork = get_model([1, 16])
 qnetwork.train()
-train_weights = qnetwork.weights
+train_weights = qnetwork.trainable_weights
 
 # chose action greedily with reward. in Q-Learning, policy is greedy, so we use "max" to select the next action.
     # predict = tf.argmax(y, 1)

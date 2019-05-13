@@ -150,10 +150,10 @@ class RNN(Layer):
         with tf.name_scope(self.name) as scope:
             self.cell.build(tuple(inputs_shape))
 
-        if self._weights is None:
-            self._weights = list()
+        if self._trainable_weights is None:
+            self._trainable_weights = list()
         for var in self.cell.trainable_variables:
-            self._weights.append(var)
+            self._trainable_weights.append(var)
 
     # @tf.function
     def forward(self, inputs, initial_state=None, **kwargs):
@@ -343,12 +343,12 @@ class BiRNN(Layer):
             self.fw_cell.build(tuple(inputs_shape))
             self.bw_cell.build(tuple(inputs_shape))
 
-        if self._weights is None:
-            self._weights = list()
+        if self._trainable_weights is None:
+            self._trainable_weights = list()
         for var in self.fw_cell.trainable_variables:
-            self._weights.append(var)
+            self._trainable_weights.append(var)
         for var in self.bw_cell.trainable_variables:
-            self._weights.append(var)
+            self._trainable_weights.append(var)
 
     # @tf.function
     def forward(self, inputs, fw_initial_state=None, bw_initial_state=None, **kwargs):
