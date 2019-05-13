@@ -356,7 +356,9 @@ class Model(object):
             # dynamic model
             self._all_layers = list()
             attr_list = [attr for attr in dir(self) if attr[:2] != "__"]
-            attr_list.remove("weights")
+            attr_list.remove("all_weights")
+            attr_list.remove("trainable_weights")
+            attr_list.remove("nontrainable_weights")
             attr_list.remove("all_layers")
             for idx, attr in enumerate(attr_list):
                 try:
