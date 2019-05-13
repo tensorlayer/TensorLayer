@@ -460,7 +460,7 @@ class Model(object):
         >>> net.train()
 
         """
-        if self.is_train != True:
+        if self.is_train !=True:
             self.is_train = True
             self._set_mode_for_layers(True)
 
@@ -879,7 +879,7 @@ class Model(object):
             format = filepath.split('.')[-1]
 
         if format == 'hdf5' or format == 'h5':
-            if skip == True or in_order == False:
+            if skip ==True or in_order == False:
                 # load by weights name
                 utils.load_hdf5_to_weights(filepath, self, skip)
             else:

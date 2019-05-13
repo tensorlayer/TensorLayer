@@ -258,8 +258,12 @@ class BatchNorm(Layer):
         if self.gamma_init:
             self.gamma = self._get_weights("gamma", shape=params_shape, init=self.gamma_init)
 
-        self.moving_mean = self._get_weights("moving_mean", shape=params_shape, init=self.moving_mean_init, trainable=False)
-        self.moving_var = self._get_weights("moving_var", shape=params_shape, init=self.moving_var_init, trainable=False)
+        self.moving_mean = self._get_weights(
+            "moving_mean", shape=params_shape, init=self.moving_mean_init, trainable=False
+        )
+        self.moving_var = self._get_weights(
+            "moving_var", shape=params_shape, init=self.moving_var_init, trainable=False
+        )
 
     def forward(self, inputs):
         mean, var = tf.nn.moments(inputs, self.axes, keepdims=True)
@@ -268,12 +272,8 @@ class BatchNorm(Layer):
             self.moving_mean = moving_averages.assign_moving_average(
                 self.moving_mean, mean, self.decay, zero_debias=False
             )
-            self.moving_var = moving_averages.assign_moving_average(
-                self.moving_var, var, self.decay, zero_debias=False
-            )
-            outputs = batch_normalization(
-                inputs, mean, var, self.beta, self.gamma, self.epsilon, self.data_format
-            )
+            self.moving_var = moving_averages.assign_moving_average(self.moving_var, var, self.decay, zero_debias=False)
+            outputs = batch_normalization(inputs, mean, var, self.beta, self.gamma, self.epsilon, self.data_format)
         else:
             outputs = batch_normalization(
                 inputs, self.moving_mean, self.moving_var, self.beta, self.gamma, self.epsilon, self.data_format
