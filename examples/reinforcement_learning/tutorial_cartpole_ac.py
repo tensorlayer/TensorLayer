@@ -73,10 +73,15 @@ class Actor(object):
 
         def get_model(inputs_shape):
             ni = tl.layers.Input(inputs_shape, name='state')
-            nn = tl.layers.Dense(n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')(ni)
-            nn = tl.layers.Dense(n_units=10, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')(nn)
+            nn = tl.layers.Dense(
+                n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden'
+            )(ni)
+            nn = tl.layers.Dense(
+                n_units=10, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2'
+            )(nn)
             nn = tl.layers.Dense(n_units=n_actions, name='actions')(nn)
             return tl.models.Model(inputs=ni, outputs=nn, name="Actor")
+
         self.model = get_model([None, n_features])
         self.model.train()
         self.optimizer = tf.optimizers.Adam(lr)
@@ -84,10 +89,10 @@ class Actor(object):
     def learn(self, s, a, td):
         with tf.GradientTape() as tape:
             _logits = self.model(np.array([s]))
-            ## cross-entropy loss weighted by td-error (advantage), 
+            ## cross-entropy loss weighted by td-error (advantage),
             # the cross-entropy mearsures the difference of two probability distributions: the predicted logits and sampled action distribution,
-            # then weighted by the td-error: small difference of real and predict actions for large td-error (advantage); and vice versa. 
-            _exp_v = tl.rein.cross_entropy_reward_loss(logits=_logits, actions=[a], rewards=td[0])  
+            # then weighted by the td-error: small difference of real and predict actions for large td-error (advantage); and vice versa.
+            _exp_v = tl.rein.cross_entropy_reward_loss(logits=_logits, actions=[a], rewards=td[0])
         grad = tape.gradient(_exp_v, self.model.trainable_weights)
         self.optimizer.apply_gradients(zip(grad, self.model.trainable_weights))
         return _exp_v
@@ -95,7 +100,7 @@ class Actor(object):
     def choose_action(self, s):
         _logits = self.model(np.array([s]))
         _probs = tf.nn.softmax(_logits).numpy()
-        return tl.rein.choice_action_by_probs(_probs.ravel()) # sample according to probability distribution
+        return tl.rein.choice_action_by_probs(_probs.ravel())  # sample according to probability distribution
 
     def choose_action_greedy(self, s):
         _logits = self.model(np.array([s]))  # logits: probability distribution of actions
@@ -109,10 +114,15 @@ class Critic(object):
 
         def get_model(inputs_shape):
             ni = tl.layers.Input(inputs_shape, name='state')
-            nn = tl.layers.Dense(n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')(ni)
-            nn = tl.layers.Dense(n_units=5, act=tf.nn.relu, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')(nn)
+            nn = tl.layers.Dense(
+                n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden'
+            )(ni)
+            nn = tl.layers.Dense(
+                n_units=5, act=tf.nn.relu, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2'
+            )(nn)
             nn = tl.layers.Dense(n_units=1, act=None, name='value')(nn)
             return tl.models.Model(inputs=ni, outputs=nn, name="Critic")
+
         self.model = get_model([1, n_features])
         self.model.train()
 
@@ -130,10 +140,10 @@ class Critic(object):
 
         return td_error
 
+
 actor = Actor(n_features=N_F, n_actions=N_A, lr=LR_A)
 # we need a good teacher, so the teacher should learn faster than the actor
 critic = Critic(n_features=N_F, lr=LR_C)
-
 
 for i_episode in range(MAX_EPISODE):
     episode_time = time.time()

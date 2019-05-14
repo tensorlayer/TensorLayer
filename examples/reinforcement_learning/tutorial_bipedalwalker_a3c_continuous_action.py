@@ -51,7 +51,6 @@ from tensorlayer.layers import DenseLayer, InputLayer
 
 tfd = tfp.distributions
 
-
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 np.random.seed(2)
@@ -85,11 +84,12 @@ A_BOUND[1] = A_BOUND[1].reshape(1, N_A)
 
 class ACNet(object):
 
-    def __init__(self, scope, globalAC=None):  
+    def __init__(self, scope, globalAC=None):
         self.scope = scope
         self.save_path = './model'
 
         w_init = tf.keras.initializers.glorot_normal(seed=None)  # initializer, glorot=xavier
+
         def get_actor(input_shape):  # policy network
             with tf.name_scope(self.scope):
                 ni = tl.layers.Input(input_shape, name='in')
@@ -97,21 +97,26 @@ class ACNet(object):
                 nn = tl.layers.Dense(n_units=300, act=tf.nn.relu6, W_init=w_init, name='la2')(nn)
                 mu = tl.layers.Dense(n_units=N_A, act=tf.nn.tanh, W_init=w_init, name='mu')(nn)
                 sigma = tl.layers.Dense(n_units=N_A, act=tf.nn.softplus, W_init=w_init, name='sigma')(nn)
-            return tl.models.Model(inputs=ni, outputs=[mu, sigma], name=scope+'/Actor')
-        self.actor = get_actor( [None, N_S])
+            return tl.models.Model(inputs=ni, outputs=[mu, sigma], name=scope + '/Actor')
+
+        self.actor = get_actor([None, N_S])
         self.actor.train()  # train mode for Dropout, BatchNorm
-        def get_critic(input_shape): # we use Value-function here, but not Q-function.
+
+        def get_critic(input_shape):  # we use Value-function here, but not Q-function.
             with tf.name_scope(self.scope):
                 ni = tl.layers.Input(input_shape, name='in')
                 nn = tl.layers.Dense(n_units=500, act=tf.nn.relu6, W_init=w_init, name='lc')(ni)
                 nn = tl.layers.Dense(n_units=300, act=tf.nn.relu6, W_init=w_init, name='lc2')(nn)
                 v = tl.layers.Dense(n_units=1, W_init=w_init, name='v')(nn)
-            return tl.models.Model(inputs=ni, outputs=v, name=scope+'/Critic')
-        self.critic = get_critic( [None, N_S])
-        self.critic.train() # train mode for Dropout, BatchNorm
-    
-    @tf.function # convert numpy functions to tf.Operations in the TFgraph, return tensor
-    def update_global(self, buffer_s, buffer_a, buffer_v_target, globalAC):  # refer to the global Actor-Crtic network for updating it with samples  
+            return tl.models.Model(inputs=ni, outputs=v, name=scope + '/Critic')
+
+        self.critic = get_critic([None, N_S])
+        self.critic.train()  # train mode for Dropout, BatchNorm
+
+    @tf.function  # convert numpy functions to tf.Operations in the TFgraph, return tensor
+    def update_global(
+            self, buffer_s, buffer_a, buffer_v_target, globalAC
+    ):  # refer to the global Actor-Crtic network for updating it with samples
         ''' update the global critic '''
         with tf.GradientTape() as tape:
             self.v = self.critic(buffer_s)
@@ -121,7 +126,6 @@ class ACNet(object):
         self.c_grads = tape.gradient(self.c_loss, self.critic.trainable_weights)
         OPT_C.apply_gradients(zip(self.c_grads, globalAC.critic.trainable_weights))  # local grads applies to global net
         # del tape # Drop the reference to the tape
-
         ''' update the global actor '''
         with tf.GradientTape() as tape:
             self.mu, self.sigma = self.actor(buffer_s)
@@ -129,7 +133,7 @@ class ACNet(object):
             self.mu, self.sigma = self.mu * A_BOUND[1], self.sigma + 1e-5
 
             normal_dist = tfd.Normal(self.mu, self.sigma)  # no tf.contrib for tf2.0
-            self.a_his = buffer_a # float32
+            self.a_his = buffer_a  # float32
             log_prob = normal_dist.log_prob(self.a_his)
             exp_v = log_prob * td  # td is from the critic part, no gradients for it
             entropy = normal_dist.entropy()  # encourage exploration
@@ -138,7 +142,7 @@ class ACNet(object):
         self.a_grads = tape.gradient(self.a_loss, self.actor.trainable_weights)
         OPT_A.apply_gradients(zip(self.a_grads, globalAC.actor.trainable_weights))  # local grads applies to global net
         return self.test  # for test purpose
-    
+
     @tf.function
     def pull_global(self, globalAC):  # run by a local, pull weights from the global nets
         for l_p, g_p in zip(self.actor.trainable_weights, globalAC.actor.trainable_weights):
@@ -152,17 +156,18 @@ class ACNet(object):
 
         with tf.name_scope('wrap_a_out'):
             self.mu, self.sigma = self.mu * A_BOUND[1], self.sigma + 1e-5
-        normal_dist = tfd.Normal(self.mu, self.sigma)   # for continuous action space
+        normal_dist = tfd.Normal(self.mu, self.sigma)  # for continuous action space
         self.A = tf.clip_by_value(tf.squeeze(normal_dist.sample(1), axis=0), *A_BOUND)
         return self.A.numpy()[0]
 
-    def save_ckpt(self): # save trained weights
+    def save_ckpt(self):  # save trained weights
         tl.files.save_npz(self.actor.trainable_weights, name='model_actor.npz')
         tl.files.save_npz(self.critic.trainable_weights, name='model_critic.npz')
 
-    def load_ckpt(self): # load trained weights
+    def load_ckpt(self):  # load trained weights
         tl.files.load_and_assign_npz(name='model_actor.npz', network=self.actor)
         tl.files.load_and_assign_npz(name='model_critic.npz', network=self.critic)
+
 
 class Worker(object):
 
@@ -183,11 +188,11 @@ class Worker(object):
                 # visualize Worker_0 during training
                 if self.name == 'Worker_0' and total_step % 30 == 0:
                     self.env.render()
-                s = s.astype('float32') # double to float
-                a = self.AC.choose_action(s) 
+                s = s.astype('float32')  # double to float
+                a = self.AC.choose_action(s)
                 s_, r, done, _info = self.env.step(a)
-                
-                s_ = s_.astype('float32') # double to float
+
+                s_ = s_.astype('float32')  # double to float
                 # set robot falls reward to -2 instead of -100
                 if r == -100: r = -2
 
@@ -201,7 +206,7 @@ class Worker(object):
                     if done:
                         v_s_ = 0  # terminal
                     else:
-                        v_s_ = self.AC.critic(s_[np.newaxis, :])[0,0] # reduce dim from 2 to 0
+                        v_s_ = self.AC.critic(s_[np.newaxis, :])[0, 0]  # reduce dim from 2 to 0
 
                     buffer_v_target = []
 
@@ -210,7 +215,7 @@ class Worker(object):
                         buffer_v_target.append(v_s_)
 
                     buffer_v_target.reverse()
-                    
+
                     buffer_s, buffer_a, buffer_v_target = (
                         np.vstack(buffer_s), np.vstack(buffer_a), np.vstack(buffer_v_target)
                     )
@@ -245,7 +250,7 @@ class Worker(object):
 if __name__ == "__main__":
     # ============================= TRAINING ===============================
     with tf.device("/cpu:0"):
-        
+
         OPT_A = tf.optimizers.RMSprop(LR_A, name='RMSPropA')
         OPT_C = tf.optimizers.RMSprop(LR_C, name='RMSPropC')
 
@@ -263,7 +268,7 @@ if __name__ == "__main__":
     for worker in workers:
         # t = threading.Thread(target=worker.work)
         job = lambda: worker.work(GLOBAL_AC)
-        t = threading.Thread(target=job)  
+        t = threading.Thread(target=job)
         t.start()
         worker_threads.append(t)
     COORD.join(worker_threads)
@@ -285,7 +290,7 @@ if __name__ == "__main__":
         rall = 0
         while True:
             env.render()
-            s = s.astype('float32') # double to float
+            s = s.astype('float32')  # double to float
             a = GLOBAL_AC.choose_action(s)
             s, r, d, _ = env.step(a)
             rall += r

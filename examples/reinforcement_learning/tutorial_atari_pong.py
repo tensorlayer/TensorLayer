@@ -68,6 +68,8 @@ reward_sum = 0
 episode_number = 0
 
 xs, ys, rs = [], [], []
+
+
 # policy network
 def get_model(inputs_shape):
     ni = tl.layers.Input(inputs_shape)
@@ -75,12 +77,14 @@ def get_model(inputs_shape):
     nn = tl.layers.Dense(n_units=3, name='output')(nn)
     M = tl.models.Model(inputs=ni, outputs=nn, name="mlp")
     return M
+
+
 model = get_model([None, D])
 train_weights = model.trainable_weights
 
 optimizer = tf.optimizers.RMSprop(lr=learning_rate, decay=decay_rate)
 
-model.train() # set model to train mode (in case you add dropout into the model)
+model.train()  # set model to train mode (in case you add dropout into the model)
 
 start_time = time.time()
 game_number = 0
@@ -97,8 +101,8 @@ while True:
     prob = tf.nn.softmax(_prob)
 
     # action. 1: STOP  2: UP  3: DOWN
-        # action = np.random.choice([1,2,3], p=prob.flatten())
-        # action = tl.rein.choice_action_by_probs(prob.flatten(), [1, 2, 3])
+    # action = np.random.choice([1,2,3], p=prob.flatten())
+    # action = tl.rein.choice_action_by_probs(prob.flatten(), [1, 2, 3])
     action = tl.rein.choice_action_by_probs(prob[0].numpy(), [1, 2, 3])
 
     observation, reward, done, _ = env.step(action)

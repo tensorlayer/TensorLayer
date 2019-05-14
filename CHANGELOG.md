@@ -77,7 +77,7 @@ To release a new version, please update the changelog as followed:
 - remove `tl.layers.initialize_global_variables(sess)` (PR #931)
 - change `tl.layers.core`, `tl.models.core` (PR #966)
 - change `weights` into `all_weights`, `trainable_weights`, `nontrainable_weights`
-- change reinforcement learning examples from TL1 to TL2 (PR #970)
+- change reinforcement learning examples from TL1 to TL2 (PR #969)
 
 ### Dependencies Update
 - nltk>=3.3,<3.4 => nltk>=3.3,<3.5 (PR #892)
@@ -99,6 +99,7 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 - @zsdonghao: #931
 - @yd-yin: #963
+- @quantumiracle: #969
 
 
 ## [2.0.0-alpha] - 2019-05-04
