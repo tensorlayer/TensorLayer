@@ -76,12 +76,13 @@ To release a new version, please update the changelog as followed:
 ### Changed
 - remove `tl.layers.initialize_global_variables(sess)` (PR #931)
 - change `tl.layers.core`, `tl.models.core` (PR #966)
-   - change `weights` into `all_weights`, `trainable_weights`, `nontrainable_weights`
+- change `weights` into `all_weights`, `trainable_weights`, `nontrainable_weights`
 
 ### Dependencies Update
 - nltk>=3.3,<3.4 => nltk>=3.3,<3.5 (PR #892)
 - pytest>=3.6,<3.11 => pytest>=3.6,<4.1 (PR #889)
 - yapf>=0.22,<0.25 => yapf==0.25.0 (PR #896)
+- imageio==2.5.0 progressbar2==3.39.3  scikit-learn==0.21.0 scikit-image==0.15.0 scipy==1.2.1 wrapt==1.11.1 pymongo==3.8.0 sphinx==2.0.1 wrapt==1.11.1 opencv-python==4.1.0.25 requests==2.21.0 tqdm==4.31.1	lxml==4.3.3 pycodestyle==2.5.0 sphinx==2.0.1 yapf==0.27.0(PR #967)
 
 ### Deprecated
 
