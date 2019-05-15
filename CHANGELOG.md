@@ -67,32 +67,32 @@ To release a new version, please update the changelog as followed:
 
 <!-- YOU CAN EDIT FROM HERE -->
 
-## [Unreleased]
+## [2.0.1] - 2019-5-15
 
-### Added
+A maintain release.
 
 ### Changed
 - remove `tl.layers.initialize_global_variables(sess)` (PR #931)
+- support `trainable_weights` (PR #966)
 
 ### Dependencies Update
 - nltk>=3.3,<3.4 => nltk>=3.3,<3.5 (PR #892)
 - pytest>=3.6,<3.11 => pytest>=3.6,<4.1 (PR #889)
 - yapf>=0.22,<0.25 => yapf==0.25.0 (PR #896)
 
-### Deprecated
 
 ### Fixed
 - fix docs of models @zsdonghao #957
 
-### Removed
-
-### Security
 
 ### Contributors
+@warshallrho: #PR966
 @zsdonghao: #931
 
 
-## [2.0.0-alpha] - 2019-05-04
+## [2.0.0] - 2019-05-04
+
+To many PR for this update, please check [here](https://github.com/tensorlayer/tensorlayer/releases/tag/2.0.0) for more details.
 
 ### Changed
 * update for TensorLayer 2.0.0 alpha version (PR #952)
@@ -110,6 +110,7 @@ To release a new version, please update the changelog as followed:
 - @JingqingZ
 - @ChrisWu1997
 - @warshallrho
+
 
 ## [1.11.1] - 2018-11-15
 
