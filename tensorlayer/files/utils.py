@@ -1907,7 +1907,7 @@ def save_npz(save_list=None, name='model.npz'):
     --------
     Save model to npz
 
-    >>> tl.files.save_npz(network.weights, name='model.npz')
+    >>> tl.files.save_npz(network.all_weights, name='model.npz')
 
     Load model from npz (Method 1)
 
@@ -1958,7 +1958,7 @@ def load_npz(path='', name='model.npz'):
     - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
 
     """
-    d = np.load(os.path.join(path, name))
+    d = np.load(os.path.join(path, name), allow_pickle=True)
     return d['params']
 
 
@@ -1993,7 +1993,7 @@ def assign_weights(weights, network):
     """
     ops = []
     for idx, param in enumerate(weights):
-        ops.append(network.weights[idx].assign(param))
+        ops.append(network.all_weights[idx].assign(param))
     return ops
 
 
@@ -2073,7 +2073,7 @@ def load_and_assign_npz_dict(name='model.npz', network=None, skip=False):
     if len(weights.keys()) != len(set(weights.keys())):
         raise Exception("Duplication in model npz_dict %s" % name)
 
-    net_weights_name = [w.name for w in network.weights]
+    net_weights_name = [w.name for w in network.all_weights]
 
     for key in weights.keys():
         if key not in net_weights_name:
@@ -2085,7 +2085,7 @@ def load_and_assign_npz_dict(name='model.npz', network=None, skip=False):
                     "if you want to skip redundant or mismatch weights." % key
                 )
         else:
-            assign_tf_variable(network.weights[net_weights_name.index(key)], weights[key])
+            assign_tf_variable(network.all_weights[net_weights_name.index(key)], weights[key])
     logging.info("[*] Model restored from npz_dict %s" % name)
 
 
@@ -2549,9 +2549,9 @@ def _save_weights_to_hdf5_group(f, layers):
         elif isinstance(layer, tl.layers.LayerList):
             _save_weights_to_hdf5_group(g, layer.layers)
         elif isinstance(layer, tl.layers.Layer):
-            if layer.weights is not None:
-                weight_values = tf_variables_to_numpy(layer.weights)
-                weight_names = [w.name.encode('utf8') for w in layer.weights]
+            if layer.all_weights is not None:
+                weight_values = tf_variables_to_numpy(layer.all_weights)
+                weight_names = [w.name.encode('utf8') for w in layer.all_weights]
             else:
                 weight_values = []
                 weight_names = []
@@ -2593,7 +2593,7 @@ def _load_weights_from_hdf5_group_in_order(f, layers):
         elif isinstance(layer, tl.layers.Layer):
             weight_names = [n.decode('utf8') for n in g.attrs['weight_names']]
             for iid, w_name in enumerate(weight_names):
-                assign_tf_variable(layer.weights[iid], np.asarray(g[w_name]))
+                assign_tf_variable(layer.all_weights[iid], np.asarray(g[w_name]))
         else:
             raise Exception("Only layer or model can be saved into hdf5.")
         if idx == len(layers) - 1:
@@ -2639,7 +2639,7 @@ def _load_weights_from_hdf5_group(f, layers, skip=False):
             elif isinstance(layer, tl.layers.Layer):
                 weight_names = [n.decode('utf8') for n in g.attrs['weight_names']]
                 for iid, w_name in enumerate(weight_names):
-                    assign_tf_variable(layer.weights[iid], np.asarray(g[w_name]))
+                    assign_tf_variable(layer.all_weights[iid], np.asarray(g[w_name]))
             else:
                 raise Exception("Only layer or model can be saved into hdf5.")
 

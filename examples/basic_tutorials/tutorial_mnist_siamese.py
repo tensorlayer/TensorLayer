@@ -96,7 +96,7 @@ te_pairs, te_y = create_pairs(X_test, digit_indices)
 
 # training settings
 print_freq = 5
-train_weights = model.weights
+train_weights = model.trainable_weights
 optimizer = tf.optimizers.RMSprop()
 
 

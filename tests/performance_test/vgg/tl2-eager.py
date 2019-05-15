@@ -23,7 +23,7 @@ total_time = 0
 # training setting
 num_iter = NUM_ITERS
 batch_size = BATCH_SIZE
-train_weights = vgg.weights
+train_weights = vgg.trainable_weights
 optimizer = tf.optimizers.Adam(learning_rate=LERANING_RATE)
 loss_object = tl.cost.cross_entropy
 

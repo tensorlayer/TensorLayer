@@ -149,11 +149,11 @@ We can get the specific weights by indexing or naming.
 .. code-block:: python
 
   # indexing
-  all_weights = MLP.weights
-  some_weights = MLP.weights[1:3]
+  all_weights = MLP.all_weights
+  some_weights = MLP.all_weights[1:3]
 
   # naming
-  some_weights = MLP.get_layer('dense1').weights
+  some_weights = MLP.get_layer('dense1').all_weights
 
 
 Save and restore model

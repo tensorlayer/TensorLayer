@@ -142,14 +142,14 @@ sake of cross-platform. Other file formats such as ``.npz`` are also available.
 .. code-block:: python
 
   ## save model as .h5
-  tl.files.save_weights_to_hdf5('model.h5', network.weights)
+  tl.files.save_weights_to_hdf5('model.h5', network.all_weights)
   # restore model from .h5 (in order)
-  tl.files.load_hdf5_to_weights_in_order('model.h5', network.weights)
+  tl.files.load_hdf5_to_weights_in_order('model.h5', network.all_weights)
   # restore model from .h5 (by name)
-  tl.files.load_hdf5_to_weights('model.h5', network.weights)
+  tl.files.load_hdf5_to_weights('model.h5', network.all_weights)
 
   ## save model as .npz
-  tl.files.save_npz(network.weights , name='model.npz')
+  tl.files.save_npz(network.all_weights , name='model.npz')
   # restore model from .npz (method 1)
   load_params = tl.files.load_npz(name='model.npz')
   tl.files.assign_weights(sess, load_params, network)
