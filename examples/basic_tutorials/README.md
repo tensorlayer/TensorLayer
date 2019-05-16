@@ -1,6 +1,6 @@
 Something you need to know:
 
-### 1. Static and dynamic model
+### 1. Static and dynamic models
 
 1) `tutorial_mnist_mlp_static.py`: static model
 
