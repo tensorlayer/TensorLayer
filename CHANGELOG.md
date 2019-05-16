@@ -98,6 +98,7 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 - @zsdonghao: #931
 - @yd-yin: #963
+- @dvklopfenstein: #971
 
 
 ## [2.0.0-alpha] - 2019-05-04
