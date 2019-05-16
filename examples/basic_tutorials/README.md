@@ -6,7 +6,7 @@ Something you need to know:
 
 2) `tutorial_mnist_mlp_dynamic.py`: dynamic model
 
-### 2. Switching Training and testing
+### 2. Switching training and testing
 
 There are two ways to switch the training and testing mode: 
 
@@ -25,8 +25,6 @@ y2 = model(x)
 y1 = model(x, is_train=True)
 y2 = model(x, is_train=False)
 ```
-
-
 
 ### Data augmentation
 
