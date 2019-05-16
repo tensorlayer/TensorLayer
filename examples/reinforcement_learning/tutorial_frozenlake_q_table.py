@@ -11,6 +11,9 @@ For Q-Network, see tutorial_frozenlake_q_network.py
 EN: https://medium.com/emergent-future/simple-reinforcement-learning-with-tensorflow-part-0-q-learning-with-tables-and-neural-networks-d195264329d0#.5m3361vlw
 CN: https://zhuanlan.zhihu.com/p/25710327
 
+tensorflow==2.0.0a0
+tensorlayer==2.0.0
+
 """
 
 import time
@@ -52,7 +55,7 @@ for i in range(num_episodes):
             break
     rList.append(rAll)
     running_reward = r if running_reward is None else running_reward * 0.99 + r * 0.01
-    print("Episode [%d/%d] sum reward: %f running reward: %f took: %.5fs %s" % \
-        (i, num_episodes, rAll, running_reward, time.time() - episode_time, '' if rAll == 0 else ' !!!!!!!!'))
+    print("Episode [%d/%d] sum reward: %f running reward: %f took: %.5fs " % \
+        (i, num_episodes, rAll, running_reward, time.time() - episode_time))
 
 print("Final Q-Table Values:/n %s" % Q)
