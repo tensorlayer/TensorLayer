@@ -103,7 +103,6 @@ A maintain release.
 - @dvklopfenstein: #971
 
 
-
 ## [2.0.0] - 2019-05-04
 
 To many PR for this update, please check [here](https://github.com/tensorlayer/tensorlayer/releases/tag/2.0.0) for more details.
@@ -452,6 +451,8 @@ To many PR for this update, please check [here](https://github.com/tensorlayer/t
 @zsdonghao @luomai @DEKHTIARJonathan
 
 [Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.11....master
+[2.0.1]: https://github.com/tensorlayer/tensorlayer/compare/2.0.1...2.0.1
+[2.0.0]: https://github.com/tensorlayer/tensorlayer/compare/2.0.0...2.0.0
 [1.11.1]: https://github.com/tensorlayer/tensorlayer/compare/1.11.0...1.11.0
 [1.11.0]: https://github.com/tensorlayer/tensorlayer/compare/1.10.1...1.11.0
 [1.10.1]: https://github.com/tensorlayer/tensorlayer/compare/1.10.0...1.10.1
