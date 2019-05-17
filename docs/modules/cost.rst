@@ -96,5 +96,5 @@ Special
 .. autofunction:: maxnorm_i_regularizer
 
 Huber Loss
-^^^^^^^^^^
+--------------------------
 .. autofunction:: huber_loss

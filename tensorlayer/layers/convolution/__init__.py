@@ -80,4 +80,12 @@ __all__ = [
     #quan_conv
     'QuanConv2d',
     'QuanConv2dWithBN',
+
+    # octave_conv
+    'OctConv2dIn',
+    'OctConv2d',
+    'OctConv2dOut',
+    'OctConv2dHighOut',
+    'OctConv2dLowOut',
+    'OctConv2dConcat',
 ]
