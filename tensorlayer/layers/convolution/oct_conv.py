@@ -84,7 +84,6 @@ class OctConv2d(Layer):
         The filter size (height, width).
     strides : tuple of int
         The sliding window strides of corresponding input dimensions.
-        It must be in the same order as the ``shape`` parameter.
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
