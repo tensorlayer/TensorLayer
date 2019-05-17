@@ -24,7 +24,7 @@ class OctConv2dIn(Layer):
     The :class:`OctConv2dIn` class is a preprocessing layer for
     2D image [batch, height, width, channel], see `Drop an Octave: Reducing
     Spatial Redundancy in Convolutional Neural Networks with Octave
-     Convolution <https://arxiv.org/abs/1904.05049>`__.
+    Convolution <https://arxiv.org/abs/1904.05049>`__.
     Parameters
     ----------
     name : None or str
