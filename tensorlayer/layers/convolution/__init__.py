@@ -24,6 +24,7 @@ from .super_resolution import *
 from .ternary_conv import *
 from .quan_conv import *
 from .quan_conv_bn import *
+from .oct_conv import *
 
 __all__ = [
 
