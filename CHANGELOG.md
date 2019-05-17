@@ -100,6 +100,7 @@ A maintain release.
 - @warshallrho: #PR966
 - @zsdonghao: #931
 - @yd-yin: #963
+- @dvklopfenstein: #971
 
 
 
