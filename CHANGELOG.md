@@ -67,7 +67,7 @@ To release a new version, please update the changelog as followed:
 
 <!-- YOU CAN EDIT FROM HERE -->
 
-## [2.0.1] - 2019-5-15
+## [2.0.1] - 2019-5-17
 
 
 A maintain release.
