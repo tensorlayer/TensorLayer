@@ -79,7 +79,7 @@ class OctConv2d(Layer):
     ----------
     nfilter : int
         The sum of the number of filters.
-    alpha : :float
+    alpha : float
         The percentage of high_res output.
     filter_size : tuple of int
         The filter size (height, width).
@@ -122,7 +122,7 @@ class OctConv2d(Layer):
             b_init=tl.initializers.constant(value=0.0),
             act=None,
             in_channels=None,
-            name=None  # 'cnn2d_layer',
+            name=None
     ):
         super().__init__(name)
         self.filter = nfilter
