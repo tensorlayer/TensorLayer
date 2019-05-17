@@ -96,8 +96,7 @@ class OctConv2d(Layer):
         A unique layer name.
     Notes
     -----
-    - The input should be a list with shape [high_res_tensor , low_res_tensor],
-    the height and width of high_res should be twice of the low_res_tensor.
+    - The input should be a list with shape [high_res_tensor , low_res_tensor], the height and width of high_res should be twice of the low_res_tensor.
     - If you do not which tensor is larger, use OctConv2dConcat layer.
     - The output will be a list which contains 2 tensor.
     - You should not use the output directly.
@@ -338,8 +337,7 @@ class OctConv2dHighOut(Layer):
     Notes
     -----
     - Use this layer to get high resolution tensor.
-    - If you want to do some customized normalization ops, use this layer with
-    OctConv2dLowOut and OctConv2dConcat layers to implement your idea.
+    - If you want to do some customized normalization ops, use this layer with OctConv2dLowOut and OctConv2dConcat layers to implement your idea.
     Examples
     --------
     With TensorLayer
@@ -390,8 +388,7 @@ class OctConv2dLowOut(Layer):
     Notes
     -----
     - Use this layer to get low resolution tensor.
-    - If you want to do some customized normalization ops, use this layer with
-    OctConv2dHighOut and OctConv2dConcat layers to implement your idea.
+    - If you want to do some customized normalization ops, use this layer with OctConv2dHighOut and OctConv2dConcat layers to implement your idea.
     Examples
     --------
     With TensorLayer
