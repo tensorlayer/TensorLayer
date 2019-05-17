@@ -80,7 +80,7 @@ class OctConv2d(Layer):
     nfilter : int
         The sum of the number of filters.
     alpha : float
-        The percentage of high_res output.
+        The percentage of highres output.
     filter_size : tuple of int
         The filter size (height, width).
     strides : tuple of int
@@ -96,7 +96,7 @@ class OctConv2d(Layer):
         A unique layer name.
     Notes
     -----
-    - The input should be a list with shape [high_res_tensor , low_res_tensor], the height and width of high_res should be twice of the low_res_tensor.
+    - The input should be a list with shape (highrestensor , lowrestensor), the height and width of high_res should be twice of the low_res_tensor.
     - If you do not which tensor is larger, use OctConv2dConcat layer.
     - The output will be a list which contains 2 tensor.
     - You should not use the output directly.
