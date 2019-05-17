@@ -4150,7 +4150,7 @@ def keypoint_random_resize_shortestedge(
 
 
 def obj_box_coord_affine(
-        classes=None,coords=None, affine_matrix=None,affine_matrix_inv=None,min_ratio=0.0,min_width=0.0,min_height=0.0
+        classes=None,coords=None, affine_matrix=None, affine_matrix_inv=None, min_ratio=0.0, min_width=0.0, min_height=0.0
 ):
     """Apply affine transform the box coordinates, and gets the new box coordinates.
 
@@ -4159,17 +4159,21 @@ def obj_box_coord_affine(
     classes : list of int or None
         Class IDs.
     coords : list of list of 4 int/float or None
-        Coordinates [[x, y, w, h], [x, y, w, h], ...]. Here x,y are the center coordinates of the bbox.
+        Coordinates [[x, y, w, h], [x, y, w, h], ...]. Here x,y are
+         the center coordinates of the bbox.
     affine_matrix : np.ndarray
         The affine matrix of the image. A ndarray with shape [2,3].
     affine_matrix_inv : np.ndarray
         The inverse of the affine matrix. A ndarray with shape [2,3].
     min_ratio : float
-        Threshold, remove the box if its ratio of new size to old size less than the threshold.
+        Threshold, remove the box if its ratio of new size to old size less
+        than the threshold.
     min_width : float
-        Threshold, remove the box if its ratio of width to image size less than the threshold.
+        Threshold, remove the box if its ratio of width to image size less
+         than the threshold.
     min_height : float
-        Threshold, remove the box if its ratio of height to image size less than the threshold.
+        Threshold, remove the box if its ratio of height to image size less
+         than the threshold.
 
     Returns
     -------
@@ -4179,59 +4183,66 @@ def obj_box_coord_affine(
         A list of new bounding boxes.
     """
     Me = np.array([[0, 0, 1.]])
-    new_classes=[]
-    new_cords=[]
-    if affine_matrix_inv==None:
-        affine_matrix_inv=np.linalg.pinv(np.concatenate((affine_matrix, Me), axis=0))
-    for bbox_idx,bbox in enumerate(coords):
-        old_pt = np.array([[bbox[0] * 2. - 1.0], [bbox[1] * 2. - 1.0], [1.0]])
-        new_wh_a = np.matmul(affine_matrix_inv[0:2, 0:2], np.array([[affine_matrix_inv[2]], [bbox[3]]]))
-        new_wh_b = np.matmul(affine_matrix_inv[0:2, 0:2], np.array([[affine_matrix_inv[2]], [-bbox[3]]]))
+    new_classes = []
+    new_cords = []
+    if affine_matrix_inv is None:
+        affine_matrix_inv = np.linalg.pinv(np.concatenate((affine_matrix,
+                                                           Me), axis=0))
+    for (bbox_idx, bbox) in enumerate(coords):
+        old_pt = np.array([[bbox[0] * 2. - 1.], [bbox[1] * 2. - 1.], [1.]])
+        new_wh_a = np.matmul(affine_matrix_inv[0:2, 0:2],
+                             np.array([[bbox[2]], [bbox[3]]]))
+        new_wh_b = np.matmul(affine_matrix_inv[0:2, 0:2],
+                             np.array([[bbox[2]], [-bbox[3]]]))
         new_w = max(abs(new_wh_a[0]), abs(new_wh_b[0]))
         new_h = max(abs(new_wh_a[1]), abs(new_wh_b[1]))
-        new_pt = (np.matmul(affine_matrix_inv, old_pt) + 1.0) / 2.0
-        bbox_left = new_pt[0] - new_w / 2.0
+        new_pt = (np.matmul(affine_matrix_inv, old_pt) + 1.) / 2.
+        bbox_left = new_pt[0] - new_w / 2.
         if bbox_left <= 0:
             bbox_left = 0.
         if bbox_left >= 1:
             bbox_left = 1.
-        bbox_right = new_pt[0] + new_w / 2.0
+        bbox_right = new_pt[0] + new_w / 2.
         if bbox_right <= 0:
             bbox_right = 0.
         if bbox_right >= 1:
             bbox_right = 1.
-        bbox_top = new_pt[1] + new_h / 2.0
+        bbox_top = new_pt[1] + new_h / 2.
         if bbox_top <= 0:
             bbox_top = 0.
         if bbox_top >= 1:
             bbox_top = 1.
-        bbox_bottom = new_pt[1] - new_h / 2.0
+        bbox_bottom = new_pt[1] - new_h / 2.
         if bbox_bottom <= 0:
             bbox_bottom = 0.
         if bbox_bottom >= 1:
             bbox_bottom = 1.
-        ratio = abs(bbox_right - bbox_left) * abs(bbox_top - bbox_bottom) / (new_w + 0.00001) / (new_h + 0.00001)
+        ratio = abs(bbox_right - bbox_left) * abs(bbox_top - bbox_bottom) \
+                / (new_w + 0.00001) / (new_h + 0.00001)
         bbox_x = abs(bbox_right + bbox_left) / 2.
         bbox_y = abs(bbox_top + bbox_bottom) / 2.
         bbox_h = abs(bbox_top - bbox_bottom)
         bbox_w = abs(bbox_right - bbox_left)
-        if (ratio > min_ratio) & (bbox_h >= min_height) & (bbox_w >= min_width):
+        if (ratio > min_ratio) & (bbox_h >= min_height) & (bbox_w
+                                                           >= min_width):
             new_classes.append(classes[bbox_idx])
-            new_cords.append([bbox_x,bbox_y,bbox_w,bbox_h])
-    return new_classes,new_cords
+            new_cords.append([bbox_x, bbox_y, bbox_w, bbox_h])
+    return (new_classes, new_cords)
 
 
 def rotated_obj_box_coord_affine(
-        classes=None,coords=None, affine_matrix=None,affine_matrix_inv=None
+        classes=None, coords=None, affine_matrix=None, affine_matrix_inv=None
     ):
-    """Apply affine transform the box coordinates with rotation, and gets the new box coordinates with rotation. Experimental!
+    """Apply affine transform the box coordinates with rotation, and gets the
+     new box coordinates with rotation. Experimental!
 
     Parameters
     -----------
     classes : list of int or None
         Class IDs.
     coords : list of list of 5 int/float or None
-        Coordinates [[x, y, w, h, r], [x, y, w, h, r], ...]. Here x,y are the center coordinates of the bbox, r is the radius.
+        Coordinates [[x, y, w, h, r], [x, y, w, h, r], ...]. Here x,y are
+         the center coordinates of the bbox, r is the radius.
     affine_matrix : np.ndarray
         The affine matrix of the image. A ndarray with shape [2,3].
     affine_matrix_inv : np.ndarray
@@ -4245,38 +4256,51 @@ def rotated_obj_box_coord_affine(
         A list of new bounding boxes.
     """
     Me = np.array([[0, 0, 1.]])
-    new_classes=[]
-    new_cords=[]
-    if affine_matrix_inv==None:
-        affine_matrix_inv=np.linalg.pinv(np.concatenate((affine_matrix, Me), axis=0))
-    for bbox_idx,bbox in enumerate(coords):
+    new_classes = []
+    new_cords = []
+    if affine_matrix_inv is None:
+        affine_matrix_inv = np.linalg.pinv(np.concatenate((affine_matrix,
+                                                           Me), axis=0))
+    for (bbox_idx, bbox) in enumerate(coords):
         centerx = bbox[0]
         centery = bbox[1]
-        old_pt = np.array([[centerx * 2. - 1.0], [centery * 2. - 1.0], [1.0]])
-        top_center = np.array([[0.], [-bbox[3]], [1.0]])
-        right_center = np.array([[bbox[2]], [0.], [1.0]])
+        old_pt = np.array([[centerx * 2. - 1.], [centery * 2. - 1.], [1.]])
+        top_center = np.array([[0.], [-bbox[3]], [1.]])
+        right_center = np.array([[bbox[2]], [0.], [1.]])
         rot = bbox[-1]
-        rot_mat = np.array([[np.cos(rot), -np.sin(rot), 0], [np.sin(rot), np.cos(rot), 0], [0, 0, 1]])
+        rot_mat = np.array([[np.cos(rot), -np.sin(rot), 0], [np.sin(rot),
+                                                             np.cos(rot), 0], [0, 0, 1]])
         top_center = np.matmul(rot_mat, top_center) + old_pt
         top_center[2][0] = 1.
         right_center = np.matmul(rot_mat, right_center) + old_pt
         right_center[2][0] = 1.
-        new_pt = (np.matmul(affine_matrix_inv, old_pt) + 1.0) / 2.0
-        new_topcenter = (np.matmul(affine_matrix_inv, top_center) + 1.0) / 2.0
-        new_rightcenter = (np.matmul(affine_matrix_inv, right_center) + 1.0) / 2.0
-        new_h = np.sqrt((new_topcenter[0][0] - new_pt[0][0]) ** 2 + (new_topcenter[1][0] - new_pt[1][0]) ** 2) * 2.
-        new_w = np.sqrt((new_rightcenter[0][0] - new_pt[0][0]) ** 2 + (new_rightcenter[1][0] - new_pt[1][0]) ** 2) * 2.
+        new_pt = (np.matmul(affine_matrix_inv, old_pt) + 1.) / 2.
+        new_topcenter = (np.matmul(affine_matrix_inv, top_center) + 1.) / 2.
+        new_rightcenter = (np.matmul(affine_matrix_inv, right_center) + 1.) \
+                          / 2.
+        new_h = np.sqrt((new_topcenter[0][0] - new_pt[0][0]) ** 2
+                        + (new_topcenter[1][0] - new_pt[1][0]) ** 2) * 2.
+        new_w = np.sqrt((new_rightcenter[0][0] - new_pt[0][0]) ** 2
+                        + (new_rightcenter[1][0] - new_pt[1][0]) ** 2) * 2.
         deltax = -new_topcenter[0][0] + new_pt[0][0]
-        deltay = (-new_topcenter[1][0] + new_pt[1][0])* -1
-        if deltay==0:
-            if deltax>=0:
-                new_rot = -math.pi/2
+        deltay = (-new_topcenter[1][0] + new_pt[1][0]) * -1
+        if deltay == 0:
+            if deltax >= 0:
+                new_rot = -math.pi / 2
             else:
                 new_rot = math.pi / 2
         else:
             tanx = deltax / deltay
             new_rot = np.arctan(tanx)
-        if (new_pt[0][0]>0) and (new_pt[0][0]<1)and (new_pt[1][0]>0)and (new_pt[1][0]<1):
-            new_cords.append([1, new_pt[0][0], new_pt[1][0], new_w, new_h, new_rot])
+        if new_pt[0][0] > 0 and new_pt[0][0] < 1 and new_pt[1][0] > 0 \
+                and new_pt[1][0] < 1:
+            new_cords.append([
+                1,
+                new_pt[0][0],
+                new_pt[1][0],
+                new_w,
+                new_h,
+                new_rot,
+            ])
             new_classes.append(classes[bbox_idx])
-    return new_classes,new_cords
+    return (new_classes, new_cords)

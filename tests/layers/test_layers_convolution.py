@@ -466,61 +466,75 @@ class Layer_OctConv_2D_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("\n#################################")
+        print ('\n#################################')
 
         cls.batch_size = 5
         cls.inputs_shape = [cls.batch_size, 32, 32, 16]
         cls.input_layer = Input(cls.inputs_shape, name='input_layer')
 
-        cls.n1 = tl.layers.OctConv2dIn(name='octconv2din')(cls.input_layer)
+        cls.n1 = tl.layers.OctConv2dIn(name='octconv2din'
+                )(cls.input_layer)
 
-        cls.n2 = tl.layers.OctConv2d(32,0.5,act=tf.nn.relu, name='octconv2d')(cls.n1)
+        cls.n2 = tl.layers.OctConv2d(32, 0.5, act=tf.nn.relu,
+                name='octconv2d')(cls.n1)
 
         cls.n3 = tl.layers.OctConv2dHighOut(name='octconv2dho')(cls.n2)
 
         cls.n4 = tl.layers.OctConv2dLowOut(name='octconv2dlo')(cls.n2)
 
-        cls.n5 = tl.layers.OctConv2dConcat(name='octconv2dconcat')([cls.n3,cls.n4])
+        cls.n5 = tl.layers.OctConv2dConcat(name='octconv2dconcat'
+                )([cls.n3, cls.n4])
 
-        cls.n6 = tl.layers.OctConv2dOut(n_filter=32,name='octconv2dout')(cls.n5)
+        cls.n6 = tl.layers.OctConv2dOut(n_filter=32, name='octconv2dout'
+                )(cls.n5)
 
         cls.model = Model(cls.input_layer, cls.n6)
-        print("Testing OctConv2d model: \n", cls.model)
+        print ('Testing OctConv2d model: \n', cls.model)
 
     @classmethod
     def tearDownClass(cls):
         pass
+
         # tf.reset_default_graph()
 
     def test_layer_n1(self):
 
-        self.assertEqual(self.n1[0].get_shape().as_list()[1:], [32, 32, 16])
-        self.assertEqual(self.n1[1].get_shape().as_list()[1:], [16, 16, 16])
+        self.assertEqual(self.n1[0].get_shape().as_list()[1:], [32, 32,
+                         16])
+        self.assertEqual(self.n1[1].get_shape().as_list()[1:], [16, 16,
+                         16])
         self.assertEqual(len(self.n1), 2)
 
     def test_layer_n2(self):
 
-        self.assertEqual(self.n2[0].get_shape().as_list()[1:], [32, 32, 16])
-        self.assertEqual(self.n2[1].get_shape().as_list()[1:], [16, 16, 16])
+        self.assertEqual(self.n2[0].get_shape().as_list()[1:], [32, 32,
+                         16])
+        self.assertEqual(self.n2[1].get_shape().as_list()[1:], [16, 16,
+                         16])
         self.assertEqual(len(self.n2), 2)
 
     def test_layer_n3(self):
 
-        self.assertEqual(self.n3.get_shape().as_list()[1:], [32, 32, 16])
+        self.assertEqual(self.n3.get_shape().as_list()[1:], [32, 32,
+                         16])
 
     def test_layer_n4(self):
 
-        self.assertEqual(self.n4.get_shape().as_list()[1:], [16, 16, 16])
+        self.assertEqual(self.n4.get_shape().as_list()[1:], [16, 16,
+                         16])
 
     def test_layer_n5(self):
 
-        self.assertEqual(self.n5[0].get_shape().as_list()[1:], [32, 32, 16])
-        self.assertEqual(self.n5[1].get_shape().as_list()[1:], [16, 16, 16])
+        self.assertEqual(self.n5[0].get_shape().as_list()[1:], [32, 32,
+                         16])
+        self.assertEqual(self.n5[1].get_shape().as_list()[1:], [16, 16,
+                         16])
         self.assertEqual(len(self.n2), 2)
 
     def test_layer_n6(self):
 
-        self.assertEqual(self.n6.get_shape().as_list()[1:], [16, 16, 32])
+        self.assertEqual(self.n6.get_shape().as_list()[1:], [16, 16,
+                         32])
 
 if __name__ == '__main__':
 
