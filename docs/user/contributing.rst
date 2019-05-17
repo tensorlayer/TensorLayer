@@ -6,7 +6,7 @@ Contributing
 
 TensorLayer is a major ongoing research project in Data Science Institute, Imperial College London. 
 The goal of the project is to develop a compositional language while complex learning systems
-can be build through composition of neural network modules.
+can be built through composition of neural network modules.
 
 Numerous contributors come from various horizons such as: Tsinghua University, Carnegie Mellon University, University of Technology of Compiegne, 
 Google, Microsoft, Bloomberg and etc.
@@ -51,7 +51,7 @@ What to contribute
 Your method and example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you have a new method or example in term of Deep learning and Reinforcement learning,
+If you have a new method or example in terms of Deep learning and Reinforcement learning,
 you are welcome to contribute.
 
 * Provide your layer or example, so everyone can use it.

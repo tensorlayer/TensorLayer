@@ -193,27 +193,6 @@ def deconv2d_bilinear_upsampling_initializer(shape):
         A constant initializer with weights set to correspond to per channel bilinear upsampling
         when passed as W_int in DeConv2dLayer
 
-    Examples
-    --------
-    Upsampling by a factor of 2, ie e.g 100->200
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> rescale_factor = 2
-    >>> imsize = 128
-    >>> num_channels = 3
-    >>> num_in_channels = 3
-    >>> num_out_channels = 3
-    >>> filter_shape = (5, 5, num_out_channels, num_in_channels)
-    >>> ni = tl.layers.Input(shape=(1, imsize, imsize, num_channels))
-    >>> bilinear_init = deconv2d_bilinear_upsampling_initializer(shape=filter_shape)
-    >>> net = tl.layers.DeConv2dLayer(
-    ...                    shape=filter_shape,
-    ...                    outputs_shape=(1, imsize*rescale_factor, imsize*rescale_factor, num_out_channels),
-    ...                    strides=(1, rescale_factor, rescale_factor, 1),
-    ...                    W_init=bilinear_init,
-    ...                    padding='SAME',
-    ...                    act=None, name='g/h1/decon2d')(ni)
-
     """
     if shape[0] != shape[1]:
         raise Exception('deconv2d_bilinear_upsampling_initializer only supports symmetrical filter sizes')
