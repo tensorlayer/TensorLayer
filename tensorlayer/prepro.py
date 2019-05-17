@@ -4150,7 +4150,8 @@ def keypoint_random_resize_shortestedge(
 
 
 def obj_box_coord_affine(
-        classes=None,coords=None, affine_matrix=None, affine_matrix_inv=None, min_ratio=0.0, min_width=0.0, min_height=0.0
+        classes=None, coords=None, affine_matrix=None, affine_matrix_inv=None, min_ratio=0.0, min_width=0.0,
+        min_height=0.0
 ):
     """Apply affine transform the box coordinates, and gets the new box coordinates.
 
@@ -4186,14 +4187,11 @@ def obj_box_coord_affine(
     new_classes = []
     new_cords = []
     if affine_matrix_inv is None:
-        affine_matrix_inv = np.linalg.pinv(np.concatenate((affine_matrix,
-                                                           Me), axis=0))
+        affine_matrix_inv = np.linalg.pinv(np.concatenate((affine_matrix, Me), axis=0))
     for (bbox_idx, bbox) in enumerate(coords):
         old_pt = np.array([[bbox[0] * 2. - 1.], [bbox[1] * 2. - 1.], [1.]])
-        new_wh_a = np.matmul(affine_matrix_inv[0:2, 0:2],
-                             np.array([[bbox[2]], [bbox[3]]]))
-        new_wh_b = np.matmul(affine_matrix_inv[0:2, 0:2],
-                             np.array([[bbox[2]], [-bbox[3]]]))
+        new_wh_a = np.matmul(affine_matrix_inv[0:2, 0:2], np.array([[bbox[2]], [bbox[3]]]))
+        new_wh_b = np.matmul(affine_matrix_inv[0:2, 0:2], np.array([[bbox[2]], [-bbox[3]]]))
         new_w = max(abs(new_wh_a[0]), abs(new_wh_b[0]))
         new_h = max(abs(new_wh_a[1]), abs(new_wh_b[1]))
         new_pt = (np.matmul(affine_matrix_inv, old_pt) + 1.) / 2.
@@ -4223,16 +4221,13 @@ def obj_box_coord_affine(
         bbox_y = abs(bbox_top + bbox_bottom) / 2.
         bbox_h = abs(bbox_top - bbox_bottom)
         bbox_w = abs(bbox_right - bbox_left)
-        if (ratio > min_ratio) & (bbox_h >= min_height) & (bbox_w
-                                                           >= min_width):
+        if (ratio > min_ratio) & (bbox_h >= min_height) & (bbox_w >= min_width):
             new_classes.append(classes[bbox_idx])
             new_cords.append([bbox_x, bbox_y, bbox_w, bbox_h])
     return (new_classes, new_cords)
 
 
-def rotated_obj_box_coord_affine(
-        classes=None, coords=None, affine_matrix=None, affine_matrix_inv=None
-    ):
+def rotated_obj_box_coord_affine(classes=None, coords=None, affine_matrix=None, affine_matrix_inv=None):
     """Apply affine transform the box coordinates with rotation, and gets the
      new box coordinates with rotation. Experimental!
 
@@ -4259,8 +4254,7 @@ def rotated_obj_box_coord_affine(
     new_classes = []
     new_cords = []
     if affine_matrix_inv is None:
-        affine_matrix_inv = np.linalg.pinv(np.concatenate((affine_matrix,
-                                                           Me), axis=0))
+        affine_matrix_inv = np.linalg.pinv(np.concatenate((affine_matrix, Me), axis=0))
     for (bbox_idx, bbox) in enumerate(coords):
         centerx = bbox[0]
         centery = bbox[1]
@@ -4268,8 +4262,7 @@ def rotated_obj_box_coord_affine(
         top_center = np.array([[0.], [-bbox[3]], [1.]])
         right_center = np.array([[bbox[2]], [0.], [1.]])
         rot = bbox[-1]
-        rot_mat = np.array([[np.cos(rot), -np.sin(rot), 0], [np.sin(rot),
-                                                             np.cos(rot), 0], [0, 0, 1]])
+        rot_mat = np.array([[np.cos(rot), -np.sin(rot), 0], [np.sin(rot), np.cos(rot), 0], [0, 0, 1]])
         top_center = np.matmul(rot_mat, top_center) + old_pt
         top_center[2][0] = 1.
         right_center = np.matmul(rot_mat, right_center) + old_pt
@@ -4278,10 +4271,8 @@ def rotated_obj_box_coord_affine(
         new_topcenter = (np.matmul(affine_matrix_inv, top_center) + 1.) / 2.
         new_rightcenter = (np.matmul(affine_matrix_inv, right_center) + 1.) \
                           / 2.
-        new_h = np.sqrt((new_topcenter[0][0] - new_pt[0][0]) ** 2
-                        + (new_topcenter[1][0] - new_pt[1][0]) ** 2) * 2.
-        new_w = np.sqrt((new_rightcenter[0][0] - new_pt[0][0]) ** 2
-                        + (new_rightcenter[1][0] - new_pt[1][0]) ** 2) * 2.
+        new_h = np.sqrt((new_topcenter[0][0] - new_pt[0][0])**2 + (new_topcenter[1][0] - new_pt[1][0])**2) * 2.
+        new_w = np.sqrt((new_rightcenter[0][0] - new_pt[0][0])**2 + (new_rightcenter[1][0] - new_pt[1][0])**2) * 2.
         deltax = -new_topcenter[0][0] + new_pt[0][0]
         deltay = (-new_topcenter[1][0] + new_pt[1][0]) * -1
         if deltay == 0:

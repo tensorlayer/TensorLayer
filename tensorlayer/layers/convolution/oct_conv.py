@@ -9,7 +9,6 @@ from tensorlayer.layers.core import Layer
 
 # from tensorlayer.layers.core import LayersConfig
 
-
 __all__ = [
     'OctConv2dIn',
     'OctConv2d',
@@ -52,11 +51,7 @@ class OctConv2dIn(Layer):
         self.build(None)
         self._built = True
 
-        logging.info(
-            "OctConv2dIn %s: " % (
-                self.name,
-            )
-        )
+        logging.info("OctConv2dIn %s: " % (self.name, ))
 
     def __repr__(self):
         s = ('{classname}(')
@@ -70,8 +65,7 @@ class OctConv2dIn(Layer):
 
     def forward(self, inputs):
         high_out = tf.identity(inputs, name=(self.name + '_high_out'))
-        low_out = tf.nn.avg_pool2d(inputs, (2, 2), strides=(2, 2), padding='SAME',
-                                   name=self.name + '_low_out')
+        low_out = tf.nn.avg_pool2d(inputs, (2, 2), strides=(2, 2), padding='SAME', name=self.name + '_low_out')
         outputs = [high_out, low_out]
         return outputs
 
@@ -135,13 +129,11 @@ class OctConv2d(Layer):
         self.filter = nfilter
         self.alpha = alpha
         if (self.alpha >= 1) or (self.alpha <= 0):
-            raise ValueError(
-                "The alpha must be in (0,1)")
+            raise ValueError("The alpha must be in (0,1)")
         self.high_out = int(self.alpha * self.filter)
         self.low_out = self.filter - self.high_out
         if (self.high_out == 0) or (self.low_out == 0):
-            raise ValueError(
-                "The output channel must be greater than 0.")
+            raise ValueError("The output channel must be greater than 0.")
         self.filter_size = filter_size
         self.strides = strides
         self.W_init = W_init
@@ -161,8 +153,10 @@ class OctConv2d(Layer):
 
     def __repr__(self):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
-        s = ('{classname}(in_channels={in_channels}, out_channels={filter}, '
-             'kernel_size={filter_size}, strides={strides}')
+        s = (
+            '{classname}(in_channels={in_channels}, out_channels={filter}, '
+            'kernel_size={filter_size}, strides={strides}'
+        )
         if self.b_init is None:
             s += ', bias=False'
         s += (', ' + actstr)
@@ -179,52 +173,27 @@ class OctConv2d(Layer):
         else:
             high_ch = self.in_channels[0]
             low_ch = self.in_channels[1]
-        self.high_high_filter_shape = (
-            self.filter_size[0], self.filter_size[1], high_ch, self.high_out
-        )
-        self.high_low_filter_shape = (
-            self.filter_size[0], self.filter_size[1], high_ch, self.low_out
-        )
-        self.low_low_filter_shape = (
-            self.filter_size[0], self.filter_size[1], low_ch, self.low_out
-        )
-        self.low_high_filter_shape = (
-            self.filter_size[0], self.filter_size[1], low_ch, self.high_out
-        )
-        self.high_high__W = self._get_weights(
-            "high_high_filters", shape=self.high_high_filter_shape, init=self.W_init
-        )
-        self.high_low__W = self._get_weights(
-            "high_low_filters", shape=self.high_low_filter_shape, init=self.W_init
-        )
-        self.low_low_W = self._get_weights(
-            "low_low_filters", shape=self.low_low_filter_shape, init=self.W_init
-        )
-        self.low_high_W = self._get_weights(
-            "low_high_filters", shape=self.low_high_filter_shape, init=self.W_init
-        )
+        self.high_high_filter_shape = (self.filter_size[0], self.filter_size[1], high_ch, self.high_out)
+        self.high_low_filter_shape = (self.filter_size[0], self.filter_size[1], high_ch, self.low_out)
+        self.low_low_filter_shape = (self.filter_size[0], self.filter_size[1], low_ch, self.low_out)
+        self.low_high_filter_shape = (self.filter_size[0], self.filter_size[1], low_ch, self.high_out)
+        self.high_high__W = self._get_weights("high_high_filters", shape=self.high_high_filter_shape, init=self.W_init)
+        self.high_low__W = self._get_weights("high_low_filters", shape=self.high_low_filter_shape, init=self.W_init)
+        self.low_low_W = self._get_weights("low_low_filters", shape=self.low_low_filter_shape, init=self.W_init)
+        self.low_high_W = self._get_weights("low_high_filters", shape=self.low_high_filter_shape, init=self.W_init)
         if self.b_init:
-            self.high_b = self._get_weights(
-                "high_biases", shape=(self.high_out), init=self.b_init
-            )
-            self.low_b = self._get_weights(
-                "low_biases", shape=(self.low_out), init=self.b_init
-            )
+            self.high_b = self._get_weights("high_biases", shape=(self.high_out), init=self.b_init)
+            self.low_b = self._get_weights("low_biases", shape=(self.low_out), init=self.b_init)
 
     def forward(self, inputs):
         high_input = inputs[0]
         low_input = inputs[1]
-        high_to_high = tf.nn.conv2d(high_input, self.high_high__W,
-                                    strides=self.strides, padding="SAME")
+        high_to_high = tf.nn.conv2d(high_input, self.high_high__W, strides=self.strides, padding="SAME")
         high_to_low = tf.nn.avg_pool2d(high_input, (2, 2), strides=(2, 2), padding='SAME')
-        high_to_low = tf.nn.conv2d(high_to_low, self.high_low__W,
-                                   strides=self.strides, padding="SAME")
-        low_to_low = tf.nn.conv2d(low_input, self.low_low_W,
-                                  strides=self.strides, padding="SAME")
-        low_to_high = tf.nn.conv2d(low_input, self.low_high_W,
-                                   strides=self.strides, padding="SAME")
-        low_to_high = tf.keras.layers.UpSampling2D(size=(2, 2),
-                                                   interpolation='nearest')(low_to_high)
+        high_to_low = tf.nn.conv2d(high_to_low, self.high_low__W, strides=self.strides, padding="SAME")
+        low_to_low = tf.nn.conv2d(low_input, self.low_low_W, strides=self.strides, padding="SAME")
+        low_to_high = tf.nn.conv2d(low_input, self.low_high_W, strides=self.strides, padding="SAME")
+        low_to_high = tf.keras.layers.UpSampling2D(size=(2, 2), interpolation='nearest')(low_to_high)
         high_out = high_to_high + low_to_high
         low_out = low_to_low + high_to_low
         if self.b_init:
@@ -315,8 +284,10 @@ class OctConv2dOut(Layer):
 
     def __repr__(self):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
-        s = ('{classname}(in_channels={in_channels}, out_channels={low_out}, '
-             'kernel_size={filter_size}, strides={strides}')
+        s = (
+            '{classname}(in_channels={in_channels}, out_channels={low_out}, '
+            'kernel_size={filter_size}, strides={strides}'
+        )
         if self.b_init is None:
             s += ', bias=False'
         s += (', ' + actstr)
@@ -332,31 +303,19 @@ class OctConv2dOut(Layer):
         else:
             high_ch = self.in_channels[0]
             low_ch = self.in_channels[1]
-        self.high_low_filter_shape = (
-            self.filter_size[0], self.filter_size[1], high_ch, self.high_out
-        )
-        self.low_low_filter_shape = (
-            self.filter_size[0], self.filter_size[1], low_ch, self.low_out
-        )
-        self.high_low__W = self._get_weights(
-            "high_low_filters", shape=self.high_low_filter_shape, init=self.W_init
-        )
-        self.low_low_W = self._get_weights(
-            "low_low_filters", shape=self.low_low_filter_shape, init=self.W_init
-        )
+        self.high_low_filter_shape = (self.filter_size[0], self.filter_size[1], high_ch, self.high_out)
+        self.low_low_filter_shape = (self.filter_size[0], self.filter_size[1], low_ch, self.low_out)
+        self.high_low__W = self._get_weights("high_low_filters", shape=self.high_low_filter_shape, init=self.W_init)
+        self.low_low_W = self._get_weights("low_low_filters", shape=self.low_low_filter_shape, init=self.W_init)
         if self.b_init:
-            self.low_b = self._get_weights(
-                "low_biases", shape=(self.low_out), init=self.b_init
-            )
+            self.low_b = self._get_weights("low_biases", shape=(self.low_out), init=self.b_init)
 
     def forward(self, inputs):
         high_input = inputs[0]
         low_input = inputs[1]
         high_to_low = tf.nn.avg_pool2d(high_input, (2, 2), strides=(2, 2), padding='SAME')
-        high_to_low = tf.nn.conv2d(high_to_low, self.high_low__W,
-                                   strides=self.strides, padding="SAME")
-        low_to_low = tf.nn.conv2d(low_input, self.low_low_W,
-                                  strides=self.strides, padding="SAME")
+        high_to_low = tf.nn.conv2d(high_to_low, self.high_low__W, strides=self.strides, padding="SAME")
+        low_to_low = tf.nn.conv2d(low_input, self.low_low_W, strides=self.strides, padding="SAME")
         low_out = low_to_low + high_to_low
         if self.b_init:
             low_out = tf.nn.bias_add(low_out, self.low_b, data_format="NHWC")
@@ -401,11 +360,7 @@ class OctConv2dHighOut(Layer):
         self.build(None)
         self._built = True
 
-        logging.info(
-            "OctConv2dHighOut %s: " % (
-                self.name,
-            )
-        )
+        logging.info("OctConv2dHighOut %s: " % (self.name, ))
 
     def __repr__(self):
 
@@ -457,11 +412,7 @@ class OctConv2dLowOut(Layer):
         self.build(None)
         self._built = True
 
-        logging.info(
-            "OctConv2dHighOut %s: " % (
-                self.name,
-            )
-        )
+        logging.info("OctConv2dHighOut %s: " % (self.name, ))
 
     def __repr__(self):
 
@@ -514,11 +465,7 @@ class OctConv2dConcat(Layer):
         self.build(None)
         self._built = True
 
-        logging.info(
-            "OctConv2dConcat %s: " % (
-                self.name,
-            )
-        )
+        logging.info("OctConv2dConcat %s: " % (self.name, ))
 
     def __repr__(self):
 
