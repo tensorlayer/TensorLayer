@@ -113,16 +113,9 @@ class OctConv2d(Layer):
     """
 
     def __init__(
-            self,
-            nfilter=32,
-            alpha=0.5,
-            filter_size=(2, 2),
-            strides=(1, 1),
-            W_init=tl.initializers.truncated_normal(stddev=0.02),
-            b_init=tl.initializers.constant(value=0.0),
-            act=None,
-            in_channels=None,
-            name=None
+            self, nfilter=32, alpha=0.5, filter_size=(2, 2), strides=(1, 1),
+            W_init=tl.initializers.truncated_normal(stddev=0.02), b_init=tl.initializers.constant(value=0.0), act=None,
+            in_channels=None, name=None
     ):
         super().__init__(name)
         self.filter = nfilter
