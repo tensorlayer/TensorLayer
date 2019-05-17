@@ -71,8 +71,7 @@ class OctConv2dIn(Layer):
 
 
 class OctConv2d(Layer):
-    """
-    The :class:`OctConv2d` class is a 2D CNN layer for OctConv2d layer output, see
+    """The :class: `OctConv2d` class is a 2D CNN layer for OctConv2d layer output, see
     `Drop an Octave: Reducing Spatial Redundancy in Convolutional Neural Networks with
     Octave Convolution <https://arxiv.org/abs/1904.05049>`__. Use this layer to process tensor list.
     Parameters
@@ -96,7 +95,7 @@ class OctConv2d(Layer):
         A unique layer name.
     Notes
     -----
-    - The input should be a list with shape (highrestensor , lowrestensor), the height and width of high_res should be twice of the low_res_tensor.
+    - The input should be a list with shape (highrestensor, lowrestensor), the height and width of high_res should be twice of the low_res_tensor.
     - If you do not which tensor is larger, use OctConv2dConcat layer.
     - The output will be a list which contains 2 tensor.
     - You should not use the output directly.
