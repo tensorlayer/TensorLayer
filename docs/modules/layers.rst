@@ -247,8 +247,8 @@ GroupConv2d
 """""""""""""""""""""
 .. autoclass:: GroupConv2d
 
-OctConv2d
---------------------------
+OctConv
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 For OctConv2d, see `Drop an Octave: Reducing Spatial Redundancy in Convolutional Neural Networks with Octave Convolution <https://arxiv.org/abs/1904.05049>`__.
 
