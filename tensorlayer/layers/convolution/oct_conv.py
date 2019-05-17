@@ -77,7 +77,7 @@ class OctConv2d(Layer):
     Octave Convolution <https://arxiv.org/abs/1904.05049>`__. Use this layer to process tensor list.
     Parameters
     ----------
-    filter : int
+    nfilter : int
         The sum of the number of filters.
     alpha : :float
         The percentage of high_res output.
