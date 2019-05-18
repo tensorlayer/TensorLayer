@@ -3,7 +3,6 @@
 """A file containing various activation functions."""
 
 import tensorflow as tf
-
 from tensorlayer.decorators import deprecated
 
 __all__ = [

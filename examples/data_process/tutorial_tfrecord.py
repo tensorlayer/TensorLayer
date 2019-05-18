@@ -22,9 +22,9 @@ More
 import os
 
 import numpy as np
-import tensorflow as tf
 from PIL import Image
 
+import tensorflow as tf
 import tensorlayer as tl
 
 ## Save data ==================================================================
@@ -97,4 +97,3 @@ img_batch, label_batch = next(read_and_decode("train.tfrecords"))
 print("img_batch   : %s" % img_batch.shape)
 print("label_batch : %s" % label_batch.shape)
 tl.visualize.images2d(img_batch, second=1, saveable=False, name='batch', dtype=None, fig_idx=2020121)
-
