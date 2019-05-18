@@ -84,6 +84,7 @@ A maintain release.
 - remove `tl.layers.initialize_global_variables(sess)` (PR #931)
 - change `tl.layers.core`, `tl.models.core` (PR #966)
 - change `weights` into `all_weights`, `trainable_weights`, `nontrainable_weights`
+- change reinforcement learning examples from TL1 to TL2 (PR #969)
 
 
 ### Dependencies Update
@@ -100,6 +101,7 @@ A maintain release.
 - @warshallrho: #PR966
 - @zsdonghao: #931
 - @yd-yin: #963
+- @quantumiracle: #969
 - @dvklopfenstein: #971
 
 
@@ -326,8 +328,10 @@ To many PR for this update, please check [here](https://github.com/tensorlayer/t
   - AtrousDeConv2dLayer added (PR #662)
   - Fix bugs of using `tf.layers` in CNN (PR #686)
 - Optimizer:
+
   - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (PR #636)
 - Setup:
+
   - Creation of installation flaggs `all`, `all_cpu`, and `all_gpu` (PR #660)
 - Test:
   - `test_utils_predict.py` added to reproduce and fix issue #288 (PR #566)
