@@ -12,6 +12,9 @@ tensorlayer 2.0.0
 
 &&
 pip install box2d box2d-kengz --user
+
+To run:
+python tutorial_td3.py --train/test
 '''
 import argparse
 import math
@@ -252,7 +255,7 @@ class TD3_Trainer():
                 new_action = self.policy_net.evaluate(state, eval_noise_scale=0.0)  # no noise, deterministic policy gradients
                 new_q_input = tf.concat([state, new_action], 1)
                 ''' implementation 1 '''
-                # predicted_new_q_value = torch.min(self.q_net1(new_q_input),self.q_net2(new_q_input))
+                # predicted_new_q_value = tf.minimum(self.q_net1(new_q_input),self.q_net2(new_q_input))
                 ''' implementation 2 '''
                 predicted_new_q_value = self.q_net1(new_q_input)
                 policy_loss = - tf.reduce_mean(predicted_new_q_value)
@@ -309,12 +312,12 @@ max_frames  = 40000                 # total number of steps for training
 test_frames = 300                   # total number of steps for testing
 max_steps   = 150                   # maximum number of steps for one episode
 batch_size  = 64                    # udpate batchsize
-explore_steps = 0                   # 500 for random action sampling in the beginning of training
-update_itr = 3                      # delayed steps for updating the policy network and target networks
+explore_steps = 500                 # 500 for random action sampling in the beginning of training
+update_itr = 3                      # repeated updates for single step
 hidden_dim = 32                     # size of hidden layers for networks 
 q_lr       = 3e-4                   # q_net learning rate
 policy_lr  = 3e-4                   # policy_net learning rate
-policy_target_update_interval = 3   # delayed update for the policy network and target networks
+policy_target_update_interval = 3   # delayed steps for updating the policy network and target networks
 explore_noise_scale = 1.0           # range of action noise for exploration
 eval_noise_scale = 0.5              # range of action noise for evaluation of action value
 reward_scale = 1.                   # value range of reward
@@ -339,7 +342,7 @@ if args.train:
         episode_reward = 0
         if frame_idx <1 :
             print('intialize')
-            _=td3_trainer.policy_net([state])  # need an extra call to make inside functions be able to use forward
+            _=td3_trainer.policy_net([state])  # need an extra call here to make inside functions be able to use model.forward
             _=td3_trainer.target_policy_net([state])
 
 
