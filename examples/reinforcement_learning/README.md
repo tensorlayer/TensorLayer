@@ -30,7 +30,7 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 | A3C          | Continuous        | Continuous   |
 | SAC          | Continuous        | Continuous   |
 | DDPG         | Continuous        | Continuous   |
-| TD3          | Continuous        | C            |
+| TD3          | Continuous        | Continuous   |
 | HER          |                   |              |
 | TRPO         |                   |              |
 | PPO          |                   |              |
