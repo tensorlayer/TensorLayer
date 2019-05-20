@@ -22,6 +22,25 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
 ## Table of Contents:
 
+| Algorithms   | Observation Space | Action Space |
+| ------------ | ----------------- | ------------ |
+| Q-learning   | Discrete          | Discrete     |
+| DQN          | Discrete          | Discrete     |
+| Actor-Critic | Continuous        | Discrete     |
+| A3C          | Continuous        | Continuous   |
+| SAC          | Continuous        | Continuous   |
+| DDPG         | Continuous        | Continuous   |
+| TD3          | Continuous        | C            |
+| HER          |                   |              |
+| TRPO         |                   |              |
+| PPO          |                   |              |
+|              |                   |              |
+|              |                   |              |
+|              |                   |              |
+|              |                   |              |
+
+
+
 * Q-learning
 
   Code: `./tutorial_frozenlake_q_table.py`
