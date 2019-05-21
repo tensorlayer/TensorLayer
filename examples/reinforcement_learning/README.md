@@ -6,7 +6,7 @@ This folder contains implementation of most popular reinforcement learning algor
 
 * python 3.5
 * tensorflow >= 2.0.0
-* tensorlayer >= 2.0.0
+* tensorlayer >= 2.0.1
 * tensorflow-probability
 * tf-nightly-2.0-preview
 
