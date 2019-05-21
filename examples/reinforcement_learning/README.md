@@ -55,7 +55,9 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
 * Double DQN / Dueling DQN / Noisy DQN
 
-  To do.
+  Code: `./tutorial_double_dueling_noisy_dqn.py`
+
+  Experiment Environments: Pong and Cartpole
 
   
 
