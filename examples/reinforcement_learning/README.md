@@ -5,14 +5,14 @@ This folder contains implementation of most popular reinforcement learning algor
 ## Prerequisites:
 
 * python 3.5
-
 * tensorflow >= 2.0.0
-
 * tensorlayer >= 2.0.0
-
 * tensorflow-probability
-
 * tf-nightly-2.0-preview
+
+*** If you meet problem `AttributeError: module 'tensorflow' has no attribute 'contrib'` when running the code after install tensorflow-probability, try:
+
+`pip install --upgrade tf-nightly-2.0-preview tfp-nightly`
 
 ## To Use:
 
