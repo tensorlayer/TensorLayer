@@ -59,6 +59,12 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
   Experiment Environments: Pong and Cartpole
 
+
+* Prioritized replay
+
+  Code: `./tutorial_prioritized_replay.py`
+
+  Experiment Environments: Pong and Cartpole
   
 
 * Distributed DQN
