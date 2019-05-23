@@ -58,35 +58,9 @@ class MLP(tl.models.Model):
         self.h1 = tl.layers.Dense(64, tf.nn.tanh, in_channels=in_dim[0])
         self.qvalue = tl.layers.Dense(out_dim, in_channels=64, name='q',
                                       W_init=tf.initializers.GlorotUniform())
-        self.svalue = tl.layers.Dense(1, in_channels=64, name='s',
-                                      W_init=tf.initializers.GlorotUniform())
-        self.noise_scale = 0
 
     def forward(self, ni):
-        feature = self.h1(ni)
-
-        # apply noise to all linear layer
-        if self.noise_scale != 0:
-            noises = []
-            for layer in [self.qvalue, self.svalue]:
-                for var in layer.trainable_weights:
-                    noise = tf.random.normal(tf.shape(var), 0, self.noise_scale)
-                    noises.append(noise)
-                    var.assign_add(noise)
-
-        qvalue = self.qvalue(feature)
-        svalue = self.svalue(feature)
-
-        if self.noise_scale != 0:
-            idx = 0
-            for layer in [self.qvalue, self.svalue]:
-                for var in layer.trainable_weights:
-                    var.assign_sub(noises[idx])
-                    idx += 1
-
-        # dueling network
-        out = svalue + qvalue - tf.reduce_mean(qvalue, 1, keepdims=True)
-        return out
+        return self.qvalue(self.h1(ni))
 
 
 class CNN(tl.models.Model):
@@ -109,37 +83,10 @@ class CNN(tl.models.Model):
                                     W_init=tf.initializers.GlorotUniform())
         self.qvalue = tl.layers.Dense(out_dim, in_channels=256, name='q',
                                       W_init=tf.initializers.GlorotUniform())
-        self.pres = tl.layers.Dense(256, tf.nn.relu,
-                                    in_channels=dense_in_channels, name='pre_s',
-                                    W_init=tf.initializers.GlorotUniform())
-        self.svalue = tl.layers.Dense(1, in_channels=256, name='state',
-                                      W_init=tf.initializers.GlorotUniform())
-        self.noise_scale = 0
 
     def forward(self, ni):
         feature = self.flatten(self.conv3(self.conv2(self.conv1(ni))))
-
-        # apply noise to all linear layer
-        if self.noise_scale != 0:
-            noises = []
-            for layer in [self.preq, self.qvalue, self.pres, self.svalue]:
-                for var in layer.trainable_weights:
-                    noise = tf.random.normal(tf.shape(var), 0, self.noise_scale)
-                    noises.append(noise)
-                    var.assign_add(noise)
-
-        qvalue = self.qvalue(self.preq(feature))
-        svalue = self.svalue(self.pres(feature))
-
-        if self.noise_scale != 0:
-            idx = 0
-            for layer in [self.preq, self.qvalue, self.pres, self.svalue]:
-                for var in layer.trainable_weights:
-                    var.assign_sub(noises[idx])
-                    idx += 1
-
-        # dueling network
-        return svalue + qvalue - tf.reduce_mean(qvalue, 1, keepdims=True)
+        return self.qvalue(self.preq(feature))
 
 
 class SegmentTree(object):

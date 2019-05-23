@@ -69,7 +69,9 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
 * Distributed DQN
 
-  To do.
+  Code: `./tutorial_c51.py`
+
+  Experiment Environments: Pong and Cartpole
 
   
 
