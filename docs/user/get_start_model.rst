@@ -66,6 +66,22 @@ In this case, you need to manually input the output shape of the previous layer 
   MLP.eval()
   outputs = MLP(data, foo=True) # controls the forward here
   outputs = MLP(data, foo=False)
+  
+  
+Train/Test switching
+=======================
+
+.. code-block:: python
+
+  # method 1: switch before forward
+  Model.train() # enable dropout, batch norm moving avg ...
+  ... # training code
+  Model.eval()  # disable dropout, batch norm moving avg ...
+  ... # testing code
+  
+  # method 2: switch while forward
+  output = Model(train_data, is_train=True)
+  output = Model(test_data, is_train=False)
 
 Reuse weights
 =======================
