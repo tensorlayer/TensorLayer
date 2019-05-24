@@ -73,7 +73,13 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
   Experiment Environments: Pong and Cartpole
 
-  
+
+* Retrace(lambda) DQN
+
+  Code: `./tutorial_retrace.py`
+
+  Experiment Environments: Pong and Cartpole
+
 
 * Actor-Critic (AC)
 

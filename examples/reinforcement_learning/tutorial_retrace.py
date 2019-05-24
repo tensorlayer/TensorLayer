@@ -1,7 +1,7 @@
-"""Implement C51 algorithm
-Bellemare M G, Dabney W, Munos R. A distributional perspective on reinforcement
-learning[C]//Proceedings of the 34th International Conference on Machine
-Learning-Volume 70. JMLR. org, 2017: 449-458.
+"""Implement retrace(\lambda) algorithm
+Munos R, Stepleton T, Harutyunyan A, et al. Safe and efficient off-policy
+reinforcement learning[C]//Advances in Neural Information Processing Systems.
+2016: 1054-1062.
 
 # Requirements
 tensorflow==2.0.0a0
@@ -23,9 +23,6 @@ env_id = 'CartPole-v0'  # CartPole-v0, PongNoFrameskip-v4
 if env_id == 'CartPole-v0':
     qnet_type = 'MLP'
     number_timesteps = 10000  # total number of time steps to train on
-    explore_timesteps = 100
-    # epsilon-greedy schedule, final exploit prob is 0.99
-    epsilon = lambda i_iter: 1 - 0.99 * min(1, i_iter / explore_timesteps)
     lr = 5e-3  # learning rate
     buffer_size = 1000  # replay buffer size
     target_q_update_freq = 50  # how frequency target q net update
@@ -34,9 +31,6 @@ else:
     # reward will increase obviously after 1e5 time steps
     qnet_type = 'CNN'
     number_timesteps = int(1e6)  # total number of time steps to train on
-    explore_timesteps = 1e5
-    # epsilon-greedy schedule, final exploit prob is 0.99
-    epsilon = lambda i_iter: 1 - 0.99 * min(1, i_iter / explore_timesteps)
     lr = 1e-4  # learning rate
     buffer_size = 10000  # replay buffer size
     target_q_update_freq = 200  # how frequency target q net update
@@ -48,26 +42,20 @@ out_dim = env.action_space.n
 reward_gamma = 0.99  # reward discount
 batch_size = 32  # batch size for sampling from replay buffer
 warm_start = buffer_size / 10  # sample times befor learning
-atom_num = 51
-min_value = -10
-max_value = 10
-vrange = np.linspace(min_value, max_value, atom_num)
-deltaz = float(max_value - min_value) / (atom_num - 1)
+retrace_lambda = 1.0
 
 
 class MLP(tl.models.Model):
     def __init__(self, name):
         super(MLP, self).__init__(name=name)
-        self.h1 = tl.layers.Dense(64, tf.nn.tanh, in_channels=in_dim[0],
-                                  W_init=tf.initializers.GlorotUniform())
-        self.qvalue = tl.layers.Dense(out_dim * atom_num,
-                                      in_channels=64, name='q',
+        self.h1 = tl.layers.Dense(64, tf.nn.tanh, in_channels=in_dim[0])
+        self.qvalue = tl.layers.Dense(out_dim, in_channels=64, name='q',
                                       W_init=tf.initializers.GlorotUniform())
-        self.reshape = tl.layers.Reshape((-1, out_dim, atom_num))
 
     def forward(self, ni):
-        qvalues = self.qvalue(self.h1(ni))
-        return tf.nn.log_softmax(self.reshape(qvalues), 2)
+        feature = self.h1(ni)
+        qvalue = self.qvalue(feature)
+        return qvalue, tf.nn.softmax(qvalue, 1)
 
 
 class CNN(tl.models.Model):
@@ -88,15 +76,13 @@ class CNN(tl.models.Model):
         self.preq = tl.layers.Dense(256, tf.nn.relu,
                                     in_channels=dense_in_channels, name='pre_q',
                                     W_init=tf.initializers.GlorotUniform())
-        self.qvalue = tl.layers.Dense(out_dim * atom_num,
-                                      in_channels=256, name='q',
+        self.qvalue = tl.layers.Dense(out_dim, in_channels=256, name='q',
                                       W_init=tf.initializers.GlorotUniform())
-        self.reshape = tl.layers.Reshape((-1, out_dim, atom_num))
 
     def forward(self, ni):
         feature = self.flatten(self.conv3(self.conv2(self.conv1(ni))))
-        qvalues = self.qvalue(self.preq(feature))
-        return tf.nn.log_softmax(self.reshape(qvalues), 2)
+        qvalue = self.qvalue(self.preq(feature))
+        return qvalue, tf.nn.softmax(qvalue, 1)
 
 
 class ReplayBuffer(object):
@@ -116,26 +102,33 @@ class ReplayBuffer(object):
         self._next_idx = (self._next_idx + 1) % self._maxsize
 
     def _encode_sample(self, idxes):
-        b_o, b_a, b_r, b_o_, b_d = [], [], [], [], []
+        b_o, b_a, b_r, b_o_, b_d, b_pi = [], [], [], [], [], []
         for i in idxes:
-            o, a, r, o_, d = self._storage[i]
+            o, a, r, o_, d, pi = self._storage[i]
             b_o.append(o)
             b_a.append(a)
             b_r.append(r)
             b_o_.append(o_)
             b_d.append(d)
+            b_pi.append(pi)
         return (
             np.stack(b_o).astype('float32') * ob_scale,
             np.stack(b_a).astype('int32'),
             np.stack(b_r).astype('float32'),
             np.stack(b_o_).astype('float32') * ob_scale,
             np.stack(b_d).astype('float32'),
+            np.stack(b_pi).astype('float32')
         )
 
     def sample(self, batch_size):
         indexes = range(len(self._storage))
         idxes = [random.choice(indexes) for _ in range(batch_size)]
         return self._encode_sample(idxes)
+
+
+def huber_loss(x):
+    """Loss function for value"""
+    return tf.where(tf.abs(x) < 1, tf.square(x) * 0.5, tf.abs(x) - 0.5)
 
 
 def sync(net, net_tar):
@@ -157,21 +150,16 @@ o = env.reset()
 nepisode = 0
 t = time.time()
 for i in range(1, number_timesteps + 1):
-    eps = epsilon(i)
-
-    # select action
-    if random.random() < eps:
-        a = int(random.random() * out_dim)
-    else:
-        obv = np.expand_dims(o, 0).astype('float32') * ob_scale
-        qdist = np.exp(qnet(obv).numpy())
-        qvalues = (qdist * vrange).sum(-1)
-        a = qvalues.argmax(1)[0]
+    # select action based on boltzmann exploration
+    obv = np.expand_dims(o, 0).astype('float32') * ob_scale
+    qs, pi = qnet(obv)
+    a = np.random.multinomial(1, pi.numpy()[0]).argmax()
+    pi = pi.numpy()[0]
 
     # execute action and feed to replay buffer
     # note that `_` tail in var name means next
     o_, r, done, info = env.step(a)
-    buffer.add(o, a, r, o_, done)
+    buffer.add(o, a, r, o_, done, pi)
 
     if i >= warm_start:
         # sync q net and target q net
@@ -179,32 +167,23 @@ for i in range(1, number_timesteps + 1):
             sync(qnet, targetqnet)
 
         # sample from replay buffer
-        b_o, b_a, b_r, b_o_, b_d = buffer.sample(batch_size)
+        b_o, b_a, b_r, b_o_, b_d, b_old_pi = buffer.sample(batch_size)
 
-        # q estimation, see Algorithm 1 in paper for detail
-        b_dist_ = np.exp(targetqnet(b_o_).numpy())
-        b_a_ = (b_dist_ * vrange).sum(-1).argmax(1)
-        b_tzj = np.clip(reward_gamma * (1 - b_d[:, None]) * vrange[None, :] +
-                        b_r[:, None], min_value, max_value)
-        b_i = (b_tzj - min_value) / deltaz
-        b_l = np.floor(b_i).astype('int64')
-        b_u = np.ceil(b_i).astype('int64')
-        templ = b_dist_[range(batch_size), b_a_, :] * (b_u - b_i)
-        tempu = b_dist_[range(batch_size), b_a_, :] * (b_i - b_l)
-        b_m = np.zeros((batch_size, atom_num))
-        # TODO: aggregate value by index and batch update (scatter_add)
-        for j in range(batch_size):
-            for k in range(atom_num):
-                b_m[j][b_l[j][k]] += templ[j][k]
-                b_m[j][b_u[j][k]] += tempu[j][k]
-        b_m = tf.convert_to_tensor(b_m, dtype='float32')
+        # q estimation based on 1 step retrace(\lambda)
+        b_q_, b_pi_ = targetqnet(b_o_)
+        b_v_ = (b_q_ * b_pi_).numpy().sum(1)
+        b_q, b_pi = targetqnet(b_o)
+        b_q = tf.reduce_sum(b_q * tf.one_hot(b_a, out_dim), 1).numpy()
+        c = np.clip(b_pi.numpy() / (b_old_pi + 1e-8), None, 1)
+        c = c[range(batch_size), b_a]
+        td = b_r + reward_gamma * (1 - b_d) * b_v_ - b_q
+        q_target = c * td + b_q
 
         # calculate loss
         with tf.GradientTape() as q_tape:
-            b_index = np.stack([range(batch_size), b_a], 1)
-            b_index = tf.convert_to_tensor(b_index, 'int64')
-            b_dist_a = tf.gather_nd(qnet(b_o), b_index)
-            loss = -tf.reduce_mean(tf.reduce_sum(b_dist_a * b_m, 1))
+            b_q, _ = qnet(b_o)
+            b_q = tf.reduce_sum(b_q * tf.one_hot(b_a, out_dim), 1)
+            loss = tf.reduce_mean(huber_loss(b_q - q_target))
 
         # backward gradients
         q_grad = q_tape.gradient(loss, trainabel_weights)
