@@ -38,9 +38,6 @@ class CustomModel(Model):
         return out
 
 MLP = CustomModel()
-# MLP.print_layers()
-# MLP.print_weights()
-# print(MLP.outputs.outputs)
 
 ## start training
 n_epoch = 500
