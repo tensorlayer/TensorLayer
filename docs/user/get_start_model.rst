@@ -75,9 +75,11 @@ Switching train/test modes
 
   # method 1: switch before forward
   Model.train() # enable dropout, batch norm moving avg ...
-  ... # training code
+  output = Model(train_data) 
+  ... # training code here
   Model.eval()  # disable dropout, batch norm moving avg ...
-  ... # testing code
+  output = Model(test_data) 
+  ... # testing code here
   
   # method 2: switch while forward
   output = Model(train_data, is_train=True)
