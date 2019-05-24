@@ -68,8 +68,8 @@ In this case, you need to manually input the output shape of the previous layer 
   outputs = MLP(data, foo=False)
   
   
-Train/Test switching
-=======================
+Switching train/test modes
+=============================
 
 .. code-block:: python
 
