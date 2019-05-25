@@ -71,7 +71,7 @@ class DeConv2d(Layer):
             in_channels=None,
             name=None  # 'decnn2d'
     ):
-        super().__init__(name, act=act)
+        super().__init__(name, act=act, haveact=True)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = strides
@@ -198,7 +198,7 @@ class DeConv3d(Layer):
             in_channels=None,
             name=None  # 'decnn3d'
     ):
-        super().__init__(name, act=act)
+        super().__init__(name, act=act, haveact=True)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = strides

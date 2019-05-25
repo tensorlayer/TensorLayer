@@ -56,7 +56,7 @@ class DorefaDense(Layer):
             in_channels=None,
             name=None,  #'dorefa_dense',
     ):
-        super().__init__(name, act=act)
+        super().__init__(name, act=act, haveact=True)
         self.bitW = bitW
         self.bitA = bitA
         self.n_units = n_units

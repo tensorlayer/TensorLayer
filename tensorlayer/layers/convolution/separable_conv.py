@@ -84,7 +84,7 @@ class SeparableConv1d(Layer):
             in_channels=None,
             name=None  # 'seperable1d',
     ):
-        super().__init__(name, act=act)
+        super().__init__(name, act=act, haveact=True)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = strides
@@ -231,7 +231,7 @@ class SeparableConv2d(Layer):
             in_channels=None,
             name=None  # 'seperable2d',
     ):
-        super().__init__(name, act=act)
+        super().__init__(name, act=act, haveact=True)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = strides

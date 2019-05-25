@@ -75,7 +75,7 @@ class BinaryConv2d(Layer):
             in_channels=None,
             name=None  # 'binary_cnn2d',
     ):
-        super().__init__(name, act=act)
+        super().__init__(name, act=act, haveact=True)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = self._strides = strides

@@ -56,7 +56,7 @@ class Layer(object):
 
     """
 
-    def __init__(self, name=None, act=None, *args, **kwargs):
+    def __init__(self, name=None, act=None, haveact=False, *args, **kwargs):
         """
         Initializing the Layer.
 
@@ -94,7 +94,7 @@ class Layer(object):
                 _global_layer_name_dict[name] = 0
 
         self.name = name
-        if act is not None:
+        if haveact:
             if isinstance(act, str):
                 if act not in _act_dict.keys():
                     raise RuntimeError("No activation function named {}.".format(act))

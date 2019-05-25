@@ -195,7 +195,7 @@ class BatchNorm(Layer):
             data_format='channels_last',
             name=None,
     ):
-        super(BatchNorm, self).__init__(name=name, act=act)
+        super(BatchNorm, self).__init__(name=name, act=act, haveact=True)
         self.decay = decay
         self.epsilon = epsilon
         self.data_format = data_format
@@ -440,7 +440,7 @@ class InstanceNorm(Layer):
             gamma_init=tl.initializers.random_normal(mean=1.0, stddev=0.002), num_features=None,
             data_format='channels_last', name=None
     ):
-        super(InstanceNorm, self).__init__(name=name, act=act)
+        super(InstanceNorm, self).__init__(name=name, act=act, haveact=True)
         self.epsilon = epsilon
         self.beta_init = beta_init
         self.gamma_init = gamma_init
@@ -648,8 +648,8 @@ class LayerNorm(Layer):
             name=None,
     ):
 
-        # super(LayerNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
-        super(LayerNorm, self).__init__(name, act=act)
+        # super(LayerNorm, self).__init__(prev_layer=prev_layer, act=act, haveact=True, name=name)
+        super(LayerNorm, self).__init__(name, act=act, haveact=True)
         self.center = center
         self.scale = scale
         self.epsilon = epsilon
@@ -726,8 +726,8 @@ class GroupNorm(Layer):
     """
 
     def __init__(self, groups=32, epsilon=1e-06, act=None, data_format='channels_last', name=None):  #'groupnorm'):
-        # super(GroupNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
-        super().__init__(name, act=act)
+        # super(GroupNorm, self).__init__(prev_layer=prev_layer, act=act, haveact=True, name=name)
+        super().__init__(name, act=act, haveact=True)
         self.groups = groups
         self.epsilon = epsilon
         self.data_format = data_format
@@ -842,8 +842,8 @@ class SwitchNorm(Layer):
             data_format='channels_last',
             name=None,  #'switchnorm',
     ):
-        # super(SwitchNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
-        super().__init__(name, act=act)
+        # super(SwitchNorm, self).__init__(prev_layer=prev_layer, act=act, haveact=True, name=name)
+        super().__init__(name, act=act, haveact=True)
         self.epsilon = epsilon
         self.beta_init = beta_init
         self.gamma_init = gamma_init
