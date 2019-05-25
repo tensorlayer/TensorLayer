@@ -111,7 +111,7 @@ class Elementwise(Layer):
             name=None,  #'elementwise',
     ):
 
-        super(Elementwise, self).__init__(name, act)
+        super(Elementwise, self).__init__(name, act=act, haveact=True)
         self.combine_fn = combine_fn
 
         self.build(None)
