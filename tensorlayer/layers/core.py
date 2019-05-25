@@ -17,6 +17,15 @@ __all__ = ['Layer', 'ModelLayer', 'LayerList']
 
 _global_layer_name_dict = {}  # TODO: better implementation?
 
+_act_dict = {
+    "relu": tf.nn.relu,
+    "relu6": tf.nn.relu6,
+    "leaky_relu": tf.nn.leaky_relu,
+    "softplus": tf.nn.softplus,
+    "tanh": tf.nn.tanh,
+    "sigmoid": tf.nn.sigmoid,
+}
+
 
 class Layer(object):
     """The basic :class:`Layer` class represents a single layer of a neural network.
@@ -47,11 +56,12 @@ class Layer(object):
 
     """
 
-    def __init__(self, name=None, *args, **kwargs):
+    def __init__(self, name=None, act=None, *args, **kwargs):
         """
         Initializing the Layer.
 
         :param name: str or None
+        :param name: str or function or None
         """
 
         # Layer constants
@@ -84,6 +94,13 @@ class Layer(object):
                 _global_layer_name_dict[name] = 0
 
         self.name = name
+        if act is not None:
+            if isinstance(act, str):
+                if act not in _act_dict.keys():
+                    raise RuntimeError("No activation function named {}.".format(act))
+                self.act = _act_dict[act]
+            else:
+                self.act = act
 
         # Layer building state
         self._built = False

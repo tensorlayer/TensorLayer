@@ -195,8 +195,7 @@ class BatchNorm(Layer):
             data_format='channels_last',
             name=None,
     ):
-        super(BatchNorm, self).__init__(name=name)
-        self.act = act
+        super(BatchNorm, self).__init__(name=name, act=act)
         self.decay = decay
         self.epsilon = epsilon
         self.data_format = data_format
@@ -441,8 +440,7 @@ class InstanceNorm(Layer):
             gamma_init=tl.initializers.random_normal(mean=1.0, stddev=0.002), num_features=None,
             data_format='channels_last', name=None
     ):
-        super(InstanceNorm, self).__init__(name=name)
-        self.act = act
+        super(InstanceNorm, self).__init__(name=name, act=act)
         self.epsilon = epsilon
         self.beta_init = beta_init
         self.gamma_init = gamma_init
@@ -651,10 +649,9 @@ class LayerNorm(Layer):
     ):
 
         # super(LayerNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
-        super(LayerNorm, self).__init__(name)
+        super(LayerNorm, self).__init__(name, act=act)
         self.center = center
         self.scale = scale
-        self.act = act
         self.epsilon = epsilon
         self.begin_norm_axis = begin_norm_axis
         self.begin_params_axis = begin_params_axis
@@ -730,10 +727,9 @@ class GroupNorm(Layer):
 
     def __init__(self, groups=32, epsilon=1e-06, act=None, data_format='channels_last', name=None):  #'groupnorm'):
         # super(GroupNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
-        super().__init__(name)
+        super().__init__(name, act=act)
         self.groups = groups
         self.epsilon = epsilon
-        self.act = act
         self.data_format = data_format
 
         logging.info(
@@ -847,8 +843,7 @@ class SwitchNorm(Layer):
             name=None,  #'switchnorm',
     ):
         # super(SwitchNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
-        super().__init__(name)
-        self.act = act
+        super().__init__(name, act=act)
         self.epsilon = epsilon
         self.beta_init = beta_init
         self.gamma_init = gamma_init
