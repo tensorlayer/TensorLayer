@@ -31,6 +31,7 @@ from tensorflow.python.keras.saving import model_config as model_config_lib
 from tensorflow.python.util.tf_export import keras_export
 from tensorflow.python.util import serialization
 import json
+import datetime
 
 # from six.moves import zip
 
@@ -92,29 +93,29 @@ def str2func(s):
     return expr
 
 
-def net2static_graph(network):
-    saved_file = dict()
-    if network._NameNone is True:
-        saved_file.update({"name": None})
-    else:
-        saved_file.update({"name": network.name})
-    if not isinstance(network.inputs, list):
-        saved_file.update({"inputs": network.inputs._info[0].name})
-    else:
-        saved_inputs = []
-        for saved_input in network.inputs:
-            saved_inputs.append(saved_input._info[0].name)
-        saved_file.update({"inputs": saved_inputs})
-    if not isinstance(network.outputs, list):
-        saved_file.update({"outputs": network.outputs._info[0].name})
-    else:
-        saved_outputs = []
-        for saved_output in network.outputs:
-            saved_outputs.append(saved_output._info[0].name)
-        saved_file.update({"outputs": saved_outputs})
-    saved_file.update({"config": network.config})
-
-    return saved_file
+# def net2static_graph(network):
+#     saved_file = dict()
+#     # if network._NameNone is True:
+#     #     saved_file.update({"name": None})
+#     # else:
+#     #     saved_file.update({"name": network.name})
+#     # if not isinstance(network.inputs, list):
+#     #     saved_file.update({"inputs": network.inputs._info[0].name})
+#     # else:
+#     #     saved_inputs = []
+#     #     for saved_input in network.inputs:
+#     #         saved_inputs.append(saved_input._info[0].name)
+#     #     saved_file.update({"inputs": saved_inputs})
+#     # if not isinstance(network.outputs, list):
+#     #     saved_file.update({"outputs": network.outputs._info[0].name})
+#     # else:
+#     #     saved_outputs = []
+#     #     for saved_output in network.outputs:
+#     #         saved_outputs.append(saved_output._info[0].name)
+#     #     saved_file.update({"outputs": saved_outputs})
+#     saved_file.update({"config": network.config})
+#
+#     return saved_file
 
 
 @keras_export('keras.models.save_model')
@@ -149,7 +150,7 @@ def load_keras_model(model_config):
     return model
 
 
-def save_hdf5_graph(network, filepath='model.hdf5', save_weights=False):
+def save_hdf5_graph(network, filepath='model.hdf5', save_weights=False, customized_data=None):
     """Save the architecture of TL model into a hdf5 file. Support saving model weights.
 
     Parameters
@@ -160,6 +161,8 @@ def save_hdf5_graph(network, filepath='model.hdf5', save_weights=False):
         The name of model file.
     save_weights : bool
         Whether to save model weights.
+    customized_data : dict
+        The user customized meta data.
 
     Examples
     --------
@@ -177,11 +180,22 @@ def save_hdf5_graph(network, filepath='model.hdf5', save_weights=False):
 
     logging.info("[*] Saving TL model into {}, saving weights={}".format(filepath, save_weights))
 
-    saved_file = net2static_graph(network)
-    saved_file_str = str(saved_file)
+    network_config = network.config  # net2static_graph(network)
+    network_config_str = str(network_config)
+    customized_data_str = str(customized_data)
+    version_info = {
+            "tensorlayer_version": tl.__version__,
+            "backend": "tensorflow",
+            "backend_version": tf.__version__,
+            "training_device": "gpu",
+            "save_date": datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        }
+    version_info_str = str(version_info)
 
     with h5py.File(filepath, 'w') as f:
-        f.attrs["model_structure"] = saved_file_str.encode('utf8')
+        f.attrs["network_config"] = network_config_str.encode('utf8')
+        f.attrs["customized_data"] = customized_data_str.encode('utf8')
+        f.attrs["version_info"] = version_info_str.encode('utf8')
         if save_weights:
             _save_weights_to_hdf5_group(f, network.all_layers)
         f.flush()
@@ -237,29 +251,15 @@ def eval_layer(layer_kwargs):
         raise RuntimeError("Unknown layer type.")
 
 
-def static_graph2net(saved_file):
+def static_graph2net(network_config):
     layer_dict = {}
-    model_name = saved_file['name']
-    inputs_tensors = saved_file['inputs']
-    outputs_tensors = saved_file['outputs']
-    all_args = saved_file['config']
-    tf_version = saved_file['config'].pop(0)['tf_version']
-    tl_version = saved_file['config'].pop(0)['tl_version']
-    if tf_version != tf.__version__:
-        logging.warning(
-            "Saved model uses tensorflow version {}, but now you are using tensorflow version {}".format(
-                tf_version, tf.__version__
-            )
-        )
-    if tl_version != tl.__version__:
-        logging.warning(
-            "Saved model uses tensorlayer version {}, but now you are using tensorlayer version {}".format(
-                tl_version, tl.__version__
-            )
-        )
+    model_name = network_config["name"]
+    inputs_tensors = network_config["inputs"]
+    outputs_tensors = network_config["outputs"]
+    all_args = network_config["model_architecture"]
     for idx, layer_kwargs in enumerate(all_args):
-        layer_class = layer_kwargs['class']  # class of current layer
-        prev_layers = layer_kwargs.pop('prev_layer')  # name of previous layers
+        layer_class = layer_kwargs["class"]  # class of current layer
+        prev_layers = layer_kwargs.pop("prev_layer")  # name of previous layers
         net = eval_layer(layer_kwargs)
         if layer_class in tl.layers.inputs.__all__:
             net = net._nodes[0].out_tensors[0]
@@ -312,11 +312,30 @@ def load_hdf5_graph(filepath='model.hdf5', load_weights=False):
     - see ``tl.files.save_hdf5_graph``
     """
     logging.info("[*] Loading TL model from {}, loading weights={}".format(filepath, load_weights))
-    f = h5py.File(filepath, 'r')
-    saved_file_str = f.attrs["model_structure"].decode('utf8')
-    saved_file = eval(saved_file_str)
 
-    M = static_graph2net(saved_file)
+    f = h5py.File(filepath, 'r')
+
+    version_info_str = f.attrs["version_info"].decode('utf8')
+    version_info = eval(version_info_str)
+    backend_version = version_info["backend_version"]
+    tensorlayer_version =version_info["tensorlayer_version"]
+    if backend_version != tf.__version__:
+        logging.warning(
+            "Saved model uses tensorflow version {}, but now you are using tensorflow version {}".format(
+                backend_version, tf.__version__
+            )
+        )
+    if tensorlayer_version != tl.__version__:
+        logging.warning(
+            "Saved model uses tensorlayer version {}, but now you are using tensorlayer version {}".format(
+                tensorlayer_version, tl.__version__
+            )
+        )
+
+    network_config_str = f.attrs["network_config"].decode('utf8')
+    network_config = eval(network_config_str)
+
+    M = static_graph2net(network_config)
     if load_weights:
         if not ('layer_names' in f.attrs.keys()):
             raise RuntimeError("Saved model does not contain weights.")
@@ -329,55 +348,55 @@ def load_hdf5_graph(filepath='model.hdf5', load_weights=False):
     return M
 
 
-def load_pkl_graph(name='model.pkl'):
-    """Restore TL model archtecture from a a pickle file. No parameters be restored.
-
-    Parameters
-    -----------
-    name : str
-        The name of graph file.
-
-    Returns
-    --------
-    network : TensorLayer Model.
-
-    Examples
-    --------
-    >>> # It is better to use load_hdf5_graph
-    """
-    logging.info("[*] Loading TL graph from {}".format(name))
-    with open(name, 'rb') as file:
-        saved_file = pickle.load(file)
-
-    M = static_graph2net(saved_file)
-
-    return M
-
-
-def save_pkl_graph(network, name='model.pkl'):
-    """Save the architecture of TL model into a pickle file. No parameters be saved.
-
-    Parameters
-    -----------
-    network : TensorLayer layer
-        The network to save.
-    name : str
-        The name of graph file.
-
-    Example
-    --------
-    >>> # It is better to use save_hdf5_graph
-    """
-    if network.outputs is None:
-        raise AssertionError("save_graph not support dynamic mode yet")
-
-    logging.info("[*] Saving TL graph into {}".format(name))
-
-    saved_file = net2static_graph(network)
-
-    with open(name, 'wb') as file:
-        pickle.dump(saved_file, file, protocol=pickle.HIGHEST_PROTOCOL)
-    logging.info("[*] Saved graph")
+# def load_pkl_graph(name='model.pkl'):
+#     """Restore TL model archtecture from a a pickle file. No parameters be restored.
+#
+#     Parameters
+#     -----------
+#     name : str
+#         The name of graph file.
+#
+#     Returns
+#     --------
+#     network : TensorLayer Model.
+#
+#     Examples
+#     --------
+#     >>> # It is better to use load_hdf5_graph
+#     """
+#     logging.info("[*] Loading TL graph from {}".format(name))
+#     with open(name, 'rb') as file:
+#         saved_file = pickle.load(file)
+#
+#     M = static_graph2net(saved_file)
+#
+#     return M
+#
+#
+# def save_pkl_graph(network, name='model.pkl'):
+#     """Save the architecture of TL model into a pickle file. No parameters be saved.
+#
+#     Parameters
+#     -----------
+#     network : TensorLayer layer
+#         The network to save.
+#     name : str
+#         The name of graph file.
+#
+#     Example
+#     --------
+#     >>> # It is better to use save_hdf5_graph
+#     """
+#     if network.outputs is None:
+#         raise AssertionError("save_graph not support dynamic mode yet")
+#
+#     logging.info("[*] Saving TL graph into {}".format(name))
+#
+#     saved_file = net2static_graph(network)
+#
+#     with open(name, 'wb') as file:
+#         pickle.dump(saved_file, file, protocol=pickle.HIGHEST_PROTOCOL)
+#     logging.info("[*] Saved graph")
 
 
 # Load dataset functions

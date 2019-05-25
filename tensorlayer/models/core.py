@@ -437,15 +437,43 @@ class Model(object):
         if self._config is not None and len(self._config) > 0:
             return self._config
         else:
-            _config = []
-            _config.append({"tf_version": tf.__version__})
-            _config.append({"tl_version": tl.__version__})
+            # _config = []
+            _config = {}
+            if self._NameNone is True:
+                _config.update({"name": None})
+            else:
+                _config.update({"name": self.name})
+            # versionInfo = {
+            #     "tensorlayer_version": tl.__version__,
+            #     "backend": "tensorflow",
+            #     "backend_version": tf.__version__,
+            #     "training_device": "gpu",
+            # }
+            # _config.update(versionInfo)
             # if self.outputs is None:
             #     raise RuntimeError(
             #         "Dynamic mode does not support config yet."
             #     )
+            model_architecture = []
             for layer in self.all_layers:
-                _config.append(layer.config)
+                model_architecture.append(layer.config)
+            _config["model_architecture"] = model_architecture
+            if self.inputs is not None:
+                if not isinstance(self.inputs, list):
+                    _config.update({"inputs": self.inputs._info[0].name})
+                else:
+                    config_inputs = []
+                    for config_input in self.inputs:
+                        config_inputs.append(config_input._info[0].name)
+                    _config.update({"inputs": config_inputs})
+            if self.outputs is not None:
+                if not isinstance(self.outputs, list):
+                    _config.update({"outputs": self.outputs._info[0].name})
+                else:
+                    config_outputs = []
+                    for config_output in self.outputs:
+                        config_outputs.append(config_output._info[0].name)
+                    _config.update({"outputs": config_outputs})
             if self._nodes_fixed or self.outputs is None:
                 self._config = _config
 
@@ -714,7 +742,7 @@ class Model(object):
         for layer in self.all_layers:
             layer._release_memory()
 
-    def save(self, filepath, save_weights=True):
+    def save(self, filepath, save_weights=True, customized_data=None):
         """
         Save model into a given file.
         This function save can save both the architecture of neural networks and weights (optional).
@@ -726,6 +754,8 @@ class Model(object):
             Filename into which the model will be saved.
         save_weights : bool
             Whether to save model weights.
+        customized_data : dict
+            The user customized meta data.
 
         Examples
         --------
@@ -739,7 +769,7 @@ class Model(object):
             raise RuntimeError(
                 "Model save() not support dynamic mode yet.\nHint: you can use Model save_weights() to save the weights in dynamic mode."
             )
-        utils.save_hdf5_graph(network=self, filepath=filepath, save_weights=save_weights)
+        utils.save_hdf5_graph(network=self, filepath=filepath, save_weights=save_weights, customized_data=customized_data)
 
     @staticmethod
     def load(filepath, load_weights=True):
