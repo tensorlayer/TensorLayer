@@ -84,7 +84,7 @@ class QuanDenseLayerWithBN(Layer):
             W_init_args=None,
             name=None,  #'quan_dense_with_bn',
     ):
-        super(QuanDenseLayerWithBN, self).__init__(prev_layer=prev_layer, act=act, haveact=True, W_init_args=W_init_args, name=name)
+        super(QuanDenseLayerWithBN, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
 
         logging.info(
             "QuanDenseLayerWithBN  %s: %d %s" %

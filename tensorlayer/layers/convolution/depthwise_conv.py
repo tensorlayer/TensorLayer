@@ -82,7 +82,7 @@ class DepthwiseConv2d(Layer):
             in_channels=None,
             name=None  # 'depthwise_conv2d'
     ):
-        super().__init__(name, act=act, haveact=True)
+        super().__init__(name, act=act)
         self.filter_size = filter_size
         self.strides = self._strides = strides
         self.padding = padding

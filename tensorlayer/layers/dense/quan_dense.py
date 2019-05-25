@@ -54,7 +54,7 @@ class QuanDense(Layer):
             in_channels=None,
             name=None,  #'quan_dense',
     ):
-        super().__init__(name, act=act, haveact=True)
+        super().__init__(name, act=act)
         self.n_units = n_units
         self.bitW = bitW
         self.bitA = bitA

@@ -83,7 +83,7 @@ class DeformableConv2d(Layer):
             in_channels=None,
             name=None  # 'deformable_conv_2d',
     ):
-        super().__init__(name, act=act, haveact=True)
+        super().__init__(name, act=act)
 
         self.offset_layer = offset_layer
         self.n_filter = n_filter

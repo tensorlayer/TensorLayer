@@ -49,7 +49,7 @@ class TernaryDense(Layer):
             in_channels=None,
             name=None,  #'ternary_dense',
     ):
-        super().__init__(name, act=act, haveact=True)
+        super().__init__(name, act=act)
         self.n_units = n_units
         self.use_gemm = use_gemm
         self.W_init = W_init

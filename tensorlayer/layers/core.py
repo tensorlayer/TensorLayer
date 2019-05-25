@@ -21,10 +21,17 @@ _act_dict = {
     "relu": tf.nn.relu,
     "relu6": tf.nn.relu6,
     "leaky_relu": tf.nn.leaky_relu,
+    "lrelu0.2": tf.nn.leaky_relu,
     "softplus": tf.nn.softplus,
     "tanh": tf.nn.tanh,
     "sigmoid": tf.nn.sigmoid,
 }
+
+
+def str2act(act):
+    if act not in _act_dict.keys():
+        raise Exception("Unsupported act {}".format(act))
+    return _act_dict[act]
 
 
 class Layer(object):
@@ -56,7 +63,7 @@ class Layer(object):
 
     """
 
-    def __init__(self, name=None, act=None, haveact=False, *args, **kwargs):
+    def __init__(self, name=None, act=None, *args, **kwargs):
         """
         Initializing the Layer.
 
@@ -94,13 +101,10 @@ class Layer(object):
                 _global_layer_name_dict[name] = 0
 
         self.name = name
-        if haveact:
-            if isinstance(act, str):
-                if act not in _act_dict.keys():
-                    raise RuntimeError("No activation function named {}.".format(act))
-                self.act = _act_dict[act]
-            else:
-                self.act = act
+        if isinstance(act, str):
+            self.act = str2act(act)
+        else:
+            self.act = act
 
         # Layer building state
         self._built = False

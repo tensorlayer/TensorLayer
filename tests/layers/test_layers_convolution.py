@@ -467,7 +467,7 @@ class Exception_test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("##### begin testing exception in activation  #####")
+        print("##### begin testing exception in activation #####")
 
     def test_exception(cls):
 
@@ -481,7 +481,7 @@ class Exception_test(CustomTestCase):
                 b_init=tf.constant_initializer(value=0.0), name='conv2dlayer'
             )(cls.input_layer)
         except Exception as e:
-            cls.assertIsInstance(e, RuntimeError)
+            cls.assertIsInstance(e, Exception)
             print(e)
 
 

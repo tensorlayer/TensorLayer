@@ -70,7 +70,7 @@ class Conv1d(Layer):
             in_channels=None,
             name=None  # 'conv1d'
     ):
-        super().__init__(name, act=act, haveact=True)
+        super().__init__(name, act=act)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.stride = stride
@@ -200,7 +200,7 @@ class Conv2d(Layer):
             in_channels=None,
             name=None  # 'conv2d',
     ):
-        super().__init__(name, act=act, haveact=True)
+        super().__init__(name, act=act)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self._strides = self.strides = strides
@@ -333,7 +333,7 @@ class Conv3d(Layer):
             in_channels=None,
             name=None  # 'conv3d',
     ):
-        super().__init__(name, act=act, haveact=True)
+        super().__init__(name, act=act)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self._strides = self.strides = strides

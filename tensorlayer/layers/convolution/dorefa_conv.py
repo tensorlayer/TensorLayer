@@ -81,7 +81,7 @@ class DorefaConv2d(Layer):
             in_channels=None,
             name=None  # 'dorefa_cnn2d',
     ):
-        super().__init__(name, act=act, haveact=True)
+        super().__init__(name, act=act)
         self.bitW = bitW
         self.bitA = bitA
         self.n_filter = n_filter

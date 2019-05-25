@@ -113,7 +113,7 @@ class QuanConv2dWithBN(Layer):
             data_format=None,
             name='quan_cnn2d_bn',
     ):
-        super(QuanConv2dWithBN, self).__init__(prev_layer=prev_layer, act=act, haveact=True, W_init_args=W_init_args, name=name)
+        super(QuanConv2dWithBN, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
 
         logging.info(
             "QuanConv2dWithBN %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s " % (
