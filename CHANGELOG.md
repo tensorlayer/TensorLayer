@@ -70,7 +70,7 @@ To release a new version, please update the changelog as followed:
 ## [2.1.0] - 2019-5-25
 
 ### Changed
-- change the format of network config, change related code and files
+- change the format of network config, change related code and files (PR #980)
 
 ### Added
 
@@ -79,6 +79,7 @@ To release a new version, please update the changelog as followed:
 ### Fixed
 
 ### Contributors
+- @warshallrho: #PR980
 
 
 ## [2.0.1] - 2019-5-17

@@ -184,12 +184,12 @@ def save_hdf5_graph(network, filepath='model.hdf5', save_weights=False, customiz
     model_config_str = str(model_config)
     customized_data_str = str(customized_data)
     version_info = {
-            "tensorlayer_version": tl.__version__,
-            "backend": "tensorflow",
-            "backend_version": tf.__version__,
-            "training_device": "gpu",
-            "save_date": datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-        }
+        "tensorlayer_version": tl.__version__,
+        "backend": "tensorflow",
+        "backend_version": tf.__version__,
+        "training_device": "gpu",
+        "save_date": datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    }
     version_info_str = str(version_info)
 
     with h5py.File(filepath, 'w') as f:
@@ -318,7 +318,7 @@ def load_hdf5_graph(filepath='model.hdf5', load_weights=False):
     version_info_str = f.attrs["version_info"].decode('utf8')
     version_info = eval(version_info_str)
     backend_version = version_info["backend_version"]
-    tensorlayer_version =version_info["tensorlayer_version"]
+    tensorlayer_version = version_info["tensorlayer_version"]
     if backend_version != tf.__version__:
         logging.warning(
             "Saved model uses tensorflow version {}, but now you are using tensorflow version {}".format(

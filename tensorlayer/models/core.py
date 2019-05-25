@@ -769,7 +769,9 @@ class Model(object):
             raise RuntimeError(
                 "Model save() not support dynamic mode yet.\nHint: you can use Model save_weights() to save the weights in dynamic mode."
             )
-        utils.save_hdf5_graph(network=self, filepath=filepath, save_weights=save_weights, customized_data=customized_data)
+        utils.save_hdf5_graph(
+            network=self, filepath=filepath, save_weights=save_weights, customized_data=customized_data
+        )
 
     @staticmethod
     def load(filepath, load_weights=True):
