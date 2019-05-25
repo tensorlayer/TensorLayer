@@ -90,7 +90,7 @@ class Model_SEQ2SEQ_Test(CustomTestCase):
             top_n = 1
             for i in range(top_n):
                 prediction = model_([test_sample], seq_length = self.dec_seq_length, start_token = 0, top_n = top_n)
-                print("Prediction: >>>>>  ", prediction[0], "\n Target: >>>>>  ", trainY[0,1:], "\n\n")
+                print("Prediction: >>>>>  ", prediction[0].numpy(), "\n Target: >>>>>  ", trainY[0,1:], "\n\n")
 
             # printing average loss after every epoch
             print('Epoch [{}/{}]: loss {:.4f}'.format(epoch + 1, self.num_epochs, total_loss / n_iter))
