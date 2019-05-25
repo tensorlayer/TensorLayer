@@ -74,7 +74,7 @@ __all__ = [
     'load_hdf5_to_weights',
     'save_hdf5_graph',
     'load_hdf5_graph',
-    'net2static_graph',
+    # 'net2static_graph',
     'static_graph2net',
     # 'save_pkl_graph',
     # 'load_pkl_graph',
