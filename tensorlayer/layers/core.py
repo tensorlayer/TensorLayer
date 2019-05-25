@@ -479,7 +479,8 @@ class ModelLayer(Layer):
     def get_args(self):
         init_args = {}
         init_args.update({"layer_type": "modellayer"})
-        init_args["model"] = utils.net2static_graph(self.layer_args["model"])
+        # init_args["model"] = utils.net2static_graph(self.layer_args["model"])
+        init_args["model"] = self.layer_args["model"].config
         return init_args
 
 

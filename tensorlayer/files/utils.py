@@ -180,8 +180,8 @@ def save_hdf5_graph(network, filepath='model.hdf5', save_weights=False, customiz
 
     logging.info("[*] Saving TL model into {}, saving weights={}".format(filepath, save_weights))
 
-    network_config = network.config  # net2static_graph(network)
-    network_config_str = str(network_config)
+    model_config = network.config  # net2static_graph(network)
+    model_config_str = str(model_config)
     customized_data_str = str(customized_data)
     version_info = {
             "tensorlayer_version": tl.__version__,
@@ -193,7 +193,7 @@ def save_hdf5_graph(network, filepath='model.hdf5', save_weights=False, customiz
     version_info_str = str(version_info)
 
     with h5py.File(filepath, 'w') as f:
-        f.attrs["network_config"] = network_config_str.encode('utf8')
+        f.attrs["model_config"] = model_config_str.encode('utf8')
         f.attrs["customized_data"] = customized_data_str.encode('utf8')
         f.attrs["version_info"] = version_info_str.encode('utf8')
         if save_weights:
@@ -251,12 +251,12 @@ def eval_layer(layer_kwargs):
         raise RuntimeError("Unknown layer type.")
 
 
-def static_graph2net(network_config):
+def static_graph2net(model_config):
     layer_dict = {}
-    model_name = network_config["name"]
-    inputs_tensors = network_config["inputs"]
-    outputs_tensors = network_config["outputs"]
-    all_args = network_config["model_architecture"]
+    model_name = model_config["name"]
+    inputs_tensors = model_config["inputs"]
+    outputs_tensors = model_config["outputs"]
+    all_args = model_config["model_architecture"]
     for idx, layer_kwargs in enumerate(all_args):
         layer_class = layer_kwargs["class"]  # class of current layer
         prev_layers = layer_kwargs.pop("prev_layer")  # name of previous layers
@@ -332,10 +332,10 @@ def load_hdf5_graph(filepath='model.hdf5', load_weights=False):
             )
         )
 
-    network_config_str = f.attrs["network_config"].decode('utf8')
-    network_config = eval(network_config_str)
+    model_config_str = f.attrs["model_config"].decode('utf8')
+    model_config = eval(model_config_str)
 
-    M = static_graph2net(network_config)
+    M = static_graph2net(model_config)
     if load_weights:
         if not ('layer_names' in f.attrs.keys()):
             raise RuntimeError("Saved model does not contain weights.")
