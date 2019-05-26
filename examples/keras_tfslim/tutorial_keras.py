@@ -38,7 +38,7 @@ print(network)
 n_epoch = 200
 learning_rate = 0.0001
 
-train_params = network.weights
+train_params = network.trainable_weights
 optimizer = tf.optimizers.Adam(learning_rate)
 
 for epoch in range(n_epoch):

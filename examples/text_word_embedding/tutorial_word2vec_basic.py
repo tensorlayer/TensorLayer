@@ -240,8 +240,8 @@ def main_word2vec_basic():
         with tf.GradientTape() as tape:
             outputs, nce_cost = model([batch_inputs, batch_labels])
 
-        grad = tape.gradient(nce_cost, model.weights)
-        optimizer.apply_gradients(zip(grad, model.weights))
+        grad = tape.gradient(nce_cost, model.trainable_weights)
+        optimizer.apply_gradients(zip(grad, model.trainable_weights))
 
         average_loss += nce_cost
 

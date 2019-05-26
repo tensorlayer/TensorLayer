@@ -38,15 +38,12 @@ class CustomModel(Model):
         return out
 
 MLP = CustomModel()
-# MLP.print_layers()
-# MLP.print_weights()
-# print(MLP.outputs.outputs)
 
 ## start training
 n_epoch = 500
 batch_size = 500
 print_freq = 5
-train_weights = MLP.weights
+train_weights = MLP.trainable_weights
 optimizer = tf.optimizers.Adam(learning_rate=0.0001)
 
 ## the following code can help you understand SGD deeply

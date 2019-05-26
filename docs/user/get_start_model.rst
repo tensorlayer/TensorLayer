@@ -66,6 +66,24 @@ In this case, you need to manually input the output shape of the previous layer 
   MLP.eval()
   outputs = MLP(data, foo=True) # controls the forward here
   outputs = MLP(data, foo=False)
+  
+  
+Switching train/test modes
+=============================
+
+.. code-block:: python
+
+  # method 1: switch before forward
+  Model.train() # enable dropout, batch norm moving avg ...
+  output = Model(train_data) 
+  ... # training code here
+  Model.eval()  # disable dropout, batch norm moving avg ...
+  output = Model(test_data) 
+  ... # testing code here
+  
+  # method 2: switch while forward
+  output = Model(train_data, is_train=True)
+  output = Model(test_data, is_train=False)
 
 Reuse weights
 =======================
@@ -149,11 +167,11 @@ We can get the specific weights by indexing or naming.
 .. code-block:: python
 
   # indexing
-  all_weights = MLP.weights
-  some_weights = MLP.weights[1:3]
+  all_weights = MLP.all_weights
+  some_weights = MLP.all_weights[1:3]
 
   # naming
-  some_weights = MLP.get_layer('dense1').weights
+  some_weights = MLP.get_layer('dense1').all_weights
 
 
 Save and restore model

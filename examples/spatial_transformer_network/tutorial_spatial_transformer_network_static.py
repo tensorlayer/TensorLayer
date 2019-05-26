@@ -84,7 +84,7 @@ n_epoch = 100
 learning_rate = 0.0001
 print_freq = 10
 batch_size = 64
-train_weights = net.weights
+train_weights = net.trainable_weights
 optimizer = tf.optimizers.Adam(lr=learning_rate)
 
 ##================== TRAINING ================================================##

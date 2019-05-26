@@ -58,8 +58,8 @@ class Layer_Lambda_Test(CustomTestCase):
                 pred_y = model(self.data_x)
                 loss = tl.cost.mean_squared_error(pred_y, self.data_y)
 
-            gradients = tape.gradient(loss, model.weights)
-            optimizer.apply_gradients(zip(gradients, model.weights))
+            gradients = tape.gradient(loss, model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, model.trainable_weights))
 
             print("epoch %d, loss %f" % (epoch, loss))
 
