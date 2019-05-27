@@ -32,8 +32,9 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 | DDPG         | Continuous        | Continuous   |
 | TD3          | Continuous        | Continuous   |
 | HER          |                   |              |
-| TRPO         |                   |              |
-| PPO          |                   |              |
+| PG           | Continuous        | Continuous   |
+| TRPO         | Continuous        | Continuous   |
+| PPO          | Continuous        | Continuous   |
 |              |                   |              |
 |              |                   |              |
 |              |                   |              |
