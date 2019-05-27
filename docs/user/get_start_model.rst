@@ -158,6 +158,9 @@ Print model information
   #   (dropout_2): Dropout(keep=0.8, name='dropout_2')
   #   (dense_2): Dense(n_units=10, relu, in_channels='800', name='dense_2')
   # )
+  
+  import pprint
+  pprint.pprint(MLP.config) # print the model architecture
 
 Get specific weights
 =======================
