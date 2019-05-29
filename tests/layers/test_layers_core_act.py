@@ -19,7 +19,6 @@ class Layer_Convolution_2D_Test(CustomTestCase):
     def setUpClass(cls):
         print("##### begin testing activation #####")
 
-
     @classmethod
     def tearDownClass(cls):
         pass
@@ -36,41 +35,29 @@ class Layer_Convolution_2D_Test(CustomTestCase):
             b_init=tf.constant_initializer(value=0.0), name='conv2dlayer'
         )(cls.input_layer)
 
-        cls.n2 = tl.layers.Conv2d(
-            n_filter=32, filter_size=(3, 3), strides=(2, 2), act="relu", name='conv2d'
-        )(cls.n1)
+        cls.n2 = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act="relu", name='conv2d')(cls.n1)
 
-        cls.n3 = tl.layers.Conv2d(
-            n_filter=32, filter_size=(3, 3), strides=(2, 2), act="leaky_relu", b_init=None
-        )(cls.n2)
+        cls.n3 = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act="leaky_relu",
+                                  b_init=None)(cls.n2)
 
-        cls.n4 = tl.layers.Conv2d(
-            n_filter=32, filter_size=(3, 3), strides=(2, 2), act="lrelu", b_init=None
-        )(cls.n2)
+        cls.n4 = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act="lrelu", b_init=None)(cls.n2)
 
-        cls.n5 = tl.layers.Conv2d(
-            n_filter=32, filter_size=(3, 3), strides=(2, 2), act="sigmoid", in_channels=32
-        )(cls.n4)
+        cls.n5 = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act="sigmoid",
+                                  in_channels=32)(cls.n4)
 
-        cls.n6 = tl.layers.Conv2d(
-            n_filter=32, filter_size=(3, 3), strides=(2, 2), act="tanh", in_channels=32
-        )(cls.n5)
+        cls.n6 = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act="tanh", in_channels=32)(cls.n5)
 
         cls.n7 = tl.layers.Conv2d(
             n_filter=32, filter_size=(3, 3), strides=(2, 2), act="leaky_relu0.22", in_channels=32
         )(cls.n6)
 
-        cls.n8 = tl.layers.Conv2d(
-            n_filter=32, filter_size=(3, 3), strides=(2, 2), act="lrelu0.22", in_channels=32
-        )(cls.n7)
+        cls.n8 = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act="lrelu0.22",
+                                  in_channels=32)(cls.n7)
 
-        cls.n9 = tl.layers.Conv2d(
-            n_filter=32, filter_size=(3, 3), strides=(2, 2), act="softplus", in_channels=32
-        )(cls.n8)
+        cls.n9 = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act="softplus",
+                                  in_channels=32)(cls.n8)
 
-        cls.n10 = tl.layers.Conv2d(
-            n_filter=32, filter_size=(3, 3), strides=(2, 2), act="relu6", in_channels=32
-        )(cls.n9)
+        cls.n10 = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act="relu6", in_channels=32)(cls.n9)
 
         cls.model = Model(cls.input_layer, cls.n8)
 
