@@ -95,6 +95,7 @@ class PRelu(Layer):
     def forward(self, inputs):
 
         pos = tf.nn.relu(inputs)
+        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
         neg = -self.alpha_var_constrained * tf.nn.relu(-inputs)
 
         return pos + neg
