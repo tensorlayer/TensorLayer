@@ -21,7 +21,7 @@ _act_dict = {
     "relu": tf.nn.relu,
     "relu6": tf.nn.relu6,
     "leaky_relu": tf.nn.leaky_relu,
-    "lrelu0.2": tf.nn.leaky_relu,
+    "lrelu": tf.nn.leaky_relu,
     "softplus": tf.nn.softplus,
     "tanh": tf.nn.tanh,
     "sigmoid": tf.nn.sigmoid,
@@ -29,8 +29,22 @@ _act_dict = {
 
 
 def str2act(act):
+    if len(act) > 5 and act[0:5] == "lrelu":
+        try:
+            alpha = float(act[5:])
+            return lambda x: tf.nn.leaky_relu(x, alpha=alpha)
+        except Exception as e:
+            raise Exception("{} can not be parsed as a float".format(act[5:]))
+
+    if len(act) > 10 and act[0:10] == "leaky_relu":
+        try:
+            alpha = float(act[10:])
+            return lambda x: tf.nn.leaky_relu(x, alpha=alpha)
+        except Exception as e:
+            raise Exception("{} can not be parsed as a float".format(act[10:]))
+
     if act not in _act_dict.keys():
-        raise Exception("Unsupported act {}".format(act))
+        raise Exception("Unsupported act: {}".format(act))
     return _act_dict[act]
 
 
