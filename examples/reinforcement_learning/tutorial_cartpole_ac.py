@@ -54,11 +54,22 @@ LAMBDA = 0.9  # reward discount in TD error
 LR_A = 0.001  # learning rate for actor
 LR_C = 0.01  # learning rate for critic
 
+''' 
+choose environment
+1. Openai gym:
+env = gym.make()
+2. DeepMind Control Suite:
+env = dm_control2gym.make()
+'''
+
 env = gym.make('CartPole-v0')
+# dm_control2gym.create_render_mode('example mode', show=True, return_pixel=False, height=240, width=320, camera_id=-1, overlays=(),
+#              depth=False, scene_option=None)
+# env = dm_control2gym.make(domain_name="cartpole", task_name="balance")
 env.seed(2)  # reproducible
 # env = env.unwrapped
-
 N_F = env.observation_space.shape[0]
+# N_A = env.action_space.shape[0]
 N_A = env.action_space.n
 
 print("observation dimension: %d" % N_F)  # 4

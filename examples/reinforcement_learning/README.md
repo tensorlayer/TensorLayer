@@ -1,6 +1,6 @@
 # Reinforcement Learning Tutorial with Tensorlayer
 
-This folder contains implementation of most popular reinforcement learning algorithms with Tensorlayer 2.0.
+This repository contains implementation of most popular reinforcement learning algorithms with Tensorlayer 2.0, supporting Tensorflow 2.0. We aim to make the reinforcement learning tutorial for each algorithm simple and straight-forward to use, as this would not only benefits new learners of reinforcement learning, but also provide convenience for senior researchers to testify their new ideas quickly.
 
 ## Prerequisites:
 
@@ -14,7 +14,13 @@ This folder contains implementation of most popular reinforcement learning algor
 
 `pip install --upgrade tf-nightly-2.0-preview tfp-nightly`
 
+## Status: Beta
+
+We are currently open to any suggestions or pull requests from you to make the reinforcement learning tutorial with TensorLayer2.0 a better code repository for both new learners and senior researchers. Some of the algorithms mentioned in the this markdown may be not yet available, since we are still trying to implement more RL algorithms and optimize their performances. However, those algorithms listed above will come out in a few weeks, and the repository will keep updating more advanced RL algorithms in the future.
+
 ## To Use:
+
+For each tutorial, open a terminal and run:
 
 `python ***.py` 
 
@@ -22,23 +28,17 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
 ## Table of Contents:
 
-| Algorithms   | Observation Space | Action Space |
-| ------------ | ----------------- | ------------ |
-| Q-learning   | Discrete          | Discrete     |
-| DQN          | Discrete          | Discrete     |
-| Actor-Critic | Continuous        | Discrete     |
-| A3C          | Continuous        | Continuous   |
-| SAC          | Continuous        | Continuous   |
-| DDPG         | Continuous        | Continuous   |
-| TD3          | Continuous        | Continuous   |
-| HER          |                   |              |
-| PG           | Continuous        | Discrete     |
-| TRPO         | Continuous        | Continuous   |
-| PPO          | Continuous        | Continuous   |
-|              |                   |              |
-|              |                   |              |
-|              |                   |              |
-|              |                   |              |
+| Algorithms       | Observation Space | Action Space | Tutorial Env   |
+| ---------------- | ----------------- | ------------ | -------------- |
+| Q-learning       | Discrete          | Discrete     | FrozenLake     |
+| DQN and variants | Discrete          | Discrete     | Pong, CartPole |
+| Actor-Critic     | Continuous        | Discrete     | CartPole       |
+| A3C              | Continuous        | Continuous   | BipedalWalker  |
+| SAC              | Continuous        | Continuous   | Pendulum       |
+| PG               | Continuous        | Discrete     | CartPole       |
+| DDPG             | Continuous        | Continuous   | Pendulum       |
+| TD3              | Continuous        | Continuous   | Pendulum       |
+| C51              |                   |              | CartPole       |
 
 
 
@@ -47,16 +47,20 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
   Code: `./tutorial_frozenlake_q_table.py`
 
   
+
 * Deep Q-Network (DQN)
 
   Code: `./tutorial_frozenlake_dqn.py`
 
   
+
 * Double DQN / Dueling DQN / Noisy DQN
 
   Code: `./tutorial_double_dueling_noisy_dqn.py`
 
   Experiment Environments: Pong and Cartpole
+
+  
 
 
 * Prioritized replay
@@ -64,6 +68,7 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
   Code: `./tutorial_prioritized_replay.py`
 
   Experiment Environments: Pong and Cartpole
+
   
 
 * Distributed DQN
@@ -72,6 +77,8 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
   Experiment Environments: Pong and Cartpole
 
+  
+
 
 * Retrace(lambda) DQN
 
@@ -79,36 +86,45 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
   Experiment Environments: Pong and Cartpole
 
+  
+
 
 * Actor-Critic (AC)
 
   Code:`./tutorial_cartpole_ac.py`
 
   
+
 * Asynchronous Advantage Actor-Critic (A3C)
 
   Code: `./tutorial_bipedalwalker_a3c_continuous_action.py`
 
   
+
 * Soft Actor-Critic (SAC)
 
   Code: `./tutorial_sac.py`
 
   Paper: [Soft Actor-Critic Algorithms and Applications](https://arxiv.org/pdf/1812.05905.pdf)
 
+  
+
 
 * Policy Gradient (PG/REINFORCE) 
 
   Code: `./tutorial_PG.py`
-  
+
   Paper: [Policy Gradient Methods for Reinforcement Learning with Function Approximation](https://papers.nips.cc/paper/1713-policy-gradient-methods-for-reinforcement-learning-with-function-approximation.pdf)
+
   
-  
+
 * Deep Deterministic Policy Gradient (DDPG)
 
   Code: `./tutorial_DDPG.py`
-  
+
   Paper: [CONTINUOUS CONTROL WITH DEEP REINFORCEMENT LEARNING](https://arxiv.org/pdf/1509.02971.pdf)
+
+  
 
 
 * Twin Delayed DDPG (TD3)
@@ -118,31 +134,35 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
   Paper: [Addressing Function Approximation Error in Actor-Critic Methods](https://arxiv.org/pdf/1802.09477.pdf)
 
   
-* Hindsight Experience Replay (HER)
 
-  To do.
-
-  
 * Trust Region Policy Optimization (TRPO)
 
   Code: `./tutorial_TRPO.py`
-  
+
   Paper: [Trust Region Policy Optimization](https://arxiv.org/pdf/1502.05477.pdf)
 
   
+
 * Proximal Policy Optimization (PPO)
 
   Code: `./tutorial_PPO.py`
-  
+
   Paper: [Proximal Policy Optimization Algorithms](https://arxiv.org/pdf/1707.06347.pdf)
+
+  
 
 * Distributed Proximal Policy Optimization (PPO)
 
   Code: `./tutorial_DPPO.py`
-  
+
   Paper: [Emergence of Locomotion Behaviours in Rich Environments](https://arxiv.org/pdf/1707.02286.pdf)
 
   
+
+* Hindsight Experience Replay (HER)
+
+  To do.
+
 * etc
 
 ## Environment:
