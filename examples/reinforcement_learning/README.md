@@ -1,6 +1,6 @@
 # Reinforcement Learning Tutorial with Tensorlayer
 
-This repository contains implementation of most popular reinforcement learning algorithms with Tensorlayer 2.0, supporting Tensorflow 2.0. We aim to make the reinforcement learning tutorial for each algorithm simple and straight-forward to use, as this would not only benefits new learners of reinforcement learning, but also provide convenience for senior researchers to testify their new ideas quickly.
+This repository contains implementation of most popular reinforcement learning algorithms with Tensorlayer 2.0, supporting [Tensorflow 2.0](https://www.tensorflow.org/alpha/guide/effective_tf2). We aim to make the reinforcement learning tutorial for each algorithm simple and straight-forward to use, as this would not only benefits new learners of reinforcement learning, but also provide convenience for senior researchers to testify their new ideas quickly.
 
 ## Prerequisites:
 
@@ -40,7 +40,7 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 | TD3              | Continuous        | Continuous   | Pendulum       |
 | C51              |                   |              | CartPole       |
 
-
+## Examples of RL Algorithms:
 
 * Q-learning
 
@@ -167,7 +167,7 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
 ## Environment:
 
-[Openai Gym](https://gym.openai.com/)
+We typically apply game environments in [Openai Gym](https://gym.openai.com/) for our tutorials. For other environment sources like [DeepMind Control Suite](https://github.com/deepmind/dm_control) and [Marathon-Envs in Unity](https://github.com/Unity-Technologies/marathon-envs), they all have wrappers to convert into format of Gym environments, see [here](https://github.com/martinseilair/dm_control2gym) and [here](https://github.com/Unity-Technologies/marathon-envs/tree/master/gym-unity).
 
 Our env wrapper: `./tutorial_wrappers.py` 
 

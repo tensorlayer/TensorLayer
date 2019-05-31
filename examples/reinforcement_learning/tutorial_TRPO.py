@@ -497,6 +497,7 @@ def trpo(env_fn, actor_critic=mlp_actor_critic, ac_kwargs=dict(), seed=0,
         with tf.GradientTape() as tape:
             v_loss = cal_v_loss(inputs)
         grad = tape.gradient(v_loss, critic.trainable_weights)
+        print(grad)
         tf.optimizers.Adam(vf_lr).apply_gradients(zip(grad, critic.trainable_weights))
 
     # Symbols needed for CG solver
