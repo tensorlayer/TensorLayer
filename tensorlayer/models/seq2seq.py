@@ -75,34 +75,24 @@ class Seq2seq(Model):
 
     def inference(self, encoding, seq_length, start_token, top_n):
 
-        feed_output = self.embedding_layer(encoding)
-
+        feed_output = self.embedding_layer(encoding[0])
         state = [None for i in range(self.n_layer)]
 
         for i in range(self.n_layer):
             feed_output, state[i] = self.enc_layers[i](feed_output, return_state=True)
-
-        batch_size = len(encoding) 
+        batch_size = len(encoding[0].numpy()) 
         decoding = [[start_token] for i in range(batch_size)]
         feed_output = self.embedding_layer(decoding)
-
         for i in range(self.n_layer):
             feed_output, state[i] = self.dec_layers[i](feed_output, initial_state=state[i], return_state=True)
         
         feed_output = self.reshape_layer(feed_output)
         feed_output = self.dense_layer(feed_output)
         feed_output = self.reshape_layer_individual_sequence(feed_output)
-
-        if (top_n is not None):
-            idx = np.argpartition(feed_output[0][0], -top_n)[-top_n:]
-            probs = [feed_output[0][0][i] for i in idx]
-            probs = probs / np.sum(probs)
-            feed_output = np.random.choice(idx, p=probs)
-            feed_output = tf.convert_to_tensor([[feed_output]])
-        else:
-            feed_output = tf.argmax(feed_output, -1)
-
+        feed_output = tf.argmax(feed_output, -1)
+        # [B, 1]
         final_output = feed_output
+
         for i in range(seq_length - 1):
             feed_output = self.embedding_layer(feed_output)
             for i in range(self.n_layer):
@@ -110,13 +100,19 @@ class Seq2seq(Model):
             feed_output = self.reshape_layer(feed_output)
             feed_output = self.dense_layer(feed_output)
             feed_output = self.reshape_layer_individual_sequence(feed_output)
-
+            ori_feed_output = feed_output
             if (top_n is not None):
-                idx = np.argpartition(feed_output[0][0], -top_n)[-top_n:]
-                probs = [feed_output[0][0][i] for i in idx]
-                probs = probs / np.sum(probs)
-                feed_output = np.random.choice(idx, p=probs)
-                feed_output = [[feed_output]]
+                for k in range(batch_size):
+                    idx = np.argpartition(ori_feed_output[k][0], -top_n)[-top_n:]
+                    probs = [ori_feed_output[k][0][i] for i in idx]
+                    probs = probs / np.sum(probs)
+                    feed_output = np.random.choice(idx, p=probs)
+                    feed_output = tf.convert_to_tensor([[feed_output]], dtype=tf.int64)
+                    if (k == 0):
+                        final_output_temp = feed_output
+                    else:
+                        final_output_temp = tf.concat([final_output_temp, feed_output], 0)
+                feed_output = final_output_temp
             else:
                 feed_output = tf.argmax(feed_output, -1)
             final_output = tf.concat([final_output, feed_output], 1)
