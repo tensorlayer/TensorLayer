@@ -18,15 +18,13 @@ class Seq2seq(Model):
     decoder_seq_length: int
         The length of your target sequence
     cell_enc : str, tf.function
-        The RNN function cell for your encoder stack, i.e. tf.keras.layers.GRUCell
+        The RNN function cell for your encoder stack, e.g tf.keras.layers.GRUCell
     cell_dec : str, tf.function
-        The RNN function cell for your decoder stack, i.e. tf.keras.layers.GRUCell
+        The RNN function cell for your decoder stack, e.g. tf.keras.layers.GRUCell
     n_layer : int
         The number of your RNN layers for both encoder and decoder block
-    embbedding_layer : tl.function
-        The embedding layer function, i.e. tl.layers.Embedding(vocabulary_size=voc_size, embedding_size=emb_dim)
-    is_train : bool
-        True if train mode, False if Inference mode
+    embedding_layer : tl.Layer
+        A embedding layer, e.g. tl.layers.Embedding(vocabulary_size=voc_size, embedding_size=emb_dim)
     name : str
         The model name
     
@@ -46,8 +44,7 @@ class Seq2seq(Model):
             n_units=256,
             n_layer=3,
             embedding_layer=None,
-            is_train=True,
-            name="seq2seq_"
+            name=None
     ):
         super(Seq2seq, self).__init__(name=name)
         self.embedding_layer = embedding_layer
@@ -74,7 +71,19 @@ class Seq2seq(Model):
         self.reshape_layer_individual_sequence = tl.layers.Reshape([-1, 1, self.vocabulary_size])
 
     def inference(self, encoding, seq_length, start_token, top_n):
-
+        """Inference mode"""
+        """
+        Parameters
+        ----------
+        encoding : input tensor
+            The source sequences 
+        seq_length : int
+            The expected length of your predicted sequence.
+        start_token : int
+            <SOS> : The token of "start of sequence"
+        top_n : int
+            Random search algorithm based on the top top_n words sorted by the probablity. 
+        """
         feed_output = self.embedding_layer(encoding[0])
         state = [None for i in range(self.n_layer)]
 
