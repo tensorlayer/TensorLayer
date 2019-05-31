@@ -10,7 +10,6 @@ from tensorlayer.layers.core import Layer
 
 
 class Seq2seq(Model):
-
     """vanilla stacked layer Seq2Seq model.
 
     Parameters
@@ -36,16 +35,8 @@ class Seq2seq(Model):
     -------
         static stacked-layer Seq2Seq model.
     """
-    def __init__(
-            self,
-            decoder_seq_length,
-            cell_enc,
-            cell_dec,
-            n_units=256,
-            n_layer=3,
-            embedding_layer=None,
-            name=None
-    ):
+
+    def __init__(self, decoder_seq_length, cell_enc, cell_dec, n_units=256, n_layer=3, embedding_layer=None, name=None):
         super(Seq2seq, self).__init__(name=name)
         self.embedding_layer = embedding_layer
         self.vocabulary_size = embedding_layer.vocabulary_size
@@ -55,15 +46,27 @@ class Seq2seq(Model):
         self.dec_layers = []
         for i in range(n_layer):
             if (i == 0):
-                self.enc_layers.append(tl.layers.RNN(cell=cell_enc(units=n_units), in_channels=self.embedding_size, return_last_state=True))
+                self.enc_layers.append(
+                    tl.layers.RNN(
+                        cell=cell_enc(units=n_units), in_channels=self.embedding_size, return_last_state=True
+                    )
+                )
             else:
-                self.enc_layers.append(tl.layers.RNN(cell=cell_enc(units=n_units), in_channels=n_units, return_last_state=True))
+                self.enc_layers.append(
+                    tl.layers.RNN(cell=cell_enc(units=n_units), in_channels=n_units, return_last_state=True)
+                )
 
         for i in range(n_layer):
             if (i == 0):
-                self.dec_layers.append(tl.layers.RNN(cell=cell_dec(units=n_units), in_channels=self.embedding_size, return_last_state=True))
+                self.dec_layers.append(
+                    tl.layers.RNN(
+                        cell=cell_dec(units=n_units), in_channels=self.embedding_size, return_last_state=True
+                    )
+                )
             else:
-                self.dec_layers.append(tl.layers.RNN(cell=cell_dec(units=n_units), in_channels=n_units, return_last_state=True))
+                self.dec_layers.append(
+                    tl.layers.RNN(cell=cell_dec(units=n_units), in_channels=n_units, return_last_state=True)
+                )
 
         self.reshape_layer = tl.layers.Reshape([-1, n_units])
         self.dense_layer = tl.layers.Dense(n_units=self.vocabulary_size, in_channels=n_units)
@@ -89,12 +92,12 @@ class Seq2seq(Model):
 
         for i in range(self.n_layer):
             feed_output, state[i] = self.enc_layers[i](feed_output, return_state=True)
-        batch_size = len(encoding[0].numpy()) 
+        batch_size = len(encoding[0].numpy())
         decoding = [[start_token] for i in range(batch_size)]
         feed_output = self.embedding_layer(decoding)
         for i in range(self.n_layer):
             feed_output, state[i] = self.dec_layers[i](feed_output, initial_state=state[i], return_state=True)
-        
+
         feed_output = self.reshape_layer(feed_output)
         feed_output = self.dense_layer(feed_output)
         feed_output = self.reshape_layer_individual_sequence(feed_output)
@@ -128,18 +131,12 @@ class Seq2seq(Model):
 
         return final_output, state
 
-    def forward(self,
-                inputs,
-                seq_length=20,
-                start_token=None,
-                return_state=False,
-                top_n = None):
+    def forward(self, inputs, seq_length=20, start_token=None, return_state=False, top_n=None):
 
         state = [None for i in range(self.n_layer)]
         if (self.is_train):
             encoding = inputs[0]
             enc_output = self.embedding_layer(encoding)
-
 
             for i in range(self.n_layer):
                 enc_output, state[i] = self.enc_layers[i](enc_output, return_state=True)
