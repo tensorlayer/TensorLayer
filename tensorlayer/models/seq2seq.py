@@ -10,6 +10,34 @@ from tensorlayer.layers.core import Layer
 
 
 class Seq2seq(Model):
+
+    """vanilla stacked layer Seq2Seq model.
+
+    Parameters
+    ----------
+    decoder_seq_length: int
+        The length of your target sequence
+    cell_enc : str, tf.function
+        The RNN function cell for your encoder stack, i.e. tf.keras.layers.GRUCell
+    cell_dec : str, tf.function
+        The RNN function cell for your decoder stack, i.e. tf.keras.layers.GRUCell
+    n_layer : int
+        The number of your RNN layers for both encoder and decoder block
+    embbedding_layer : tl.function
+        The embedding layer function, i.e. tl.layers.Embedding(vocabulary_size=voc_size, embedding_size=emb_dim)
+    is_train : bool
+        True if train mode, False if Inference mode
+    name : str
+        The model name
+    
+    Examples
+    ---------
+    Classify stacked-layer Seq2Seq model, see `chatbot <https://github.com/tensorlayer/seq2seq-chatbot>`__
+
+    Returns
+    -------
+        static stacked-layer Seq2Seq model.
+    """
     def __init__(
             self,
             decoder_seq_length,
@@ -39,8 +67,6 @@ class Seq2seq(Model):
                 self.dec_layers.append(tl.layers.RNN(cell=cell_dec(units=n_units), in_channels=self.embedding_size, return_last_state=True))
             else:
                 self.dec_layers.append(tl.layers.RNN(cell=cell_dec(units=n_units), in_channels=n_units, return_last_state=True))
-
-
 
         self.reshape_layer = tl.layers.Reshape([-1, n_units])
         self.dense_layer = tl.layers.Dense(n_units=self.vocabulary_size, in_channels=n_units)
@@ -75,6 +101,7 @@ class Seq2seq(Model):
             feed_output = tf.convert_to_tensor([[feed_output]])
         else:
             feed_output = tf.argmax(feed_output, -1)
+
         final_output = feed_output
         for i in range(seq_length - 1):
             feed_output = self.embedding_layer(feed_output)
