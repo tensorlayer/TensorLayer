@@ -91,5 +91,6 @@ class Model_SEQ2SEQ_Test(CustomTestCase):
             # printing average loss after every epoch
             print('Epoch [{}/{}]: loss {:.4f}'.format(epoch + 1, self.num_epochs, total_loss / n_iter))
 
+
 if __name__ == '__main__':
     unittest.main()
