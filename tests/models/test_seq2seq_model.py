@@ -12,7 +12,6 @@ import tensorlayer as tl
 from tqdm import tqdm
 from sklearn.utils import shuffle
 from tensorlayer.models.seq2seq import Seq2seq
-from tensorlayer.models.seq2seq import Seq2seq
 from tests.utils import CustomTestCase
 from tensorlayer.cost import cross_entropy_seq
 
@@ -85,12 +84,12 @@ class Model_SEQ2SEQ_Test(CustomTestCase):
             
 
             model_.eval()
-            test_sample = trainX[0,:].tolist()
+            test_sample = trainX[0:2,:].tolist()
 
             top_n = 1
             for i in range(top_n):
-                prediction = model_([test_sample], seq_length = self.dec_seq_length, start_token = 0, top_n = top_n)
-                print("Prediction: >>>>>  ", prediction[0].numpy(), "\n Target: >>>>>  ", trainY[0,1:], "\n\n")
+                prediction = model_([test_sample], seq_length = self.dec_seq_length, start_token = 0, top_n = 1)
+                print("Prediction: >>>>>  ", prediction, "\n Target: >>>>>  ", trainY[0:2,1:], "\n\n")
 
             # printing average loss after every epoch
             print('Epoch [{}/{}]: loss {:.4f}'.format(epoch + 1, self.num_epochs, total_loss / n_iter))
