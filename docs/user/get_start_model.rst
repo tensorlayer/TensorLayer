@@ -211,10 +211,9 @@ z = f(x*W+b)
 
   class Dense(Layer):
       def __init__(self, n_units, act=None, in_channels=None, name=None):
-          super(Dense, self).__init__(name)
+          super(Dense, self).__init__(name, act=act)
 
           self.n_units = n_units
-          self.act = act
           self.in_channels = in_channels
 
           # for dynamic model, it needs the input shape to get the shape of W

@@ -70,11 +70,10 @@ class Conv1d(Layer):
             in_channels=None,
             name=None  # 'conv1d'
     ):
-        super().__init__(name)
+        super().__init__(name, act=act)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.stride = stride
-        self.act = act
         self.padding = padding
         self.data_format = data_format
         self.dilation_rate = dilation_rate
@@ -201,11 +200,10 @@ class Conv2d(Layer):
             in_channels=None,
             name=None  # 'conv2d',
     ):
-        super().__init__(name)
+        super().__init__(name, act=act)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self._strides = self.strides = strides
-        self.act = act
         self.padding = padding
         self.data_format = data_format
         self._dilation_rate = self.dilation_rate = dilation_rate
@@ -335,11 +333,10 @@ class Conv3d(Layer):
             in_channels=None,
             name=None  # 'conv3d',
     ):
-        super().__init__(name)
+        super().__init__(name, act=act)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self._strides = self.strides = strides
-        self.act = act
         self.padding = padding
         self.data_format = data_format
         self._dilation_rate = self.dilation_rate = dilation_rate

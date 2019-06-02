@@ -17,6 +17,36 @@ __all__ = ['Layer', 'ModelLayer', 'LayerList']
 
 _global_layer_name_dict = {}  # TODO: better implementation?
 
+_act_dict = {
+    "relu": tf.nn.relu,
+    "relu6": tf.nn.relu6,
+    "leaky_relu": tf.nn.leaky_relu,
+    "lrelu": tf.nn.leaky_relu,
+    "softplus": tf.nn.softplus,
+    "tanh": tf.nn.tanh,
+    "sigmoid": tf.nn.sigmoid,
+}
+
+
+def str2act(act):
+    if len(act) > 5 and act[0:5] == "lrelu":
+        try:
+            alpha = float(act[5:])
+            return lambda x: tf.nn.leaky_relu(x, alpha=alpha)
+        except Exception as e:
+            raise Exception("{} can not be parsed as a float".format(act[5:]))
+
+    if len(act) > 10 and act[0:10] == "leaky_relu":
+        try:
+            alpha = float(act[10:])
+            return lambda x: tf.nn.leaky_relu(x, alpha=alpha)
+        except Exception as e:
+            raise Exception("{} can not be parsed as a float".format(act[10:]))
+
+    if act not in _act_dict.keys():
+        raise Exception("Unsupported act: {}".format(act))
+    return _act_dict[act]
+
 
 class Layer(object):
     """The basic :class:`Layer` class represents a single layer of a neural network.
@@ -47,11 +77,12 @@ class Layer(object):
 
     """
 
-    def __init__(self, name=None, *args, **kwargs):
+    def __init__(self, name=None, act=None, *args, **kwargs):
         """
         Initializing the Layer.
 
         :param name: str or None
+        :param name: str or function or None
         """
 
         # Layer constants
@@ -84,6 +115,10 @@ class Layer(object):
                 _global_layer_name_dict[name] = 0
 
         self.name = name
+        if isinstance(act, str):
+            self.act = str2act(act)
+        else:
+            self.act = act
 
         # Layer building state
         self._built = False
@@ -479,7 +514,8 @@ class ModelLayer(Layer):
     def get_args(self):
         init_args = {}
         init_args.update({"layer_type": "modellayer"})
-        init_args["model"] = utils.net2static_graph(self.layer_args["model"])
+        # init_args["model"] = utils.net2static_graph(self.layer_args["model"])
+        init_args["model"] = self.layer_args["model"].config
         return init_args
 
 

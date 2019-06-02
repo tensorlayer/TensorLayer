@@ -178,7 +178,7 @@ class Reuse_ModelLayer_test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("##### begin testing save_graph, load_graph, including ModelLayer and reuse  #####")
+        print("##### begin testing save_graph, load_graph, including ModelLayer and reuse #####")
 
     def test_save(self):
         input_shape = (None, 784)
@@ -195,7 +195,7 @@ class Vgg_LayerList_test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("##### begin testing save_graph, load_graph, including LayerList  #####")
+        print("##### begin testing save_graph, load_graph, including LayerList #####")
 
     def test_save(self):
         M1 = tl.models.vgg16(mode='static')
@@ -211,7 +211,7 @@ class List_inputs_outputs_test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("##### begin testing model with list inputs and outputs  #####")
+        print("##### begin testing model with list inputs and outputs #####")
 
     def test_list_inputs_outputs(self):
         ni_1 = Input(shape=[4, 16])
@@ -344,7 +344,7 @@ class ElementWise_lambda_test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("##### begin testing elementwise lambda layer  #####")
+        print("##### begin testing elementwise lambda layer #####")
 
     def test_elementwise_no_para_with_args(self):
         # z = mean + noise * tf.exp(std * 0.5) + foo
@@ -467,7 +467,7 @@ class Dynamic_config_test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("##### begin testing exception in dynamic mode  #####")
+        print("##### begin testing exception in dynamic mode #####")
 
     def test_dynamic_config(self):
         M1 = basic_dynamic_model()
@@ -480,7 +480,7 @@ class Exception_test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("##### begin testing exception in dynamic mode  #####")
+        print("##### begin testing exception in dynamic mode #####")
 
     def test_exception(self):
         M1 = basic_dynamic_model()
