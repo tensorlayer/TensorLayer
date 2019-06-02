@@ -20,18 +20,18 @@ and `Wechat group <https://github.com/shorxp/tensorlayer-chinese/blob/master/doc
 
 Beginner
 -----------
-For people who new to deep learning, the contirbutors provided a number of tutorials in this website, these tutorials will guide you to understand autoencoder, convolutional neural network, recurrent neural network, word embedding and deep reinforcement learning and etc. If your already understand the basic of deep learning, we recommend you to skip the tutorials and read the example codes on `Github <https://github.com/tensorlayer/tensorlayer>`__ , then implement an example from scratch.
+For people who new to deep learning, the contributors provided a number of tutorials in this website, these tutorials will guide you to understand autoencoder, convolutional neural network, recurrent neural network, word embedding and deep reinforcement learning and etc. If your already understand the basic of deep learning, we recommend you to skip the tutorials and read the example codes on `Github <https://github.com/tensorlayer/tensorlayer>`__ , then implement an example from scratch.
 
 Engineer
 ------------
-For people from industry, the contirbutors provided mass format-consistent examples covering computer vision, natural language processing and reinforcement learning. Besides, there are also many TensorFlow users already implemented product-level examples including image captioning, semantic/instance segmentation, machine translation, chatbot and etc, which can be found online.
+For people from industry, the contributors provided mass format-consistent examples covering computer vision, natural language processing and reinforcement learning. Besides, there are also many TensorFlow users already implemented product-level examples including image captioning, semantic/instance segmentation, machine translation, chatbot and etc., which can be found online.
 It is worth noting that a wrapper especially for computer vision `Tf-Slim <https://github.com/tensorflow/models/tree/master/slim#Pretrained>`__ can be connected with TensorLayer seamlessly.
 Therefore, you may able to find the examples that can be used in your project.
 
 Researcher
 -------------
-For people from academic, TensorLayer was originally developed by PhD students who facing issues with other libraries on implement novel algorithm. Installing TensorLayer in editable mode is recommended, so you can extend your methods in TensorLayer.
-For researches related to image such as image captioning, visual QA and etc, you may find it is very helpful to use the existing `Tf-Slim pre-trained models <https://github.com/tensorflow/models/tree/master/slim#Pretrained>`__ with TensorLayer (a specially layer for connecting Tf-Slim is provided).
+For people from academia, TensorLayer was originally developed by PhD students who facing issues with other libraries on implement novel algorithm. Installing TensorLayer in editable mode is recommended, so you can extend your methods in TensorLayer.
+For research related to image processing such as image captioning, visual QA and etc., you may find it is very helpful to use the existing `Tf-Slim pre-trained models <https://github.com/tensorflow/models/tree/master/slim#Pretrained>`__ with TensorLayer (a specially layer for connecting Tf-Slim is provided).
 
 
 Exclude some layers from training
@@ -46,20 +46,20 @@ To choose which variables to update, you can do as below.
 
 .. code-block:: python
 
-  train_params = network.all_params[3:]
+  train_params = network.trainable_weights[3:]
 
-The second way is to get the variables by a given name. For example, if you want to get all variables which the layer name contain ``dense``, you can do as below.
+The second way is to get the variables by a given name. For example, if you want to get all variables which the layer name contains ``dense``, you can do as below.
 
 .. code-block:: python
 
-  train_params = tl.layers.get_variables_with_name('dense', train_only=True, printable=True)
+  train_params = network.get_layer('dense').trainable_weights
 
 After you get the variable list, you can define your optimizer like that so as to update only a part of the variables.
 
 .. code-block:: python
 
-  train_op = tf.train.AdamOptimizer(0.001).minimize(cost, var_list= train_params)
-
+    train_weights = network.trainable_weights
+    optimizer.apply_gradients(zip(grad, train_weights))
 
 Logging
 ==========
@@ -76,13 +76,13 @@ Visualization
 Cannot Save Image
 -----------------------
 
-If you run the script via SSH control, sometime you may find the following error.
+If you run the script via SSH control, sometimes you may find the following error.
 
 .. code-block:: bash
 
   _tkinter.TclError: no display name and no $DISPLAY environment variable
 
-If happen, run ``sudo apt-get install python3-tk`` or ``import matplotlib`` and ``matplotlib.use('Agg')`` before ``import tensorlayer as tl``.
+If this happens, run ``sudo apt-get install python3-tk`` or ``import matplotlib`` and ``matplotlib.use('Agg')`` before ``import tensorlayer as tl``.
 Alternatively, add the following code into the top of ``visualize.py`` or in your own code.
 
 .. code-block:: python

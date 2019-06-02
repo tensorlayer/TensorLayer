@@ -1,23 +1,21 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import pickle
-import time
 import os
+import pickle
 import sys
+import time
 from datetime import datetime
 
 import gridfs
+import numpy as np
 import pymongo
-
-# from tensorlayer.files import load_graph_and_params
-from tensorlayer.files import exists_or_mkdir
-from tensorlayer.files import del_folder
+import tensorflow as tf
 
 from tensorlayer import logging
-
-import tensorflow as tf
-import numpy as np
+from tensorlayer.files import static_graph2net, assign_weights
+from tensorlayer.files import save_weights_to_hdf5, load_hdf5_to_weights
+from tensorlayer.files import del_folder, exists_or_mkdir
 
 
 class TensorHub(object):
@@ -115,8 +113,8 @@ class TensorHub(object):
 
         Parameters
         ----------
-        network : TensorLayer layer
-            TensorLayer layer instance.
+        network : TensorLayer Model
+            TensorLayer Model instance.
         model_name : str
             The name/key of model.
         kwargs : other events
@@ -128,15 +126,15 @@ class TensorHub(object):
         >>> db.save_model(net, accuracy=0.8, loss=2.3, name='second_model')
 
         Load one model with parameters from database (run this in other script)
-        >>> net = db.find_top_model(sess=sess, accuracy=0.8, loss=2.3)
+        >>> net = db.find_top_model(accuracy=0.8, loss=2.3)
 
         Find and load the latest model.
-        >>> net = db.find_top_model(sess=sess, sort=[("time", pymongo.DESCENDING)])
-        >>> net = db.find_top_model(sess=sess, sort=[("time", -1)])
+        >>> net = db.find_top_model(sort=[("time", pymongo.DESCENDING)])
+        >>> net = db.find_top_model(sort=[("time", -1)])
 
         Find and load the oldest model.
-        >>> net = db.find_top_model(sess=sess, sort=[("time", pymongo.ASCENDING)])
-        >>> net = db.find_top_model(sess=sess, sort=[("time", 1)])
+        >>> net = db.find_top_model(sort=[("time", pymongo.ASCENDING)])
+        >>> net = db.find_top_model(sort=[("time", 1)])
 
         Get model information
         >>> net._accuracy
@@ -149,11 +147,13 @@ class TensorHub(object):
         kwargs.update({'model_name': model_name})
         self._fill_project_info(kwargs)  # put project_name into kwargs
 
-        params = network.get_all_params()
+        # params = network.get_all_params()
+        params = network.all_weights
 
         s = time.time()
 
-        kwargs.update({'architecture': network.all_graphs, 'time': datetime.utcnow()})
+        # kwargs.update({'architecture': network.all_graphs, 'time': datetime.utcnow()})
+        kwargs.update({'architecture': network.config, 'time': datetime.utcnow()})
 
         try:
             params_id = self.model_fs.put(self._serialization(params))
@@ -168,13 +168,11 @@ class TensorHub(object):
             print("[Database] Save model: FAIL")
             return False
 
-    def find_top_model(self, sess, sort=None, model_name='model', **kwargs):
+    def find_top_model(self, sort=None, model_name='model', **kwargs):
         """Finds and returns a model architecture and its parameters from the database which matches the requirement.
 
         Parameters
         ----------
-        sess : Session
-            TensorFlow session.
         sort : List of tuple
             PyMongo sort comment, search "PyMongo find one sorting" and `collection level operations <http://api.mongodb.com/python/current/api/pymongo/collection.html>`__ for more details.
         model_name : str or None
@@ -188,7 +186,7 @@ class TensorHub(object):
 
         Returns
         ---------
-        network : TensorLayer layer
+        network : TensorLayer Model
             Note that, the returned network contains all information of the document (record), e.g. if you saved accuracy in the document, you can get the accuracy by using ``net._accuracy``.
         """
         # print(kwargs)   # {}
@@ -199,33 +197,38 @@ class TensorHub(object):
 
         d = self.db.Model.find_one(filter=kwargs, sort=sort)
 
-        _temp_file_name = '_find_one_model_ztemp_file'
+        # _temp_file_name = '_find_one_model_ztemp_file'
         if d is not None:
             params_id = d['params_id']
             graphs = d['architecture']
             _datetime = d['time']
-            exists_or_mkdir(_temp_file_name, False)
-            with open(os.path.join(_temp_file_name, 'graph.pkl'), 'wb') as file:
-                pickle.dump(graphs, file, protocol=pickle.HIGHEST_PROTOCOL)
+            # exists_or_mkdir(_temp_file_name, False)
+            # with open(os.path.join(_temp_file_name, 'graph.pkl'), 'wb') as file:
+            #     pickle.dump(graphs, file, protocol=pickle.HIGHEST_PROTOCOL)
         else:
             print("[Database] FAIL! Cannot find model: {}".format(kwargs))
             return False
         try:
             params = self._deserialization(self.model_fs.get(params_id).read())
-            np.savez(os.path.join(_temp_file_name, 'params.npz'), params=params)
-
-            network = load_graph_and_params(name=_temp_file_name, sess=sess)
-            del_folder(_temp_file_name)
+            # TODO : restore model and load weights
+            network = static_graph2net(graphs)
+            assign_weights(weights=params, network=network)
+            # np.savez(os.path.join(_temp_file_name, 'params.npz'), params=params)
+            #
+            # network = load_graph_and_params(name=_temp_file_name, sess=sess)
+            # del_folder(_temp_file_name)
 
             pc = self.db.Model.find(kwargs)
             print(
-                "[Database] Find one model SUCCESS. kwargs:{} sort:{} save time:{} took: {}s".
-                format(kwargs, sort, _datetime, round(time.time() - s, 2))
+                "[Database] Find one model SUCCESS. kwargs:{} sort:{} save time:{} took: {}s".format(
+                    kwargs, sort, _datetime, round(time.time() - s, 2)
+                )
             )
 
+            # FIXME : not sure what's this for
             # put all informations of model into the TL layer
-            for key in d:
-                network.__dict__.update({"_%s" % key: d[key]})
+            # for key in d:
+            #     network.__dict__.update({"_%s" % key: d[key]})
 
             # check whether more parameters match the requirement
             params_id_list = pc.distinct('params_id')
@@ -556,12 +559,12 @@ class TensorHub(object):
         >>> db.create_task(task_name='mnist', script='example/tutorial_mnist_simple.py', description='simple tutorial')
 
         Finds and runs the latest task
-        >>> db.run_top_task(sess=sess, sort=[("time", pymongo.DESCENDING)])
-        >>> db.run_top_task(sess=sess, sort=[("time", -1)])
+        >>> db.run_top_task(sort=[("time", pymongo.DESCENDING)])
+        >>> db.run_top_task(sort=[("time", -1)])
 
         Finds and runs the oldest task
-        >>> db.run_top_task(sess=sess, sort=[("time", pymongo.ASCENDING)])
-        >>> db.run_top_task(sess=sess, sort=[("time", 1)])
+        >>> db.run_top_task(sort=[("time", pymongo.ASCENDING)])
+        >>> db.run_top_task(sort=[("time", 1)])
 
         """
         if not isinstance(task_name, str):  # is None:
@@ -616,58 +619,57 @@ class TensorHub(object):
         # find task and set status to running
         task = self.db.Task.find_one_and_update(kwargs, {'$set': {'status': 'running'}}, sort=sort)
 
-        try:
-            # get task info e.g. hyper parameters, python script
-            if task is None:
-                logging.info("[Database] Find Task FAIL: key: {} sort: {}".format(task_name, sort))
-                return False
-            else:
-                logging.info("[Database] Find Task SUCCESS: key: {} sort: {}".format(task_name, sort))
-            _datetime = task['time']
-            _script = task['script']
-            _id = task['_id']
-            _hyper_parameters = task['hyper_parameters']
-            _saved_result_keys = task['saved_result_keys']
-            logging.info("  hyper parameters:")
-            for key in _hyper_parameters:
-                globals()[key] = _hyper_parameters[key]
-                logging.info("    {}: {}".format(key, _hyper_parameters[key]))
-            # run task
-            s = time.time()
-            logging.info("[Database] Start Task: key: {} sort: {} push time: {}".format(task_name, sort, _datetime))
-            _script = _script.decode('utf-8')
-            with tf.Graph().as_default():  # as graph: # clear all TF graphs
-                exec(_script, globals())
-
-            # set status to finished
-            _ = self.db.Task.find_one_and_update({'_id': _id}, {'$set': {'status': 'finished'}})
-
-            # return results
-            __result = {}
-            for _key in _saved_result_keys:
-                logging.info("  result: {}={} {}".format(_key, globals()[_key], type(globals()[_key])))
-                __result.update({"%s" % _key: globals()[_key]})
-            _ = self.db.Task.find_one_and_update(
-                {
-                    '_id': _id
-                }, {'$set': {
-                    'result': __result
-                }}, return_document=pymongo.ReturnDocument.AFTER
-            )
-            logging.info(
-                "[Database] Finished Task: task_name - {} sort: {} push time: {} took: {}s".
-                format(task_name, sort, _datetime,
-                       time.time() - s)
-            )
-            return True
-        except Exception as e:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            logging.info("{}  {}  {}  {}  {}".format(exc_type, exc_obj, fname, exc_tb.tb_lineno, e))
-            logging.info("[Database] Fail to run task")
-            # if fail, set status back to pending
-            _ = self.db.Task.find_one_and_update({'_id': _id}, {'$set': {'status': 'pending'}})
+        # try:
+        # get task info e.g. hyper parameters, python script
+        if task is None:
+            logging.info("[Database] Find Task FAIL: key: {} sort: {}".format(task_name, sort))
             return False
+        else:
+            logging.info("[Database] Find Task SUCCESS: key: {} sort: {}".format(task_name, sort))
+        _datetime = task['time']
+        _script = task['script']
+        _id = task['_id']
+        _hyper_parameters = task['hyper_parameters']
+        _saved_result_keys = task['saved_result_keys']
+        logging.info("  hyper parameters:")
+        for key in _hyper_parameters:
+            globals()[key] = _hyper_parameters[key]
+            logging.info("    {}: {}".format(key, _hyper_parameters[key]))
+        # run task
+        s = time.time()
+        logging.info("[Database] Start Task: key: {} sort: {} push time: {}".format(task_name, sort, _datetime))
+        _script = _script.decode('utf-8')
+        with tf.Graph().as_default():  #  # as graph: # clear all TF graphs
+            exec(_script, globals())
+
+        # set status to finished
+        _ = self.db.Task.find_one_and_update({'_id': _id}, {'$set': {'status': 'finished'}})
+
+        # return results
+        __result = {}
+        for _key in _saved_result_keys:
+            logging.info("  result: {}={} {}".format(_key, globals()[_key], type(globals()[_key])))
+            __result.update({"%s" % _key: globals()[_key]})
+        _ = self.db.Task.find_one_and_update(
+            {'_id': _id}, {'$set': {
+                'result': __result
+            }}, return_document=pymongo.ReturnDocument.AFTER
+        )
+        logging.info(
+            "[Database] Finished Task: task_name - {} sort: {} push time: {} took: {}s".format(
+                task_name, sort, _datetime,
+                time.time() - s
+            )
+        )
+        return True
+        # except Exception as e:
+        #     exc_type, exc_obj, exc_tb = sys.exc_info()
+        #     fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        #     logging.info("{}  {}  {}  {}  {}".format(exc_type, exc_obj, fname, exc_tb.tb_lineno, e))
+        #     logging.info("[Database] Fail to run task")
+        #     # if fail, set status back to pending
+        #     _ = self.db.Task.find_one_and_update({'_id': _id}, {'$set': {'status': 'pending'}})
+        #     return False
 
     def delete_tasks(self, **kwargs):
         """Delete tasks.

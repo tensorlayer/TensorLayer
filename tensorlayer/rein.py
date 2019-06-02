@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-
 import tensorflow as tf
-
 from six.moves import xrange
 
 __all__ = [

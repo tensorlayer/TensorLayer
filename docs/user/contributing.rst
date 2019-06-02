@@ -6,7 +6,7 @@ Contributing
 
 TensorLayer is a major ongoing research project in Data Science Institute, Imperial College London. 
 The goal of the project is to develop a compositional language while complex learning systems
-can be build through composition of neural network modules.
+can be built through composition of neural network modules.
 
 Numerous contributors come from various horizons such as: Tsinghua University, Carnegie Mellon University, University of Technology of Compiegne, 
 Google, Microsoft, Bloomberg and etc.
@@ -25,7 +25,14 @@ Project Maintainers
 
 The TensorLayer project was started by `Hao Dong <https://zsdonghao.github.io>`_ at Imperial College London in June 2016. 
 
-It is actively developed and maintained by the following people *(in alphabetical order)*:
+For TensorLayer 2.x, it is now actively developing and maintaining by the following people who has more than 50 contributions*:
+
+- **Hao Dong** (`@zsdonghao <https://github.com/zsdonghao>`_) - `<https://zsdonghao.github.io>`_
+- **Jingqing Zhang** (`@JingqingZ <https://github.com/JingqingZ>`_) - `<https://jingqingz.github.io>`_
+- **Rundi Wu** (`@ChrisWu1997 <https://github.com/ChrisWu1997>`_) - `<http://chriswu1997.github.io>`_
+- **Ruihai Wu** (`@warshallrho <https://github.com/warshallrho>`_) - `<https://warshallrho.github.io/>`_
+
+For TensorLayer 1.x, it was actively developed and maintained by the following people *(in alphabetical order)*:
 
 - **Akara Supratak** (`@akaraspt <https://github.com/akaraspt>`_) - `<https://akaraspt.github.io>`_
 - **Fangde Liu** (`@fangde <https://github.com/fangde>`_) - `<http://fangde.github.io/>`_
@@ -44,7 +51,7 @@ What to contribute
 Your method and example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you have a new method or example in term of Deep learning and Reinforcement learning,
+If you have a new method or example in terms of Deep learning and Reinforcement learning,
 you are welcome to contribute.
 
 * Provide your layer or example, so everyone can use it.

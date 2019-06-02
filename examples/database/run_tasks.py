@@ -4,6 +4,7 @@ task distributor push a task to the database.
 
 """
 import time
+
 import tensorlayer as tl
 
 # tl.logging.set_verbosity(tl.logging.DEBUG)

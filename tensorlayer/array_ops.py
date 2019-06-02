@@ -3,15 +3,11 @@
 """A file containing functions related to array manipulation."""
 
 from tensorflow.python.eager import context
-from tensorflow.python.framework import constant_op
-from tensorflow.python.framework import dtypes
-from tensorflow.python.framework import ops
-from tensorflow.python.framework import tensor_shape
+from tensorflow.python.framework import constant_op, dtypes, ops, tensor_shape
 from tensorflow.python.framework.constant_op import constant
 from tensorflow.python.framework.ops import convert_to_tensor
 from tensorflow.python.ops.array_ops import shape_internal
-from tensorflow.python.ops.gen_array_ops import fill
-from tensorflow.python.ops.gen_array_ops import reshape
+from tensorflow.python.ops.gen_array_ops import fill, reshape
 
 __all__ = ['alphas', 'alphas_like']
 

@@ -2,14 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
-
 import pickle
+import sys
 
 import numpy as np
 
 from tensorlayer import logging
-
 from tensorlayer.files.utils import maybe_download_and_extract
 
 __all__ = ['load_cifar10_dataset']

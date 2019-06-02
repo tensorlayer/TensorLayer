@@ -7,181 +7,112 @@ import os
 import tensorflow as tf
 
 from tensorlayer import logging
-
-from tensorlayer.layers import Layer
-from tensorlayer.layers import BatchNormLayer
-from tensorlayer.layers import Conv2d
-from tensorlayer.layers import DepthwiseConv2d
-from tensorlayer.layers import FlattenLayer
-from tensorlayer.layers import GlobalMeanPool2d
-from tensorlayer.layers import InputLayer
-from tensorlayer.layers import ReshapeLayer
-
-from tensorlayer.files import maybe_download_and_extract, assign_params, load_npz
+from tensorlayer.files import (assign_weights, load_npz, maybe_download_and_extract)
+from tensorlayer.layers import (BatchNorm, Conv2d, DepthwiseConv2d, Flatten, GlobalMeanPool2d, Input, Reshape)
+from tensorlayer.models import Model
 
 __all__ = [
     'MobileNetV1',
 ]
 
+layer_names = [
+    'conv', 'depth1', 'depth2', 'depth3', 'depth4', 'depth5', 'depth6', 'depth7', 'depth8', 'depth9', 'depth10',
+    'depth11', 'depth12', 'depth13', 'globalmeanpool', 'reshape', 'out'
+]
+n_filters = [32, 64, 128, 128, 256, 256, 512, 512, 512, 512, 512, 512, 1024, 1024]
 
-class MobileNetV1(Layer):
-    """Pre-trained MobileNetV1 model.
+
+def conv_block(n, n_filter, filter_size=(3, 3), strides=(1, 1), name='conv_block'):
+    # ref: https://github.com/keras-team/keras/blob/master/keras/applications/mobilenet.py
+    n = Conv2d(n_filter, filter_size, strides, b_init=None, name=name + '.conv')(n)
+    n = BatchNorm(decay=0.99, act=tf.nn.relu6, name=name + '.batchnorm')(n)
+    return n
+
+
+def depthwise_conv_block(n, n_filter, strides=(1, 1), name="depth_block"):
+    n = DepthwiseConv2d((3, 3), strides, b_init=None, name=name + '.depthwise')(n)
+    n = BatchNorm(decay=0.99, act=tf.nn.relu6, name=name + '.batchnorm1')(n)
+    n = Conv2d(n_filter, (1, 1), (1, 1), b_init=None, name=name + '.conv')(n)
+    n = BatchNorm(decay=0.99, act=tf.nn.relu6, name=name + '.batchnorm2')(n)
+    return n
+
+
+def restore_params(network, path='models'):
+    logging.info("Restore pre-trained parameters")
+    maybe_download_and_extract(
+        'mobilenet.npz', path, 'https://github.com/tensorlayer/pretrained-models/raw/master/models/',
+        expected_bytes=25600116
+    )  # ls -al
+    params = load_npz(name=os.path.join(path, 'mobilenet.npz'))
+    for idx, net_weight in enumerate(network.all_weights):
+        if 'batchnorm' in net_weight.name:
+            params[idx] = params[idx].reshape(1, 1, 1, -1)
+    assign_weights(params[:len(network.all_weights)], network)
+    del params
+
+
+def MobileNetV1(pretrained=False, end_with='out', name=None):
+    """Pre-trained MobileNetV1 model (static mode). Input shape [?, 224, 224, 3], value range [0, 1].
 
     Parameters
-    ------------
-    x : placeholder
-        shape [None, 224, 224, 3], value range [0, 1].
+    ----------
+    pretrained : boolean
+        Whether to load pretrained weights. Default False.
     end_with : str
         The end point of the model [conv, depth1, depth2 ... depth13, globalmeanpool, out]. Default ``out`` i.e. the whole model.
-    is_train : boolean
-        Whether the model is used for training i.e. enable dropout.
-    reuse : boolean
-        Whether to reuse the model.
+    name : None or str
+        Name for this model.
 
     Examples
     ---------
     Classify ImageNet classes, see `tutorial_models_mobilenetv1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_mobilenetv1.py>`__
 
-    >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
-    >>> # get the whole model
-    >>> net = tl.models.MobileNetV1(x)
-    >>> # restore pre-trained parameters
-    >>> sess = tf.InteractiveSession()
-    >>> net.restore_params(sess)
+    >>> # get the whole model with pretrained weights
+    >>> mobilenetv1 = tl.models.MobileNetV1(pretrained=True)
     >>> # use for inferencing
-    >>> probs = tf.nn.softmax(net.outputs)
+    >>> output = mobilenetv1(img1, is_train=False)
+    >>> prob = tf.nn.softmax(output)[0].numpy()
 
     Extract features and Train a classifier with 100 classes
 
-    >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get model without the last layer
-    >>> cnn = tl.models.MobileNetV1(x, end_with='reshape')
-    >>> # add one more layer
-    >>> net = Conv2d(cnn, 100, (1, 1), (1, 1), name='out')
-    >>> net = FlattenLayer(net, name='flatten')
-    >>> # initialize all parameters
-    >>> sess = tf.InteractiveSession()
-    >>> tl.layers.initialize_global_variables(sess)
-    >>> # restore pre-trained parameters
-    >>> cnn.restore_params(sess)
+    >>> cnn = tl.models.MobileNetV1(pretrained=True, end_with='reshape').as_layer()
+    >>> # add one more layer and build new model
+    >>> ni = Input([None, 224, 224, 3], name="inputs")
+    >>> nn = cnn(ni)
+    >>> nn = Conv2d(100, (1, 1), (1, 1), name='out')(nn)
+    >>> nn = Flatten(name='flatten')(nn)
+    >>> model = tl.models.Model(inputs=ni, outputs=nn)
     >>> # train your own classifier (only update the last layer)
-    >>> train_params = tl.layers.get_variables_with_name('out')
+    >>> train_params = model.get_layer('out').trainable_weights
 
-    Reuse model
-
-    >>> x1 = tf.placeholder(tf.float32, [None, 224, 224, 3])
-    >>> x2 = tf.placeholder(tf.float32, [None, 224, 224, 3])
-    >>> # get model without the last layer
-    >>> net1 = tl.models.MobileNetV1(x1, end_with='reshape')
-    >>> # reuse the parameters with different input
-    >>> net2 = tl.models.MobileNetV1(x2, end_with='reshape', reuse=True)
-    >>> # restore pre-trained parameters (as they share parameters, we don’t need to restore net2)
-    >>> sess = tf.InteractiveSession()
-    >>> net1.restore_params(sess)
-
+    Returns
+    -------
+        static MobileNetV1.
     """
+    ni = Input([None, 224, 224, 3], name="input")
 
-    def __init__(self, x, end_with='out', is_train=False, reuse=None):
+    for i in range(len(layer_names)):
+        if i == 0:
+            n = conv_block(ni, n_filters[i], strides=(2, 2), name=layer_names[i])
+        elif layer_names[i] in ['depth2', 'depth4', 'depth6', 'depth12']:
+            n = depthwise_conv_block(n, n_filters[i], strides=(2, 2), name=layer_names[i])
+        elif layer_names[i] == 'globalmeanpool':
+            n = GlobalMeanPool2d(name='globalmeanpool')(n)
+        elif layer_names[i] == 'reshape':
+            n = Reshape([-1, 1, 1, 1024], name='reshape')(n)
+        elif layer_names[i] == 'out':
+            n = Conv2d(1000, (1, 1), (1, 1), name='out')(n)
+            n = Flatten(name='flatten')(n)
+        else:
+            n = depthwise_conv_block(n, n_filters[i], name=layer_names[i])
 
-        self.net = self.mobilenetv1(x, end_with, is_train, reuse)
+        if layer_names[i] == end_with:
+            break
 
-        self.outputs = self.net.outputs
+    network = Model(inputs=ni, outputs=n, name=name)
 
-        self.all_params = list(self.net.all_params)
-        self.all_layers = list(self.net.all_layers)
-        self.all_drop = dict(self.net.all_drop)
-        self.print_layers = self.net.print_layers
-        self.print_params = self.net.print_params
+    if pretrained:
+        restore_params(network)
 
-    # @classmethod
-    def mobilenetv1(self, x, end_with='out', is_train=False, reuse=None):
-        with tf.variable_scope("mobilenetv1", reuse=reuse):
-            n = InputLayer(x)
-            n = self.conv_block(n, 32, strides=(2, 2), is_train=is_train, name="conv")
-            if end_with in n.outputs.name:
-                return n
-            n = self.depthwise_conv_block(n, 64, is_train=is_train, name="depth1")
-            if end_with in n.outputs.name:
-                return n
-
-            n = self.depthwise_conv_block(n, 128, strides=(2, 2), is_train=is_train, name="depth2")
-            if end_with in n.outputs.name:
-                return n
-            n = self.depthwise_conv_block(n, 128, is_train=is_train, name="depth3")
-            if end_with in n.outputs.name:
-                return n
-
-            n = self.depthwise_conv_block(n, 256, strides=(2, 2), is_train=is_train, name="depth4")
-            if end_with in n.outputs.name:
-                return n
-            n = self.depthwise_conv_block(n, 256, is_train=is_train, name="depth5")
-            if end_with in n.outputs.name:
-                return n
-
-            n = self.depthwise_conv_block(n, 512, strides=(2, 2), is_train=is_train, name="depth6")
-            if end_with in n.outputs.name:
-                return n
-            n = self.depthwise_conv_block(n, 512, is_train=is_train, name="depth7")
-            if end_with in n.outputs.name:
-                return n
-            n = self.depthwise_conv_block(n, 512, is_train=is_train, name="depth8")
-            if end_with in n.outputs.name:
-                return n
-            n = self.depthwise_conv_block(n, 512, is_train=is_train, name="depth9")
-            if end_with in n.outputs.name:
-                return n
-            n = self.depthwise_conv_block(n, 512, is_train=is_train, name="depth10")
-            if end_with in n.outputs.name:
-                return n
-            n = self.depthwise_conv_block(n, 512, is_train=is_train, name="depth11")
-            if end_with in n.outputs.name:
-                return n
-
-            n = self.depthwise_conv_block(n, 1024, strides=(2, 2), is_train=is_train, name="depth12")
-            if end_with in n.outputs.name:
-                return n
-            n = self.depthwise_conv_block(n, 1024, is_train=is_train, name="depth13")
-            if end_with in n.outputs.name:
-                return n
-
-            n = GlobalMeanPool2d(n, name='globalmeanpool')
-            if end_with in n.outputs.name:
-                return n
-            # n = DropoutLayer(n, 1-1e-3, True, is_train, name='drop')
-            # n = DenseLayer(n, 1000, name='output')   # equal
-            n = ReshapeLayer(n, [-1, 1, 1, 1024], name='reshape')
-            if end_with in n.outputs.name:
-                return n
-            n = Conv2d(n, 1000, (1, 1), (1, 1), name='out')
-            n = FlattenLayer(n, name='flatten')
-            if end_with == 'out':
-                return n
-
-            raise Exception("end_with : conv, depth1, depth2 ... depth13, globalmeanpool, out")
-
-    @classmethod
-    def conv_block(cls, n, n_filter, filter_size=(3, 3), strides=(1, 1), is_train=False, name='conv_block'):
-        # ref: https://github.com/keras-team/keras/blob/master/keras/applications/mobilenet.py
-        with tf.variable_scope(name):
-            n = Conv2d(n, n_filter, filter_size, strides, b_init=None, name='conv')
-            n = BatchNormLayer(n, decay=0.99, act=tf.nn.relu6, is_train=is_train, name='batchnorm')
-        return n
-
-    @classmethod
-    def depthwise_conv_block(cls, n, n_filter, strides=(1, 1), is_train=False, name="depth_block"):
-        with tf.variable_scope(name):
-            n = DepthwiseConv2d(n, (3, 3), strides, b_init=None, name='depthwise')
-            n = BatchNormLayer(n, decay=0.99, act=tf.nn.relu6, is_train=is_train, name='batchnorm1')
-            n = Conv2d(n, n_filter, (1, 1), (1, 1), b_init=None, name='conv')
-            n = BatchNormLayer(n, decay=0.99, act=tf.nn.relu6, is_train=is_train, name='batchnorm2')
-        return n
-
-    def restore_params(self, sess, path='models'):
-        logging.info("Restore pre-trained parameters")
-        maybe_download_and_extract(
-            'mobilenet.npz', path, 'https://github.com/tensorlayer/pretrained-models/raw/master/models/',
-            expected_bytes=25600116
-        )  # ls -al
-        params = load_npz(name=os.path.join(path, 'mobilenet.npz'))
-        assign_params(sess, params[:len(self.net.all_params)], self.net)
-        del params
+    return network

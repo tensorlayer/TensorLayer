@@ -1,27 +1,26 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import numpy as np
 import tensorflow as tf
 
-from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
-
+import tensorlayer as tl
 from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.layers.core import Layer
+
+# from tensorlayer.layers.core import LayersConfig
 
 __all__ = [
-    'DenseLayer',
+    'Dense',
 ]
 
 
-class DenseLayer(Layer):
-    """The :class:`DenseLayer` class is a fully connected layer.
+class Dense(Layer):
+    """The :class:`Dense` class is a fully connected layer.
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     n_units : int
         The number of units of this layer.
     act : activation function
@@ -30,82 +29,83 @@ class DenseLayer(Layer):
         The initializer for the weight matrix.
     b_init : initializer or None
         The initializer for the bias vector. If None, skip biases.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer.
-    b_init_args : dictionary
-        The arguments for the bias vector initializer.
-    name : a str
-        A unique layer name.
+    in_channels: int
+        The number of channels of the previous layer.
+        If None, it will be automatically detected when the layer is forwarded for the first time.
+    name : None or str
+        A unique layer name. If None, a unique name will be automatically generated.
 
     Examples
     --------
     With TensorLayer
 
-    >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.DenseLayer(net, 800, act=tf.nn.relu, name='relu')
-
-    Without native TensorLayer APIs, you can do as follow.
-
-    >>> W = tf.Variable(
-    ...     tf.random_uniform([n_in, n_units], -1.0, 1.0), name='W')
-    >>> b = tf.Variable(tf.zeros(shape=[n_units]), name='b')
-    >>> y = tf.nn.relu(tf.matmul(inputs, W) + b)
+    >>> net = tl.layers.Input([100, 50], name='input')
+    >>> dense = tl.layers.Dense(n_units=800, act=tf.nn.relu, in_channels=50, name='dense_1')
+    >>> print(dense)
+    Dense(n_units=800, relu, in_channels='50', name='dense_1')
+    >>> tensor = tl.layers.Dense(n_units=800, act=tf.nn.relu, name='dense_2')(net)
+    >>> print(tensor)
+    tf.Tensor([...], shape=(100, 800), dtype=float32)
 
     Notes
     -----
-    If the layer input has more than two axes, it needs to be flatten by using :class:`FlattenLayer`.
+    If the layer input has more than two axes, it needs to be flatten by using :class:`Flatten`.
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
-            n_units=100,
+            n_units,
             act=None,
-            W_init=tf.truncated_normal_initializer(stddev=0.1),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            name='dense',
+            W_init=tl.initializers.truncated_normal(stddev=0.1),
+            b_init=tl.initializers.constant(value=0.0),
+            in_channels=None,
+            name=None,  # 'dense',
     ):
 
-        super(DenseLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
-
-        logging.info(
-            "DenseLayer  %s: %d %s" %
-            (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
-        )
+        super(Dense, self).__init__(name, act=act)
 
         self.n_units = n_units
+        self.W_init = W_init
+        self.b_init = b_init
+        self.in_channels = in_channels
 
-        if self.inputs.get_shape().ndims != 2:
+        if self.in_channels is not None:
+            self.build(self.in_channels)
+            self._built = True
+
+        logging.info(
+            "Dense  %s: %d %s" %
+            (self.name, self.n_units, self.act.__name__ if self.act is not None else 'No Activation')
+        )
+
+    def __repr__(self):
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(n_units={n_units}, ' + actstr)
+        if self.in_channels is not None:
+            s += ', in_channels=\'{in_channels}\''
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape):
+        if self.in_channels is None and len(inputs_shape) != 2:
             raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
-
-        n_in = int(self.inputs.get_shape()[-1])
-
-        with tf.variable_scope(name):
-            W = tf.get_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
-            )
-
-            self.outputs = tf.matmul(self.inputs, W)
-
-            if b_init is not None:
-                try:
-                    b = tf.get_variable(
-                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
-                    )
-                except Exception:  # If initializer is a constant, do not specify shape.
-                    b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
-
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
-
-            self.outputs = self._apply_activation(self.outputs)
-
-        self._add_layers(self.outputs)
-        if b_init is not None:
-            self._add_params([W, b])
+        if self.in_channels:
+            shape = [self.in_channels, self.n_units]
         else:
-            self._add_params(W)
+            self.in_channels = inputs_shape[1]
+            shape = [inputs_shape[1], self.n_units]
+        self.W = self._get_weights("weights", shape=tuple(shape), init=self.W_init)
+        if self.b_init:
+            self.b = self._get_weights("biases", shape=(self.n_units, ), init=self.b_init)
+
+    # @tf.function
+    def forward(self, inputs):
+        z = tf.matmul(inputs, self.W)
+        if self.b_init:
+            z = tf.add(z, self.b)
+        if self.act:
+            z = self.act(z)
+        return z

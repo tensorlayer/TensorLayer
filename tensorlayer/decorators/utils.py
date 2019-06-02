@@ -10,8 +10,8 @@ They replace the following imports:
 >>> from tensorflow.python.util.deprecation import _validate_deprecation_args
 """
 
-import sys
 import re
+import sys
 
 __all__ = ["add_deprecation_notice_to_docstring", "get_qualified_name", "validate_deprecation_args"]
 

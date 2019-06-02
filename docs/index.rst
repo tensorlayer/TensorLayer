@@ -28,14 +28,19 @@ to the library as a developer.
 
 .. toctree::
   :maxdepth: 2
-  :caption: Starting with TensorLayer
 
   user/installation
-  user/tutorials
   user/examples
   user/contributing
   user/get_involved
   user/faq
+
+.. toctree::
+  :maxdepth: 2
+  :caption: Getting started
+
+  user/get_start_model
+  user/get_start_advance
 
 API Reference
 -------------
@@ -51,13 +56,12 @@ method, this part of the documentation is for you.
   modules/array_ops
   modules/cost
   modules/prepro
-  modules/distributed
   modules/files
   modules/iterate
   modules/layers
   modules/models
   modules/nlp
-  modules/optimizers
+  modules/initializers
   modules/rein
   modules/utils
   modules/visualize
@@ -67,8 +71,9 @@ method, this part of the documentation is for you.
   :caption: Alpha Version Functionalities
 
   modules/db
-
-
+  modules/optimizers
+  modules/distributed
+  
 Command-line Reference
 ----------------------
 

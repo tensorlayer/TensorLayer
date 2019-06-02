@@ -1,14 +1,12 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import os
-
 import gzip
+import os
 
 import numpy as np
 
 from tensorlayer import logging
-
 from tensorlayer.files.utils import maybe_download_and_extract
 
 __all__ = ["_load_mnist_dataset"]

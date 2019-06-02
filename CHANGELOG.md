@@ -67,28 +67,79 @@ To release a new version, please update the changelog as followed:
 
 <!-- YOU CAN EDIT FROM HERE -->
 
-## [Unreleased]
+## [2.1.0] - 2019-5-25
+
+### Changed
+- change the format of network config, change related code and files; change layer act (PR #980)
 
 ### Added
 
+### Dependencies Update
+
+### Fixed
+
+### Contributors
+- @warshallrho: #PR980
+
+
+## [2.0.1] - 2019-5-17
+
+
+A maintain release.
+
 ### Changed
 - remove `tl.layers.initialize_global_variables(sess)` (PR #931)
+- support `trainable_weights` (PR #966)
+
+### Added
+ - Layer
+    - `InstanceNorm`, `InstanceNorm1d`, `InstanceNorm2d`, `InstanceNorm3d` (PR #963)
+
+### Changed
+- remove `tl.layers.initialize_global_variables(sess)` (PR #931)
+- update `tutorial_generate_text.py`, `tutorial_ptb_lstm.py`. remove `tutorial_ptb_lstm_state_is_tuple.py` (PR #958)
+- change `tl.layers.core`, `tl.models.core` (PR #966)
+- change `weights` into `all_weights`, `trainable_weights`, `nontrainable_weights`
 
 ### Dependencies Update
 - nltk>=3.3,<3.4 => nltk>=3.3,<3.5 (PR #892)
 - pytest>=3.6,<3.11 => pytest>=3.6,<4.1 (PR #889)
 - yapf>=0.22,<0.25 => yapf==0.25.0 (PR #896)
-
-### Deprecated
+- imageio==2.5.0 progressbar2==3.39.3  scikit-learn==0.21.0 scikit-image==0.15.0 scipy==1.2.1 wrapt==1.11.1 pymongo==3.8.0 sphinx==2.0.1 wrapt==1.11.1 opencv-python==4.1.0.25 requests==2.21.0 tqdm==4.31.1	lxml==4.3.3 pycodestyle==2.5.0 sphinx==2.0.1 yapf==0.27.0(PR #967)
 
 ### Fixed
-
-### Removed
-
-### Security
+- fix docs of models @zsdonghao #957
+- In `BatchNorm`, keep dimensions of mean and variance to suit `channels first` (PR #963)
 
 ### Contributors
-@zsdonghao: #931
+- @warshallrho: #PR966
+- @zsdonghao: #931
+- @yd-yin: #963
+- @1FengL: #958
+- @dvklopfenstein: #971
+
+
+## [2.0.0] - 2019-05-04
+
+To many PR for this update, please check [here](https://github.com/tensorlayer/tensorlayer/releases/tag/2.0.0) for more details.
+
+### Changed
+* update for TensorLayer 2.0.0 alpha version (PR #952)
+* support TensorFlow 2.0.0-alpha
+* support both static and dynamic model building
+
+### Dependencies Update
+- tensorflow>=1.6,<1.13 => tensorflow>=2.0.0-alpha (PR #952)
+- h5py>=2.9 (PR #952)
+- cloudpickle>=0.8.1 (PR #952)
+- remove matplotlib
+
+### Contributors
+- @zsdonghao
+- @JingqingZ
+- @ChrisWu1997
+- @warshallrho
+
 
 ## [1.11.1] - 2018-11-15
 
@@ -416,6 +467,8 @@ To release a new version, please update the changelog as followed:
 @zsdonghao @luomai @DEKHTIARJonathan
 
 [Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.11....master
+[2.0.1]: https://github.com/tensorlayer/tensorlayer/compare/2.0.1...2.0.1
+[2.0.0]: https://github.com/tensorlayer/tensorlayer/compare/2.0.0...2.0.0
 [1.11.1]: https://github.com/tensorlayer/tensorlayer/compare/1.11.0...1.11.0
 [1.11.0]: https://github.com/tensorlayer/tensorlayer/compare/1.10.1...1.11.0
 [1.10.1]: https://github.com/tensorlayer/tensorlayer/compare/1.10.0...1.10.1

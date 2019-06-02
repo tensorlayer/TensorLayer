@@ -1,15 +1,15 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import functools
 import inspect
 import sys
-import functools
-
-from tensorlayer.decorators.utils import add_deprecation_notice_to_docstring
-from tensorlayer.decorators.utils import get_qualified_name
-from tensorlayer.decorators.utils import validate_deprecation_args
 
 import wrapt
+
+from tensorlayer.decorators.utils import (
+    add_deprecation_notice_to_docstring, get_qualified_name, validate_deprecation_args
+)
 
 __all__ = ['deprecated']
 

@@ -3,39 +3,48 @@
 
 import tensorflow as tf
 
-from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
-
-from tensorlayer.activation import leaky_relu6
-from tensorlayer.activation import leaky_twice_relu6
-
 from tensorlayer import logging
-
+from tensorlayer.activation import leaky_relu6, leaky_twice_relu6
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.initializers import truncated_normal
+from tensorlayer.layers.core import Layer
+
+# from tensorlayer.layers.core import LayersConfig
 
 __all__ = [
-    'PReluLayer',
-    'PRelu6Layer',
-    'PTRelu6Layer',
+    'PRelu',
+    'PRelu6',
+    'PTRelu6',
 ]
 
 
-class PReluLayer(Layer):
+class PRelu(Layer):
     """
-    The :class:`PReluLayer` class is Parametric Rectified Linear layer.
+    The :class:`PRelu` class is Parametric Rectified Linear layer.
+    It follows f(x) = alpha * x for x < 0, f(x) = x for x >= 0,
+    where alpha is a learned array with the same shape as x.
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     channel_shared : boolean
         If True, single weight is shared by all channels.
+    in_channels: int
+        The number of channels of the previous layer.
+        If None, it will be automatically detected when the layer is forwarded for the first time.
     a_init : initializer
         The initializer for initializing the alpha(s).
-    a_init_args : dictionary
-        The arguments for initializing the alpha(s).
-    name : str
+    name : None or str
         A unique layer name.
+
+    Examples
+    -----------
+    >>> inputs = tl.layers.Input([10, 5])
+    >>> prelulayer = tl.layers.PRelu(channel_shared=True)
+    >>> print(prelulayer)
+    PRelu(channel_shared=True,in_channels=None,name=prelu)
+    >>> prelu = prelulayer(inputs)
+    >>> model = tl.models.Model(inputs=inputs, outputs=prelu)
+    >>> out = model(data, is_train=True)
 
     References
     -----------
@@ -44,46 +53,59 @@ class PReluLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
-            a_init_args=None, name="PReluLayer"
+            self,
+            channel_shared=False,
+            in_channels=None,
+            a_init=truncated_normal(mean=0.0, stddev=0.1),
+            name=None  # "prelu"
     ):
 
-        super(PReluLayer,
-              self).__init__(prev_layer=prev_layer, act=tf.nn.leaky_relu, a_init_args=a_init_args, name=name)
+        super(PRelu, self).__init__(name)
+        self.channel_shared = channel_shared
+        self.in_channels = in_channels
+        self.a_init = a_init
 
-        if channel_shared:
+        if self.channel_shared:
+            self.build((None, ))
+            self._built = True
+        elif self.in_channels is not None:
+            self.build((None, self.in_channels))
+            self._built = True
+
+        logging.info("PRelu %s: channel_shared: %s" % (self.name, self.channel_shared))
+
+    def __repr__(self):
+        s = ('{classname}(')
+        s += 'channel_shared={channel_shared},'
+        s += 'in_channels={in_channels},'
+        s += 'name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape):
+        if self.channel_shared:
             w_shape = (1, )
         else:
-            w_shape = int(self.inputs.get_shape()[-1])
+            w_shape = (inputs_shape[-1], )
+        self.alpha_var = self._get_weights("alpha", shape=w_shape, init=self.a_init)
+        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
 
-        logging.info("PReluLayer %s: channel_shared: %s" % (self.name, channel_shared))
+    # @tf.function
+    def forward(self, inputs):
 
-        # with tf.name_scope(name) as scope:
-        with tf.variable_scope(name):
-            alpha_var = tf.get_variable(
-                name='alpha', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
-            )
+        pos = tf.nn.relu(inputs)
+        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
+        neg = -self.alpha_var_constrained * tf.nn.relu(-inputs)
 
-            alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
-
-        self.outputs = self._apply_activation(
-            self.inputs, **{
-                'alpha': alpha_var_constrained,
-                'name': "PReLU_activation"
-            }
-        )
-
-        self._add_layers(self.outputs)
-        self._add_params(alpha_var)
+        return pos + neg
 
 
-class PRelu6Layer(Layer):
+class PRelu6(Layer):
     """
-    The :class:`PRelu6Layer` class is Parametric Rectified Linear layer integrating ReLU6 behaviour.
+    The :class:`PRelu6` class is Parametric Rectified Linear layer integrating ReLU6 behaviour.
 
-    This Layer is a modified version of the :class:`PReluLayer`.
+    This Layer is a modified version of the :class:`PRelu`.
 
     This activation layer use a modified version :func:`tl.act.leaky_relu` introduced by the following paper:
     `Rectifier Nonlinearities Improve Neural Network Acoustic Models [A. L. Maas et al., 2013] <https://ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf>`__
@@ -100,15 +122,14 @@ class PRelu6Layer(Layer):
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     channel_shared : boolean
         If True, single weight is shared by all channels.
+    in_channels: int
+        The number of channels of the previous layer.
+        If None, it will be automatically detected when the layer is forwarded for the first time.
     a_init : initializer
         The initializer for initializing the alpha(s).
-    a_init_args : dictionary
-        The arguments for initializing the alpha(s).
-    name : str
+    name : None or str
         A unique layer name.
 
     References
@@ -119,45 +140,58 @@ class PRelu6Layer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
-            a_init_args=None, name="PReLU6_layer"
+            self,
+            channel_shared=False,
+            in_channels=None,
+            a_init=truncated_normal(mean=0.0, stddev=0.1),
+            name=None  # "prelu6"
     ):
 
-        super(PRelu6Layer, self).__init__(prev_layer=prev_layer, act=leaky_relu6, a_init_args=a_init_args, name=name)
+        super(PRelu6, self).__init__(name)
+        self.channel_shared = channel_shared
+        self.in_channels = in_channels
+        self.a_init = a_init
 
-        if channel_shared:
+        if self.channel_shared:
+            self.build((None, ))
+            self._built = True
+        elif self.in_channels is not None:
+            self.build((None, self.in_channels))
+            self._built = True
+
+        logging.info("PRelu6 %s: channel_shared: %s" % (self.name, self.channel_shared))
+
+    def __repr__(self):
+        s = ('{classname}(')
+        s += 'channel_shared={channel_shared},'
+        s += 'in_channels={in_channels},'
+        s += 'name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape):
+        if self.channel_shared:
             w_shape = (1, )
         else:
-            w_shape = int(self.inputs.get_shape()[-1])
+            w_shape = (inputs_shape[-1], )
+        self.alpha_var = self._get_weights("alpha", shape=w_shape, init=self.a_init)
+        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
 
-        logging.info("PRelu6Layer %s: channel_shared: %s" % (self.name, channel_shared))
+    # @tf.function
+    def forward(self, inputs):
+        pos = tf.nn.relu(inputs)
+        pos_6 = -tf.nn.relu(inputs - 6)
+        neg = -self.alpha_var_constrained * tf.nn.relu(-inputs)
 
-        # with tf.name_scope(name) as scope:
-        with tf.variable_scope(name):
-            alpha_var = tf.get_variable(
-                name='alpha', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
-            )
-
-            alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
-
-        self.outputs = self._apply_activation(
-            self.inputs, **{
-                'alpha': alpha_var_constrained,
-                'name': "PReLU6_activation"
-            }
-        )
-
-        self._add_layers(self.outputs)
-        self._add_params(alpha_var)
+        return pos + pos_6 + neg
 
 
-class PTRelu6Layer(Layer):
+class PTRelu6(Layer):
     """
-    The :class:`PTRelu6Layer` class is Parametric Rectified Linear layer integrating ReLU6 behaviour.
+    The :class:`PTRelu6` class is Parametric Rectified Linear layer integrating ReLU6 behaviour.
 
-    This Layer is a modified version of the :class:`PReluLayer`.
+    This Layer is a modified version of the :class:`PRelu`.
 
     This activation layer use a modified version :func:`tl.act.leaky_relu` introduced by the following paper:
     `Rectifier Nonlinearities Improve Neural Network Acoustic Models [A. L. Maas et al., 2013] <https://ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf>`__
@@ -172,19 +206,18 @@ class PTRelu6Layer(Layer):
       - When x in [0, 6]: ``f(x) = x``.
       - When x > 6: ``f(x) = 6 + (alpha_high * (x-6))``.
 
-    This version goes one step beyond :class:`PRelu6Layer` by introducing leaky behaviour on the positive side when x > 6.
+    This version goes one step beyond :class:`PRelu6` by introducing leaky behaviour on the positive side when x > 6.
 
     Parameters
     ----------
-    prev_layer : :class:`Layer`
-        Previous layer.
     channel_shared : boolean
         If True, single weight is shared by all channels.
+    in_channels: int
+        The number of channels of the previous layer.
+        If None, it will be automatically detected when the layer is forwarded for the first time.
     a_init : initializer
         The initializer for initializing the alpha(s).
-    a_init_args : dictionary
-        The arguments for initializing the alpha(s).
-    name : str
+    name : None or str
         A unique layer name.
 
     References
@@ -195,46 +228,54 @@ class PTRelu6Layer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
-            a_init_args=None, name="PTReLU6_layer"
+            self,
+            channel_shared=False,
+            in_channels=None,
+            a_init=truncated_normal(mean=0.0, stddev=0.1),
+            name=None  # "ptrelu6"
     ):
 
-        super(PTRelu6Layer,
-              self).__init__(prev_layer=prev_layer, act=leaky_twice_relu6, a_init_args=a_init_args, name=name)
+        super(PTRelu6, self).__init__(name)
+        self.channel_shared = channel_shared
+        self.in_channels = in_channels
+        self.a_init = a_init
 
-        if channel_shared:
+        if self.channel_shared:
+            self.build((None, ))
+            self._built = True
+        elif self.in_channels:
+            self.build((None, self.in_channels))
+            self._built = True
+
+        logging.info("PTRelu6 %s: channel_shared: %s" % (self.name, self.channel_shared))
+
+    def __repr__(self):
+        s = ('{classname}(')
+        s += 'channel_shared={channel_shared},'
+        s += 'in_channels={in_channels},'
+        s += 'name={name}'
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape):
+        if self.channel_shared:
             w_shape = (1, )
         else:
-            w_shape = int(self.inputs.get_shape()[-1])
+            w_shape = (inputs_shape[-1], )
 
-        logging.info("PTRelu6Layer %s: channel_shared: %s" % (self.name, channel_shared))
+        # Alpha for outputs lower than zeros
+        self.alpha_low = self._get_weights("alpha_low", shape=w_shape, init=self.a_init)
+        self.alpha_low_constrained = tf.nn.sigmoid(self.alpha_low, name="constraining_alpha_low_in_0_1")
 
-        # with tf.name_scope(name) as scope:
-        with tf.variable_scope(name):
+        # Alpha for outputs higher than 6
+        self.alpha_high = self._get_weights("alpha_high", shape=w_shape, init=self.a_init)
+        self.alpha_high_constrained = tf.nn.sigmoid(self.alpha_high, name="constraining_alpha_high_in_0_1")
 
-            # Alpha for outputs lower than zeros
-            alpha_low = tf.get_variable(
-                name='alpha_low', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
-            )
+    # @tf.function
+    def forward(self, inputs):
+        pos = tf.nn.relu(inputs)
+        pos_6 = -tf.nn.relu(inputs - 6) + self.alpha_high_constrained * tf.nn.relu(inputs - 6)
+        neg = -self.alpha_low_constrained * tf.nn.relu(-inputs)
 
-            alpha_low_constrained = tf.nn.sigmoid(alpha_low, name="constraining_alpha_low_in_0_1")
-
-            # Alpha for outputs higher than 6
-            alpha_high = tf.get_variable(
-                name='alpha_high', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
-            )
-
-            alpha_high_constrained = tf.nn.sigmoid(alpha_high, name="constraining_alpha_high_in_0_1")
-
-        self.outputs = self.outputs = self._apply_activation(
-            self.inputs, **{
-                'alpha_low': alpha_low_constrained,
-                'alpha_high': alpha_high_constrained,
-                'name': "PTReLU6_activation"
-            }
-        )
-
-        self._add_layers(self.outputs)
-        self._add_params([alpha_low, alpha_high])
+        return pos + pos_6 + neg
