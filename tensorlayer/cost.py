@@ -431,7 +431,7 @@ def sequence_loss_by_example(
 
 def cross_entropy_seq(logits, target_seqs, batch_size=None):
     """Returns the expression of cross-entropy of two sequences, implement
-    softmax internally. Normally be used for fixed length RNN outputs, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__.
+    softmax internally. Normally be used for fixed length RNN outputs, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm.py>`__.
 
     Parameters
     ----------
@@ -447,7 +447,7 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):
     Examples
     --------
     >>> import tensorlayer as tl
-    >>> # see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__.for more details
+    >>> # see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm.py>`__.for more details
     >>> # outputs shape : (batch_size * n_steps, n_classes)
     >>> # targets shape : (batch_size, n_steps)
     >>> cost = tl.cost.cross_entropy_seq(outputs, targets)
