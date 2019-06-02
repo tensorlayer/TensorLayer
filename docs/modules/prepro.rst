@@ -79,6 +79,8 @@ API - Data Pre-Processing
    obj_box_coord_upleft_butright_to_centroid
    obj_box_coord_centroid_to_upleft
    obj_box_coord_upleft_to_centroid
+   obj_box_coord_affine
+   rotated_obj_box_coord_affine
 
    parse_darknet_ann_str_to_list
    parse_darknet_ann_list_to_cls_box
@@ -576,6 +578,14 @@ Image Aug - Shift
 Image Aug - Zoom
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: obj_box_zoom
+
+Image Aug - Affine
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: obj_box_coord_affine
+
+Image Aug - Rotated-Affine
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: rotated_obj_box_coord_affine
 
 Keypoints
 ------------

@@ -39,6 +39,12 @@ Layer list
    SeparableConv2d
    DeformableConv2d
    GroupConv2d
+   OctConv2dIn
+   OctConv2d
+   OctConv2dOut
+   OctConv2dHighOut
+   OctConv2dLowOut
+   OctConv2dConcat
 
    PadLayer
    PoolLayer
@@ -241,6 +247,34 @@ GroupConv2d
 """""""""""""""""""""
 .. autoclass:: GroupConv2d
 
+OctConv
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For OctConv2d, see `Drop an Octave: Reducing Spatial Redundancy in Convolutional Neural Networks with Octave Convolution <https://arxiv.org/abs/1904.05049>`__.
+
+OctConv2dIn
+"""""""""""""""""""""
+.. autoclass:: OctConv2dIn
+
+OctConv2d
+"""""""""""""""""""""
+.. autoclass:: OctConv2d
+
+OctConv2dOut
+"""""""""""""""""""""
+.. autoclass:: OctConv2dOut
+
+OctConv2dHighOut
+"""""""""""""""""""""
+.. autoclass:: OctConv2dHighOut
+
+OctConv2dConcat
+"""""""""""""""""""""
+.. autoclass:: OctConv2dConcat
+
+OctConv2dLowOut
+"""""""""""""""""""""
+.. autoclass:: OctConv2dLowOut
 
 Separable Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
