@@ -4229,7 +4229,8 @@ def obj_box_coord_affine(
 
 def rotated_obj_box_coord_affine(classes=None, coords=None, affine_matrix=None, affine_matrix_inv=None):
     """Apply affine transform the box coordinates with rotation, and gets the
-     new box coordinates with rotation. Experimental!
+     new box coordinates with rotation. Experimental! Box angle are normalized
+     to [-pi/2, pi/2].
 
     Parameters
     -----------
