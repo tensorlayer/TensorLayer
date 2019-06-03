@@ -85,6 +85,7 @@ Layer list
    retrieve_seq_length_op
    retrieve_seq_length_op2
    retrieve_seq_length_op3
+   target_mask_op
 
    Flatten
    Reshape
@@ -600,6 +601,9 @@ Compute Sequence length 3
 """"""""""""""""""""""""""
 .. autofunction:: retrieve_seq_length_op3
 
+Compute mask of the target sequence
+""""""""""""""""""""""""""
+.. autofunction:: target_mask_op
 
 
 

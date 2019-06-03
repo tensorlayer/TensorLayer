@@ -40,6 +40,7 @@ class Layer_RNN_Test(CustomTestCase):
     def tearDownClass(cls):
         pass
 
+    '''
     def test_basic_simplernn(self):
 
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
@@ -603,6 +604,60 @@ class Layer_RNN_Test(CustomTestCase):
             print(length)
         except Exception as e:
             print(e)
+    '''
+
+    def test_target_mask_op(self):
+        fail_flag = False
+        data = [
+            ['hello', 'world', '', '', ''],
+            ['hello', 'world', 'tensorlayer', '', ''],
+            ['hello', 'world', 'tensorlayer', '2.0', '']
+        ]
+        try:
+            tl.layers.target_mask_op(data, pad_val='')
+            fail_flag = True
+        except AttributeError as e:
+            print(e)
+        if fail_flag:
+            self.fail("Type error not raised")
+
+        data = tf.convert_to_tensor(data, dtype=tf.string)
+        mask = tl.layers.target_mask_op(data, pad_val='')
+        print(mask)
+
+        data = [[[1], [0], [0], [0], [0]], [[1], [2], [3], [0], [0]], [[1], [2], [0], [1], [0]]]
+        data = tf.convert_to_tensor(data, dtype=tf.float32)
+        mask = tl.layers.target_mask_op(data)
+        print(mask)
+
+        data = [[[0,0],[2,2],[1,2],[1,2],[0,0]],
+                [[2,3],[2,4],[3,2],[1,0],[0,0]],
+                [[3,3],[0,1],[5,3],[1,2],[0,0]]]
+        data = tf.convert_to_tensor(data, dtype=tf.float32)
+        mask = tl.layers.target_mask_op(data)
+        print(mask)
+
+        fail_flag = False
+        try:
+            data = [1, 2, 0, 0, 0]
+            data = tf.convert_to_tensor(data, dtype=tf.float32)
+            tl.layers.target_mask_op(data)
+            fail_flag = True
+        except ValueError as e:
+            print(e)
+        if fail_flag:
+            self.fail("Wrong data shape not detected.")
+
+        fail_flag = False
+        try:
+            data = np.random.random([4, 2, 6, 2])
+            data = tf.convert_to_tensor(data, dtype=tf.float32)
+            tl.layers.target_mask_op(data)
+            fail_flag = True
+        except ValueError as e:
+            print(e)
+        if fail_flag:
+            self.fail("Wrong data shape not detected.")
 
 
 if __name__ == '__main__':
