@@ -28,17 +28,18 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
 ## Table of Contents:
 
-| Algorithms       | Observation Space | Action Space | Tutorial Env   |
-| ---------------- | ----------------- | ------------ | -------------- |
-| Q-learning       | Discrete          | Discrete     | FrozenLake     |
-| DQN and variants | Discrete          | Discrete     | Pong, CartPole |
-| Actor-Critic     | Continuous        | Discrete     | CartPole       |
-| A3C              | Continuous        | Continuous   | BipedalWalker  |
-| SAC              | Continuous        | Continuous   | Pendulum       |
-| PG               | Continuous        | Discrete     | CartPole       |
-| DDPG             | Continuous        | Continuous   | Pendulum       |
-| TD3              | Continuous        | Continuous   | Pendulum       |
-| C51              |                   |              | CartPole       |
+| Algorithms      | Observation Space | Action Space | Tutorial Env   |
+| --------------- | ----------------- | ------------ | -------------- |
+| Q-learning      | Discrete          | Discrete     | FrozenLake     |
+| DQN             | Discrete          | Discrete     | FrozenLake     |
+| Variants of DQN | Continuous        | Discrete     | Pong, CartPole |
+| Actor-Critic    | Continuous        | Discrete     | CartPole       |
+| A3C             | Continuous        | Continuous   | BipedalWalker  |
+| SAC             | Continuous        | Continuous   | Pendulum       |
+| PG              | Continuous        | Discrete     | CartPole       |
+| DDPG            | Continuous        | Continuous   | Pendulum       |
+| TD3             | Continuous        | Continuous   | Pendulum       |
+| C51             | Continuous        | Discrete     | CartPole       |
 
 ## Examples of RL Algorithms:
 
