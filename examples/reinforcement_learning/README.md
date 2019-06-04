@@ -41,15 +41,19 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 | Algorithms      | Observation Space | Action Space | Tutorial Env   |
 | --------------- | ----------------- | ------------ | -------------- |
 | Q-learning      | Discrete          | Discrete     | FrozenLake     |
+| C51             | Continuous        | Discrete     | CartPole       |
 | DQN             | Discrete          | Discrete     | FrozenLake     |
 | Variants of DQN | Continuous        | Discrete     | Pong, CartPole |
 | Actor-Critic    | Continuous        | Discrete     | CartPole       |
 | A3C             | Continuous        | Continuous   | BipedalWalker  |
-| SAC             | Continuous        | Continuous   | Pendulum       |
-| PG              | Continuous        | Discrete     | CartPole       |
 | DDPG            | Continuous        | Continuous   | Pendulum       |
 | TD3             | Continuous        | Continuous   | Pendulum       |
-| C51             | Continuous        | Discrete     | CartPole       |
+| SAC             | Continuous        | Continuous   | Pendulum       |
+| PG              | Continuous        | Discrete     | CartPole       |
+| TRPO            | Continuous        | Continuous   | Pendulum       |
+| PPO             | Continuous        | Continuous   | Pendulum       |
+| DPPO            | Continuous        | Continuous   | Pendulum       |
+
 
 ## Examples of RL Algorithms:
 
@@ -162,7 +166,7 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
   
 
-* Distributed Proximal Policy Optimization (PPO)
+* Distributed Proximal Policy Optimization (DPPO)
 
   Code: `./tutorial_DPPO.py`
 
