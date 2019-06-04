@@ -182,6 +182,9 @@ We typically apply game environments in [Openai Gym](https://gym.openai.com/) fo
 
 Our env wrapper: `./tutorial_wrappers.py` 
 
-
+## Authors
+- @xxxx XXXXX
+- @xxxx XXXXX
+- @xxxx XXXXX
 
 ### More examples can be found in [example List](https://tensorlayer.readthedocs.io/en/stable/user/examples.html)
