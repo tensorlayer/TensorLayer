@@ -85,8 +85,8 @@ For latest code for TensorLayer 2.0, please build from the source.
 .. code-block:: bash
 
   # First clone the repository and change the current directory to the newly cloned repository
-  git clone https://github.com/zsdonghao/tensorlayer2.git
-  cd tensorlayer2
+  git clone https://github.com/tensorlayer/tensorlayer.git
+  cd tensorlayer
 
   # Install virtualenv if necessary
   pip install virtualenv
