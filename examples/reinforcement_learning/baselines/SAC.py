@@ -34,6 +34,8 @@ import tensorflow_probability as tfp
 import tensorlayer as tl
 from tensorlayer.layers import Dense
 from tensorlayer.models import Model
+from utils import *
+from wrappers import NormalizedActions
 
 tfd = tfp.distributions
 Normal = tfd.Normal
@@ -43,66 +45,13 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 np.random.seed(2)
 tf.random.set_seed(2)  # reproducible
 
-# GPU = True
-# device_idx = 0
-# if GPU:
-#     device = torch.device("cuda:" + str(device_idx) if torch.cuda.is_available() else "cpu")
-# else:
-#     device = torch.device("cpu")
-# print(device)
-
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=False)
 parser.add_argument('--test', dest='test', action='store_true', default=True)
 args = parser.parse_args()
 
 
-class ReplayBuffer:
-    def __init__(self, capacity):
-        self.capacity = capacity
-        self.buffer = []
-        self.position = 0
-    
-    def push(self, state, action, reward, next_state, done):
-        if len(self.buffer) < self.capacity:
-            self.buffer.append(None)
-        self.buffer[self.position] = (state, action, reward, next_state, done)
-        self.position = int((self.position + 1) % self.capacity)  # as a ring buffer
-    
-    def sample(self, batch_size):
-        batch = random.sample(self.buffer, batch_size)
-        state, action, reward, next_state, done = map(np.stack, zip(*batch)) # stack for each element
-        ''' 
-        the * serves as unpack: sum(a,b) <=> batch=(a,b), sum(*batch) ;
-        zip: a=[1,2], b=[2,3], zip(a,b) => [(1, 2), (2, 3)] ;
-        the map serves as mapping the function on each list element: map(square, [2,3]) => [4,9] ;
-        np.stack((1,2)) => array([1, 2])
-        '''
-        return state, action, reward, next_state, done
-    
-    def __len__(self):
-        return len(self.buffer)
 
-class NormalizedActions(gym.ActionWrapper):
-    def _action(self, action):
-        low  = self.action_space.low
-        high = self.action_space.high
-        
-        action = low + (action + 1.0) * 0.5 * (high - low)
-        action = np.clip(action, low, high)
-        
-        return action
-
-    def _reverse_action(self, action):
-        low  = self.action_space.low
-        high = self.action_space.high
-        
-        action = 2 * (action - low) / (high - low) - 1
-        action = np.clip(action, low, high)
-        
-        return action
-
-        
 class SoftQNetwork(Model):
     def __init__(self, num_inputs, num_actions, hidden_dim, init_w=3e-3):
         super(SoftQNetwork, self).__init__()
@@ -293,27 +242,38 @@ class SAC_Trainer():
         self.target_soft_q_net2=self.target_soft_update(self.soft_q_net2, self.target_soft_q_net2, soft_tau)
 
     def save_weights(self): # save trained weights
-        tl.files.save_npz(self.soft_q_net1.trainable_weights, name='model_q_net1.npz')
-        tl.files.save_npz(self.soft_q_net2.trainable_weights, name='model_q_net2.npz')
-        tl.files.save_npz(self.target_soft_q_net1.trainable_weights, name='model_target_q_net1.npz')
-        tl.files.save_npz(self.target_soft_q_net2.trainable_weights, name='model_target_q_net2.npz')
-        tl.files.save_npz(self.policy_net.trainable_weights, name='model_policy_net.npz')
+        save_model(self.soft_q_net1, 'model_q_net1', 'SAC')
+        save_model(self.soft_q_net2, 'model_q_net2', 'SAC')
+        save_model(self.target_soft_q_net1, 'model_target_q_net1', 'SAC')
+        save_model(self.target_soft_q_net2, 'model_target_q_net2', 'SAC')
+        save_model(self.policy_net, 'model_policy_net', 'SAC')
+
+        # tl.files.save_npz(self.soft_q_net1.trainable_weights, name='model_q_net1.npz')
+        # tl.files.save_npz(self.soft_q_net2.trainable_weights, name='model_q_net2.npz')
+        # tl.files.save_npz(self.target_soft_q_net1.trainable_weights, name='model_target_q_net1.npz')
+        # tl.files.save_npz(self.target_soft_q_net2.trainable_weights, name='model_target_q_net2.npz')
+        # tl.files.save_npz(self.policy_net.trainable_weights, name='model_policy_net.npz')
 
     def load_weights(self): # load trained weights
-        tl.files.load_and_assign_npz(name='model_q_net1.npz', network=self.soft_q_net1)
-        tl.files.load_and_assign_npz(name='model_q_net2.npz', network=self.soft_q_net2)
-        tl.files.load_and_assign_npz(name='model_target_q_net1.npz', network=self.target_soft_q_net1)
-        tl.files.load_and_assign_npz(name='model_target_q_net2.npz', network=self.target_soft_q_net2)
-        tl.files.load_and_assign_npz(name='model_policy_net.npz', network=self.policy_net)
+        # tl.files.load_and_assign_npz(name='model_q_net1.npz', network=self.soft_q_net1)
+        # tl.files.load_and_assign_npz(name='model_q_net2.npz', network=self.soft_q_net2)
+        # tl.files.load_and_assign_npz(name='model_target_q_net1.npz', network=self.target_soft_q_net1)
+        # tl.files.load_and_assign_npz(name='model_target_q_net2.npz', network=self.target_soft_q_net2)
+        # tl.files.load_and_assign_npz(name='model_policy_net.npz', network=self.policy_net)
+        load_model(self.soft_q_net1, 'model_q_net1', 'SAC')
+        load_model(self.soft_q_net2, 'model_q_net2', 'SAC')
+        load_model(self.target_soft_q_net1, 'model_target_q_net1', 'SAC')
+        load_model(self.target_soft_q_net2, 'model_target_q_net2', 'SAC')
+        load_model(self.policy_net, 'model_policy_net', 'SAC')
 
-def plot(frame_idx, rewards):
-    clear_output(True)
-    plt.figure(figsize=(20,5))
-    plt.title('frame %s. reward: %s' % (frame_idx, rewards[-1]))
-    plt.plot(rewards)
-    plt.xlabel('Episode')
-    plt.ylabel('Episode Reward')
-    plt.savefig('sac.png')
+# def plot(frame_idx, rewards):
+#     clear_output(True)
+#     plt.figure(figsize=(20,5))
+#     plt.title('frame %s. reward: %s' % (frame_idx, rewards[-1]))
+#     plt.plot(rewards)
+#     plt.xlabel('Episode')
+#     plt.ylabel('Episode Reward')
+#     plt.savefig('sac.png')
     # plt.show()
 
 
@@ -329,7 +289,7 @@ replay_buffer = ReplayBuffer(replay_buffer_size)
 
 
 # hyper-parameters for RL training
-max_frames  = 40000                 # total number of steps for training
+max_frames  = 30000                 # total number of steps for training
 test_frames = 300                   # total number of steps for testing
 max_steps   = 150                   # maximum number of steps for one episode
 batch_size  = 64                    # udpate batchsize
@@ -392,7 +352,7 @@ if args.train:
                     sac_trainer.update(batch_size, reward_scale=reward_scale, auto_entropy=AUTO_ENTROPY, target_entropy=-1.*action_dim)
             
             if frame_idx % 500 == 0:
-                plot(frame_idx, rewards)
+                plot(rewards, Algorithm_name = 'SAC', Env_name = ENV)
             
             if done:
                 break

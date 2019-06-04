@@ -1,21 +1,34 @@
 '''
-Twin Delayed DDPG (TD3), if no twin no delayed then it's DDPG.
-using networks including: 2 Q-net, 2 target Q-net, 1 policy net, 1 target policy net
-original paper: https://arxiv.org/pdf/1802.09477.pdf
+Twin Delayed DDPG (TD3)
+------------------------
+If no twin no delayed then it's DDPG.
+It uses networks including: 2 Q-net, 2 target Q-net, 1 policy net, 1 target policy net
 Actor policy is deterministic, with Gaussian exploration noise.
 
-Env: Openai Gym Pendulum-v0, continuous action space
+Reference
+---------
+original paper: https://arxiv.org/pdf/1802.09477.pdf
 
-tensorflow 2.0.0a0
+
+Env
+---
+Openai Gym Pendulum-v0, continuous action space
+
+Prerequisites
+---
+tensorflow >=2.0.0a0
 tensorflow-probability 0.6.0
-tensorlayer 2.0.0
+tensorlayer >=2.0.0
 
 &&
 pip install box2d box2d-kengz --user
 
-To run:
+To run
+-------
 python tutorial_td3.py --train/test
+
 '''
+
 import argparse
 import math
 import random
@@ -40,19 +53,34 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 np.random.seed(2)
 tf.random.set_seed(2)  # reproducible
 
-
-# GPU = True
-# device_idx = 0
-# if GPU:
-#     device = torch.device("cuda:" + str(device_idx) if torch.cuda.is_available() else "cpu")
-# else:
-#     device = torch.device("cpu")
-# print(device)
-
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=False)
 parser.add_argument('--test', dest='test', action='store_true', default=True)
 args = parser.parse_args()
+
+#####################  hyper parameters  ####################
+# choose env
+ENV = 'Pendulum-v0'
+action_range=1.                     # scale action, [-action_range, action_range]
+
+# RL training
+max_frames  = 40000                 # total number of steps for training
+test_frames = 300                   # total number of steps for testing
+max_steps   = 150                   # maximum number of steps for one episode
+batch_size  = 64                    # udpate batchsize
+explore_steps = 500                 # 500 for random action sampling in the beginning of training
+update_itr = 3                      # repeated updates for single step
+hidden_dim = 32                     # size of hidden layers for networks 
+q_lr       = 3e-4                   # q_net learning rate
+policy_lr  = 3e-4                   # policy_net learning rate
+policy_target_update_interval = 3   # delayed steps for updating the policy network and target networks
+explore_noise_scale = 1.0           # range of action noise for exploration
+eval_noise_scale = 0.5              # range of action noise for evaluation of action value
+reward_scale = 1.                   # value range of reward
+replay_buffer_size = 5e5            # size of replay buffer
+
+
+###############################  TD3  ####################################
 
 class ReplayBuffer:
     def __init__(self, capacity):
@@ -296,32 +324,13 @@ def plot(frame_idx, rewards):
     # plt.show()
 
 
-# choose env
-ENV = 'Pendulum-v0'
+# initialization of env
 env = NormalizedActions(gym.make(ENV))
 action_dim = env.action_space.shape[0]
 state_dim  = env.observation_space.shape[0]
-action_range=1.
-
-replay_buffer_size = 5e5
+# initialization of buffer
 replay_buffer = ReplayBuffer(replay_buffer_size)
-
-
-# hyper-parameters for RL training
-max_frames  = 40000                 # total number of steps for training
-test_frames = 300                   # total number of steps for testing
-max_steps   = 150                   # maximum number of steps for one episode
-batch_size  = 64                    # udpate batchsize
-explore_steps = 500                 # 500 for random action sampling in the beginning of training
-update_itr = 3                      # repeated updates for single step
-hidden_dim = 32                     # size of hidden layers for networks 
-q_lr       = 3e-4                   # q_net learning rate
-policy_lr  = 3e-4                   # policy_net learning rate
-policy_target_update_interval = 3   # delayed steps for updating the policy network and target networks
-explore_noise_scale = 1.0           # range of action noise for exploration
-eval_noise_scale = 0.5              # range of action noise for evaluation of action value
-reward_scale = 1.                   # value range of reward
-
+# initialization of trainer
 td3_trainer=TD3_Trainer(replay_buffer, hidden_dim=hidden_dim, policy_target_update_interval=policy_target_update_interval, \
 action_range=action_range, q_lr=q_lr, policy_lr=policy_lr )
 # set train mode
@@ -336,6 +345,7 @@ td3_trainer.target_policy_net.train()
 if args.train:
     frame_idx   = 0
     rewards     = []
+    t0 = time.time()
     while frame_idx < max_frames:
         state =  env.reset()
         state = state.astype(np.float32)
@@ -372,13 +382,18 @@ if args.train:
             
             if done:
                 break
-        print('Episode: ', frame_idx/max_steps, '| Episode Reward: ', episode_reward)
+        episode = int(frame_idx/max_steps) # current episode
+        all_episodes = int(max_frames/max_steps) # total episodes
+        print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
+        .format(episode, all_episodes, episode_reward, time.time()-t0 ))
         rewards.append(episode_reward)
     td3_trainer.save_weights()
 
 if args.test:
     frame_idx   = 0
     rewards     = []
+    t0 = time.time()
+
     td3_trainer.load_weights()
 
     while frame_idx < test_frames:
@@ -407,5 +422,8 @@ if args.test:
             
             if done:
                 break
-        print('Episode: ', frame_idx/max_steps, '| Episode Reward: ', episode_reward)
+        episode = int(frame_idx/max_steps)
+        all_episodes = int(test_frames/max_steps)
+        print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
+        .format(episode, all_episodes, episode_reward, time.time()-t0 ) )
         rewards.append(episode_reward)

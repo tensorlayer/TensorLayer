@@ -59,66 +59,74 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
 * Q-learning
 
-  Code: `./tutorial_frozenlake_q_table.py`
+  Code: `./tutorial_Qlearning.py`
+
+  Paper: [Technical  Note Q-Learning](http://www.gatsby.ucl.ac.uk/~dayan/papers/cjch.pdf)
 
   
 
 * Deep Q-Network (DQN)
 
-  Code: `./tutorial_frozenlake_dqn.py`
+  Code: `./tutorial_DQN.py`
+
+  Paper: [Human-level control through deep reinforcementlearning](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf)
+
+  [Playing Atari with Deep Reinforcement Learning](https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf)
 
   
 
 * Double DQN / Dueling DQN / Noisy DQN
 
-  Code: `./tutorial_double_dueling_noisy_dqn.py`
+  Code: `./tutorial_DQN_variants.py`
 
-  Experiment Environments: Pong and Cartpole
+  Paper: [Deep Reinforcement Learning with Double Q-learning](https://arxiv.org/abs/1509.06461)
 
   
 
 
-* Prioritized replay
+* Prioritized Experience Replay
 
   Code: `./tutorial_prioritized_replay.py`
 
-  Experiment Environments: Pong and Cartpole
+  Paper: [Prioritized Experience Replay](https://arxiv.org/abs/1511.05952)
 
   
 
 * Distributed DQN
 
-  Code: `./tutorial_c51.py`
+  Code: `./tutorial_C51.py`
 
-  Experiment Environments: Pong and Cartpole
+  Paper: [A Distributional Perspective on Reinforcement Learning](https://arxiv.org/pdf/1707.06887.pdf)
 
   
 
 
 * Retrace(lambda) DQN
 
-  Code: `./tutorial_retrace.py`
+  Code: `./tutorial_Retrace.py`
 
-  Experiment Environments: Pong and Cartpole
+  Paper: [Safe and Efficient Off-Policy Reinforcement Learning](https://arxiv.org/abs/1606.02647)
 
   
 
 
 * Actor-Critic (AC)
 
-  Code:`./tutorial_cartpole_ac.py`
+  Code:`./tutorial_AC.py`
+
+  Paper: [Actor-Critic Algorithms](https://papers.nips.cc/paper/1786-actor-critic-algorithms.pdf)
 
   
 
 * Asynchronous Advantage Actor-Critic (A3C)
 
-  Code: `./tutorial_bipedalwalker_a3c_continuous_action.py`
+  Code: `./tutorial_A3C.py`
 
   
 
 * Soft Actor-Critic (SAC)
 
-  Code: `./tutorial_sac.py`
+  Code: `./tutorial_SAC.py`
 
   Paper: [Soft Actor-Critic Algorithms and Applications](https://arxiv.org/pdf/1812.05905.pdf)
 
@@ -144,7 +152,7 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
 * Twin Delayed DDPG (TD3)
 
-  Code: `./tutorial_td3.py`
+  Code: `./tutorial_TD3.py`
 
   Paper: [Addressing Function Approximation Error in Actor-Critic Methods](https://arxiv.org/pdf/1802.09477.pdf)
 
@@ -189,6 +197,6 @@ Our env wrapper: `./tutorial_wrappers.py`
 ## Authors
 - @xxxx XXXXX : AC, A3C
 - @xxxx XXXXX : TPRO
-- @xxxx XXXXX
+- @quantumiracle Zihan Ding: SAC, TD3.
 
 ### More examples can be found in the [example list](https://tensorlayer.readthedocs.io/en/stable/user/examples.html)
