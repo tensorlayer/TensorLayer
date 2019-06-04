@@ -15,7 +15,7 @@ This repository contains implementation of most popular reinforcement learning a
 ## Prerequisites:
 
 * python 3.5
-* tensorflow >= 2.0.0
+* tensorflow >= 2.0.0 or tensorflow-gpu >= 2.0.0a0
 * tensorlayer >= 2.0.1
 * tensorflow-probability
 * tf-nightly-2.0-preview
@@ -32,9 +32,7 @@ We are currently open to any suggestions or pull requests from you to make the r
 
 For each tutorial, open a terminal and run:
 
-`python ***.py` 
-
-or `python ***.py --train` for training and `python ***.py --test` for testing.
+ `python ***.py --train` for training and `python ***.py --test` for testing.
 
 ## Table of Contents:
 
@@ -121,6 +119,8 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 * Asynchronous Advantage Actor-Critic (A3C)
 
   Code: `./tutorial_A3C.py`
+
+  Paper: [Asynchronous Methods for Deep Reinforcement Learning](https://arxiv.org/pdf/1602.01783.pdf)
 
   
 
