@@ -133,7 +133,7 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
   Code: `./tutorial_DDPG.py`
 
-  Paper: [CONTINUOUS CONTROL WITH DEEP REINFORCEMENT LEARNING](https://arxiv.org/pdf/1509.02971.pdf)
+  Paper: [Continuous Control With Deep Reinforcement Learning](https://arxiv.org/pdf/1509.02971.pdf)
 
   
 
