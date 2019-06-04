@@ -1,5 +1,15 @@
 # Reinforcement Learning Tutorial with Tensorlayer
 
+<br/>
+
+<a href="https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc" target="\_blank">
+	<div align="center">
+		<img src="../../img/join_slack.png" width="40%"/>
+	</div>
+</a>
+
+<br/>
+
 This repository contains implementation of most popular reinforcement learning algorithms with Tensorlayer 2.0, supporting [Tensorflow 2.0](https://www.tensorflow.org/alpha/guide/effective_tf2). We aim to make the reinforcement learning tutorial for each algorithm simple and straight-forward to use, as this would not only benefits new learners of reinforcement learning, but also provide convenience for senior researchers to testify their new ideas quickly.
 
 ## Prerequisites:
@@ -31,15 +41,19 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 | Algorithms      | Observation Space | Action Space | Tutorial Env   |
 | --------------- | ----------------- | ------------ | -------------- |
 | Q-learning      | Discrete          | Discrete     | FrozenLake     |
+| C51             | Continuous        | Discrete     | CartPole       |
 | DQN             | Discrete          | Discrete     | FrozenLake     |
 | Variants of DQN | Continuous        | Discrete     | Pong, CartPole |
 | Actor-Critic    | Continuous        | Discrete     | CartPole       |
 | A3C             | Continuous        | Continuous   | BipedalWalker  |
-| SAC             | Continuous        | Continuous   | Pendulum       |
-| PG              | Continuous        | Discrete     | CartPole       |
 | DDPG            | Continuous        | Continuous   | Pendulum       |
 | TD3             | Continuous        | Continuous   | Pendulum       |
-| C51             | Continuous        | Discrete     | CartPole       |
+| SAC             | Continuous        | Continuous   | Pendulum       |
+| PG              | Continuous        | Discrete     | CartPole       |
+| TRPO            | Continuous        | Continuous   | Pendulum       |
+| PPO             | Continuous        | Continuous   | Pendulum       |
+| DPPO            | Continuous        | Continuous   | Pendulum       |
+
 
 ## Examples of RL Algorithms:
 
@@ -123,7 +137,7 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
   Code: `./tutorial_DDPG.py`
 
-  Paper: [CONTINUOUS CONTROL WITH DEEP REINFORCEMENT LEARNING](https://arxiv.org/pdf/1509.02971.pdf)
+  Paper: [Continuous Control With Deep Reinforcement Learning](https://arxiv.org/pdf/1509.02971.pdf)
 
   
 
@@ -152,7 +166,7 @@ or `python ***.py --train` for training and `python ***.py --test` for testing.
 
   
 
-* Distributed Proximal Policy Optimization (PPO)
+* Distributed Proximal Policy Optimization (DPPO)
 
   Code: `./tutorial_DPPO.py`
 
@@ -172,6 +186,9 @@ We typically apply game environments in [Openai Gym](https://gym.openai.com/) fo
 
 Our env wrapper: `./tutorial_wrappers.py` 
 
+## Authors
+- @xxxx XXXXX : AC, A3C
+- @xxxx XXXXX : TPRO
+- @xxxx XXXXX
 
-
-### More examples can be found in [example List](https://tensorlayer.readthedocs.io/en/stable/user/examples.html)
+### More examples can be found in the [example list](https://tensorlayer.readthedocs.io/en/stable/user/examples.html)
