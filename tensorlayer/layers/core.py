@@ -196,6 +196,10 @@ class Layer(object):
     def nontrainable_weights(self):
         return self._nontrainable_weights
 
+    @property
+    def weights(self):
+        raise Exception("no property .weights exists, do you mean .all_weights, .trainable_weights, or .nontrainable_weights ?")
+    
     def __call__(self, inputs, *args, **kwargs):
         """
         (1) Build the Layer if necessary.
