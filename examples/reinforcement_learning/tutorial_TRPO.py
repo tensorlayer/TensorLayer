@@ -24,187 +24,19 @@ python *.py
 
 """
 import numpy as np
-
 import tensorflow as tf
 import tensorflow_probability as tfp
 import tensorlayer as tl
 import gym
-from gym.spaces import Box, Discrete
 import time
-from matplotlib import pyplot as plt
-from scipy import signal
+import os
+
+import matplotlib.pyplot as plt
+import scipy.signal
 import copy
+from gym.spaces import Box, Discrete
 
 EPS = 1e-8
-
-
-def assign_params_from_flat(x, params):
-    flat_size = lambda p: int(np.prod(p.shape.as_list()))  # the 'int' is important for scalars
-    splits = tf.split(x, [flat_size(p) for p in params])
-    new_params = [tf.reshape(p_new, p.shape) for p, p_new in zip(params, splits)]
-    return tf.group([p.assign(p_new) for p, p_new in zip(params, new_params)])
-
-
-def hessian_vector_product(func, inputs, params, x):
-    # for H = grad**2 f, compute Hx
-    with tf.GradientTape() as tape0:
-        with tf.GradientTape() as tape1:
-            pi, logp, logp_pi, info, info_phs, d_kl, v = func(*inputs)
-        grad1 = tape1.gradient(d_kl, params)
-        g = flat_concat(grad1)
-        assert g.shape == x.shape
-        a = tf.reduce_sum(g * x)
-    grad0 = tape0.gradient(a, params)
-    g0 = flat_concat(grad0)
-    return x, g0
-
-
-def flat_concat(xs):
-    return tf.concat([tf.reshape(x, (-1,)) for x in xs], axis=0)
-
-
-def flat_grad(f, params):
-    return flat_concat(tf.gradients(xs=params, ys=f))
-
-
-def diagonal_gaussian_kl(mu0, log_std0, mu1, log_std1):
-    """
-    tf symbol for mean KL divergence between two batches of diagonal gaussian distributions,
-    where distributions are specified by means and log stds.
-    (https://en.wikipedia.org/wiki/Kullback-Leibler_divergence#Multivariate_normal_distributions)
-    """
-    var0, var1 = tf.exp(2 * log_std0), tf.exp(2 * log_std1)
-    pre_sum = 0.5 * (((mu1 - mu0) ** 2 + var0) / (var1 + EPS) - 1) + log_std1 - log_std0
-    all_kls = tf.reduce_sum(pre_sum, axis=1)
-    return tf.reduce_mean(all_kls)
-
-
-def gaussian_likelihood(x, mu, log_std):
-    pre_sum = -0.5 * (((x - mu) / (tf.exp(log_std) + EPS)) ** 2 + 2 * log_std + np.log(2 * np.pi))
-    return tf.reduce_sum(pre_sum, axis=1)
-
-
-def categorical_kl(logp0, logp1):
-    """
-    tf symbol for mean KL divergence between two batches of categorical probability distributions,
-    where the distributions are input as log probs.
-    """
-    all_kls = tf.reduce_sum(tf.exp(logp1) * (logp1 - logp0), axis=1)
-    return tf.reduce_mean(all_kls)
-
-
-def mlp(input_space, hidden_sizes=(32,), activation=tf.tanh, output_activation=None, name=None):
-    inputs = input_layers_from_space(input_space)
-    x = inputs
-    for i, h in enumerate(hidden_sizes[:-1]):
-        # x = tf.layers.dense(x, units=h, activation=activation)
-        if name:
-            n = name + '_layer_' + str(i)
-        else:
-            n = None
-        x = tl.layers.Dense(h, activation, name=n)(x)
-    if name:
-        n = name + '_output'
-    else:
-        n = None
-    outputs = tl.layers.Dense(hidden_sizes[-1], output_activation, name=n)(x)
-    return tl.models.Model(inputs, outputs, name)
-
-
-def mlp_categorical_policy(obs_space, act_space, hidden_sizes, activation, output_activation):
-    act_dim = act_space.n
-    actor = mlp(obs_space, list(hidden_sizes) + [act_dim], activation, None, name='actor')
-
-    critic = mlp(obs_space, list(hidden_sizes) + [1], activation, None, name='critic')
-
-    def cal(s, a=None, old_logp_all=None):
-        s = s.astype(np.float32)
-        logits = actor(s)
-        logp_all = tf.nn.log_softmax(logits)
-        pi = tf.squeeze(tfp.distributions.Multinomial(logits, 1), axis=1)
-        logp_pi = tf.reduce_sum(tf.one_hot(pi, depth=act_dim) * logp_all, axis=1)
-        v = tf.squeeze(critic(s), axis=1)
-        info = {'logp_all': logp_all}
-
-        if a is None and old_logp_all is None:
-            info = values_as_sorted_list(info)
-            return [pi, v, logp_pi] + info
-        else:
-            a = a.astype(np.float32)
-            logp = tf.reduce_sum(tf.one_hot(a, depth=act_dim) * logp_all, axis=1)
-
-            # check_shape(old_logp_all, act_dim)
-            d_kl = categorical_kl(logp_all, old_logp_all)
-
-            info_phs = {'logp_all': old_logp_all}
-            return pi, logp, logp_pi, info, info_phs, d_kl, v
-
-    return actor, cal
-
-
-def check_shape(array, shape):
-    try:
-        assert np.shape(array) == shape
-    except Exception as e:
-        print(np.shape(array), '!=', shape)
-        raise e
-
-
-def check_shapes(array_list, shape_list):
-    for arr, shp in zip(array_list, shape_list):
-        check_shape(arr, shp)
-
-
-def mlp_gaussian_policy(obs_space, act_space, hidden_sizes, activation, output_activation):
-    act_dim = act_space.shape[0]
-    actor = mlp(obs_space, list(hidden_sizes) + [act_dim], activation, output_activation, name='actor')
-
-    critic = mlp(obs_space, list(hidden_sizes) + [1], activation, None, name='critic')
-
-    def cal(s, a=None, old_mu_ph=None, old_log_std_ph=None):
-        s = s.astype(np.float32)
-        mu = actor(s)
-        log_std = -0.5 * np.ones(act_dim, dtype=np.float32)
-        std = tf.exp(log_std)
-        pi = mu + tf.random.normal(tf.shape(mu)) * std
-        logp_pi = gaussian_likelihood(pi, mu, log_std)
-        v = tf.squeeze(critic(s), axis=1)
-        info = {'mu': mu, 'log_std': log_std}
-
-        if a is None and old_mu_ph is None and old_log_std_ph is None:
-            info = values_as_sorted_list(info)
-            return [pi, v, logp_pi] + info
-        elif a is not None and old_mu_ph is not None and old_log_std_ph is not None:
-            a = a.astype(np.float32)
-            logp = gaussian_likelihood(a, mu, log_std)
-            # check_shapes((old_mu_ph, old_log_std_ph), (act_dim, act_dim))
-            d_kl = diagonal_gaussian_kl(mu, log_std, old_mu_ph, old_log_std_ph)
-
-            info_phs = {'mu': old_mu_ph, 'log_std': old_log_std_ph}
-
-            return pi, logp, logp_pi, info, info_phs, d_kl, v
-        else:
-            print(a, old_mu_ph, old_log_std_ph)
-            raise Exception
-
-    return actor, critic, cal
-
-
-def mlp_actor_critic(obs_space, act_space, hidden_sizes=(64, 64), activation=tf.tanh,
-                     output_activation=None, policy=None):
-    # default policy builder depends on action space
-    if policy is None and isinstance(act_space, Box):
-        policy = mlp_gaussian_policy
-        name = 'mlp_gaussian_policy'
-    elif policy is None and isinstance(act_space, Discrete):
-        policy = mlp_categorical_policy
-        name = 'mlp_categorical_policy'
-    else:
-        raise Exception
-
-    actor, critic, cal_func = policy(obs_space, act_space, hidden_sizes, activation, output_activation)
-
-    return actor, critic, cal_func, name
 
 
 def combined_shape(length, shape=None):
@@ -221,42 +53,196 @@ def values_as_sorted_list(dict):
     return [dict[k] for k in keys_as_sorted_list(dict)]
 
 
-def discount_cumsum(x, discount):
-    """
-    magic from rllab for computing discounted cumulative sums of vectors.
-
-    input:
-        vector x,
-        [x0,
-         x1,
-         x2]
-
-    output:
-        [x0 + discount * x1 + discount^2 * x2,
-         x1 + discount * x2,
-         x2]
-    """
-    return signal.lfilter([1], [1, float(-discount)], x[::-1], axis=0)[::-1]
-
-
 def input_layer(dim=None):
-    return tl.layers.Input(combined_shape(None, dim))
+    return tl.layers.Input(dtype=tf.float32, shape=combined_shape(None, dim))
 
 
 def input_layers(*args):
     return [input_layer(dim) for dim in args]
 
 
-def input_layers_from_space(space):
+def input_layer_from_space(space):
     if isinstance(space, Box):
         return input_layer(space.shape)
     elif isinstance(space, Discrete):
-        return tl.layers.Input((None,))
+        return tl.layers.Input(dtype=tf.int32, shape=(None,))
     raise NotImplementedError
 
 
 def input_layers_from_spaces(*args):
-    return [input_layers_from_space(space) for space in args]
+    return [input_layer_from_space(space) for space in args]
+
+
+def mlp(x, hidden_sizes=(32,), activation=tf.tanh, output_activation=None):
+    for h in hidden_sizes[:-1]:
+        x = tl.layers.Dense(n_units=h, act=activation)(x)
+    return tl.layers.Dense(n_units=hidden_sizes[-1], act=output_activation)(x)
+
+
+def get_vars(model: tl.models.Model):
+    return model.trainable_weights
+
+
+def count_vars(model: tl.models.Model):
+    v = get_vars(model)
+    return sum([np.prod(var.shape.as_list()) for var in v])
+
+
+def gaussian_likelihood(x, mu, log_std):
+    pre_sum = -0.5 * (((x - mu) / (tf.exp(log_std) + EPS)) ** 2 + 2 * log_std + np.log(2 * np.pi))
+    return tf.reduce_sum(pre_sum, axis=1)
+
+
+def diagonal_gaussian_kl(mu0, log_std0, mu1, log_std1):
+    """
+    tf symbol for mean KL divergence between two batches of diagonal gaussian distributions,
+    where distributions are specified by means and log stds.
+    (https://en.wikipedia.org/wiki/Kullback-Leibler_divergence#Multivariate_normal_distributions)
+    """
+    var0, var1 = tf.exp(2 * log_std0), tf.exp(2 * log_std1)
+    pre_sum = 0.5 * (((mu1 - mu0) ** 2 + var0) / (var1 + EPS) - 1) + log_std1 - log_std0
+    all_kls = tf.reduce_sum(pre_sum, axis=1)
+    return tf.reduce_mean(all_kls)
+
+
+def categorical_kl(logp0, logp1):
+    """
+    tf symbol for mean KL divergence between two batches of categorical probability distributions,
+    where the distributions are input as log probs.
+    """
+    all_kls = tf.reduce_sum(tf.exp(logp1) * (logp1 - logp0), axis=1)
+    return tf.reduce_mean(all_kls)
+
+
+def flat_concat(xs):
+    return tf.concat([tf.reshape(x, (-1,)) for x in xs], axis=0)
+
+
+def flat_grad(f, params):
+    return flat_concat(tf.gradients(xs=params, ys=f))
+
+
+def hessian_vector_product(f, params, x):
+    # for H = grad**2 f, compute Hx
+    g = flat_grad(f, params)
+    return flat_grad(tf.reduce_sum(g * x), params)
+
+
+def assign_params_from_flat(x, params):
+    flat_size = lambda p: int(np.prod(p.shape.as_list()))  # the 'int' is important for scalars
+    splits = tf.split(x, [flat_size(p) for p in params])
+    new_params = [tf.reshape(p_new, p.shape) for p, p_new in zip(params, splits)]
+    return tf.group([p.assign(p_new) for p, p_new in zip(params, new_params)])
+
+
+def discount_cumsum(x, discount):
+    """
+    magic from rllab for computing discounted cumulative sums of vectors.
+
+    input: 
+        vector x, 
+        [x0, 
+         x1, 
+         x2]
+
+    output:
+        [x0 + discount * x1 + discount^2 * x2,  
+         x1 + discount * x2,
+         x2]
+    """
+    return scipy.signal.lfilter([1], [1, float(-discount)], x[::-1], axis=0)[::-1]
+
+
+"""
+Policies
+"""
+
+
+def mlp_categorical_policy(x, a, hidden_sizes, activation, output_activation):
+    act_dim = a.n
+
+    x = input_layer_from_space(x)
+    logits = mlp(x, list(hidden_sizes) + [act_dim], activation, None)
+    actor = tl.models.Model(x, logits)
+
+    def cal_outputs_0(states):
+        states = states.astype(np.float32)
+        logits = actor(states)
+        logp_all = tf.nn.log_softmax(logits)
+        pi = tf.squeeze(tfp.distributions.Multinomial(1, logits), axis=1)
+        logp_pi = tf.reduce_sum(tf.one_hot(pi, depth=act_dim) * logp_all, axis=1)
+        info = {'logp_all': logp_all}
+        return pi, logp_pi, info, logp_all
+
+    def cal_outputs_1(states, actions, old_logp_all):
+        pi, logp_pi, info, logp_all = cal_outputs_0(states)
+        logp = tf.reduce_sum(tf.one_hot(actions, depth=act_dim) * logp_all, axis=1)
+        d_kl = categorical_kl(logp_all, old_logp_all)
+
+        info_phs = {'logp_all': old_logp_all}
+
+        return pi, logp, logp_pi, info, info_phs, d_kl
+
+    return actor, cal_outputs_0, cal_outputs_1
+
+
+def mlp_gaussian_policy(x, a, hidden_sizes, activation, output_activation):
+    act_dim = a.shape[0]
+
+    x = input_layer_from_space(x)
+    mu = mlp(x, list(hidden_sizes) + [act_dim], activation, output_activation)
+    actor = tl.models.Model(x, mu)
+
+    def cal_outputs_0(states):
+        states = states.astype(np.float32)
+        mu = actor(states)
+        log_std = -0.5 * np.ones(act_dim, dtype=np.float32)
+        std = tf.exp(log_std)
+        pi = mu + tf.random.normal(tf.shape(mu)) * std
+        logp_pi = gaussian_likelihood(pi, mu, log_std)
+
+        info = {'mu': mu, 'log_std': log_std}
+
+        return pi, logp_pi, info, mu, log_std
+
+    def cal_outputs_1(states, actions, old_log_std_ph, old_mu_ph):
+        pi, logp_pi, info, mu, log_std = cal_outputs_0(states)
+        logp = gaussian_likelihood(actions, mu, log_std)
+        d_kl = diagonal_gaussian_kl(mu, log_std, old_mu_ph, old_log_std_ph)
+
+        info_phs = {'mu': old_mu_ph, 'log_std': old_log_std_ph}
+
+        return pi, logp, logp_pi, info, info_phs, d_kl
+
+    return actor, cal_outputs_0, cal_outputs_1
+
+
+"""
+Actor-Critics
+"""
+
+
+def mlp_actor_critic(x: 'env.observation_space', a: 'env.action_space', hidden_sizes=(64, 64), activation=tf.tanh,
+                     output_activation=None, policy=None):
+    # default policy builder depends on action space
+    if policy is None and isinstance(a, Box):
+        policy = mlp_gaussian_policy
+    elif policy is None and isinstance(a, Discrete):
+        policy = mlp_categorical_policy
+
+    actor, actor_cal_func_0, actor_cal_func_1 = policy(x, a, hidden_sizes, activation, output_activation)
+
+    x = input_layer_from_space(x)
+    critic = tl.models.Model(x, mlp(x, list(hidden_sizes) + [1], activation, None))
+
+    actor.train()
+    critic.train()
+
+    def critic_cal_func(states):
+        states = states.astype(np.float32)
+        return tf.squeeze(critic(states), axis=1)
+
+    return actor, actor_cal_func_0, actor_cal_func_1, critic, critic_cal_func
 
 
 class GAEBuffer:
@@ -313,7 +299,7 @@ class GAEBuffer:
         rews = np.append(self.rew_buf[path_slice], last_val)
         vals = np.append(self.val_buf[path_slice], last_val)
 
-        # GAE-Lambda advantage calculation
+        # the next two lines implement GAE-Lambda advantage calculation
         deltas = rews[:-1] + self.gamma * vals[1:] - vals[:-1]
         self.adv_buf[path_slice] = discount_cumsum(deltas, self.gamma * self.lam)
 
@@ -330,14 +316,10 @@ class GAEBuffer:
         """
         assert self.ptr == self.max_size  # buffer has to be full before you can get
         self.ptr, self.path_start_idx = 0, 0
-        # The advantage normalization trick
-        _sum, _n = np.sum(self.adv_buf), len(self.adv_buf)
-        mean = _sum / _n
 
-        _sum_sq = np.sum((self.adv_buf - mean) ** 2)
-        std = np.sqrt(_sum_sq / _n)  # compute global std
-
-        self.adv_buf = (self.adv_buf - mean) / std
+        # the next two lines implement the advantage normalization trick
+        adv_mean, adv_std = np.mean(self.adv_buf), np.std(self.adv_buf)
+        self.adv_buf = (self.adv_buf - adv_mean) / adv_std
         return [self.obs_buf, self.act_buf, self.adv_buf, self.ret_buf,
                 self.logp_buf] + values_as_sorted_list(self.info_bufs)
 
@@ -351,7 +333,7 @@ Trust Region Policy Optimization
 """
 
 
-def trpo(env_fn, actor_critic=mlp_actor_critic, ac_kwargs=dict(), seed=0,
+def trpo(env_fn, actor_critic=mlp_actor_critic, ac_kwargs=dict(), seed=1,
          steps_per_epoch=4000, epochs=50, gamma=0.99, delta=0.01, vf_lr=1e-3,
          train_v_iters=80, damping_coeff=0.1, cg_iters=10, backtrack_iters=10,
          backtrack_coeff=0.8, lam=0.97, max_ep_len=1000, save_freq=10, algo='trpo'):
@@ -418,7 +400,7 @@ def trpo(env_fn, actor_critic=mlp_actor_critic, ac_kwargs=dict(), seed=0,
 
         damping_coeff (float): Artifact for numerical stability, should be 
             smallish. Adjusts Hessian-vector product calculation:
-
+            
             .. math:: Hv \\rightarrow (\\alpha I + H)v
 
             where :math:`\\alpha` is the damping coefficient. 
@@ -458,87 +440,109 @@ def trpo(env_fn, actor_critic=mlp_actor_critic, ac_kwargs=dict(), seed=0,
     obs_dim = env.observation_space.shape
     act_dim = env.action_space.shape
 
-    actor, critic, cal_func, name = actor_critic(env.observation_space, env.action_space, **ac_kwargs)
-    actor.train()
-    critic.train()
+    # Share information about action space with policy architecture
+    ac_kwargs['action_space'] = env.action_space
+
+    # Main models and functions
+    actor, actor_cal_func_0, actor_cal_func_1, critic, critic_cal_func = \
+        actor_critic(env.observation_space, env.action_space)
+
+    # Every step, get: action, value, logprob, & info for pdist (for computing kl div)
+    def get_action_ops(states):
+        pi, logp_pi, info, *_ = actor_cal_func_0(states)
+        v = critic_cal_func(states)
+        return [pi, v, logp_pi] + values_as_sorted_list(info)
 
     # Experience buffer
-    local_steps_per_epoch = int(steps_per_epoch)
+    local_steps_per_epoch = steps_per_epoch
 
-    if name == 'mlp_categorical_policy':
-        info_shapes = {'logp_all': env.action_space.n}
+    if isinstance(env.action_space, Box):
+        act_dim = env.action_space.shape[0]
+        info_shapes = {'mu': [act_dim], 'log_std': [act_dim]}
+
+    elif isinstance(env.action_space, Discrete):
+        act_dim = env.action_space.n
+        info_shapes = {'logp_all': [act_dim]}
     else:
-        info_shapes = {'mu': env.action_space.shape, 'log_std': env.action_space.shape}
+        raise Exception('info_shape error')
 
     buf = GAEBuffer(obs_dim, act_dim, local_steps_per_epoch, info_shapes, gamma, lam)
 
     # TRPO losses
-    def cal_pi_loss(inputs):
-        obs_buf, act_buf, adv_buf, ret_buf, logp_buf, *info_bufs = inputs
-        x_ph, a_ph, adv_ph, ret_ph, logp_old_ph, *info_phs = inputs
-        pi, logp, logp_pi, info, info_phs, d_kl, v = cal_func(obs_buf, act_buf, *info_bufs)
+    def pi_loss(inputs):
+        x_ph, a_ph, adv_ph, ret_ph, logp_old_ph, *info_values = inputs
 
+        pi, logp, logp_pi, info, info_phs, d_kl = actor_cal_func_1(x_ph, a_ph, *info_values)
         ratio = tf.exp(logp - logp_old_ph)  # pi(a|s) / pi_old(a|s)
         pi_loss = -tf.reduce_mean(ratio * adv_ph)
         return pi_loss
 
-    def cal_v_loss(inputs):
-        obs_buf, act_buf, adv_buf, ret_buf, logp_buf, *info_bufs = inputs
-        x_ph, a_ph, adv_ph, ret_ph, logp_old_ph, *info_phs = inputs
-
-        s = obs_buf.astype(np.float32)
-        v = tf.squeeze(critic(s), axis=1)
-
+    def v_loss(inputs):
+        x_ph, a_ph, adv_ph, ret_ph, logp_old_ph, *info_values = inputs
+        v = critic_cal_func(x_ph)
         v_loss = tf.reduce_mean((ret_ph - v) ** 2)
         return v_loss
 
-    # Train value function
+    # Optimizer for value function
+    critic_optimizer = tf.optimizers.Adam(learning_rate=vf_lr)
+
     def train_vf(inputs):
         with tf.GradientTape() as tape:
-            v_loss = cal_v_loss(inputs)
-        grad = tape.gradient(v_loss, critic.trainable_weights)
-        print(grad)
-        tf.optimizers.Adam(vf_lr).apply_gradients(zip(grad, critic.trainable_weights))
+            loss = v_loss(inputs)
+        grad = tape.gradient(loss, critic.trainable_weights)
+        critic_optimizer.apply_gradients(zip(grad, critic.trainable_weights))
 
     # Symbols needed for CG solver
-    def pi_params():
-        return actor.trainable_weights
-
     def gradient(inputs):
+        pi_params = actor.trainable_weights
         with tf.GradientTape() as tape:
-            pi_loss = cal_pi_loss(inputs)
-        grad = tape.gradient(pi_loss, pi_params())
-        return flat_concat(grad)
+            loss = pi_loss(inputs)
+        grad = tape.gradient(loss, pi_params)
+        gradient = flat_concat(grad)
+        return gradient
 
-    def get_hvp(inputs, v_ph):
-        obs_buf, act_buf, adv_buf, ret_buf, logp_buf, *info_bufs = inputs
-        v_ph, hvp = hessian_vector_product(cal_func, (obs_buf, act_buf, *info_bufs), pi_params(), v_ph)
+    def hvp(inputs, v_ph):
+        pi_params = actor.trainable_weights
+        x_ph, a_ph, adv_ph, ret_ph, logp_old_ph, *info_values = inputs
+
+        with tf.GradientTape() as tape1:
+            with tf.GradientTape() as tape0:
+                pi, logp, logp_pi, info, info_phs, d_kl = actor_cal_func_1(x_ph, a_ph, *info_values)
+            g = flat_concat(tape0.gradient(d_kl, pi_params))
+            l = tf.reduce_sum(g * v_ph)
+        hvp = flat_concat(tape1.gradient(l, pi_params))
+
         if damping_coeff > 0:
             hvp += damping_coeff * v_ph
         return hvp
 
     # Symbols for getting and setting params
     def get_pi_params():
-        return flat_concat(actor.trainable_weights)
+        pi_params = actor.trainable_weights
+        return flat_concat(pi_params)
 
     def set_pi_params(v_ph):
-        assign_params_from_flat(v_ph, pi_params())
+        pi_params = actor.trainable_weights
+        assign_params_from_flat(v_ph, pi_params)
 
     def save_ckpt():
         """
         save trained weights
         :return: None
         """
-        tl.files.save_npz(actor.trainable_weights, name='model/actor.npz')
-        tl.files.save_npz(critic.trainable_weights, name='model/critic.npz')
+        if not os.path.exists('model'):
+            os.makedirs('model')
+
+        tl.files.save_weights_to_hdf5('model/trpo_actor.hdf5', actor)
+        tl.files.save_weights_to_hdf5('model/trpo_critic.hdf5', critic)
 
     def load_ckpt():
         """
         load trained weights
         :return: None
         """
-        tl.files.load_and_assign_npz(name='model/actor.npz', network=actor)
-        tl.files.load_and_assign_npz(name='model/critic.npz', network=critic)
+        tl.files.load_hdf5_to_weights_in_order('model/trpo_actor.hdf5', actor)
+        tl.files.load_hdf5_to_weights_in_order('model/trpo_critic.hdf5', critic)
 
     def cg(Ax, b):
         """
@@ -546,7 +550,7 @@ def trpo(env_fn, actor_critic=mlp_actor_critic, ac_kwargs=dict(), seed=0,
         (see https://en.wikipedia.org/wiki/Conjugate_gradient_method)
         """
         x = np.zeros_like(b)
-        r = copy.deepcopy(b)    # Note: should be 'b - Ax(x)', but for x=0, Ax(x)=0. Change if doing warm start.
+        r = copy.deepcopy(b)  # Note: should be 'b - Ax(x)', but for x=0, Ax(x)=0. Change if doing warm start.
         p = copy.deepcopy(r)
         r_dot_old = np.dot(r, r)
         for _ in range(cg_iters):
@@ -562,12 +566,9 @@ def trpo(env_fn, actor_critic=mlp_actor_critic, ac_kwargs=dict(), seed=0,
     def update():
         # Prepare hessian func, gradient eval
         inputs = buf.get()
-
-        Hx = lambda x: get_hvp(inputs, x)
-
-        g = gradient(inputs)
-        pi_l_old = cal_pi_loss(inputs)
-        v_l_old = cal_v_loss(inputs)
+        ''''all_phs = [x_ph, a_ph, adv_ph, ret_ph, logp_old_ph] + values_as_sorted_list(info_phs)'''
+        Hx = lambda x: hvp(inputs, x)
+        g, pi_l_old, v_l_old = gradient(inputs), pi_loss(inputs), v_loss(inputs)
 
         # Core calculations for TRPO or NPG
         x = cg(Hx, g)
@@ -576,10 +577,10 @@ def trpo(env_fn, actor_critic=mlp_actor_critic, ac_kwargs=dict(), seed=0,
 
         def set_and_eval(step):
             set_pi_params(old_params - alpha * x * step)
-            obs_buf, act_buf, adv_buf, ret_buf, logp_buf, *info_bufs = inputs
-            pi, logp, logp_pi, info, info_phs, d_kl, v = cal_func(obs_buf, act_buf, *info_bufs)
-            pi_loss = cal_pi_loss(inputs)
-            return d_kl, pi_loss
+            x_ph, a_ph, adv_ph, ret_ph, logp_old_ph, *info_values = inputs
+            pi, logp, logp_pi, info, info_phs, d_kl = actor_cal_func_1(x_ph, a_ph, *info_values)
+            loss = pi_loss(inputs)
+            return [d_kl, loss]
 
         if algo == 'npg':
             # npg has no backtracking or hard kl constraint enforcement
@@ -590,80 +591,73 @@ def trpo(env_fn, actor_critic=mlp_actor_critic, ac_kwargs=dict(), seed=0,
             for j in range(backtrack_iters):
                 kl, pi_l_new = set_and_eval(step=backtrack_coeff ** j)
                 if kl <= delta and pi_l_new <= pi_l_old:
+                    # Accepting new params at step of line search
                     break
 
                 if j == backtrack_iters - 1:
+                    # Line search failed! Keeping old params.
                     kl, pi_l_new = set_and_eval(step=0.)
 
         # Value function updates
         for _ in range(train_v_iters):
             train_vf(inputs)
 
+    start_time = time.time()
     o, r, d, ep_ret, ep_len = env.reset(), 0, False, 0, 0
 
-    sum_reward_list = []
-
+    reward_list = []
     # Main loop: collect experience in env and update/log each epoch
     for epoch in range(epochs):
         t0 = time.time()
+        rew = 0
         for t in range(local_steps_per_epoch):
-            agent_outs = cal_func(o.reshape(1, -1))
-
+            agent_outs = get_action_ops(o.reshape(1, -1))
             a, v_t, logp_t, info_t = np.array(agent_outs[0][0], np.float32), \
                                      np.array(agent_outs[1], np.float32), \
                                      np.array(agent_outs[2], np.float32), \
                                      np.array(agent_outs[3:], np.float32)
 
+            # store
             buf.store(o, a, r, v_t, logp_t, info_t)
 
             o, r, d, _ = env.step(a)
-
             ep_ret += r
             ep_len += 1
 
             terminal = d or (ep_len == max_ep_len)
-
             if terminal or (t == local_steps_per_epoch - 1):
                 if not (terminal):
                     print('Warning: trajectory cut off by epoch at %d steps.' % ep_len)
                 # if trajectory didn't reach terminal state, bootstrap value target
-                last_val = r if d else critic(o.reshape(1, -1))
+                last_val = r if d else critic_cal_func(o.reshape(1, -1))
                 buf.finish_path(last_val)
-
-                if terminal:
-                    # trajectory finished
-
-                    sum_reward_list.append(ep_ret)
-                    print("Episode [%d/%d]\ttrajectory counter: %d \tsum reward: %d  \ttook: %.5fs " %
-                          (epoch, epochs, len(sum_reward_list), ep_ret, time.time() - t0))
-                    t0 = time.time()
-
-                    plt.ion()
-                    plt.cla()
-                    plt.title('TRPO')
-                    plt.plot(np.arange(len(sum_reward_list)), sum_reward_list)
-                    plt.ylim(-2000, 0)
-                    plt.xlabel('Episode')
-                    plt.ylabel('Moving averaged episode reward')
-                    plt.show()
-                    plt.pause(0.1)
-                    plt.ioff()
-
+                rew = ep_ret
                 o, r, d, ep_ret, ep_len = env.reset(), 0, False, 0, 0
 
         # Save model
         if (epoch % save_freq == 0) or (epoch == epochs - 1):
-            pass
+            save_ckpt()
 
         # Perform TRPO or NPG update!
         update()
+        print('epoch [{}/{}] ep_ret: {} time: {}'.format(epoch, epochs, rew, time.time() - t0))
 
-    plt.savefig('plt.jpg')
+        reward_list.append(rew)
+        plt.clf()
+        plt.ion()
+        plt.plot(reward_list)
+        plt.title('TRPO' + str(delta))
+        plt.ylim(-2000, 0)
+        plt.show()
+        plt.pause(0.1)
+
+    plt.ioff()
+    plt.show()
     while True:
         o = env.reset()
         for i in range(200):
             env.render()
-            agent_outs = cal_func(o.reshape(1, -1))
+            agent_outs = get_action_ops(o.reshape(1, -1))
             a, v_t, logp_t, info_t = agent_outs[0][0], agent_outs[1], agent_outs[2], agent_outs[3:]
             o, r, d, _ = env.step(a)
             if d:
@@ -680,9 +674,9 @@ if __name__ == '__main__':
     parser.add_argument('--gamma', type=float, default=0.99)
     parser.add_argument('--seed', '-s', type=int, default=0)
     parser.add_argument('--steps', type=int, default=4000)
-    parser.add_argument('--epochs', type=int, default=50)
+    parser.add_argument('--epochs', type=int, default=500)
     args = parser.parse_args()
 
     trpo(lambda: gym.make(args.env), actor_critic=mlp_actor_critic,
          ac_kwargs=dict(hidden_sizes=[args.hid] * args.l), gamma=args.gamma,
-         seed=args.seed, steps_per_epoch=args.steps, epochs=args.epochs,)
+         seed=args.seed, steps_per_epoch=args.steps, epochs=args.epochs)

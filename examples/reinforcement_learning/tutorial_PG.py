@@ -24,6 +24,7 @@ python *.py
 import tensorflow as tf
 import tensorlayer as tl
 import numpy as np
+import os
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
@@ -147,14 +148,16 @@ class PolicyGradient:
         save trained weights
         :return: None
         """
-        tl.files.save_npz(self.model.trainable_weights, name='model.npz')
+        if not os.path.exists('model'):
+            os.makedirs('model')
+        tl.files.save_weights_to_hdf5('model/pg_policy.hdf5', self.model)
 
     def load_ckpt(self):
         """
         load trained weights
         :return: None
         """
-        tl.files.load_and_assign_npz(name='model.npz', network=self.model)
+        tl.files.load_hdf5_to_weights_in_order('model/pg_policy.hdf5', self.model)
 
 
 if __name__ == '__main__':

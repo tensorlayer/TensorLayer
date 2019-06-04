@@ -28,6 +28,7 @@ import matplotlib.pyplot as plt
 import gym
 import tensorlayer as tl
 import tensorflow_probability as tfp
+import os
 
 EP_MAX = 1000
 EP_LEN = 200
@@ -213,18 +214,20 @@ class PPO(object):
         save trained weights
         :return: None
         """
-        tl.files.save_npz(self.actor.trainable_weights, name='model/actor.npz')
-        tl.files.save_npz(self.actor_old.trainable_weights, name='model/actor_old.npz')
-        tl.files.save_npz(self.critic.trainable_weights, name='model/critic.npz')
+        if not os.path.exists('model'):
+            os.makedirs('model')
+        tl.files.save_weights_to_hdf5('model/ppo_actor.hdf5', self.actor)
+        tl.files.save_weights_to_hdf5('model/ppo_actor_old.hdf5', self.actor_old)
+        tl.files.save_weights_to_hdf5('model/ppo_critic.hdf5', self.critic)
 
     def load_ckpt(self):
         """
         load trained weights
         :return: None
         """
-        tl.files.load_and_assign_npz(name='model/actor.npz', network=self.actor)
-        tl.files.load_and_assign_npz(name='model/actor_old.npz', network=self.actor_old)
-        tl.files.load_and_assign_npz(name='model/critic.npz', network=self.critic)
+        tl.files.load_hdf5_to_weights_in_order('model/ppo_actor.hdf5', self.actor)
+        tl.files.load_hdf5_to_weights_in_order('model/ppo_actor_old.hdf5', self.actor_old)
+        tl.files.load_hdf5_to_weights_in_order('model/ppo_critic.hdf5', self.critic)
 
 
 env = gym.make('Pendulum-v0').unwrapped

@@ -30,6 +30,7 @@ import gym, threading, queue
 
 import tensorlayer as tl
 import tensorflow_probability as tfp
+import os
 
 EP_MAX = 1000
 EP_LEN = 200
@@ -219,6 +220,27 @@ class PPO(object):
         s = s.astype(np.float32)
         if s.ndim < 2: s = s[np.newaxis, :]
         return self.critic(s)[0, 0]
+
+    def save_ckpt(self):
+        """
+        save trained weights
+        :return: None
+        """
+        if not os.path.exists('model'):
+            os.makedirs('model')
+        tl.files.save_weights_to_hdf5('model/dppo_actor.hdf5', self.actor)
+        tl.files.save_weights_to_hdf5('model/dppo_actor_old.hdf5', self.actor_old)
+        tl.files.save_weights_to_hdf5('model/dppo_critic.hdf5', self.critic)
+
+    def load_ckpt(self):
+        """
+        load trained weights
+        :return: None
+        """
+        tl.files.load_hdf5_to_weights_in_order('model/dppo_actor.hdf5', self.actor)
+        tl.files.load_hdf5_to_weights_in_order('model/dppo_actor_old.hdf5', self.actor_old)
+        tl.files.load_hdf5_to_weights_in_order('model/dppo_critic.hdf5', self.critic)
+
 
 
 '''--------------------------------------------------------------'''

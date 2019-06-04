@@ -24,6 +24,7 @@ python *.py
 import tensorflow as tf
 import tensorlayer as tl
 import numpy as np
+import os
 
 #####################  hyper parameters  ####################
 
@@ -175,20 +176,23 @@ class DDPG(object):
         save trained weights
         :return: None
         """
-        tl.files.save_npz(self.actor.trainable_weights, name='model/actor.npz')
-        tl.files.save_npz(self.actor_target.trainable_weights, name='model/actor_target.npz')
-        tl.files.save_npz(self.critic.trainable_weights, name='model/critic.npz')
-        tl.files.save_npz(self.critic_target.trainable_weights, name='model/critic_target.npz')
+        if not os.path.exists('model'):
+            os.makedirs('model')
+
+        tl.files.save_weights_to_hdf5('model/ddpg_actor.hdf5', self.actor)
+        tl.files.save_weights_to_hdf5('model/ddpg_actor_target.hdf5', self.actor_target)
+        tl.files.save_weights_to_hdf5('model/ddpg_critic.hdf5', self.critic)
+        tl.files.save_weights_to_hdf5('model/ddpg_critic_target.hdf5', self.critic_target)
 
     def load_ckpt(self):
         """
         load trained weights
         :return: None
         """
-        tl.files.load_and_assign_npz(name='model/actor.npz', network=self.actor)
-        tl.files.load_and_assign_npz(name='model/actor_target.npz', network=self.actor_target)
-        tl.files.load_and_assign_npz(name='model/critic.npz', network=self.critic)
-        tl.files.load_and_assign_npz(name='model/critic_target.npz', network=self.critic_target)
+        tl.files.load_hdf5_to_weights_in_order('model/ddpg_actor.hdf5', self.actor)
+        tl.files.load_hdf5_to_weights_in_order('model/ddpg_actor_target.hdf5', self.actor_target)
+        tl.files.load_hdf5_to_weights_in_order('model/ddpg_critic.hdf5', self.critic)
+        tl.files.load_hdf5_to_weights_in_order('model/ddpg_critic_target.hdf5', self.critic_target)
 
 
 if __name__ == '__main__':
