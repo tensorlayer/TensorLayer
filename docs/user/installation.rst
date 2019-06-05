@@ -44,28 +44,33 @@ To build a virtual environment and install dependencies into it, run the followi
 .. code-block:: bash
 
   virtualenv env
-  env/bin/pip install matplotlib
-  env/bin/pip install numpy
-  env/bin/pip install scipy
-  env/bin/pip install scikit-image
+  env/bin/pip3 install matplotlib
+  env/bin/pip3 install numpy
+  env/bin/pip3 install scipy
+  env/bin/pip3 install scikit-image
 
 To check the installed packages, run the following command:
 
 .. code-block:: bash
 
-  env/bin/pip list
+  env/bin/pip3 list
 
 After that, you can run python script by using the virtual python as follow.
 
 .. code-block:: bash
 
-  env/bin/python *.py
+  env/bin/python3 *.py
 
 
 
 
 Step 2 : TensorFlow
 =========================
+
+.. code-block:: bash
+
+  env/bin/pip3 install tensorflow-gpu
+  env/bin/pip3 install tensorflow-gpu==2.0.0a0  # specific version
 
 The installation instructions of TensorFlow are written to be very detailed on `TensorFlow`_  website.
 However, there are something need to be considered.
@@ -75,12 +80,22 @@ supports GPU acceleration for Linux, Mac OX and Windows at present.
 .. warning::
   For ARM processor architecture, you need to install TensorFlow from source.
 
-
-
 Step 3 : TensorLayer
 =========================
 
-For latest code for TensorLayer 2.0, please build from the source.
+For stable version:
+
+.. code-block:: bash
+
+  pip3 install tensorlayer
+  
+For latest version, please install from Github.
+
+.. code-block:: bash
+
+  pip3 install git+https://github.com/zsdonghao/tensorlayer.git
+
+Alternatively, you can build from the source.
 
 .. code-block:: bash
 
