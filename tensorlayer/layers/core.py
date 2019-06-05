@@ -198,8 +198,10 @@ class Layer(object):
 
     @property
     def weights(self):
-        raise Exception("no property .weights exists, do you mean .all_weights, .trainable_weights, or .nontrainable_weights ?")
-    
+        raise Exception(
+            "no property .weights exists, do you mean .all_weights, .trainable_weights, or .nontrainable_weights ?"
+        )
+
     def __call__(self, inputs, *args, **kwargs):
         """
         (1) Build the Layer if necessary.
