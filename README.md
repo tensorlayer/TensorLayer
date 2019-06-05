@@ -97,7 +97,7 @@ For latest code for TensorLayer 2.0, please build from the source. TensorLayer 2
 Install the stable version:
 
 ```bash
-pip3 install tensorflow-gpu
+pip3 install tensorflow-gpu==2.0.0a0
 pip3 install tensorlayer
 ```
 
