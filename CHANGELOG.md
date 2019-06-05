@@ -92,13 +92,13 @@ To release a new version, please update the changelog as followed:
 - update Seq2seq (#989) 
 
 ### Fixed
-- Fix dynamic model cannot track PRelu weights gradients problem (#982)
-- Raise .weights warning
+- Fix dynamic model cannot track PRelu weights gradients problem (PR #982)
+- Raise .weights warning (commit)
 
 ### Contributors
-- @warshallrho: #PR980
-- @ArnoldLIULJ: #PR989
-- @1FengL 
+- @warshallrho: #980
+- @ArnoldLIULJ: #989
+- @1FengL: #982
 
 ## [2.0.1] - 2019-5-17
 
@@ -484,7 +484,8 @@ To many PR for this update, please check [here](https://github.com/tensorlayer/t
 ### Contributors
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.11....master
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/2.0....master
+[2.0.2]: https://github.com/tensorlayer/tensorlayer/compare/2.0.2...2.0.2
 [2.0.1]: https://github.com/tensorlayer/tensorlayer/compare/2.0.1...2.0.1
 [2.0.0]: https://github.com/tensorlayer/tensorlayer/compare/2.0.0...2.0.0
 [1.11.1]: https://github.com/tensorlayer/tensorlayer/compare/1.11.0...1.11.0
