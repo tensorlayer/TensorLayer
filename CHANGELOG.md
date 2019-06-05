@@ -67,20 +67,38 @@ To release a new version, please update the changelog as followed:
 
 <!-- YOU CAN EDIT FROM HERE -->
 
-## [2.1.0] - 2019-5-25
-
-### Changed
-- change the format of network config, change related code and files; change layer act (PR #980)
+## [Unreleased]
 
 ### Added
 
+### Changed
+
 ### Dependencies Update
+
+### Deprecated
 
 ### Fixed
 
+### Removed
+
+### Security
+
+### Contributors
+
+## [2.0.2] - 2019-6-5
+
+### Changed
+- change the format of network config, change related code and files; change layer act (PR #980)
+- update Seq2seq (#989) 
+
+### Fixed
+- Fix dynamic model cannot track PRelu weights gradients problem (#982)
+- Raise .weights warning
+
 ### Contributors
 - @warshallrho: #PR980
-
+- @ArnoldLIULJ: #PR989
+- @1FengL 
 
 ## [2.0.1] - 2019-5-17
 
