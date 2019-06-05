@@ -131,6 +131,26 @@ class Decoder_Attention(Layer):
 
 
 class Seq2seq_Attention(Model):
+    """Attention-based Seq2Seq model.
+
+    Parameters
+    ----------
+    hidden_size: int
+        The hidden size of both encoder and decoder RNN cells
+    cell : str, tf.function
+        The RNN function cell for your encoder and decoder stack, e.g. tf.keras.layers.GRUCell
+    embedding_layer : tl.Layer
+        A embedding layer, e.g. tl.layers.Embedding(vocabulary_size=voc_size, embedding_size=emb_dim)
+    mothod : str
+        The three alternatives to calculate the attention scores, e.g. "dot", "general" and "concat"
+    name : str
+        The model name
+    
+
+    Returns
+    -------
+        static single layer attention-based Seq2Seq model.
+    """
     def __init__(self, hidden_size, embedding_layer, cell, method, name=None):
         super(Seq2seq_Attention, self).__init__(name)
         self.enc_layer = Encoder(hidden_size, cell, embedding_layer)
@@ -141,6 +161,22 @@ class Seq2seq_Attention(Model):
 
 
     def inference(self, src_seq, encoding_hidden_states, last_hidden_states, seq_length, sos):
+        """Inference mode"""
+        """
+        Parameters
+        ----------
+        src_seq : input tensor
+            The source sequences 
+        encoding_hidden_states : a list of tensor
+            The list of encoder's hidden states at each time step
+        last_hidden_states: tensor
+            The last hidden_state from encoder
+        seq_length : int
+            The expected length of your predicted sequence.
+        sos : int
+            <SOS> : The token of "start of sequence"
+        """
+        
         batch_size = src_seq.shape[0]
         decoding = [[sos] for i in range(batch_size)]
         dec_output = self.embedding_layer(decoding)
