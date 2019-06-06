@@ -18,6 +18,11 @@ As an open-source project, we highly welcome and value contributions!
 
 **If you are interested in working with us, please contact us at:** `tensorlayer@gmail.com <tensorlayer@gmail.com>`_.
 
+.. image:: ../../img/join_slack.png
+  :width: 30 %
+  :align: center
+  :target: https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc
+
 
 Project Maintainers
 --------------------------

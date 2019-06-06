@@ -15,78 +15,49 @@ Mac OX, Linux and Windows, or ask for help on `tensorlayer@gmail.com <tensorlaye
 or `FAQ <http://tensorlayer.readthedocs.io/en/latest/user/more.html>`_.
 
 
-
-Step 1 : Install dependencies
-=================================
-
-TensorLayer is build on the top of Python-version TensorFlow, so please install
-Python first.
-
-.. note::
-  We highly recommend python3 instead of python2 for the sake of future.
-
-Python includes ``pip`` command for installing additional modules is recommended.
-Besides, a `virtual environment
-<http://www.dabapps.com/blog/introduction-to-pip-and-virtualenv-python/>`_
-via ``virtualenv`` can help you to manage python packages.
-
-Take Python3 on Ubuntu for example, to install Python includes ``pip``, run the following commands:
-
-.. code-block:: bash
-
-  sudo apt-get install python3
-  sudo apt-get install python3-pip
-  sudo pip3 install virtualenv
-
-To build a virtual environment and install dependencies into it, run the following commands:
-(You can also skip to Step 3, automatically install the prerequisites by TensorLayer)
-
-.. code-block:: bash
-
-  virtualenv env
-  env/bin/pip install matplotlib
-  env/bin/pip install numpy
-  env/bin/pip install scipy
-  env/bin/pip install scikit-image
-
-To check the installed packages, run the following command:
-
-.. code-block:: bash
-
-  env/bin/pip list
-
-After that, you can run python script by using the virtual python as follow.
-
-.. code-block:: bash
-
-  env/bin/python *.py
-
-
-
-
-Step 2 : TensorFlow
+Install TensorFlow
 =========================
+
+.. code-block:: bash
+
+  pip3 install tensorflow-gpu==2.0.0a0 # specific version  (YOU SHOULD INSTALL THIS ONE NOW)
+  pip3 install tensorflow-gpu # GPU version
+  pip3 install tensorflow # CPU version
 
 The installation instructions of TensorFlow are written to be very detailed on `TensorFlow`_  website.
-However, there are something need to be considered.
-For example, `TensorFlow`_ officially
-supports GPU acceleration for Linux, Mac OX and Windows at present.
+However, there are something need to be considered. For example, `TensorFlow`_ officially supports GPU acceleration for Linux, Mac OX and Windows at present. For ARM processor architecture, you need to install TensorFlow from source.
 
-.. warning::
-  For ARM processor architecture, you need to install TensorFlow from source.
-
-
-
-Step 3 : TensorLayer
+Install TensorLayer
 =========================
 
-For latest code for TensorLayer 2.0, please build from the source.
+For stable version:
+
+.. code-block:: bash
+
+  pip3 install tensorlayer
+  
+For latest version, please install from Github.
+
+.. code-block:: bash
+
+  pip3 install git+https://github.com/tensorlayer/tensorlayer.git
+  or
+  pip3 install https://github.com/tensorlayer/tensorlayer/archive/master.zip
+
+For developers, you should clone the folder to your local machine and put it along with your project scripts.
+
+.. code-block:: bash
+
+  git clone https://github.com/tensorlayer/tensorlayer.git
+
+
+Alternatively, you can build from the source.
 
 .. code-block:: bash
 
   # First clone the repository and change the current directory to the newly cloned repository
-  git clone https://github.com/zsdonghao/tensorlayer2.git
-  cd tensorlayer2
+  git clone https://github.com/tensorlayer/tensorlayer.git
+  cd tensorlayer
 
   # Install virtualenv if necessary
   pip install virtualenv
@@ -132,7 +103,7 @@ editable, then you can edit the source code in ``tensorlayer`` folder, and ``imp
 TensorLayer.
 
 
-Step 4 : GPU support
+GPU support 
 ==========================
 
 Thanks to NVIDIA supports, training a fully connected network on a
