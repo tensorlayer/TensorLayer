@@ -44,6 +44,7 @@ class RNN(Layer):
             - Note TF2.0+, TF1.0+ and TF1.0- are different
     return_last_output : boolean
         Whether return last output or all outputs in a sequence.
+        
             - If True, return the last output, "Sequence input and single output"
             - If False, return all outputs, "Synced sequence input and output"
             - In other word, if you want to stack more RNNs on this layer, set to False
@@ -51,6 +52,7 @@ class RNN(Layer):
         By default, `False`.
     return_seq_2d : boolean
         Only consider this argument when `return_last_output` is `False`
+        
             - If True, return 2D Tensor [batch_size * n_steps, n_hidden], for stacking Dense layer after it.
             - If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
         In a dynamic model, `return_seq_2d` can be updated when it is called in customised forward().
@@ -58,6 +60,7 @@ class RNN(Layer):
     return_last_state: boolean
         Whether to return the last state of the RNN cell. The state is a list of Tensor.
         For simple RNN and GRU, last_state = [last_output]; For LSTM, last_state = [last_output, last_cell_state]
+        
             - If True, the layer will return outputs and the final state of the cell.
             - If False, the layer will return outputs only.
         In a dynamic model, `return_last_state` can be updated when it is called in customised forward().
@@ -74,6 +77,7 @@ class RNN(Layer):
     For synced sequence input and output, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm.py>`__
 
     A simple regression model below.
+    
     >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
     >>> rnn_out, lstm_state = tl.layers.RNN(
     >>>     cell=tf.keras.layers.LSTMCell(units=hidden_size, dropout=0.1),
@@ -85,6 +89,7 @@ class RNN(Layer):
     >>> # If LSTMCell is applied, the rnn_state is [h, c] where h the hidden state and c the cell state of LSTM.
 
     A stacked RNN model.
+    
     >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
     >>> rnn_out1 = tl.layers.RNN(
     >>>     cell=tf.keras.layers.SimpleRNNCell(units=hidden_size, dropout=0.1),
@@ -247,6 +252,7 @@ class BiRNN(Layer):
     Examples
     --------
     A simple regression model below.
+    
     >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
     >>> # the fw_cell and bw_cell can be different
     >>> rnnlayer = tl.layers.BiRNN(
@@ -264,6 +270,7 @@ class BiRNN(Layer):
     >>> rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_out, rnn_fw_state[0], rnn_bw_state[0]])
 
     A stacked BiRNN model.
+    
     >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
     >>> rnn_out1 = tl.layers.BiRNN(
     >>>     fw_cell=tf.keras.layers.SimpleRNNCell(units=hidden_size, dropout=0.1),
@@ -278,7 +285,6 @@ class BiRNN(Layer):
     >>> dense = tl.layers.Dense(n_units=1)(rnn_out2)
     >>> outputs = tl.layers.Reshape([-1, num_steps])(dense)
     >>> rnn_model = tl.models.Model(inputs=inputs, outputs=outputs)
-
 
     Notes
     -----
