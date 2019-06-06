@@ -42,20 +42,17 @@ class RNN(Layer):
         A RNN cell implemented by tf.keras
             - E.g. tf.keras.layers.SimpleRNNCell, tf.keras.layers.LSTMCell, tf.keras.layers.GRUCell
             - Note TF2.0+, TF1.0+ and TF1.0- are different
+
     return_last_output : boolean
         Whether return last output or all outputs in a sequence.
-        
             - If True, return the last output, "Sequence input and single output"
-
             - If False, return all outputs, "Synced sequence input and output"
-            
             - In other word, if you want to stack more RNNs on this layer, set to False
 
         In a dynamic model, `return_last_output` can be updated when it is called in customised forward().
         By default, `False`.
     return_seq_2d : boolean
         Only consider this argument when `return_last_output` is `False`
-        
             - If True, return 2D Tensor [batch_size * n_steps, n_hidden], for stacking Dense layer after it.
             - If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
 
@@ -64,10 +61,9 @@ class RNN(Layer):
     return_last_state: boolean
         Whether to return the last state of the RNN cell. The state is a list of Tensor.
         For simple RNN and GRU, last_state = [last_output]; For LSTM, last_state = [last_output, last_cell_state]
-        
             - If True, the layer will return outputs and the final state of the cell.
             - If False, the layer will return outputs only.
-            
+
         In a dynamic model, `return_last_state` can be updated when it is called in customised forward().
         By default, `False`.
     in_channels: int
@@ -246,6 +242,7 @@ class BiRNN(Layer):
         Whether to return the last state of the two cells. The state is a list of Tensor.
             - If True, the layer will return outputs, the final state of `fw_cell` and the final state of `bw_cell`.
             - If False, the layer will return outputs only.
+
         In a dynamic model, `return_last_state` can be updated when it is called in customised forward().
         By default, `False`.
     in_channels: int
@@ -622,10 +619,12 @@ class ConvLSTM(Layer):
             - If True, return the last output, "Sequence input and single output".
             - If False, return all outputs, "Synced sequence input and output".
             - In other word, if you want to stack more RNNs on this layer, set to False.
+
     return_seq_2d : boolean
         Only consider this argument when `return_last_output` is `False`
             - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+
     name : str
         A unique layer name.
 
@@ -896,6 +895,7 @@ class Seq2Seq(Layer):
         A TensorFlow core RNN cell
             - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
             - Note TF1.0+ and TF1.0- are different
+
     cell_init_args : dictionary or None
         The arguments for the cell initializer.
     n_hidden : int
@@ -913,12 +913,14 @@ class Seq2Seq(Layer):
     dropout : tuple of float or int
         The input and output keep probability (input_keep_prob, output_keep_prob).
             - If one int, input and output keep probability are the same.
+
     n_layer : int
         The number of RNN layers, default is 1.
     return_seq_2d : boolean
         Only consider this argument when `return_last_output` is `False`
             - If True, return 2D Tensor [n_example, 2 * n_hidden], for stacking DenseLayer after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, 2 * n_hidden], for stacking multiple RNN after it.
+
     name : str
         A unique layer name.
 
