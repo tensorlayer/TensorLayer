@@ -45,6 +45,7 @@ class RNN(Layer):
 
     return_last_output : boolean
         Whether return last output or all outputs in a sequence.
+
             - If True, return the last output, "Sequence input and single output"
             - If False, return all outputs, "Synced sequence input and output"
             - In other word, if you want to stack more RNNs on this layer, set to False
@@ -53,6 +54,7 @@ class RNN(Layer):
         By default, `False`.
     return_seq_2d : boolean
         Only consider this argument when `return_last_output` is `False`
+
             - If True, return 2D Tensor [batch_size * n_steps, n_hidden], for stacking Dense layer after it.
             - If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
 
@@ -61,6 +63,7 @@ class RNN(Layer):
     return_last_state: boolean
         Whether to return the last state of the RNN cell. The state is a list of Tensor.
         For simple RNN and GRU, last_state = [last_output]; For LSTM, last_state = [last_output, last_cell_state]
+
             - If True, the layer will return outputs and the final state of the cell.
             - If False, the layer will return outputs only.
 
