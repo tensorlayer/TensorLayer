@@ -181,7 +181,8 @@ def save_hdf5_graph(network, filepath='model.hdf5', save_weights=False, customiz
     logging.info("[*] Saving TL model into {}, saving weights={}".format(filepath, save_weights))
 
     model_config = network.config  # net2static_graph(network)
-    model_config["version_info"]["save_date"] = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    model_config["version_info"]["save_date"] = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc
+                                                                                  ).isoformat()
     model_config_str = str(model_config)
     customized_data_str = str(customized_data)
     # version_info = {
