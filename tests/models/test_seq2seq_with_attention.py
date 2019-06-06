@@ -23,12 +23,23 @@ class Model_SEQ2SEQ_WITH_ATTENTION_Test(CustomTestCase):
 
         cls.batch_size = 16
 
-        cls.vocab_size = 20
+        cls.vocab_size = 200
         cls.embedding_size = 32
         cls.dec_seq_length = 5
-        cls.trainX = np.random.randint(20, size=(50, 6))
-        cls.trainY = np.random.randint(20, size=(50, cls.dec_seq_length + 1))
+        cls.pure_time = np.linspace(-1, 1, 11)
+        cls.pure_signal = 100*np.sin(cls.pure_time/(2*np.pi))
+        cls.dataset = np.zeros((100, 11))
+        for i in range(100):
+            noise = 100+10*np.random.normal(0, 1, cls.pure_signal.shape)
+            cls.dataset[i] = cls.pure_signal + noise
+        cls.dataset = cls.dataset.astype(int)
+        cls.trainX = cls.dataset[:80,:5]
+        cls.trainY = cls.dataset[:80,5:]
+        cls.testX = cls.dataset[80:,:5]
+        cls.testY = cls.dataset[80:,5:]
+
         cls.trainY[:, 0] = 0  # start_token == 0
+        cls.testY[:, 0] = 0  # start_token == 0
 
         # Parameters
         cls.src_len = len(cls.trainX)
@@ -76,12 +87,12 @@ class Model_SEQ2SEQ_WITH_ATTENTION_Test(CustomTestCase):
                 n_iter += 1
 
             model_.eval()
-            test_sample = trainX[0:2, :].tolist()
-
+            test_sample = self.testX[:2,:].tolist() # Can't capture the sequence.
+            print(test_sample)
             top_n = 1
             for i in range(top_n):
                 prediction = model_([test_sample], seq_length=self.dec_seq_length, sos=0)
-                print("Prediction: >>>>>  ", prediction, "\n Target: >>>>>  ", trainY[0:2, 1:], "\n\n")
+                print("Prediction: >>>>>  ", prediction, "\n Target: >>>>>  ", self.testY[0:2, 1:], "\n\n")
 
             # printing average loss after every epoch
             print('Epoch [{}/{}]: loss {:.4f}'.format(epoch + 1, self.num_epochs, total_loss / n_iter))

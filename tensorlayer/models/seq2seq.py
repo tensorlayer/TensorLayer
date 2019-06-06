@@ -7,6 +7,9 @@ import numpy as np
 from tensorlayer.models import Model
 from tensorlayer.layers import Dense, Dropout, Input
 from tensorlayer.layers.core import Layer
+__all__ = [
+    'Seq2seq'
+]
 
 
 class Seq2seq(Model):

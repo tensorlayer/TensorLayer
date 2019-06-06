@@ -8,7 +8,9 @@ from tensorlayer.models import Model
 from tensorlayer.layers import Dense, Dropout, Input
 from tensorlayer.layers.core import Layer
 
-
+__all__ = [
+    'Seq2seq_Luong_Attention'
+]
 
 
 
@@ -130,8 +132,8 @@ class Decoder_Attention(Layer):
 
 
 
-class Seq2seq_Attention(Model):
-    """Attention-based Seq2Seq model.
+class Seq2seq_Luong_Attention(Model):
+    """Luong Attention-based Seq2Seq model. Implementation based on https://arxiv.org/pdf/1508.04025.pdf.
 
     Parameters
     ----------
