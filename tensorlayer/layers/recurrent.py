@@ -50,6 +50,7 @@ class RNN(Layer):
             - If False, return all outputs, "Synced sequence input and output"
             
             - In other word, if you want to stack more RNNs on this layer, set to False
+
         In a dynamic model, `return_last_output` can be updated when it is called in customised forward().
         By default, `False`.
     return_seq_2d : boolean
