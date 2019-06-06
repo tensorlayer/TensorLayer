@@ -58,6 +58,7 @@ class RNN(Layer):
         
             - If True, return 2D Tensor [batch_size * n_steps, n_hidden], for stacking Dense layer after it.
             - If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
+
         In a dynamic model, `return_seq_2d` can be updated when it is called in customised forward().
         By default, `False`.
     return_last_state: boolean
@@ -66,6 +67,7 @@ class RNN(Layer):
         
             - If True, the layer will return outputs and the final state of the cell.
             - If False, the layer will return outputs only.
+            
         In a dynamic model, `return_last_state` can be updated when it is called in customised forward().
         By default, `False`.
     in_channels: int
