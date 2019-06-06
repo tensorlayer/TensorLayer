@@ -11,7 +11,7 @@ import tensorflow as tf
 import tensorlayer as tl
 from tqdm import tqdm
 from sklearn.utils import shuffle
-from tensorlayer.models.seq2seq_with_attention import Seq2seq_Attention
+from tensorlayer.models.seq2seq_with_attention import Seq2seq_Luong_Attention
 from tests.utils import CustomTestCase
 from tensorlayer.cost import cross_entropy_seq
 
