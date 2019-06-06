@@ -56,7 +56,7 @@ class Model_SEQ2SEQ_WITH_ATTENTION_Test(CustomTestCase):
 
     def test_basic_simpleSeq2Seq(self):
 
-        model_ = Seq2seq_Attention(
+        model_ = Seq2seq_Luong_Attention(
             hidden_size=128,
             cell = tf.keras.layers.SimpleRNNCell,
             embedding_layer=tl.layers.Embedding(vocabulary_size=self.vocab_size, embedding_size=self.embedding_size),

@@ -154,7 +154,7 @@ class Seq2seq_Luong_Attention(Model):
         static single layer attention-based Seq2Seq model.
     """
     def __init__(self, hidden_size, embedding_layer, cell, method, name=None):
-        super(Seq2seq_Attention, self).__init__(name)
+        super(Seq2seq_Luong_Attention, self).__init__(name)
         self.enc_layer = Encoder(hidden_size, cell, embedding_layer)
         self.dec_layer = Decoder_Attention(hidden_size, cell, embedding_layer, method=method)
         self.embedding_layer = embedding_layer
