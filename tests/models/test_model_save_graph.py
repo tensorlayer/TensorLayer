@@ -15,6 +15,11 @@ from tensorlayer.models import *
 from tests.utils import CustomTestCase
 
 
+def RemoveDateInConfig(config):
+    config["version_info"]["save_date"] = None
+    return config
+
+
 def basic_static_model():
     ni = Input((None, 24, 24, 3))
     nn = Conv2d(16, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, name="conv1")(ni)
@@ -42,7 +47,10 @@ class Model_Save_and_Load_without_weights(CustomTestCase):
         M1.save(filepath="basic_model_without_weights.hdf5", save_weights=False)
         M2 = Model.load(filepath="basic_model_without_weights.hdf5", load_weights=False)
 
-        self.assertEqual(M1.config, M2.config)
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
+        self.assertEqual(M1_config, M2_config)
 
 
 def get_model(inputs_shape):
@@ -188,7 +196,10 @@ class Reuse_ModelLayer_test(CustomTestCase):
         M1.save(filepath="siamese.hdf5", save_weights=False)
         M2 = Model.load(filepath="siamese.hdf5", load_weights=False)
 
-        self.assertEqual(M1.config, M2.config)
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
+        self.assertEqual(M1_config, M2_config)
 
 
 class Vgg_LayerList_test(CustomTestCase):
@@ -204,7 +215,10 @@ class Vgg_LayerList_test(CustomTestCase):
         M1.save(filepath="vgg.hdf5", save_weights=False)
         M2 = Model.load(filepath="vgg.hdf5", load_weights=False)
 
-        self.assertEqual(M1.config, M2.config)
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
+        self.assertEqual(M1_config, M2_config)
 
 
 class List_inputs_outputs_test(CustomTestCase):
@@ -228,7 +242,10 @@ class List_inputs_outputs_test(CustomTestCase):
         M1.save(filepath="list.hdf5", save_weights=False)
         M2 = Model.load(filepath="list.hdf5", load_weights=False)
 
-        self.assertEqual(M1.config, M2.config)
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
+        self.assertEqual(M1_config, M2_config)
 
 
 class Lambda_layer_test(CustomTestCase):
@@ -251,8 +268,11 @@ class Lambda_layer_test(CustomTestCase):
         output1 = M1(npInput).numpy()
         output2 = M1(npInput).numpy()
 
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
         self.assertEqual((output1 == output2).all(), True)
-        self.assertEqual(M1.config, M2.config)
+        self.assertEqual(M1_config, M2_config)
 
     def test_lambda_layer_no_para_with_args(self):
 
@@ -272,9 +292,12 @@ class Lambda_layer_test(CustomTestCase):
         output1 = M1(npInput).numpy()
         output2 = M2(npInput).numpy()
 
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
         self.assertEqual((output1 == output2).all(), True)
         self.assertEqual((output1 == (np.zeros((8, 3)) + 9)).all(), True)
-        self.assertEqual(M1.config, M2.config)
+        self.assertEqual(M1_config, M2_config)
 
     def test_lambda_layer_keras_model(self):
         input_shape = [100, 5]
@@ -365,8 +388,11 @@ class ElementWise_lambda_test(CustomTestCase):
         output1 = M1(ipt).numpy()
         output2 = M2(ipt).numpy()
 
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
         self.assertEqual((output1 == output2).all(), True)
-        self.assertEqual(M1.config, M2.config)
+        self.assertEqual(M1_config, M2_config)
 
     def test_elementwise_no_para_no_args(self):
         # z = mean + noise * tf.exp(std * 0.5) + foo
@@ -387,8 +413,11 @@ class ElementWise_lambda_test(CustomTestCase):
         output1 = M1(ipt).numpy()
         output2 = M2(ipt).numpy()
 
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
         self.assertEqual((output1 == output2).all(), True)
-        self.assertEqual(M1.config, M2.config)
+        self.assertEqual(M1_config, M2_config)
 
     def test_elementwise_lambda_func(self):
         # z = mean + noise * tf.exp(std * 0.5)
@@ -410,8 +439,11 @@ class ElementWise_lambda_test(CustomTestCase):
         output1 = M1(ipt).numpy()
         output2 = M2(ipt).numpy()
 
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
         self.assertEqual((output1 == output2).all(), True)
-        self.assertEqual(M1.config, M2.config)
+        self.assertEqual(M1_config, M2_config)
 
     # # ElementwiseLambda does not support keras layer/model func yet
     # def test_elementwise_keras_model(self):
@@ -434,8 +466,11 @@ class ElementWise_lambda_test(CustomTestCase):
     #     output1 = M1(ipt).numpy()
     #     output2 = M2(ipt).numpy()
     #
+    #     M1_config = RemoveDateInConfig(M1.config)
+    #     M2_config = RemoveDateInConfig(M2.config)
+    #
     #     self.assertEqual((output1 == output2).all(), True)
-    #     self.assertEqual(M1.config, M2.config)
+    #     self.assertEqual(M1_config, M2_config)
 
 
 class basic_dynamic_model(Model):
