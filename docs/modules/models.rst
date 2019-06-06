@@ -25,21 +25,21 @@ Base Model
 VGG16
 ----------------------
 
-.. autofunction:: VGG16
+.. autoclass:: VGG16
 
 VGG19
 ----------------------
 
-.. autofunction:: VGG19
+.. autoclass:: VGG19
 
 SqueezeNetV1
 ----------------
-.. autofunction:: SqueezeNetV1
+.. autoclass:: SqueezeNetV1
 
 MobileNetV1
 ----------------
 
-.. autofunction:: MobileNetV1
+.. autoclass:: MobileNetV1
 
 Seq2seq
 ------------------------

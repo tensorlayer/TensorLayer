@@ -7,9 +7,7 @@ import numpy as np
 from tensorlayer.models import Model
 from tensorlayer.layers import Dense, Dropout, Input
 from tensorlayer.layers.core import Layer
-__all__ = [
-    'Seq2seq'
-]
+__all__ = ['Seq2seq']
 
 
 class Seq2seq(Model):
@@ -19,9 +17,9 @@ class Seq2seq(Model):
     ----------
     decoder_seq_length: int
         The length of your target sequence
-    cell_enc : str, tf.function
+    cell_enc : TensorFlow cell function
         The RNN function cell for your encoder stack, e.g tf.keras.layers.GRUCell
-    cell_dec : str, tf.function
+    cell_dec : TensorFlow cell function
         The RNN function cell for your decoder stack, e.g. tf.keras.layers.GRUCell
     n_layer : int
         The number of your RNN layers for both encoder and decoder block
@@ -50,9 +48,8 @@ class Seq2seq(Model):
         for i in range(n_layer):
             if (i == 0):
                 self.enc_layers.append(
-                    tl.layers.RNN(
-                        cell=cell_enc(units=n_units), in_channels=self.embedding_size, return_last_state=True
-                    )
+                    tl.layers.
+                    RNN(cell=cell_enc(units=n_units), in_channels=self.embedding_size, return_last_state=True)
                 )
             else:
                 self.enc_layers.append(
@@ -62,9 +59,8 @@ class Seq2seq(Model):
         for i in range(n_layer):
             if (i == 0):
                 self.dec_layers.append(
-                    tl.layers.RNN(
-                        cell=cell_dec(units=n_units), in_channels=self.embedding_size, return_last_state=True
-                    )
+                    tl.layers.
+                    RNN(cell=cell_dec(units=n_units), in_channels=self.embedding_size, return_last_state=True)
                 )
             else:
                 self.dec_layers.append(
