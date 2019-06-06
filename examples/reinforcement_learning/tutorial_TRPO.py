@@ -192,11 +192,12 @@ def mlp_gaussian_policy(x, a, hidden_sizes, activation, output_activation):
     x = input_layer_from_space(x)
     mu = mlp(x, list(hidden_sizes) + [act_dim], activation, output_activation)
     actor = tl.models.Model(x, mu)
+    log_std = tf.Variable(-0.5 * np.ones(act_dim, dtype=np.float32))
+    actor.trainable_weights.append(log_std)
 
     def cal_outputs_0(states):
         states = states.astype(np.float32)
         mu = actor(states)
-        log_std = -0.5 * np.ones(act_dim, dtype=np.float32)
         std = tf.exp(log_std)
         pi = mu + tf.random.normal(tf.shape(mu)) * std
         logp_pi = gaussian_likelihood(pi, mu, log_std)
