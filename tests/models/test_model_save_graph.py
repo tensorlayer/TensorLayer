@@ -322,8 +322,11 @@ class Lambda_layer_test(CustomTestCase):
         output2 = M2(npInput).numpy()
         output4 = M4(npInput).numpy()
 
+        M2_config = RemoveDateInConfig(M2.config)
+        M4_config = RemoveDateInConfig(M4.config)
+
         self.assertEqual((output2 == output4).all(), True)
-        self.assertEqual(M2.config, M4.config)
+        self.assertEqual(M2_config, M4_config)
 
         ori_weights = M4.all_weights
         ori_val = ori_weights[1].numpy()
@@ -351,8 +354,11 @@ class Lambda_layer_test(CustomTestCase):
         output1 = M1(npInput).numpy()
         output3 = M3(npInput).numpy()
 
+        M1_config = RemoveDateInConfig(M1.config)
+        M3_config = RemoveDateInConfig(M3.config)
+
         self.assertEqual((output1 == output3).all(), True)
-        self.assertEqual(M1.config, M3.config)
+        self.assertEqual(M1_config, M3_config)
 
         ori_weights = M3.all_weights
         ori_val = ori_weights[1].numpy()
