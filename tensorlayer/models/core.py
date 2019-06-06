@@ -448,7 +448,7 @@ class Model(object):
                 "backend": "tensorflow",
                 "backend_version": tf.__version__,
                 "training_device": "gpu",
-                "save_time": None,
+                "save_date": None,
             }
             _config["version_info"] = version_info
             # if self.outputs is None:
