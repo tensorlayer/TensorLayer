@@ -266,12 +266,9 @@ def main_lstm_generate_text():
         # reset all states at the begining of every epoch
         lstm_state = None
         for step, (x, y) in enumerate(tl.iterate.ptb_iterator(train_data, batch_size, sequence_length)):
-            print(">>>>>", y)
             with tf.GradientTape() as tape:
-
                 ## compute outputs
                 logits, lstm_state = net(x, initial_state=lstm_state)
-                print(">>>>logits" , logits)
                 ## compute loss and update model
                 cost = tl.cost.cross_entropy(logits, tf.reshape(y, [-1]), name='train_loss')
 

@@ -14,7 +14,26 @@ from tensorlayer.models import *
 from tests.utils import CustomTestCase
 
 
-class seq2seq(Model):
+def basic_static_model(name=None, conv1_name="conv1", conv2_name="conv2"):
+    ni = Input((None, 24, 24, 3))
+    nn = Conv2d(16, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, name=conv1_name)(ni)
+    nn = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(nn)
+
+    nn = Conv2d(16, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, name=conv2_name)(nn)
+    nn = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(nn)
+
+    M = Model(inputs=ni, outputs=nn, name=name)
+    return M
+
+
+def nested_static_model(name=None, inner_model_name=None):
+    ni = Input((None, 24, 24, 3))
+    nn = ModelLayer(basic_static_model(inner_model_name))(ni)
+    M = Model(inputs=ni, outputs=nn, name=name)
+    return M
+
+
+class basic_dynamic_model(Model):
 
     def __init__(self, name=None, conv1_name="conv1", conv2_name="conv2"):
         super(basic_dynamic_model, self).__init__(name=name)
