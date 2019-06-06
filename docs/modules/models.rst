@@ -47,7 +47,7 @@ Seq2seq
 .. autoclass:: Seq2seq
 
 
-Seq2seq_Luong_Attention
+Seq2seq Luong Attention
 ------------------------
 
 .. autoclass:: Seq2seq_Luong_Attention
