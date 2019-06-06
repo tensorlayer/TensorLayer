@@ -101,7 +101,6 @@ class RNN(Layer):
     -----
     Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see layer :class:`Reshape`.
 
-
     """
 
     def __init__(
