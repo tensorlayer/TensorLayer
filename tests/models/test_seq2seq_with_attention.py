@@ -27,17 +27,17 @@ class Model_SEQ2SEQ_WITH_ATTENTION_Test(CustomTestCase):
         cls.embedding_size = 32
         cls.dec_seq_length = 5
         cls.pure_time = np.linspace(-1, 1, 21)
-        cls.pure_signal = 100*np.sin(cls.pure_time)
+        cls.pure_signal = 100 * np.sin(cls.pure_time)
         cls.dataset = np.zeros((100, 21))
         for i in range(100):
-            noise = 100+1*np.random.normal(0, 1, cls.pure_signal.shape)
+            noise = 100 + 1 * np.random.normal(0, 1, cls.pure_signal.shape)
             cls.dataset[i] = cls.pure_signal + noise
         cls.dataset = cls.dataset.astype(int)
         np.random.shuffle(cls.dataset)
-        cls.trainX = cls.dataset[:80,:15]
-        cls.trainY = cls.dataset[:80,15:]
-        cls.testX = cls.dataset[80:,:15]
-        cls.testY = cls.dataset[80:,15:]
+        cls.trainX = cls.dataset[:80, :15]
+        cls.trainY = cls.dataset[:80, 15:]
+        cls.testX = cls.dataset[80:, :15]
+        cls.testY = cls.dataset[80:, 15:]
 
         cls.trainY[:, 0] = 0  # start_token == 0
         cls.testY[:, 0] = 0  # start_token == 0
@@ -58,10 +58,10 @@ class Model_SEQ2SEQ_WITH_ATTENTION_Test(CustomTestCase):
     def test_basic_simpleSeq2Seq(self):
 
         model_ = Seq2seq_Luong_Attention(
-            hidden_size=128,
-            cell = tf.keras.layers.SimpleRNNCell,
-            embedding_layer=tl.layers.Embedding(vocabulary_size=self.vocab_size, embedding_size=self.embedding_size),
-            method = 'dot')
+            hidden_size=128, cell=tf.keras.layers.SimpleRNNCell,
+            embedding_layer=tl.layers.Embedding(vocabulary_size=self.vocab_size,
+                                                embedding_size=self.embedding_size), method='dot'
+        )
         optimizer = tf.optimizers.Adam(learning_rate=0.001)
 
         for epoch in range(self.num_epochs):
@@ -88,7 +88,7 @@ class Model_SEQ2SEQ_WITH_ATTENTION_Test(CustomTestCase):
                 n_iter += 1
 
             model_.eval()
-            test_sample = self.testX[:5,:].tolist() # Can't capture the sequence.
+            test_sample = self.testX[:5, :].tolist()  # Can't capture the sequence.
             top_n = 1
             for i in range(top_n):
                 prediction = model_([test_sample], seq_length=self.dec_seq_length, sos=0)

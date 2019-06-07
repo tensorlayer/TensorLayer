@@ -48,8 +48,9 @@ class Seq2seq(Model):
         for i in range(n_layer):
             if (i == 0):
                 self.enc_layers.append(
-                    tl.layers.
-                    RNN(cell=cell_enc(units=n_units), in_channels=self.embedding_size, return_last_state=True)
+                    tl.layers.RNN(
+                        cell=cell_enc(units=n_units), in_channels=self.embedding_size, return_last_state=True
+                    )
                 )
             else:
                 self.enc_layers.append(
@@ -59,8 +60,9 @@ class Seq2seq(Model):
         for i in range(n_layer):
             if (i == 0):
                 self.dec_layers.append(
-                    tl.layers.
-                    RNN(cell=cell_dec(units=n_units), in_channels=self.embedding_size, return_last_state=True)
+                    tl.layers.RNN(
+                        cell=cell_dec(units=n_units), in_channels=self.embedding_size, return_last_state=True
+                    )
                 )
             else:
                 self.dec_layers.append(
