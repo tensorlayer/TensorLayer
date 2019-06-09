@@ -28,6 +28,7 @@ __all__ = (
     'SubprocVecEnv',  # vectorized env wrapper
     'VecFrameStack',  # stack frames in vectorized env
     'Monitor',  # Episode reward and length monitor
+    'NormalizedActions',  # normalized action to actual space
 )
 cv2.ocl.setUseOpenCL(False)
 # env_id -> env_type
