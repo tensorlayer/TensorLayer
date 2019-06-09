@@ -157,14 +157,13 @@ class Critic(object):
 
 if __name__ == '__main__':
 
-        ''' 
+    ''' 
     choose environment
     1. Openai gym:
     env = gym.make()
     2. DeepMind Control Suite:
     env = dm_control2gym.make()
     '''
-
     env = gym.make('CartPole-v0')
     # dm_control2gym.create_render_mode('example mode', show=True, return_pixel=False, height=240, width=320, camera_id=-1, overlays=(),
     #              depth=False, scene_option=None)
@@ -184,9 +183,10 @@ if __name__ == '__main__':
     # we need a good teacher, so the teacher should learn faster than the actor
     critic = Critic(n_features=N_F, lr=LR_C)
 
-    if args.train():
+    if args.train:
+        t0 = time.time()
         for i_episode in range(MAX_EPISODE):
-            episode_time = time.time()
+            # episode_time = time.time()
             s = env.reset().astype(np.float32)
             t = 0  # number of step in this episode
             all_r = []  # rewards of all steps
@@ -229,8 +229,11 @@ if __name__ == '__main__':
                         running_reward = running_reward * 0.95 + ep_rs_sum * 0.05
                     # start rending if running_reward greater than a threshold
                     # if running_reward > DISPLAY_REWARD_THRESHOLD: RENDER = True
-                    print("Episode: %d reward: %f running_reward %f took: %.5f" % \
-                        (i_episode, ep_rs_sum, running_reward, time.time() - episode_time))
+                    # print("Episode: %d reward: %f running_reward %f took: %.5f" % \
+                    #     (i_episode, ep_rs_sum, running_reward, time.time() - episode_time))
+                    print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
+                    .format(i_episode, MAX_EPISODE, ep_rs_sum, time.time()-t0 ))
+
 
                     # Early Stopping for quick check
                     if t >= MAX_EP_STEPS:
@@ -253,7 +256,11 @@ if __name__ == '__main__':
         actor.save_ckpt()
         critic.save_ckpt()
 
-    if args.test():
+    if args.test:
+        actor.load_ckpt()
+        critic.load_ckpt()
+        t0 = time.time()
+
         for i_episode in range(MAX_EPISODE):
             episode_time = time.time()
             s = env.reset().astype(np.float32)
@@ -273,13 +280,6 @@ if __name__ == '__main__':
                 # r -= abs(s_new[0])  * .1
 
                 all_r.append(r)
-                try:
-                    actor.learn(s, a, td_error)  # learn Policy : true_gradient = grad[logPi(s, a) * td_error]
-                except KeyboardInterrupt: # if Ctrl+C at running actor.learn(), then save model, or exit if not at actor.learn()
-                    actor.save_ckpt()
-                    critic.save_ckpt()
-                    # logging
-
                 s = s_new
                 t += 1
                 
@@ -292,8 +292,10 @@ if __name__ == '__main__':
                         running_reward = running_reward * 0.95 + ep_rs_sum * 0.05
                     # start rending if running_reward greater than a threshold
                     # if running_reward > DISPLAY_REWARD_THRESHOLD: RENDER = True
-                    print("Episode: %d reward: %f running_reward %f took: %.5f" % \
-                        (i_episode, ep_rs_sum, running_reward, time.time() - episode_time))
+                    # print("Episode: %d reward: %f running_reward %f took: %.5f" % \
+                    #     (i_episode, ep_rs_sum, running_reward, time.time() - episode_time))
+                    print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
+                    .format(i_episode, MAX_EPISODE, ep_rs_sum, time.time()-t0 ))
 
                     # Early Stopping for quick check
                     if t >= MAX_EP_STEPS:

@@ -15,6 +15,7 @@ Have bias.
 
 Reference
 ----------
+Original Paper: https://arxiv.org/pdf/1602.01783.pdf
 MorvanZhou's tutorial: https://morvanzhou.github.io/tutorials/
 MorvanZhou's code: https://github.com/MorvanZhou/Reinforcement-learning-with-tensorflow/blob/master/experiments/Solve_BipedalWalker/A3C.py
 
@@ -29,12 +30,17 @@ speed, angular velocity, horizontal speed, vertical speed, position of joints
 and joints angular speed, legs contact with ground, and 10 lidar rangefinder
 measurements. There's no coordinates in the state vector.
 
+Prerequisites
+--------------
 tensorflow 2.0.0a0
 tensorflow-probability 0.6.0
 tensorlayer 2.0.0
-
 &&
 pip install box2d box2d-kengz --user
+
+To run
+------
+python tutorial_A3C.py --train/test
 
 """
 
@@ -42,7 +48,8 @@ import multiprocessing
 import threading
 
 import numpy as np
-
+import argparse
+import time
 import gym
 import tensorflow as tf
 import tensorflow_probability as tfp
@@ -51,37 +58,35 @@ from tensorlayer.layers import DenseLayer, InputLayer
 
 tfd = tfp.distributions
 
-
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 np.random.seed(2)
 tf.random.set_seed(2)  # reproducible
 
+# add arguments in command  --train/test
+parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
+parser.add_argument('--train', dest='train', action='store_true', default=False)
+parser.add_argument('--test', dest='test', action='store_true', default=True)
+args = parser.parse_args()
+
+#####################  hyper parameters  ####################
+
 GAME = 'BipedalWalker-v2'  # BipedalWalkerHardcore-v2   BipedalWalker-v2  LunarLanderContinuous-v2
-OUTPUT_GRAPH = False
-LOG_DIR = './log'
-N_WORKERS = multiprocessing.cpu_count()
-# N_WORKERS = 2
-MAX_GLOBAL_EP = 8000  # 8000
+LOG_DIR = './log'  # the log file
+N_WORKERS = multiprocessing.cpu_count()  # number of workers accroding to number of cores in cpu
+# N_WORKERS = 2     # manually set number of workers
+MAX_GLOBAL_EP = 8   # number of training episodes
 GLOBAL_NET_SCOPE = 'Global_Net'
-UPDATE_GLOBAL_ITER = 10
-GAMMA = 0.99
-ENTROPY_BETA = 0.005
+UPDATE_GLOBAL_ITER = 10   # update global policy after several episodes
+GAMMA = 0.99       # reward discount factor
+ENTROPY_BETA = 0.005  # factor for entropy boosted exploration
 LR_A = 0.00005  # learning rate for actor
 LR_C = 0.0001  # learning rate for critic
 GLOBAL_RUNNING_R = []
 GLOBAL_EP = 0  # will increase during training, stop training when it >= MAX_GLOBAL_EP
 
-env = gym.make(GAME)
 
-N_S = env.observation_space.shape[0]
-N_A = env.action_space.shape[0]
-
-A_BOUND = [env.action_space.low, env.action_space.high]
-A_BOUND[0] = A_BOUND[0].reshape(1, N_A)
-A_BOUND[1] = A_BOUND[1].reshape(1, N_A)
-# print(A_BOUND)
-
+###################  Asynchronous Advantage Actor Critic (A3C)  ####################################
 
 class ACNet(object):
 
@@ -228,67 +233,82 @@ class Worker(object):
                         GLOBAL_RUNNING_R.append(ep_r)
                     else:  # moving average
                         GLOBAL_RUNNING_R.append(0.95 * GLOBAL_RUNNING_R[-1] + 0.05 * ep_r)
-                    print(
-                        self.name,
-                        "episode:",
-                        GLOBAL_EP,
-                        # "| pos: %i" % self.env.unwrapped.hull.position[0],  # number of move
-                        '| reward: %.1f' % ep_r,
-                        "| running_reward: %.1f" % GLOBAL_RUNNING_R[-1],
-                        # '| sigma:', test, # debug
-                        # 'WIN ' * 5 if self.env.unwrapped.hull.position[0] >= 88 else '',
-                    )
+                    # print(
+                    #     self.name,
+                    #     "Episode: ",
+                    #     GLOBAL_EP,
+                    #     # "| pos: %i" % self.env.unwrapped.hull.position[0],  # number of move
+                    #     '| reward: %.1f' % ep_r,
+                    #     "| running_reward: %.1f" % GLOBAL_RUNNING_R[-1],
+                    #     # '| sigma:', test, # debug
+                    #     # 'WIN ' * 5 if self.env.unwrapped.hull.position[0] >= 88 else '',
+                    # )
+                    print('{}, Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
+                    .format(self.name, GLOBAL_EP, MAX_GLOBAL_EP, ep_r, time.time()-t0 ))
                     GLOBAL_EP += 1
                     break
 
 
 if __name__ == "__main__":
-    # ============================= TRAINING ===============================
-    with tf.device("/cpu:0"):
-        
-        OPT_A = tf.optimizers.RMSprop(LR_A, name='RMSPropA')
-        OPT_C = tf.optimizers.RMSprop(LR_C, name='RMSPropC')
 
-        GLOBAL_AC = ACNet(GLOBAL_NET_SCOPE)  # we only need its params
-        workers = []
-        # Create worker
-        for i in range(N_WORKERS):
-            i_name = 'Worker_%i' % i  # worker name
-            workers.append(Worker(i_name, GLOBAL_AC))
+    env = gym.make(GAME)
 
-    COORD = tf.train.Coordinator()
+    N_S = env.observation_space.shape[0]
+    N_A = env.action_space.shape[0]
 
-    # start TF threading
-    worker_threads = []
-    for worker in workers:
-        # t = threading.Thread(target=worker.work)
-        job = lambda: worker.work(GLOBAL_AC)
-        t = threading.Thread(target=job)  
-        t.start()
-        worker_threads.append(t)
-    COORD.join(worker_threads)
-    import matplotlib.pyplot as plt
-    plt.plot(GLOBAL_RUNNING_R)
-    plt.xlabel('episode')
-    plt.ylabel('global running reward')
-    plt.savefig('a3c.png')
-    plt.show()
+    A_BOUND = [env.action_space.low, env.action_space.high]
+    A_BOUND[0] = A_BOUND[0].reshape(1, N_A)
+    A_BOUND[1] = A_BOUND[1].reshape(1, N_A)
+    # print(A_BOUND)
+    if args.train:
+        # ============================= TRAINING ===============================
+        t0 = time.time()
+        with tf.device("/cpu:0"):
+            
+            OPT_A = tf.optimizers.RMSprop(LR_A, name='RMSPropA')
+            OPT_C = tf.optimizers.RMSprop(LR_C, name='RMSPropC')
 
-    GLOBAL_AC.save_ckpt()
+            GLOBAL_AC = ACNet(GLOBAL_NET_SCOPE)  # we only need its params
+            workers = []
+            # Create worker
+            for i in range(N_WORKERS):
+                i_name = 'Worker_%i' % i  # worker name
+                workers.append(Worker(i_name, GLOBAL_AC))
 
-    # ============================= EVALUATION =============================
-    # env = gym.make(GAME)
-    # GLOBAL_AC = ACNet(GLOBAL_NET_SCOPE)
-    GLOBAL_AC.load_ckpt()
-    while True:
-        s = env.reset()
-        rall = 0
+        COORD = tf.train.Coordinator()
+
+        # start TF threading
+        worker_threads = []
+        for worker in workers:
+            # t = threading.Thread(target=worker.work)
+            job = lambda: worker.work(GLOBAL_AC)
+            t = threading.Thread(target=job)  
+            t.start()
+            worker_threads.append(t)
+        COORD.join(worker_threads)
+        import matplotlib.pyplot as plt
+        plt.plot(GLOBAL_RUNNING_R)
+        plt.xlabel('episode')
+        plt.ylabel('global running reward')
+        plt.savefig('a3c.png')
+        plt.show()
+
+        GLOBAL_AC.save_ckpt()
+
+    if args.test:
+        # ============================= EVALUATION =============================
+        # env = gym.make(GAME)
+        # GLOBAL_AC = ACNet(GLOBAL_NET_SCOPE)
+        GLOBAL_AC.load_ckpt()
         while True:
-            env.render()
-            s = s.astype('float32') # double to float
-            a = GLOBAL_AC.choose_action(s)
-            s, r, d, _ = env.step(a)
-            rall += r
-            if d:
-                print("reward", rall)
-                break
+            s = env.reset()
+            rall = 0
+            while True:
+                env.render()
+                s = s.astype('float32') # double to float
+                a = GLOBAL_AC.choose_action(s)
+                s, r, d, _ = env.step(a)
+                rall += r
+                if d:
+                    print("reward", rall)
+                    break

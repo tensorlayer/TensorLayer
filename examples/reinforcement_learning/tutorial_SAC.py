@@ -12,6 +12,7 @@ paper: https://arxiv.org/pdf/1812.05905.pdf
 Environment
 ---
 Openai Gym Pendulum-v0, continuous action space
+https://gym.openai.com/envs/Pendulum-v0/
 
 Prerequisites
 --------------
@@ -24,7 +25,7 @@ pip install box2d box2d-kengz --user
 
 To run
 ------
-python tutorial_sac.py --train/test
+python tutorial_SAC.py --train/test
 '''
 
 import argparse

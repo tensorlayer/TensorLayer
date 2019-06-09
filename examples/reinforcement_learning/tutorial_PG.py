@@ -14,6 +14,7 @@ MorvanZhou's tutorial page: https://morvanzhou.github.io/tutorials/
 Env
 ---
 Openai Gym CartPole-v0, discrete action space
+https://gym.openai.com/envs/CartPole-v0
 
 To run
 ------
