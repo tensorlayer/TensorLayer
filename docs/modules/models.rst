@@ -14,7 +14,7 @@ TensorLayer provides many pretrained models, you can easily use the whole or a p
     SqueezeNetV1
     MobileNetV1
     Seq2seq
-    Seq2seq_Luong_Attention
+    Seq2seqLuongAttention
 
 
 Base Model
@@ -50,4 +50,4 @@ Seq2seq
 Seq2seq Luong Attention
 ------------------------
 
-.. autoclass:: Seq2seq_Luong_Attention
+.. autoclass:: Seq2seqLuongAttention

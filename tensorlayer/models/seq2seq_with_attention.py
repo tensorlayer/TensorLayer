@@ -8,7 +8,7 @@ from tensorlayer.models import Model
 from tensorlayer.layers import Dense, Dropout, Input
 from tensorlayer.layers.core import Layer
 
-__all__ = ['Seq2seq_Luong_Attention']
+__all__ = ['Seq2seqLuongAttention']
 
 
 class Encoder(Layer):
@@ -123,7 +123,7 @@ class Decoder_Attention(Layer):
         return cell_outputs
 
 
-class Seq2seq_Luong_Attention(Model):
+class Seq2seqLuongAttention(Model):
     """Luong Attention-based Seq2Seq model. Implementation based on https://arxiv.org/pdf/1508.04025.pdf.
 
     Parameters
@@ -146,7 +146,7 @@ class Seq2seq_Luong_Attention(Model):
     """
 
     def __init__(self, hidden_size, embedding_layer, cell, method, name=None):
-        super(Seq2seq_Luong_Attention, self).__init__(name)
+        super(Seq2seqLuongAttention, self).__init__(name)
         self.enc_layer = Encoder(hidden_size, cell, embedding_layer)
         self.dec_layer = Decoder_Attention(hidden_size, cell, embedding_layer, method=method)
         self.embedding_layer = embedding_layer

@@ -11,7 +11,7 @@ import tensorflow as tf
 import tensorlayer as tl
 from tqdm import tqdm
 from sklearn.utils import shuffle
-from tensorlayer.models.seq2seq_with_attention import Seq2seq_Luong_Attention
+from tensorlayer.models.seq2seq_with_attention import Seq2seqLuongAttention
 from tests.utils import CustomTestCase
 from tensorlayer.cost import cross_entropy_seq
 
@@ -57,7 +57,7 @@ class Model_SEQ2SEQ_WITH_ATTENTION_Test(CustomTestCase):
 
     def test_basic_simpleSeq2Seq(self):
 
-        model_ = Seq2seq_Luong_Attention(
+        model_ = Seq2seqLuongAttention(
             hidden_size=128, cell=tf.keras.layers.SimpleRNNCell,
             embedding_layer=tl.layers.Embedding(vocabulary_size=self.vocab_size,
                                                 embedding_size=self.embedding_size), method='dot'
