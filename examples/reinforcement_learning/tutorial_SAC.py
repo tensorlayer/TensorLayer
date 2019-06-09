@@ -341,100 +341,101 @@ def plot(frame_idx, rewards):
     plt.savefig('sac.png')
     # plt.show()
 
-# initialization of env
-env = NormalizedActions(gym.make(ENV))
-action_dim = env.action_space.shape[0]
-state_dim  = env.observation_space.shape[0]
-# initialization of buffer
-replay_buffer = ReplayBuffer(replay_buffer_size)
-# initialization of trainer
-sac_trainer=SAC_Trainer(replay_buffer, hidden_dim=hidden_dim, action_range=action_range, \
-soft_q_lr=soft_q_lr, policy_lr=policy_lr, alpha_lr=alpha_lr )
-#set train mode
-sac_trainer.soft_q_net1.train()
-sac_trainer.soft_q_net2.train()
-sac_trainer.target_soft_q_net1.train()
-sac_trainer.target_soft_q_net2.train()
-sac_trainer.policy_net.train()
+if __name__ == '__main__':
+    # initialization of env
+    env = NormalizedActions(gym.make(ENV))
+    action_dim = env.action_space.shape[0]
+    state_dim  = env.observation_space.shape[0]
+    # initialization of buffer
+    replay_buffer = ReplayBuffer(replay_buffer_size)
+    # initialization of trainer
+    sac_trainer=SAC_Trainer(replay_buffer, hidden_dim=hidden_dim, action_range=action_range, \
+    soft_q_lr=soft_q_lr, policy_lr=policy_lr, alpha_lr=alpha_lr )
+    #set train mode
+    sac_trainer.soft_q_net1.train()
+    sac_trainer.soft_q_net2.train()
+    sac_trainer.target_soft_q_net1.train()
+    sac_trainer.target_soft_q_net2.train()
+    sac_trainer.policy_net.train()
 
-# training loop
-if args.train:
-    frame_idx   = 0
-    rewards     = []
-    t0 = time.time()
-    while frame_idx < max_frames:
-        state =  env.reset()
-        state = state.astype(np.float32)
-        episode_reward = 0
-        if frame_idx <1 :
-            print('intialize')
-            _=sac_trainer.policy_net([state])  # need an extra call here to make inside functions be able to use model.forward
+    # training loop
+    if args.train:
+        frame_idx   = 0
+        rewards     = []
+        t0 = time.time()
+        while frame_idx < max_frames:
+            state =  env.reset()
+            state = state.astype(np.float32)
+            episode_reward = 0
+            if frame_idx <1 :
+                print('intialize')
+                _=sac_trainer.policy_net([state])  # need an extra call here to make inside functions be able to use model.forward
 
-        for step in range(max_steps):
-            if frame_idx > explore_steps:
+            for step in range(max_steps):
+                if frame_idx > explore_steps:
+                    action = sac_trainer.policy_net.get_action(state, deterministic = DETERMINISTIC)
+                else:
+                    action = sac_trainer.policy_net.sample_action()
+
+                next_state, reward, done, _ = env.step(action) 
+                next_state = next_state.astype(np.float32)
+                env.render()
+                done = 1 if done == True else 0
+                # print('s:', state, action, reward, next_state, done)
+
+                replay_buffer.push(state, action, reward, next_state, done)
+                
+                state = next_state
+                episode_reward += reward
+                frame_idx += 1
+                
+                if len(replay_buffer) > batch_size:
+                    for i in range(update_itr):
+                        sac_trainer.update(batch_size, reward_scale=reward_scale, auto_entropy=AUTO_ENTROPY, target_entropy=-1.*action_dim)
+                
+                if frame_idx % 500 == 0:
+                    plot(frame_idx, rewards)
+                
+                if done:
+                    break
+            episode = int(frame_idx/max_steps) # current episode
+            all_episodes = int(max_frames/max_steps) # total episodes
+            print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(episode, all_episodes, episode_reward, time.time()-t0 ) )
+            rewards.append(episode_reward)
+        sac_trainer.save_weights()
+
+    if args.test:
+        frame_idx   = 0
+        rewards     = []
+        t0 = time.time()
+        sac_trainer.load_weights()
+
+        while frame_idx < test_frames:
+            state =  env.reset()
+            state = state.astype(np.float32)
+            episode_reward = 0
+            if frame_idx <1 :
+                print('intialize')
+                _=sac_trainer.policy_net([state])  # need an extra call to make inside functions be able to use forward
+
+
+            for step in range(max_steps):
                 action = sac_trainer.policy_net.get_action(state, deterministic = DETERMINISTIC)
-            else:
-                action = sac_trainer.policy_net.sample_action()
-
-            next_state, reward, done, _ = env.step(action) 
-            next_state = next_state.astype(np.float32)
-            env.render()
-            done = 1 if done == True else 0
-            print('s:', state, action, reward, next_state, done)
-
-            replay_buffer.push(state, action, reward, next_state, done)
-            
-            state = next_state
-            episode_reward += reward
-            frame_idx += 1
-            
-            if len(replay_buffer) > batch_size:
-                for i in range(update_itr):
-                    sac_trainer.update(batch_size, reward_scale=reward_scale, auto_entropy=AUTO_ENTROPY, target_entropy=-1.*action_dim)
-            
-            if frame_idx % 500 == 0:
-                plot(frame_idx, rewards)
-            
-            if done:
-                break
-        episode = int(frame_idx/max_steps) # current episode
-        all_episodes = int(max_frames/max_steps) # total episodes
-        print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(episode, all_episodes, episode_reward, time.time()-t0 ) )
-        rewards.append(episode_reward)
-    sac_trainer.save_weights()
-
-if args.test:
-    frame_idx   = 0
-    rewards     = []
-    t0 = time.time()
-    sac_trainer.load_weights()
-
-    while frame_idx < test_frames:
-        state =  env.reset()
-        state = state.astype(np.float32)
-        episode_reward = 0
-        if frame_idx <1 :
-            print('intialize')
-            _=sac_trainer.policy_net([state])  # need an extra call to make inside functions be able to use forward
-
-
-        for step in range(max_steps):
-            action = sac_trainer.policy_net.get_action(state, deterministic = DETERMINISTIC)
-            next_state, reward, done, _ = env.step(action) 
-            next_state = next_state.astype(np.float32)
-            env.render()
-            done = 1 if done == True else 0
-            
-            state = next_state
-            episode_reward += reward
-            frame_idx += 1
-            
-            # if frame_idx % 50 == 0:
-            #     plot(frame_idx, rewards)
-            
-            if done:
-                break
-        episode = int(frame_idx/max_steps)
-        all_episodes = int(test_frames/max_steps)
-        print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(episode, all_episodes, episode_reward, time.time()-t0 ) )
-        rewards.append(episode_reward)
+                next_state, reward, done, _ = env.step(action) 
+                next_state = next_state.astype(np.float32)
+                env.render()
+                done = 1 if done == True else 0
+                
+                state = next_state
+                episode_reward += reward
+                frame_idx += 1
+                
+                # if frame_idx % 50 == 0:
+                #     plot(frame_idx, rewards)
+                
+                if done:
+                    break
+            episode = int(frame_idx/max_steps)
+            all_episodes = int(test_frames/max_steps)
+            print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(episode, all_episodes, episode_reward, time.time()-t0 ) )
+            rewards.append(episode_reward)
