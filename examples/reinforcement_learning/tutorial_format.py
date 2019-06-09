@@ -80,17 +80,17 @@ if __name__ == '__main__':
             print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
             .format(episode, all_episodes, episode_reward, time.time()-t0 ))
 
-        ''' plot , following the format of ./baselines/utils/plot'''
-        plot(rewards, Algorithm_name = 'SAC', Env_name = ENV)
+        ''' plot , following the format of ./baselines/utils/plot()'''
+        plot(rewards, Algorithm_name = 'SAC', Env_name = 'Pendulum-v0')
 
-        ''' save weights '''
+        ''' save weights, implemented in defined classes above, following the format of ./baselines/utils/save_model()  '''
         model.save_weights()
 
 
     # testing loop
     if args.test:
         t0 = time.time()
-        ''' load_weights '''
+        ''' save weights, implemented in defined classes above, following the format of ./baselines/utils/load_model()  '''
         model.load_weights()
 
         while: # loop of episodes

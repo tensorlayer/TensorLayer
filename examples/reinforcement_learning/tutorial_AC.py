@@ -42,7 +42,7 @@ tensorlayer >=2.0.0
 
 To run
 ------
-python tutorial_sac.py --train/test
+python tutorial_AC.py --train/test
 
 """
 import time
@@ -250,5 +250,66 @@ if __name__ == '__main__':
                                 s = env.reset().astype(np.float32)
                                 rall = 0
                     break
+        actor.save_ckpt()
+        critic.save_ckpt()
 
     if args.test():
+        for i_episode in range(MAX_EPISODE):
+            episode_time = time.time()
+            s = env.reset().astype(np.float32)
+            t = 0  # number of step in this episode
+            all_r = []  # rewards of all steps
+            while True:
+                if RENDER: env.render()
+                a = actor.choose_action(s)
+                s_new, r, done, info = env.step(a)
+                s_new = s_new.astype(np.float32)
+                if done: r = -20
+                # these may helpful in some tasks
+                # if abs(s_new[0]) >= env.observation_space.high[0]:
+                # #  cart moves more than 2.4 units from the center
+                #     r = -20
+                # reward for the distance between cart to the center
+                # r -= abs(s_new[0])  * .1
+
+                all_r.append(r)
+                try:
+                    actor.learn(s, a, td_error)  # learn Policy : true_gradient = grad[logPi(s, a) * td_error]
+                except KeyboardInterrupt: # if Ctrl+C at running actor.learn(), then save model, or exit if not at actor.learn()
+                    actor.save_ckpt()
+                    critic.save_ckpt()
+                    # logging
+
+                s = s_new
+                t += 1
+                
+                if done or t >= MAX_EP_STEPS:
+                    ep_rs_sum = sum(all_r)
+
+                    if 'running_reward' not in globals():
+                        running_reward = ep_rs_sum
+                    else:
+                        running_reward = running_reward * 0.95 + ep_rs_sum * 0.05
+                    # start rending if running_reward greater than a threshold
+                    # if running_reward > DISPLAY_REWARD_THRESHOLD: RENDER = True
+                    print("Episode: %d reward: %f running_reward %f took: %.5f" % \
+                        (i_episode, ep_rs_sum, running_reward, time.time() - episode_time))
+
+                    # Early Stopping for quick check
+                    if t >= MAX_EP_STEPS:
+                        print("Early Stopping")
+                        s = env.reset().astype(np.float32)
+                        rall = 0
+                        while True:
+                            env.render()
+                            # a = actor.choose_action(s)
+                            a = actor.choose_action_greedy(s)  # Hao Dong: it is important for this task
+                            s_new, r, done, info = env.step(a)
+                            s_new = np.concatenate((s_new[0:N_F], s[N_F:]), axis=0).astype(np.float32)
+                            rall += r
+                            s = s_new
+                            if done:
+                                print("reward", rall)
+                                s = env.reset().astype(np.float32)
+                                rall = 0
+                    break
