@@ -51,6 +51,7 @@ Normal = tfd.Normal
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
+random.seed(2)
 np.random.seed(2)
 tf.random.set_seed(2)  # reproducible
 
