@@ -13,11 +13,11 @@ website: ...
 
 
 Environment
----
+-----------
 e.g. Openai Gym Pendulum-v0, continuous action space
 
 Prerequisites
----
+---------------
 tensorflow >=2.0.0a0
 tensorlayer >=2.0.0
 ...
@@ -28,7 +28,12 @@ python tutorial_***.py --train/test
 
 '''
 
-import 'package_name'
+import time
+import argparse
+import numpy as np
+import tensorflow as tf
+import 'other package name'
+
 
 np.random.seed(2)
 tf.random.set_seed(2)  # reproducible
