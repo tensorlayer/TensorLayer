@@ -8,13 +8,13 @@ Briefly describe the algorithms, add some details.
 
 Reference
 ---------
-original paper: https://arxiv.org/pdf/1802.09477.pdf
+original paper: e.g. https://arxiv.org/pdf/1802.09477.pdf
 website: ...
 
 
 Environment
 ---
-Openai Gym Pendulum-v0, continuous action space
+e.g. Openai Gym Pendulum-v0, continuous action space
 
 Prerequisites
 ---
@@ -40,19 +40,27 @@ parser.add_argument('--test', dest='test', action='store_true', default=True)
 args = parser.parse_args()
 
 #####################  hyper parameters  ####################
-A=a # description
-B=b # description
+A=a # description of hyper parameter
+B=b # description of hyper parameter
 
 ###############################  Algorithm Name  ####################################
 
 class C(): # algorithm-specific classes 
+    ''' description of class '''
+    def C1():
+        ''' description of function'''
 
 def D():  # some common functions, could be extracted into utils afterwards
+    ''' description of function '''
 
 
 if __name__ == '__main__':
 
     '''initialization of env, buffer, networks in algorithms'''
+    env=...
+    buffer=...
+    network1=...
+    network2=...
 
 
     # training loop

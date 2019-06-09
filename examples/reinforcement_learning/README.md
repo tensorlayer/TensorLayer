@@ -34,6 +34,8 @@ For each tutorial, open a terminal and run:
 
  `python ***.py --train` for training and `python ***.py --test` for testing.
 
+The tutorial algorithms follow the same basic structure, as shown in file: `./tutorial_format.py`
+
 ## Table of Contents:
 
 | Algorithms      | Observation Space | Action Space | Tutorial Env   |
