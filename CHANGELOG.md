@@ -85,6 +85,16 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 
+## [2.0.3]
+
+### Changed
+- Add version_info in model.config. 
+
+### Fixed
+
+### Contributors
+- @warshallrho:
+
 ## [2.0.2] - 2019-6-5
 
 ### Changed
