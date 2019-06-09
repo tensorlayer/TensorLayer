@@ -84,9 +84,6 @@ if __name__ == '__main__':
             while: # loop of steps in episode
                 ''' step '''
 
-                ''' train '''
-
-
             print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
             .format(episode, all_episodes, episode_reward, time.time()-t0 ) )
 
