@@ -1,4 +1,7 @@
-"""Actor-Critic using TD-error as the Advantage, Reinforcement Learning.
+"""
+Actor-Critic 
+-------------
+It uses TD-error as the Advantage.
 
 Actor Critic History
 ----------------------
@@ -15,6 +18,7 @@ this problem using advantage of DQN.
 
 Reference
 ----------
+paper: https://papers.nips.cc/paper/1786-actor-critic-algorithms.pdf
 View more on MorvanZhou's tutorial page: https://morvanzhou.github.io/tutorials/
 
 Environment
@@ -30,6 +34,16 @@ A reward of +1 is provided for every timestep that the pole remains upright.
 The episode ends when the pole is more than 15 degrees from vertical, or the
 cart moves more than 2.4 units from the center.
 
+
+Prerequisites
+--------------
+tensorflow >=2.0.0a0
+tensorlayer >=2.0.0
+
+To run
+------
+python tutorial_sac.py --train/test
+
 """
 import time
 
@@ -38,11 +52,19 @@ import numpy as np
 import gym
 import tensorflow as tf
 import tensorlayer as tl
+import argparse
+
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 np.random.seed(2)
 tf.random.set_seed(2)  # reproducible
+
+# add arguments in command  --train/test
+parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
+parser.add_argument('--train', dest='train', action='store_true', default=False)
+parser.add_argument('--test', dest='test', action='store_true', default=True)
+args = parser.parse_args()
 
 # hyper-parameters
 OUTPUT_GRAPH = False

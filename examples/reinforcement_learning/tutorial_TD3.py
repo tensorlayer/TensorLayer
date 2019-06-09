@@ -10,7 +10,7 @@ Reference
 original paper: https://arxiv.org/pdf/1802.09477.pdf
 
 
-Env
+Environment
 ---
 Openai Gym Pendulum-v0, continuous action space
 
@@ -53,6 +53,7 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 np.random.seed(2)
 tf.random.set_seed(2)  # reproducible
 
+# add arguments in command  --train/test
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=False)
 parser.add_argument('--test', dest='test', action='store_true', default=True)
