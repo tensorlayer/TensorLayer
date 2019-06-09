@@ -34,7 +34,7 @@ For each tutorial, open a terminal and run:
 
  `python ***.py --train` for training and `python ***.py --test` for testing.
 
-The tutorial algorithms follow the same basic structure, as shown in file: `./tutorial_format.py`
+The tutorial algorithms follow the same basic structure, as shown in file: `[./tutorial_format.py](https://github.com/tensorlayer/tensorlayer/blob/reinforcement-learning/examples/reinforcement_learning/tutorial_format.py)`
 
 ## Table of Contents:
 
