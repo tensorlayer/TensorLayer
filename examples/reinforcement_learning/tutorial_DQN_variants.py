@@ -1,20 +1,49 @@
-"""Implement following enhanced deep q-learning algorithms
+"""
+DQN and its variants
+------------------------
+We implement Double DQN, Dueling DQN and Noisy DQN here.
+
+The max operator in standard DQN uses the same values both to select and to
+evaluate an action by
+Q(s_t, a_t) = R_{t+1} + \gamma * max_{a}Q_{tar}(s_{t+1}, a).
+Double DQN propose to use following evaluation to address overestimation problem
+of max operator:
+Q(s_t, a_t) = R_{t+1} + \gamma * Q_{tar}(s_{t+1}, max_{a}Q(s_{t+1}, a)).
+
+Dueling DQN uses dueling architecture where the value of state and the advantage
+of each action is estimated separately.
+
+Noisy DQN propose to explore by adding parameter noises.
+
+
+Reference:
+------------------------
 1. Double DQN
     Van Hasselt H, Guez A, Silver D. Deep reinforcement learning with double
     q-learning[C]//Thirtieth AAAI Conference on Artificial Intelligence. 2016.
-
 2. Dueling DQN
     Wang Z, Schaul T, Hessel M, et al. Dueling network architectures for deep
     reinforcement learning[J]. arXiv preprint arXiv:1511.06581, 2015.
-
 3. Noisy DQN
     Plappert M, Houthooft R, Dhariwal P, et al. Parameter space noise for
     exploration[J]. arXiv preprint arXiv:1706.01905, 2017.
 
-# Requirements
-tensorflow==2.0.0a0
-tensorlayer==2.0.1
 
+Environment:
+------------------------
+Cartpole and Pong in OpenAI Gym
+
+
+Requirements:
+------------------------
+tensorflow>=2.0.0a0
+tensorlayer>=2.0.0
+
+
+To run:
+------------------------
+python tutorial_DQN_variantes.py --mode=train
+python tutorial_DQN_variantes.py --mode=test --save_path=c51/8000.npz
 """
 import argparse
 import os
@@ -47,6 +76,7 @@ tf.random.set_seed(args.seed)  # reproducible
 env_id = args.env_id
 env = build_env(env_id, seed=args.seed)
 
+# ####################  hyper parameters  ####################
 if env_id == 'CartPole-v0':
     qnet_type = 'MLP'
     number_timesteps = 10000  # total number of time steps to train on
@@ -77,6 +107,7 @@ warm_start = buffer_size / 10  # sample times befor learning
 noise_update_freq = 50  # how frequency param noise net update
 
 
+# ##############################  DQN  ####################################
 class MLP(tl.models.Model):
     def __init__(self, name):
         super(MLP, self).__init__(name=name)
@@ -227,114 +258,115 @@ def softmax(x, dim):
     return temp / temp.sum(dim, keepdims=True)
 
 
-if args.mode == 'train':
-    qnet = MLP('q') if qnet_type == 'MLP' else CNN('q')
-    qnet.train()
-    trainabel_weights = qnet.trainable_weights
-    targetqnet = MLP('targetq') if qnet_type == 'MLP' else CNN('targetq')
-    targetqnet.infer()
-    sync(qnet, targetqnet)
-    optimizer = tf.optimizers.Adam(learning_rate=lr)
-    buffer = ReplayBuffer(buffer_size)
+if __name__ == '__main__':
+    if args.mode == 'train':
+        qnet = MLP('q') if qnet_type == 'MLP' else CNN('q')
+        qnet.train()
+        trainabel_weights = qnet.trainable_weights
+        targetqnet = MLP('targetq') if qnet_type == 'MLP' else CNN('targetq')
+        targetqnet.infer()
+        sync(qnet, targetqnet)
+        optimizer = tf.optimizers.Adam(learning_rate=lr)
+        buffer = ReplayBuffer(buffer_size)
 
-    o = env.reset()
-    nepisode = 0
-    t = time.time()
-    noise_scale = 1e-2
-    for i in range(1, number_timesteps + 1):
-        eps = epsilon(i)
+        o = env.reset()
+        nepisode = 0
+        t = time.time()
+        noise_scale = 1e-2
+        for i in range(1, number_timesteps + 1):
+            eps = epsilon(i)
 
-        # select action
-        if random.random() < eps:
-            a = int(random.random() * out_dim)
-        else:
-            # noise schedule is based on KL divergence between perturbed and
-            # non-perturbed policy, see https://arxiv.org/pdf/1706.01905.pdf
-            obv = np.expand_dims(o, 0).astype('float32') * ob_scale
-            if i < explore_timesteps:
-                qnet.noise_scale = noise_scale
-                q_ptb = qnet(obv).numpy()
-                qnet.noise_scale = 0
-                if i % noise_update_freq == 0:
-                    q = qnet(obv).numpy()
-                    kl_ptb = (log_softmax(q, 1) - log_softmax(q_ptb, 1))
-                    kl_ptb = np.sum(kl_ptb * softmax(q, 1), 1).mean()
-                    kl_explore = -np.log(1 - eps + eps / out_dim)
-                    if kl_ptb < kl_explore:
-                        noise_scale *= 1.01
-                    else:
-                        noise_scale /= 1.01
-                a = q_ptb.argmax(1)[0]
+            # select action
+            if random.random() < eps:
+                a = int(random.random() * out_dim)
             else:
-                a = qnet(obv).numpy().argmax(1)[0]
+                # noise schedule is based on KL divergence between perturbed and
+                # non-perturbed policy, see https://arxiv.org/pdf/1706.01905.pdf
+                obv = np.expand_dims(o, 0).astype('float32') * ob_scale
+                if i < explore_timesteps:
+                    qnet.noise_scale = noise_scale
+                    q_ptb = qnet(obv).numpy()
+                    qnet.noise_scale = 0
+                    if i % noise_update_freq == 0:
+                        q = qnet(obv).numpy()
+                        kl_ptb = (log_softmax(q, 1) - log_softmax(q_ptb, 1))
+                        kl_ptb = np.sum(kl_ptb * softmax(q, 1), 1).mean()
+                        kl_explore = -np.log(1 - eps + eps / out_dim)
+                        if kl_ptb < kl_explore:
+                            noise_scale *= 1.01
+                        else:
+                            noise_scale /= 1.01
+                    a = q_ptb.argmax(1)[0]
+                else:
+                    a = qnet(obv).numpy().argmax(1)[0]
 
-        # execute action and feed to replay buffer
-        # note that `_` tail in var name means next
-        o_, r, done, info = env.step(a)
-        buffer.add(o, a, r, o_, done)
+            # execute action and feed to replay buffer
+            # note that `_` tail in var name means next
+            o_, r, done, info = env.step(a)
+            buffer.add(o, a, r, o_, done)
 
-        if i >= warm_start:
-            # sync q net and target q net
-            if i % target_q_update_freq == 0:
-                sync(qnet, targetqnet)
-                path = os.path.join(args.save_path, '{}.npz'.format(i))
-                tl.files.save_npz(qnet.trainable_weights, name=path)
+            if i >= warm_start:
+                # sync q net and target q net
+                if i % target_q_update_freq == 0:
+                    sync(qnet, targetqnet)
+                    path = os.path.join(args.save_path, '{}.npz'.format(i))
+                    tl.files.save_npz(qnet.trainable_weights, name=path)
 
-            # sample from replay buffer
-            b_o, b_a, b_r, b_o_, b_d = buffer.sample(batch_size)
+                # sample from replay buffer
+                b_o, b_a, b_r, b_o_, b_d = buffer.sample(batch_size)
 
-            # double q estimation
-            b_a_ = tf.one_hot(tf.argmax(qnet(b_o_), 1), out_dim)
-            b_q_ = (1 - b_d) * tf.reduce_sum(targetqnet(b_o_) * b_a_, 1)
+                # double q estimation
+                b_a_ = tf.one_hot(tf.argmax(qnet(b_o_), 1), out_dim)
+                b_q_ = (1 - b_d) * tf.reduce_sum(targetqnet(b_o_) * b_a_, 1)
 
-            # calculate loss
-            with tf.GradientTape() as q_tape:
-                b_q = tf.reduce_sum(qnet(b_o) * tf.one_hot(b_a, out_dim), 1)
-                loss = tf.reduce_mean(
-                    huber_loss(b_q - (b_r + reward_gamma * b_q_)))
+                # calculate loss
+                with tf.GradientTape() as q_tape:
+                    b_q = tf.reduce_sum(qnet(b_o) * tf.one_hot(b_a, out_dim), 1)
+                    loss = tf.reduce_mean(
+                        huber_loss(b_q - (b_r + reward_gamma * b_q_)))
 
-            # backward gradients
-            q_grad = q_tape.gradient(loss, trainabel_weights)
-            optimizer.apply_gradients(zip(q_grad, trainabel_weights))
+                # backward gradients
+                q_grad = q_tape.gradient(loss, trainabel_weights)
+                optimizer.apply_gradients(zip(q_grad, trainabel_weights))
 
-        if done:
-            o = env.reset()
-        else:
-            o = o_
+            if done:
+                o = env.reset()
+            else:
+                o = o_
 
-        # episode in info is real (unwrapped) message
-        if info.get('episode'):
-            nepisode += 1
-            reward, length = info['episode']['r'], info['episode']['l']
-            fps = int(length / (time.time() - t))
-            print('Time steps so far: {}, episode so far: {}, '
-                  'episode reward: {:.4f}, episode length: {}, FPS: {}'
-                  .format(i, nepisode, reward, length, fps))
-            t = time.time()
-else:
-    qnet = MLP('q') if qnet_type == 'MLP' else CNN('q')
-    tl.files.load_and_assign_npz(name=args.save_path, network=qnet)
-    qnet.eval()
+            # episode in info is real (unwrapped) message
+            if info.get('episode'):
+                nepisode += 1
+                reward, length = info['episode']['r'], info['episode']['l']
+                fps = int(length / (time.time() - t))
+                print('Time steps so far: {}, episode so far: {}, '
+                      'episode reward: {:.4f}, episode length: {}, FPS: {}'
+                      .format(i, nepisode, reward, length, fps))
+                t = time.time()
+    else:
+        qnet = MLP('q') if qnet_type == 'MLP' else CNN('q')
+        tl.files.load_and_assign_npz(name=args.save_path, network=qnet)
+        qnet.eval()
 
-    nepisode = 0
-    o = env.reset()
-    for i in range(1, number_timesteps + 1):
-        obv = np.expand_dims(o, 0).astype('float32') * ob_scale
-        a = qnet(obv).numpy().argmax(1)[0]
+        nepisode = 0
+        o = env.reset()
+        for i in range(1, number_timesteps + 1):
+            obv = np.expand_dims(o, 0).astype('float32') * ob_scale
+            a = qnet(obv).numpy().argmax(1)[0]
 
-        # execute action and feed to replay buffer
-        # note that `_` tail in var name means next
-        o_, r, done, info = env.step(a)
+            # execute action and feed to replay buffer
+            # note that `_` tail in var name means next
+            o_, r, done, info = env.step(a)
 
-        if done:
-            o = env.reset()
-        else:
-            o = o_
+            if done:
+                o = env.reset()
+            else:
+                o = o_
 
-        # episode in info is real (unwrapped) message
-        if info.get('episode'):
-            nepisode += 1
-            reward, length = info['episode']['r'], info['episode']['l']
-            print('Time steps so far: {}, episode so far: {}, '
-                  'episode reward: {:.4f}, episode length: {}'
-                  .format(i, nepisode, reward, length))
+            # episode in info is real (unwrapped) message
+            if info.get('episode'):
+                nepisode += 1
+                reward, length = info['episode']['r'], info['episode']['l']
+                print('Time steps so far: {}, episode so far: {}, '
+                      'episode reward: {:.4f}, episode length: {}'
+                      .format(i, nepisode, reward, length))

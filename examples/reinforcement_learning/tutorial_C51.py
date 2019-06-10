@@ -1,12 +1,33 @@
-"""Implement C51 algorithm
+"""
+C51 Algorithm
+------------------------
+Categorical 51 distributional RL algorithm, 51 means the number of atoms. In
+this algorithm, instead of estimating actual expected value, value distribution
+over a series of continuous sub-intervals (atoms) is considered.
+
+
+Reference:
+------------------------
 Bellemare M G, Dabney W, Munos R. A distributional perspective on reinforcement
 learning[C]//Proceedings of the 34th International Conference on Machine
 Learning-Volume 70. JMLR. org, 2017: 449-458.
 
-# Requirements
-tensorflow==2.0.0a0
-tensorlayer==2.0.1
 
+Environment:
+------------------------
+Cartpole and Pong in OpenAI Gym
+
+
+Requirements:
+------------------------
+tensorflow>=2.0.0a0
+tensorlayer>=2.0.0
+
+
+To run:
+------------------------
+python tutorial_C51.py --mode=train
+python tutorial_C51.py --mode=test --save_path=c51/8000.npz
 """
 import argparse
 import os
@@ -39,6 +60,7 @@ tf.random.set_seed(args.seed)  # reproducible
 env_id = args.env_id
 env = build_env(env_id, seed=args.seed)
 
+# ####################  hyper parameters  ####################
 if env_id == 'CartPole-v0':
     qnet_type = 'MLP'
     number_timesteps = 10000  # total number of time steps to train on
@@ -73,6 +95,7 @@ vrange = np.linspace(min_value, max_value, atom_num)
 deltaz = float(max_value - min_value) / (atom_num - 1)
 
 
+# ##############################  C51  ####################################
 class MLP(tl.models.Model):
     def __init__(self, name):
         super(MLP, self).__init__(name=name)
@@ -164,116 +187,117 @@ def sync(net, net_tar):
         var_tar.assign(var)
 
 
-if args.mode == 'train':
-    qnet = MLP('q') if qnet_type == 'MLP' else CNN('q')
-    qnet.train()
-    trainabel_weights = qnet.trainable_weights
-    targetqnet = MLP('targetq') if qnet_type == 'MLP' else CNN('targetq')
-    targetqnet.infer()
-    sync(qnet, targetqnet)
-    optimizer = tf.optimizers.Adam(learning_rate=lr)
-    buffer = ReplayBuffer(buffer_size)
+if __name__ == '__main__':
+    if args.mode == 'train':
+        qnet = MLP('q') if qnet_type == 'MLP' else CNN('q')
+        qnet.train()
+        trainabel_weights = qnet.trainable_weights
+        targetqnet = MLP('targetq') if qnet_type == 'MLP' else CNN('targetq')
+        targetqnet.infer()
+        sync(qnet, targetqnet)
+        optimizer = tf.optimizers.Adam(learning_rate=lr)
+        buffer = ReplayBuffer(buffer_size)
 
-    o = env.reset()
-    nepisode = 0
-    t = time.time()
-    for i in range(1, number_timesteps + 1):
-        eps = epsilon(i)
+        o = env.reset()
+        nepisode = 0
+        t = time.time()
+        for i in range(1, number_timesteps + 1):
+            eps = epsilon(i)
 
-        # select action
-        if random.random() < eps:
-            a = int(random.random() * out_dim)
-        else:
+            # select action
+            if random.random() < eps:
+                a = int(random.random() * out_dim)
+            else:
+                obv = np.expand_dims(o, 0).astype('float32') * ob_scale
+                qdist = np.exp(qnet(obv).numpy())
+                qvalues = (qdist * vrange).sum(-1)
+                a = qvalues.argmax(1)[0]
+
+            # execute action and feed to replay buffer
+            # note that `_` tail in var name means next
+            o_, r, done, info = env.step(a)
+            buffer.add(o, a, r, o_, done)
+
+            if i >= warm_start:
+                # sync q net and target q net
+                if i % target_q_update_freq == 0:
+                    sync(qnet, targetqnet)
+                    path = os.path.join(args.save_path, '{}.npz'.format(i))
+                    tl.files.save_npz(qnet.trainable_weights, name=path)
+
+                # sample from replay buffer
+                b_o, b_a, b_r, b_o_, b_d = buffer.sample(batch_size)
+
+                # q estimation, see Algorithm 1 in paper for detail
+                b_dist_ = np.exp(targetqnet(b_o_).numpy())
+                b_a_ = (b_dist_ * vrange).sum(-1).argmax(1)
+                b_tzj = np.clip(
+                    reward_gamma * (1 - b_d[:, None]) * vrange[None, :]
+                    + b_r[:, None], min_value, max_value)
+                b_i = (b_tzj - min_value) / deltaz
+                b_l = np.floor(b_i).astype('int64')
+                b_u = np.ceil(b_i).astype('int64')
+                templ = b_dist_[range(batch_size), b_a_, :] * (b_u - b_i)
+                tempu = b_dist_[range(batch_size), b_a_, :] * (b_i - b_l)
+                b_m = np.zeros((batch_size, atom_num))
+                # TODO: aggregate value by index and batch update (scatter_add)
+                for j in range(batch_size):
+                    for k in range(atom_num):
+                        b_m[j][b_l[j][k]] += templ[j][k]
+                        b_m[j][b_u[j][k]] += tempu[j][k]
+                b_m = tf.convert_to_tensor(b_m, dtype='float32')
+
+                # calculate loss
+                with tf.GradientTape() as q_tape:
+                    b_index = np.stack([range(batch_size), b_a], 1)
+                    b_index = tf.convert_to_tensor(b_index, 'int64')
+                    b_dist_a = tf.gather_nd(qnet(b_o), b_index)
+                    loss = -tf.reduce_mean(tf.reduce_sum(b_dist_a * b_m, 1))
+
+                # backward gradients
+                q_grad = q_tape.gradient(loss, trainabel_weights)
+                optimizer.apply_gradients(zip(q_grad, trainabel_weights))
+
+            if done:
+                o = env.reset()
+            else:
+                o = o_
+
+            # episode in info is real (unwrapped) message
+            if info.get('episode'):
+                nepisode += 1
+                reward, length = info['episode']['r'], info['episode']['l']
+                fps = int(length / (time.time() - t))
+                print('Time steps so far: {}, episode so far: {}, '
+                      'episode reward: {:.4f}, episode length: {}, FPS: {}'
+                      .format(i, nepisode, reward, length, fps))
+                t = time.time()
+    else:
+        qnet = MLP('q') if qnet_type == 'MLP' else CNN('q')
+        tl.files.load_and_assign_npz(name=args.save_path, network=qnet)
+        qnet.eval()
+
+        nepisode = 0
+        o = env.reset()
+        for i in range(1, number_timesteps + 1):
             obv = np.expand_dims(o, 0).astype('float32') * ob_scale
             qdist = np.exp(qnet(obv).numpy())
             qvalues = (qdist * vrange).sum(-1)
             a = qvalues.argmax(1)[0]
 
-        # execute action and feed to replay buffer
-        # note that `_` tail in var name means next
-        o_, r, done, info = env.step(a)
-        buffer.add(o, a, r, o_, done)
+            # execute action and feed to replay buffer
+            # note that `_` tail in var name means next
+            o_, r, done, info = env.step(a)
 
-        if i >= warm_start:
-            # sync q net and target q net
-            if i % target_q_update_freq == 0:
-                sync(qnet, targetqnet)
-                path = os.path.join(args.save_path, '{}.npz'.format(i))
-                tl.files.save_npz(qnet.trainable_weights, name=path)
+            if done:
+                o = env.reset()
+            else:
+                o = o_
 
-            # sample from replay buffer
-            b_o, b_a, b_r, b_o_, b_d = buffer.sample(batch_size)
-
-            # q estimation, see Algorithm 1 in paper for detail
-            b_dist_ = np.exp(targetqnet(b_o_).numpy())
-            b_a_ = (b_dist_ * vrange).sum(-1).argmax(1)
-            b_tzj = np.clip(reward_gamma * (1 - b_d[:, None]) * vrange[None, :]
-                            + b_r[:, None], min_value, max_value)
-            b_i = (b_tzj - min_value) / deltaz
-            b_l = np.floor(b_i).astype('int64')
-            b_u = np.ceil(b_i).astype('int64')
-            templ = b_dist_[range(batch_size), b_a_, :] * (b_u - b_i)
-            tempu = b_dist_[range(batch_size), b_a_, :] * (b_i - b_l)
-            b_m = np.zeros((batch_size, atom_num))
-            # TODO: aggregate value by index and batch update (scatter_add)
-            for j in range(batch_size):
-                for k in range(atom_num):
-                    b_m[j][b_l[j][k]] += templ[j][k]
-                    b_m[j][b_u[j][k]] += tempu[j][k]
-            b_m = tf.convert_to_tensor(b_m, dtype='float32')
-
-            # calculate loss
-            with tf.GradientTape() as q_tape:
-                b_index = np.stack([range(batch_size), b_a], 1)
-                b_index = tf.convert_to_tensor(b_index, 'int64')
-                b_dist_a = tf.gather_nd(qnet(b_o), b_index)
-                loss = -tf.reduce_mean(tf.reduce_sum(b_dist_a * b_m, 1))
-
-            # backward gradients
-            q_grad = q_tape.gradient(loss, trainabel_weights)
-            optimizer.apply_gradients(zip(q_grad, trainabel_weights))
-
-        if done:
-            o = env.reset()
-        else:
-            o = o_
-
-        # episode in info is real (unwrapped) message
-        if info.get('episode'):
-            nepisode += 1
-            reward, length = info['episode']['r'], info['episode']['l']
-            fps = int(length / (time.time() - t))
-            print('Time steps so far: {}, episode so far: {}, '
-                  'episode reward: {:.4f}, episode length: {}, FPS: {}'
-                  .format(i, nepisode, reward, length, fps))
-            t = time.time()
-else:
-    qnet = MLP('q') if qnet_type == 'MLP' else CNN('q')
-    tl.files.load_and_assign_npz(name=args.save_path, network=qnet)
-    qnet.eval()
-
-    nepisode = 0
-    o = env.reset()
-    for i in range(1, number_timesteps + 1):
-        obv = np.expand_dims(o, 0).astype('float32') * ob_scale
-        qdist = np.exp(qnet(obv).numpy())
-        qvalues = (qdist * vrange).sum(-1)
-        a = qvalues.argmax(1)[0]
-
-        # execute action and feed to replay buffer
-        # note that `_` tail in var name means next
-        o_, r, done, info = env.step(a)
-
-        if done:
-            o = env.reset()
-        else:
-            o = o_
-
-        # episode in info is real (unwrapped) message
-        if info.get('episode'):
-            nepisode += 1
-            reward, length = info['episode']['r'], info['episode']['l']
-            print('Time steps so far: {}, episode so far: {}, '
-                  'episode reward: {:.4f}, episode length: {}'
-                  .format(i, nepisode, reward, length))
-
+            # episode in info is real (unwrapped) message
+            if info.get('episode'):
+                nepisode += 1
+                reward, length = info['episode']['r'], info['episode']['l']
+                print('Time steps so far: {}, episode so far: {}, '
+                      'episode reward: {:.4f}, episode length: {}'
+                      .format(i, nepisode, reward, length))
