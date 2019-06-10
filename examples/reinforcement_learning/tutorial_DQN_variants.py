@@ -16,6 +16,8 @@ tensorflow==2.0.0a0
 tensorlayer==2.0.1
 
 """
+import argparse
+import os
 import random
 import time
 
@@ -26,8 +28,25 @@ import tensorlayer as tl
 from tutorial_wrappers import build_env
 
 
-seed = 0
-env_id = 'CartPole-v0'  # CartPole-v0, PongNoFrameskip-v4
+parser = argparse.ArgumentParser()
+parser.add_argument('--mode', help='train or test', default='train')
+parser.add_argument('--save_path', default='dqn_variants',
+                    help='folder to save if mode == train else model path,'
+                         'qnet will be saved once target net update')
+parser.add_argument('--seed', help='random seed', type=int, default=0)
+parser.add_argument('--env_id', default='CartPole-v0',
+                    help='CartPole-v0 or PongNoFrameskip-v4')
+args = parser.parse_args()
+print(args)
+
+if args.mode == 'train':
+    os.makedirs(args.save_path, exist_ok=True)
+random.seed(args.seed)
+np.random.seed(args.seed)
+tf.random.set_seed(args.seed)  # reproducible
+env_id = args.env_id
+env = build_env(env_id, seed=args.seed)
+
 if env_id == 'CartPole-v0':
     qnet_type = 'MLP'
     number_timesteps = 10000  # total number of time steps to train on
@@ -50,7 +69,6 @@ else:
     target_q_update_freq = 200  # how frequency target q net update
     ob_scale = 1.0 / 255  # scale observations
 
-env = build_env(env_id, seed=seed)
 in_dim = env.observation_space.shape
 out_dim = env.action_space.n
 reward_gamma = 0.99  # reward discount
@@ -209,83 +227,114 @@ def softmax(x, dim):
     return temp / temp.sum(dim, keepdims=True)
 
 
-qnet = MLP('q') if qnet_type == 'MLP' else CNN('q')
-qnet.train()
-trainabel_weights = qnet.trainable_weights
-targetqnet = MLP('targetq') if qnet_type == 'MLP' else CNN('targetq')
-targetqnet.infer()
-sync(qnet, targetqnet)
-optimizer = tf.optimizers.Adam(learning_rate=lr)
-buffer = ReplayBuffer(buffer_size)
+if args.mode == 'train':
+    qnet = MLP('q') if qnet_type == 'MLP' else CNN('q')
+    qnet.train()
+    trainabel_weights = qnet.trainable_weights
+    targetqnet = MLP('targetq') if qnet_type == 'MLP' else CNN('targetq')
+    targetqnet.infer()
+    sync(qnet, targetqnet)
+    optimizer = tf.optimizers.Adam(learning_rate=lr)
+    buffer = ReplayBuffer(buffer_size)
 
-o = env.reset()
-nepisode = 0
-t = time.time()
-noise_scale = 1e-2
-for i in range(1, number_timesteps + 1):
-    eps = epsilon(i)
+    o = env.reset()
+    nepisode = 0
+    t = time.time()
+    noise_scale = 1e-2
+    for i in range(1, number_timesteps + 1):
+        eps = epsilon(i)
 
-    # select action
-    if random.random() < eps:
-        a = int(random.random() * out_dim)
-    else:
-        # noise schedule is based on KL divergence between perturbed and
-        # non-perturbed policy, see https://arxiv.org/pdf/1706.01905.pdf
-        obv = np.expand_dims(o, 0).astype('float32') * ob_scale
-        if i < explore_timesteps:
-            qnet.noise_scale = noise_scale
-            q_ptb = qnet(obv).numpy()
-            qnet.noise_scale = 0
-            if i % noise_update_freq == 0:
-                q = qnet(obv).numpy()
-                kl_ptb = (log_softmax(q, 1) - log_softmax(q_ptb, 1))
-                kl_ptb = np.sum(kl_ptb * softmax(q, 1), 1).mean()
-                kl_explore = -np.log(1 - eps + eps / out_dim)
-                if kl_ptb < kl_explore:
-                    noise_scale *= 1.01
-                else:
-                    noise_scale /= 1.01
-            a = q_ptb.argmax(1)[0]
+        # select action
+        if random.random() < eps:
+            a = int(random.random() * out_dim)
         else:
-            a = qnet(obv).numpy().argmax(1)[0]
+            # noise schedule is based on KL divergence between perturbed and
+            # non-perturbed policy, see https://arxiv.org/pdf/1706.01905.pdf
+            obv = np.expand_dims(o, 0).astype('float32') * ob_scale
+            if i < explore_timesteps:
+                qnet.noise_scale = noise_scale
+                q_ptb = qnet(obv).numpy()
+                qnet.noise_scale = 0
+                if i % noise_update_freq == 0:
+                    q = qnet(obv).numpy()
+                    kl_ptb = (log_softmax(q, 1) - log_softmax(q_ptb, 1))
+                    kl_ptb = np.sum(kl_ptb * softmax(q, 1), 1).mean()
+                    kl_explore = -np.log(1 - eps + eps / out_dim)
+                    if kl_ptb < kl_explore:
+                        noise_scale *= 1.01
+                    else:
+                        noise_scale /= 1.01
+                a = q_ptb.argmax(1)[0]
+            else:
+                a = qnet(obv).numpy().argmax(1)[0]
 
-    # execute action and feed to replay buffer
-    # note that `_` tail in var name means next
-    o_, r, done, info = env.step(a)
-    buffer.add(o, a, r, o_, done)
+        # execute action and feed to replay buffer
+        # note that `_` tail in var name means next
+        o_, r, done, info = env.step(a)
+        buffer.add(o, a, r, o_, done)
 
-    if i >= warm_start:
-        # sync q net and target q net
-        if i % target_q_update_freq == 0:
-            sync(qnet, targetqnet)
+        if i >= warm_start:
+            # sync q net and target q net
+            if i % target_q_update_freq == 0:
+                sync(qnet, targetqnet)
+                path = os.path.join(args.save_path, '{}.npz'.format(i))
+                tl.files.save_npz(qnet.trainable_weights, name=path)
 
-        # sample from replay buffer
-        b_o, b_a, b_r, b_o_, b_d = buffer.sample(batch_size)
+            # sample from replay buffer
+            b_o, b_a, b_r, b_o_, b_d = buffer.sample(batch_size)
 
-        # double q estimation
-        b_a_ = tf.one_hot(tf.argmax(qnet(b_o_), 1), out_dim)
-        b_q_ = (1 - b_d) * tf.reduce_sum(targetqnet(b_o_) * b_a_, 1)
+            # double q estimation
+            b_a_ = tf.one_hot(tf.argmax(qnet(b_o_), 1), out_dim)
+            b_q_ = (1 - b_d) * tf.reduce_sum(targetqnet(b_o_) * b_a_, 1)
 
-        # calculate loss
-        with tf.GradientTape() as q_tape:
-            b_q = tf.reduce_sum(qnet(b_o) * tf.one_hot(b_a, out_dim), 1)
-            loss = tf.reduce_mean(huber_loss(b_q - (b_r + reward_gamma * b_q_)))
+            # calculate loss
+            with tf.GradientTape() as q_tape:
+                b_q = tf.reduce_sum(qnet(b_o) * tf.one_hot(b_a, out_dim), 1)
+                loss = tf.reduce_mean(
+                    huber_loss(b_q - (b_r + reward_gamma * b_q_)))
 
-        # backward gradients
-        q_grad = q_tape.gradient(loss, trainabel_weights)
-        optimizer.apply_gradients(zip(q_grad, trainabel_weights))
+            # backward gradients
+            q_grad = q_tape.gradient(loss, trainabel_weights)
+            optimizer.apply_gradients(zip(q_grad, trainabel_weights))
 
-    if done:
-        o = env.reset()
-    else:
-        o = o_
+        if done:
+            o = env.reset()
+        else:
+            o = o_
 
-    # episode in info is real (unwrapped) message
-    if info.get('episode'):
-        nepisode += 1
-        reward, length = info['episode']['r'], info['episode']['l']
-        fps = int(length / (time.time() - t))
-        print('Time steps so far: {}, episode so far: {}, '
-              'episode reward: {:.4f}, episode length: {}, FPS: {}'
-              .format(i, nepisode, reward, length, fps))
-        t = time.time()
+        # episode in info is real (unwrapped) message
+        if info.get('episode'):
+            nepisode += 1
+            reward, length = info['episode']['r'], info['episode']['l']
+            fps = int(length / (time.time() - t))
+            print('Time steps so far: {}, episode so far: {}, '
+                  'episode reward: {:.4f}, episode length: {}, FPS: {}'
+                  .format(i, nepisode, reward, length, fps))
+            t = time.time()
+else:
+    qnet = MLP('q') if qnet_type == 'MLP' else CNN('q')
+    tl.files.load_and_assign_npz(name=args.save_path, network=qnet)
+    qnet.eval()
+
+    nepisode = 0
+    o = env.reset()
+    for i in range(1, number_timesteps + 1):
+        obv = np.expand_dims(o, 0).astype('float32') * ob_scale
+        a = qnet(obv).numpy().argmax(1)[0]
+
+        # execute action and feed to replay buffer
+        # note that `_` tail in var name means next
+        o_, r, done, info = env.step(a)
+
+        if done:
+            o = env.reset()
+        else:
+            o = o_
+
+        # episode in info is real (unwrapped) message
+        if info.get('episode'):
+            nepisode += 1
+            reward, length = info['episode']['r'], info['episode']['l']
+            print('Time steps so far: {}, episode so far: {}, '
+                  'episode reward: {:.4f}, episode length: {}'
+                  .format(i, nepisode, reward, length))
