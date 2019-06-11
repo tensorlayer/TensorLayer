@@ -66,7 +66,6 @@ parser.add_argument('--seed', help='random seed', type=int, default=0)
 parser.add_argument('--env_id', default='CartPole-v0',
                     help='CartPole-v0 or PongNoFrameskip-v4')
 args = parser.parse_args()
-print(args)
 
 if args.mode == 'train':
     os.makedirs(args.save_path, exist_ok=True)
@@ -354,7 +353,7 @@ if __name__ == '__main__':
             obv = np.expand_dims(o, 0).astype('float32') * ob_scale
             a = qnet(obv).numpy().argmax(1)[0]
 
-            # execute action and feed to replay buffer
+            # execute action
             # note that `_` tail in var name means next
             o_, r, done, info = env.step(a)
 

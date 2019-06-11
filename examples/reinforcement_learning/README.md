@@ -41,9 +41,11 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 | Algorithms      | Observation Space | Action Space | Tutorial Env   |
 | --------------- | ----------------- | ------------ | -------------- |
 | Q-learning      | Discrete          | Discrete     | FrozenLake     |
-| C51             | Continuous        | Discrete     | CartPole       |
+| C51             | Discrete          | Discrete     | Pong, CartPole |
 | DQN             | Discrete          | Discrete     | FrozenLake     |
-| Variants of DQN | Continuous        | Discrete     | Pong, CartPole |
+| Variants of DQN | Discrete          | Discrete     | Pong, CartPole |
+| Retrace         | Discrete          | Discrete     | Pong, CartPole |
+| PER             | Discrete          | Discrete     | Pong, CartPole |
 | Actor-Critic    | Continuous        | Discrete     | CartPole       |
 | A3C             | Continuous        | Continuous   | BipedalWalker  |
 | DDPG            | Continuous        | Continuous   | Pendulum       |
@@ -84,7 +86,7 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
   
 
 
-* Prioritized Experience Replay
+* PER (Prioritized Experience Replay)
 
   Code: `./tutorial_prioritized_replay.py`
 
@@ -200,5 +202,6 @@ Our env wrapper: `./tutorial_wrappers.py`
 - @xxxx XXXXX : AC, A3C
 - @quantumiracle Zihan Ding: SAC, TD3.
 - @Tokarev-TT-33 Tianyang Yu @initial-h Hongming Zhang : PG, DDPG, PPO, DPPO, TRPO
+- @Officium Yanhua Huang: C51, Retrace, DQN_variants, prioritized_replay, wrappers.
 
 ### More examples can be found in the [example list](https://tensorlayer.readthedocs.io/en/stable/user/examples.html)
