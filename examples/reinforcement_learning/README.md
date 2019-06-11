@@ -113,11 +113,11 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
   
   -The max operator in standard DQN uses the same values both to select and to evaluate an action by:
   
-     Q(s_t, a_t) = R\_{t+1\} + gamma \* max\_{a}Q\_\{target\}(s_{t+1}, a).
+     Q(s_t, a_t) = R_{t+1} + gamma * max_{a}Q_{target}(s_{t+1}, a).
   
   -Double DQN proposes to use following evaluation to address overestimation problem of max operator:
   
-     Q(s_t, a_t) = R\_{t+1\} + gamma \* Q\_{target}(s\_\{t+1\}, max{a}Q(s_{t+1}, a)).
+     Q(s_t, a_t) = R_{t+1} + gamma * Q_{target}(s_{t+1}, max_{a}Q(s_{t+1}, a)).
   
   -Dueling DQN uses dueling architecture where the value of state and the advantage of each action is estimated separately.
   
