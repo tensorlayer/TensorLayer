@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import tensorflow as tf
 
+import tensorflow as tf
 import tensorlayer as tl
 
 tl.logging.set_verbosity(tl.logging.DEBUG)

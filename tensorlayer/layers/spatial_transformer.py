@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import tensorflow as tf
 from six.moves import xrange
-from tensorflow.python.ops import array_ops
 
+import tensorflow as tf
 import tensorlayer as tl
+from tensorflow.python.ops import array_ops
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer

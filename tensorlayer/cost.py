@@ -6,7 +6,6 @@ import numbers
 import tensorflow as tf
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import array_ops, math_ops, nn_ops, standard_ops
-
 from tensorlayer import logging
 
 __all__ = [

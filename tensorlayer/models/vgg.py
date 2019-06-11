@@ -30,8 +30,8 @@ feeding images of multiple sizes is by doing center cropping.
 import os
 
 import numpy as np
-import tensorflow as tf
 
+import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.files import assign_weights, maybe_download_and_extract

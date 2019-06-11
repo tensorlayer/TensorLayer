@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import tensorflow as tf
-from tensorflow.python.ops.rnn_cell import LSTMStateTuple
 
+import tensorflow as tf
 import tensorlayer as tl
+from tensorflow.python.ops.rnn_cell import LSTMStateTuple
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated, deprecated_alias
 

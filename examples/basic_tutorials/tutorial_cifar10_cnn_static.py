@@ -5,8 +5,8 @@ import multiprocessing
 import time
 
 import numpy as np
-import tensorflow as tf
 
+import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import (BatchNorm, Conv2d, Dense, Flatten, Input,
                                 LocalResponseNorm, MaxPool2d)

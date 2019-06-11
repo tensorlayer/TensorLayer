@@ -4,7 +4,6 @@
 import os
 
 import tensorflow as tf
-
 from tensorlayer import logging, utils
 from tensorlayer.files.utils import (del_file, del_folder, folder_exists,
                                      load_file_list,

@@ -31,8 +31,8 @@ import os
 import time
 
 import numpy as np
-import tensorflow as tf
 
+import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
 from tensorlayer.models import *

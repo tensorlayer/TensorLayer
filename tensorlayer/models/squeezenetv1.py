@@ -5,7 +5,6 @@
 import os
 
 import tensorflow as tf
-
 from tensorlayer import logging
 from tensorlayer.files import (assign_weights, load_npz, maybe_download_and_extract)
 from tensorlayer.layers import (Concat, Conv2d, Dropout, GlobalMeanPool2d, Input, Lambda, MaxPool2d)
