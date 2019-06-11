@@ -66,14 +66,13 @@ class DropconnectDense(Layer):
             in_channels=None,
             name=None,  # 'dropconnect',
     ):
-        super().__init__(name)
+        super().__init__(name, act=act)
 
         if isinstance(keep, numbers.Real) and not (keep > 0 and keep <= 1):
             raise ValueError("keep must be a scalar tensor or a float in the " "range (0, 1], got %g" % keep)
 
         self.keep = keep
         self.n_units = n_units
-        self.act = act
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = in_channels

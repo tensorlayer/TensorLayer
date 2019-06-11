@@ -70,11 +70,63 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Dependencies Update
+
+### Deprecated
+
+### Fixed
+
+### Removed
+
+### Security
+
+### Contributors
+
+## [2.0.3]
+
+### Changed
+- Add version_info in model.config. (PR #992)
+- Replace tf.nn.func with tf.nn.func.\_\_name\_\_ in model config.
+
+### Fixed
+
+### Contributors
+- @warshallrho:
+
+## [2.0.2] - 2019-6-5
+
+### Changed
+- change the format of network config, change related code and files; change layer act (PR #980)
+- update Seq2seq (#989) 
+
+### Fixed
+- Fix dynamic model cannot track PRelu weights gradients problem (PR #982)
+- Raise .weights warning (commit)
+
+### Contributors
+- @warshallrho: #980
+- @ArnoldLIULJ: #989
+- @1FengL: #982
+
+## [2.0.1] - 2019-5-17
+
+
+A maintain release.
+
+### Changed
+- remove `tl.layers.initialize_global_variables(sess)` (PR #931)
+- support `trainable_weights` (PR #966)
+
+### Added
  - Layer
     - `InstanceNorm`, `InstanceNorm1d`, `InstanceNorm2d`, `InstanceNorm3d` (PR #963)
 
 ### Changed
 - remove `tl.layers.initialize_global_variables(sess)` (PR #931)
+- update `tutorial_generate_text.py`, `tutorial_ptb_lstm.py`. remove `tutorial_ptb_lstm_state_is_tuple.py` (PR #958)
 - change `tl.layers.core`, `tl.models.core` (PR #966)
 - change `weights` into `all_weights`, `trainable_weights`, `nontrainable_weights`
 
@@ -84,23 +136,21 @@ To release a new version, please update the changelog as followed:
 - yapf>=0.22,<0.25 => yapf==0.25.0 (PR #896)
 - imageio==2.5.0 progressbar2==3.39.3  scikit-learn==0.21.0 scikit-image==0.15.0 scipy==1.2.1 wrapt==1.11.1 pymongo==3.8.0 sphinx==2.0.1 wrapt==1.11.1 opencv-python==4.1.0.25 requests==2.21.0 tqdm==4.31.1	lxml==4.3.3 pycodestyle==2.5.0 sphinx==2.0.1 yapf==0.27.0(PR #967)
 
-### Deprecated
-
 ### Fixed
 - fix docs of models @zsdonghao #957
 - In `BatchNorm`, keep dimensions of mean and variance to suit `channels first` (PR #963)
 
-
-### Removed
-
-### Security
-
 ### Contributors
+- @warshallrho: #PR966
 - @zsdonghao: #931
 - @yd-yin: #963
+- @1FengL: #958
+- @dvklopfenstein: #971
 
 
-## [2.0.0-alpha] - 2019-05-04
+## [2.0.0] - 2019-05-04
+
+To many PR for this update, please check [here](https://github.com/tensorlayer/tensorlayer/releases/tag/2.0.0) for more details.
 
 ### Changed
 * update for TensorLayer 2.0.0 alpha version (PR #952)
@@ -118,6 +168,7 @@ To release a new version, please update the changelog as followed:
 - @JingqingZ
 - @ChrisWu1997
 - @warshallrho
+
 
 ## [1.11.1] - 2018-11-15
 
@@ -444,7 +495,10 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.11....master
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/2.0....master
+[2.0.2]: https://github.com/tensorlayer/tensorlayer/compare/2.0.2...2.0.2
+[2.0.1]: https://github.com/tensorlayer/tensorlayer/compare/2.0.1...2.0.1
+[2.0.0]: https://github.com/tensorlayer/tensorlayer/compare/2.0.0...2.0.0
 [1.11.1]: https://github.com/tensorlayer/tensorlayer/compare/1.11.0...1.11.0
 [1.11.0]: https://github.com/tensorlayer/tensorlayer/compare/1.10.1...1.11.0
 [1.10.1]: https://github.com/tensorlayer/tensorlayer/compare/1.10.0...1.10.1

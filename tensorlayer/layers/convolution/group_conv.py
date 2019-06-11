@@ -73,12 +73,11 @@ class GroupConv2d(Layer):
             in_channels=None,
             name=None  # 'groupconv',
     ):  # Windaway
-        super().__init__(name)
+        super().__init__(name, act=act)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = self._strides = strides
         self.n_group = n_group
-        self.act = act
         self.padding = padding
         self.data_format = data_format
         self.dilation_rate = self._dilation_rate = dilation_rate

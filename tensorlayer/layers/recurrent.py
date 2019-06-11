@@ -42,24 +42,32 @@ class RNN(Layer):
         A RNN cell implemented by tf.keras
             - E.g. tf.keras.layers.SimpleRNNCell, tf.keras.layers.LSTMCell, tf.keras.layers.GRUCell
             - Note TF2.0+, TF1.0+ and TF1.0- are different
-    return_last : boolean
+
+    return_last_output : boolean
         Whether return last output or all outputs in a sequence.
-        1) If True, return the last output, "Sequence input and single output"
-        2) If False, return all outputs, "Synced sequence input and output"
-        3) In other word, if you want to stack more RNNs on this layer, set to False.
-        In a dynamic model, `return_last` can be updated when it is called in customised forward().
+
+            - If True, return the last output, "Sequence input and single output"
+            - If False, return all outputs, "Synced sequence input and output"
+            - In other word, if you want to stack more RNNs on this layer, set to False
+
+        In a dynamic model, `return_last_output` can be updated when it is called in customised forward().
         By default, `False`.
     return_seq_2d : boolean
-        Only consider this argument when `return_last` is `False`.
-        1) If True, return 2D Tensor [batch_size * n_steps, n_hidden], for stacking Dense layer after it.
-        2) If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
+        Only consider this argument when `return_last_output` is `False`
+
+            - If True, return 2D Tensor [batch_size * n_steps, n_hidden], for stacking Dense layer after it.
+            - If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
+
         In a dynamic model, `return_seq_2d` can be updated when it is called in customised forward().
         By default, `False`.
-    return_state: boolean
+    return_last_state: boolean
         Whether to return the last state of the RNN cell. The state is a list of Tensor.
-        1) If True, the layer will return outputs and the final state of the cell.
-        2) If False, the layer will return outputs only.
-        In a dynamic model, `return_state` can be updated when it is called in customised forward().
+        For simple RNN and GRU, last_state = [last_output]; For LSTM, last_state = [last_output, last_cell_state]
+
+            - If True, the layer will return outputs and the final state of the cell.
+            - If False, the layer will return outputs only.
+
+        In a dynamic model, `return_last_state` can be updated when it is called in customised forward().
         By default, `False`.
     in_channels: int
         Optional, the number of channels of the previous layer which is normally the size of embedding.
@@ -70,28 +78,30 @@ class RNN(Layer):
 
     Examples
     --------
-    For synced sequence input and output, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__
+    For synced sequence input and output, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm.py>`__
 
     A simple regression model below.
+    
     >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
     >>> rnn_out, lstm_state = tl.layers.RNN(
     >>>     cell=tf.keras.layers.LSTMCell(units=hidden_size, dropout=0.1),
     >>>     in_channels=embedding_size,
-    >>>     return_last=True, return_state=True, name='lstmrnn'
+    >>>     return_last_output=True, return_last_state=True, name='lstmrnn'
     >>> )(inputs)
     >>> outputs = tl.layers.Dense(n_units=1)(rnn_out)
     >>> rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0], rnn_state[1]], name='rnn_model')
     >>> # If LSTMCell is applied, the rnn_state is [h, c] where h the hidden state and c the cell state of LSTM.
 
     A stacked RNN model.
+    
     >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
     >>> rnn_out1 = tl.layers.RNN(
     >>>     cell=tf.keras.layers.SimpleRNNCell(units=hidden_size, dropout=0.1),
-    >>>     return_last=False, return_seq_2d=False, return_state=False
+    >>>     return_last_output=False, return_seq_2d=False, return_last_state=False
     >>> )(inputs)
     >>> rnn_out2 = tl.layers.RNN(
     >>>     cell=tf.keras.layers.SimpleRNNCell(units=hidden_size, dropout=0.1),
-    >>>     return_last=True, return_state=False
+    >>>     return_last_output=True, return_last_state=False
     >>> )(rnn_out1)
     >>> outputs = tl.layers.Dense(n_units=1)(rnn_out2)
     >>> rnn_model = tl.models.Model(inputs=inputs, outputs=outputs)
@@ -100,15 +110,14 @@ class RNN(Layer):
     -----
     Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see layer :class:`Reshape`.
 
-
     """
 
     def __init__(
             self,
             cell,
-            return_last=False,
+            return_last_output=False,
             return_seq_2d=False,
-            return_state=False,
+            return_last_state=True,
             in_channels=None,
             name=None,  # 'rnn'
     ):
@@ -116,9 +125,9 @@ class RNN(Layer):
         super(RNN, self).__init__(name=name)
 
         self.cell = cell
-        self.return_last = return_last
+        self.return_last_output = return_last_output
         self.return_seq_2d = return_seq_2d
-        self.return_state = return_state
+        self.return_last_state = return_last_state
 
         if in_channels is not None:
             self.build((None, None, in_channels))
@@ -165,14 +174,15 @@ class RNN(Layer):
             If None, `initial_state` is zero state.
         **kwargs: dict
             Some attributes can be updated during forwarding
-            such as `return_last`, `return_seq_2d`, `return_state`.
+            such as `return_last_output`, `return_seq_2d`, `return_last_state`.
         """
 
         if kwargs:
             for attr in kwargs:
-                setattr(self, attr, kwargs[attr])
+                if attr in self.__dict__:
+                    setattr(self, attr, kwargs[attr])
 
-        if self.return_last:
+        if self.return_last_output:
             outputs = [-1]
         else:
             outputs = list()
@@ -190,12 +200,12 @@ class RNN(Layer):
 
             cell_output, states = self.cell.call(inputs[:, time_step, :], states, training=self.is_train)
 
-            if self.return_last:
+            if self.return_last_output:
                 outputs[-1] = cell_output
             else:
                 outputs.append(cell_output)
 
-        if self.return_last:
+        if self.return_last_output:
             outputs = outputs[-1]
         else:
             if self.return_seq_2d:
@@ -207,7 +217,7 @@ class RNN(Layer):
                 # 3D Tensor [batch_size, n_steps, n_hidden]
                 outputs = tf.reshape(tf.concat(outputs, 1), [-1, total_steps, self.cell.units])
 
-        if self.return_state:
+        if self.return_last_state:
             return outputs, states
         else:
             return outputs
@@ -231,11 +241,12 @@ class BiRNN(Layer):
         If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
         In a dynamic model, `return_seq_2d` can be updated when it is called in customised forward().
         By default, `False`.
-    return_state: boolean
+    return_last_state: boolean
         Whether to return the last state of the two cells. The state is a list of Tensor.
-        1) If True, the layer will return outputs, the final state of `fw_cell` and the final state of `bw_cell`.
-        2) If False, the layer will return outputs only.
-        In a dynamic model, `return_state` can be updated when it is called in customised forward().
+            - If True, the layer will return outputs, the final state of `fw_cell` and the final state of `bw_cell`.
+            - If False, the layer will return outputs only.
+
+        In a dynamic model, `return_last_state` can be updated when it is called in customised forward().
         By default, `False`.
     in_channels: int
         Optional, the number of channels of the previous layer which is normally the size of embedding.
@@ -247,15 +258,16 @@ class BiRNN(Layer):
     Examples
     --------
     A simple regression model below.
+    
     >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
     >>> # the fw_cell and bw_cell can be different
     >>> rnnlayer = tl.layers.BiRNN(
     >>>     fw_cell=tf.keras.layers.SimpleRNNCell(units=hidden_size, dropout=0.1),
     >>>     bw_cell=tf.keras.layers.SimpleRNNCell(units=hidden_size + 1, dropout=0.1),
-    >>>     return_seq_2d=True, return_state=True
+    >>>     return_seq_2d=True, return_last_state=True
     >>> )
-    >>> # if return_state=True, the final state of the two cells will be returned together with the outputs
-    >>> # if return_state=False, only the outputs will be returned
+    >>> # if return_last_state=True, the final state of the two cells will be returned together with the outputs
+    >>> # if return_last_state=False, only the outputs will be returned
     >>> rnn_out, rnn_fw_state, rnn_bw_state = rnnlayer(inputs)
     >>> # if the BiRNN is followed by a Dense, return_seq_2d should be True.
     >>> # if the BiRNN is followed by other RNN, return_seq_2d can be False.
@@ -264,21 +276,21 @@ class BiRNN(Layer):
     >>> rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_out, rnn_fw_state[0], rnn_bw_state[0]])
 
     A stacked BiRNN model.
+    
     >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
     >>> rnn_out1 = tl.layers.BiRNN(
     >>>     fw_cell=tf.keras.layers.SimpleRNNCell(units=hidden_size, dropout=0.1),
     >>>     bw_cell=tf.keras.layers.SimpleRNNCell(units=hidden_size + 1, dropout=0.1),
-    >>>     return_seq_2d=False, return_state=False
+    >>>     return_seq_2d=False, return_last_state=False
     >>> )(inputs)
     >>> rnn_out2 = tl.layers.BiRNN(
     >>>     fw_cell=tf.keras.layers.SimpleRNNCell(units=hidden_size, dropout=0.1),
     >>>     bw_cell=tf.keras.layers.SimpleRNNCell(units=hidden_size + 1, dropout=0.1),
-    >>>     return_seq_2d=True, return_state=False
+    >>>     return_seq_2d=True, return_last_state=False
     >>> )(rnn_out1)
     >>> dense = tl.layers.Dense(n_units=1)(rnn_out2)
     >>> outputs = tl.layers.Reshape([-1, num_steps])(dense)
     >>> rnn_model = tl.models.Model(inputs=inputs, outputs=outputs)
-
 
     Notes
     -----
@@ -291,7 +303,7 @@ class BiRNN(Layer):
             fw_cell,
             bw_cell,
             return_seq_2d=False,
-            return_state=False,
+            return_last_state=False,
             in_channels=None,
             name=None,  # 'birnn'
     ):
@@ -300,7 +312,7 @@ class BiRNN(Layer):
         self.fw_cell = fw_cell
         self.bw_cell = bw_cell
         self.return_seq_2d = return_seq_2d
-        self.return_state = return_state
+        self.return_last_state = return_last_state
 
         if in_channels is not None:
             self.build((None, None, in_channels))
@@ -361,12 +373,13 @@ class BiRNN(Layer):
             If None, `bw_initial_state` is zero state.
         **kwargs: dict
             Some attributes can be updated during forwarding
-            such as `return_last`, `return_seq_2d`, `return_state`.
+            such as `return_last_output`, `return_seq_2d`, `return_last_state`.
         """
 
         if kwargs:
             for attr in kwargs:
-                setattr(self, attr, kwargs[attr])
+                if attr in self.__dict__:
+                    setattr(self, attr, kwargs[attr])
 
         fw_outputs = list()
         bw_outputs = list()
@@ -409,7 +422,7 @@ class BiRNN(Layer):
 
         outputs = tf.concat([fw_outputs, bw_outputs], -1)
 
-        if self.return_state:
+        if self.return_last_state:
             return outputs, fw_states, bw_states
         else:
             return outputs
@@ -609,17 +622,19 @@ class ConvLSTM(Layer):
             - If True, return the last output, "Sequence input and single output".
             - If False, return all outputs, "Synced sequence input and output".
             - In other word, if you want to stack more RNNs on this layer, set to False.
+
     return_seq_2d : boolean
-        Only consider this argument when `return_last` is `False`
+        Only consider this argument when `return_last_output` is `False`
             - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+
     name : str
         A unique layer name.
 
     Attributes
     ----------
     outputs : tensor
-        The output of this RNN. return_last = False, outputs = all cell_output, which is the hidden state.
+        The output of this RNN. return_last_output = False, outputs = all cell_output, which is the hidden state.
         cell_output.get_shape() = (?, h, w, c])
 
     final_state : tensor or StateTuple
@@ -883,6 +898,7 @@ class Seq2Seq(Layer):
         A TensorFlow core RNN cell
             - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
             - Note TF1.0+ and TF1.0- are different
+
     cell_init_args : dictionary or None
         The arguments for the cell initializer.
     n_hidden : int
@@ -900,12 +916,14 @@ class Seq2Seq(Layer):
     dropout : tuple of float or int
         The input and output keep probability (input_keep_prob, output_keep_prob).
             - If one int, input and output keep probability are the same.
+
     n_layer : int
         The number of RNN layers, default is 1.
     return_seq_2d : boolean
-        Only consider this argument when `return_last` is `False`
+        Only consider this argument when `return_last_output` is `False`
             - If True, return 2D Tensor [n_example, 2 * n_hidden], for stacking DenseLayer after it.
             - If False, return 3D Tensor [n_example/n_steps, n_steps, 2 * n_hidden], for stacking multiple RNN after it.
+
     name : str
         A unique layer name.
 
