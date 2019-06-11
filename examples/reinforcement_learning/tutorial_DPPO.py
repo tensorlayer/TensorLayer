@@ -12,13 +12,19 @@ Proximal Policy Optimization Algorithms, Schulman et al. 2017
 High Dimensional Continuous Control Using Generalized Advantage Estimation, Schulman et al. 2016
 MorvanZhou's tutorial page: https://morvanzhou.github.io/tutorials
 
-Env
----
+Environment
+-----------
 Openai Gym Pendulum-v0, continual action space
+
+Prerequisites
+--------------
+tensorflow >=2.0.0a0
+tensorflow-probability 0.6.0
+tensorlayer >=2.0.0
 
 To run
 ------
-python *.py
+python tutorial_DPPO.py --train/test
 
 
 """
@@ -27,26 +33,43 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import gym, threading, queue
+import time
 
 import tensorlayer as tl
 import tensorflow_probability as tfp
 import os
+import argparse
 
-EP_MAX = 1000
-EP_LEN = 200
-GAMMA = 0.9
-A_LR = 0.0001
-C_LR = 0.0002
-BATCH = 32
-A_UPDATE_STEPS = 10
-C_UPDATE_STEPS = 10
-S_DIM, A_DIM = 3, 1
-EPS = 1e-8
-METHOD = [
-    dict(name='kl_pen', kl_target=0.01, lam=0.5),  # KL penalty
-    dict(name='clip', epsilon=0.2),  # Clipped surrogate objective, find this is better
-][1]  # choose the method for optimization
+parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
+parser.add_argument('--train', dest='train', action='store_true', default=True)
+parser.add_argument('--test', dest='train', action='store_false')
+args = parser.parse_args()
 
+#####################  hyper parameters  ####################
+
+GAME = 'Pendulum-v0'  # environment name
+RANDOMSEED = 1  # random seed
+
+EP_MAX = 1000  # total number of episodes for training
+EP_LEN = 200  # total number of steps for each episode
+GAMMA = 0.9  # reward discount
+A_LR = 0.0001  # learning rate for actor
+C_LR = 0.0002  # learning rate for critic
+BATCH = 32  # update batchsize
+A_UPDATE_STEPS = 10  # actor update steps
+C_UPDATE_STEPS = 10  # critic update steps
+S_DIM, A_DIM = 3, 1  # state dimension, action dimension
+EPS = 1e-8  # epsilon
+METHOD = [dict(name='kl_pen', kl_target=0.01, lam=0.5),  # KL penalty
+          dict(name='clip', epsilon=0.2),  # Clipped surrogate objective, find this is better
+          ][1]  # choose the method for optimization
+
+N_WORKER = 4  # parallel workers
+MIN_BATCH_SIZE = 64  # minimum batch size for updating PPO
+UPDATE_STEP = 10  # loop update operation n-steps
+
+
+###############################  DPPO  ####################################
 
 class PPO(object):
     '''
@@ -166,7 +189,10 @@ class PPO(object):
                         METHOD['lam'] /= 2
                     elif kl > METHOD['kl_target'] * 1.5:
                         METHOD['lam'] *= 2
-                    METHOD['lam'] = np.clip(METHOD['lam'], 1e-4, 10)  # sometimes explode, this clipping is MorvanZhou's solution
+
+                    # sometimes explode, this clipping is MorvanZhou's solution
+                    METHOD['lam'] = np.clip(METHOD['lam'], 1e-4, 10)
+
                 else:  # clipping method, find this is better (OpenAI's paper)
                     for _ in range(A_UPDATE_STEPS):
                         self.a_train(s, a, adv)
@@ -242,14 +268,7 @@ class PPO(object):
         tl.files.load_hdf5_to_weights_in_order('model/dppo_critic.hdf5', self.critic)
 
 
-
 '''--------------------------------------------------------------'''
-
-N_WORKER = 4  # parallel workers
-MIN_BATCH_SIZE = 64  # minimum batch size for updating PPO
-UPDATE_STEP = 10  # loop update operation n-steps
-
-GAME = 'Pendulum-v0'
 
 
 class Worker(object):
@@ -260,6 +279,7 @@ class Worker(object):
     def __init__(self, wid):
         self.wid = wid
         self.env = gym.make(GAME).unwrapped
+        self.env.seed(wid*100 + RANDOMSEED)
         self.ppo = GLOBAL_PPO
 
     def work(self):
@@ -272,6 +292,7 @@ class Worker(object):
             s = self.env.reset()
             ep_r = 0
             buffer_s, buffer_a, buffer_r = [], [], []
+            t0 = time.time()
             for t in range(EP_LEN):
                 if not ROLLING_EVENT.is_set():  # while global PPO is updating
                     ROLLING_EVENT.wait()  # wait until PPO is updated
@@ -310,41 +331,55 @@ class Worker(object):
             else:
                 GLOBAL_RUNNING_R.append(GLOBAL_RUNNING_R[-1] * 0.9 + ep_r * 0.1)
             GLOBAL_EP += 1
-            print('{0:.1f}%'.format(GLOBAL_EP / EP_MAX * 100), '|W%i' % self.wid, '|Ep_r: %.2f' % ep_r, )
+
+            print('Episode: {}/{}  | Worker: {} | Episode Reward: {:.4f}  | Running Time: {:.4f}'
+                  .format(GLOBAL_EP, EP_MAX, self.wid, ep_r, time.time() - t0))
 
 
 if __name__ == '__main__':
+
+    # reproducible
+    np.random.seed(RANDOMSEED)
+    tf.random.set_seed(RANDOMSEED)
+
     GLOBAL_PPO = PPO()
-    UPDATE_EVENT, ROLLING_EVENT = threading.Event(), threading.Event()
-    UPDATE_EVENT.clear()  # not update now
-    ROLLING_EVENT.set()  # start to roll out
-    workers = [Worker(wid=i) for i in range(N_WORKER)]
+    if args.train:  # train
+        UPDATE_EVENT, ROLLING_EVENT = threading.Event(), threading.Event()
+        UPDATE_EVENT.clear()  # not update now
+        ROLLING_EVENT.set()  # start to roll out
+        workers = [Worker(wid=i) for i in range(N_WORKER)]
 
-    GLOBAL_UPDATE_COUNTER, GLOBAL_EP = 0, 0
-    GLOBAL_RUNNING_R = []
-    COORD = tf.train.Coordinator()
-    QUEUE = queue.Queue()  # workers putting data in this queue
-    threads = []
-    for worker in workers:  # worker threads
-        t = threading.Thread(target=worker.work, args=())
-        t.start()  # training
-        threads.append(t)
-    # add a PPO updating thread
-    threads.append(threading.Thread(target=GLOBAL_PPO.update, ))
-    threads[-1].start()
-    COORD.join(threads)
+        GLOBAL_UPDATE_COUNTER, GLOBAL_EP = 0, 0
+        GLOBAL_RUNNING_R = []
+        COORD = tf.train.Coordinator()
+        QUEUE = queue.Queue()  # workers putting data in this queue
+        threads = []
+        for worker in workers:  # worker threads
+            t = threading.Thread(target=worker.work, args=())
+            t.start()  # training
+            threads.append(t)
+        # add a PPO updating thread
+        threads.append(threading.Thread(target=GLOBAL_PPO.update, ))
+        threads[-1].start()
+        COORD.join(threads)
 
-    # plot reward change and test
-    plt.title('DPPO')
-    plt.plot(np.arange(len(GLOBAL_RUNNING_R)), GLOBAL_RUNNING_R)
-    plt.xlabel('Episode')
-    plt.ylabel('Moving reward')
-    plt.ylim(-2000, 0)
-    plt.show()
+        GLOBAL_PPO.save_ckpt()
 
-    env = gym.make('Pendulum-v0')
+        # plot reward change and test
+        plt.title('DPPO')
+        plt.plot(np.arange(len(GLOBAL_RUNNING_R)), GLOBAL_RUNNING_R)
+        plt.xlabel('Episode')
+        plt.ylabel('Moving reward')
+        plt.ylim(-2000, 0)
+        plt.show()
+
+    # test
+    GLOBAL_PPO.load_ckpt()
+    env = gym.make(GAME)
     while True:
         s = env.reset()
-        for t in range(300):
+        for t in range(EP_LEN):
             env.render()
-            s = env.step(GLOBAL_PPO.choose_action(s))[0]
+            s, r, done, info = env.step(GLOBAL_PPO.choose_action(s))
+            if done:
+                break

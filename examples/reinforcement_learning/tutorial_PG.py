@@ -11,28 +11,49 @@ Reference
 Cookbook: Barto A G, Sutton R S. Reinforcement Learning: An Introduction[J]. 1998.
 MorvanZhou's tutorial page: https://morvanzhou.github.io/tutorials/
 
-Env
----
+Environment
+-----------
 Openai Gym CartPole-v0, discrete action space
-https://gym.openai.com/envs/CartPole-v0
+
+Prerequisites
+--------------
+tensorflow >=2.0.0a0
+tensorflow-probability 0.6.0
+tensorlayer >=2.0.0
 
 To run
 ------
-python *.py
+python tutorial_PG.py --train/test
 
 """
 
 import tensorflow as tf
 import tensorlayer as tl
 import numpy as np
+
+import gym
+import matplotlib.pyplot as plt
+import time
 import os
+import argparse
 
-tl.logging.set_verbosity(tl.logging.DEBUG)
+parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
+parser.add_argument('--train', dest='train', action='store_true', default=True)
+parser.add_argument('--test', dest='train', action='store_false')
+args = parser.parse_args()
 
-# reproducible
-np.random.seed(1)
-tf.random.set_seed(1)
 
+#####################  hyper parameters  ####################
+
+ENV_NAME = 'CartPole-v0'  # environment name
+RANDOMSEED = 1  # random seed
+
+DISPLAY_REWARD_THRESHOLD = 400      # renders environment if total episode reward is greater then this threshold
+RENDER = False                      # rendering wastes time
+num_episodes = 3000
+
+
+###############################  PG  ####################################
 
 class PolicyGradient:
     """
@@ -163,16 +184,14 @@ class PolicyGradient:
 
 if __name__ == '__main__':
 
-    import gym
-    import matplotlib.pyplot as plt
-    import time
+    # reproducible
+    np.random.seed(RANDOMSEED)
+    tf.random.set_seed(RANDOMSEED)
 
-    DISPLAY_REWARD_THRESHOLD = 400      # renders environment if total episode reward is greater then this threshold
-    RENDER = False                      # rendering wastes time
-    num_episodes = 3000
+    tl.logging.set_verbosity(tl.logging.DEBUG)
 
-    env = gym.make('CartPole-v0')
-    env.seed(1)                         # reproducible, general Policy gradient has high variance
+    env = gym.make(ENV_NAME)
+    env.seed(RANDOMSEED)                         # reproducible, general Policy gradient has high variance
     env = env.unwrapped
 
     print(env.action_space)
@@ -187,53 +206,66 @@ if __name__ == '__main__':
         reward_decay=0.99,
         # output_graph=True,
     )
-    reward_buffer = []
 
+    if args.train:
+        reward_buffer = []
 
-    for i_episode in range(num_episodes):
+        for i_episode in range(num_episodes):
 
-        episode_time = time.time()
-        observation = env.reset()
+            episode_time = time.time()
+            observation = env.reset()
 
-        while True:
-            if RENDER:
-                env.render()
+            while True:
+                if RENDER:
+                    env.render()
 
-            action = RL.choose_action(observation)
+                action = RL.choose_action(observation)
 
-            observation_, reward, done, info = env.step(action)
+                observation_, reward, done, info = env.step(action)
 
-            RL.store_transition(observation, action, reward)
+                RL.store_transition(observation, action, reward)
 
-            if done:
-                ep_rs_sum = sum(RL.ep_rs)
+                if done:
+                    ep_rs_sum = sum(RL.ep_rs)
 
-                if 'running_reward' not in globals():
-                    running_reward = ep_rs_sum
-                else:
-                    running_reward = running_reward * 0.99 + ep_rs_sum * 0.01
+                    if 'running_reward' not in globals():
+                        running_reward = ep_rs_sum
+                    else:
+                        running_reward = running_reward * 0.99 + ep_rs_sum * 0.01
 
-                if running_reward > DISPLAY_REWARD_THRESHOLD:
-                    RENDER = True  # rendering
+                    if running_reward > DISPLAY_REWARD_THRESHOLD:
+                        RENDER = True  # rendering
 
-                # print("episode:", i_episode, "  reward:", int(running_reward))
+                    # print("episode:", i_episode, "  reward:", int(running_reward))
 
-                print("Episode [%d/%d] \tsum reward: %d  \trunning reward: %f \ttook: %.5fs " %
-                      (i_episode, num_episodes, ep_rs_sum, running_reward, time.time() - episode_time))
-                reward_buffer.append(running_reward)
+                    print("Episode [%d/%d] \tsum reward: %d  \trunning reward: %f \ttook: %.5fs " %
+                          (i_episode, num_episodes, ep_rs_sum, running_reward, time.time() - episode_time))
+                    reward_buffer.append(running_reward)
 
-                vt = RL.learn()
+                    vt = RL.learn()
 
-                plt.ion()
-                plt.title('PG')
-                plt.plot(reward_buffer, )  # plot the episode vt
-                plt.xlabel('episode steps')
-                plt.ylabel('normalized state-action value')
-                plt.show()
-                plt.pause(0.1)
-                plt.cla()
-                plt.ioff()
+                    plt.ion()
+                    plt.cla()
+                    plt.title('PG')
+                    plt.plot(reward_buffer, )  # plot the episode vt
+                    plt.xlabel('episode steps')
+                    plt.ylabel('normalized state-action value')
+                    plt.show()
+                    plt.pause(0.1)
 
-                break
+                    break
 
-            observation = observation_
+                observation = observation_
+        RL.save_ckpt()
+        plt.ioff()
+        plt.show()
+
+    # test
+    RL.load_ckpt()
+    observation = env.reset()
+    while True:
+        env.render()
+        action = RL.choose_action(observation)
+        observation, reward, done, info = env.step(action)
+        if done:
+            observation = env.reset()

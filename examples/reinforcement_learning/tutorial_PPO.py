@@ -12,13 +12,19 @@ High Dimensional Continuous Control Using Generalized Advantage Estimation, Schu
 Emergence of Locomotion Behaviours in Rich Environments, Heess et al. 2017
 MorvanZhou's tutorial page: https://morvanzhou.github.io/tutorials
 
-Env
----
+Environment
+-----------
 Openai Gym Pendulum-v0, continual action space
+
+Prerequisites
+--------------
+tensorflow >=2.0.0a0
+tensorflow-probability 0.6.0
+tensorlayer >=2.0.0
 
 To run
 ------
-python *.py
+python tutorial_PPO.py --train/test
 
 """
 
@@ -28,23 +34,36 @@ import matplotlib.pyplot as plt
 import gym
 import tensorlayer as tl
 import tensorflow_probability as tfp
+import time
 import os
+import argparse
 
-EP_MAX = 1000
-EP_LEN = 200
-GAMMA = 0.9
-A_LR = 0.0001
-C_LR = 0.0002
-BATCH = 32
-A_UPDATE_STEPS = 10
-C_UPDATE_STEPS = 10
-S_DIM, A_DIM = 3, 1
-EPS = 1e-8
-METHOD = [
-    dict(name='kl_pen', kl_target=0.01, lam=0.5),  # KL penalty
-    dict(name='clip', epsilon=0.2),  # Clipped surrogate objective, find this is better
-][1]  # choose the method for optimization
+parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
+parser.add_argument('--train', dest='train', action='store_true', default=True)
+parser.add_argument('--test', dest='train', action='store_false')
+args = parser.parse_args()
 
+#####################  hyper parameters  ####################
+
+ENV_NAME = 'Pendulum-v0'  # environment name
+RANDOMSEED = 1  # random seed
+
+EP_MAX = 1000  # total number of episodes for training
+EP_LEN = 200  # total number of steps for each episode
+GAMMA = 0.9  # reward discount
+A_LR = 0.0001  # learning rate for actor
+C_LR = 0.0002  # learning rate for critic
+BATCH = 32  # update batchsize
+A_UPDATE_STEPS = 10  # actor update steps
+C_UPDATE_STEPS = 10  # critic update steps
+S_DIM, A_DIM = 3, 1  # state dimension, action dimension
+EPS = 1e-8  # epsilon
+METHOD = [dict(name='kl_pen', kl_target=0.01, lam=0.5),  # KL penalty
+          dict(name='clip', epsilon=0.2),  # Clipped surrogate objective, find this is better
+          ][1]  # choose the method for optimization
+
+
+###############################  PPO  ####################################
 
 class PPO(object):
     '''
@@ -118,8 +137,10 @@ class PPO(object):
         '''
         tfdc_r = np.array(tfdc_r, dtype=np.float32)
         with tf.GradientTape() as tape:
-            advantage = tfdc_r - self.critic(s)
+            v = self.critic(s)
+            advantage = tfdc_r - v
             closs = tf.reduce_mean(tf.square(advantage))
+        # print('tfdc_r value', tfdc_r)
         grad = tape.gradient(closs, self.critic.trainable_weights)
         tf.optimizers.Adam(C_LR).apply_gradients(zip(grad, self.critic.trainable_weights))
 
@@ -230,63 +251,72 @@ class PPO(object):
         tl.files.load_hdf5_to_weights_in_order('model/ppo_critic.hdf5', self.critic)
 
 
-env = gym.make('Pendulum-v0').unwrapped
-ppo = PPO()
-all_ep_r = []
+if __name__ == '__main__':
 
-for ep in range(EP_MAX):
-    s = env.reset()
-    buffer_s, buffer_a, buffer_r = [], [], []
-    ep_r = 0
-    for t in range(EP_LEN):  # in one episode
-        # env.render()
-        a = ppo.choose_action(s)
-        s_, r, done, _ = env.step(a)
-        buffer_s.append(s)
-        buffer_a.append(a)
-        buffer_r.append((r + 8) / 8)  # normalize reward, find to be useful
-        s = s_
-        ep_r += r
+    env = gym.make(ENV_NAME).unwrapped
 
-        # update ppo
-        if (t + 1) % BATCH == 0 or t == EP_LEN - 1:
-            v_s_ = ppo.get_v(s_)
-            discounted_r = []
-            for r in buffer_r[::-1]:
-                v_s_ = r + GAMMA * v_s_
-                discounted_r.append(v_s_)
-            discounted_r.reverse()
+    # reproducible
+    env.seed(RANDOMSEED)
+    np.random.seed(RANDOMSEED)
+    tf.random.set_seed(RANDOMSEED)
 
-            bs, ba, br = np.vstack(buffer_s), np.vstack(buffer_a), np.array(discounted_r)[:, np.newaxis]
+    ppo = PPO()
+
+    if args.train:
+        all_ep_r = []
+        for ep in range(EP_MAX):
+            s = env.reset()
             buffer_s, buffer_a, buffer_r = [], [], []
-            ppo.update(bs, ba, br)
-    if ep == 0:
-        all_ep_r.append(ep_r)
-    else:
-        all_ep_r.append(all_ep_r[-1] * 0.9 + ep_r * 0.1)
-    print(
-        'Ep: %i' % ep,
-        "|Ep_r: %i" % ep_r,
-        ("|Lam: %.4f" % METHOD['lam']) if METHOD['name'] == 'kl_pen' else '',
-    )
+            ep_r = 0
+            t0 = time.time()
+            for t in range(EP_LEN):  # in one episode
+                # env.render()
+                a = ppo.choose_action(s)
+                s_, r, done, _ = env.step(a)
+                buffer_s.append(s)
+                buffer_a.append(a)
+                buffer_r.append((r + 8) / 8)  # normalize reward, find to be useful
+                s = s_
+                ep_r += r
 
-    plt.ion()
-    plt.cla()
-    plt.title('PPO')
-    plt.plot(np.arange(len(all_ep_r)), all_ep_r)
-    plt.ylim(-2000, 0)
-    plt.xlabel('Episode')
-    plt.ylabel('Moving averaged episode reward')
-    plt.show()
-    plt.pause(0.1)
-    plt.ioff()
+                # update ppo
+                if (t + 1) % BATCH == 0 or t == EP_LEN - 1:
+                    v_s_ = ppo.get_v(s_)
+                    discounted_r = []
+                    for r in buffer_r[::-1]:
+                        v_s_ = r + GAMMA * v_s_
+                        discounted_r.append(v_s_)
+                    discounted_r.reverse()
 
-while True:
-    s = env.reset()
-    for i in range(EP_LEN):
-        env.render()
-        a = ppo.choose_action(s)
-        s_, r, done, _ = env.step(a)
-        if done:
-            break
-        s = s_
+                    bs, ba, br = np.vstack(buffer_s), np.vstack(buffer_a), np.array(discounted_r)[:, np.newaxis]
+                    buffer_s, buffer_a, buffer_r = [], [], []
+                    ppo.update(bs, ba, br)
+            if ep == 0:
+                all_ep_r.append(ep_r)
+            else:
+                all_ep_r.append(all_ep_r[-1] * 0.9 + ep_r * 0.1)
+            print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'
+                  .format(ep, EP_MAX, ep_r, time.time() - t0))
+
+            plt.ion()
+            plt.cla()
+            plt.title('PPO')
+            plt.plot(np.arange(len(all_ep_r)), all_ep_r)
+            plt.ylim(-2000, 0)
+            plt.xlabel('Episode')
+            plt.ylabel('Moving averaged episode reward')
+            plt.show()
+            plt.pause(0.1)
+        ppo.save_ckpt()
+        plt.ioff()
+        plt.show()
+
+    # test
+    ppo.load_ckpt()
+    while True:
+        s = env.reset()
+        for i in range(EP_LEN):
+            env.render()
+            s, r, done, _ = env.step(ppo.choose_action(s))
+            if done:
+                break

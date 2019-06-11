@@ -11,38 +11,63 @@ Deterministic Policy Gradient Algorithms, Silver et al. 2014
 Continuous Control With Deep Reinforcement Learning, Lillicrap et al. 2016
 MorvanZhou's tutorial page: https://morvanzhou.github.io/tutorials/
 
-Env
----
+Environment
+-----------
 Openai Gym Pendulum-v0, continual action space
+
+Prerequisites
+-------------
+tensorflow >=2.0.0a0
+tensorflow-probability 0.6.0
+tensorlayer >=2.0.0
 
 To run
 ------
-python *.py
+python tutorial_DDPG.py --train/test
 
 """
 
 import tensorflow as tf
 import tensorlayer as tl
 import numpy as np
+import gym
+import time
+import matplotlib.pyplot as plt
 import os
+import argparse
+
+parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
+parser.add_argument('--train', dest='train', action='store_true', default=True)
+parser.add_argument('--test', dest='train', action='store_false')
+args = parser.parse_args()
 
 #####################  hyper parameters  ####################
+
+ENV_NAME = 'Pendulum-v0'  # environment name
+RANDOMSEED = 1  # random seed
 
 LR_A = 0.001  # learning rate for actor
 LR_C = 0.002  # learning rate for critic
 GAMMA = 0.9  # reward discount
 TAU = 0.01  # soft replacement
-MEMORY_CAPACITY = 10000
-BATCH_SIZE = 32
+MEMORY_CAPACITY = 10000  # size of replay buffer
+BATCH_SIZE = 32  # update batchsize
+
+MAX_EPISODES = 200  # total number of episodes for training
+MAX_EP_STEPS = 200  # total number of steps for each episode
+TEST_PER_EPISODES = 10  # test the model per episodes
+VAR = 3  # control exploration
+
 
 ###############################  DDPG  ####################################
 
 
 class DDPG(object):
-    '''
+    """
     DDPG class
-    '''
-    def __init__(self, a_dim, s_dim, a_bound, ):
+    """
+
+    def __init__(self, a_dim, s_dim, a_bound):
         self.memory = np.zeros((MEMORY_CAPACITY, s_dim * 2 + a_dim + 1), dtype=np.float32)
         self.pointer = 0
         self.a_dim, self.s_dim, self.a_bound = a_dim, s_dim, a_bound
@@ -51,25 +76,26 @@ class DDPG(object):
         b_init = tf.constant_initializer(0.1)
 
         def get_actor(input_state_shape, name=''):
-            '''
+            """
             Build actor network
             :param input_state_shape: state
+            :param name: name
             :return: act
-            '''
+            """
             inputs = tl.layers.Input(input_state_shape, name='A_input')
             x = tl.layers.Dense(n_units=30, act=tf.nn.relu, W_init=W_init, b_init=b_init, name='A_l1')(inputs)
             x = tl.layers.Dense(n_units=a_dim, act=tf.nn.tanh, W_init=W_init, b_init=b_init, name='A_a')(x)
-            # x = tl.layers.Lambda(lambda x: np.array(a_bound)*x)(x)
-            # x = tf.multiply(x, a_bound, name='A_scaled_a')
+            x = tl.layers.Lambda(lambda x: np.array(a_bound) * x)(x)
             return tl.models.Model(inputs=inputs, outputs=x, name='Actor' + name)
 
         def get_critic(input_state_shape, input_action_shape, name=''):
-            '''
+            """
             Build critic network
             :param input_state_shape: state
             :param input_action_shape: act
+            :param name: name
             :return: Q value Q(s,a)
-            '''
+            """
             s = tl.layers.Input(input_state_shape, name='C_s_input')
             a = tl.layers.Input(input_action_shape, name='C_a_input')
             x = tl.layers.Concat(1)([s, a])
@@ -83,12 +109,12 @@ class DDPG(object):
         self.critic.train()
 
         def copy_para(from_model, to_model):
-            '''
+            """
             Copy parameters for soft updating
             :param from_model: latest model
             :param to_model: target model
             :return: None
-            '''
+            """
             for i, j in zip(from_model.trainable_weights, to_model.trainable_weights):
                 j.assign(i)
 
@@ -108,28 +134,28 @@ class DDPG(object):
         self.critic_opt = tf.optimizers.Adam(LR_C)
 
     def ema_update(self):
-        '''
+        """
         Soft updating by exponential smoothing
         :return: None
-        '''
+        """
         paras = self.actor.trainable_weights + self.critic.trainable_weights
         self.ema.apply(paras)
         for i, j in zip(self.actor_target.trainable_weights + self.critic_target.trainable_weights, paras):
             i.assign(self.ema.average(j))
 
     def choose_action(self, s):
-        '''
+        """
         Choose action
         :param s: state
         :return: act
-        '''
+        """
         return self.actor(np.array([s], dtype=np.float32))[0]
 
     def learn(self):
-        '''
+        """
         Update parameters
         :return: None
-        '''
+        """
         indices = np.random.choice(MEMORY_CAPACITY, size=BATCH_SIZE)
         bt = self.memory[indices, :]
         bs = bt[:, :self.s_dim]
@@ -156,14 +182,14 @@ class DDPG(object):
         self.ema_update()
 
     def store_transition(self, s, a, r, s_):
-        '''
+        """
         Store data in data buffer
         :param s: state
         :param a: act
         :param r: reward
         :param s_: next state
         :return: None
-        '''
+        """
         s = s.astype(np.float32)
         s_ = s_.astype(np.float32)
         transition = np.hstack((s, a, [r], s_))
@@ -196,20 +222,14 @@ class DDPG(object):
 
 
 if __name__ == '__main__':
-    import gym
-    import time
-    import matplotlib.pyplot as plt
-
-    MAX_EPISODES = 200
-    MAX_EP_STEPS = 200
-    TEST_PER_EPISODES = 10
-    ENV_NAME = 'Pendulum-v0'
-
-    ###############################  training  ####################################
 
     env = gym.make(ENV_NAME)
     env = env.unwrapped
-    env.seed(1)
+
+    # reproducible
+    env.seed(RANDOMSEED)
+    np.random.seed(RANDOMSEED)
+    tf.random.set_seed(RANDOMSEED)
 
     s_dim = env.observation_space.shape[0]
     a_dim = env.action_space.shape[0]
@@ -217,69 +237,70 @@ if __name__ == '__main__':
 
     ddpg = DDPG(a_dim, s_dim, a_bound)
 
-    var = 3  # control exploration
-    reward_buffer = []
-    t0 = time.time()
-    for i in range(MAX_EPISODES):
-        t1 = time.time()
-        s = env.reset()
-        ep_reward = 0
-        for j in range(MAX_EP_STEPS):
-            # Add exploration noise
-            a = ddpg.choose_action(s)
-            a = np.clip(np.random.normal(a, var), -2, 2)  # add randomness to action selection for exploration
-            s_, r, done, info = env.step(a)
+    if args.train:  # train
 
-            ddpg.store_transition(s, a, r / 10, s_)
-
-            if ddpg.pointer > MEMORY_CAPACITY:
-                # var *= .9995  # decay the action randomness
-                ddpg.learn()
-
-            s = s_
-            ep_reward += r
-            if j == MAX_EP_STEPS - 1:
-                print("\rEpisode [%d/%d] \tReward: %i \tExplore: %.2f \ttook: %.5fs " %
-                      (i, MAX_EPISODES, ep_reward, var, time.time() - t1), end='')
-
-        # test
-        if i and not i % TEST_PER_EPISODES:
+        reward_buffer = []
+        t0 = time.time()
+        for i in range(MAX_EPISODES):
             t1 = time.time()
             s = env.reset()
             ep_reward = 0
             for j in range(MAX_EP_STEPS):
-
-                a = ddpg.choose_action(s)       # without exploration noise
+                # Add exploration noise
+                a = ddpg.choose_action(s)
+                a = np.clip(np.random.normal(a, VAR), -2, 2)  # add randomness to action selection for exploration
                 s_, r, done, info = env.step(a)
+
+                ddpg.store_transition(s, a, r / 10, s_)
+
+                if ddpg.pointer > MEMORY_CAPACITY:
+                    ddpg.learn()
 
                 s = s_
                 ep_reward += r
                 if j == MAX_EP_STEPS - 1:
-                    print("\rEpisode [%d/%d] \tReward: %i \tExplore: %.2f \ttook: %.5fs " %
-                          (i, MAX_EPISODES, ep_reward, var, time.time() - t1))
+                    print('\rEpisode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'
+                          .format(i, MAX_EPISODES, ep_reward, time.time() - t1), end='')
+                plt.show()
+            # test
+            if i and not i % TEST_PER_EPISODES:
+                t1 = time.time()
+                s = env.reset()
+                ep_reward = 0
+                for j in range(MAX_EP_STEPS):
 
-                    reward_buffer.append(ep_reward)
+                    a = ddpg.choose_action(s)  # without exploration noise
+                    s_, r, done, info = env.step(a)
 
-        if reward_buffer:
-            plt.ion()
-            plt.title('DDPG')
-            plt.plot(np.array(range(len(reward_buffer)))*TEST_PER_EPISODES, reward_buffer)  # plot the episode vt
-            plt.xlabel('episode steps')
-            plt.ylabel('normalized state-action value')
-            plt.ylim(-2000, 0)
-            plt.show()
-            plt.pause(0.1)
-            plt.cla()
-            plt.ioff()
+                    s = s_
+                    ep_reward += r
+                    if j == MAX_EP_STEPS - 1:
+                        print('\rEpisode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'
+                              .format(i, MAX_EPISODES, ep_reward, time.time() - t1))
 
-    print('\nRunning time: ', time.time() - t0)
-    s = env.reset()
+                        reward_buffer.append(ep_reward)
+
+            if reward_buffer:
+                plt.ion()
+                plt.cla()
+                plt.title('DDPG')
+                plt.plot(np.array(range(len(reward_buffer))) * TEST_PER_EPISODES, reward_buffer)  # plot the episode vt
+                plt.xlabel('episode steps')
+                plt.ylabel('normalized state-action value')
+                plt.ylim(-2000, 0)
+                plt.show()
+                plt.pause(0.1)
+        plt.ioff()
+        plt.show()
+        print('\nRunning time: ', time.time() - t0)
+        ddpg.save_ckpt()
+
+    # test
+    ddpg.load_ckpt()
     while True:
         s = env.reset()
         for i in range(MAX_EP_STEPS):
             env.render()
-            a = ddpg.choose_action(s)
-            s_, r, done, info = env.step(a)
+            s, r, done, info = env.step(ddpg.choose_action(s))
             if done:
                 break
-            s = s_
