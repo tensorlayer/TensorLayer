@@ -88,7 +88,8 @@ To release a new version, please update the changelog as followed:
 ## [2.0.3]
 
 ### Changed
-- Add version_info in model.config. 
+- Add version_info in model.config. (PR #992)
+- Replace tf.nn.func with tf.nn.func.\_\_name\_\_ in model config.
 
 ### Fixed
 

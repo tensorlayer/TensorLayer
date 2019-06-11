@@ -354,7 +354,11 @@ class Layer(object):
 
                 # change function (e.g. act) into dictionary of module path and function name
                 if inspect.isfunction(val):
-                    params[arg] = ('is_Func', utils.func2str(val))
+                    if ("__module__" in dir(val)) and (len(val.__module__) >
+                                                       10) and (val.__module__[0:10] == "tensorflow"):
+                        params[arg] = val.__name__
+                    else:
+                        params[arg] = ('is_Func', utils.func2str(val))
                     # if val.__name__ == "<lambda>":
                     #     params[arg] = utils.lambda2str(val)
                     # else:
