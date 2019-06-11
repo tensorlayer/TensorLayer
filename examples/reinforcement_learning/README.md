@@ -198,7 +198,7 @@ Our env wrapper: `./tutorial_wrappers.py`
 
 ## Authors
 - @xxxx XXXXX : AC, A3C
-- @xxxx XXXXX : TPRO
+- @Tokarev-TT-33 Tianyang Yu @initial-h Hongming Zhang : PG, DDPG, PPO, DPPO, TRPO
 - @quantumiracle Zihan Ding: SAC, TD3.
 
 ### More examples can be found in the [example list](https://tensorlayer.readthedocs.io/en/stable/user/examples.html)
