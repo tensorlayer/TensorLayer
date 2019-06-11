@@ -122,8 +122,6 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
     - Dueling DQN uses dueling architecture where the value of state and the advantage of each action is estimated separately.
     
     - Noisy DQN propose to explore by adding parameter noises.
-    
-      
     ```
 
     
@@ -166,7 +164,9 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Description:</u>
 
+  ```
   Retrace (lambda) is an off-policy algorithm that extend the idea of eligibility trace. It apply an importance sampling ratio truncated at 1 to several behaviour policies, which suffer from the variance explosion of standard IS and lead to safe and efficient learning.
+  ```
 
   
 
@@ -241,9 +241,11 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Description:</u>
 
+  ```
   An algorithm concurrently learns a Q-function and a policy.
-
+  
   It uses off-policy data and the Bellman equation to learn the Q-function, and uses the Q-function to learn the policy.
+  ```
 
   
 
