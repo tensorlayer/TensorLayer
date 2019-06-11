@@ -45,12 +45,12 @@ from tutorial_wrappers import build_env
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--mode', help='train or test', default='train')
-parser.add_argument('--save_path', default='per',
-                    help='folder to save if mode == train else model path,'
-                         'qnet will be saved once target net update')
+parser.add_argument(
+    '--save_path', default='per', help='folder to save if mode == train else model path,'
+    'qnet will be saved once target net update'
+)
 parser.add_argument('--seed', help='random seed', type=int, default=0)
-parser.add_argument('--env_id', default='CartPole-v0',
-                    help='CartPole-v0 or PongNoFrameskip-v4')
+parser.add_argument('--env_id', default='CartPole-v0', help='CartPole-v0 or PongNoFrameskip-v4')
 args = parser.parse_args()
 
 if args.mode == 'train':
@@ -95,36 +95,39 @@ prioritized_replay_beta0 = 0.4  # initial beta in PER
 
 # ##############################  PER  ####################################
 class MLP(tl.models.Model):
+
     def __init__(self, name):
         super(MLP, self).__init__(name=name)
         self.h1 = tl.layers.Dense(64, tf.nn.tanh, in_channels=in_dim[0])
-        self.qvalue = tl.layers.Dense(out_dim, in_channels=64, name='q',
-                                      W_init=tf.initializers.GlorotUniform())
+        self.qvalue = tl.layers.Dense(out_dim, in_channels=64, name='q', W_init=tf.initializers.GlorotUniform())
 
     def forward(self, ni):
         return self.qvalue(self.h1(ni))
 
 
 class CNN(tl.models.Model):
+
     def __init__(self, name):
         super(CNN, self).__init__(name=name)
         h, w, in_channels = in_dim
         dense_in_channels = 64 * ((h - 28) // 8) * ((w - 28) // 8)
-        self.conv1 = tl.layers.Conv2d(32, (8, 8), (4, 4), tf.nn.relu, 'VALID',
-                                      in_channels=in_channels, name='conv2d_1',
-                                      W_init=tf.initializers.GlorotUniform())
-        self.conv2 = tl.layers.Conv2d(64, (4, 4), (2, 2), tf.nn.relu, 'VALID',
-                                      in_channels=32, name='conv2d_2',
-                                      W_init=tf.initializers.GlorotUniform())
-        self.conv3 = tl.layers.Conv2d(64, (3, 3), (1, 1), tf.nn.relu, 'VALID',
-                                      in_channels=64, name='conv2d_3',
-                                      W_init=tf.initializers.GlorotUniform())
+        self.conv1 = tl.layers.Conv2d(
+            32, (8, 8), (4, 4), tf.nn.relu, 'VALID', in_channels=in_channels, name='conv2d_1',
+            W_init=tf.initializers.GlorotUniform()
+        )
+        self.conv2 = tl.layers.Conv2d(
+            64, (4, 4), (2, 2), tf.nn.relu, 'VALID', in_channels=32, name='conv2d_2',
+            W_init=tf.initializers.GlorotUniform()
+        )
+        self.conv3 = tl.layers.Conv2d(
+            64, (3, 3), (1, 1), tf.nn.relu, 'VALID', in_channels=64, name='conv2d_3',
+            W_init=tf.initializers.GlorotUniform()
+        )
         self.flatten = tl.layers.Flatten(name='flatten')
-        self.preq = tl.layers.Dense(256, tf.nn.relu,
-                                    in_channels=dense_in_channels, name='pre_q',
-                                    W_init=tf.initializers.GlorotUniform())
-        self.qvalue = tl.layers.Dense(out_dim, in_channels=256, name='q',
-                                      W_init=tf.initializers.GlorotUniform())
+        self.preq = tl.layers.Dense(
+            256, tf.nn.relu, in_channels=dense_in_channels, name='pre_q', W_init=tf.initializers.GlorotUniform()
+        )
+        self.qvalue = tl.layers.Dense(out_dim, in_channels=256, name='q', W_init=tf.initializers.GlorotUniform())
 
     def forward(self, ni):
         feature = self.flatten(self.conv3(self.conv2(self.conv1(ni))))
@@ -132,6 +135,7 @@ class CNN(tl.models.Model):
 
 
 class SegmentTree(object):
+
     def __init__(self, capacity, operation, neutral_element):
         """Build a Segment Tree data structure.
 
@@ -172,14 +176,11 @@ class SegmentTree(object):
             return self._reduce_helper(start, end, 2 * node, node_start, mid)
         else:
             if mid + 1 <= start:
-                return self._reduce_helper(start, end,
-                                           2 * node + 1, mid + 1, node_end)
+                return self._reduce_helper(start, end, 2 * node + 1, mid + 1, node_end)
             else:
                 return self._operation(
-                    self._reduce_helper(start, mid,
-                                        2 * node, node_start, mid),
-                    self._reduce_helper(mid + 1, end,
-                                        2 * node + 1, mid + 1, node_end)
+                    self._reduce_helper(start, mid, 2 * node, node_start, mid),
+                    self._reduce_helper(mid + 1, end, 2 * node + 1, mid + 1, node_end)
                 )
 
     def reduce(self, start=0, end=None):
@@ -211,10 +212,7 @@ class SegmentTree(object):
         self._value[idx] = val
         idx //= 2
         while idx >= 1:
-            self._value[idx] = self._operation(
-                self._value[2 * idx],
-                self._value[2 * idx + 1]
-            )
+            self._value[idx] = self._operation(self._value[2 * idx], self._value[2 * idx + 1])
             idx //= 2
 
     def __getitem__(self, idx):
@@ -223,12 +221,9 @@ class SegmentTree(object):
 
 
 class SumSegmentTree(SegmentTree):
+
     def __init__(self, capacity):
-        super(SumSegmentTree, self).__init__(
-            capacity=capacity,
-            operation=operator.add,
-            neutral_element=0.0
-        )
+        super(SumSegmentTree, self).__init__(capacity=capacity, operation=operator.add, neutral_element=0.0)
 
     def sum(self, start=0, end=None):
         """Returns arr[start] + ... + arr[end]"""
@@ -264,12 +259,9 @@ class SumSegmentTree(SegmentTree):
 
 
 class MinSegmentTree(SegmentTree):
+
     def __init__(self, capacity):
-        super(MinSegmentTree, self).__init__(
-            capacity=capacity,
-            operation=min,
-            neutral_element=float('inf')
-        )
+        super(MinSegmentTree, self).__init__(capacity=capacity, operation=min, neutral_element=float('inf'))
 
     def min(self, start=0, end=None):
         """Returns min(arr[start], ...,  arr[end])"""
@@ -278,6 +270,7 @@ class MinSegmentTree(SegmentTree):
 
 
 class ReplayBuffer(object):
+
     def __init__(self, size):
         self._storage = []
         self._maxsize = size
@@ -317,6 +310,7 @@ class ReplayBuffer(object):
 
 
 class PrioritizedReplayBuffer(ReplayBuffer):
+
     def __init__(self, size, alpha, beta):
         """Create Prioritized Replay buffer.
 
@@ -350,8 +344,8 @@ class PrioritizedReplayBuffer(ReplayBuffer):
         """See ReplayBuffer.store_effect"""
         idx = self._next_idx
         super().add(*args)
-        self._it_sum[idx] = self._max_priority ** self._alpha
-        self._it_min[idx] = self._max_priority ** self._alpha
+        self._it_sum[idx] = self._max_priority**self._alpha
+        self._it_min[idx] = self._max_priority**self._alpha
 
     def _sample_proportional(self, batch_size):
         res = []
@@ -369,10 +363,10 @@ class PrioritizedReplayBuffer(ReplayBuffer):
 
         it_sum = self._it_sum.sum()
         p_min = self._it_min.min() / it_sum
-        max_weight = (p_min * len(self._storage)) ** (-self.beta)
+        max_weight = (p_min * len(self._storage))**(-self.beta)
 
         p_samples = np.asarray([self._it_sum[idx] for idx in idxes]) / it_sum
-        weights = (p_samples * len(self._storage)) ** (-self.beta) / max_weight
+        weights = (p_samples * len(self._storage))**(-self.beta) / max_weight
         encoded_sample = self._encode_sample(idxes)
         return encoded_sample + (weights, idxes)
 
@@ -382,8 +376,8 @@ class PrioritizedReplayBuffer(ReplayBuffer):
         for idx, priority in zip(idxes, priorities):
             assert priority > 0
             assert 0 <= idx < len(self._storage)
-            self._it_sum[idx] = priority ** self._alpha
-            self._it_min[idx] = priority ** self._alpha
+            self._it_sum[idx] = priority**self._alpha
+            self._it_min[idx] = priority**self._alpha
 
             self._max_priority = max(self._max_priority, priority)
 
@@ -408,8 +402,7 @@ if __name__ == '__main__':
         targetqnet.infer()
         sync(qnet, targetqnet)
         optimizer = tf.optimizers.Adam(learning_rate=lr)
-        buffer = PrioritizedReplayBuffer(
-            buffer_size, prioritized_replay_alpha, prioritized_replay_beta0)
+        buffer = PrioritizedReplayBuffer(buffer_size, prioritized_replay_alpha, prioritized_replay_beta0)
 
         o = env.reset()
         nepisode = 0
@@ -466,9 +459,10 @@ if __name__ == '__main__':
                 nepisode += 1
                 reward, length = info['episode']['r'], info['episode']['l']
                 fps = int(length / (time.time() - t))
-                print('Time steps so far: {}, episode so far: {}, '
-                      'episode reward: {:.4f}, episode length: {}, FPS: {}'
-                      .format(i, nepisode, reward, length, fps))
+                print(
+                    'Time steps so far: {}, episode so far: {}, '
+                    'episode reward: {:.4f}, episode length: {}, FPS: {}'.format(i, nepisode, reward, length, fps)
+                )
                 t = time.time()
     else:
         qnet = MLP('q') if qnet_type == 'MLP' else CNN('q')
@@ -494,6 +488,7 @@ if __name__ == '__main__':
             if info.get('episode'):
                 nepisode += 1
                 reward, length = info['episode']['r'], info['episode']['l']
-                print('Time steps so far: {}, episode so far: {}, '
-                      'episode reward: {:.4f}, episode length: {}'
-                      .format(i, nepisode, reward, length))
+                print(
+                    'Time steps so far: {}, episode so far: {}, '
+                    'episode reward: {:.4f}, episode length: {}'.format(i, nepisode, reward, length)
+                )

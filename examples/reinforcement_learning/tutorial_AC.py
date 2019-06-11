@@ -76,7 +76,6 @@ LAMBDA = 0.9  # reward discount in TD error
 LR_A = 0.001  # learning rate for actor
 LR_C = 0.01  # learning rate for critic
 
-
 ###############################  Actor-Critic  ####################################
 
 
@@ -86,10 +85,15 @@ class Actor(object):
 
         def get_model(inputs_shape):
             ni = tl.layers.Input(inputs_shape, name='state')
-            nn = tl.layers.Dense(n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')(ni)
-            nn = tl.layers.Dense(n_units=10, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')(nn)
+            nn = tl.layers.Dense(
+                n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden'
+            )(ni)
+            nn = tl.layers.Dense(
+                n_units=10, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2'
+            )(nn)
             nn = tl.layers.Dense(n_units=n_actions, name='actions')(nn)
             return tl.models.Model(inputs=ni, outputs=nn, name="Actor")
+
         self.model = get_model([None, n_features])
         self.model.train()
         self.optimizer = tf.optimizers.Adam(lr)
@@ -97,10 +101,10 @@ class Actor(object):
     def learn(self, s, a, td):
         with tf.GradientTape() as tape:
             _logits = self.model(np.array([s]))
-            ## cross-entropy loss weighted by td-error (advantage), 
+            ## cross-entropy loss weighted by td-error (advantage),
             # the cross-entropy mearsures the difference of two probability distributions: the predicted logits and sampled action distribution,
-            # then weighted by the td-error: small difference of real and predict actions for large td-error (advantage); and vice versa. 
-            _exp_v = tl.rein.cross_entropy_reward_loss(logits=_logits, actions=[a], rewards=td[0])  
+            # then weighted by the td-error: small difference of real and predict actions for large td-error (advantage); and vice versa.
+            _exp_v = tl.rein.cross_entropy_reward_loss(logits=_logits, actions=[a], rewards=td[0])
         grad = tape.gradient(_exp_v, self.model.trainable_weights)
         self.optimizer.apply_gradients(zip(grad, self.model.trainable_weights))
         return _exp_v
@@ -108,17 +112,17 @@ class Actor(object):
     def choose_action(self, s):
         _logits = self.model(np.array([s]))
         _probs = tf.nn.softmax(_logits).numpy()
-        return tl.rein.choice_action_by_probs(_probs.ravel()) # sample according to probability distribution
+        return tl.rein.choice_action_by_probs(_probs.ravel())  # sample according to probability distribution
 
     def choose_action_greedy(self, s):
         _logits = self.model(np.array([s]))  # logits: probability distribution of actions
         _probs = tf.nn.softmax(_logits).numpy()
         return np.argmax(_probs.ravel())
 
-    def save_ckpt(self): # save trained weights
+    def save_ckpt(self):  # save trained weights
         tl.files.save_npz(self.model.trainable_weights, name='model_actor.npz')
 
-    def load_ckpt(self): # load trained weights
+    def load_ckpt(self):  # load trained weights
         tl.files.load_and_assign_npz(name='model_actor.npz', network=self.model)
 
 
@@ -128,10 +132,15 @@ class Critic(object):
 
         def get_model(inputs_shape):
             ni = tl.layers.Input(inputs_shape, name='state')
-            nn = tl.layers.Dense(n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')(ni)
-            nn = tl.layers.Dense(n_units=5, act=tf.nn.relu, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')(nn)
+            nn = tl.layers.Dense(
+                n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden'
+            )(ni)
+            nn = tl.layers.Dense(
+                n_units=5, act=tf.nn.relu, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2'
+            )(nn)
             nn = tl.layers.Dense(n_units=1, act=None, name='value')(nn)
             return tl.models.Model(inputs=ni, outputs=nn, name="Critic")
+
         self.model = get_model([1, n_features])
         self.model.train()
 
@@ -148,14 +157,15 @@ class Critic(object):
         self.optimizer.apply_gradients(zip(grad, self.model.trainable_weights))
 
         return td_error
-    def save_ckpt(self): # save trained weights
+
+    def save_ckpt(self):  # save trained weights
         tl.files.save_npz(self.model.trainable_weights, name='model_critic.npz')
 
-    def load_ckpt(self): # load trained weights
+    def load_ckpt(self):  # load trained weights
         tl.files.load_and_assign_npz(name='model_critic.npz', network=self.model)
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     ''' 
     choose environment
     1. Openai gym:
@@ -190,7 +200,7 @@ if __name__ == '__main__':
             t = 0  # number of step in this episode
             all_r = []  # rewards of all steps
             while True:
-                
+
                 if RENDER: env.render()
 
                 a = actor.choose_action(s)
@@ -208,17 +218,19 @@ if __name__ == '__main__':
 
                 all_r.append(r)
 
-                td_error = critic.learn(s, r, s_new)  # learn Value-function : gradient = grad[r + lambda * V(s_new) - V(s)]
+                td_error = critic.learn(
+                    s, r, s_new
+                )  # learn Value-function : gradient = grad[r + lambda * V(s_new) - V(s)]
                 try:
                     actor.learn(s, a, td_error)  # learn Policy : true_gradient = grad[logPi(s, a) * td_error]
-                except KeyboardInterrupt: # if Ctrl+C at running actor.learn(), then save model, or exit if not at actor.learn()
+                except KeyboardInterrupt:  # if Ctrl+C at running actor.learn(), then save model, or exit if not at actor.learn()
                     actor.save_ckpt()
                     critic.save_ckpt()
                     # logging
 
                 s = s_new
                 t += 1
-                
+
                 if done or t >= MAX_EP_STEPS:
                     ep_rs_sum = sum(all_r)
 
@@ -232,7 +244,6 @@ if __name__ == '__main__':
                     #     (i_episode, ep_rs_sum, running_reward, time.time() - episode_time))
                     print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
                     .format(i_episode, MAX_EPISODE, ep_rs_sum, time.time()-t0 ))
-
 
                     # Early Stopping for quick check
                     if t >= MAX_EP_STEPS:
@@ -281,7 +292,7 @@ if __name__ == '__main__':
                 all_r.append(r)
                 s = s_new
                 t += 1
-                
+
                 if done or t >= MAX_EP_STEPS:
                     ep_rs_sum = sum(all_r)
 

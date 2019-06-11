@@ -79,8 +79,7 @@ def read_and_decode(filename):
     raw_dataset = tf.data.TFRecordDataset([filename]).shuffle(1000).batch(4)
     for serialized_example in raw_dataset:
         features = tf.io.parse_example(
-            serialized_example,
-            features={
+            serialized_example, features={
                 'label': tf.io.FixedLenFeature([], tf.int64),
                 'img_raw': tf.io.FixedLenFeature([], tf.string),
             }

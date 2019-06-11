@@ -77,6 +77,7 @@ def read_and_decode(filename):
         label_batch = tf.cast(features['label'], tf.int32)
         yield img_batch, label_batch
 
+
 img_batch, label_batch = next(read_and_decode("train.tfrecords"))
 print("img_batch   : %s" % img_batch.shape)
 print("label_batch : %s" % label_batch.shape)

@@ -8,8 +8,7 @@ import numpy as np
 
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import (BatchNorm, Conv2d, Dense, Flatten, Input,
-                                LocalResponseNorm, MaxPool2d)
+from tensorlayer.layers import (BatchNorm, Conv2d, Dense, Flatten, Input, LocalResponseNorm, MaxPool2d)
 from tensorlayer.models import Model
 
 # enable debug logging
@@ -74,7 +73,6 @@ def get_model_batchnorm(inputs_shape):
 # get the network
 net = get_model([None, 24, 24, 3])
 
-
 # training settings
 batch_size = 128
 n_epoch = 50000
@@ -82,7 +80,7 @@ learning_rate = 0.0001
 print_freq = 5
 n_step_epoch = int(len(y_train) / batch_size)
 n_step = n_epoch * n_step_epoch
-shuffle_buffer_size = 128 # 100
+shuffle_buffer_size = 128  # 100
 # init_learning_rate = 0.1
 # learning_rate_decay_factor = 0.1
 # num_epoch_decay = 350

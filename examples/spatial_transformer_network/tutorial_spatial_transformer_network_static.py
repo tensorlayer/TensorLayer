@@ -13,6 +13,7 @@ from tensorlayer.models import Model
 X_train, y_train, X_val, y_val, X_test, y_test = \
     tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
 
+
 def pad_distort_im_fn(x):
     """ Zero pads an image to 40x40, and distort it.
 
@@ -122,7 +123,7 @@ for epoch in range(n_epoch):
             X_train_a = tf.expand_dims(X_train_a, 3)
 
             _logits, _ = net(X_train_a)  # alternatively, you can use MLP(x, is_train=False) and remove MLP.eval()
-            train_loss += tl.cost.cross_entropy(_logits, y_train_a,  name='eval_train_loss')
+            train_loss += tl.cost.cross_entropy(_logits, y_train_a, name='eval_train_loss')
             train_acc += np.mean(np.equal(np.argmax(_logits, 1), y_train_a))
             n_iter += 1
         print("   train loss: %f" % (train_loss / n_iter))

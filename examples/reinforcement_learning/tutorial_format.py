@@ -1,6 +1,5 @@
 # the format of turorial algorithm #
 # please heavily annotate the code #
-
 '''
 Algorithm Name
 ------------------------
@@ -33,11 +32,9 @@ import time
 
 import numpy as np
 
-import package
 import tensorflow as tf
 
-import 'other
-import name'
+# import 'other package name'
 
 np.random.seed(2)
 tf.random.set_seed(2)  # reproducible
@@ -49,47 +46,44 @@ parser.add_argument('--test', dest='test', action='store_true', default=True)
 args = parser.parse_args()
 
 #####################  hyper parameters  ####################
-A=a # description of hyper parameter
-B=b # description of hyper parameter
+A = a  # description of hyper parameter
+B = b  # description of hyper parameter
 
 ###############################  Algorithm Name  ####################################
 
-class C(): # algorithm-specific classes 
+
+class C():  # algorithm-specific classes
     ''' description of class '''
+
     def C1():
         ''' description of function'''
+
 
 def D():  # some common functions, could be extracted into utils afterwards
     ''' description of function '''
 
 
 if __name__ == '__main__':
-
     '''initialization of env, buffer, networks in algorithms'''
-    env=...
-    buffer=...
-    network1=...
-    network2=...
-
+    env = 'env model'
+    buffer = 'buffer model'
+    network1 = 'network model1'
+    network2 = 'network model2'
 
     # training loop
     if args.train:
         t0 = time.time()
-        while: # loop of episodes
-            while: # loop of steps in episode
+        while NOT_FINISHED:  # loop of episodes
+            while NOT_DONE:  # loop of steps in episode
                 ''' step '''
-
                 ''' train '''
 
             print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
             .format(episode, all_episodes, episode_reward, time.time()-t0 ))
-
         ''' plot , following the format of ./baselines/utils/plot()'''
-        plot(rewards, Algorithm_name = 'SAC', Env_name = 'Pendulum-v0')
-
+        plot(rewards, Algorithm_name='SAC', Env_name='Pendulum-v0')
         ''' save weights, implemented in defined classes above, following the format of ./baselines/utils/save_model()  '''
         model.save_weights()
-
 
     # testing loop
     if args.test:
@@ -97,8 +91,8 @@ if __name__ == '__main__':
         ''' save weights, implemented in defined classes above, following the format of ./baselines/utils/load_model()  '''
         model.load_weights()
 
-        while: # loop of episodes
-            while: # loop of steps in episode
+        while NOT_FINISHED:  # loop of episodes
+            while NOT_DONE:  # loop of steps in episode
                 ''' step '''
 
             print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\

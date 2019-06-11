@@ -77,16 +77,14 @@ def _make_env(env_id, env_type, seed, reward_scale, frame_stack=True):
 
 def _make_vec_env(env_id, env_type, nenv, seed, reward_scale, frame_stack=True):
     """Make vectorized env"""
-    env = SubprocVecEnv([
-        partial(_make_env, env_id, env_type, seed + i, reward_scale, False)
-        for i in range(nenv)
-    ])
+    env = SubprocVecEnv([partial(_make_env, env_id, env_type, seed + i, reward_scale, False) for i in range(nenv)])
     if frame_stack:
         env = VecFrameStack(env, 4)
     return env
 
 
 class TimeLimit(gym.Wrapper):
+
     def __init__(self, env, max_episode_steps=None):
         super(TimeLimit, self).__init__(env)
         self._max_episode_steps = max_episode_steps
@@ -106,6 +104,7 @@ class TimeLimit(gym.Wrapper):
 
 
 class NoopResetEnv(gym.Wrapper):
+
     def __init__(self, env, noop_max=30):
         """Sample initial states by taking random number of no-ops on reset.
         No-op is assumed to be action 0.
@@ -136,6 +135,7 @@ class NoopResetEnv(gym.Wrapper):
 
 
 class FireResetEnv(gym.Wrapper):
+
     def __init__(self, env):
         """Take action on reset for environments that are fixed until firing."""
         super(FireResetEnv, self).__init__(env)
@@ -157,6 +157,7 @@ class FireResetEnv(gym.Wrapper):
 
 
 class EpisodicLifeEnv(gym.Wrapper):
+
     def __init__(self, env):
         """Make end-of-life == end-of-episode, but only reset on true game over.
         Done by DeepMind for the DQN and co. since it helps value estimation.
@@ -194,6 +195,7 @@ class EpisodicLifeEnv(gym.Wrapper):
 
 
 class MaxAndSkipEnv(gym.Wrapper):
+
     def __init__(self, env, skip=4):
         """Return only every `skip`-th frame"""
         super(MaxAndSkipEnv, self).__init__(env)
@@ -225,6 +227,7 @@ class MaxAndSkipEnv(gym.Wrapper):
 
 
 class ClipRewardEnv(gym.RewardWrapper):
+
     def __init__(self, env):
         super(ClipRewardEnv, self).__init__(env)
 
@@ -234,6 +237,7 @@ class ClipRewardEnv(gym.RewardWrapper):
 
 
 class WarpFrame(gym.ObservationWrapper):
+
     def __init__(self, env, width=84, height=84, grayscale=True):
         """Warp frames to 84x84 as done in the Nature paper and later work."""
         super(WarpFrame, self).__init__(env)
@@ -241,9 +245,7 @@ class WarpFrame(gym.ObservationWrapper):
         self.height = height
         self.grayscale = grayscale
         shape = (self.height, self.width, 1 if self.grayscale else 3)
-        self.observation_space = spaces.Box(
-            low=0, high=255, shape=shape, dtype=np.uint8
-        )
+        self.observation_space = spaces.Box(low=0, high=255, shape=shape, dtype=np.uint8)
 
     def observation(self, frame):
         if self.grayscale:
@@ -256,6 +258,7 @@ class WarpFrame(gym.ObservationWrapper):
 
 
 class FrameStack(gym.Wrapper):
+
     def __init__(self, env, k):
         """Stack k last frames.
         Returns lazy array, which is much more memory efficient.
@@ -266,9 +269,7 @@ class FrameStack(gym.Wrapper):
         self.frames = deque([], maxlen=k)
         shp = env.observation_space.shape
         shape = shp[:-1] + (shp[-1] * k, )
-        self.observation_space = spaces.Box(
-            low=0, high=255, shape=shape, dtype=env.observation_space.dtype
-        )
+        self.observation_space = spaces.Box(low=0, high=255, shape=shape, dtype=env.observation_space.dtype)
 
     def reset(self):
         ob = self.env.reset()
@@ -287,6 +288,7 @@ class FrameStack(gym.Wrapper):
 
 
 class LazyFrames(object):
+
     def __init__(self, frames):
         """This object ensures that common frames between the observations are
         only stored once. It exists purely to optimize memory usage which can be
@@ -321,6 +323,7 @@ class RewardScaler(gym.RewardWrapper):
     """Bring rewards to a reasonable scale for PPO.
     This is incredibly important and effects performance drastically.
     """
+
     def __init__(self, env, scale=0.01):
         super(RewardScaler, self).__init__(env)
         self.scale = scale
@@ -330,6 +333,7 @@ class RewardScaler(gym.RewardWrapper):
 
 
 class VecFrameStack(object):
+
     def __init__(self, env, k):
         self.env = env
         self.k = k
@@ -337,9 +341,7 @@ class VecFrameStack(object):
         self.frames = deque([], maxlen=k)
         shp = env.observation_space.shape
         shape = shp[:-1] + (shp[-1] * k, )
-        self.observation_space = spaces.Box(
-            low=0, high=255, shape=shape, dtype=env.observation_space.dtype
-        )
+        self.observation_space = spaces.Box(low=0, high=255, shape=shape, dtype=env.observation_space.dtype)
 
     def reset(self):
         ob = self.env.reset()
@@ -386,6 +388,7 @@ class CloudpickleWrapper(object):
     """
     Uses cloudpickle to serialize contents
     """
+
     def __init__(self, x):
         self.x = x
 
@@ -399,6 +402,7 @@ class CloudpickleWrapper(object):
 
 
 class SubprocVecEnv(object):
+
     def __init__(self, env_fns):
         """
         envs: list of gym environments to run in subprocesses
@@ -412,8 +416,7 @@ class SubprocVecEnv(object):
         self.remotes, self.work_remotes = zip(*[Pipe() for _ in range(nenvs)])
         zipped_args = zip(self.work_remotes, self.remotes, env_fns)
         self.ps = [
-            Process(target=_worker,
-                    args=(work_remote, remote, CloudpickleWrapper(env_fn)))
+            Process(target=_worker, args=(work_remote, remote, CloudpickleWrapper(env_fn)))
             for (work_remote, remote, env_fn) in zipped_args
         ]
 
@@ -494,6 +497,7 @@ class SubprocVecEnv(object):
 
 
 class Monitor(gym.Wrapper):
+
     def __init__(self, env):
         super(Monitor, self).__init__(env)
         self._monitor_rewards = None
@@ -506,29 +510,28 @@ class Monitor(gym.Wrapper):
         o_, r, done, info = self.env.step(action)
         self._monitor_rewards.append(r)
         if done:
-            info['episode'] = {
-                'r': sum(self._monitor_rewards),
-                'l': len(self._monitor_rewards)}
+            info['episode'] = {'r': sum(self._monitor_rewards), 'l': len(self._monitor_rewards)}
         return o_, r, done, info
 
 
 class NormalizedActions(gym.ActionWrapper):
+
     def _action(self, action):
-        low  = self.action_space.low
+        low = self.action_space.low
         high = self.action_space.high
-        
+
         action = low + (action + 1.0) * 0.5 * (high - low)
         action = np.clip(action, low, high)
-        
+
         return action
 
     def _reverse_action(self, action):
-        low  = self.action_space.low
+        low = self.action_space.low
         high = self.action_space.high
-        
+
         action = 2 * (action - low) / (high - low) - 1
         action = np.clip(action, low, high)
-        
+
         return action
 
 

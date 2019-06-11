@@ -13,11 +13,11 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 ## prepare MNIST data
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 
-
 ## define the network
 # the softmax is implemented internally in tl.cost.cross_entropy(y, y_) to
 # speed up computation, so we use identity here.
 # see tf.nn.sparse_softmax_cross_entropy_with_logits()
+
 
 def hidden_model(inputs_shape):
     ni = Input(inputs_shape)
@@ -28,6 +28,7 @@ def hidden_model(inputs_shape):
 
     return Model(inputs=ni, outputs=nn, name="mlp_hidden")
 
+
 def get_model(inputs_shape, hmodel):
     hidden = hmodel.as_layer()
     ni = Input(inputs_shape)
@@ -36,6 +37,7 @@ def get_model(inputs_shape, hmodel):
     nn = Dense(n_units=10, act=tf.nn.relu)(nn)
 
     return Model(inputs=ni, outputs=nn, name="mlp")
+
 
 MLP_hidden = hidden_model([None, 784])
 MLP = get_model([None, 784], MLP_hidden)

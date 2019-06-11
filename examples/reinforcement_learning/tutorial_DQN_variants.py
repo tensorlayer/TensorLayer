@@ -58,12 +58,12 @@ from tutorial_wrappers import build_env
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--mode', help='train or test', default='train')
-parser.add_argument('--save_path', default='dqn_variants',
-                    help='folder to save if mode == train else model path,'
-                         'qnet will be saved once target net update')
+parser.add_argument(
+    '--save_path', default='dqn_variants', help='folder to save if mode == train else model path,'
+    'qnet will be saved once target net update'
+)
 parser.add_argument('--seed', help='random seed', type=int, default=0)
-parser.add_argument('--env_id', default='CartPole-v0',
-                    help='CartPole-v0 or PongNoFrameskip-v4')
+parser.add_argument('--env_id', default='CartPole-v0', help='CartPole-v0 or PongNoFrameskip-v4')
 args = parser.parse_args()
 
 if args.mode == 'train':
@@ -107,13 +107,12 @@ noise_update_freq = 50  # how frequency param noise net update
 
 # ##############################  DQN  ####################################
 class MLP(tl.models.Model):
+
     def __init__(self, name):
         super(MLP, self).__init__(name=name)
         self.h1 = tl.layers.Dense(64, tf.nn.tanh, in_channels=in_dim[0])
-        self.qvalue = tl.layers.Dense(out_dim, in_channels=64, name='q',
-                                      W_init=tf.initializers.GlorotUniform())
-        self.svalue = tl.layers.Dense(1, in_channels=64, name='s',
-                                      W_init=tf.initializers.GlorotUniform())
+        self.qvalue = tl.layers.Dense(out_dim, in_channels=64, name='q', W_init=tf.initializers.GlorotUniform())
+        self.svalue = tl.layers.Dense(1, in_channels=64, name='s', W_init=tf.initializers.GlorotUniform())
         self.noise_scale = 0
 
     def forward(self, ni):
@@ -144,30 +143,32 @@ class MLP(tl.models.Model):
 
 
 class CNN(tl.models.Model):
+
     def __init__(self, name):
         super(CNN, self).__init__(name=name)
         h, w, in_channels = in_dim
         dense_in_channels = 64 * ((h - 28) // 8) * ((w - 28) // 8)
-        self.conv1 = tl.layers.Conv2d(32, (8, 8), (4, 4), tf.nn.relu, 'VALID',
-                                      in_channels=in_channels, name='conv2d_1',
-                                      W_init=tf.initializers.GlorotUniform())
-        self.conv2 = tl.layers.Conv2d(64, (4, 4), (2, 2), tf.nn.relu, 'VALID',
-                                      in_channels=32, name='conv2d_2',
-                                      W_init=tf.initializers.GlorotUniform())
-        self.conv3 = tl.layers.Conv2d(64, (3, 3), (1, 1), tf.nn.relu, 'VALID',
-                                      in_channels=64, name='conv2d_3',
-                                      W_init=tf.initializers.GlorotUniform())
+        self.conv1 = tl.layers.Conv2d(
+            32, (8, 8), (4, 4), tf.nn.relu, 'VALID', in_channels=in_channels, name='conv2d_1',
+            W_init=tf.initializers.GlorotUniform()
+        )
+        self.conv2 = tl.layers.Conv2d(
+            64, (4, 4), (2, 2), tf.nn.relu, 'VALID', in_channels=32, name='conv2d_2',
+            W_init=tf.initializers.GlorotUniform()
+        )
+        self.conv3 = tl.layers.Conv2d(
+            64, (3, 3), (1, 1), tf.nn.relu, 'VALID', in_channels=64, name='conv2d_3',
+            W_init=tf.initializers.GlorotUniform()
+        )
         self.flatten = tl.layers.Flatten(name='flatten')
-        self.preq = tl.layers.Dense(256, tf.nn.relu,
-                                    in_channels=dense_in_channels, name='pre_q',
-                                    W_init=tf.initializers.GlorotUniform())
-        self.qvalue = tl.layers.Dense(out_dim, in_channels=256, name='q',
-                                      W_init=tf.initializers.GlorotUniform())
-        self.pres = tl.layers.Dense(256, tf.nn.relu,
-                                    in_channels=dense_in_channels, name='pre_s',
-                                    W_init=tf.initializers.GlorotUniform())
-        self.svalue = tl.layers.Dense(1, in_channels=256, name='state',
-                                      W_init=tf.initializers.GlorotUniform())
+        self.preq = tl.layers.Dense(
+            256, tf.nn.relu, in_channels=dense_in_channels, name='pre_q', W_init=tf.initializers.GlorotUniform()
+        )
+        self.qvalue = tl.layers.Dense(out_dim, in_channels=256, name='q', W_init=tf.initializers.GlorotUniform())
+        self.pres = tl.layers.Dense(
+            256, tf.nn.relu, in_channels=dense_in_channels, name='pre_s', W_init=tf.initializers.GlorotUniform()
+        )
+        self.svalue = tl.layers.Dense(1, in_channels=256, name='state', W_init=tf.initializers.GlorotUniform())
         self.noise_scale = 0
 
     def forward(self, ni):
@@ -197,6 +198,7 @@ class CNN(tl.models.Model):
 
 
 class ReplayBuffer(object):
+
     def __init__(self, size):
         self._storage = []
         self._maxsize = size
@@ -320,8 +322,7 @@ if __name__ == '__main__':
                 # calculate loss
                 with tf.GradientTape() as q_tape:
                     b_q = tf.reduce_sum(qnet(b_o) * tf.one_hot(b_a, out_dim), 1)
-                    loss = tf.reduce_mean(
-                        huber_loss(b_q - (b_r + reward_gamma * b_q_)))
+                    loss = tf.reduce_mean(huber_loss(b_q - (b_r + reward_gamma * b_q_)))
 
                 # backward gradients
                 q_grad = q_tape.gradient(loss, trainabel_weights)
@@ -337,9 +338,10 @@ if __name__ == '__main__':
                 nepisode += 1
                 reward, length = info['episode']['r'], info['episode']['l']
                 fps = int(length / (time.time() - t))
-                print('Time steps so far: {}, episode so far: {}, '
-                      'episode reward: {:.4f}, episode length: {}, FPS: {}'
-                      .format(i, nepisode, reward, length, fps))
+                print(
+                    'Time steps so far: {}, episode so far: {}, '
+                    'episode reward: {:.4f}, episode length: {}, FPS: {}'.format(i, nepisode, reward, length, fps)
+                )
                 t = time.time()
     else:
         qnet = MLP('q') if qnet_type == 'MLP' else CNN('q')
@@ -365,6 +367,7 @@ if __name__ == '__main__':
             if info.get('episode'):
                 nepisode += 1
                 reward, length = info['episode']['r'], info['episode']['l']
-                print('Time steps so far: {}, episode so far: {}, '
-                      'episode reward: {:.4f}, episode length: {}'
-                      .format(i, nepisode, reward, length))
+                print(
+                    'Time steps so far: {}, episode so far: {}, '
+                    'episode reward: {:.4f}, episode length: {}'.format(i, nepisode, reward, length)
+                )

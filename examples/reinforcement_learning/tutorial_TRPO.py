@@ -77,8 +77,8 @@ MAX_EP_LEN = 1000  # Maximum length of trajectory
 SAVE_FREQ = 10  # How often (in terms of gap between epochs) to save the current policy and value function
 EPS = 1e-8  # epsilon
 
-
 #####################  functions  ####################
+
 
 def combined_shape(length, shape=None):
     """
@@ -137,7 +137,7 @@ def input_layer_from_space(space):
     if isinstance(space, Box):
         return input_layer(space.shape)
     elif isinstance(space, Discrete):
-        return tl.layers.Input(dtype=tf.int32, shape=(None,))
+        return tl.layers.Input(dtype=tf.int32, shape=(None, ))
     raise NotImplementedError
 
 
@@ -150,7 +150,7 @@ def input_layers_from_spaces(*args):
     return [input_layer_from_space(space) for space in args]
 
 
-def mlp(x, hidden_sizes=(32,), activation=tf.tanh, output_activation=None):
+def mlp(x, hidden_sizes=(32, ), activation=tf.tanh, output_activation=None):
     """
     create Multi-Layer Perception
     :param x: tensorlayer input layer
@@ -191,7 +191,7 @@ def gaussian_likelihood(x, mu, log_std):
     :param log_std: log std
     :return: gaussian likelihood
     """
-    pre_sum = -0.5 * (((x - mu) / (tf.exp(log_std) + EPS)) ** 2 + 2 * log_std + np.log(2 * np.pi))
+    pre_sum = -0.5 * (((x - mu) / (tf.exp(log_std) + EPS))**2 + 2 * log_std + np.log(2 * np.pi))
     return tf.reduce_sum(pre_sum, axis=1)
 
 
@@ -202,7 +202,7 @@ def diagonal_gaussian_kl(mu0, log_std0, mu1, log_std1):
     (https://en.wikipedia.org/wiki/Kullback-Leibler_divergence#Multivariate_normal_distributions)
     """
     var0, var1 = tf.exp(2 * log_std0), tf.exp(2 * log_std1)
-    pre_sum = 0.5 * (((mu1 - mu0) ** 2 + var0) / (var1 + EPS) - 1) + log_std1 - log_std0
+    pre_sum = 0.5 * (((mu1 - mu0)**2 + var0) / (var1 + EPS) - 1) + log_std1 - log_std0
     all_kls = tf.reduce_sum(pre_sum, axis=1)
     return tf.reduce_mean(all_kls)
 
@@ -222,7 +222,7 @@ def flat_concat(xs):
     :param xs: a list of tensor
     :return: flat tensor
     """
-    return tf.concat([tf.reshape(x, (-1,)) for x in xs], axis=0)
+    return tf.concat([tf.reshape(x, (-1, )) for x in xs], axis=0)
 
 
 def assign_params_from_flat(x, params):
@@ -334,8 +334,10 @@ Actor-Critics
 """
 
 
-def mlp_actor_critic(x: 'env.observation_space', a: 'env.action_space', hidden_sizes=(64, 64), activation=tf.tanh,
-                     output_activation=None):
+def mlp_actor_critic(
+        x: 'env.observation_space', a: 'env.action_space', hidden_sizes=(64, 64), activation=tf.tanh,
+        output_activation=None
+):
     """
     create actor and critic
     :param x: observation space
@@ -354,6 +356,7 @@ def mlp_actor_critic(x: 'env.observation_space', a: 'env.action_space', hidden_s
         raise ValueError('action space type error')
 
     class Critic:
+
         def __init__(self, obs_space, hidden_layer_sizes, activation_funcs):
             inputs = input_layer_from_space(obs_space)
             self.model = tl.models.Model(inputs, mlp(inputs, list(hidden_layer_sizes) + [1], activation_funcs, None))
@@ -443,12 +446,11 @@ class GAEBuffer:
         # the next two lines implement the advantage normalization trick
         adv_mean, adv_std = np.mean(self.adv_buf), np.std(self.adv_buf)
         self.adv_buf = (self.adv_buf - adv_mean) / adv_std
-        return [self.obs_buf, self.act_buf, self.adv_buf, self.ret_buf,
-                self.logp_buf] + values_as_sorted_list(self.info_bufs)
+        return [self.obs_buf, self.act_buf, self.adv_buf, self.ret_buf, self.logp_buf
+               ] + values_as_sorted_list(self.info_bufs)
 
 
 #####################  TRPO  ####################
-
 """
 
 Trust Region Policy Optimization 
@@ -462,6 +464,7 @@ class TRPO:
     """
     trpo class
     """
+
     def __init__(self, obs_space, act_space):
 
         obs_dim = obs_space.shape
@@ -497,7 +500,7 @@ class TRPO:
         res0 = [pi, v, logp_pi] + values_as_sorted_list(info)
         res = []
         for i in res0:
-            res.append(i + 0)   # transfer to tensor
+            res.append(i + 0)  # transfer to tensor
         return res
 
     # TRPO losses
@@ -522,7 +525,7 @@ class TRPO:
         """
         x_ph, a_ph, adv_ph, ret_ph, logp_old_ph, *info_values = inputs
         v = self.critic.critic_cal_func(x_ph)
-        v_loss = tf.reduce_mean((ret_ph - v) ** 2)
+        v_loss = tf.reduce_mean((ret_ph - v)**2)
         return v_loss
 
     def train_vf(self, inputs):
@@ -653,7 +656,7 @@ class TRPO:
 
         # trpo augments npg with backtracking line search, hard kl
         for j in range(BACKTRACK_ITERS):
-            kl, pi_l_new = set_and_eval(step=BACKTRACK_COEFF ** j)
+            kl, pi_l_new = set_and_eval(step=BACKTRACK_COEFF**j)
             if kl <= DELTA and pi_l_new <= pi_l_old:
                 # Accepting new params at step of line search
                 break

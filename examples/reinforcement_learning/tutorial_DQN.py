@@ -67,7 +67,6 @@ num_episodes = 10000
 render = False  # display the game environment
 running_reward = None
 
-
 ##################### DQN ##########################
 
 
@@ -75,7 +74,6 @@ def to_one_hot(i, n_classes=None):
     a = np.zeros(n_classes, 'uint8')
     a[i] = 1
     return a
-
 
 
 ## Define Q-network q(a,s) that ouput the rewards of 4 actions by given state, i.e. Action-Value Function.
@@ -86,11 +84,13 @@ def get_model(inputs_shape):
     return tl.models.Model(inputs=ni, outputs=nn, name="Q-Network")
 
 
-def save_ckpt(model): # save trained weights
+def save_ckpt(model):  # save trained weights
     tl.files.save_npz(model.trainable_weights, name='dqn_model.npz')
 
-def load_ckpt(model): # load trained weights
+
+def load_ckpt(model):  # load trained weights
     tl.files.load_and_assign_npz(name='dqn_model.npz', network=model)
+
 
 if __name__ == '__main__':
 
@@ -150,7 +150,7 @@ if __name__ == '__main__':
             #     (i, num_episodes, rAll, running_reward, time.time() - episode_time))
             print('Episode: {}/{}  | Episode Reward: {:.4f} | Running Average Reward: {:.4f}  | Running Time: {:.4f}'\
             .format(i, num_episodes, rAll, running_reward,  time.time()-t0 ))
-        save_ckpt(qnetwork) # save model
+        save_ckpt(qnetwork)  # save model
 
     if args.test:
         t0 = time.time()

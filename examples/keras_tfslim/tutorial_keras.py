@@ -15,7 +15,6 @@ X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(sha
 
 batch_size = 128
 
-
 # keras layers
 layers = [
     tf.keras.layers.Dropout(0.8),
@@ -23,11 +22,11 @@ layers = [
     tf.keras.layers.Dropout(0.5),
     tf.keras.layers.Dense(800, activation='relu'),
     tf.keras.layers.Dropout(0.5),
-    tf.keras.layers.Dense(10, activation='linear')]
+    tf.keras.layers.Dense(10, activation='linear')
+]
 keras_block = tf.keras.Sequential(layers)
 # in order to compile keras model and get trainable_variables of the keras model
 _ = keras_block(np.random.random([batch_size, 784]).astype(np.float32))
-
 
 # build tl model using keras layers
 ni = Input([None, 784], dtype=tf.float32)
