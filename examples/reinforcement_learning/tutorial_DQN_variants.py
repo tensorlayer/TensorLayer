@@ -43,7 +43,7 @@ tensorlayer>=2.0.0
 To run:
 ------------------------
 python tutorial_DQN_variantes.py --mode=train
-python tutorial_DQN_variantes.py --mode=test --save_path=c51/8000.npz
+python tutorial_DQN_variantes.py --mode=test --save_path=dqn_variants/8000.npz
 """
 import argparse
 import os
