@@ -19,6 +19,7 @@ from tensorlayer.layers.core import Layer
 # TODO: uncomment
 __all__ = [
     'RNN',
+    'SimpleRNN',
     'BiRNN',
     # 'ConvRNNCell',
     # 'BasicConvLSTMCell',
@@ -213,7 +214,171 @@ class RNN(Layer):
         else:
             return outputs
 
-# TODO: write tl.layers.SimpleRNN, tl.layers.GRU, tl.layers.LSTM
+class SimpleRNN(RNN):
+    """
+    The :class:`SimpleRNN` class is a fixed length recurrent layer for implementing simple RNN.
+    This class is a derived class from :class:`RNN`.
+
+    Parameters
+    ----------
+    units: int
+        Positive integer, the dimension of hidden space.
+    return_last_output : boolean
+        Same as :class:`RNN` class.
+        Whether return last output or all outputs in a sequence.
+            - If True, return the last output, "Sequence input and single output"
+            - If False, return all outputs, "Synced sequence input and output"
+            - In other word, if you want to stack more RNNs on this layer, set to False
+        In a dynamic model, `return_last_output` can be updated when it is called in customised forward().
+        By default, `False`.
+    return_seq_2d : boolean
+        Same as :class:`RNN` class.
+        Only consider this argument when `return_last_output` is `False`
+            - If True, return 2D Tensor [batch_size * n_steps, n_hidden], for stacking Dense layer after it.
+            - If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
+        In a dynamic model, `return_seq_2d` can be updated when it is called in customised forward().
+        By default, `False`.
+    return_last_state: boolean
+        Same as :class:`RNN` class.
+        Whether to return the last state of the RNN cell. The state is a list of Tensor.
+        For simple RNN and GRU, last_state = [last_output]; For LSTM, last_state = [last_output, last_cell_state]
+            - If True, the layer will return outputs and the final state of the cell.
+            - If False, the layer will return outputs only.
+        In a dynamic model, `return_last_state` can be updated when it is called in customised forward().
+        By default, `False`.
+    in_channels: int
+        Same as :class:`RNN` class.
+        Optional, the number of channels of the previous layer which is normally the size of embedding.
+        If given, the layer will be built when init.
+        If None, it will be automatically detected when the layer is forwarded for the first time.
+    name : str
+        A unique layer name.
+    **kwargs:
+        Advanced arguments to configure the simple RNN cell. Please check tf.keras.layers.SimpleRNNCell.
+
+    Examples
+    --------
+
+    A simple regression model below.
+    >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
+    >>> rnn_out, lstm_state = tl.layers.SimpleRNN(
+    >>>     units=hidden_size, dropout=0.1, # both units and dropout are used to configure the simple rnn cell.
+    >>>     in_channels=embedding_size,
+    >>>     return_last_output=True, return_last_state=True, name='simplernn'
+    >>> )(inputs)
+    >>> outputs = tl.layers.Dense(n_units=1)(rnn_out)
+    >>> rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0]], name='rnn_model')
+
+    Notes
+    -----
+    Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see layer :class:`Reshape`.
+
+
+    """
+
+
+    def __init__(
+            self,
+            units,
+            return_last_output=False,
+            return_seq_2d=False,
+            return_last_state=True,
+            in_channels=None,
+            name=None,  # 'simplernn'
+            **kwargs
+    ):
+        super(SimpleRNN, self).__init__(
+            cell=tf.keras.layers.SimpleRNNCell(units=units, **kwargs),
+            return_last_output=return_last_output,
+            return_seq_2d=return_seq_2d,
+            return_last_state=return_last_state,
+            in_channels=in_channels,
+            name=name
+        )
+
+class GRURNN(RNN):
+    """
+    The :class:`GRURNN` class is a fixed length recurrent layer for implementing RNN with GRU cell.
+    This class is a derived class from :class:`RNN`.
+
+    Parameters
+    ----------
+    units: int
+        Positive integer, the dimension of hidden space.
+    return_last_output : boolean
+        Same as :class:`RNN` class.
+        Whether return last output or all outputs in a sequence.
+            - If True, return the last output, "Sequence input and single output"
+            - If False, return all outputs, "Synced sequence input and output"
+            - In other word, if you want to stack more RNNs on this layer, set to False
+        In a dynamic model, `return_last_output` can be updated when it is called in customised forward().
+        By default, `False`.
+    return_seq_2d : boolean
+        Same as :class:`RNN` class.
+        Only consider this argument when `return_last_output` is `False`
+            - If True, return 2D Tensor [batch_size * n_steps, n_hidden], for stacking Dense layer after it.
+            - If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
+        In a dynamic model, `return_seq_2d` can be updated when it is called in customised forward().
+        By default, `False`.
+    return_last_state: boolean
+        Same as :class:`RNN` class.
+        Whether to return the last state of the RNN cell. The state is a list of Tensor.
+        For simple RNN and GRU, last_state = [last_output]; For LSTM, last_state = [last_output, last_cell_state]
+            - If True, the layer will return outputs and the final state of the cell.
+            - If False, the layer will return outputs only.
+        In a dynamic model, `return_last_state` can be updated when it is called in customised forward().
+        By default, `False`.
+    in_channels: int
+        Same as :class:`RNN` class.
+        Optional, the number of channels of the previous layer which is normally the size of embedding.
+        If given, the layer will be built when init.
+        If None, it will be automatically detected when the layer is forwarded for the first time.
+    name : str
+        A unique layer name.
+    **kwargs:
+        Advanced arguments to configure the GRU cell. Please check tf.keras.layers.SimpleRNNCell.
+
+    Examples
+    --------
+
+    A simple regression model below.
+    >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
+    >>> rnn_out, lstm_state = tl.layers.SimpleRNN(
+    >>>     units=hidden_size, dropout=0.1, # both units and dropout are used to configure the simple rnn cell.
+    >>>     in_channels=embedding_size,
+    >>>     return_last_output=True, return_last_state=True, name='simplernn'
+    >>> )(inputs)
+    >>> outputs = tl.layers.Dense(n_units=1)(rnn_out)
+    >>> rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0]], name='rnn_model')
+
+    Notes
+    -----
+    Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see layer :class:`Reshape`.
+
+
+    """
+
+
+    def __init__(
+            self,
+            units,
+            return_last_output=False,
+            return_seq_2d=False,
+            return_last_state=True,
+            in_channels=None,
+            name=None,  # 'simplernn'
+            **kwargs
+    ):
+        super(SimpleRNN, self).__init__(
+            cell=tf.keras.layers.SimpleRNNCell(units=units, **kwargs),
+            return_last_output=return_last_output,
+            return_seq_2d=return_seq_2d,
+            return_last_state=return_last_state,
+            in_channels=in_channels,
+            name=name
+        )
+
+# TODO: tl.layers.GRU, tl.layers.LSTM
 
 class BiRNN(Layer):
     """
