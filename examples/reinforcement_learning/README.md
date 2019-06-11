@@ -67,15 +67,16 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Description</u>: 
 
+  ```
   Non deep learning method with TD Learning, Off-Policy, e-Greedy Exploration.
-
-  Central formula:
-
-  Q(S, A) <- Q(S, A) + alpha * (R + lambda * Q(newS, newA) - Q(S, A))
-
-  See David Silver RL Tutorial Lecture 5 - Q-Learning for more details.
-
   
+  Central formula:
+  Q(S, A) <- Q(S, A) + alpha * (R + lambda * Q(newS, newA) - Q(S, A))
+  
+  See David Silver RL Tutorial Lecture 5 - Q-Learning for more details.
+  ```
+
+  ​    
 
 * **Deep Q-Network (DQN)**
 
@@ -87,15 +88,15 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Description</u>: 
 
+  ```
   Deep Q-Network (DQN) is a method of TD Learning, Off-Policy, e-Greedy Exploration (GLIE).
-
+  
   Central formula:
-
   Q(S, A) <- Q(S, A) + alpha * (R + lambda * Q(newS, newA) - Q(S, A)),
-
   delta_w = R + lambda * Q(newS, newA).
-
+  
   See David Silver RL Tutorial Lecture 5 - Q-Learning for more details.
+  ```
 
   
 
@@ -107,19 +108,23 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Description</u>: 
 
-  We implement Double DQN, Dueling DQN and Noisy DQN here.
-
-  * The max operator in standard DQN uses the same values both to select and to evaluate an action by:
-
-  ​       Q(s_t, a_t) = R\_{t+1\} + gamma \* max\_{a}Q\_\{target\}(s_{t+1}, a).
-
-  * Double DQN proposes to use following evaluation to address overestimation problem of max operator:
-
-  ​       Q(s_t, a_t) = R\_{t+1\} + gamma \* Q\_{target}(s\_\{t+1\}, max{a}Q(s_{t+1}, a)).
-
-  * Dueling DQN uses dueling architecture where the value of state and the advantage of each action is estimated separately.
-
-  * Noisy DQN propose to explore by adding parameter noises.
+  * ```
+    We implement Double DQN, Dueling DQN and Noisy DQN here.
+    
+    - The max operator in standard DQN uses the same values both to select and to evaluate an action by:
+    
+          Q(s_t, a_t) = R\_{t+1\} + gamma \* max\_{a}Q\_\{target\}(s_{t+1}, a).
+    
+    - Double DQN proposes to use following evaluation to address overestimation problem of max operator:
+    
+          Q(s_t, a_t) = R\_{t+1\} + gamma \* Q\_{target}(s\_\{t+1\}, max{a}Q(s_{t+1}, a)).
+    
+    - Dueling DQN uses dueling architecture where the value of state and the advantage of each action is estimated separately.
+    
+    - Noisy DQN propose to explore by adding parameter noises.
+    
+      
+    ```
 
     
 
@@ -132,7 +137,9 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Description:</u>
 
+  ```
   Prioritized experience replay is an efficient replay method that replay important transitions more frequently. Segment tree data structure is used to speed up indexing.
+  ```
 
   
 
@@ -144,7 +151,9 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Description</u>:
 
+  ```
   Categorical 51 distributional RL algorithm is a distrbuted DQN, where 51 means the number of atoms. In this algorithm, instead of estimating actual expected value, value distribution over a series of  continuous sub-intervals (atoms) is considered.
+  ```
 
   
 
@@ -170,7 +179,9 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Description</u>:
 
+  ```
   The implementation of Advantage Actor-Critic, using TD-error as the advantage.
+  ```
 
   
 
@@ -182,7 +193,9 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Description</u>:
 
+  ```
   The implementation of Asynchronous Advantage Actor-Critic (A3C), using multi-threading for distributed policy learning on Actor-Critic structure.
+  ```
 
   
 
@@ -194,11 +207,12 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Description:</u>
 
+  ```
   Actor policy in SAC is stochastic, with off-policy training.  And 'soft' in SAC indicates the trade-off between the entropy and expected return.  The additional consideration of entropy term helps with more explorative policy. And this implementation contains an automatic update for the entropy factor.
-
+  
   This version of Soft Actor-Critic (SAC) implementation contains 5 networks: 
-
   2 Q-networks, 2 target Q-networks and 1 policy network.
+  ```
 
   
 
@@ -211,9 +225,11 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Description:</u>
 
+  ```
   The policy gradient algorithm works by updating policy parameters via stochastic gradient ascent on policy performance. It's an on-policy algorithm can be used for environments with either discrete or continuous action spaces.
-
+  
   To apply it on continuous action space, you need to change the last softmax layer and the choose_action function.
+  ```
 
   
 
@@ -240,27 +256,20 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Description</u>:
 
+  ```
   DDPG suffers from problems like overestimate of Q-values and sensitivity to hyper-parameters.
-
+  
   Twin Delayed DDPG (TD3) is a variant of DDPG with several tricks:
-
-  * Trick One: Clipped Double-Q Learning. TD3 learns two Q-functions instead of one (hence “twin”), 
-
-  and uses the smaller of the two Q-values to form the targets in the Bellman error loss functions.
-
-  * Trick Two: “Delayed” Policy Updates. TD3 updates the policy (and target networks) less frequently 
-
-  than the Q-function. 
-
-  * Trick Three: Target Policy Smoothing. TD3 adds noise to the target action, to make it harder for 
-
-  the policy to exploit Q-function errors by smoothing out Q along changes in action.
-
+  
+  - Trick One: Clipped Double-Q Learning. TD3 learns two Q-functions instead of one (hence “twin”), and uses the smaller of the two Q-values to form the targets in the Bellman error loss functions.
+  - Trick Two: “Delayed” Policy Updates. TD3 updates the policy (and target networks) less frequently than the Q-function. 
+  - Trick Three: Target Policy Smoothing. TD3 adds noise to the target action, to make it harder for the policy to exploit Q-function errors by smoothing out Q along changes in action.
+  
   The implementation of TD3 includes 6 networks: 
-
   2 Q-networks, 2 target Q-networks, 1 policy network, 1 target policy network.
-
+  
   Actor policy in TD3 is deterministic, with Gaussian exploration noise.
+  ```
 
   
 
@@ -272,9 +281,11 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Description:</u>
 
+  ```
   PG method with a large step can crash the policy performance, even with a small step can lead a large differences in policy.
-
+  
   TRPO constraints the step in policy space using KL divergence (rather than in parameter space), which can monotonically improve performance and avoid a collapsed update.
+  ```
 
   
 
@@ -286,11 +297,15 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Description:</u>
 
+  ```
   A simple version of Proximal Policy Optimization (PPO) using single thread.
-
+  
   PPO is a family of first-order methods that use a few other tricks to keep new policies close to old.
-
+  
   PPO methods are significantly simpler to implement, and empirically seem to perform at least as well as TRPO.
+  
+  
+  ```
 
   
 
@@ -302,13 +317,15 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Description:</u>
 
+  ```
   A distributed version of OpenAI's Proximal Policy Optimization (PPO).
-
+  
   Distribute the workers to collect data in parallel, then stop worker's roll-out and train PPO on collected data.
+  ```
 
   
 
-* More in recent weeks
+* **More in recent weeks**
 
 ## Environment:
 
