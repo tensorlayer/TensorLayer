@@ -38,8 +38,8 @@ import random
 import time
 
 import numpy as np
-import tensorflow as tf
 
+import tensorflow as tf
 import tensorlayer as tl
 from tutorial_wrappers import build_env
 

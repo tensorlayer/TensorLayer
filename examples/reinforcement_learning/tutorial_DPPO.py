@@ -1,7 +1,7 @@
 """
 Distributed Proximal Policy Optimization (DPPO)
 ----------------------------
-A distributing version of OpenAI's Proximal Policy Optimization (PPO).
+A distributed version of OpenAI's Proximal Policy Optimization (PPO).
 Workers in parallel to collect data, then stop worker's roll-out and train PPO on collected data.
 Restart workers once PPO is updated.
 
@@ -35,11 +35,11 @@ import queue
 import threading
 import time
 
-import gym
 import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
 
+import gym
+import tensorflow as tf
 import tensorflow_probability as tfp
 import tensorlayer as tl
 

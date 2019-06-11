@@ -18,8 +18,9 @@ tensorlayer==2.0.0
 
 import time
 
-import gym
 import numpy as np
+
+import gym
 
 ## Load the environment
 env = gym.make('FrozenLake-v0')

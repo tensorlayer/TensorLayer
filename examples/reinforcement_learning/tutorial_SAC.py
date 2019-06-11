@@ -1,9 +1,15 @@
-'''
-Soft Actor-Critic
+''' 
+Soft Actor-Critic (SAC)
 ------------------
-It uses target Q instead of V net: 2 Q net, 2 target Q net, 1 policy net
+Actor policy in SAC is stochastic, with off-policy training. 
+And 'soft' in SAC indicates the trade-off between the entropy and expected return. 
+The additional consideration of entropy term helps with more explorative policy.
+And this implementation contains an automatic update for the entropy factor.
+
+This version of Soft Actor-Critic (SAC) implementation contains 5 networks: 
+2 Q net, 2 target Q net, 1 policy net.
 It uses alpha loss.
-Actor policy is stochastic, with off-policy training.
+
 
 Reference
 ---------
@@ -33,12 +39,12 @@ import math
 import random
 import time
 
-import gym
 import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
 from IPython.display import clear_output
 
+import gym
+import tensorflow as tf
 import tensorflow_probability as tfp
 import tensorlayer as tl
 from tensorlayer.layers import Dense
@@ -85,6 +91,14 @@ DETERMINISTIC=False                 # stochastic action policy if False, otherwi
 ###############################  SAC  ####################################
 
 class ReplayBuffer:
+    '''
+    a ring buffer for storing transitions and sampling for training
+    :state: (state_dim,)
+    :action: (action_dim,)
+    :reward: (,), scalar
+    :next_state: (state_dim,)
+    :done: (,), scalar (0 and 1) or bool (True and False)
+    '''
     def __init__(self, capacity):
         self.capacity = capacity
         self.buffer = []
@@ -111,6 +125,7 @@ class ReplayBuffer:
         return len(self.buffer)
 
 class NormalizedActions(gym.ActionWrapper):
+    ''' normalize the actions to be in reasonable range '''
     def _action(self, action):
         low  = self.action_space.low
         high = self.action_space.high
@@ -131,6 +146,7 @@ class NormalizedActions(gym.ActionWrapper):
 
         
 class SoftQNetwork(Model):
+    ''' the network for evaluate values of state-action pairs: Q(s,a) '''
     def __init__(self, num_inputs, num_actions, hidden_dim, init_w=3e-3):
         super(SoftQNetwork, self).__init__()
         input_dim = num_inputs + num_actions
@@ -149,6 +165,7 @@ class SoftQNetwork(Model):
         
         
 class PolicyNetwork(Model):
+    ''' the network for generating non-determinstic (Gaussian distributed) action from the state input '''
     def __init__(self, num_inputs, num_actions, hidden_dim, action_range=1., init_w=3e-3, log_std_min=-20, log_std_max=2):
         super(PolicyNetwork, self).__init__()
         
@@ -245,7 +262,6 @@ class SAC_Trainer():
         self.soft_q_optimizer2 = tf.optimizers.Adam(soft_q_lr)
         self.policy_optimizer = tf.optimizers.Adam(policy_lr)
         self.alpha_optimizer = tf.optimizers.Adam(alpha_lr)
-        # self.alpha_optimizer = optim.Adam([self.log_alpha], lr=alpha_lr)
     
     def target_ini(self, net, target_net):
         ''' hard-copy update for initializing target networks '''
@@ -296,7 +312,7 @@ class SAC_Trainer():
             new_q_input = tf.concat([state, new_action], 1)  # the dim 0 is number of samples
             ''' implementation 1 '''
             predicted_new_q_value = tf.minimum(self.soft_q_net1(new_q_input),self.soft_q_net2(new_q_input))
-            ''' implementation 2 '''
+            # ''' implementation 2 '''
             # predicted_new_q_value = self.soft_q_net1(new_q_input)
             policy_loss = tf.reduce_mean(self.alpha * log_prob - predicted_new_q_value)
         p_grad = p_tape.gradient(policy_loss, self.policy_net.trainable_weights)

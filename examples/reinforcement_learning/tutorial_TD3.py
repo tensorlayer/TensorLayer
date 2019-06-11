@@ -1,9 +1,19 @@
 '''
 Twin Delayed DDPG (TD3)
 ------------------------
-If no twin no delayed then it's DDPG.
-It uses networks including: 2 Q-net, 2 target Q-net, 1 policy net, 1 target policy net
-Actor policy is deterministic, with Gaussian exploration noise.
+DDPG suffers from problems like overestimate of Q-values and sensitivity to hyper-parameters.
+Twin Delayed DDPG (TD3) is a variant of DDPG with several tricks:
+* Trick One: Clipped Double-Q Learning. TD3 learns two Q-functions instead of one (hence “twin”), 
+and uses the smaller of the two Q-values to form the targets in the Bellman error loss functions.
+
+* Trick Two: “Delayed” Policy Updates. TD3 updates the policy (and target networks) less frequently 
+than the Q-function. 
+
+* Trick Three: Target Policy Smoothing. TD3 adds noise to the target action, to make it harder for 
+the policy to exploit Q-function errors by smoothing out Q along changes in action.
+
+The implementation of TD3 includes 6 networks: 2 Q-net, 2 target Q-net, 1 policy net, 1 target policy net
+Actor policy in TD3 is deterministic, with Gaussian exploration noise.
 
 Reference
 ---------
@@ -35,12 +45,12 @@ import math
 import random
 import time
 
-import gym
 import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
 from IPython.display import clear_output
 
+import gym
+import tensorflow as tf
 import tensorflow_probability as tfp
 import tensorlayer as tl
 from tensorlayer.layers import Dense
@@ -86,6 +96,14 @@ replay_buffer_size = 5e5            # size of replay buffer
 ###############################  TD3  ####################################
 
 class ReplayBuffer:
+    '''
+    a ring buffer for storing transitions and sampling for training
+    :state: (state_dim,)
+    :action: (action_dim,)
+    :reward: (,), scalar
+    :next_state: (state_dim,)
+    :done: (,), scalar (0 and 1) or bool (True and False)
+    '''
     def __init__(self, capacity):
         self.capacity = capacity
         self.buffer = []
@@ -112,6 +130,7 @@ class ReplayBuffer:
         return len(self.buffer)
 
 class NormalizedActions(gym.ActionWrapper):
+    ''' normalize the actions to be in reasonable range '''
     def _action(self, action):
         low  = self.action_space.low
         high = self.action_space.high
@@ -131,6 +150,7 @@ class NormalizedActions(gym.ActionWrapper):
         return action
         
 class QNetwork(Model):
+    ''' the network for evaluate values of state-action pairs: Q(s,a) '''
     def __init__(self, num_inputs, num_actions, hidden_dim, init_w=3e-3):
         super(QNetwork, self).__init__()
         input_dim = num_inputs + num_actions
@@ -148,6 +168,7 @@ class QNetwork(Model):
         return x
         
 class PolicyNetwork(Model):
+    ''' the network for generating non-determinstic (Gaussian distributed) action from the state input '''
     def __init__(self, num_inputs, num_actions, hidden_dim, action_range=1., init_w=3e-3):
         super(PolicyNetwork, self).__init__()
 
@@ -175,7 +196,10 @@ class PolicyNetwork(Model):
         return output
     
     def evaluate(self, state, eval_noise_scale):
-        ''' generate action with state for calculating gradients '''
+        ''' 
+        generate action with state for calculating gradients;
+        eval_noise_scale: as the trick of target policy smoothing, for generating noisy actions.
+        '''
         state = state.astype(np.float32)
         action = self.forward(state)  
         
@@ -285,7 +309,7 @@ class TD3_Trainer():
             with tf.GradientTape() as p_tape:
                 new_action = self.policy_net.evaluate(state, eval_noise_scale=0.0)  # no noise, deterministic policy gradients
                 new_q_input = tf.concat([state, new_action], 1)
-                ''' implementation 1 '''
+                # ''' implementation 1 '''
                 # predicted_new_q_value = tf.minimum(self.q_net1(new_q_input),self.q_net2(new_q_input))
                 ''' implementation 2 '''
                 predicted_new_q_value = self.q_net1(new_q_input)
