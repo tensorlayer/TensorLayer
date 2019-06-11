@@ -11,11 +11,11 @@ import warnings
 from collections import Counter
 
 import numpy as np
-from six.moves import urllib, xrange
-
 import tensorflow as tf
-import tensorlayer as tl
+from six.moves import urllib, xrange
 from tensorflow.python.platform import gfile
+
+import tensorlayer as tl
 from tensorlayer.lazy_imports import LazyImport
 
 nltk = LazyImport("nltk")

@@ -27,14 +27,16 @@ python tutorial_DDPG.py --train/test
 
 """
 
-import tensorflow as tf
-import tensorlayer as tl
-import numpy as np
-import gym
-import time
-import matplotlib.pyplot as plt
-import os
 import argparse
+import os
+import time
+
+import gym
+import matplotlib.pyplot as plt
+import numpy as np
+import tensorflow as tf
+
+import tensorlayer as tl
 
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=True)

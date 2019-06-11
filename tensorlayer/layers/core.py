@@ -5,6 +5,7 @@ import inspect
 from abc import abstractmethod
 
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import (deprecated_alias, private_method, protected_method)

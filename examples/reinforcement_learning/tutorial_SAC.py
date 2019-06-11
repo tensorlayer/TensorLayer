@@ -33,12 +33,12 @@ import math
 import random
 import time
 
+import gym
 import matplotlib.pyplot as plt
 import numpy as np
+import tensorflow as tf
 from IPython.display import clear_output
 
-import gym
-import tensorflow as tf
 import tensorflow_probability as tfp
 import tensorlayer as tl
 from tensorlayer.layers import Dense

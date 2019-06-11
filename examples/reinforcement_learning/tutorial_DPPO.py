@@ -29,16 +29,19 @@ python tutorial_DPPO.py --train/test
 
 """
 
-import tensorflow as tf
-import numpy as np
-import matplotlib.pyplot as plt
-import gym, threading, queue
+import argparse
+import os
+import queue
+import threading
 import time
 
-import tensorlayer as tl
+import gym
+import matplotlib.pyplot as plt
+import numpy as np
+import tensorflow as tf
+
 import tensorflow_probability as tfp
-import os
-import argparse
+import tensorlayer as tl
 
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=True)

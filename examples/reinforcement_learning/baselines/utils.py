@@ -6,14 +6,14 @@ tensorflow==2.0.0a0
 tensorlayer==2.0.1
 
 """
+import os
 import random
 import time
 
 import matplotlib.pyplot as plt
-import tensorlayer as tl
 import numpy as np
-import os
 
+import tensorlayer as tl
 
 
 def plot(episode_rewards, Algorithm_name, Env_name):
@@ -90,8 +90,3 @@ class ReplayBuffer:
     
     def __len__(self):
         return len(self.buffer)
-
-
-
-
-

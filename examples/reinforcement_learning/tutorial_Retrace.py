@@ -37,10 +37,9 @@ import time
 
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
-
 from tutorial_wrappers import build_env
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--mode', help='train or test', default='train')

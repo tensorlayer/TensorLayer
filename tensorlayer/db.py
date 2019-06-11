@@ -8,10 +8,10 @@ import time
 from datetime import datetime
 
 import numpy as np
+import tensorflow as tf
 
 import gridfs
 import pymongo
-import tensorflow as tf
 from tensorlayer import logging
 from tensorlayer.files import (
     assign_weights, del_folder, exists_or_mkdir, load_hdf5_to_weights, net2static_graph, save_weights_to_hdf5,
@@ -641,7 +641,7 @@ class TensorHub(object):
         logging.info("[Database] Start Task: key: {} sort: {} push time: {}".format(task_name, sort, _datetime))
         _script = _script.decode('utf-8')
         with tf.Graph().as_default():  #  # as graph: # clear all TF graphs
-            exec (_script, globals())
+            exec(_script, globals())
 
         # set status to finished
         _ = self.db.Task.find_one_and_update({'_id': _id}, {'$set': {'status': 'finished'}})

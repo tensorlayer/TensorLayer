@@ -28,19 +28,20 @@ To run
 python tutorial_TRPO.py --train/test
 
 """
-import numpy as np
-import tensorflow as tf
-import tensorflow_probability as tfp
-import tensorlayer as tl
-import gym
+import argparse
+import copy
+import os
 import time
 
+import gym
 import matplotlib.pyplot as plt
+import numpy as np
 import scipy.signal
-import copy
+import tensorflow as tf
 from gym.spaces import Box, Discrete
-import os
-import argparse
+
+import tensorflow_probability as tfp
+import tensorlayer as tl
 
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=True)

@@ -43,14 +43,14 @@ python tutorial_DQN.py --train/test
 
 
 """
-import time
-import numpy as np
 import argparse
+import time
 
 import gym
+import numpy as np
 import tensorflow as tf
-import tensorlayer as tl
 
+import tensorlayer as tl
 
 # add arguments in command  --train/test
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')

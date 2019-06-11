@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 from tensorlayer import logging
 from tensorlayer.activation import leaky_relu6, leaky_twice_relu6
 from tensorlayer.decorators import deprecated_alias

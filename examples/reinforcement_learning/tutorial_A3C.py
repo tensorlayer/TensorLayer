@@ -44,14 +44,15 @@ python tutorial_A3C.py --train/test
 
 """
 
+import argparse
 import multiprocessing
 import threading
-
-import numpy as np
-import argparse
 import time
+
 import gym
+import numpy as np
 import tensorflow as tf
+
 import tensorflow_probability as tfp
 import tensorlayer as tl
 from tensorlayer.layers import DenseLayer, InputLayer

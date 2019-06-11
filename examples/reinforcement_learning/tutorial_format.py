@@ -28,12 +28,15 @@ python tutorial_***.py --train/test
 
 '''
 
-import time
 import argparse
+import time
+
 import numpy as np
 import tensorflow as tf
-import 'other package name'
 
+import 'other
+import name'
+import package
 
 np.random.seed(2)
 tf.random.set_seed(2)  # reproducible
@@ -99,4 +102,3 @@ if __name__ == '__main__':
 
             print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
             .format(episode, all_episodes, episode_reward, time.time()-t0 ) )
-

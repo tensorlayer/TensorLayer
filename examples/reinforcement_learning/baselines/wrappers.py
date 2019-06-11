@@ -4,14 +4,13 @@ Note that this file is adapted from `https://pypi.org/project/gym-vec-env` and
 """
 from collections import deque
 from functools import partial
-from multiprocessing import cpu_count, Process, Pipe
+from multiprocessing import Pipe, Process, cpu_count
 from sys import platform
 
 import cv2
 import gym
 import numpy as np
 from gym import spaces
-
 
 __all__ = (
     'build_env',  # build env

@@ -3,8 +3,9 @@ from abc import abstractmethod
 from queue import Queue
 
 import tensorflow as tf
-import tensorlayer as tl
 from tensorflow.python.framework import ops as tf_ops
+
+import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.files import utils
 from tensorlayer.layers import Layer, ModelLayer
