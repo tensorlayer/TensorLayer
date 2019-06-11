@@ -299,6 +299,33 @@ class Layer_RNN_Test(CustomTestCase):
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
 
+    def test_basic_lstmrnn_class(self):
+
+        inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
+        rnnlayer = tl.layers.LSTMRNN(
+            units=self.hidden_size, dropout=0.1, return_last_output=True,
+            return_seq_2d=False, return_last_state=True
+        )
+        rnn, rnn_state = rnnlayer(inputs)
+        outputs = tl.layers.Dense(n_units=1)(rnn)
+        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0], rnn_state[1]])
+        print(rnn_model)
+
+        optimizer = tf.optimizers.Adam(learning_rate=0.01)
+
+        rnn_model.train()
+
+        for epoch in range(50):
+            with tf.GradientTape() as tape:
+                pred_y, final_h, final_c = rnn_model(self.data_x)
+                loss = tl.cost.mean_squared_error(pred_y, self.data_y)
+
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
+
+            if (epoch + 1) % 10 == 0:
+                print("epoch %d, loss %f" % (epoch, loss))
+
     def test_basic_grurnn(self):
 
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])

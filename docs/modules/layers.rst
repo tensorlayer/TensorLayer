@@ -82,6 +82,7 @@ Layer list
    RNN
    SimpleRNN
    GRURNN
+   LSTMRNN
    BiRNN
 
    retrieve_seq_length_op
@@ -590,6 +591,9 @@ RNN layer with GRU Cell
 """"""""""""""""""""""""""""""""""
 .. autoclass:: GRURNN
 
+RNN layer with LSTM Cell
+""""""""""""""""""""""""""""""""""
+.. autoclass:: LSTMRNN
 
 Bidirectional layer
 """""""""""""""""""""""""""""""""

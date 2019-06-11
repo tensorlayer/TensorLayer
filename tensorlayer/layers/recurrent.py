@@ -21,6 +21,7 @@ __all__ = [
     'RNN',
     'SimpleRNN',
     'GRURNN',
+    'LSTMRNN',
     'BiRNN',
     # 'ConvRNNCell',
     # 'BasicConvLSTMCell',
@@ -371,7 +372,84 @@ class GRURNN(RNN):
             name=name
         )
 
-# TODO: tl.layers.LSTM
+class LSTMRNN(RNN):
+    """
+    The :class:`LSTMRNN` class is a fixed length recurrent layer for implementing RNN with LSTM cell.
+    This class is a derived class from :class:`RNN`.
+
+    Parameters
+    ----------
+    units: int
+        Positive integer, the dimension of hidden space.
+    return_last_output : boolean
+        Whether return last output or all outputs in a sequence.
+            - If True, return the last output, "Sequence input and single output"
+            - If False, return all outputs, "Synced sequence input and output"
+            - In other word, if you want to stack more RNNs on this layer, set to False
+        In a dynamic model, `return_last_output` can be updated when it is called in customised forward().
+        By default, `False`.
+    return_seq_2d : boolean
+        Only consider this argument when `return_last_output` is `False`
+            - If True, return 2D Tensor [batch_size * n_steps, n_hidden], for stacking Dense layer after it.
+            - If False, return 3D Tensor [batch_size, n_steps, n_hidden], for stacking multiple RNN after it.
+        In a dynamic model, `return_seq_2d` can be updated when it is called in customised forward().
+        By default, `False`.
+    return_last_state: boolean
+        Whether to return the last state of the RNN cell. The state is a list of Tensor.
+        For LSTM, last_state = [last_output, last_cell_state]
+            - If True, the layer will return outputs and the final state of the cell.
+            - If False, the layer will return outputs only.
+        In a dynamic model, `return_last_state` can be updated when it is called in customised forward().
+        By default, `False`.
+    in_channels: int
+        Optional, the number of channels of the previous layer which is normally the size of embedding.
+        If given, the layer will be built when init.
+        If None, it will be automatically detected when the layer is forwarded for the first time.
+    name : str
+        A unique layer name.
+    **kwargs:
+        Advanced arguments to configure the LSTM cell. Please check tf.keras.layers.LSTMCell.
+
+    Examples
+    --------
+
+    A simple regression model below.
+    >>> inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
+    >>> rnn_out, lstm_state = tl.layers.LSTMRNN(
+    >>>     units=hidden_size, dropout=0.1, # both units and dropout are used to configure the LSTM cell.
+    >>>     in_channels=embedding_size,
+    >>>     return_last_output=True, return_last_state=True, name='grurnn'
+    >>> )(inputs)
+    >>> outputs = tl.layers.Dense(n_units=1)(rnn_out)
+    >>> rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0]], name='rnn_model')
+
+    Notes
+    -----
+    Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see layer :class:`Reshape`.
+
+
+    """
+
+
+    def __init__(
+            self,
+            units,
+            return_last_output=False,
+            return_seq_2d=False,
+            return_last_state=True,
+            in_channels=None,
+            name=None,  # 'lstmrnn'
+            **kwargs
+    ):
+        super(LSTMRNN, self).__init__(
+            cell=tf.keras.layers.LSTMCell(units=units, **kwargs),
+            return_last_output=return_last_output,
+            return_seq_2d=return_seq_2d,
+            return_last_state=return_last_state,
+            in_channels=in_channels,
+            name=name
+        )
+
 
 class BiRNN(Layer):
     """
