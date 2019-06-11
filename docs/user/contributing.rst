@@ -6,7 +6,7 @@ Contributing
 
 TensorLayer is a major ongoing research project in Data Science Institute, Imperial College London. 
 The goal of the project is to develop a compositional language while complex learning systems
-can be build through composition of neural network modules.
+can be built through composition of neural network modules.
 
 Numerous contributors come from various horizons such as: Tsinghua University, Carnegie Mellon University, University of Technology of Compiegne, 
 Google, Microsoft, Bloomberg and etc.
@@ -17,6 +17,11 @@ You can easily open a Pull Request (PR) on `GitHub`_, every little step counts a
 As an open-source project, we highly welcome and value contributions!
 
 **If you are interested in working with us, please contact us at:** `tensorlayer@gmail.com <tensorlayer@gmail.com>`_.
+
+.. image:: ../../img/join_slack.png
+  :width: 30 %
+  :align: center
+  :target: https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc
 
 
 Project Maintainers
@@ -51,7 +56,7 @@ What to contribute
 Your method and example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you have a new method or example in term of Deep learning and Reinforcement learning,
+If you have a new method or example in terms of Deep learning and Reinforcement learning,
 you are welcome to contribute.
 
 * Provide your layer or example, so everyone can use it.

@@ -33,7 +33,7 @@ class Layer_Convolution_1D_Test(CustomTestCase):
         )(cls.n2)
 
         cls.n4 = tl.layers.SeparableConv1d(
-            n_filter=32, filter_size=3, strides=2, padding='SAME', act=tf.nn.relu, name='separable_1d'
+            n_filter=32, filter_size=3, strides=2, padding='SAME', act='relu', name='separable_1d'
         )(cls.n3)
 
         cls.n5 = tl.layers.SubpixelConv1d(scale=2, act=tf.nn.relu, in_channels=32, name='subpixel_1d')(cls.n4)
@@ -461,6 +461,29 @@ class Layer_Convolution_3D_Test(CustomTestCase):
 #         self.assertEqual(len(self.net2.all_params), 4)
 #         self.assertEqual(self.net2.count_params(), 19392)
 #         self.assertEqual(self.net2.outputs.get_shape().as_list()[1:], [299, 299, 64])
+
+
+class Exception_test(CustomTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        print("##### begin testing exception in activation #####")
+
+    def test_exception(cls):
+
+        cls.batch_size = 5
+        cls.inputs_shape = [cls.batch_size, 400, 400, 3]
+        cls.input_layer = Input(cls.inputs_shape, name='input_layer')
+
+        try:
+            cls.n1 = tl.layers.Conv2dLayer(
+                act='activation', shape=(5, 5, 3, 32), strides=(1, 2, 2, 1), padding='SAME',
+                b_init=tf.constant_initializer(value=0.0), name='conv2dlayer'
+            )(cls.input_layer)
+        except Exception as e:
+            cls.assertIsInstance(e, Exception)
+            print(e)
+
 
 if __name__ == '__main__':
 

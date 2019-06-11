@@ -13,10 +13,10 @@ import gridfs
 import pymongo
 import tensorflow as tf
 from tensorlayer import logging
-from tensorlayer.files import (
-    assign_weights, del_folder, exists_or_mkdir, load_hdf5_to_weights, net2static_graph, save_weights_to_hdf5,
-    static_graph2net
-)
+
+from tensorlayer.files import static_graph2net, assign_weights
+from tensorlayer.files import save_weights_to_hdf5, load_hdf5_to_weights
+from tensorlayer.files import del_folder, exists_or_mkdir
 
 
 class TensorHub(object):
@@ -154,7 +154,7 @@ class TensorHub(object):
         s = time.time()
 
         # kwargs.update({'architecture': network.all_graphs, 'time': datetime.utcnow()})
-        kwargs.update({'architecture': net2static_graph(network), 'time': datetime.utcnow()})
+        kwargs.update({'architecture': network.config, 'time': datetime.utcnow()})
 
         try:
             params_id = self.model_fs.put(self._serialization(params))

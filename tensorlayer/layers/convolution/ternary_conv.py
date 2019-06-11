@@ -74,11 +74,10 @@ class TernaryConv2d(Layer):
             in_channels=None,
             name=None  # 'ternary_cnn2d',
     ):
-        super().__init__(name)
+        super().__init__(name, act=act)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = self._strides = strides
-        self.act = act
         self.padding = padding
         self.use_gemm = use_gemm
         self.data_format = data_format
