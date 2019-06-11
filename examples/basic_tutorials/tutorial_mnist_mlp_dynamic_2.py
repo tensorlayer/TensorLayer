@@ -1,8 +1,8 @@
 import time
 
 import numpy as np
-import tensorflow as tf
 
+import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import Dense, Dropout, Input, LayerList
 from tensorlayer.models import Model
@@ -13,13 +13,14 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 ## prepare MNIST data
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 
+
 ## define the network
 class CustomModelHidden(Model):
 
     def __init__(self):
         super(CustomModelHidden, self).__init__()
 
-        self.dropout1 = Dropout(keep=0.8)#(self.innet)
+        self.dropout1 = Dropout(keep=0.8)  #(self.innet)
 
         self.seq = LayerList(
             [
@@ -29,13 +30,14 @@ class CustomModelHidden(Model):
             ]
         )
 
-        self.dropout3 = Dropout(keep=0.8)#(self.seq)
+        self.dropout3 = Dropout(keep=0.8)  #(self.seq)
 
     def forward(self, x):
         z = self.dropout1(x)
         z = self.seq(z)
         z = self.dropout3(z)
         return z
+
 
 class CustomModelOut(Model):
 

@@ -11,9 +11,9 @@ from sys import exit as _exit
 from sys import platform as _platform
 
 import numpy as np
-import tensorflow as tf
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 
+import tensorflow as tf
 import tensorlayer as tl
 
 __all__ = [

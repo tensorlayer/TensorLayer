@@ -1,8 +1,9 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import base64
 import gzip
-import importlib
+import json
 import math
 import os
 import pickle
@@ -14,15 +15,19 @@ import tarfile
 import time
 import zipfile
 
+import cloudpickle
 import h5py
 import numpy as np
-import progressbar
 import scipy.io as sio
-import tensorflow as tf
 from six.moves import cPickle
-from tensorflow.python.platform import gfile
 
+import progressbar
+import tensorflow as tf
 import tensorlayer as tl
+from tensorflow.python.keras.saving import model_config as model_config_lib
+from tensorflow.python.platform import gfile
+from tensorflow.python.util import serialization
+from tensorflow.python.util.tf_export import keras_export
 from tensorlayer import logging, nlp, utils, visualize
 
 import cloudpickle

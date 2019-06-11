@@ -4,7 +4,6 @@
 from __future__ import absolute_import
 
 import hyperdash as hd
-
 import tensorlayer as tl
 
 __all__ = ["HyperDashHandler", "monitor", "Experiment", "IPythonMagicsWrapper"]
