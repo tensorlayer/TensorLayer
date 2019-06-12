@@ -271,7 +271,6 @@ class SimpleRNN(RNN):
     -----
     Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see layer :class:`Reshape`.
 
-
     """
 
     def __init__(
@@ -345,7 +344,6 @@ class GRURNN(RNN):
     -----
     Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see layer :class:`Reshape`.
 
-
     """
 
     def __init__(
@@ -418,7 +416,6 @@ class LSTMRNN(RNN):
     Notes
     -----
     Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see layer :class:`Reshape`.
-
 
     """
 
