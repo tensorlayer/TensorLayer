@@ -1,8 +1,9 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import base64
 import gzip
-import importlib
+import json
 import math
 import os
 import pickle
@@ -14,15 +15,19 @@ import tarfile
 import time
 import zipfile
 
+import cloudpickle
 import h5py
 import numpy as np
-import progressbar
 import scipy.io as sio
-import tensorflow as tf
 from six.moves import cPickle
-from tensorflow.python.platform import gfile
 
+import progressbar
+import tensorflow as tf
 import tensorlayer as tl
+from tensorflow.python.keras.saving import model_config as model_config_lib
+from tensorflow.python.platform import gfile
+from tensorflow.python.util import serialization
+from tensorflow.python.util.tf_export import keras_export
 from tensorlayer import logging, nlp, utils, visualize
 
 import cloudpickle
@@ -181,21 +186,23 @@ def save_hdf5_graph(network, filepath='model.hdf5', save_weights=False, customiz
     logging.info("[*] Saving TL model into {}, saving weights={}".format(filepath, save_weights))
 
     model_config = network.config  # net2static_graph(network)
+    model_config["version_info"]["save_date"] = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc
+                                                                                  ).isoformat()
     model_config_str = str(model_config)
     customized_data_str = str(customized_data)
-    version_info = {
-        "tensorlayer_version": tl.__version__,
-        "backend": "tensorflow",
-        "backend_version": tf.__version__,
-        "training_device": "gpu",
-        "save_date": datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
-    }
-    version_info_str = str(version_info)
+    # version_info = {
+    #     "tensorlayer_version": tl.__version__,
+    #     "backend": "tensorflow",
+    #     "backend_version": tf.__version__,
+    #     "training_device": "gpu",
+    #     "save_date": datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+    # }
+    # version_info_str = str(version_info)
 
     with h5py.File(filepath, 'w') as f:
         f.attrs["model_config"] = model_config_str.encode('utf8')
         f.attrs["customized_data"] = customized_data_str.encode('utf8')
-        f.attrs["version_info"] = version_info_str.encode('utf8')
+        # f.attrs["version_info"] = version_info_str.encode('utf8')
         if save_weights:
             _save_weights_to_hdf5_group(f, network.all_layers)
         f.flush()
@@ -315,8 +322,12 @@ def load_hdf5_graph(filepath='model.hdf5', load_weights=False):
 
     f = h5py.File(filepath, 'r')
 
-    version_info_str = f.attrs["version_info"].decode('utf8')
-    version_info = eval(version_info_str)
+    model_config_str = f.attrs["model_config"].decode('utf8')
+    model_config = eval(model_config_str)
+
+    # version_info_str = f.attrs["version_info"].decode('utf8')
+    # version_info = eval(version_info_str)
+    version_info = model_config["version_info"]
     backend_version = version_info["backend_version"]
     tensorlayer_version = version_info["tensorlayer_version"]
     if backend_version != tf.__version__:
@@ -331,9 +342,6 @@ def load_hdf5_graph(filepath='model.hdf5', load_weights=False):
                 tensorlayer_version, tl.__version__
             )
         )
-
-    model_config_str = f.attrs["model_config"].decode('utf8')
-    model_config = eval(model_config_str)
 
     M = static_graph2net(model_config)
     if load_weights:

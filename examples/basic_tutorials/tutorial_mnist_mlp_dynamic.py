@@ -1,8 +1,8 @@
 import time
 
 import numpy as np
-import tensorflow as tf
 
+import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import Dense, Dropout, Input
 from tensorlayer.models import Model
@@ -13,18 +13,19 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 ## prepare MNIST data
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 
+
 ## define the network
 class CustomModel(Model):
 
     def __init__(self):
         super(CustomModel, self).__init__()
 
-        self.dropout1 = Dropout(keep=0.8)#(self.innet)
-        self.dense1 = Dense(n_units=800, act=tf.nn.relu, in_channels=784)#(self.dropout1)
-        self.dropout2 = Dropout(keep=0.8)#(self.dense1)
-        self.dense2 = Dense(n_units=800, act=tf.nn.relu, in_channels=800)#(self.dropout2)
-        self.dropout3 = Dropout(keep=0.8)#(self.dense2)
-        self.dense3 = Dense(n_units=10, act=tf.nn.relu, in_channels=800)#(self.dropout3)
+        self.dropout1 = Dropout(keep=0.8)  #(self.innet)
+        self.dense1 = Dense(n_units=800, act=tf.nn.relu, in_channels=784)  #(self.dropout1)
+        self.dropout2 = Dropout(keep=0.8)  #(self.dense1)
+        self.dense2 = Dense(n_units=800, act=tf.nn.relu, in_channels=800)  #(self.dropout2)
+        self.dropout3 = Dropout(keep=0.8)  #(self.dense2)
+        self.dense3 = Dense(n_units=10, act=tf.nn.relu, in_channels=800)  #(self.dropout3)
 
     def forward(self, x, foo=None):
         z = self.dropout1(x)
@@ -36,6 +37,7 @@ class CustomModel(Model):
         if foo is not None:
             out = tf.nn.relu(out)
         return out
+
 
 MLP = CustomModel()
 

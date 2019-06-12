@@ -3,9 +3,8 @@ from abc import abstractmethod
 from queue import Queue
 
 import tensorflow as tf
-from tensorflow.python.framework import ops as tf_ops
-
 import tensorlayer as tl
+from tensorflow.python.framework import ops as tf_ops
 from tensorlayer import logging
 from tensorlayer.files import utils
 from tensorlayer.layers import Layer, ModelLayer
@@ -443,13 +442,14 @@ class Model(object):
                 _config.update({"name": None})
             else:
                 _config.update({"name": self.name})
-            # versionInfo = {
-            #     "tensorlayer_version": tl.__version__,
-            #     "backend": "tensorflow",
-            #     "backend_version": tf.__version__,
-            #     "training_device": "gpu",
-            # }
-            # _config.update(versionInfo)
+            version_info = {
+                "tensorlayer_version": tl.__version__,
+                "backend": "tensorflow",
+                "backend_version": tf.__version__,
+                "training_device": "gpu",
+                "save_date": None,
+            }
+            _config["version_info"] = version_info
             # if self.outputs is None:
             #     raise RuntimeError(
             #         "Dynamic mode does not support config yet."

@@ -35,7 +35,7 @@ For stable version:
 .. code-block:: bash
 
   pip3 install tensorlayer
-  
+
 For latest version, please install from Github.
 
 .. code-block:: bash
@@ -87,8 +87,7 @@ If you want install TensorLayer 1.X, the simplest way to install TensorLayer 1.X
 
 .. code-block:: bash
 
-  [stable version] pip install tensorlayer
-  [master version] pip install git+https://github.com/tensorlayer/tensorlayer.git
+  [stable version] pip install tensorlayer==1.x.x
 
 However, if you want to modify or extend TensorLayer 1.X, you can download the repository from
 `Github`_ and install it as follow.
@@ -103,7 +102,7 @@ editable, then you can edit the source code in ``tensorlayer`` folder, and ``imp
 TensorLayer.
 
 
-GPU support 
+GPU support
 ==========================
 
 Thanks to NVIDIA supports, training a fully connected network on a
@@ -201,8 +200,8 @@ For TensorLayer 1.X, you can easily install Tensorlayer 1.X using pip in CMD：
   pip install tensorflow-gpu    #GPU version (GPU version and CPU version just choose one)
   pip install tensorlayer       #Install tensorlayer
 
-Test
---------
+Test GPU
+----------
 
 Enter “python” in CMD. Then:
 
@@ -220,7 +219,7 @@ If there is no error and the following output is displayed, the GPU version is s
   successfully opened CUDA library nvcuda.dll locally
   successfully opened CUDA library curand64_80.dll locally
 
-If there is no error, the CPU version is successfully installed.
+If there is no error, the GPU version is successfully installed.
 
 
 

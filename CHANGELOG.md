@@ -85,6 +85,22 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 
+## [2.0.3]
+
+### Changed
+- Add version_info in model.config. (PR #992)
+- Replace tf.nn.func with tf.nn.func.\_\_name\_\_ in model config.
+- Add Reinforcement learning tutorials. (PR #995)
+
+### Fixed
+
+### Contributors
+- @warshallrho:
+- @quantumiracle: #995
+- @Tokarev-TT-33: #995
+- @initial-h: #995
+- @Officium: #995
+
 ## [2.0.2] - 2019-6-5
 
 ### Changed
@@ -113,6 +129,8 @@ A maintain release.
  - Layer
     - `InstanceNorm`, `InstanceNorm1d`, `InstanceNorm2d`, `InstanceNorm3d` (PR #963)
 
+* Reinforcement learning tutorials. (PR #995)
+
 ### Changed
 - remove `tl.layers.initialize_global_variables(sess)` (PR #931)
 - update `tutorial_generate_text.py`, `tutorial_ptb_lstm.py`. remove `tutorial_ptb_lstm_state_is_tuple.py` (PR #958)
@@ -133,8 +151,15 @@ A maintain release.
 - @warshallrho: #PR966
 - @zsdonghao: #931
 - @yd-yin: #963
+<<<<<<< HEAD
+- @Tokarev-TT-33: # 995
+- @initial-h: # 995
+- @quantumiracle: #995
+- @Officium: #995
+=======
 - @1FengL: #958
 - @dvklopfenstein: #971
+>>>>>>> 560dbb8a17963023a3b1d59a79e1c2752530114a
 
 
 ## [2.0.0] - 2019-05-04
@@ -360,8 +385,10 @@ To many PR for this update, please check [here](https://github.com/tensorlayer/t
   - AtrousDeConv2dLayer added (PR #662)
   - Fix bugs of using `tf.layers` in CNN (PR #686)
 - Optimizer:
+
   - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (PR #636)
 - Setup:
+
   - Creation of installation flaggs `all`, `all_cpu`, and `all_gpu` (PR #660)
 - Test:
   - `test_utils_predict.py` added to reproduce and fix issue #288 (PR #566)

@@ -13,9 +13,9 @@ from .base_dense import *
 from .binary_dense import *
 from .dorefa_dense import *
 from .dropconnect import *
-from .ternary_dense import *
 from .quan_dense import *
 from .quan_dense_bn import *
+from .ternary_dense import *
 
 __all__ = [
     'BinaryDense',
