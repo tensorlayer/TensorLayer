@@ -7,14 +7,6 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
 
-# from tensorflow.python.ops import array_ops
-# from tensorflow.python.util.tf_inspect import getfullargspec
-# from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
-# from tensorflow.python.ops.rnn_cell import LSTMStateTuple
-
-# from tensorlayer.layers.core import LayersConfig
-# from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
-
 # TODO: uncomment
 __all__ = [
     'RNN',
@@ -223,6 +215,7 @@ class RNN(Layer):
         else:
             return outputs
 
+
 class SimpleRNN(RNN):
     """
     The :class:`SimpleRNN` class is a fixed length recurrent layer for implementing simple RNN.
@@ -281,7 +274,6 @@ class SimpleRNN(RNN):
 
     """
 
-
     def __init__(
             self,
             units,
@@ -293,13 +285,10 @@ class SimpleRNN(RNN):
             **kwargs
     ):
         super(SimpleRNN, self).__init__(
-            cell=tf.keras.layers.SimpleRNNCell(units=units, **kwargs),
-            return_last_output=return_last_output,
-            return_seq_2d=return_seq_2d,
-            return_last_state=return_last_state,
-            in_channels=in_channels,
-            name=name
+            cell=tf.keras.layers.SimpleRNNCell(units=units, **kwargs), return_last_output=return_last_output,
+            return_seq_2d=return_seq_2d, return_last_state=return_last_state, in_channels=in_channels, name=name
         )
+
 
 class GRURNN(RNN):
     """
@@ -359,7 +348,6 @@ class GRURNN(RNN):
 
     """
 
-
     def __init__(
             self,
             units,
@@ -371,13 +359,10 @@ class GRURNN(RNN):
             **kwargs
     ):
         super(GRURNN, self).__init__(
-            cell=tf.keras.layers.GRUCell(units=units, **kwargs),
-            return_last_output=return_last_output,
-            return_seq_2d=return_seq_2d,
-            return_last_state=return_last_state,
-            in_channels=in_channels,
-            name=name
+            cell=tf.keras.layers.GRUCell(units=units, **kwargs), return_last_output=return_last_output,
+            return_seq_2d=return_seq_2d, return_last_state=return_last_state, in_channels=in_channels, name=name
         )
+
 
 class LSTMRNN(RNN):
     """
@@ -437,7 +422,6 @@ class LSTMRNN(RNN):
 
     """
 
-
     def __init__(
             self,
             units,
@@ -449,12 +433,8 @@ class LSTMRNN(RNN):
             **kwargs
     ):
         super(LSTMRNN, self).__init__(
-            cell=tf.keras.layers.LSTMCell(units=units, **kwargs),
-            return_last_output=return_last_output,
-            return_seq_2d=return_seq_2d,
-            return_last_state=return_last_state,
-            in_channels=in_channels,
-            name=name
+            cell=tf.keras.layers.LSTMCell(units=units, **kwargs), return_last_output=return_last_output,
+            return_seq_2d=return_seq_2d, return_last_state=return_last_state, in_channels=in_channels, name=name
         )
 
 
@@ -973,6 +953,7 @@ class ConvLSTM(Layer):
         self._add_layers(self.outputs)
         self._add_params(rnn_variables)
 
+
 # @tf.function
 def retrieve_seq_length_op(data):
     """An op to compute the length of a sequence from input shape of [batch_size, n_step(max), n_features],
@@ -1014,6 +995,7 @@ def retrieve_seq_length_op(data):
 
         return tf.cast(length, tf.int32)
 
+
 # @tf.function
 def retrieve_seq_length_op2(data):
     """An op to compute the length of a sequence, from input shape of [batch_size, n_step(max)],
@@ -1035,6 +1017,7 @@ def retrieve_seq_length_op2(data):
 
     """
     return tf.reduce_sum(input_tensor=tf.cast(tf.greater(data, tf.zeros_like(data)), tf.int32), axis=1)
+
 
 # @tf.function
 def retrieve_seq_length_op3(data, pad_val=0):
@@ -1094,6 +1077,7 @@ def retrieve_seq_length_op3(data, pad_val=0):
             "retrieve_seq_length_op3: handling data with num of dims %s hasn't been implemented!" % (data_shape_size)
         )
 
+
 def target_mask_op(data, pad_val=0):
     """ Return the mask of the input sequence data based on the padding values.
 
@@ -1146,9 +1130,12 @@ def target_mask_op(data, pad_val=0):
     elif data_shape_size == 2:
         return tf.cast(tf.not_equal(data, pad_val), dtype=tf.int32)
     elif data_shape_size == 1:
-        raise ValueError("target_mask_op: data_shape %s is not supported. "
-                         "The shape of data should have 2 or 3 dims." % (data.get_shape()))
+        raise ValueError(
+            "target_mask_op: data_shape %s is not supported. "
+            "The shape of data should have 2 or 3 dims." % (data.get_shape())
+        )
     else:
-        raise ValueError("target_mask_op: handling data_shape %s hasn't been implemented! "
-                         "The shape of data should have 2 or 3 dims" % (data.get_shape()))
-
+        raise ValueError(
+            "target_mask_op: handling data_shape %s hasn't been implemented! "
+            "The shape of data should have 2 or 3 dims" % (data.get_shape())
+        )

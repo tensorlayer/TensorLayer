@@ -1,12 +1,12 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
-import numpy as np
-from tensorlayer.models import Model
 from tensorlayer.layers import Dense, Dropout, Input
 from tensorlayer.layers.core import Layer
+from tensorlayer.models import Model
 
 __all__ = ['Seq2seqLuongAttention']
 
