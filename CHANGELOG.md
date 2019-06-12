@@ -91,6 +91,9 @@ To release a new version, please update the changelog as followed:
 - Add version_info in model.config. (PR #992)
 - Replace tf.nn.func with tf.nn.func.\_\_name\_\_ in model config.
 - Add Reinforcement learning tutorials. (PR #995)
+- Add RNN layers with simple rnn cell, GRU cell, LSTM cell. (PR #998)
+- Update Seq2seq (#998) 
+- Add Seq2seqLuongAttention model (#998)
 
 ### Fixed
 
@@ -100,13 +103,14 @@ To release a new version, please update the changelog as followed:
 - @Tokarev-TT-33: #995
 - @initial-h: #995
 - @Officium: #995
+- @ArnoldLIULJ: #998
+- @JingqingZ: #998
+
 
 ## [2.0.2] - 2019-6-5
 
 ### Changed
 - change the format of network config, change related code and files; change layer act (PR #980)
-- update Seq2seq (#989) 
-- add Seq2seqLuongAttention model (#991)
 
 ### Fixed
 - Fix dynamic model cannot track PRelu weights gradients problem (PR #982)
@@ -114,7 +118,6 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 - @warshallrho: #980
-- @ArnoldLIULJ: #989, #991
 - @1FengL: #982
 
 ## [2.0.1] - 2019-5-17
