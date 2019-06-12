@@ -1,7 +1,7 @@
 """
 Distributed Proximal Policy Optimization (DPPO)
 ----------------------------
-A distributing version of OpenAI's Proximal Policy Optimization (PPO).
+A distributed version of OpenAI's Proximal Policy Optimization (PPO).
 Workers in parallel to collect data, then stop worker's roll-out and train PPO on collected data.
 Restart workers once PPO is updated.
 
@@ -29,16 +29,19 @@ python tutorial_DPPO.py --train/test
 
 """
 
-import tensorflow as tf
-import numpy as np
-import matplotlib.pyplot as plt
-import gym, threading, queue
+import argparse
+import os
+import queue
+import threading
 import time
 
-import tensorlayer as tl
+import matplotlib.pyplot as plt
+import numpy as np
+
+import gym
+import tensorflow as tf
 import tensorflow_probability as tfp
-import os
-import argparse
+import tensorlayer as tl
 
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=True)
@@ -60,16 +63,17 @@ A_UPDATE_STEPS = 10  # actor update steps
 C_UPDATE_STEPS = 10  # critic update steps
 S_DIM, A_DIM = 3, 1  # state dimension, action dimension
 EPS = 1e-8  # epsilon
-METHOD = [dict(name='kl_pen', kl_target=0.01, lam=0.5),  # KL penalty
-          dict(name='clip', epsilon=0.2),  # Clipped surrogate objective, find this is better
-          ][1]  # choose the method for optimization
+METHOD = [
+    dict(name='kl_pen', kl_target=0.01, lam=0.5),  # KL penalty
+    dict(name='clip', epsilon=0.2),  # Clipped surrogate objective, find this is better
+][1]  # choose the method for optimization
 
 N_WORKER = 4  # parallel workers
 MIN_BATCH_SIZE = 64  # minimum batch size for updating PPO
 UPDATE_STEP = 10  # loop update operation n-steps
 
-
 ###############################  DPPO  ####################################
+
 
 class PPO(object):
     '''
@@ -118,9 +122,10 @@ class PPO(object):
                 kl_mean = tf.reduce_mean(kl)
                 aloss = -(tf.reduce_mean(surr - tflam * kl))
             else:  # clipping method, find this is better
-                aloss = -tf.reduce_mean(tf.minimum(
-                    surr,
-                    tf.clip_by_value(ratio, 1. - METHOD['epsilon'], 1. + METHOD['epsilon']) * tfadv))
+                aloss = -tf.reduce_mean(
+                    tf.minimum(surr,
+                               tf.clip_by_value(ratio, 1. - METHOD['epsilon'], 1. + METHOD['epsilon']) * tfadv)
+                )
         a_gard = tape.gradient(aloss, self.actor.trainable_weights)
 
         self.actor_opt.apply_gradients(zip(a_gard, self.actor.trainable_weights))
@@ -281,7 +286,7 @@ class Worker(object):
     def __init__(self, wid):
         self.wid = wid
         self.env = gym.make(GAME).unwrapped
-        self.env.seed(wid*100 + RANDOMSEED)
+        self.env.seed(wid * 100 + RANDOMSEED)
         self.ppo = GLOBAL_PPO
 
     def work(self):
@@ -334,8 +339,12 @@ class Worker(object):
                 GLOBAL_RUNNING_R.append(GLOBAL_RUNNING_R[-1] * 0.9 + ep_r * 0.1)
             GLOBAL_EP += 1
 
-            print('Episode: {}/{}  | Worker: {} | Episode Reward: {:.4f}  | Running Time: {:.4f}'
-                  .format(GLOBAL_EP, EP_MAX, self.wid, ep_r, time.time() - t0))
+            print(
+                'Episode: {}/{}  | Worker: {} | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
+                    GLOBAL_EP, EP_MAX, self.wid, ep_r,
+                    time.time() - t0
+                )
+            )
 
 
 if __name__ == '__main__':
