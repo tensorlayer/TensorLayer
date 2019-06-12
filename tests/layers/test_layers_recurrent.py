@@ -68,6 +68,34 @@ class Layer_RNN_Test(CustomTestCase):
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
 
+    def test_basic_simplernn_class(self):
+
+        inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
+        rnnlayer = tl.layers.SimpleRNN(
+            units=self.hidden_size, dropout=0.1, return_last_output=True,
+            return_seq_2d=False, return_last_state=True
+        )
+        rnn, rnn_state = rnnlayer(inputs)
+        outputs = tl.layers.Dense(n_units=1)(rnn)
+        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0]])
+        print(rnn_model)
+
+        optimizer = tf.optimizers.Adam(learning_rate=0.01)
+
+        rnn_model.train()
+        assert rnnlayer.is_train
+
+        for epoch in range(50):
+            with tf.GradientTape() as tape:
+                pred_y, final_state = rnn_model(self.data_x)
+                loss = tl.cost.mean_squared_error(pred_y, self.data_y)
+
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
+
+            if (epoch + 1) % 10 == 0:
+                print("epoch %d, loss %f" % (epoch, loss))
+
     def test_basic_simplernn2(self):
 
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
@@ -112,6 +140,39 @@ class Layer_RNN_Test(CustomTestCase):
                 super(CustomisedModel, self).__init__()
                 self.rnnlayer = tl.layers.RNN(
                     cell=tf.keras.layers.SimpleRNNCell(units=8, dropout=0.1), in_channels=4, return_last_output=False,
+                    return_seq_2d=False, return_last_state=False
+                )
+                self.dense = tl.layers.Dense(in_channels=8, n_units=1)
+
+            def forward(self, x):
+                z = self.rnnlayer(x)
+                z = self.dense(z[:, -1, :])
+                return z
+
+        rnn_model = CustomisedModel()
+        print(rnn_model)
+        optimizer = tf.optimizers.Adam(learning_rate=0.01)
+        rnn_model.train()
+
+        for epoch in range(50):
+            with tf.GradientTape() as tape:
+                pred_y = rnn_model(self.data_x)
+                loss = tl.cost.mean_squared_error(pred_y, self.data_y)
+
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
+
+            if (epoch + 1) % 10 == 0:
+                print("epoch %d, loss %f" % (epoch, loss))
+
+    def test_basic_simplernn_dynamic_class(self):
+
+        class CustomisedModel(tl.models.Model):
+
+            def __init__(self):
+                super(CustomisedModel, self).__init__()
+                self.rnnlayer = tl.layers.SimpleRNN(
+                    units=8, dropout=0.1, in_channels=4, return_last_output=False,
                     return_seq_2d=False, return_last_state=False
                 )
                 self.dense = tl.layers.Dense(in_channels=8, n_units=1)
@@ -238,11 +299,65 @@ class Layer_RNN_Test(CustomTestCase):
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
 
+    def test_basic_lstmrnn_class(self):
+
+        inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
+        rnnlayer = tl.layers.LSTMRNN(
+            units=self.hidden_size, dropout=0.1, return_last_output=True,
+            return_seq_2d=False, return_last_state=True
+        )
+        rnn, rnn_state = rnnlayer(inputs)
+        outputs = tl.layers.Dense(n_units=1)(rnn)
+        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0], rnn_state[1]])
+        print(rnn_model)
+
+        optimizer = tf.optimizers.Adam(learning_rate=0.01)
+
+        rnn_model.train()
+
+        for epoch in range(50):
+            with tf.GradientTape() as tape:
+                pred_y, final_h, final_c = rnn_model(self.data_x)
+                loss = tl.cost.mean_squared_error(pred_y, self.data_y)
+
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
+
+            if (epoch + 1) % 10 == 0:
+                print("epoch %d, loss %f" % (epoch, loss))
+
     def test_basic_grurnn(self):
 
         inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
         rnnlayer = tl.layers.RNN(
             cell=tf.keras.layers.GRUCell(units=self.hidden_size, dropout=0.1), return_last_output=True,
+            return_seq_2d=False, return_last_state=True
+        )
+        rnn, rnn_state = rnnlayer(inputs)
+        outputs = tl.layers.Dense(n_units=1)(rnn)
+        rnn_model = tl.models.Model(inputs=inputs, outputs=[outputs, rnn_state[0]])
+        print(rnn_model)
+
+        optimizer = tf.optimizers.Adam(learning_rate=0.01)
+
+        rnn_model.train()
+
+        for epoch in range(50):
+            with tf.GradientTape() as tape:
+                pred_y, final_h = rnn_model(self.data_x)
+                loss = tl.cost.mean_squared_error(pred_y, self.data_y)
+
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
+
+            if (epoch + 1) % 10 == 0:
+                print("epoch %d, loss %f" % (epoch, loss))
+
+    def test_basic_grurnn_class(self):
+
+        inputs = tl.layers.Input([self.batch_size, self.num_steps, self.embedding_size])
+        rnnlayer = tl.layers.GRURNN(
+            units=self.hidden_size, dropout=0.1, return_last_output=True,
             return_seq_2d=False, return_last_state=True
         )
         rnn, rnn_state = rnnlayer(inputs)
@@ -603,6 +718,59 @@ class Layer_RNN_Test(CustomTestCase):
             print(length)
         except Exception as e:
             print(e)
+
+    def test_target_mask_op(self):
+        fail_flag = False
+        data = [
+            ['hello', 'world', '', '', ''],
+            ['hello', 'world', 'tensorlayer', '', ''],
+            ['hello', 'world', 'tensorlayer', '2.0', '']
+        ]
+        try:
+            tl.layers.target_mask_op(data, pad_val='')
+            fail_flag = True
+        except AttributeError as e:
+            print(e)
+        if fail_flag:
+            self.fail("Type error not raised")
+
+        data = tf.convert_to_tensor(data, dtype=tf.string)
+        mask = tl.layers.target_mask_op(data, pad_val='')
+        print(mask)
+
+        data = [[[1], [0], [0], [0], [0]], [[1], [2], [3], [0], [0]], [[1], [2], [0], [1], [0]]]
+        data = tf.convert_to_tensor(data, dtype=tf.float32)
+        mask = tl.layers.target_mask_op(data)
+        print(mask)
+
+        data = [[[0,0],[2,2],[1,2],[1,2],[0,0]],
+                [[2,3],[2,4],[3,2],[1,0],[0,0]],
+                [[3,3],[0,1],[5,3],[1,2],[0,0]]]
+        data = tf.convert_to_tensor(data, dtype=tf.float32)
+        mask = tl.layers.target_mask_op(data)
+        print(mask)
+
+        fail_flag = False
+        try:
+            data = [1, 2, 0, 0, 0]
+            data = tf.convert_to_tensor(data, dtype=tf.float32)
+            tl.layers.target_mask_op(data)
+            fail_flag = True
+        except ValueError as e:
+            print(e)
+        if fail_flag:
+            self.fail("Wrong data shape not detected.")
+
+        fail_flag = False
+        try:
+            data = np.random.random([4, 2, 6, 2])
+            data = tf.convert_to_tensor(data, dtype=tf.float32)
+            tl.layers.target_mask_op(data)
+            fail_flag = True
+        except ValueError as e:
+            print(e)
+        if fail_flag:
+            self.fail("Wrong data shape not detected.")
 
 
 if __name__ == '__main__':
