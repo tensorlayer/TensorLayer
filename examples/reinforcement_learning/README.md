@@ -41,11 +41,11 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 | Algorithms      | Observation Space | Action Space | Tutorial Env   |
 | --------------- | ----------------- | ------------ | -------------- |
 | Q-learning      | Discrete          | Discrete     | FrozenLake     |
-| C51             | Discrete          | Discrete     | Pong, CartPole |
+| C51             | Continuous        | Discrete     | Pong, CartPole |
 | DQN             | Discrete          | Discrete     | FrozenLake     |
-| Variants of DQN | Discrete          | Discrete     | Pong, CartPole |
-| Retrace         | Discrete          | Discrete     | Pong, CartPole |
-| PER             | Discrete          | Discrete     | Pong, CartPole |
+| Variants of DQN | Continuous        | Discrete     | Pong, CartPole |
+| Retrace         | Continuous        | Discrete     | Pong, CartPole |
+| PER             | Continuous        | Discrete     | Pong, CartPole |
 | Actor-Critic    | Continuous        | Discrete     | CartPole       |
 | A3C             | Continuous        | Continuous   | BipedalWalker  |
 | DDPG            | Continuous        | Continuous   | Pendulum       |
@@ -105,6 +105,10 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
   <u>Code:</u> `./tutorial_DQN_variants.py`
 
   <u>Paper</u>: [Deep Reinforcement Learning with Double Q-learning](https://arxiv.org/abs/1509.06461)
+
+  [Dueling Network Architectures for Deep Reinforcement Learning](https://arxiv.org/abs/1511.06581)
+
+  [Noisy Networks for Exploration](https://arxiv.org/abs/1706.10295)
 
   <u>Description</u>: 
 
