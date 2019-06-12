@@ -27,39 +27,38 @@ python tutorial_PG.py --train/test
 
 """
 
-import argparse
-import os
-import time
-
-import matplotlib.pyplot as plt
+import tensorflow as tf
+import tensorlayer as tl
 import numpy as np
 
 import gym
-import tensorflow as tf
-import tensorlayer as tl
+import matplotlib.pyplot as plt
+import time
+import os
+import argparse
 
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=True)
 parser.add_argument('--test', dest='train', action='store_false')
 args = parser.parse_args()
 
+
 #####################  hyper parameters  ####################
 
 ENV_NAME = 'CartPole-v0'  # environment name
 RANDOMSEED = 1  # random seed
 
-DISPLAY_REWARD_THRESHOLD = 400  # renders environment if total episode reward is greater then this threshold
-RENDER = False  # rendering wastes time
+DISPLAY_REWARD_THRESHOLD = 400      # renders environment if total episode reward is greater then this threshold
+RENDER = False                      # rendering wastes time
 num_episodes = 3000
 
-###############################  PG  ####################################
 
+###############################  PG  ####################################
 
 class PolicyGradient:
     """
     PG class
     """
-
     def __init__(self, n_features, n_actions, learning_rate=0.01, reward_decay=0.95):
         self.n_actions = n_actions
         self.n_features = n_features
@@ -76,22 +75,16 @@ class PolicyGradient:
             """
             with tf.name_scope('inputs'):
                 self.tf_obs = tl.layers.Input(inputs_shape, tf.float32, name="observations")
-                self.tf_acts = tl.layers.Input([
-                    None,
-                ], tf.int32, name="actions_num")
-                self.tf_vt = tl.layers.Input([
-                    None,
-                ], tf.float32, name="actions_value")
+                self.tf_acts = tl.layers.Input([None, ], tf.int32, name="actions_num")
+                self.tf_vt = tl.layers.Input([None, ], tf.float32, name="actions_value")
             # fc1
-            layer = tl.layers.Dense(
-                n_units=30, act=tf.nn.tanh, W_init=tf.random_normal_initializer(mean=0, stddev=0.3),
-                b_init=tf.constant_initializer(0.1), name='fc1'
-            )(self.tf_obs)
+            layer = tl.layers.Dense(n_units=30, act=tf.nn.tanh,
+                                    W_init=tf.random_normal_initializer(mean=0, stddev=0.3),
+                                    b_init=tf.constant_initializer(0.1), name='fc1')(self.tf_obs)
             # fc2
-            all_act = tl.layers.Dense(
-                n_units=self.n_actions, act=None, W_init=tf.random_normal_initializer(mean=0, stddev=0.3),
-                b_init=tf.constant_initializer(0.1), name='all_act'
-            )(layer)
+            all_act = tl.layers.Dense(n_units=self.n_actions, act=None,
+                                      W_init=tf.random_normal_initializer(mean=0, stddev=0.3),
+                                      b_init=tf.constant_initializer(0.1), name='all_act')(layer)
             return tl.models.Model(inputs=self.tf_obs, outputs=all_act, name='PG model')
 
         self.model = get_model([None, n_features])
@@ -198,7 +191,7 @@ if __name__ == '__main__':
     tl.logging.set_verbosity(tl.logging.DEBUG)
 
     env = gym.make(ENV_NAME)
-    env.seed(RANDOMSEED)  # reproducible, general Policy gradient has high variance
+    env.seed(RANDOMSEED)                         # reproducible, general Policy gradient has high variance
     env = env.unwrapped
 
     print(env.action_space)
@@ -245,10 +238,8 @@ if __name__ == '__main__':
 
                     # print("episode:", i_episode, "  reward:", int(running_reward))
 
-                    print(
-                        "Episode [%d/%d] \tsum reward: %d  \trunning reward: %f \ttook: %.5fs " %
-                        (i_episode, num_episodes, ep_rs_sum, running_reward, time.time() - episode_time)
-                    )
+                    print("Episode [%d/%d] \tsum reward: %d  \trunning reward: %f \ttook: %.5fs " %
+                          (i_episode, num_episodes, ep_rs_sum, running_reward, time.time() - episode_time))
                     reward_buffer.append(running_reward)
 
                     vt = RL.learn()

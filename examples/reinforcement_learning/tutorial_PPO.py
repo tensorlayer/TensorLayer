@@ -28,17 +28,15 @@ python tutorial_PPO.py --train/test
 
 """
 
-import argparse
-import os
-import time
-
-import matplotlib.pyplot as plt
-import numpy as np
-
-import gym
 import tensorflow as tf
-import tensorflow_probability as tfp
+import numpy as np
+import matplotlib.pyplot as plt
+import gym
 import tensorlayer as tl
+import tensorflow_probability as tfp
+import time
+import os
+import argparse
 
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=True)
@@ -60,13 +58,12 @@ A_UPDATE_STEPS = 10  # actor update steps
 C_UPDATE_STEPS = 10  # critic update steps
 S_DIM, A_DIM = 3, 1  # state dimension, action dimension
 EPS = 1e-8  # epsilon
-METHOD = [
-    dict(name='kl_pen', kl_target=0.01, lam=0.5),  # KL penalty
-    dict(name='clip', epsilon=0.2),  # Clipped surrogate objective, find this is better
-][1]  # choose the method for optimization
+METHOD = [dict(name='kl_pen', kl_target=0.01, lam=0.5),  # KL penalty
+          dict(name='clip', epsilon=0.2),  # Clipped surrogate objective, find this is better
+          ][1]  # choose the method for optimization
+
 
 ###############################  PPO  ####################################
-
 
 class PPO(object):
     '''
@@ -85,6 +82,8 @@ class PPO(object):
         # actor
         self.actor = self._build_anet('pi', trainable=True)
         self.actor_old = self._build_anet('oldpi', trainable=False)
+        self.actor_opt = tf.optimizers.Adam(A_LR)
+        self.critic_opt = tf.optimizers.Adam(C_LR)
 
     def a_train(self, tfs, tfa, tfadv):
         '''
@@ -113,13 +112,12 @@ class PPO(object):
                 kl_mean = tf.reduce_mean(kl)
                 aloss = -(tf.reduce_mean(surr - tflam * kl))
             else:  # clipping method, find this is better
-                aloss = -tf.reduce_mean(
-                    tf.minimum(surr,
-                               tf.clip_by_value(ratio, 1. - METHOD['epsilon'], 1. + METHOD['epsilon']) * tfadv)
-                )
+                aloss = -tf.reduce_mean(tf.minimum(
+                    surr,
+                    tf.clip_by_value(ratio, 1. - METHOD['epsilon'], 1. + METHOD['epsilon']) * tfadv))
         a_gard = tape.gradient(aloss, self.actor.trainable_weights)
 
-        tf.optimizers.Adam(A_LR).apply_gradients(zip(a_gard, self.actor.trainable_weights))
+        self.actor_opt.apply_gradients(zip(a_gard, self.actor.trainable_weights))
 
         if METHOD['name'] == 'kl_pen':
             return kl_mean
@@ -146,7 +144,7 @@ class PPO(object):
             closs = tf.reduce_mean(tf.square(advantage))
         # print('tfdc_r value', tfdc_r)
         grad = tape.gradient(closs, self.critic.trainable_weights)
-        tf.optimizers.Adam(C_LR).apply_gradients(zip(grad, self.critic.trainable_weights))
+        self.critic_opt.apply_gradients(zip(grad, self.critic.trainable_weights))
 
     def cal_adv(self, tfs, tfdc_r):
         '''
@@ -177,16 +175,14 @@ class PPO(object):
         if METHOD['name'] == 'kl_pen':
             for _ in range(A_UPDATE_STEPS):
                 kl = self.a_train(s, a, adv)
-                if kl > 4 * METHOD['kl_target']:  # this in in google's paper
+                if kl > 4 * METHOD['kl_target']:              # this in in google's paper
                     break
-            if kl < METHOD['kl_target'] / 1.5:  # adaptive lambda, this is in OpenAI's paper
+            if kl < METHOD['kl_target'] / 1.5:                # adaptive lambda, this is in OpenAI's paper
                 METHOD['lam'] /= 2
             elif kl > METHOD['kl_target'] * 1.5:
                 METHOD['lam'] *= 2
-            METHOD['lam'] = np.clip(
-                METHOD['lam'], 1e-4, 10
-            )  # sometimes explode, this clipping is MorvanZhou's solution
-        else:  # clipping method, find this is better (OpenAI's paper)
+            METHOD['lam'] = np.clip(METHOD['lam'], 1e-4, 10)  # sometimes explode, this clipping is MorvanZhou's solution
+        else:                                                 # clipping method, find this is better (OpenAI's paper)
             for _ in range(A_UPDATE_STEPS):
                 self.a_train(s, a, adv)
 
@@ -301,12 +297,8 @@ if __name__ == '__main__':
                 all_ep_r.append(ep_r)
             else:
                 all_ep_r.append(all_ep_r[-1] * 0.9 + ep_r * 0.1)
-            print(
-                'Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                    ep, EP_MAX, ep_r,
-                    time.time() - t0
-                )
-            )
+            print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'
+                  .format(ep, EP_MAX, ep_r, time.time() - t0))
 
             plt.ion()
             plt.cla()

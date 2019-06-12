@@ -27,16 +27,14 @@ python tutorial_DDPG.py --train/test
 
 """
 
-import argparse
-import os
-import time
-
-import matplotlib.pyplot as plt
-import numpy as np
-
-import gym
 import tensorflow as tf
 import tensorlayer as tl
+import numpy as np
+import gym
+import time
+import matplotlib.pyplot as plt
+import os
+import argparse
 
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=True)
@@ -59,6 +57,7 @@ MAX_EPISODES = 200  # total number of episodes for training
 MAX_EP_STEPS = 200  # total number of steps for each episode
 TEST_PER_EPISODES = 10  # test the model per episodes
 VAR = 3  # control exploration
+
 
 ###############################  DDPG  ####################################
 
@@ -160,8 +159,8 @@ class DDPG(object):
         indices = np.random.choice(MEMORY_CAPACITY, size=BATCH_SIZE)
         bt = self.memory[indices, :]
         bs = bt[:, :self.s_dim]
-        ba = bt[:, self.s_dim:self.s_dim + self.a_dim]
-        br = bt[:, -self.s_dim - 1:-self.s_dim]
+        ba = bt[:, self.s_dim: self.s_dim + self.a_dim]
+        br = bt[:, -self.s_dim - 1: -self.s_dim]
         bs_ = bt[:, -self.s_dim:]
 
         with tf.GradientTape() as tape:
@@ -176,7 +175,7 @@ class DDPG(object):
         with tf.GradientTape() as tape:
             a = self.actor(bs)
             q = self.critic([bs, a])
-            a_loss = -tf.reduce_mean(q)  # maximize the q
+            a_loss = - tf.reduce_mean(q)  # maximize the q
         a_grads = tape.gradient(a_loss, self.actor.trainable_weights)
         self.actor_opt.apply_gradients(zip(a_grads, self.actor.trainable_weights))
 
@@ -260,12 +259,8 @@ if __name__ == '__main__':
                 s = s_
                 ep_reward += r
                 if j == MAX_EP_STEPS - 1:
-                    print(
-                        '\rEpisode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                            i, MAX_EPISODES, ep_reward,
-                            time.time() - t1
-                        ), end=''
-                    )
+                    print('\rEpisode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'
+                          .format(i, MAX_EPISODES, ep_reward, time.time() - t1), end='')
                 plt.show()
             # test
             if i and not i % TEST_PER_EPISODES:
@@ -280,12 +275,8 @@ if __name__ == '__main__':
                     s = s_
                     ep_reward += r
                     if j == MAX_EP_STEPS - 1:
-                        print(
-                            '\rEpisode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                                i, MAX_EPISODES, ep_reward,
-                                time.time() - t1
-                            )
-                        )
+                        print('\rEpisode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'
+                              .format(i, MAX_EPISODES, ep_reward, time.time() - t1))
 
                         reward_buffer.append(ep_reward)
 
