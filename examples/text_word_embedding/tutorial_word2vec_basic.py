@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-
 """Vector Representations of Words.
 
 This is the minimalistic reimplementation of
@@ -44,19 +43,17 @@ import sys
 import time
 
 import numpy as np
-import tensorflow as tf
 from six.moves import xrange  # pylint: disable=redefined-builtin
 
+import tensorflow as tf
 import tensorlayer as tl
 import wget
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--model",
-                    default='one',
-                    type=str,
-                    required=False,
-                    help="The model name. It can be 'one', 'two', 'three', 'four'.")
+parser.add_argument(
+    "--model", default='one', type=str, required=False, help="The model name. It can be 'one', 'two', 'three', 'four'."
+)
 
 FLAGS = parser.parse_args()
 
@@ -158,12 +155,14 @@ def main_word2vec_basic():
     print()
 
     batch, labels, data_index = tl.nlp.generate_skip_gram_batch(
-        data=data, batch_size=8, num_skips=4, skip_window=2, data_index=0)
+        data=data, batch_size=8, num_skips=4, skip_window=2, data_index=0
+    )
     for i in range(8):
         print(batch[i], reverse_dictionary[batch[i]], '->', labels[i, 0], reverse_dictionary[labels[i, 0]])
 
     batch, labels, data_index = tl.nlp.generate_skip_gram_batch(
-        data=data, batch_size=8, num_skips=2, skip_window=1, data_index=0)
+        data=data, batch_size=8, num_skips=2, skip_window=1, data_index=0
+    )
     for i in range(8):
         print(batch[i], reverse_dictionary[batch[i]], '->', labels[i, 0], reverse_dictionary[labels[i, 0]])
 
@@ -193,7 +192,7 @@ def main_word2vec_basic():
         vocabulary_size=vocabulary_size,
         embedding_size=embedding_size,
         num_sampled=num_sampled,
-        activate_nce_loss=True, # nce loss is activated
+        activate_nce_loss=True,  # nce loss is activated
         nce_loss_args={},
         E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
         nce_W_init=tl.initializers.truncated_normal(stddev=float(1.0 / np.sqrt(embedding_size))),
@@ -230,9 +229,8 @@ def main_word2vec_basic():
     while step < num_steps:
         start_time = time.time()
         batch_inputs, batch_labels, data_index = tl.nlp.generate_skip_gram_batch(
-            data=data, batch_size=batch_size, num_skips=num_skips,
-            skip_window=skip_window, data_index=data_index)
-
+            data=data, batch_size=batch_size, num_skips=num_skips, skip_window=skip_window, data_index=data_index
+        )
 
         # We perform one update step by evaluating the train_op (including it
         # in the list of returned values for sess.run()
@@ -335,7 +333,6 @@ def main_word2vec_basic():
         # Compute cosine distance between each pair of target and vocab.
         # dist has shape [N, vocab_size].
         dist = tf.matmul(target, normalized_embeddings, transpose_b=True)
-
         """Predict the top 4 answers for analogy questions."""
         _, pred_idx = tf.nn.top_k(dist, n_answer)
 

@@ -14,8 +14,8 @@ import random
 import time
 
 import numpy as np
-import tensorflow as tf
 
+import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import Dense, Dropout, Flatten, Input
 from tensorlayer.models import Model
@@ -33,7 +33,7 @@ def contrastive_loss(label, feature1, feature2):
 
 
 def compute_accuracy(label, feature1, feature2):
-    eucd = tf.sqrt(tf.reduce_sum((feature1 - feature2) ** 2, axis=1))
+    eucd = tf.sqrt(tf.reduce_sum((feature1 - feature2)**2, axis=1))
     pred = tf.cast(eucd < 0.5, label.dtype)
     return tf.reduce_mean(tf.cast(tf.equal(pred, label), tf.float32))
 

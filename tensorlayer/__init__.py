@@ -5,19 +5,10 @@
 import os
 from distutils.version import LooseVersion
 
-from tensorlayer.package_info import VERSION
-from tensorlayer.package_info import __shortversion__
-from tensorlayer.package_info import __version__
-
-from tensorlayer.package_info import __package_name__
-from tensorlayer.package_info import __contact_names__
-from tensorlayer.package_info import __contact_emails__
-from tensorlayer.package_info import __homepage__
-from tensorlayer.package_info import __repository_url__
-from tensorlayer.package_info import __download_url__
-from tensorlayer.package_info import __description__
-from tensorlayer.package_info import __license__
-from tensorlayer.package_info import __keywords__
+from tensorlayer.package_info import (
+    VERSION, __contact_emails__, __contact_names__, __description__, __download_url__, __homepage__, __keywords__,
+    __license__, __package_name__, __repository_url__, __shortversion__, __version__
+)
 
 if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
 
