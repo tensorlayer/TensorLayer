@@ -27,7 +27,6 @@ To run
 python tutorial_PPO.py --train/test
 
 """
-
 import argparse
 import os
 import time
@@ -85,6 +84,8 @@ class PPO(object):
         # actor
         self.actor = self._build_anet('pi', trainable=True)
         self.actor_old = self._build_anet('oldpi', trainable=False)
+        self.actor_opt = tf.optimizers.Adam(A_LR)
+        self.critic_opt = tf.optimizers.Adam(C_LR)
 
     def a_train(self, tfs, tfa, tfadv):
         '''
@@ -119,7 +120,7 @@ class PPO(object):
                 )
         a_gard = tape.gradient(aloss, self.actor.trainable_weights)
 
-        tf.optimizers.Adam(A_LR).apply_gradients(zip(a_gard, self.actor.trainable_weights))
+        self.actor_opt.apply_gradients(zip(a_gard, self.actor.trainable_weights))
 
         if METHOD['name'] == 'kl_pen':
             return kl_mean
@@ -146,7 +147,7 @@ class PPO(object):
             closs = tf.reduce_mean(tf.square(advantage))
         # print('tfdc_r value', tfdc_r)
         grad = tape.gradient(closs, self.critic.trainable_weights)
-        tf.optimizers.Adam(C_LR).apply_gradients(zip(grad, self.critic.trainable_weights))
+        self.critic_opt.apply_gradients(zip(grad, self.critic.trainable_weights))
 
     def cal_adv(self, tfs, tfdc_r):
         '''
@@ -171,7 +172,7 @@ class PPO(object):
 
         self.update_old_pi()
         adv = self.cal_adv(s, r)
-        # adv = (adv - adv.mean())/(adv.std()+1e-6)     # sometimes helpful
+        # adv = (adv - adv.mean())/(adv.std()+1e-6)  # sometimes helpful
 
         # update actor
         if METHOD['name'] == 'kl_pen':

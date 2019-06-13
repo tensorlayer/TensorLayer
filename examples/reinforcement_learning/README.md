@@ -41,11 +41,11 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 | Algorithms      | Observation Space | Action Space | Tutorial Env   |
 | --------------- | ----------------- | ------------ | -------------- |
 | Q-learning      | Discrete          | Discrete     | FrozenLake     |
-| C51             | Discrete          | Discrete     | Pong, CartPole |
+| C51             | Continuous        | Discrete     | Pong, CartPole |
 | DQN             | Discrete          | Discrete     | FrozenLake     |
-| Variants of DQN | Discrete          | Discrete     | Pong, CartPole |
-| Retrace         | Discrete          | Discrete     | Pong, CartPole |
-| PER             | Discrete          | Discrete     | Pong, CartPole |
+| Variants of DQN | Continuous        | Discrete     | Pong, CartPole |
+| Retrace         | Continuous        | Discrete     | Pong, CartPole |
+| PER             | Continuous        | Discrete     | Pong, CartPole |
 | Actor-Critic    | Continuous        | Discrete     | CartPole       |
 | A3C             | Continuous        | Continuous   | BipedalWalker  |
 | DDPG            | Continuous        | Continuous   | Pendulum       |
@@ -106,6 +106,10 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Paper</u>: [Deep Reinforcement Learning with Double Q-learning](https://arxiv.org/abs/1509.06461)
 
+  [Dueling Network Architectures for Deep Reinforcement Learning](https://arxiv.org/abs/1511.06581)
+
+  [Noisy Networks for Exploration](https://arxiv.org/abs/1706.10295)
+
   <u>Description</u>: 
 
   ```
@@ -113,11 +117,11 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
   
   -The max operator in standard DQN uses the same values both to select and to evaluate an action by:
   
-     Q(s_t, a_t) = R\_{t+1\} + gamma \* max\_{a}Q\_\{target\}(s_{t+1}, a).
+     Q(s_t, a_t) = R_{t+1} + gamma * max_{a}Q_{target}(s_{t+1}, a).
   
   -Double DQN proposes to use following evaluation to address overestimation problem of max operator:
   
-     Q(s_t, a_t) = R\_{t+1\} + gamma \* Q\_{target}(s\_\{t+1\}, max{a}Q(s_{t+1}, a)).
+     Q(s_t, a_t) = R_{t+1} + gamma * Q_{target}(s_{t+1}, max_{a}Q(s_{t+1}, a)).
   
   -Dueling DQN uses dueling architecture where the value of state and the advantage of each action is estimated separately.
   
