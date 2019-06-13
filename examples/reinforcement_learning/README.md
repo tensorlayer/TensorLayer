@@ -40,6 +40,7 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 ### value-based
 | Algorithms      | Action Space | Tutorial Env   | Papers |
 | --------------- | ------------ | -------------- | -------|
+|**value-based**||||
 | Q-learning      | Discrete     | FrozenLake     | [Technical note: Q-learning. Watkins et al. 1992](http://www.gatsby.ucl.ac.uk/~dayan/papers/cjch.pdf)|
 | Deep Q-Network (DQN)| Discrete     | FrozenLake     | [Human-level control through deep reinforcement learning, Mnih et al. 2015.](https://www.nature.com/articles/nature14236/) |
 | Prioritized Experience Replay | Discrete     | Pong, CartPole | [Schaul et al. Prioritized experience replay. Schaul et al. 2015.](https://arxiv.org/abs/1511.05952) |
@@ -48,18 +49,12 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 |Retrace|Discrete     | Pong, CartPole |[Safe and efficient off-policy reinforcement learning. Munos et al. 2016: ](https://arxiv.org/pdf/1606.02647.pdf)|
 |Noisy DQN|Discrete     | Pong, CartPole |[Noisy networks for exploration. Fortunato et al. 2017.](https://arxiv.org/pdf/1706.10295.pdf)|
 | Distributed DQN (C51)| Discrete     | Pong, CartPole | [A distributional perspective on reinforcement learning. Bellemare et al. 2017.](https://arxiv.org/pdf/1707.06887.pdf) |
-
-### policy-based
-| Algorithms      | Action Space | Tutorial Env   | Papers |
-| --------------- | ------------ | -------------- | -------|
+|**policy-based**||||
 |REINFORCE(PG) |Discrete/Continuous|CartPole | [Reinforcement learning: An introduction. Sutton et al. 2011.](https://www.cambridge.org/core/journals/robotica/article/robot-learning-edited-by-jonathan-h-connell-and-sridhar-mahadevan-kluwer-boston-19931997-xii240-pp-isbn-0792393651-hardback-21800-guilders-12000-8995/737FD21CA908246DF17779E9C20B6DF6)|
 | Trust Region Policy Optimization (TRPO)| Discrete/Continuous | Pendulum | [Abbeel et al. Trust region policy optimization. Schulman et al.2015.](https://arxiv.org/pdf/1502.05477.pdf) |
 | Proximal Policy Optimization (PPO) |Discrete/Continuous |Pendulum| [Proximal policy optimization algorithms. Schulman et al. 2017.](https://arxiv.org/abs/1707.06347) |
 |Distributed Proximal Policy Optimization (DPPO)|Discrete/Continuous |Pendulum|[Emergence of locomotion behaviours in rich environments. Heess et al. 2017.](https://arxiv.org/abs/1707.02286)|
-
-### actor-critic
-| Algorithms      | Action Space | Tutorial Env   | Papers |
-| --------------- | ------------ | -------------- | -------|
+|**actor-critic**||||
 |Actor-Critic (AC)|Discrete/Continuous|CartPole| [Actor-critic algorithms. Konda er al. 2000.](https://papers.nips.cc/paper/1786-actor-critic-algorithms.pdf)|
 | Asynchronous Advantage Actor-Critic (A3C)| Discrete/Continuous | BipedalWalker| [Asynchronous methods for deep reinforcement learning. Mnih et al. 2016.](https://arxiv.org/pdf/1602.01783.pdf) |
 | DDPG|Discrete/Continuous |Pendulum| [Continuous Control With Deep Reinforcement Learning, Lillicrap et al. 2016](https://arxiv.org/pdf/1509.02971.pdf) |
