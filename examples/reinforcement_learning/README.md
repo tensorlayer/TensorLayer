@@ -37,25 +37,29 @@ For each tutorial, open a terminal and run:
 The tutorial algorithms follow the same basic structure, as shown in file: [`./tutorial_format.py`](https://github.com/tensorlayer/tensorlayer/blob/reinforcement-learning/examples/reinforcement_learning/tutorial_format.py)
 
 ## Table of Contents:
-
-| Algorithms      | Observation Space | Action Space | Tutorial Env   |
-| --------------- | ----------------- | ------------ | -------------- |
-| Q-learning      | Discrete          | Discrete     | FrozenLake     |
-| C51             | Continuous        | Discrete     | Pong, CartPole |
-| DQN             | Discrete          | Discrete     | FrozenLake     |
-| Variants of DQN | Continuous        | Discrete     | Pong, CartPole |
-| Retrace         | Continuous        | Discrete     | Pong, CartPole |
-| PER             | Continuous        | Discrete     | Pong, CartPole |
-| Actor-Critic    | Continuous        | Discrete     | CartPole       |
-| A3C             | Continuous        | Continuous   | BipedalWalker  |
-| DDPG            | Continuous        | Continuous   | Pendulum       |
-| TD3             | Continuous        | Continuous   | Pendulum       |
-| SAC             | Continuous        | Continuous   | Pendulum       |
-| PG              | Continuous        | Discrete     | CartPole       |
-| TRPO            | Continuous        | Continuous   | Pendulum       |
-| PPO             | Continuous        | Continuous   | Pendulum       |
-| DPPO            | Continuous        | Continuous   | Pendulum       |
-
+### value-based
+| Algorithms      | Action Space | Tutorial Env   | Papers |
+| --------------- | ------------ | -------------- | -------|
+|**value-based**||||
+| Q-learning      | Discrete     | FrozenLake     | [Technical note: Q-learning. Watkins et al. 1992](http://www.gatsby.ucl.ac.uk/~dayan/papers/cjch.pdf)|
+| Deep Q-Network (DQN)| Discrete     | FrozenLake     | [Human-level control through deep reinforcement learning, Mnih et al. 2015.](https://www.nature.com/articles/nature14236/) |
+| Prioritized Experience Replay | Discrete     | Pong, CartPole | [Schaul et al. Prioritized experience replay. Schaul et al. 2015.](https://arxiv.org/abs/1511.05952) |
+|Dueling DQN|Discrete     | Pong, CartPole |[Dueling network architectures for deep reinforcement learning. Wang et al. 2015.](https://arxiv.org/abs/1511.06581)|
+|Double DQN| Discrete     | Pong, CartPole |[Deep reinforcement learning with double q-learning. Van et al. 2016.](https://arxiv.org/abs/1509.06461)|
+|Retrace|Discrete     | Pong, CartPole |[Safe and efficient off-policy reinforcement learning. Munos et al. 2016: ](https://arxiv.org/pdf/1606.02647.pdf)|
+|Noisy DQN|Discrete     | Pong, CartPole |[Noisy networks for exploration. Fortunato et al. 2017.](https://arxiv.org/pdf/1706.10295.pdf)|
+| Distributed DQN (C51)| Discrete     | Pong, CartPole | [A distributional perspective on reinforcement learning. Bellemare et al. 2017.](https://arxiv.org/pdf/1707.06887.pdf) |
+|**policy-based**||||
+|REINFORCE(PG) |Discrete/Continuous|CartPole | [Reinforcement learning: An introduction. Sutton et al. 2011.](https://www.cambridge.org/core/journals/robotica/article/robot-learning-edited-by-jonathan-h-connell-and-sridhar-mahadevan-kluwer-boston-19931997-xii240-pp-isbn-0792393651-hardback-21800-guilders-12000-8995/737FD21CA908246DF17779E9C20B6DF6)|
+| Trust Region Policy Optimization (TRPO)| Discrete/Continuous | Pendulum | [Abbeel et al. Trust region policy optimization. Schulman et al.2015.](https://arxiv.org/pdf/1502.05477.pdf) |
+| Proximal Policy Optimization (PPO) |Discrete/Continuous |Pendulum| [Proximal policy optimization algorithms. Schulman et al. 2017.](https://arxiv.org/abs/1707.06347) |
+|Distributed Proximal Policy Optimization (DPPO)|Discrete/Continuous |Pendulum|[Emergence of locomotion behaviours in rich environments. Heess et al. 2017.](https://arxiv.org/abs/1707.02286)|
+|**actor-critic**||||
+|Actor-Critic (AC)|Discrete/Continuous|CartPole| [Actor-critic algorithms. Konda er al. 2000.](https://papers.nips.cc/paper/1786-actor-critic-algorithms.pdf)|
+| Asynchronous Advantage Actor-Critic (A3C)| Discrete/Continuous | BipedalWalker| [Asynchronous methods for deep reinforcement learning. Mnih et al. 2016.](https://arxiv.org/pdf/1602.01783.pdf) |
+| DDPG|Discrete/Continuous |Pendulum| [Continuous Control With Deep Reinforcement Learning, Lillicrap et al. 2016](https://arxiv.org/pdf/1509.02971.pdf) |
+|TD3|Discrete/Continuous |Pendulum|[Addressing function approximation error in actor-critic methods. Fujimoto et al. 2018.](https://arxiv.org/pdf/1802.09477.pdf)|
+|Soft Actor-Critic (SAC)|Discrete/Continuous |Pendulum|[Soft actor-critic algorithms and applications. Haarnoja et al. 2018.](https://arxiv.org/abs/1812.05905)|
 
 ## Examples of RL Algorithms:
 
@@ -65,14 +69,14 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Paper</u>: [Technical  Note Q-Learning](http://www.gatsby.ucl.ac.uk/~dayan/papers/cjch.pdf)
 
-  <u>Description</u>: 
+  <u>Description</u>:
 
   ```
   Q-learning is a non-deep-learning method with TD Learning, Off-Policy, e-Greedy Exploration.
-  
+
   Central formula:
   Q(S, A) <- Q(S, A) + alpha * (R + lambda * Q(newS, newA) - Q(S, A))
-  
+
   See David Silver RL Tutorial Lecture 5 - Q-Learning for more details.
   ```
 
@@ -86,19 +90,19 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   [Playing Atari with Deep Reinforcement Learning](https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf)
 
-  <u>Description</u>: 
+  <u>Description</u>:
 
   ```
   Deep Q-Network (DQN) is a method of TD Learning, Off-Policy, e-Greedy Exploration (GLIE).
-  
+
   Central formula:
   Q(S, A) <- Q(S, A) + alpha * (R + lambda * Q(newS, newA) - Q(S, A)),
   delta_w = R + lambda * Q(newS, newA).
-  
+
   See David Silver RL Tutorial Lecture 5 - Q-Learning for more details.
   ```
 
-  
+
 
 * **Double DQN / Dueling DQN / Noisy DQN**
 
@@ -106,31 +110,27 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   <u>Paper</u>: [Deep Reinforcement Learning with Double Q-learning](https://arxiv.org/abs/1509.06461)
 
-  [Dueling Network Architectures for Deep Reinforcement Learning](https://arxiv.org/abs/1511.06581)
-
-  [Noisy Networks for Exploration](https://arxiv.org/abs/1706.10295)
-
-  <u>Description</u>: 
+  <u>Description</u>:
 
   ```
   We implement Double DQN, Dueling DQN and Noisy DQN here.
-  
+
   -The max operator in standard DQN uses the same values both to select and to evaluate an action by:
-  
-     Q(s_t, a_t) = R_{t+1} + gamma * max_{a}Q_{target}(s_{t+1}, a).
-  
+
+     Q(s_t, a_t) = R\_{t+1\} + gamma \* max\_{a}Q\_\{target\}(s_{t+1}, a).
+
   -Double DQN proposes to use following evaluation to address overestimation problem of max operator:
-  
-     Q(s_t, a_t) = R_{t+1} + gamma * Q_{target}(s_{t+1}, max_{a}Q(s_{t+1}, a)).
-  
+
+     Q(s_t, a_t) = R\_{t+1\} + gamma \* Q\_{target}(s\_\{t+1\}, max{a}Q(s_{t+1}, a)).
+
   -Dueling DQN uses dueling architecture where the value of state and the advantage of each action is estimated separately.
-  
+
   -Noisy DQN propose to explore by adding parameter noises.
-  
-  
+
+
   ```
 
-  
+
 
 
 * **Prioritized Experience Replay**
@@ -145,7 +145,7 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
   Prioritized experience replay is an efficient replay method that replay important transitions more frequently. Segment tree data structure is used to speed up indexing.
   ```
 
-  
+
 
 * **Distributed DQN (C51)**
 
@@ -159,7 +159,7 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
   Categorical 51 distributional RL algorithm is a distrbuted DQN, where 51 means the number of atoms. In this algorithm, instead of estimating actual expected value, value distribution over a series of  continuous sub-intervals (atoms) is considered.
   ```
 
-  
+
 
 
 * **Retrace(lambda) DQN**
@@ -174,7 +174,7 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
   Retrace (lambda) is an off-policy algorithm that extend the idea of eligibility trace. It apply an importance sampling ratio truncated at 1 to several behaviour policies, which suffer from the variance explosion of standard IS and lead to safe and efficient learning.
   ```
 
-  
+
 
 
 * **Actor-Critic (AC)**
@@ -189,7 +189,7 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
   The implementation of Advantage Actor-Critic, using TD-error as the advantage.
   ```
 
-  
+
 
 * **Asynchronous Advantage Actor-Critic (A3C)**
 
@@ -203,7 +203,7 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
   The implementation of Asynchronous Advantage Actor-Critic (A3C), using multi-threading for distributed policy learning on Actor-Critic structure.
   ```
 
-  
+
 
 * **Soft Actor-Critic (SAC)**
 
@@ -215,15 +215,15 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   ```
   Actor policy in SAC is stochastic, with off-policy training.  And 'soft' in SAC indicates the trade-off between the entropy and expected return.  The additional consideration of entropy term helps with more explorative policy. And this implementation contains an automatic update for the entropy factor.
-  
-  This version of Soft Actor-Critic (SAC) implementation contains 5 networks: 
+
+  This version of Soft Actor-Critic (SAC) implementation contains 5 networks:
   2 Q-networks, 2 target Q-networks and 1 policy network.
   ```
 
-  
 
 
-* **Vanilla Policy Gradient (PG or REINFORCE)** 
+
+* **Vanilla Policy Gradient (PG or REINFORCE)**
 
   <u>Code</u>: `./tutorial_PG.py`
 
@@ -233,11 +233,11 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   ```
   The policy gradient algorithm works by updating policy parameters via stochastic gradient ascent on policy performance. It's an on-policy algorithm can be used for environments with either discrete or continuous action spaces.
-  
+
   To apply it on continuous action space, you need to change the last softmax layer and the choose_action function.
   ```
 
-  
+
 
 * **Deep Deterministic Policy Gradient (DDPG)**
 
@@ -249,11 +249,11 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   ```
   An algorithm concurrently learns a Q-function and a policy.
-  
+
   It uses off-policy data and the Bellman equation to learn the Q-function, and uses the Q-function to learn the policy.
   ```
 
-  
+
 
 
 * **Twin Delayed DDPG (TD3)**
@@ -266,20 +266,20 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   ```
   DDPG suffers from problems like overestimate of Q-values and sensitivity to hyper-parameters.
-  
+
   Twin Delayed DDPG (TD3) is a variant of DDPG with several tricks:
-  
+
   - Trick One: Clipped Double-Q Learning. TD3 learns two Q-functions instead of one (hence “twin”), and uses the smaller of the two Q-values to form the targets in the Bellman error loss functions.
-  - Trick Two: “Delayed” Policy Updates. TD3 updates the policy (and target networks) less frequently than the Q-function. 
+  - Trick Two: “Delayed” Policy Updates. TD3 updates the policy (and target networks) less frequently than the Q-function.
   - Trick Three: Target Policy Smoothing. TD3 adds noise to the target action, to make it harder for the policy to exploit Q-function errors by smoothing out Q along changes in action.
-  
-  The implementation of TD3 includes 6 networks: 
+
+  The implementation of TD3 includes 6 networks:
   2 Q-networks, 2 target Q-networks, 1 policy network, 1 target policy network.
-  
+
   Actor policy in TD3 is deterministic, with Gaussian exploration noise.
   ```
 
-  
+
 
 * **Trust Region Policy Optimization (TRPO)**
 
@@ -291,11 +291,11 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   ```
   PG method with a large step can crash the policy performance, even with a small step can lead a large differences in policy.
-  
+
   TRPO constraints the step in policy space using KL divergence (rather than in parameter space), which can monotonically improve performance and avoid a collapsed update.
   ```
 
-  
+
 
 * **Proximal Policy Optimization (PPO)**
 
@@ -307,15 +307,15 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   ```
   A simple version of Proximal Policy Optimization (PPO) using single thread.
-  
+
   PPO is a family of first-order methods that use a few other tricks to keep new policies close to old.
-  
+
   PPO methods are significantly simpler to implement, and empirically seem to perform at least as well as TRPO.
-  
-  
+
+
   ```
 
-  
+
 
 * **Distributed Proximal Policy Optimization (DPPO)**
 
@@ -327,11 +327,11 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   ```
   A distributed version of OpenAI's Proximal Policy Optimization (PPO).
-  
+
   Distribute the workers to collect data in parallel, then stop worker's roll-out and train PPO on collected data.
   ```
 
-  
+
 
 * **More in recent weeks**
 
@@ -339,10 +339,10 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
 We typically apply game environments in [Openai Gym](https://gym.openai.com/) for our tutorials. For other environment sources like [DeepMind Control Suite](https://github.com/deepmind/dm_control) and [Marathon-Envs in Unity](https://github.com/Unity-Technologies/marathon-envs), they all have wrappers to convert into format of Gym environments, see [here](https://github.com/martinseilair/dm_control2gym) and [here](https://github.com/Unity-Technologies/marathon-envs/tree/master/gym-unity).
 
-Our env wrapper: `./tutorial_wrappers.py` 
+Our env wrapper: `./tutorial_wrappers.py`
 
 ## Authors
-- @xxxx XXXXX : AC, A3C
+- @zsdonghao Hao Dong: AC, A3C, Q-Learning, DQN, PG
 - @quantumiracle Zihan Ding: SAC, TD3.
 - @Tokarev-TT-33 Tianyang Yu @initial-h Hongming Zhang : PG, DDPG, PPO, DPPO, TRPO
 - @Officium Yanhua Huang: C51, Retrace, DQN_variants, prioritized_replay, wrappers.
