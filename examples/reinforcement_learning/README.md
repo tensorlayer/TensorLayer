@@ -37,25 +37,34 @@ For each tutorial, open a terminal and run:
 The tutorial algorithms follow the same basic structure, as shown in file: [`./tutorial_format.py`](https://github.com/tensorlayer/tensorlayer/blob/reinforcement-learning/examples/reinforcement_learning/tutorial_format.py)
 
 ## Table of Contents:
-
+### value-based
 | Algorithms      | Action Space | Tutorial Env   | Papers |
 | --------------- | ------------ | -------------- | -------|
-| Q-learning      | Discrete     | FrozenLake     | [Technical  Note Q-Learning](http://www.gatsby.ucl.ac.uk/~dayan/papers/cjch.pdf)|
-| DQN             | Discrete     | FrozenLake     | [Human-level control through deep reinforcementlearning](https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf) |
-| Variants of DQN | Discrete     | Pong, CartPole | [Deep Reinforcement Learning with Double Q-learning](https://arxiv.org/abs/1509.06461) |
-| PER             | Discrete     | Pong, CartPole | [Prioritized Experience Replay](https://arxiv.org/abs/1511.05952) |
-| C51             | Discrete     | Pong, CartPole | [A Distributional Perspective on Reinforcement Learning](https://arxiv.org/pdf/1707.06887.pdf) |
-| Retrace         | Discrete     | Pong, CartPole | [Safe and Efficient Off-Policy Reinforcement Learning](https://arxiv.org/abs/1606.02647) |
-| Actor-Critic    | Discrete     | CartPole       | [Actor-Critic Algorithms](https://papers.nips.cc/paper/1786-actor-critic-algorithms.pdf) |
-| A3C             | Continuous   | BipedalWalker  | [Asynchronous Methods for Deep Reinforcement Learning](https://arxiv.org/pdf/1602.01783.pdf) |
-| SAC             | Continuous   | Pendulum       | [Soft Actor-Critic Algorithms and Applications](https://arxiv.org/pdf/1812.05905.pdf) |
-| PG              | Discrete     | CartPole       | [Policy Gradient Methods for Reinforcement Learning with Function Approximation](https://papers.nips.cc/paper/1713-policy-gradient-methods-for-reinforcement-learning-with-function-approximation.pdf) |
-| DDPG            | Continuous   | Pendulum       | [Continuous Control With Deep Reinforcement Learning](https://arxiv.org/pdf/1509.02971.pdf) |
-| TD3             | Continuous   | Pendulum       | [Addressing Function Approximation Error in Actor-Critic Methods](https://arxiv.org/pdf/1802.09477.pdf) |
-| TRPO            | Continuous   | Pendulum       | [Trust Region Policy Optimization](https://arxiv.org/pdf/1502.05477.pdf) |
-| PPO             | Continuous   | Pendulum       | [Proximal Policy Optimization Algorithms](https://arxiv.org/pdf/1707.06347.pdf) |
-| DPPO            | Continuous   | Pendulum       | [Emergence of Locomotion Behaviours in Rich Environments](https://arxiv.org/pdf/1707.02286.pdf) |
+| Q-learning      | Discrete     | FrozenLake     | [Technical note: Q-learning. Watkins et al. 1992](http://www.gatsby.ucl.ac.uk/~dayan/papers/cjch.pdf)|
+| Deep Q-Network (DQN)| Discrete     | FrozenLake     | [Human-level control through deep reinforcement learning, Mnih et al. 2015.](https://www.nature.com/articles/nature14236/) |
+| Prioritized Experience Replay | Discrete     | Pong, CartPole | [Schaul et al. Prioritized experience replay. Schaul et al. 2015.](https://arxiv.org/abs/1511.05952) |
+|Dueling DQN|Discrete     | Pong, CartPole |[Dueling network architectures for deep reinforcement learning. Wang et al. 2015.](https://arxiv.org/abs/1511.06581)|
+|Double DQN| Discrete     | Pong, CartPole |[Deep reinforcement learning with double q-learning. Van et al. 2016.](https://arxiv.org/abs/1509.06461)|
+|Retrace|Discrete     | Pong, CartPole |[Safe and efficient off-policy reinforcement learning. Munos et al. 2016: ](https://arxiv.org/pdf/1606.02647.pdf)|
+|Noisy DQN|Discrete     | Pong, CartPole |[Noisy networks for exploration. Fortunato et al. 2017.](https://arxiv.org/pdf/1706.10295.pdf)|
+| Distributed DQN (C51)| Discrete     | Pong, CartPole | [A distributional perspective on reinforcement learning. Bellemare et al. 2017.](https://arxiv.org/pdf/1707.06887.pdf) |
 
+### policy-based
+| Algorithms      | Action Space | Tutorial Env   | Papers |
+| --------------- | ------------ | -------------- | -------|
+|REINFORCE(PG) |Discrete/Continuous|CartPole | [Reinforcement learning: An introduction. Sutton et al. 2011.](https://www.cambridge.org/core/journals/robotica/article/robot-learning-edited-by-jonathan-h-connell-and-sridhar-mahadevan-kluwer-boston-19931997-xii240-pp-isbn-0792393651-hardback-21800-guilders-12000-8995/737FD21CA908246DF17779E9C20B6DF6)|
+| Trust Region Policy Optimization (TRPO)| Discrete/Continuous | Pendulum | [Abbeel et al. Trust region policy optimization. Schulman et al.2015.](https://arxiv.org/pdf/1502.05477.pdf) |
+| Proximal Policy Optimization (PPO) |Discrete/Continuous |Pendulum| [Proximal policy optimization algorithms. Schulman et al. 2017.](https://arxiv.org/abs/1707.06347) |
+|Distributed Proximal Policy Optimization (DPPO)|Discrete/Continuous |Pendulum|[Emergence of locomotion behaviours in rich environments. Heess et al. 2017.](https://arxiv.org/abs/1707.02286)|
+
+### actor-critic
+| Algorithms      | Action Space | Tutorial Env   | Papers |
+| --------------- | ------------ | -------------- | -------|
+|Actor-Critic (AC)|Discrete/Continuous|CartPole| [Actor-critic algorithms. Konda er al. 2000.](https://papers.nips.cc/paper/1786-actor-critic-algorithms.pdf)|
+| Asynchronous Advantage Actor-Critic (A3C)| Discrete/Continuous | BipedalWalker| [Asynchronous methods for deep reinforcement learning. Mnih et al. 2016.](https://arxiv.org/pdf/1602.01783.pdf) |
+| DDPG|Discrete/Continuous |Pendulum| [Continuous Control With Deep Reinforcement Learning, Lillicrap et al. 2016](https://arxiv.org/pdf/1509.02971.pdf) |
+|TD3|Discrete/Continuous |Pendulum|[Addressing function approximation error in actor-critic methods. Fujimoto et al. 2018.](https://arxiv.org/pdf/1802.09477.pdf)|
+|Soft Actor-Critic (SAC)|Discrete/Continuous |Pendulum|[Soft actor-critic algorithms and applications. Haarnoja et al. 2018.](https://arxiv.org/abs/1812.05905)|
 
 ## Examples of RL Algorithms:
 
