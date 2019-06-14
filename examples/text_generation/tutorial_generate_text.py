@@ -247,7 +247,7 @@ def main_lstm_generate_text():
 
     net = Text_Generation_Net(vocab_size, hidden_size, init)
 
-    train_weights = net.weights
+    train_weights = net.trainable_weights
     optimizer = tf.optimizers.Adam(lr=learning_rate)
 
     # ===== Training
