@@ -34,6 +34,8 @@
 
 TensorLayer is a novel TensorFlow-based deep learning and reinforcement learning library designed for researchers and engineers. It provides a large collection of customizable neural layers / functions that are key to build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software by the [ACM Multimedia Society](https://twitter.com/ImperialDSI/status/923928895325442049).
 
+🔥📰🔥 [Deep Reinforcement Learning Model ZOO](https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning) Release !!!
+
 🔥📰🔥 Hello, we want to tell you some GOOD NEWS. Today, AI chip is anywhere, from our phone to our car, however, it still hard for us to have our own AI chip. To end this, TensorLayer team starts to work on AIoT and will soon support to run the TensorLayer models on the **low-cost AI chip** (e.g., K210) and microcontrollers (e.g., STM32). Details in the following:
 
 - [NNoM](https://github.com/majianjia/nnom) is a higher-level layer-based Neural Network library specifically for microcontrollers (MCU), our team and the author of NNoM is working hard to make TensorLayer models to run on different MCUs. Yes! Something like **BinaryNet**.
