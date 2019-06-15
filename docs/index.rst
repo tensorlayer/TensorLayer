@@ -9,7 +9,7 @@ Welcome to TensorLayer
 
 **Documentation Version:** |release|
 
-**Jun 19** `Deep Reinforcement Learning Model ZOO Release !! <https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning>`__.
+**Jun 2019** `Deep Reinforcement Learning Model ZOO Release !! <https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning>`__.
 
 **Good News:** We won the **Best Open Source Software Award** `@ACM Multimedia (MM) 2017 <http://www.acmmm.org/2017/mm-2017-awardees/>`_.
 
