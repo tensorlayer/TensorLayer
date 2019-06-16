@@ -1,17 +1,15 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import inspect
 from abc import abstractmethod
 
 import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import (deprecated_alias, private_method, protected_method)
-from tensorlayer.layers.utils import (get_variable_with_initializer, list_remove_repeat)
 from tensorlayer.files import utils
-
-import inspect
+from tensorlayer.layers.utils import (get_variable_with_initializer, list_remove_repeat)
 
 __all__ = ['Layer', 'ModelLayer', 'LayerList']
 

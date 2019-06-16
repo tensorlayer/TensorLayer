@@ -17,7 +17,7 @@
 <!---  ([![Build Status](https://travis-ci.org/tensorlayer/tensorlayer.svg?branch=master)](https://travis-ci.org/tensorlayer/tensorlayer)) --->
 <!---  [![CircleCI](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master.svg?style=svg)](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master) --->
 
-<!---  [![Documentation Status](https://readthedocs.org/projects/tensorlayercn/badge/)](https://tensorlayercn.readthedocs.io/) --->
+<!---  [![Documentation Status](https://readthedocs.org/projects/tensorlayercn/badge/)](https://tensorlayercn.readthedocs.io/) 
 <!---  [![PyUP Updates](https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg)](https://pyup.io/repos/github/tensorlayer/tensorlayer/) --->
 <!---  [![Docker Pulls](https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg)](https://hub.docker.com/r/tensorlayer/tensorlayer/) --->
 
@@ -33,6 +33,8 @@
 <br/>
 
 TensorLayer is a novel TensorFlow-based deep learning and reinforcement learning library designed for researchers and engineers. It provides a large collection of customizable neural layers / functions that are key to build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software by the [ACM Multimedia Society](https://twitter.com/ImperialDSI/status/923928895325442049).
+
+🔥📰🔥 [Deep Reinforcement Learning Model ZOO](https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning) Release !!!
 
 🔥📰🔥 Hello, we want to tell you some GOOD NEWS. Today, AI chip is anywhere, from our phone to our car, however, it still hard for us to have our own AI chip. To end this, TensorLayer team starts to work on AIoT and will soon support to run the TensorLayer models on the **low-cost AI chip** (e.g., K210) and microcontrollers (e.g., STM32). Details in the following:
 
@@ -87,7 +89,7 @@ TensorLayer has extensive documentation for both beginners and professionals. Th
 both English and Chinese. Please click the following icons to find the documents you need:
 
 [![English Documentation](https://img.shields.io/badge/documentation-english-blue.svg)](https://tensorlayer.readthedocs.io/)
-<!--- [![Chinese Documentation](https://img.shields.io/badge/documentation-%E4%B8%AD%E6%96%87-blue.svg)](https://tensorlayercn.readthedocs.io/) --->
+[![Chinese Documentation](https://img.shields.io/badge/documentation-%E4%B8%AD%E6%96%87-blue.svg)](https://tensorlayercn.readthedocs.io/)
 [![Chinese Book](https://img.shields.io/badge/book-%E4%B8%AD%E6%96%87-blue.svg)](http://www.broadview.com.cn/book/5059/)
 
 If you want to try the experimental features on the the master branch, you can find the latest document

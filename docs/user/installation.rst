@@ -198,29 +198,6 @@ For TensorLayer, please refer to the steps mentioned above.
   pip install tensorflow-gpu    #GPU version (GPU version and CPU version just choose one)
   pip install tensorlayer       #Install tensorlayer
 
-Test GPU
-----------
-
-Enter “python” in CMD. Then:
-
-.. code-block:: bash
-
-  import tensorlayer
-
-If there is no error and the following output is displayed, the GPU version is successfully installed.
-
-.. code-block:: bash
-
-  successfully opened CUDA library cublas64_80.dll locally
-  successfully opened CUDA library cuDNN64_5.dll locally
-  successfully opened CUDA library cufft64_80.dll locally
-  successfully opened CUDA library nvcuda.dll locally
-  successfully opened CUDA library curand64_80.dll locally
-
-If there is no error, the GPU version is successfully installed.
-
-
-
 
 
 Issue

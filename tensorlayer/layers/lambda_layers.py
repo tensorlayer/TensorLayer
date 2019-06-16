@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
-from tensorlayer.layers.core import Layer
 from tensorlayer.files import utils
+from tensorlayer.layers.core import Layer
 
 # from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
