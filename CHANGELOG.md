@@ -85,7 +85,7 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 
-## [2.0.3]
+## [2.1.0]
 
 ### Changed
 - Add version_info in model.config. (PR #992)
