@@ -188,8 +188,8 @@ Save weights only
 
 .. code-block:: python
 
-  MLP.save_weights('./model_weights.h5') # by default, file will be in hdf5 format
-  MLP.load_weights('./model_weights.h5')
+  MLP.save_weights('model_weights.h5') # by default, file will be in hdf5 format
+  MLP.load_weights('model_weights.h5')
 
 Save model architecture and weights(optional)
 ---------------------------------------------
@@ -197,8 +197,8 @@ Save model architecture and weights(optional)
 .. code-block:: python
 
   # When using Model.load(), there is no need to reimplement or declare the architecture of the model explicitly in code
-  MLP.save('./model.h5', save_weights=True)
-  MLP = Model.load('./model.h5', load_weights=True)
+  MLP.save('model.h5', save_weights=True)
+  MLP = Model.load('model.h5', load_weights=True)
 
 Customizing layer
 ==================
