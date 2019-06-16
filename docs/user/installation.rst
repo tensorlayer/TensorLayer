@@ -190,9 +190,7 @@ After extracting cuDNN, you will get three folders (bin, lib, include). Then the
 
 Installing TensorLayer
 ------------------------
-For TensorLayer 2.0, please refer to the steps mentioned above.
-
-For TensorLayer 1.X, you can easily install Tensorlayer 1.X using pip in CMD：
+For TensorLayer, please refer to the steps mentioned above.
 
 .. code-block:: bash
 
