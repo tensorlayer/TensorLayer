@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias, private_method
@@ -83,12 +82,11 @@ class DeformableConv2d(Layer):
             in_channels=None,
             name=None  # 'deformable_conv_2d',
     ):
-        super().__init__(name)
+        super().__init__(name, act=act)
 
         self.offset_layer = offset_layer
         self.n_filter = n_filter
         self.filter_size = filter_size
-        self.act = act
         self.padding = padding
         self.W_init = W_init
         self.b_init = b_init

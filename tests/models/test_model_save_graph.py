@@ -15,6 +15,11 @@ from tensorlayer.models import *
 from tests.utils import CustomTestCase
 
 
+def RemoveDateInConfig(config):
+    config["version_info"]["save_date"] = None
+    return config
+
+
 def basic_static_model():
     ni = Input((None, 24, 24, 3))
     nn = Conv2d(16, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, name="conv1")(ni)
@@ -42,7 +47,10 @@ class Model_Save_and_Load_without_weights(CustomTestCase):
         M1.save(filepath="basic_model_without_weights.hdf5", save_weights=False)
         M2 = Model.load(filepath="basic_model_without_weights.hdf5", load_weights=False)
 
-        self.assertEqual(M1.config, M2.config)
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
+        self.assertEqual(M1_config, M2_config)
 
 
 def get_model(inputs_shape):
@@ -178,7 +186,7 @@ class Reuse_ModelLayer_test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("##### begin testing save_graph, load_graph, including ModelLayer and reuse  #####")
+        print("##### begin testing save_graph, load_graph, including ModelLayer and reuse #####")
 
     def test_save(self):
         input_shape = (None, 784)
@@ -188,14 +196,17 @@ class Reuse_ModelLayer_test(CustomTestCase):
         M1.save(filepath="siamese.hdf5", save_weights=False)
         M2 = Model.load(filepath="siamese.hdf5", load_weights=False)
 
-        self.assertEqual(M1.config, M2.config)
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
+        self.assertEqual(M1_config, M2_config)
 
 
 class Vgg_LayerList_test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("##### begin testing save_graph, load_graph, including LayerList  #####")
+        print("##### begin testing save_graph, load_graph, including LayerList #####")
 
     def test_save(self):
         M1 = tl.models.vgg16(mode='static')
@@ -204,14 +215,17 @@ class Vgg_LayerList_test(CustomTestCase):
         M1.save(filepath="vgg.hdf5", save_weights=False)
         M2 = Model.load(filepath="vgg.hdf5", load_weights=False)
 
-        self.assertEqual(M1.config, M2.config)
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
+        self.assertEqual(M1_config, M2_config)
 
 
 class List_inputs_outputs_test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("##### begin testing model with list inputs and outputs  #####")
+        print("##### begin testing model with list inputs and outputs #####")
 
     def test_list_inputs_outputs(self):
         ni_1 = Input(shape=[4, 16])
@@ -228,7 +242,10 @@ class List_inputs_outputs_test(CustomTestCase):
         M1.save(filepath="list.hdf5", save_weights=False)
         M2 = Model.load(filepath="list.hdf5", load_weights=False)
 
-        self.assertEqual(M1.config, M2.config)
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
+        self.assertEqual(M1_config, M2_config)
 
 
 class Lambda_layer_test(CustomTestCase):
@@ -251,8 +268,11 @@ class Lambda_layer_test(CustomTestCase):
         output1 = M1(npInput).numpy()
         output2 = M1(npInput).numpy()
 
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
         self.assertEqual((output1 == output2).all(), True)
-        self.assertEqual(M1.config, M2.config)
+        self.assertEqual(M1_config, M2_config)
 
     def test_lambda_layer_no_para_with_args(self):
 
@@ -272,9 +292,12 @@ class Lambda_layer_test(CustomTestCase):
         output1 = M1(npInput).numpy()
         output2 = M2(npInput).numpy()
 
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
         self.assertEqual((output1 == output2).all(), True)
         self.assertEqual((output1 == (np.zeros((8, 3)) + 9)).all(), True)
-        self.assertEqual(M1.config, M2.config)
+        self.assertEqual(M1_config, M2_config)
 
     def test_lambda_layer_keras_model(self):
         input_shape = [100, 5]
@@ -299,8 +322,11 @@ class Lambda_layer_test(CustomTestCase):
         output2 = M2(npInput).numpy()
         output4 = M4(npInput).numpy()
 
+        M2_config = RemoveDateInConfig(M2.config)
+        M4_config = RemoveDateInConfig(M4.config)
+
         self.assertEqual((output2 == output4).all(), True)
-        self.assertEqual(M2.config, M4.config)
+        self.assertEqual(M2_config, M4_config)
 
         ori_weights = M4.all_weights
         ori_val = ori_weights[1].numpy()
@@ -328,8 +354,11 @@ class Lambda_layer_test(CustomTestCase):
         output1 = M1(npInput).numpy()
         output3 = M3(npInput).numpy()
 
+        M1_config = RemoveDateInConfig(M1.config)
+        M3_config = RemoveDateInConfig(M3.config)
+
         self.assertEqual((output1 == output3).all(), True)
-        self.assertEqual(M1.config, M3.config)
+        self.assertEqual(M1_config, M3_config)
 
         ori_weights = M3.all_weights
         ori_val = ori_weights[1].numpy()
@@ -344,7 +373,7 @@ class ElementWise_lambda_test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("##### begin testing elementwise lambda layer  #####")
+        print("##### begin testing elementwise lambda layer #####")
 
     def test_elementwise_no_para_with_args(self):
         # z = mean + noise * tf.exp(std * 0.5) + foo
@@ -365,8 +394,11 @@ class ElementWise_lambda_test(CustomTestCase):
         output1 = M1(ipt).numpy()
         output2 = M2(ipt).numpy()
 
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
         self.assertEqual((output1 == output2).all(), True)
-        self.assertEqual(M1.config, M2.config)
+        self.assertEqual(M1_config, M2_config)
 
     def test_elementwise_no_para_no_args(self):
         # z = mean + noise * tf.exp(std * 0.5) + foo
@@ -387,8 +419,11 @@ class ElementWise_lambda_test(CustomTestCase):
         output1 = M1(ipt).numpy()
         output2 = M2(ipt).numpy()
 
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
         self.assertEqual((output1 == output2).all(), True)
-        self.assertEqual(M1.config, M2.config)
+        self.assertEqual(M1_config, M2_config)
 
     def test_elementwise_lambda_func(self):
         # z = mean + noise * tf.exp(std * 0.5)
@@ -410,8 +445,11 @@ class ElementWise_lambda_test(CustomTestCase):
         output1 = M1(ipt).numpy()
         output2 = M2(ipt).numpy()
 
+        M1_config = RemoveDateInConfig(M1.config)
+        M2_config = RemoveDateInConfig(M2.config)
+
         self.assertEqual((output1 == output2).all(), True)
-        self.assertEqual(M1.config, M2.config)
+        self.assertEqual(M1_config, M2_config)
 
     # # ElementwiseLambda does not support keras layer/model func yet
     # def test_elementwise_keras_model(self):
@@ -434,8 +472,11 @@ class ElementWise_lambda_test(CustomTestCase):
     #     output1 = M1(ipt).numpy()
     #     output2 = M2(ipt).numpy()
     #
+    #     M1_config = RemoveDateInConfig(M1.config)
+    #     M2_config = RemoveDateInConfig(M2.config)
+    #
     #     self.assertEqual((output1 == output2).all(), True)
-    #     self.assertEqual(M1.config, M2.config)
+    #     self.assertEqual(M1_config, M2_config)
 
 
 class basic_dynamic_model(Model):
@@ -467,7 +508,7 @@ class Dynamic_config_test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("##### begin testing exception in dynamic mode  #####")
+        print("##### begin testing exception in dynamic mode #####")
 
     def test_dynamic_config(self):
         M1 = basic_dynamic_model()
@@ -480,7 +521,7 @@ class Exception_test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("##### begin testing exception in dynamic mode  #####")
+        print("##### begin testing exception in dynamic mode #####")
 
     def test_exception(self):
         M1 = basic_dynamic_model()

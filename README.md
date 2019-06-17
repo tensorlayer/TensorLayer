@@ -9,7 +9,7 @@
 
 <!--- [![PyPI Version](https://badge.fury.io/py/tensorlayer.svg)](https://badge.fury.io/py/tensorlayer) --->
 <!--- ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/tensorlayer.svg)) --->
-![GitHub last commit (branch)](https://img.shields.io/github/last-commit/zsdonghao/tensorlayer2/master.svg)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/tensorlayer/tensorlayer/master.svg)
 [![Supported TF Version](https://img.shields.io/badge/TensorFlow-2.0.0%2B-brightgreen.svg)](https://github.com/tensorflow/tensorflow/releases)
 [![Documentation Status](https://readthedocs.org/projects/tensorlayer/badge/)](https://tensorlayer.readthedocs.io/)
 [![Downloads](http://pepy.tech/badge/tensorlayer)](http://pepy.tech/project/tensorlayer)
@@ -17,7 +17,7 @@
 <!---  ([![Build Status](https://travis-ci.org/tensorlayer/tensorlayer.svg?branch=master)](https://travis-ci.org/tensorlayer/tensorlayer)) --->
 <!---  [![CircleCI](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master.svg?style=svg)](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master) --->
 
-<!---  [![Documentation Status](https://readthedocs.org/projects/tensorlayercn/badge/)](https://tensorlayercn.readthedocs.io/) --->
+<!---  [![Documentation Status](https://readthedocs.org/projects/tensorlayercn/badge/)](https://tensorlayercn.readthedocs.io/) 
 <!---  [![PyUP Updates](https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg)](https://pyup.io/repos/github/tensorlayer/tensorlayer/) --->
 <!---  [![Docker Pulls](https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg)](https://hub.docker.com/r/tensorlayer/tensorlayer/) --->
 
@@ -33,6 +33,15 @@
 <br/>
 
 TensorLayer is a novel TensorFlow-based deep learning and reinforcement learning library designed for researchers and engineers. It provides a large collection of customizable neural layers / functions that are key to build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software by the [ACM Multimedia Society](https://twitter.com/ImperialDSI/status/923928895325442049).
+
+🔥📰🔥 [Deep Reinforcement Learning Model ZOO](https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning) Release !!!
+
+🔥📰🔥 Hello, we want to tell you some GOOD NEWS. Today, AI chip is anywhere, from our phone to our car, however, it still hard for us to have our own AI chip. To end this, TensorLayer team starts to work on AIoT and will soon support to run the TensorLayer models on the **low-cost AI chip** (e.g., K210) and microcontrollers (e.g., STM32). Details in the following:
+
+- [NNoM](https://github.com/majianjia/nnom) is a higher-level layer-based Neural Network library specifically for microcontrollers (MCU), our team and the author of NNoM is working hard to make TensorLayer models to run on different MCUs. Yes! Something like **BinaryNet**.
+- [K210](https://kendryte.com) is a low-cost AI chip, we are collaborating with the designers of K210 and the [Sipeed](https://github.com/sipeed) team to make TensorLayer models to run on the K210 AI chip.
+
+If you are interested in AIoT, feel free to discuss in [slack](https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc).
 
 
 # Features
@@ -52,8 +61,6 @@ Also, it allow users to easily fine-tune TensorFlow; while being suitable for pr
     |   Graph   |      Keras      | channel last  | 8677 |      2580         |        2576         |      101       |
     |   Eager   | TensorFlow 2.0  | channel last  | 8723 |      2052         |        2024         |      97       |
     |           | TensorLayer 2.0 | channel last  | 8723 |      2010         |        2007         |      95       |
-
-
 
 
 TensorLayer stands at a unique spot in the library landscape. Other wrapper libraries like Keras and TFLearn also provide high-level abstractions. They, however, often
@@ -82,7 +89,7 @@ TensorLayer has extensive documentation for both beginners and professionals. Th
 both English and Chinese. Please click the following icons to find the documents you need:
 
 [![English Documentation](https://img.shields.io/badge/documentation-english-blue.svg)](https://tensorlayer.readthedocs.io/)
-<!--- [![Chinese Documentation](https://img.shields.io/badge/documentation-%E4%B8%AD%E6%96%87-blue.svg)](https://tensorlayercn.readthedocs.io/) --->
+[![Chinese Documentation](https://img.shields.io/badge/documentation-%E4%B8%AD%E6%96%87-blue.svg)](https://tensorlayercn.readthedocs.io/)
 [![Chinese Book](https://img.shields.io/badge/book-%E4%B8%AD%E6%96%87-blue.svg)](http://www.broadview.com.cn/book/5059/)
 
 If you want to try the experimental features on the the master branch, you can find the latest document
@@ -90,21 +97,34 @@ If you want to try the experimental features on the the master branch, you can f
 
 # Install
 
-
 For latest code for TensorLayer 2.0, please build from the source. TensorLayer 2.0 has pre-requisites including TensorFlow 2, numpy, and others. For GPU support, CUDA and cuDNN are required.
 
-
-Install the stable version:
+Install TensorFlow:
 
 ```bash
+pip3 install tensorflow-gpu==2.0.0a0 # specific version  (YOU SHOULD INSTALL THIS ONE NOW)
 pip3 install tensorflow-gpu
+pip3 install tensorflow # CPU version
+```
+
+Install the stable version of TensorLayer:
+
+```bash
 pip3 install tensorlayer
 ```
 
-Install the latest version:
+Install the latest version of TensorLayer:
 
 ```bash
+pip3 install git+https://github.com/zsdonghao/tensorlayer.git
+or
 pip3 install https://github.com/tensorlayer/tensorlayer/archive/master.zip
+```
+
+For developers, you should clone the folder to your local machine and put it along with your project scripts.
+
+```bash
+git clone https://github.com/tensorlayer/tensorlayer.git
 ```
 
 If you want install TensorLayer 1.X, the simplest way to install TensorLayer 1.X is to use the **Py**thon **P**ackage **I**ndex (PyPI):

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-
 from tensorlayer import logging
 from tensorlayer.activation import leaky_relu6, leaky_twice_relu6
 from tensorlayer.decorators import deprecated_alias
@@ -95,6 +94,7 @@ class PRelu(Layer):
     def forward(self, inputs):
 
         pos = tf.nn.relu(inputs)
+        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
         neg = -self.alpha_var_constrained * tf.nn.relu(-inputs)
 
         return pos + neg

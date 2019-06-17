@@ -6,7 +6,6 @@ using the database module.
 import time
 
 import tensorflow as tf
-
 import tensorlayer as tl
 
 tl.logging.set_verbosity(tl.logging.DEBUG)

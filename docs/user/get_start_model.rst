@@ -66,6 +66,24 @@ In this case, you need to manually input the output shape of the previous layer 
   MLP.eval()
   outputs = MLP(data, foo=True) # controls the forward here
   outputs = MLP(data, foo=False)
+  
+  
+Switching train/test modes
+=============================
+
+.. code-block:: python
+
+  # method 1: switch before forward
+  Model.train() # enable dropout, batch norm moving avg ...
+  output = Model(train_data) 
+  ... # training code here
+  Model.eval()  # disable dropout, batch norm moving avg ...
+  output = Model(test_data) 
+  ... # testing code here
+  
+  # method 2: switch while forward
+  output = Model(train_data, is_train=True)
+  output = Model(test_data, is_train=False)
 
 Reuse weights
 =======================
@@ -140,6 +158,9 @@ Print model information
   #   (dropout_2): Dropout(keep=0.8, name='dropout_2')
   #   (dense_2): Dense(n_units=10, relu, in_channels='800', name='dense_2')
   # )
+  
+  import pprint
+  pprint.pprint(MLP.config) # print the model architecture
 
 Get specific weights
 =======================
@@ -167,8 +188,8 @@ Save weights only
 
 .. code-block:: python
 
-  MLP.save_weights('./model_weights.h5') # by default, file will be in hdf5 format
-  MLP.load_weights('./model_weights.h5')
+  MLP.save_weights('model_weights.h5') # by default, file will be in hdf5 format
+  MLP.load_weights('model_weights.h5')
 
 Save model architecture and weights(optional)
 ---------------------------------------------
@@ -176,8 +197,8 @@ Save model architecture and weights(optional)
 .. code-block:: python
 
   # When using Model.load(), there is no need to reimplement or declare the architecture of the model explicitly in code
-  MLP.save('./model.h5', save_weights=True)
-  MLP = Model.load('./model.h5', load_weights=True)
+  MLP.save('model.h5', save_weights=True)
+  MLP = Model.load('model.h5', load_weights=True)
 
 Customizing layer
 ==================
@@ -190,10 +211,9 @@ z = f(x*W+b)
 
   class Dense(Layer):
       def __init__(self, n_units, act=None, in_channels=None, name=None):
-          super(Dense, self).__init__(name)
+          super(Dense, self).__init__(name, act=act)
 
           self.n_units = n_units
-          self.act = act
           self.in_channels = in_channels
 
           # for dynamic model, it needs the input shape to get the shape of W

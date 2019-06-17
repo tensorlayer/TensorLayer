@@ -1,8 +1,8 @@
 import time
 
 import numpy as np
-import tensorflow as tf
 
+import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import Dense, Dropout, Input
 from tensorlayer.models import Model
@@ -21,17 +21,21 @@ X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(sha
 def get_model(inputs_shape):
     ni = Input(inputs_shape)
     nn = Dropout(keep=0.8)(ni)
-    nn = Dense(n_units=800, act=tf.nn.relu, in_channels=784)(nn) # in_channels is optional in this case as it can be inferred by the previous layer
+    nn = Dense(n_units=800,
+               act=tf.nn.relu)(nn)  # in_channels is optional in this case as it can be inferred by the previous layer
     nn = Dropout(keep=0.8)(nn)
-    nn = Dense(n_units=800, act=tf.nn.relu, in_channels=800)(nn) # in_channels is optional in this case as it can be inferred by the previous layer
+    nn = Dense(n_units=800,
+               act=tf.nn.relu)(nn)  # in_channels is optional in this case as it can be inferred by the previous layer
     nn = Dropout(keep=0.8)(nn)
-    nn = Dense(n_units=10, act=tf.nn.relu, in_channels=800)(nn) # in_channels is optional in this case as it can be inferred by the previous layer
+    nn = Dense(n_units=10,
+               act=tf.nn.relu)(nn)  # in_channels is optional in this case as it can be inferred by the previous layer
     M = Model(inputs=ni, outputs=nn, name="mlp")
     return M
 
+
 MLP = get_model([None, 784])
-# MLP.print_layers()
-# MLP.print_weights()
+import pprint
+pprint.pprint(MLP.config)
 
 ## start training
 n_epoch = 500

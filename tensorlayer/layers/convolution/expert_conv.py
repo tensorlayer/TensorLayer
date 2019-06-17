@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
@@ -71,8 +70,7 @@ class Conv1dLayer(Layer):
             b_init=tl.initializers.constant(value=0.0),
             name=None  # 'cnn1d_layer',
     ):
-        super().__init__(name)
-        self.act = act
+        super().__init__(name, act=act)
         self.n_filter = shape[-1]
         self.filter_size = shape[0]
         self.shape = shape
@@ -191,8 +189,7 @@ class Conv2dLayer(Layer):
             b_init=tl.initializers.constant(value=0.0),
             name=None  # 'cnn2d_layer',
     ):
-        super().__init__(name)
-        self.act = act
+        super().__init__(name, act=act)
         self.n_filter = shape[-1]
         self.filter_size = (shape[0], shape[1])
         self.shape = shape
@@ -310,8 +307,7 @@ class Conv3dLayer(Layer):
             b_init=tl.initializers.constant(value=0.0),
             name=None  # 'cnn3d_layer'
     ):
-        super().__init__(name)
-        self.act = act
+        super().__init__(name, act=act)
         self.n_filter = shape[-1]
         self.filter_size = (shape[0], shape[1], shape[2])
         self.shape = shape
