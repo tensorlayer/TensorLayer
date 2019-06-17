@@ -47,6 +47,5 @@ while db.check_unfinished_task(task_name='mnist'):
 
 # get the best model
 print("all tasks finished")
-sess = tf.InteractiveSession()
-net = db.find_top_model(sess=sess, model_name='mlp', sort=[("test_accuracy", -1)])
+net = db.find_top_model(model_name='mlp', sort=[("test_accuracy", -1)])
 print("the best accuracy {} is from model {}".format(net._test_accuracy, net._name))
