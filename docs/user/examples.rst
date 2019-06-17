@@ -4,6 +4,8 @@
 Examples
 ============
 
+We list some examples here, but more tutorials and applications can be found in `Github examples <https://github.com/tensorlayer/tensorlayer/tree/master/examples>`__ and `Awesome-TensorLayer <https://github.com/tensorlayer/awesome-tensorlayer>`_.
+
 Basics
 ============
 
