@@ -263,9 +263,9 @@ class SpatialTransformer2dAffine(Layer):
         if self.in_channels:
             shape = [self.in_channels, 6]
         else:
-            # self.in_channels = inputs_shape[1]
+            # self.in_channels = inputs_shape[1]    # BUG
             # shape = [inputs_shape[1], 6]
-            self.in_channels = inputs_shape[1][-1]
+            self.in_channels = inputs_shape[0][-1]  # zsdonghao
             shape = [self.in_channels, 6]
         print("shape", shape)
         self.W = self._get_weights("weights", shape=tuple(shape), init=tl.initializers.Zeros())
