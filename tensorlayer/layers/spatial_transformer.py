@@ -213,9 +213,12 @@ class SpatialTransformer2dAffine(Layer):
 
     Parameters
     -----------
-    in_channels:
     out_size : tuple of int or None
         - The size of the output of the network (height, width), the feature maps will be resized by this.
+    in_channels : int
+        The number of in channels.
+    data_format : str
+        "channel_last" (NHWC, default) or "channels_first" (NCHW).
     name : str
         - A unique layer name.
 
@@ -228,15 +231,16 @@ class SpatialTransformer2dAffine(Layer):
 
     def __init__(
             self,
-            in_channels=None,
             out_size=(40, 40),
+            in_channels=None,
+            data_format='channel_last',
             name=None,
     ):
         super(SpatialTransformer2dAffine, self).__init__(name)
 
         self.in_channels = in_channels
         self.out_size = out_size
-
+        self.data_format = data_format
         if self.in_channels is not None:
             self.build(self.in_channels)
             self._built = True
@@ -253,13 +257,17 @@ class SpatialTransformer2dAffine(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
+        print("inputs_shape ",inputs_shape)
         if self.in_channels is None and len(inputs_shape) != 2:
             raise AssertionError("The dimension of theta layer input must be rank 2, please reshape or flatten it")
         if self.in_channels:
             shape = [self.in_channels, 6]
         else:
-            self.in_channels = inputs_shape[1]
-            shape = [inputs_shape[1], 6]
+            # self.in_channels = inputs_shape[1]
+            # shape = [inputs_shape[1], 6]
+            self.in_channels = inputs_shape[1][-1]
+            shape = [self.in_channels, 6]
+        print("shape", shape)
         self.W = self._get_weights("weights", shape=tuple(shape), init=tl.initializers.Zeros())
         identity = np.reshape(np.array([[1, 0, 0], [0, 1, 0]], dtype=np.float32), newshape=(6, ))
         self.b = self._get_weights("biases", shape=(6, ), init=tl.initializers.Constant(identity))
@@ -274,11 +282,15 @@ class SpatialTransformer2dAffine(Layer):
                     n_channels is identical to that of U.
         """
         theta_input, U = inputs
+        print("inputs", inputs)
         theta = tf.nn.tanh(tf.matmul(theta_input, self.W) + self.b)
         outputs = transformer(U, theta, out_size=self.out_size)
         # automatically set batch_size and channels
         # e.g. [?, 40, 40, ?] --> [64, 40, 40, 1] or [64, 20, 20, 4]
         batch_size = theta_input.shape[0]
         n_channels = U.shape[-1]
-        outputs = tf.reshape(outputs, shape=[batch_size, self.out_size[0], self.out_size[1], n_channels])
+        if self.data_format == 'channel_last':
+            outputs = tf.reshape(outputs, shape=[batch_size, self.out_size[0], self.out_size[1], n_channels])
+        else:
+            raise Exception("unimplement data_format {}".format(self.data_format))
         return outputs

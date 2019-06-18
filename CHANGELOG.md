@@ -73,6 +73,8 @@ To release a new version, please update the changelog as followed:
 
 ### Changed
 
+- `SpatialTransform2dAffine` auto `in_channels`
+
 ### Dependencies Update
 
 ### Deprecated
@@ -84,6 +86,8 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Contributors
+
+- @zsdonghao
 
 ## [2.1.0]
 
