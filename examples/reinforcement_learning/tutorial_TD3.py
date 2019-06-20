@@ -293,8 +293,8 @@ class TD3_Trainer():
         new_next_action = self.target_policy_net.evaluate(
             next_state, eval_noise_scale=eval_noise_scale
         )  # clipped normal noise
-        reward = reward_scale * (reward -
-                                 np.mean(reward, axis=0)) / np.std(reward, axis=0)  # normalize with batch mean and std
+
+        reward = reward_scale * (reward - reward.mean(dim=0)) / (reward.std(dim=0) + 1e-6) # normalize with batch mean and std; plus a small number to prevent numerical problem
 
         # Training Q Function
         target_q_input = tf.concat([next_state, new_next_action], 1)  # the dim 0 is number of samples

@@ -234,7 +234,7 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
   ```
   The policy gradient algorithm works by updating policy parameters via stochastic gradient ascent on policy performance. It's an on-policy algorithm can be used for environments with either discrete or continuous action spaces.
   
-  To apply it on continuous action space, you need to change the last softmax layer and the choose_action function.
+  To apply it on continuous action space, you need to change the last softmax layer and the choose_action function, e.g. from the categorical distribution to a Gaussian distribution.
   ```
 
   

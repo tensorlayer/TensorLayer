@@ -295,8 +295,7 @@ class SAC_Trainer():
         reward = reward[:, np.newaxis]  # expand dim
         done = done[:, np.newaxis]
 
-        reward = reward_scale * (reward -
-                                 np.mean(reward, axis=0)) / np.std(reward, axis=0)  # normalize with batch mean and std
+        reward = reward_scale * (reward - reward.mean(dim=0)) / (reward.std(dim=0) + 1e-6) # normalize with batch mean and std; plus a small number to prevent numerical problem
 
         # Training Q Function
         new_next_action, next_log_prob, _, _, _ = self.policy_net.evaluate(next_state)
