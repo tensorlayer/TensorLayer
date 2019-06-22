@@ -15,49 +15,6 @@ import numpy as np
 
 import tensorlayer as tl
 
-
-def plot(episode_rewards, Algorithm_name, Env_name):
-    '''
-    plot the learning curve, saved as ./img/Algorithm_name.png
-    :episode_rewards: array of floats
-    :Algorithm_name: string
-    :Env_name: string
-    '''
-    plt.figure(figsize=(10, 5))
-    plt.title(Algorithm_name + '-' + Env_name)
-    plt.plot(np.arange(len(episode_rewards)), episode_rewards)
-    plt.xlabel('Episode')
-    plt.ylabel('Episode Reward')
-    if not os.path.exists('img'):
-        os.makedirs('img')
-    plt.savefig('./img/' + Algorithm_name + '.png')
-
-
-def save_model(model, Model_name, Algorithm_name):
-    '''
-    save trained neural network model
-    :model: tensorlayer.models.Model
-    :Model_name: string, e.g. 'model_sac_q1'
-    :Algorithm_name: string, e.g. 'SAC'
-    '''
-    if not os.path.exists('model/' + Algorithm_name):
-        os.makedirs('model/' + Algorithm_name)
-    tl.files.save_npz(model.trainable_weights, './model/' + Algorithm_name + '/' + Model_name)
-
-
-def load_model(model, Model_name, Algorithm_name):
-    '''
-    load saved neural network model
-    :model: tensorlayer.models.Model
-    :Model_name: string, e.g. 'model_sac_q1'
-    :Algorithm_name: string, e.g. 'SAC'
-    '''
-    try:
-        tl.files.load_and_assign_npz('./model/' + Algorithm_name + '/' + Model_name + '.npz', model)
-    except:
-        print('Load Model Fails!')
-
-
 class ReplayBuffer(object):
     '''
     a ring buffer for storing transitions and sampling for training
@@ -240,7 +197,7 @@ class MinSegmentTree(SegmentTree):
         return super(MinSegmentTree, self).reduce(start, end)
 
 
-class PrioritizedReplayBuffer(ReplayBuffer):
+class PrioritizedReplayBuffer(ReplayBuffer):  # is it succeed from the ReplayBuffer above?
     def __init__(self, capacity, alpha, beta):
         """Create Prioritized Replay buffer.
 
