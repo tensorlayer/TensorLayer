@@ -257,7 +257,7 @@ class SpatialTransformer2dAffine(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        print("inputs_shape ",inputs_shape)
+        print("inputs_shape ", inputs_shape)
         if self.in_channels is None and len(inputs_shape) != 2:
             raise AssertionError("The dimension of theta layer input must be rank 2, please reshape or flatten it")
         if self.in_channels:
