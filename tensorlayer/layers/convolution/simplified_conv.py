@@ -178,9 +178,9 @@ class Conv2d(Layer):
     With TensorLayer
 
     >>> net = tl.layers.Input([8, 400, 400, 3], name='input')
-    >>> conv2d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), stride=(2, 2), b_init=None, in_channels=3, name='conv2d_1')
+    >>> conv2d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), b_init=None, in_channels=3, name='conv2d_1')
     >>> print(conv2d)
-    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), stride=(2, 2), act=tf.nn.relu, name='conv2d_2')(net)
+    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, name='conv2d_2')(net)
     >>> print(tensor)
 
     """
@@ -311,9 +311,9 @@ class Conv3d(Layer):
     With TensorLayer
 
     >>> net = tl.layers.Input([8, 20, 20, 20, 3], name='input')
-    >>> conv3d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3, 3), stride=(2, 2, 2), b_init=None, in_channels=3, name='conv3d_1')
+    >>> conv3d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), b_init=None, in_channels=3, name='conv3d_1')
     >>> print(conv3d)
-    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3, 3), stride=(2, 2, 2), act=tf.nn.relu, name='conv3d_2')(net)
+    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), act=tf.nn.relu, name='conv3d_2')(net)
     >>> print(tensor)
 
     """
