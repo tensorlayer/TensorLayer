@@ -31,7 +31,7 @@ Get a part of CNN
   # get VGG without the last layer
   cnn = tl.models.vgg16(end_with='fc2_relu', mode='static').as_layer()
   # add one more layer and build a new model
-  ni = Input([None, 224, 224, 3], name="inputs")
+  ni = tl.layers.Input([None, 224, 224, 3], name="inputs")
   nn = cnn(ni)
   nn = tl.layers.Dense(n_units=100, name='out')(nn)
   model = tl.models.Model(inputs=ni, outputs=nn)
