@@ -2,7 +2,7 @@
 
 TensorLayer has two types of models.
 Static model allows you to build model in a fluent way while dynamic model allows you to fully control the forward process.
-Please read the read this [DOCS](https://tensorlayer.readthedocs.io/en/latest/user/get_start_model.html#) before you start.
+Please read this [DOCS](https://tensorlayer.readthedocs.io/en/latest/user/get_start_model.html#) before you start.
 
 - [MNIST Simplest Example](https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_simple.py)
 - [MNIST Static Example](https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_mlp_static.py)
