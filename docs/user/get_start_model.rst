@@ -203,7 +203,7 @@ Save model architecture and weights(optional)
 Customizing layer
 ==================
 
-The fully-connected layer is `a = f(x*W+b)`, the most simple way is as follow, which can only support static model.
+The fully-connected layer is `a = f(x*W+b)`, the most simple implementation is as follow, which can only support static model.
 
 .. code-block:: python
 
@@ -242,7 +242,7 @@ The full implementation is as follow, which supports both static and dynamic mod
             act=None,
             W_init=tl.initializers.truncated_normal(stddev=0.1),
             b_init=tl.initializers.constant(value=0.0),
-            in_channels=None,
+            in_channels=None,  # the number of units/channels of the previous layer
             name=None,
     ):
         # we feed activation function to the base layer, `None` denotes identity function
