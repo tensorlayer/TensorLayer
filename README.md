@@ -104,7 +104,7 @@ For latest code for TensorLayer 2.0, please build from the source. TensorLayer 2
 Install TensorFlow:
 
 ```bash
-pip3 install tensorflow==2.0.0-beta1 # specific version  (YOU SHOULD INSTALL THIS ONE NOW)
+pip3 install tensorflow-gpu==2.0.0-beta1 # specific version  (YOU SHOULD INSTALL THIS ONE NOW)
 pip3 install tensorflow-gpu # GPU version
 pip3 install tensorflow # CPU version
 ```
