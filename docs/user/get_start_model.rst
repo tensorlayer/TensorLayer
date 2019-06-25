@@ -203,9 +203,7 @@ Save model architecture and weights(optional)
 Customizing layer
 ==================
 
-The fully-connected layer is
-
-z = f(x*W+b)
+The fully-connected layer is `z = f(x*W+b)`.
 
 .. code-block:: python
 
