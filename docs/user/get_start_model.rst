@@ -203,7 +203,34 @@ Save model architecture and weights(optional)
 Customizing layer
 ==================
 
-The fully-connected layer is `z = f(x*W+b)`.
+The fully-connected layer is `a = f(x*W+b)`, the most simple way is as follow, which can only support static model.
+
+.. code-block:: python
+
+  class Dense(Layer):
+
+    def __init__(
+            self,
+            n_units,   # the number of units/channels of this layer
+            act=None,  # None: no activation, tf.nn.relu: ReLU ...
+            name=None, # the name of this layer (optional)
+    ):
+        super(Dense, self).__init__(name) # auto naming, dense_1, dense_2 ...
+        self.n_units = n_units
+        self.act = act
+        
+    def build(self, inputs_shape): # initialize the model weights here
+        shape = [inputs_shape[1], self.n_units]
+        self.W = self._get_weights("weights", shape=tuple(shape), init=self.W_init)
+        self.b = self._get_weights("biases", shape=(self.n_units, ), init=self.b_init)
+
+    def forward(self, inputs): # call function
+        z = tf.matmul(inputs, self.W) + self.b
+        if self.act:
+            z = self.act(z)
+        return z
+
+The full implementation is as follow, which supports both static and dynamic models and allows users to control whether to use the bias, how to initialize the weight values.
 
 .. code-block:: python
 
