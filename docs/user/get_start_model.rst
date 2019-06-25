@@ -210,34 +210,59 @@ z = f(x*W+b)
 .. code-block:: python
 
   class Dense(Layer):
-      def __init__(self, n_units, act=None, in_channels=None, name=None):
-          super(Dense, self).__init__(name, act=act)
 
-          self.n_units = n_units
-          self.in_channels = in_channels
+    def __init__(
+            self,
+            n_units,
+            act=None,
+            W_init=tl.initializers.truncated_normal(stddev=0.1),
+            b_init=tl.initializers.constant(value=0.0),
+            in_channels=None,
+            name=None,
+    ):
+        # we feed activation function to the base layer, `None` denotes identity function
+        # string (e.g., relu, sigmoid) will be converted into function.
+        super(Dense, self).__init__(name, act=act) 
 
-          # for dynamic model, it needs the input shape to get the shape of W
-          if self.in_channels is not None:
-              self.build(self.in_channels)
-              self._built = True
+        self.n_units = n_units
+        self.W_init = W_init
+        self.b_init = b_init
+        self.in_channels = in_channels
 
-      def build(self, inputs_shape):
-          if self.in_channels is None and len(inputs_shape) != 2:
-              raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
-          if self.in_channels:
-              shape = [self.in_channels, self.n_units]
-          else:
-              self.in_channels = inputs_shape[1]
-              shape = [inputs_shape[1], self.n_units]
-          self.W = self._get_weights("weights", shape=tuple(shape))
-          if self.b_init:
-              self.b = self._get_weights("biases", shape=(self.n_units, ))
+        # in dynamic model, the number of input channel is given, we initialize the weights here
+        if self.in_channels is not None: 
+            self.build(self.in_channels)
+            self._built = True
 
-      @tf.function
-      def forward(self, inputs):
-          z = tf.matmul(inputs, self.W)
-          if self.b_init:
-              z = tf.add(z, self.b)
-          if self.act:
-              z = self.act(z)
-          return z
+        logging.info(
+            "Dense  %s: %d %s" %
+            (self.name, self.n_units, self.act.__name__ if self.act is not None else 'No Activation')
+        )
+
+    def __repr__(self): # optional, for printing information
+        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(n_units={n_units}, ' + actstr)
+        if self.in_channels is not None:
+            s += ', in_channels=\'{in_channels}\''
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape): # initialize the model weights here
+        if self.in_channels: # if the number of input channel is given, use it
+            shape = [self.in_channels, self.n_units]
+        else:                # otherwise, get it from static model
+            self.in_channels = inputs_shape[1]
+            shape = [inputs_shape[1], self.n_units]
+        self.W = self._get_weights("weights", shape=tuple(shape), init=self.W_init)
+        if self.b_init:      # if b_init is None, no bias is applied
+            self.b = self._get_weights("biases", shape=(self.n_units, ), init=self.b_init)
+
+    def forward(self, inputs):
+        z = tf.matmul(inputs, self.W)
+        if self.b_init:
+            z = tf.add(z, self.b)
+        if self.act:
+            z = self.act(z)
+        return z
