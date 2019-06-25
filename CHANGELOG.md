@@ -74,6 +74,7 @@ To release a new version, please update the changelog as followed:
 ### Changed
 
 - `SpatialTransform2dAffine` auto `in_channels`
+- support TensorFlow 2.0.0-beta1
 
 ### Dependencies Update
 
