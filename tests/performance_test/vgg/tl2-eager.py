@@ -47,6 +47,7 @@ def train_step(x_batch, y_batch):
     optimizer.apply_gradients(zip(grad, train_weights))
     return _loss
 
+
 # begin training
 vgg.train()
 
