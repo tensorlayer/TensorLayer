@@ -203,6 +203,9 @@ Save model architecture and weights(optional)
 Customizing layer
 ==================
 
+Layers with weights
+----------------------
+
 The fully-connected layer is `a = f(x*W+b)`, the most simple implementation is as follow, which can only support static model.
 
 .. code-block:: python
@@ -291,3 +294,43 @@ The full implementation is as follow, which supports both static and dynamic mod
         if self.act:
             z = self.act(z)
         return z
+
+
+Layers with train/test modes
+------------------------------
+
+We use Dropout as an example here:
+
+.. code-block:: python
+  
+  class Dropout(Layer):
+      """
+      The :class:`Dropout` class is a noise layer which randomly set some
+      activations to zero according to a keeping probability.
+      Parameters
+      ----------
+      keep : float
+          The keeping probability.
+          The lower the probability it is, the more activations are set to zero.
+      name : None or str
+          A unique layer name.
+      """
+
+      def __init__(self, keep, name=None):
+          super(Dropout, self).__init__(name)
+          self.keep = keep
+
+          self.build()
+          self._built = True
+
+          logging.info("Dropout %s: keep: %f " % (self.name, self.keep))
+
+      def build(self, inputs_shape=None):
+          pass   # no weights in dropout layer
+
+      def forward(self, inputs):
+          if self.is_train:  # this attribute is changed by Model.train() and Model.eval() described above
+              outputs = tf.nn.dropout(inputs, rate=1 - (self.keep), name=self.name)
+          else:
+              outputs = inputs
+          return outputs
