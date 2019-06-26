@@ -5,7 +5,10 @@ import tensorflow as tf
 import tensorlayer as tl
 from exp_config import random_input_generator, MONITOR_INTERVAL, NUM_ITERS, BATCH_SIZE, LERANING_RATE
 
-tf.config.gpu.set_per_process_memory_growth(True)
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    for gpu in gpus:
+        tf.config.experimental.set_memory_growth(gpu, True)
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
@@ -42,7 +45,7 @@ def train_step(x_batch, y_batch):
 
     grad = tape.gradient(_loss, train_weights)
     optimizer.apply_gradients(zip(grad, train_weights))
-
+    return _loss
 
 # begin training
 vgg.train()
@@ -50,7 +53,7 @@ vgg.train()
 for idx, data in enumerate(gen):
     start_time = time.time()
 
-    train_step(data[0], data[1])
+    loss = train_step(data[0], data[1])
 
     end_time = time.time()
     consume_time = end_time - start_time
@@ -62,8 +65,8 @@ for idx, data in enumerate(gen):
         avg_mem_usage += cur_usage
         count += 1
         tl.logging.info(
-            "[*] {} iteration: memory usage {:.2f}MB, consume time {:.4f}s".format(
-                idx, cur_usage / (1024 * 1024), consume_time
+            "[*] {} iteration: memory usage {:.2f}MB, consume time {:.4f}s, loss {:.4f}".format(
+                idx, cur_usage / (1024 * 1024), consume_time, loss
             )
         )
 
