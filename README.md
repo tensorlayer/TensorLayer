@@ -38,12 +38,9 @@ TensorLayer is a novel TensorFlow-based deep learning and reinforcement learning
 
 🔥📰🔥 [Deep Reinforcement Learning Model ZOO](https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning) Release !!!
 
-🔥📰🔥 Hello, we want to tell you some GOOD NEWS. Today, AI chip is anywhere, from our phone to our car, however, it still hard for us to have our own AI chip. To end this, TensorLayer team starts to work on AIoT and will soon support to run the TensorLayer models on the **low-cost AI chip** (e.g., K210) and microcontrollers (e.g., STM32). Details in the following:
+🔥📰🔥 [Sipeed](https://github.com/sipeed/Maix-EMC): Run TensorLayer models on the **low-cost AI chip** (e.g., K210) (Alpha Version)
 
-- [NNoM](https://github.com/majianjia/nnom) is a higher-level layer-based Neural Network library specifically for microcontrollers (MCU), our team and the author of NNoM is working hard to make TensorLayer models to run on different MCUs. Yes! Something like **BinaryNet**.
-- [K210](https://kendryte.com) is a low-cost AI chip, we are collaborating with the designers of K210 and the [Sipeed](https://github.com/sipeed) team to make TensorLayer models to run on the K210 AI chip.
-
-If you are interested in AIoT, feel free to discuss in [slack](https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc).
+🔥📰🔥 [NNoM](https://github.com/majianjia/nnom): Run TensorLayer quantized models on the **MCU** (e.g., STM32) (Coming Soon)
 
 
 # Features
