@@ -79,8 +79,11 @@ Reinforcement Learning
 Miscellaneous
 =================
 
- - TensorDB by `fangde <https://github.com/fangde>`__ see `tl_paper <https://github.com/akaraspt/tl_paper>`__.
- - A simple web service - `TensorFlask <https://github.com/JoelKronander/TensorFlask>`__ by `JoelKronander <https://github.com/JoelKronander>`__.
+- `Sipeed <https://github.com/sipeed/Maix-EMC>`__ : Run TensorLayer on AI Chips
+
+..
+   - TensorDB by `fangde <https://github.com/fangde>`__ see `tl_paper <https://github.com/akaraspt/tl_paper>`__.
+   - A simple web service - `TensorFlask <https://github.com/JoelKronander/TensorFlask>`__ by `JoelKronander <https://github.com/JoelKronander>`__.
 
 ..
   Applications
