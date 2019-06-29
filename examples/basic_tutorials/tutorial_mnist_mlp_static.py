@@ -21,14 +21,11 @@ X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(sha
 def get_model(inputs_shape):
     ni = Input(inputs_shape)
     nn = Dropout(keep=0.8)(ni)
-    nn = Dense(n_units=800,
-               act=tf.nn.relu)(nn)  # in_channels is optional in this case as it can be inferred by the previous layer
+    nn = Dense(n_units=800, act=tf.nn.relu)(nn)  
     nn = Dropout(keep=0.8)(nn)
-    nn = Dense(n_units=800,
-               act=tf.nn.relu)(nn)  # in_channels is optional in this case as it can be inferred by the previous layer
+    nn = Dense(n_units=800, act=tf.nn.relu)(nn)
     nn = Dropout(keep=0.8)(nn)
-    nn = Dense(n_units=10,
-               act=tf.nn.relu)(nn)  # in_channels is optional in this case as it can be inferred by the previous layer
+    nn = Dense(n_units=10, act=tf.nn.relu)(nn)
     M = Model(inputs=ni, outputs=nn, name="mlp")
     return M
 

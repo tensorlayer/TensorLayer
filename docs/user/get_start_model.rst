@@ -161,6 +161,53 @@ Print model information
   
   import pprint
   pprint.pprint(MLP.config) # print the model architecture
+  #   {'inputs': '_inputlayer_1_node_0',
+  #  'model_architecture': [{'args': {'dtype': tf.float32,
+  #                                   'layer_type': 'normal',
+  #                                   'name': '_inputlayer_1',
+  #                                   'shape': [None, 784]},
+  #                          'class': '_InputLayer',
+  #                          'prev_layer': None},
+  #                         {'args': {'keep': 0.8,
+  #                                   'layer_type': 'normal',
+  #                                   'name': 'dropout_1'},
+  #                          'class': 'Dropout',
+  #                          'prev_layer': ['_inputlayer_1_node_0']},
+  #                         {'args': {'act': 'relu',
+  #                                   'layer_type': 'normal',
+  #                                   'n_units': 800,
+  #                                   'name': 'dense_1'},
+  #                          'class': 'Dense',
+  #                          'prev_layer': ['dropout_1_node_0']},
+  #                         {'args': {'keep': 0.8,
+  #                                   'layer_type': 'normal',
+  #                                   'name': 'dropout_2'},
+  #                          'class': 'Dropout',
+  #                          'prev_layer': ['dense_1_node_0']},
+  #                         {'args': {'act': 'relu',
+  #                                   'layer_type': 'normal',
+  #                                   'n_units': 800,
+  #                                   'name': 'dense_2'},
+  #                          'class': 'Dense',
+  #                          'prev_layer': ['dropout_2_node_0']},
+  #                         {'args': {'keep': 0.8,
+  #                                   'layer_type': 'normal',
+  #                                   'name': 'dropout_3'},
+  #                          'class': 'Dropout',
+  #                          'prev_layer': ['dense_2_node_0']},
+  #                         {'args': {'act': 'relu',
+  #                                   'layer_type': 'normal',
+  #                                   'n_units': 10,
+  #                                   'name': 'dense_3'},
+  #                          'class': 'Dense',
+  #                          'prev_layer': ['dropout_3_node_0']}],
+  #  'name': 'mlp',
+  #  'outputs': 'dense_3_node_0',
+  #  'version_info': {'backend': 'tensorflow',
+  #                   'backend_version': '2.0.0-alpha0',
+  #                   'save_date': None,
+  #                   'tensorlayer_version': '2.1.0',
+  #                   'training_device': 'gpu'}}
 
 Get specific weights
 =======================
@@ -191,8 +238,8 @@ Save weights only
   MLP.save_weights('model_weights.h5') # by default, file will be in hdf5 format
   MLP.load_weights('model_weights.h5')
 
-Save model architecture and weights(optional)
----------------------------------------------
+Save model architecture and weights (optional)
+-----------------------------------------------
 
 .. code-block:: python
 
@@ -200,44 +247,3 @@ Save model architecture and weights(optional)
   MLP.save('model.h5', save_weights=True)
   MLP = Model.load('model.h5', load_weights=True)
 
-Customizing layer
-==================
-
-The fully-connected layer is
-
-z = f(x*W+b)
-
-.. code-block:: python
-
-  class Dense(Layer):
-      def __init__(self, n_units, act=None, in_channels=None, name=None):
-          super(Dense, self).__init__(name, act=act)
-
-          self.n_units = n_units
-          self.in_channels = in_channels
-
-          # for dynamic model, it needs the input shape to get the shape of W
-          if self.in_channels is not None:
-              self.build(self.in_channels)
-              self._built = True
-
-      def build(self, inputs_shape):
-          if self.in_channels is None and len(inputs_shape) != 2:
-              raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
-          if self.in_channels:
-              shape = [self.in_channels, self.n_units]
-          else:
-              self.in_channels = inputs_shape[1]
-              shape = [inputs_shape[1], self.n_units]
-          self.W = self._get_weights("weights", shape=tuple(shape))
-          if self.b_init:
-              self.b = self._get_weights("biases", shape=(self.n_units, ))
-
-      @tf.function
-      def forward(self, inputs):
-          z = tf.matmul(inputs, self.W)
-          if self.b_init:
-              z = tf.add(z, self.b)
-          if self.act:
-              z = self.act(z)
-          return z

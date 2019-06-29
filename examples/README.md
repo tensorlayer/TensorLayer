@@ -20,4 +20,4 @@ This page contains basic tutorials and examples that help you to learn TensorLay
 - [Text/sentence generation](https://github.com/tensorlayer/tensorlayer/tree/master/examples/text_generation)
 - [Language modeling](https://github.com/tensorlayer/tensorlayer/tree/master/examples/text_ptb)
 - [Word embedding](https://github.com/tensorlayer/tensorlayer/tree/master/examples/text_word_embedding)
-
+- [Many more ...](https://github.com/tensorlayer)
