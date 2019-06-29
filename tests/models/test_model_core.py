@@ -392,6 +392,15 @@ class Model_Core_Test(CustomTestCase):
         except Exception as e:
             print(e)
 
+    def test_model_weights_copy(self):
+        print('-' * 20, 'test_model_weights_copy', '-' * 20)
+        model_basic = basic_static_model()
+        model_weights = model_basic.trainable_weights
+        ori_len = len(model_weights)
+        model_weights.append(np.arange(5))
+        new_len = len(model_weights)
+        self.assertEqual(new_len - 1, ori_len)
+
 
 if __name__ == '__main__':
 

@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-import sys
-sys.path.append("/Users/wurundi/workspace/tensorlayer2")
-
 import os
 import unittest
 
