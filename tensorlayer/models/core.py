@@ -669,6 +669,8 @@ class Model(object):
 
         visited_node_names = set()
         for out_node in output_nodes:
+            if out_node.visited == True:
+                continue
             queue_node.put(out_node)
 
             while not queue_node.empty():
