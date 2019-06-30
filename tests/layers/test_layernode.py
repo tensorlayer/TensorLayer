@@ -230,6 +230,7 @@ class LayerNode_Test(CustomTestCase):
 
         self.assertEqual(len(net._node_by_depth), 10)
 
+
 if __name__ == '__main__':
 
     tl.logging.set_verbosity(tl.logging.DEBUG)
