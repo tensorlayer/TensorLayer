@@ -75,12 +75,14 @@ To release a new version, please update the changelog as followed:
 
 - `SpatialTransform2dAffine` auto `in_channels`
 - support TensorFlow 2.0.0-beta1
+- Update model weights property, now returns its copy (#PR 1010)
 
 ### Dependencies Update
 
 ### Deprecated
 
 ### Fixed
+- Fix `tf.models.Model._construct_graph` for list of outputs, e.g. STN case (PR #1010)
 
 ### Removed
 
@@ -89,6 +91,7 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 
 - @zsdonghao
+- @ChrisWu1997: #1010
 
 ## [2.1.0]
 
