@@ -14,7 +14,6 @@ Basics
  - Multi-layer perceptron (MNIST), static model. Classification with dropout using iterator, see `tutorial_mnist_mlp_static.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_mlp_static.py>`__.
  - Convolutional Network (CIFAR-10). Classification task, see `tutorial_cifar10_cnn_static.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_cifar10_cnn_static.py>`_.
  - TensorFlow dataset API for object detection see `here <https://github.com/tensorlayer/tensorlayer/blob/master/examples/data_process/tutorial_tf_dataset_voc.py>`__.
- - Merge Keras into TensorLayer. `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/keras_tfslim/tutorial_keras.py>`__.
  - Data augmentation with TFRecord. Effective way to load and pre-process data, see `tutorial_tfrecord*.py <https://github.com/tensorlayer/tensorlayer/tree/master/examples/data_process>`__ and `tutorial_cifar10_tfrecord.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/data_process/tutorial_tfrecord.py>`__.
  - Data augmentation with TensorLayer. See `tutorial_fast_affine_transform.py <https://github.com/tensorlayer/tensorlayer/blob/master/examples/data_process/tutorial_fast_affine_transform.py>`__ (for quick test only).
 
@@ -79,8 +78,11 @@ Reinforcement Learning
 Miscellaneous
 =================
 
- - TensorDB by `fangde <https://github.com/fangde>`__ see `tl_paper <https://github.com/akaraspt/tl_paper>`__.
- - A simple web service - `TensorFlask <https://github.com/JoelKronander/TensorFlask>`__ by `JoelKronander <https://github.com/JoelKronander>`__.
+- `Sipeed <https://github.com/sipeed/Maix-EMC>`__ : Run TensorLayer on AI Chips
+
+..
+   - TensorDB by `fangde <https://github.com/fangde>`__ see `tl_paper <https://github.com/akaraspt/tl_paper>`__.
+   - A simple web service - `TensorFlask <https://github.com/JoelKronander/TensorFlask>`__ by `JoelKronander <https://github.com/JoelKronander>`__.
 
 ..
   Applications

@@ -401,7 +401,7 @@ class Model(object):
                 if layer.trainable_weights is not None:
                     self._trainable_weights.extend(layer.trainable_weights)
 
-        return self._trainable_weights
+        return self._trainable_weights.copy()
 
     @property
     def nontrainable_weights(self):
@@ -415,7 +415,7 @@ class Model(object):
                 if layer.nontrainable_weights is not None:
                     self._nontrainable_weights.extend(layer.nontrainable_weights)
 
-        return self._nontrainable_weights
+        return self._nontrainable_weights.copy()
 
     @property
     def all_weights(self):
@@ -429,7 +429,7 @@ class Model(object):
                 if layer.all_weights is not None:
                     self._all_weights.extend(layer.all_weights)
 
-        return self._all_weights
+        return self._all_weights.copy()
 
     @property
     def config(self):
@@ -669,6 +669,8 @@ class Model(object):
 
         visited_node_names = set()
         for out_node in output_nodes:
+            if out_node.visited:
+                continue
             queue_node.put(out_node)
 
             while not queue_node.empty():

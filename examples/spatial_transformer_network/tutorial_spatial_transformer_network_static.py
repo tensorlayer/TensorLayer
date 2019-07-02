@@ -66,8 +66,8 @@ def get_model(inputs_shape):
 
     ## 2. Spatial transformer module (sampler)
     stn = SpatialTransformer2dAffine(out_size=(40, 40), in_channels=20)
-    s = stn((nn, ni))
     nn = stn((nn, ni))
+    s = nn
 
     ## 3. Classifier
     nn = Conv2d(16, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME')(nn)
