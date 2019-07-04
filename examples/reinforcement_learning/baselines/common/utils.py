@@ -87,15 +87,15 @@ def parse_all_args(parser):
 
 def make_env(env_id):
     env = gym.make(env_id).unwrapped
-
+    ''' add env wrappers here '''
     return env 
 
 
-def learn(env_id, algorithm, number_timesteps, **kwargs):
+def learn(env_id, algorithm, train_episodes, **kwargs):
     algorithm = algorithm.lower()
     module = get_algorithm_module(algorithm, algorithm)
-    env = make_env(env_id)
-    getattr(module, 'learn')(env=env, number_timesteps=number_timesteps, **kwargs)  # call module.learn()
+    # env = make_env(env_id)
+    getattr(module, 'learn')(env_id=env_id, train_episodes=train_episodes, **kwargs)  # call module.learn()
 
 
 

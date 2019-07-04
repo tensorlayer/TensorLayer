@@ -14,9 +14,6 @@ tensorlayer 2.0.0
 
 &&
 pip install box2d box2d-kengz --user
-
-To run:
-python tutorial_sac.py --train/test
 '''
 
 import argparse
@@ -239,15 +236,15 @@ class SAC_Trainer():
         load_model(self.policy_net, 'model_policy_net', 'SAC')
 
 
-def learn(env, number_timesteps, test_timesteps=1000, max_steps=150, batch_size=64, explore_steps=500, update_itr=3, hidden_dim=32, \
+def learn(env_id, train_episodes, test_episodes=1000, max_steps=150, batch_size=64, explore_steps=500, update_itr=3, hidden_dim=32, \
     soft_q_lr = 3e-4, policy_lr = 3e-4, alpha_lr = 3e-4, policy_target_update_interval = 3, action_range = 1., \
     replay_buffer_size = 5e5, reward_scale = 1. , seed=2, save_interval=500, mode='train', AUTO_ENTROPY = True, DETERMINISTIC = False):
     '''
     parameters
     ----------
     env: learning environment
-    number_timesteps:  total number of steps for training
-    test_frames:  total number of steps for testing
+    train_episodes:  total number of episodes for training
+    test_episodes:  total number of episodes for testing
     max_steps:  maximum number of steps for one episode
     batch_size:  udpate batchsize
     explore_steps:  for random action sampling in the beginning of training
@@ -266,6 +263,7 @@ def learn(env, number_timesteps, test_timesteps=1000, max_steps=150, batch_size=
     DETERMINISTIC: stochastic action policy if False, otherwise deterministic
 
     '''
+    env = make_env(env_id)
     action_dim = env.action_space.shape[0]
     state_dim = env.observation_space.shape[0]
 
@@ -288,7 +286,8 @@ def learn(env, number_timesteps, test_timesteps=1000, max_steps=150, batch_size=
     if mode=='train':
         frame_idx = 0
         rewards = []
-        while frame_idx < number_timesteps:
+        t0 = time.time()
+        for eps in range(train_episodes):
             state = env.reset()
             state = state.astype(np.float32)
             episode_reward = 0
@@ -321,22 +320,23 @@ def learn(env, number_timesteps, test_timesteps=1000, max_steps=150, batch_size=
                             target_entropy=-1. * action_dim
                         )
 
-                if frame_idx % int(save_interval) == 0:
-                    plot(rewards, Algorithm_name='SAC', Env_name=env.unwrapped.spec.id)
-                    sac_trainer.save_weights()
-
                 if done:
                     break
-            print('Episode: ', frame_idx / max_steps, '| Episode Reward: ', episode_reward)
+            if eps % int(save_interval) == 0:
+                plot(rewards, Algorithm_name='SAC', Env_name=env_id)
+                sac_trainer.save_weights()
+            print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
+            .format(eps, train_episodes, episode_reward, time.time()-t0 ))
             rewards.append(episode_reward)
         sac_trainer.save_weights()
 
     if mode=='test':
         frame_idx = 0
         rewards = []
+        t0 = time.time()
         sac_trainer.load_weights()
 
-        while frame_idx < test_timesteps:
+        for eps in range(test_episodes):
             state = env.reset()
             state = state.astype(np.float32)
             episode_reward = 0
@@ -359,5 +359,6 @@ def learn(env, number_timesteps, test_timesteps=1000, max_steps=150, batch_size=
 
                 if done:
                     break
-            print('Episode: ', frame_idx / max_steps, '| Episode Reward: ', episode_reward)
+            print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
+            .format(eps, test_episodes, episode_reward, time.time()-t0 ) )
             rewards.append(episode_reward)

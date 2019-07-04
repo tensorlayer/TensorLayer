@@ -34,9 +34,6 @@ tensorlayer >=2.0.0
 &&
 pip install box2d box2d-kengz --user
 
-To run
--------
-python tutorial_TD3.py --train/test
 
 '''
 
@@ -268,15 +265,15 @@ class TD3_Trainer():
         load_model(self.target_policy_net, 'model_target_policy_net', 'TD3')
 
 
-def learn(env, number_timesteps, test_timesteps=1000, max_steps=150, batch_size=64, explore_steps=500, update_itr=3, hidden_dim=32, \
+def learn(env_id, train_episodes, test_episodes=1000, max_steps=150, batch_size=64, explore_steps=500, update_itr=3, hidden_dim=32, \
     q_lr = 3e-4, policy_lr = 3e-4, policy_target_update_interval = 3, action_range = 1., \
     replay_buffer_size = 5e5, reward_scale = 1. , seed=2, save_interval=500, explore_noise_scale = 1.0, eval_noise_scale = 0.5, mode='train'):
     '''
     parameters
     ----------
     env: learning environment
-    number_timesteps:  total number of steps for training
-    test_frames:  total number of steps for testing
+    train_episodes:  total number of episodes for training
+    test_episodes:  total number of episodes for testing
     max_steps:  maximum number of steps for one episode
     batch_size:  udpate batchsize
     explore_steps:  for random action sampling in the beginning of training
@@ -294,6 +291,7 @@ def learn(env, number_timesteps, test_timesteps=1000, max_steps=150, batch_size=
     mode: train or test
 
     '''
+    env = make_env(env_id)  # make env with common.utils and wrappers
     action_dim = env.action_space.shape[0]
     state_dim = env.observation_space.shape[0]
 
@@ -319,7 +317,7 @@ def learn(env, number_timesteps, test_timesteps=1000, max_steps=150, batch_size=
         frame_idx = 0
         rewards = []
         t0 = time.time()
-        while frame_idx < number_timesteps:
+        for eps in range(train_episodes):
             state = env.reset()
             state = state.astype(np.float32)
             episode_reward = 0
@@ -350,16 +348,15 @@ def learn(env, number_timesteps, test_timesteps=1000, max_steps=150, batch_size=
                     for i in range(update_itr):
                         td3_trainer.update(batch_size, eval_noise_scale=0.5, reward_scale=1.)
 
-                if frame_idx % int(save_interval) == 0:
-                    plot(rewards, Algorithm_name='TD3', Env_name=env.unwrapped.spec.id)
-                    td3_trainer.save_weights()
-
                 if done:
                     break
-            episode = int(frame_idx / max_steps)  # current episode
-            all_episodes = int(max_frames / max_steps)  # total episodes
+
+            if eps % int(save_interval) == 0:
+                plot(rewards, Algorithm_name='TD3', Env_name=env_id)
+                td3_trainer.save_weights()
+
             print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
-            .format(episode, all_episodes, episode_reward, time.time()-t0 ))
+            .format(eps, train_episodes, episode_reward, time.time()-t0 ))
             rewards.append(episode_reward)
         td3_trainer.save_weights()
 
@@ -370,7 +367,7 @@ def learn(env, number_timesteps, test_timesteps=1000, max_steps=150, batch_size=
 
         td3_trainer.load_weights()
 
-        while frame_idx < test_frames:
+        for eps in range(test_episodes):
             state = env.reset()
             state = state.astype(np.float32)
             episode_reward = 0
@@ -396,8 +393,6 @@ def learn(env, number_timesteps, test_timesteps=1000, max_steps=150, batch_size=
 
                 if done:
                     break
-            episode = int(frame_idx / max_steps)
-            all_episodes = int(test_frames / max_steps)
             print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
-            .format(episode, all_episodes, episode_reward, time.time()-t0 ) )
+            .format(eps, test_episodes, episode_reward, time.time()-t0 ) )
             rewards.append(episode_reward)
