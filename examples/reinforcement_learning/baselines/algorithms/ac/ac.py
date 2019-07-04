@@ -62,20 +62,9 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 
 class Actor(object):
 
-    def __init__(self, n_features, n_actions, lr=0.001):
+    def __init__(self, n_features, n_actions, lr, hidden_dim, hidden_layer):
 
-        def get_model(inputs_shape):
-            ni = tl.layers.Input(inputs_shape, name='state')
-            nn = tl.layers.Dense(
-                n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden'
-            )(ni)
-            nn = tl.layers.Dense(
-                n_units=10, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2'
-            )(nn)
-            nn = tl.layers.Dense(n_units=n_actions, name='actions')(nn)
-            return tl.models.Model(inputs=ni, outputs=nn, name="Actor")
-
-        self.model = get_model([None, n_features])
+        self.model = DeterministicPolicyNetwork(n_features, n_actions, hidden_dim, hidden_layer).model()
         self.model.train()
         self.optimizer = tf.optimizers.Adam(lr)
 
@@ -109,21 +98,10 @@ class Actor(object):
 
 class Critic(object):
 
-    def __init__(self, n_features, gamma, lr=0.01):
+    def __init__(self, n_features, gamma, lr, hidden_dim, hidden_layer):
         self.GAMMA = gamma
 
-        def get_model(inputs_shape):
-            ni = tl.layers.Input(inputs_shape, name='state')
-            nn = tl.layers.Dense(
-                n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden'
-            )(ni)
-            nn = tl.layers.Dense(
-                n_units=5, act=tf.nn.relu, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2'
-            )(nn)
-            nn = tl.layers.Dense(n_units=1, act=None, name='value')(nn)
-            return tl.models.Model(inputs=ni, outputs=nn, name="Critic")
-
-        self.model = get_model([1, n_features])
+        self.model = ValueNetwork(n_features, hidden_dim, hidden_layer).model()  # from common.networks
         self.model.train()
 
         self.optimizer = tf.optimizers.Adam(lr)
@@ -149,7 +127,7 @@ class Critic(object):
 
 
 def learn(env_id, train_episodes, test_episodes=1000, max_steps=1000,
-    gamma=0.9, actor_lr=1e-3, critic_lr=1e-2, seed=2, save_interval=100, mode='train', render=False):
+    gamma=0.9, actor_lr=1e-3, critic_lr=1e-2, actor_hidden_dim=30, actor_hidden_layer=1, critic_hidden_dim=30, critic_hidden_layer=1, seed=2, save_interval=100, mode='train', render=False):
 
     '''
     parameters
@@ -181,9 +159,11 @@ def learn(env_id, train_episodes, test_episodes=1000, max_steps=1000,
     print("observation low : %s" % env.observation_space.low)  # [-2.4 , -inf , -0.41887902 , -inf]
     print("num of actions: %d" % N_A)  # 2 : left or right
 
-    actor = Actor(n_features=N_F, n_actions=N_A, lr=actor_lr)
+    actor = Actor(n_features=N_F, n_actions=N_A, lr=actor_lr, hidden_dim=actor_hidden_dim,\
+    hidden_layer = actor_hidden_layer)
     # we need a good teacher, so the teacher should learn faster than the actor
-    critic = Critic(n_features=N_F, gamma=gamma, lr=critic_lr)
+    critic = Critic(n_features=N_F, gamma=gamma, lr=critic_lr, hidden_dim=critic_hidden_dim,\
+    hidden_layer = critic_hidden_layer)
 
     if mode=='train':
         t0 = time.time()

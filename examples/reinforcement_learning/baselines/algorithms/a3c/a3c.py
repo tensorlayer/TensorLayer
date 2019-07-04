@@ -64,7 +64,8 @@ tfd = tfp.distributions
 ###################  Asynchronous Advantage Actor Critic (A3C)  ####################################
 class ACNet(object):
 
-    def __init__(self, scope, entropy_beta, action_dim, state_dim, action_bound, globalAC=None):
+    def __init__(self, scope, entropy_beta, action_dim, state_dim, actor_hidden_dim, actor_hidden_layer,
+        critic_hidden_dim, critic_hidden_layer, action_bound, globalAC=None):
         self.scope = scope
         self.save_path = './model'
         self.ENTROPY_BETA=entropy_beta
@@ -72,29 +73,30 @@ class ACNet(object):
         self.N_S = state_dim
         self.A_BOUND = action_bound 
 
-        w_init = tf.keras.initializers.glorot_normal(seed=None)  # initializer, glorot=xavier
+        # w_init = tf.keras.initializers.glorot_normal(seed=None)  # initializer, glorot=xavier
+        # def get_actor(input_shape):  # policy network
+        #     with tf.name_scope(self.scope):
+        #         ni = tl.layers.Input(input_shape, name='in')
+        #         nn = tl.layers.Dense(n_units=500, act=tf.nn.relu6, W_init=w_init, name='la')(ni)
+        #         nn = tl.layers.Dense(n_units=300, act=tf.nn.relu6, W_init=w_init, name='la2')(nn)
+        #         mu = tl.layers.Dense(n_units=self.N_A, act=tf.nn.tanh, W_init=w_init, name='mu')(nn)
+        #         sigma = tl.layers.Dense(n_units=self.N_A, act=tf.nn.softplus, W_init=w_init, name='sigma')(nn)
+        #     return tl.models.Model(inputs=ni, outputs=[mu, sigma], name=scope + '/Actor')
 
-        def get_actor(input_shape):  # policy network
-            with tf.name_scope(self.scope):
-                ni = tl.layers.Input(input_shape, name='in')
-                nn = tl.layers.Dense(n_units=500, act=tf.nn.relu6, W_init=w_init, name='la')(ni)
-                nn = tl.layers.Dense(n_units=300, act=tf.nn.relu6, W_init=w_init, name='la2')(nn)
-                mu = tl.layers.Dense(n_units=self.N_A, act=tf.nn.tanh, W_init=w_init, name='mu')(nn)
-                sigma = tl.layers.Dense(n_units=self.N_A, act=tf.nn.softplus, W_init=w_init, name='sigma')(nn)
-            return tl.models.Model(inputs=ni, outputs=[mu, sigma], name=scope + '/Actor')
-
-        self.actor = get_actor([None, self.N_S])
+        # self.actor = get_actor([None, self.N_S])
+        self.actor = StochasticPolicyNetwork(self.N_S, self.N_A, actor_hidden_dim, actor_hidden_layer, scope=self.scope).model()
         self.actor.train()  # train mode for Dropout, BatchNorm
 
-        def get_critic(input_shape):  # we use Value-function here, but not Q-function.
-            with tf.name_scope(self.scope):
-                ni = tl.layers.Input(input_shape, name='in')
-                nn = tl.layers.Dense(n_units=500, act=tf.nn.relu6, W_init=w_init, name='lc')(ni)
-                nn = tl.layers.Dense(n_units=300, act=tf.nn.relu6, W_init=w_init, name='lc2')(nn)
-                v = tl.layers.Dense(n_units=1, W_init=w_init, name='v')(nn)
-            return tl.models.Model(inputs=ni, outputs=v, name=scope + '/Critic')
+        # def get_critic(input_shape):  # we use Value-function here, but not Q-function.
+        #     with tf.name_scope(self.scope):
+        #         ni = tl.layers.Input(input_shape, name='in')
+        #         nn = tl.layers.Dense(n_units=500, act=tf.nn.relu6, W_init=w_init, name='lc')(ni)
+        #         nn = tl.layers.Dense(n_units=300, act=tf.nn.relu6, W_init=w_init, name='lc2')(nn)
+        #         v = tl.layers.Dense(n_units=1, W_init=w_init, name='v')(nn)
+        #     return tl.models.Model(inputs=ni, outputs=v, name=scope + '/Critic')
 
-        self.critic = get_critic([None, self.N_S])
+        # self.critic = get_critic([None, self.N_S])
+        self.critic = ValueNetwork(self.N_S, critic_hidden_dim, critic_hidden_layer, scope=self.scope).model()
         self.critic.train()  # train mode for Dropout, BatchNorm
 
     @tf.function  # convert numpy functions to tf.Operations in the TFgraph, return tensor
@@ -155,10 +157,12 @@ class ACNet(object):
 
 class Worker(object):
 
-    def __init__(self, env_id, name, globalAC, train_episodes, gamma, update_itr, entropy_beta, action_dim, state_dim, action_bound ):
+    def __init__(self, env_id, name, globalAC, train_episodes, gamma, update_itr, entropy_beta, action_dim, state_dim,
+        actor_hidden_dim, actor_hidden_layer, critic_hidden_dim, critic_hidden_layer, action_bound ):
         self.env = make_env(env_id)
         self.name = name
-        self.AC = ACNet(name, entropy_beta, action_dim, state_dim, action_bound, globalAC )
+        self.AC = ACNet(name, entropy_beta, action_dim, state_dim, actor_hidden_dim, actor_hidden_layer, 
+        critic_hidden_dim, critic_hidden_layer, action_bound, globalAC )
         self.MAX_GLOBAL_EP = train_episodes
         self.UPDATE_GLOBAL_ITER = update_itr
         self.GAMMA = gamma
@@ -230,7 +234,8 @@ class Worker(object):
 
 
 def learn(env_id, train_episodes, test_episodes=1000, max_steps=150, number_workers=0, update_itr=10,
-    gamma=0.99, entropy_beta=0.005 , actor_lr=5e-5, critic_lr=1e-4, seed=2, save_interval=500, mode='train'):
+    gamma=0.99, entropy_beta=0.005 , actor_lr=5e-5, critic_lr=1e-4, actor_hidden_dim=300, actor_hidden_layer=2, 
+    critic_hidden_dim=300, critic_hidden_layer=2,seed=2, save_interval=500, mode='train'):
 
     '''
     parameters
@@ -275,12 +280,14 @@ def learn(env_id, train_episodes, test_episodes=1000, max_steps=150, number_work
             OPT_A = tf.optimizers.RMSprop(actor_lr, name='RMSPropA')
             OPT_C = tf.optimizers.RMSprop(critic_lr, name='RMSPropC')
 
-            GLOBAL_AC = ACNet(GLOBAL_NET_SCOPE, entropy_beta, N_A, N_S, A_BOUND)  # we only need its params
+            GLOBAL_AC = ACNet(GLOBAL_NET_SCOPE, entropy_beta, N_A, N_S, actor_hidden_dim, 
+            actor_hidden_layer, critic_hidden_dim, critic_hidden_layer, A_BOUND)  # we only need its params
             workers = []
             # Create worker
             for i in range(N_WORKERS):
                 i_name = 'Worker_%i' % i  # worker name
-                workers.append(Worker(env_id, i_name, GLOBAL_AC, train_episodes, gamma, update_itr, entropy_beta, N_A, N_S, A_BOUND))
+                workers.append(Worker(env_id, i_name, GLOBAL_AC, train_episodes, gamma, update_itr, entropy_beta, N_A, N_S, 
+                actor_hidden_dim, actor_hidden_layer, critic_hidden_dim, critic_hidden_layer, A_BOUND))
 
         
 
@@ -293,7 +300,6 @@ def learn(env_id, train_episodes, test_episodes=1000, max_steps=150, number_work
             t.start()
             worker_threads.append(t)
         COORD.join(worker_threads)
-        plot(rewards, Algorithm_name='AC', Env_name=env_id)
         import matplotlib.pyplot as plt
         plt.plot(GLOBAL_RUNNING_R)
         plt.xlabel('episode')
