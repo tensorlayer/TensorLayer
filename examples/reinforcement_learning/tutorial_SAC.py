@@ -71,10 +71,10 @@ ENV = 'Pendulum-v0'
 action_range = 1.  # scale action, [-action_range, action_range]
 
 # RL training
-max_frames = 4  # total number of steps for training
+max_frames = 40000  # total number of steps for training
 test_frames = 300  # total number of steps for testing
 max_steps = 150  # maximum number of steps for one episode
-batch_size = 64  # udpate batchsize
+batch_size = 256  # udpate batchsize
 explore_steps = 100  # 500 for random action sampling in the beginning of training
 update_itr = 3  # repeated updates for single step
 hidden_dim = 32  # size of hidden layers for networks

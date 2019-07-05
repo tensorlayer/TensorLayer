@@ -66,7 +66,7 @@ class ACNet(object):
 
     def __init__(self, scope, entropy_beta, action_dim, state_dim, actor_hidden_dim, actor_hidden_layer,
         critic_hidden_dim, critic_hidden_layer, action_bound, globalAC=None):
-        self.scope = scope
+        self.scope = scope  # the scope is for naming networks for each worker differently
         self.save_path = './model'
         self.ENTROPY_BETA=entropy_beta
         self.N_A = action_dim
@@ -84,7 +84,7 @@ class ACNet(object):
         #     return tl.models.Model(inputs=ni, outputs=[mu, sigma], name=scope + '/Actor')
 
         # self.actor = get_actor([None, self.N_S])
-        self.actor = StochasticPolicyNetwork(self.N_S, self.N_A, actor_hidden_dim, actor_hidden_layer, scope=self.scope).model()
+        self.actor = StochasticPolicyNetwork(self.N_S, self.N_A, actor_hidden_dim, actor_hidden_layer, scope=self.scope).model() # call the network model in common functions
         self.actor.train()  # train mode for Dropout, BatchNorm
 
         # def get_critic(input_shape):  # we use Value-function here, but not Q-function.
@@ -96,7 +96,7 @@ class ACNet(object):
         #     return tl.models.Model(inputs=ni, outputs=v, name=scope + '/Critic')
 
         # self.critic = get_critic([None, self.N_S])
-        self.critic = ValueNetwork(self.N_S, critic_hidden_dim, critic_hidden_layer, scope=self.scope).model()
+        self.critic = ValueNetwork(self.N_S, critic_hidden_dim, critic_hidden_layer, scope=self.scope).model() # call the network model in common functions
         self.critic.train()  # train mode for Dropout, BatchNorm
 
     @tf.function  # convert numpy functions to tf.Operations in the TFgraph, return tensor

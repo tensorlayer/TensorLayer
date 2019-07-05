@@ -177,9 +177,9 @@ class StochasticPolicyNetwork(Model):
         for i in range(self.num_hidden_layer):
             l = Dense(n_units=self.hidden_dim, act=tf.nn.relu, W_init=w_init, name=str(self.scope)+'policy'+str(i+2) if self.scope is not None else 'policy'+str(i+2))(l)
         mean_linear = Dense(n_units=self.action_dim, W_init=w_init, name=str(self.scope)+'policy_mean' if self.scope is not None else 'policy_mean' )(l)
-        log_std_linear = Dense(n_units=self.action_dim, W_init=w_init, name=str(self.scope)+'policy_std' if self.scope is not None else 'policy_std' )(l)
-        '''  is  not a standard tl layer, cannot return in list!''' 
-        # log_std_linear = tf.clip_by_value(log_std_linear, self.log_std_min, self.log_std_max)   
+        log_std_linear = Dense(n_units=self.action_dim, W_init=w_init, name=str(self.scope)+'policy_std' if self.scope is not None else 'policy_std' )(l)  
+        log_std_linear = tl.layers.Lambda(lambda x: tf.clip_by_value(x, self.log_std_min, self.log_std_max), 
+        name=str(self.scope)+'lambda' if self.scope is not None else 'lambda')(log_std_linear)
         return tl.models.Model(inputs=inputs, outputs=[mean_linear, log_std_linear], name=str(self.scope)+'stochastic_policy_network' if self.scope is not None else 'stochastic_policy_network' )
 
 class DeterministicPolicyNetwork_old(Model):
