@@ -23,8 +23,8 @@ class GaussianNoise(Layer):
         The mean. Default is 0.0.
     stddev : float
         The standard deviation. Default is 1.0.
-    is_train : boolean
-        Is trainable layer. If False, skip this layer. default is True.
+    is_always : boolean
+        Is True, add noise for train and eval mode. If False, skip this layer in eval mode.
     seed : int or None
         The seed for random noise.
     name : str
@@ -46,7 +46,7 @@ class GaussianNoise(Layer):
             self,
             mean=0.0,
             stddev=1.0,
-            is_train=True,
+            is_always=True,
             seed=None,
             name=None,  # 'gaussian_noise',
     ):
@@ -54,7 +54,7 @@ class GaussianNoise(Layer):
         self.mean = mean
         self.stddev = stddev
         self.seed = seed
-        self.is_train = is_train
+        self.is_always = is_always
 
         self.build()
         self._built = True
@@ -72,7 +72,7 @@ class GaussianNoise(Layer):
         pass
 
     def forward(self, inputs):
-        if self.is_train is False:
+        if (self.is_train and self.is_always) is False:
             return inputs
         else:
             # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
