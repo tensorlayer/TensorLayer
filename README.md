@@ -187,7 +187,7 @@ nvidia-docker run -it --rm -p 8888:8888 -p 6006:6006 -e PASSWORD=JUPYTER_NB_PASS
 Please read the [Contributor Guideline](CONTRIBUTING.md) before submitting your PRs.
 
 # Cite
-If you find this project useful, we would be grateful if you cite the TensorLayer paper：
+If you use TensorLayer for any projects, please cite this paper：
 
 ```
 @article{tensorlayer2017,
