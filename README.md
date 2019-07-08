@@ -115,7 +115,7 @@ pip3 install tensorlayer
 Install the latest version of TensorLayer:
 
 ```bash
-pip3 install git+https://github.com/zsdonghao/tensorlayer.git
+pip3 install git+https://github.com/tensorlayer/tensorlayer.git
 or
 pip3 install https://github.com/tensorlayer/tensorlayer/archive/master.zip
 ```
