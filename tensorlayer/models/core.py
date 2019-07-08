@@ -591,6 +591,15 @@ class Model(object):
             layer._fix_nodes_for_layers()
         self._nodes_fixed = True
 
+    def __setattr__(self, key, value):
+        if isinstance(value, Layer):
+            if value._built is False:
+                raise AttributeError(
+                    "The registered layer `{}` should be built in advance. "
+                    "Do you forget to pass the keyword argument 'in_channels'? ".format(value.name)
+                )
+        super().__setattr__(key, value)
+
     def __repr__(self):
         # tmpstr = self.__class__.__name__ + '(\n'
         tmpstr = self.name + '(\n'

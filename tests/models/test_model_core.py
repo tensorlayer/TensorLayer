@@ -401,6 +401,25 @@ class Model_Core_Test(CustomTestCase):
         new_len = len(model_weights)
         self.assertEqual(new_len - 1, ori_len)
 
+    def test_inchannels_exception(self):
+        print('-' * 20, 'test_inchannels_exception', '-' * 20)
+
+        class my_model(Model):
+
+            def __init__(self):
+                super(my_model, self).__init__()
+                self.dense = Dense(64)
+                self.vgg = tl.models.vgg16()
+
+            def forward(self, x):
+                return x
+
+        try:
+            M = my_model()
+        except Exception as e:
+            self.assertIsInstance(e, AttributeError)
+            print(e)
+
 
 if __name__ == '__main__':
 
