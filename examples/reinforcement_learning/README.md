@@ -9,6 +9,7 @@
 </a>
 <br/>
 
+<!--
 <br/>
 <a href="https://github.com/tensorlayer/tensorlayer-chinese/blob/master/docs/images/RL_Group_QR.jpeg" target="\_blank">
 	<div align="center">
@@ -17,7 +18,7 @@
 	<div align="center"><caption>WeChat QR Code</caption></div>
 </a>
 <br/>
-
+-->
 
 This repository contains implementation of most popular reinforcement learning algorithms with Tensorlayer 2.0, supporting [Tensorflow 2.0](https://www.tensorflow.org/alpha/guide/effective_tf2). We aim to make the reinforcement learning tutorial for each algorithm simple and straight-forward to use, as this would not only benefits new learners of reinforcement learning, but also provide convenience for senior researchers to testify their new ideas quickly.
 
