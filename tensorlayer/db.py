@@ -7,12 +7,13 @@ import sys
 import time
 from datetime import datetime
 
-import gridfs
 import numpy as np
+
+import gridfs
 import pymongo
 import tensorflow as tf
-
 from tensorlayer import logging
+
 from tensorlayer.files import static_graph2net, assign_weights
 from tensorlayer.files import save_weights_to_hdf5, load_hdf5_to_weights
 from tensorlayer.files import del_folder, exists_or_mkdir

@@ -392,6 +392,34 @@ class Model_Core_Test(CustomTestCase):
         except Exception as e:
             print(e)
 
+    def test_model_weights_copy(self):
+        print('-' * 20, 'test_model_weights_copy', '-' * 20)
+        model_basic = basic_static_model()
+        model_weights = model_basic.trainable_weights
+        ori_len = len(model_weights)
+        model_weights.append(np.arange(5))
+        new_len = len(model_weights)
+        self.assertEqual(new_len - 1, ori_len)
+
+    def test_inchannels_exception(self):
+        print('-' * 20, 'test_inchannels_exception', '-' * 20)
+
+        class my_model(Model):
+
+            def __init__(self):
+                super(my_model, self).__init__()
+                self.dense = Dense(64)
+                self.vgg = tl.models.vgg16()
+
+            def forward(self, x):
+                return x
+
+        try:
+            M = my_model()
+        except Exception as e:
+            self.assertIsInstance(e, AttributeError)
+            print(e)
+
 
 if __name__ == '__main__':
 

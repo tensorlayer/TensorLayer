@@ -1,13 +1,13 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import numbers
+
 import tensorflow as tf
 import tensorlayer as tl
-
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
-import numbers
 
 __all__ = [
     'DropconnectDense',
@@ -60,7 +60,7 @@ class DropconnectDense(Layer):
             keep=0.5,
             n_units=100,
             act=None,
-            W_init=tl.initializers.truncated_normal(stddev=0.1),
+            W_init=tl.initializers.truncated_normal(stddev=0.05),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
             name=None,  # 'dropconnect',
