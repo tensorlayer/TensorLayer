@@ -380,6 +380,10 @@ class Layer(object):
 
                 val = values[arg]
 
+                if arg == "dtype" and isinstance(val, tf.DType):
+                    params[arg] = repr(val)
+                    continue
+
                 # change function (e.g. act) into dictionary of module path and function name
                 if inspect.isfunction(val):
                     if ("__module__" in dir(val)) and (len(val.__module__) >
