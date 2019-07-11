@@ -37,6 +37,8 @@ class _InputLayer(Layer):
                 dtype = eval(dtype)
             except Exception as e:
                 raise RuntimeError("%s is not a valid dtype for InputLayer." % (dtype))
+        if not isinstance(dtype, tf.DType):
+            raise RuntimeError("%s is not a valid dtype for InputLayer." % (dtype))
 
         logging.info("Input  %s: %s" % (self.name, str(shape)))
         self.shape = shape  # shape is needed in __repr__

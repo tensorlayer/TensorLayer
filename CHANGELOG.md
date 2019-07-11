@@ -71,6 +71,7 @@ To release a new version, please update the changelog as followed:
 
 ### Added
 - Support nested layer customization (#PR 1015)
+- Support string dtype in InputLayer (#PR 1017)
 
 ### Changed
 
@@ -93,12 +94,13 @@ To release a new version, please update the changelog as followed:
 
 - @zsdonghao
 - @ChrisWu1997: #1010 #1015
+- @warshallrho: #1017
 
 ## [2.1.0]
 
 ### Changed
 - Add version_info in model.config. (PR #992)
-- Replace tf.nn.func with tf.nn.func.\_\_name\_\_ in model config.
+- Replace tf.nn.func with tf.nn.func.\_\_name\_\_ in model config. (PR #994)
 - Add Reinforcement learning tutorials. (PR #995)
 - Add RNN layers with simple rnn cell, GRU cell, LSTM cell. (PR #998)
 - Update Seq2seq (#998) 
@@ -107,7 +109,7 @@ To release a new version, please update the changelog as followed:
 ### Fixed
 
 ### Contributors
-- @warshallrho:
+- @warshallrho:  #992 #994
 - @quantumiracle: #995
 - @Tokarev-TT-33: #995
 - @initial-h: #995
