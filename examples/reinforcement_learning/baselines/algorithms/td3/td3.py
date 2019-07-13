@@ -62,27 +62,6 @@ Normal = tfd.Normal
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 
-#####################  hyper parameters  ####################
-# choose env
-ENV = 'Pendulum-v0'
-action_range = 1.  # scale action, [-action_range, action_range]
-
-# RL training
-max_frames = 40000  # total number of steps for training
-test_frames = 300  # total number of steps for testing
-max_steps = 150  # maximum number of steps for one episode
-batch_size = 64  # udpate batchsize
-explore_steps = 500  # 500 for random action sampling in the beginning of training
-update_itr = 3  # repeated updates for single step
-hidden_dim = 32  # size of hidden layers for networks
-q_lr = 3e-4  # q_net learning rate
-policy_lr = 3e-4  # policy_net learning rate
-policy_target_update_interval = 3  # delayed steps for updating the policy network and target networks
-explore_noise_scale = 1.0  # range of action noise for exploration
-eval_noise_scale = 0.5  # range of action noise for evaluation of action value
-reward_scale = 1.  # value range of reward
-replay_buffer_size = 5e5  # size of replay buffer
-
 ###############################  TD3  ####################################
 
 
