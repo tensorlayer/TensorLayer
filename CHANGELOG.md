@@ -86,6 +86,8 @@ To release a new version, please update the changelog as followed:
 ### Fixed
 - Fix `tf.models.Model._construct_graph` for list of outputs, e.g. STN case (PR #1010)
 - Enable better `in_channels` exception raise. (pR #1015)
+- Set allow_pickle=True in np.load() (#PR 1021)
+
 ### Removed
 
 ### Security
@@ -94,7 +96,7 @@ To release a new version, please update the changelog as followed:
 
 - @zsdonghao
 - @ChrisWu1997: #1010 #1015
-- @warshallrho: #1017
+- @warshallrho: #1017 #1021
 
 ## [2.1.0]
 
