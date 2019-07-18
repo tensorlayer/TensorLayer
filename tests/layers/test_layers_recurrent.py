@@ -770,6 +770,29 @@ class Layer_RNN_Test(CustomTestCase):
             self.fail("Wrong data shape not detected.")
 
 
+    def test_if_gather_work():
+        batch_size = 2
+        num_steps = 5
+        embedding_size = 2
+
+        hidden_size = 3
+        inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
+
+
+        rnn_layer = tl.layers.RNN(cell=tf.keras.layers.LSTMCell(units=hidden_size, dropout=0.1),
+        in_channels=embedding_size,
+        return_last_output=True, return_last_state=True, name='lstmrnn'
+        )
+
+        rnn_layer.is_train = False
+
+        x = rnn_layer(inputs)[1]
+        y = rnn_layer(inputs, actual_length=[4,4])[1]
+
+        for i, j in zip(x, y):
+            print(tf.math.equal(i, j))
+
+
 if __name__ == '__main__':
 
     unittest.main()

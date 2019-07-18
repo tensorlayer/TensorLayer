@@ -24,7 +24,7 @@ __all__ = [
 ]
 
 
-class RNN(Layer):
+class RNN(tl.layers.Layer):
     """
     The :class:`RNN` class is a fixed length recurrent layer for implementing simple RNN,
     LSTM, GRU and etc.
@@ -157,19 +157,21 @@ class RNN(Layer):
             self._trainable_weights.append(var)
 
     # @tf.function
-    def forward(self, inputs, initial_state=None, **kwargs):
+    def forward(self, inputs, actual_length=None, initial_state=None, **kwargs):
         """
         Parameters
         ----------
         inputs : input tensor
             The input of a network
+        actual_length: input tensor
+            The actual length of each sequence in batch without padding
         initial_state : None or list of Tensor (RNN State)
             If None, `initial_state` is zero state.
+
         **kwargs: dict
             Some attributes can be updated during forwarding
             such as `return_last_output`, `return_seq_2d`, `return_last_state`.
         """
-
         if kwargs:
             for attr in kwargs:
                 if attr in self.__dict__:
@@ -179,12 +181,17 @@ class RNN(Layer):
             outputs = [-1]
         else:
             outputs = list()
-
+        
         states = initial_state if initial_state is not None else self.cell.get_initial_state(inputs)
         if not isinstance(states, list):
             states = [states]
 
+        batch_size = inputs.get_shape().as_list()[0]
         total_steps = inputs.get_shape().as_list()[1]
+
+        stored_states = []
+        if not self.return_last_state and actual_length is not None:
+            raise Exception('Set return_last_state True to get the hidden state regarding to each sequence length')
 
         self.cell.reset_dropout_mask()
         self.cell.reset_recurrent_dropout_mask()
@@ -192,6 +199,7 @@ class RNN(Layer):
         for time_step in range(total_steps):
 
             cell_output, states = self.cell.call(inputs[:, time_step, :], states, training=self.is_train)
+            stored_states.append(states)
 
             if self.return_last_output:
                 outputs[-1] = cell_output
@@ -209,8 +217,18 @@ class RNN(Layer):
                 # <akara>: stack more RNN layer after that
                 # 3D Tensor [batch_size, n_steps, n_hidden]
                 outputs = tf.reshape(tf.concat(outputs, 1), [-1, total_steps, self.cell.units])
+        # print("should be", states)
+        if self.return_last_state and actual_length is None:
+            return outputs, states
+        elif self.return_last_output and actual_length is not None:
+            
+            stored_states = tf.convert_to_tensor(stored_states)
+            stored_states = tf.gather(stored_states, actual_length, axis=0)
+            
+            states = []
+            for i in range(batch_size):
+                states.append(stored_states[i][i][:][:])
 
-        if self.return_last_state:
             return outputs, states
         else:
             return outputs
