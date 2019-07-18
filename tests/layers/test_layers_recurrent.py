@@ -769,7 +769,7 @@ class Layer_RNN_Test(CustomTestCase):
         if fail_flag:
             self.fail("Wrong data shape not detected.")
 
-    def test_if_gather_work(self):
+    def test_dynamic_rnn(self):
         batch_size = 2
         num_steps = 5
         embedding_size = 2
@@ -777,7 +777,7 @@ class Layer_RNN_Test(CustomTestCase):
         hidden_size = 3
         inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
 
-        rnn_layer = RNN(
+        rnn_layer = tl.layers.RNN(
             cell=tf.keras.layers.LSTMCell(units=hidden_size, dropout=0.1),
             in_channels=embedding_size,
             return_last_output=True, return_last_state=True
@@ -802,7 +802,7 @@ class Layer_RNN_Test(CustomTestCase):
         try:
             _ = rnn_layer(inputs, actual_length=[10, 2])
             except_flag = True
-        except TypeError as e:
+        except ValueError as e:
             print(e)
 
         if except_flag:
@@ -820,12 +820,12 @@ class Layer_RNN_Test(CustomTestCase):
         x = rnn_layer(inputs,
                       return_last_output=True,
                       return_last_state=True)
-        y = rnn_layer(inputs, actual_length=[4, 2],
+        y = rnn_layer(inputs, actual_length=[5, 5],
                       return_last_output=True,
                       return_last_state=True)
 
-        print(len(x) == 2)
-        print(len(y) == 2)
+        assert len(x) == 2
+        assert len(y) == 2
 
         for i, j in zip(x, y):
             self.assertTrue(np.allclose(i, j))
