@@ -6,7 +6,7 @@ import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
-
+import warnings
 # TODO: uncomment
 __all__ = [
     'RNN',
@@ -163,7 +163,7 @@ class RNN(tl.layers.Layer):
         ----------
         inputs : input tensor
             The input of a network
-        actual_length: input tensor
+        actual_length: list
             The actual length of each sequence in batch without padding
         initial_state : None or list of Tensor (RNN State)
             If None, `initial_state` is zero state.
@@ -176,12 +176,16 @@ class RNN(tl.layers.Layer):
             for attr in kwargs:
                 if attr in self.__dict__:
                     setattr(self, attr, kwargs[attr])
-
-        if self.return_last_output:
+        if (actual_length is not None):
+            actual_length = [i-1 for i in actual_length]
+        
+        # return the last output, iterating each seq including padding ones. No need to store output during each
+        # time step.
+        if self.return_last_output and actual_length is None:
             outputs = [-1]
         else:
             outputs = list()
-        
+
         states = initial_state if initial_state is not None else self.cell.get_initial_state(inputs)
         if not isinstance(states, list):
             states = [states]
@@ -190,8 +194,10 @@ class RNN(tl.layers.Layer):
         total_steps = inputs.get_shape().as_list()[1]
 
         stored_states = []
-        if not self.return_last_state and actual_length is not None:
-            raise Exception('Set return_last_state True to get the hidden state regarding to each sequence length')
+
+        #TODO: set it as warning?
+        if (not self.return_last_state or not self.return_last_output) and actual_length is not None):
+            warnings.warn('Set return_last_state True to get the hidden state/last output regarding to each sequence length')
 
         self.cell.reset_dropout_mask()
         self.cell.reset_recurrent_dropout_mask()
@@ -201,13 +207,22 @@ class RNN(tl.layers.Layer):
             cell_output, states = self.cell.call(inputs[:, time_step, :], states, training=self.is_train)
             stored_states.append(states)
 
-            if self.return_last_output:
+            if self.return_last_output and actual_length is None:
                 outputs[-1] = cell_output
             else:
                 outputs.append(cell_output)
 
-        if self.return_last_output:
+        if self.return_last_output and actual_length is None:
             outputs = outputs[-1]
+
+        elif self.return_last_output and actual_length is not None:
+            outputs = tf.convert_to_tensor(outputs)
+            outputs = tf.gather(outputs, actual_length, axis=0)
+
+            outputs_without_padding = []
+            for i in range(batch_size):
+                outputs_without_padding.append(outputs[i][i][:])
+            outputs = outputs_without_padding
         else:
             if self.return_seq_2d:
                 # PTB tutorial: stack dense layer after that, or compute the cost from the output
@@ -217,14 +232,13 @@ class RNN(tl.layers.Layer):
                 # <akara>: stack more RNN layer after that
                 # 3D Tensor [batch_size, n_steps, n_hidden]
                 outputs = tf.reshape(tf.concat(outputs, 1), [-1, total_steps, self.cell.units])
-        # print("should be", states)
+
         if self.return_last_state and actual_length is None:
             return outputs, states
-        elif self.return_last_output and actual_length is not None:
-            
+        elif self.return_last_state and actual_length is not None:
+
             stored_states = tf.convert_to_tensor(stored_states)
             stored_states = tf.gather(stored_states, actual_length, axis=0)
-            
             states = []
             for i in range(batch_size):
                 states.append(stored_states[i][i][:][:])
