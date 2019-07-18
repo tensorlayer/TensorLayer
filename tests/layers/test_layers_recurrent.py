@@ -778,8 +778,7 @@ class Layer_RNN_Test(CustomTestCase):
         inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
 
         rnn_layer = tl.layers.RNN(
-            cell=tf.keras.layers.LSTMCell(units=hidden_size, dropout=0.1),
-            in_channels=embedding_size,
+            cell=tf.keras.layers.LSTMCell(units=hidden_size, dropout=0.1), in_channels=embedding_size,
             return_last_output=True, return_last_state=True
         )
 
@@ -810,19 +809,11 @@ class Layer_RNN_Test(CustomTestCase):
 
         # test warning
         for _ in range(5):
-            _ = rnn_layer(inputs, actual_length=[5,5],
-                          return_last_output=False,
-                          return_last_state=True)
-            _ = rnn_layer(inputs, actual_length=[5,5],
-                          return_last_output=True,
-                          return_last_state=False)
+            _ = rnn_layer(inputs, actual_length=[5, 5], return_last_output=False, return_last_state=True)
+            _ = rnn_layer(inputs, actual_length=[5, 5], return_last_output=True, return_last_state=False)
 
-        x = rnn_layer(inputs,
-                      return_last_output=True,
-                      return_last_state=True)
-        y = rnn_layer(inputs, actual_length=[5, 5],
-                      return_last_output=True,
-                      return_last_state=True)
+        x = rnn_layer(inputs, return_last_output=True, return_last_state=True)
+        y = rnn_layer(inputs, actual_length=[5, 5], return_last_output=True, return_last_state=True)
 
         assert len(x) == 2
         assert len(y) == 2

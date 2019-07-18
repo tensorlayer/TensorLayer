@@ -187,25 +187,33 @@ class RNN(Layer):
         # checking the type and values of actual_length
         if actual_length is not None:
             if type(actual_length) is not list:
-                raise TypeError("The argument actual_length should be either None or a list of integers. "
-                                "Type got %s" % type(actual_length))
+                raise TypeError(
+                    "The argument actual_length should be either None or a list of integers. "
+                    "Type got %s" % type(actual_length)
+                )
             for i in actual_length:
                 if type(i) is not int:
-                    raise TypeError("The argument actual_length should be either None or a list of integers. "
-                                    "One element of actual_length has the type %s" % type(i))
+                    raise TypeError(
+                        "The argument actual_length should be either None or a list of integers. "
+                        "One element of actual_length has the type %s" % type(i)
+                    )
                 if i > total_steps:
-                    raise ValueError("The actual length of a sequence should not be longer than "
-                                     "that of the longest sequence (total steps) in this mini-batch. "
-                                     "Total steps of this mini-batch %d, " % total_steps +
-                                     "but got an actual length of a sequence %d" % i)
+                    raise ValueError(
+                        "The actual length of a sequence should not be longer than "
+                        "that of the longest sequence (total steps) in this mini-batch. "
+                        "Total steps of this mini-batch %d, " % total_steps +
+                        "but got an actual length of a sequence %d" % i
+                    )
             actual_length = [i - 1 for i in actual_length]
 
         # set warning
         if (not self.return_last_state or not self.return_last_output) and actual_length is not None:
-            warnings.warn('return_last_output is set as %s ' % self.return_last_output +
-                          'and return_last_state is set as %s. ' % self.return_last_state +
-                          'When actual_length is provided, both are recommended to set as True. ' +
-                          'Otherwise, padding will be considered while RNN is forwarding.')
+            warnings.warn(
+                'return_last_output is set as %s ' % self.return_last_output +
+                'and return_last_state is set as %s. ' % self.return_last_state +
+                'When actual_length is provided, both are recommended to set as True. ' +
+                'Otherwise, padding will be considered while RNN is forwarding.'
+            )
 
         # return the last output, iterating each seq including padding ones. No need to store output during each
         # time step.
