@@ -7,6 +7,7 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
 import warnings
+
 # TODO: uncomment
 __all__ = [
     'RNN',
@@ -184,7 +185,7 @@ class RNN(tl.layers.Layer):
         total_steps = inputs.get_shape().as_list()[1]
 
         # checking the type and values of actual_length
-        if (actual_length is not None):
+        if actual_length is not None:
             if type(actual_length) is not list:
                 raise TypeError("The argument actual_length should be either None or a list of integers."
                                 "Type got %s" % type(actual_length))
@@ -198,7 +199,14 @@ class RNN(tl.layers.Layer):
                                      "Total steps of this mini-batch %d," % total_steps +
                                      "but got an actual length of a sequence %d" % i)
             actual_length = [i - 1 for i in actual_length]
-        
+
+        # set warning
+        if (not self.return_last_state or not self.return_last_output) and actual_length is not None:
+            warnings.warn('return_last_output is set as %s ' % self.return_last_output +
+                          'and return_last_state is set as %s.' % self.return_last_state +
+                          'When actual_length is provided, both are recommended to set as True.'
+                          'Otherwise, padding will be considered while RNN is forwarding.')
+
         # return the last output, iterating each seq including padding ones. No need to store output during each
         # time step.
         if self.return_last_output and actual_length is None:
@@ -206,19 +214,18 @@ class RNN(tl.layers.Layer):
         else:
             outputs = list()
 
+        # initialize the states if provided
         states = initial_state if initial_state is not None else self.cell.get_initial_state(inputs)
         if not isinstance(states, list):
             states = [states]
 
-        stored_states = []
+        stored_states = list()
 
-        #TODO: set it as warning?
-        if (not self.return_last_state or not self.return_last_output) and actual_length is not None):
-            warnings.warn('Set return_last_state True to get the hidden state/last output regarding to each sequence length')
-
+        # initialize the cell
         self.cell.reset_dropout_mask()
         self.cell.reset_recurrent_dropout_mask()
 
+        # recurrent computation
         for time_step in range(total_steps):
 
             cell_output, states = self.cell.call(inputs[:, time_step, :], states, training=self.is_train)
@@ -229,6 +236,7 @@ class RNN(tl.layers.Layer):
             else:
                 outputs.append(cell_output)
 
+        # prepare to return results
         if self.return_last_output and actual_length is None:
             outputs = outputs[-1]
 
