@@ -158,13 +158,13 @@ class RNN(Layer):
             self._trainable_weights.append(var)
 
     # @tf.function
-    def forward(self, inputs, initial_length=None, initial_state=None, **kwargs):
+    def forward(self, inputs, sequence_length=None, initial_state=None, **kwargs):
         """
         Parameters
         ----------
         inputs : input tensor
             The input of a network
-        initial_length: None or list of integers
+        sequence_length: None or list of integers
             The actual length of each sequence in batch without padding.
             If provided, when `return_last_output` and `return_last_state` are `True`,
             the RNN will perform in the manner of a dynamic RNN, i.e.
@@ -184,23 +184,23 @@ class RNN(Layer):
         batch_size = inputs.get_shape().as_list()[0]
         total_steps = inputs.get_shape().as_list()[1]
 
-        # checking the type and values of initial_length
-        if initial_length is not None:
-            if type(initial_length) is not list:
+        # checking the type and values of sequence_length
+        if sequence_length is not None:
+            if type(sequence_length) is not list:
                 raise TypeError(
-                    "The argument initial_length should be either None or a list of integers. "
-                    "Type got %s" % type(initial_length)
+                    "The argument sequence_length should be either None or a list of integers. "
+                    "Type got %s" % type(sequence_length)
                 )
-            if (len(initial_length) != batch_size):
+            if (len(sequence_length) != batch_size):
                 raise TypeError(
-                    "The argument initial_length should contain %d, " %batch_size + 
-                    "elements indicating the initial length of each sequence, but got only %d" %len(initial_length)
+                    "The argument sequence_length should contain %d, " %batch_size + 
+                    "elements indicating the initial length of each sequence, but got only %d" %len(sequence_length)
                 )
-            for i in initial_length:
+            for i in sequence_length:
                 if type(i) is not int:
                     raise TypeError(
-                        "The argument initial_length should be either None or a list of integers. "
-                        "One element of initial_length has the type %s" % type(i)
+                        "The argument sequence_length should be either None or a list of integers. "
+                        "One element of sequence_length has the type %s" % type(i)
                     )
                 if i > total_steps:
                     raise ValueError(
@@ -210,20 +210,20 @@ class RNN(Layer):
                         "but got an actual length of a sequence %d" % i
                     )
 
-            initial_length = [i - 1 for i in initial_length]
+            sequence_length = [i - 1 for i in sequence_length]
 
         # set warning
-        if (not self.return_last_state or not self.return_last_output) and initial_length is not None:
+        if (not self.return_last_state or not self.return_last_output) and sequence_length is not None:
             warnings.warn(
                 'return_last_output is set as %s ' % self.return_last_output +
                 'and return_last_state is set as %s. ' % self.return_last_state +
-                'When initial_length is provided, both are recommended to set as True. ' +
+                'When sequence_length is provided, both are recommended to set as True. ' +
                 'Otherwise, padding will be considered while RNN is forwarding.'
             )
 
         # return the last output, iterating each seq including padding ones. No need to store output during each
         # time step.
-        if self.return_last_output and initial_length is None:
+        if self.return_last_output and sequence_length is None:
             outputs = [-1]
         else:
             outputs = list()
@@ -245,18 +245,18 @@ class RNN(Layer):
             cell_output, states = self.cell.call(inputs[:, time_step, :], states, training=self.is_train)
             stored_states.append(states)
 
-            if self.return_last_output and initial_length is None:
+            if self.return_last_output and sequence_length is None:
                 outputs[-1] = cell_output
             else:
                 outputs.append(cell_output)
 
         # prepare to return results
-        if self.return_last_output and initial_length is None:
+        if self.return_last_output and sequence_length is None:
             outputs = outputs[-1]
 
-        elif self.return_last_output and initial_length is not None:
+        elif self.return_last_output and sequence_length is not None:
             outputs = tf.convert_to_tensor(outputs)
-            outputs = tf.gather(outputs, initial_length, axis=0)
+            outputs = tf.gather(outputs, sequence_length, axis=0)
 
             outputs_without_padding = []
             for i in range(batch_size):
@@ -272,12 +272,12 @@ class RNN(Layer):
                 # 3D Tensor [batch_size, n_steps, n_hidden]
                 outputs = tf.reshape(tf.concat(outputs, 1), [-1, total_steps, self.cell.units])
 
-        if self.return_last_state and initial_length is None:
+        if self.return_last_state and sequence_length is None:
             return outputs, states
-        elif self.return_last_state and initial_length is not None:
+        elif self.return_last_state and sequence_length is not None:
 
             stored_states = tf.convert_to_tensor(stored_states)
-            stored_states = tf.gather(stored_states, initial_length, axis=0)
+            stored_states = tf.gather(stored_states, sequence_length, axis=0)
             states = []
             for i in range(batch_size):
                 states.append(stored_states[i][i][:][:])
