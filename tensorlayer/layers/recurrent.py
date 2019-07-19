@@ -1,6 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer import logging
@@ -186,7 +187,13 @@ class RNN(Layer):
 
         # checking the type and values of sequence_length
         if sequence_length is not None:
-            if type(sequence_length) is not list:
+            if isinstance(sequence_length, list):
+                pass
+            elif isinstance(sequence_length, tf.Tensor):
+                pass
+            elif isinstance(sequence_length, np.ndarray):
+                sequence_length = sequence_length.tolist()
+            else:
                 raise TypeError(
                     "The argument sequence_length should be either None or a list of integers. "
                     "Type got %s" % type(sequence_length)
@@ -197,7 +204,7 @@ class RNN(Layer):
                     "elements indicating the initial length of each sequence, but got only %d. " % len(sequence_length)
                 )
             for i in sequence_length:
-                if type(i) is not int:
+                if not (type(i) is int or (isinstance(i, tf.Tensor) and i.dtype.is_integer)):
                     raise TypeError(
                         "The argument sequence_length should be either None or a list of integers. "
                         "One element of sequence_length has the type %s" % type(i)
@@ -261,7 +268,7 @@ class RNN(Layer):
             outputs_without_padding = []
             for i in range(batch_size):
                 outputs_without_padding.append(outputs[i][i][:])
-            outputs = outputs_without_padding
+            outputs = tf.convert_to_tensor(outputs_without_padding)
         else:
             if self.return_seq_2d:
                 # PTB tutorial: stack dense layer after that, or compute the cost from the output
@@ -278,9 +285,14 @@ class RNN(Layer):
 
             stored_states = tf.convert_to_tensor(stored_states)
             stored_states = tf.gather(stored_states, sequence_length, axis=0)
+
             states = []
-            for i in range(batch_size):
-                states.append(stored_states[i][i][:][:])
+            for i in range(stored_states.shape[1]):
+                states.append(
+                    tf.convert_to_tensor(
+                        [stored_states[b, i, b, :] for b in range(batch_size)]
+                    )
+                )
 
             return outputs, states
         else:

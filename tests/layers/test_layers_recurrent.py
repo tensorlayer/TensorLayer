@@ -770,11 +770,11 @@ class Layer_RNN_Test(CustomTestCase):
             self.fail("Wrong data shape not detected.")
 
     def test_dynamic_rnn(self):
-        batch_size = 2
+        batch_size = 3
         num_steps = 5
-        embedding_size = 2
+        embedding_size = 6
 
-        hidden_size = 3
+        hidden_size = 4
         inputs = tl.layers.Input([batch_size, num_steps, embedding_size])
 
         rnn_layer = tl.layers.RNN(
@@ -783,6 +783,10 @@ class Layer_RNN_Test(CustomTestCase):
         )
 
         rnn_layer.is_train = False
+
+        print(tl.layers.retrieve_seq_length_op3(inputs))
+        _ = rnn_layer(inputs, sequence_length=tl.layers.retrieve_seq_length_op3(inputs))
+        _ = rnn_layer(inputs, sequence_length=np.array([5, 5, 5]))
 
         # test exceptions
         except_flag = False
@@ -793,13 +797,13 @@ class Layer_RNN_Test(CustomTestCase):
             print(e)
 
         try:
-            _ = rnn_layer(inputs, sequence_length=["str", 1])
+            _ = rnn_layer(inputs, sequence_length=["str", 1, 2])
             except_flag = True
         except TypeError as e:
             print(e)
 
         try:
-            _ = rnn_layer(inputs, sequence_length=[10, 2])
+            _ = rnn_layer(inputs, sequence_length=[10, 2, 2])
             except_flag = True
         except ValueError as e:
             print(e)
@@ -815,17 +819,52 @@ class Layer_RNN_Test(CustomTestCase):
 
         # test warning
         for _ in range(5):
-            _ = rnn_layer(inputs, sequence_length=[5, 5], return_last_output=False, return_last_state=True)
-            _ = rnn_layer(inputs, sequence_length=[5, 5], return_last_output=True, return_last_state=False)
+            _ = rnn_layer(inputs, sequence_length=[5, 5, 5], return_last_output=False, return_last_state=True)
+            _ = rnn_layer(inputs, sequence_length=[5, 5, 5], return_last_output=True, return_last_state=False)
 
-        x = rnn_layer(inputs, return_last_output=True, return_last_state=True)
-        y = rnn_layer(inputs, sequence_length=[5, 5], return_last_output=True, return_last_state=True)
+        x = rnn_layer(inputs, sequence_length=None, return_last_output=True, return_last_state=True)
+        y = rnn_layer(inputs, sequence_length=[5, 5, 5], return_last_output=True, return_last_state=True)
 
         assert len(x) == 2
         assert len(y) == 2
 
         for i, j in zip(x, y):
             self.assertTrue(np.allclose(i, j))
+
+    def test_dynamic_rnn_with_seq_len_op2(self):
+        data = [[[1], [2], [0], [0], [0]], [[1], [2], [3], [0], [0]], [[1], [2], [6], [1], [1]]]
+        data = tf.convert_to_tensor(data, dtype=tf.float32)
+
+        class DynamicRNNExample(tl.models.Model):
+
+            def __init__(self):
+                super(DynamicRNNExample, self).__init__()
+
+                self.rnnlayer = tl.layers.RNN(
+                    cell=tf.keras.layers.SimpleRNNCell(units=6, dropout=0.1), in_channels=1, return_last_output=True,
+                    return_last_state=True
+                )
+
+            def forward(self, x):
+                z0, s0 = self.rnnlayer(x, sequence_length=None)
+                z1, s1 = self.rnnlayer(x, sequence_length=tl.layers.retrieve_seq_length_op3(x))
+                z2, s2 = self.rnnlayer(x, sequence_length=tl.layers.retrieve_seq_length_op3(x), initial_state=s1)
+                print(z0)
+                print(z1)
+                print(z2)
+                print("===")
+                print(s0)
+                print(s1)
+                print(s2)
+                return z2, s2
+
+        model = DynamicExample()
+        model.eval()
+
+        output, state = model(data)
+        print(output.shape)
+        print(state)
+
 
 
 if __name__ == '__main__':
