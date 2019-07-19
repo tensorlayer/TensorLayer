@@ -33,27 +33,6 @@ Researcher
 For people from academia, TensorLayer was originally developed by PhD students who facing issues with other libraries on implement novel algorithm. Installing TensorLayer in editable mode is recommended, so you can extend your methods in TensorLayer.
 For research related to image processing such as image captioning, visual QA and etc., you may find it is very helpful to use the existing `Tf-Slim pre-trained models <https://github.com/tensorflow/models/tree/master/slim#Pretrained>`__ with TensorLayer (a specially layer for connecting Tf-Slim is provided).
 
-Visualization
-===============
-
-Cannot Save Image
------------------------
-
-If you run the script via SSH control, sometimes you may find the following error.
-
-.. code-block:: bash
-
-  _tkinter.TclError: no display name and no $DISPLAY environment variable
-
-If this happens, run ``sudo apt-get install python3-tk`` or ``import matplotlib`` and ``matplotlib.use('Agg')`` before ``import tensorlayer as tl``.
-Alternatively, add the following code into the top of ``visualize.py`` or in your own code.
-
-.. code-block:: python
-
-  import matplotlib
-  matplotlib.use('Agg')
-  import matplotlib.pyplot as plt
-
 
 Install Master Version
 ========================
