@@ -72,6 +72,7 @@ To release a new version, please update the changelog as followed:
 ### Added
 - Support nested layer customization (#PR 1015)
 - Support string dtype in InputLayer (#PR 1017)
+- Support Dynamic RNN in RNN (#PR 1023)
 
 ### Changed
 
@@ -97,6 +98,8 @@ To release a new version, please update the changelog as followed:
 - @zsdonghao
 - @ChrisWu1997: #1010 #1015
 - @warshallrho: #1017 #1021
+- @ArnoldLIULJ: #1023
+- @JingqingZ: #1023
 
 ## [2.1.0]
 
