@@ -1025,7 +1025,7 @@ def retrieve_seq_length_op2(data):
     >>>         [1,2,6,1,0]]
     >>> data = tf.convert_to_tensor(data, dtype=tf.float32)
     >>> length = tl.layers.retrieve_seq_length_op2(data)
-    [2 3 4]
+    tensor([2 3 4])
 
     """
     return tf.reduce_sum(input_tensor=tf.cast(tf.greater(data, tf.zeros_like(data)), tf.int32), axis=1)
@@ -1053,25 +1053,25 @@ def retrieve_seq_length_op3(data, pad_val=0):
     >>>         [[1],[2],[6],[1],[0]]]
     >>> data = tf.convert_to_tensor(data, dtype=tf.float32)
     >>> length = tl.layers.retrieve_seq_length_op3(data)
-    [2, 3, 4]
+    tensor([2, 3, 4])
     >>> data = [[[1,2],[2,2],[1,2],[1,2],[0,0]],
     >>>         [[2,3],[2,4],[3,2],[0,0],[0,0]],
     >>>         [[3,3],[2,2],[5,3],[1,2],[0,0]]]
     >>> data = tf.convert_to_tensor(data, dtype=tf.float32)
     >>> length = tl.layers.retrieve_seq_length_op3(data)
-    [4, 3, 4]
+    tensor([4, 3, 4])
     >>> data = [[1,2,0,0,0],
     >>>         [1,2,3,0,0],
     >>>         [1,2,6,1,0]]
     >>> data = tf.convert_to_tensor(data, dtype=tf.float32)
     >>> length = tl.layers.retrieve_seq_length_op3(data)
-    [2, 3, 4]
+    tensor([2, 3, 4])
     >>> data = [['hello','world','','',''],
     >>>         ['hello','world','tensorlayer','',''],
     >>>         ['hello','world','tensorlayer','2.0','']]
     >>> data = tf.convert_to_tensor(data, dtype=tf.string)
     >>> length = tl.layers.retrieve_seq_length_op3(data, pad_val='')
-    [2, 3, 4]
+    tensor([2, 3, 4])
 
     """
     data_shape_size = data.get_shape().ndims
