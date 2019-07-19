@@ -315,11 +315,7 @@ class RNN(Layer):
 
             states = []
             for i in range(stored_states.shape[1]):
-                states.append(
-                    tf.convert_to_tensor(
-                        [stored_states[b, i, b, :] for b in range(batch_size)]
-                    )
-                )
+                states.append(tf.convert_to_tensor([stored_states[b, i, b, :] for b in range(batch_size)]))
 
             return outputs, states
         else:

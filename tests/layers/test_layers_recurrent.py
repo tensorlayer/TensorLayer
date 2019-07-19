@@ -866,7 +866,6 @@ class Layer_RNN_Test(CustomTestCase):
         print(state)
 
 
-
 if __name__ == '__main__':
 
     unittest.main()
