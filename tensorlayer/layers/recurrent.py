@@ -101,6 +101,33 @@ class RNN(Layer):
     >>> outputs = tl.layers.Dense(n_units=1)(rnn_out2)
     >>> rnn_model = tl.models.Model(inputs=inputs, outputs=outputs)
 
+    An example if the sequences have different length and contain padding.
+    Similar to the DynamicRNN in TL 1.x.
+
+    If the `sequence_length` is provided in RNN's forwarding and both `return_last_output` and `return_last_state`
+    are set as `True`, the forward function will automatically ignore the paddings.
+    The `sequence_length` should be a list of integers which indicates the length of each sequence.
+    It is recommended to
+    `tl.layers.retrieve_seq_length_op3 <https://tensorlayer.readthedocs.io/en/latest/modules/layers.html#compute-sequence-length-3>`__
+    to calculate the `sequence_length`.
+
+    >>> data = [[[1], [2], [0], [0], [0]], [[1], [2], [3], [0], [0]], [[1], [2], [6], [1], [1]]]
+    >>> data = tf.convert_to_tensor(data, dtype=tf.float32)
+    >>> class DynamicRNNExample(tl.models.Model):
+    >>>     def __init__(self):
+    >>>         super(DynamicRNNExample, self).__init__()
+    >>>         self.rnnlayer = tl.layers.RNN(
+    >>>             cell=tf.keras.layers.SimpleRNNCell(units=6, dropout=0.1), in_channels=1, return_last_output=True,
+    >>>             return_last_state=True
+    >>>         )
+    >>>     def forward(self, x):
+    >>>         z, s = self.rnnlayer(x, sequence_length=tl.layers.retrieve_seq_length_op3(x))
+    >>>         return z, s
+    >>> model = DynamicRNNExample()
+    >>> model.eval()
+    >>> output, state = model(data)
+
+
     Notes
     -----
     Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see layer :class:`Reshape`.

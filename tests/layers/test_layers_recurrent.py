@@ -858,7 +858,7 @@ class Layer_RNN_Test(CustomTestCase):
                 print(s2)
                 return z2, s2
 
-        model = DynamicExample()
+        model = DynamicRNNExample()
         model.eval()
 
         output, state = model(data)
