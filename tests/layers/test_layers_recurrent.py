@@ -787,19 +787,25 @@ class Layer_RNN_Test(CustomTestCase):
         # test exceptions
         except_flag = False
         try:
-            _ = rnn_layer(inputs, actual_length=1)
+            _ = rnn_layer(inputs, sequence_length=1)
             except_flag = True
         except TypeError as e:
             print(e)
 
         try:
-            _ = rnn_layer(inputs, actual_length=["str", 1])
+            _ = rnn_layer(inputs, sequence_length=["str", 1])
             except_flag = True
         except TypeError as e:
             print(e)
 
         try:
-            _ = rnn_layer(inputs, actual_length=[10, 2])
+            _ = rnn_layer(inputs, sequence_length=[10, 2])
+            except_flag = True
+        except ValueError as e:
+            print(e)
+
+        try:
+            _ = rnn_layer(inputs, sequence_length=[1])
             except_flag = True
         except ValueError as e:
             print(e)
@@ -809,11 +815,11 @@ class Layer_RNN_Test(CustomTestCase):
 
         # test warning
         for _ in range(5):
-            _ = rnn_layer(inputs, actual_length=[5, 5], return_last_output=False, return_last_state=True)
-            _ = rnn_layer(inputs, actual_length=[5, 5], return_last_output=True, return_last_state=False)
+            _ = rnn_layer(inputs, sequence_length=[5, 5], return_last_output=False, return_last_state=True)
+            _ = rnn_layer(inputs, sequence_length=[5, 5], return_last_output=True, return_last_state=False)
 
         x = rnn_layer(inputs, return_last_output=True, return_last_state=True)
-        y = rnn_layer(inputs, actual_length=[5, 5], return_last_output=True, return_last_state=True)
+        y = rnn_layer(inputs, sequence_length=[5, 5], return_last_output=True, return_last_state=True)
 
         assert len(x) == 2
         assert len(y) == 2

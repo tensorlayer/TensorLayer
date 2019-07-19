@@ -192,9 +192,9 @@ class RNN(Layer):
                     "Type got %s" % type(sequence_length)
                 )
             if (len(sequence_length) != batch_size):
-                raise TypeError(
-                    "The argument sequence_length should contain %d, " %batch_size + 
-                    "elements indicating the initial length of each sequence, but got only %d" %len(sequence_length)
+                raise ValueError(
+                    "The argument sequence_length should contain %d " % batch_size +
+                    "elements indicating the initial length of each sequence, but got only %d. " % len(sequence_length)
                 )
             for i in sequence_length:
                 if type(i) is not int:
