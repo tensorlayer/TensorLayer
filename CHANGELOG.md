@@ -67,7 +67,27 @@ To release a new version, please update the changelog as followed:
 
 <!-- YOU CAN EDIT FROM HERE -->
 
+
 ## [Unreleased]
+
+### Added
+
+### Changed
+
+### Dependencies Update
+
+### Deprecated
+
+### Fixed
+
+### Removed
+
+### Security
+
+### Contributors
+
+
+## [2.2.1]
 
 ### Added
 - Support nested layer customization (#PR 1015)
@@ -532,6 +552,7 @@ To many PR for this update, please check [here](https://github.com/tensorlayer/t
 @zsdonghao @luomai @DEKHTIARJonathan
 
 [Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/2.0....master
+[2.1.1]: https://github.com/tensorlayer/tensorlayer/compare/2.1.1...2.1.1
 [2.1.0]: https://github.com/tensorlayer/tensorlayer/compare/2.1.0...2.1.0
 [2.0.2]: https://github.com/tensorlayer/tensorlayer/compare/2.0.2...2.0.2
 [2.0.1]: https://github.com/tensorlayer/tensorlayer/compare/2.0.1...2.0.1
