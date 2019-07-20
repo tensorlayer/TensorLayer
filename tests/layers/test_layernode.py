@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 import os
 import unittest
 
@@ -192,6 +191,44 @@ class LayerNode_Test(CustomTestCase):
         self.assertEqual(net.all_layers[1]._nodes_fixed, True)
         self.assertEqual(net.all_layers[1].model._nodes_fixed, True)
         self.assertEqual(net.all_layers[1].model.all_layers[0]._nodes_fixed, True)
+
+    def test_STN(self):
+        print('-' * 20, 'test STN', '-' * 20)
+
+        def get_model(inputs_shape):
+            ni = Input(inputs_shape)
+
+            ## 1. Localisation network
+            # use MLP as the localisation net
+            nn = Flatten()(ni)
+            nn = Dense(n_units=20, act=tf.nn.tanh)(nn)
+            nn = Dropout(keep=0.8)(nn)
+            # you can also use CNN instead for MLP as the localisation net
+
+            ## 2. Spatial transformer module (sampler)
+            stn = SpatialTransformer2dAffine(out_size=(40, 40), in_channels=20)
+            # s = stn((nn, ni))
+            nn = stn((nn, ni))
+            s = nn
+
+            ## 3. Classifier
+            nn = Conv2d(16, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME')(nn)
+            nn = Conv2d(16, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME')(nn)
+            nn = Flatten()(nn)
+            nn = Dense(n_units=1024, act=tf.nn.relu)(nn)
+            nn = Dense(n_units=10, act=tf.identity)(nn)
+
+            M = Model(inputs=ni, outputs=[nn, s])
+            return M
+
+        net = get_model([None, 40, 40, 1])
+
+        inputs = np.random.randn(2, 40, 40, 1).astype(np.float32)
+        o1, o2 = net(inputs, is_train=True)
+        self.assertEqual(o1.shape, (2, 10))
+        self.assertEqual(o2.shape, (2, 40, 40, 1))
+
+        self.assertEqual(len(net._node_by_depth), 10)
 
 
 if __name__ == '__main__':

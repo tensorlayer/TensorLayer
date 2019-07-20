@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import tensorflow as tf
 
+import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.layers.core import Layer, LayerNode
@@ -31,6 +31,14 @@ class _InputLayer(Layer):
     def __init__(self, shape, dtype=tf.float32, name=None):  #'input'):
         # super(InputLayer, self).__init__(prev_layer=inputs, name=name)
         super(_InputLayer, self).__init__(name)
+
+        if isinstance(dtype, str):
+            try:
+                dtype = eval(dtype)
+            except Exception as e:
+                raise RuntimeError("%s is not a valid dtype for InputLayer." % (dtype))
+        if not isinstance(dtype, tf.DType):
+            raise RuntimeError("%s is not a valid dtype for InputLayer." % (dtype))
 
         logging.info("Input  %s: %s" % (self.name, str(shape)))
         self.shape = shape  # shape is needed in __repr__

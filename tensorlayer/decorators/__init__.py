@@ -11,7 +11,6 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
 
 from .deprecated import deprecated
 from .deprecated_alias import deprecated_alias
-from .method_decorator import private_method
-from .method_decorator import protected_method
+from .method_decorator import private_method, protected_method
 
 __all__ = ['deprecated', 'deprecated_alias', 'private_method', 'protected_method']

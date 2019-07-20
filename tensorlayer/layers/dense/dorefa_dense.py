@@ -3,7 +3,6 @@
 
 import tensorflow as tf
 import tensorlayer as tl
-
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
@@ -51,7 +50,7 @@ class DorefaDense(Layer):
             n_units=100,
             act=None,
             use_gemm=False,
-            W_init=tl.initializers.truncated_normal(stddev=0.1),
+            W_init=tl.initializers.truncated_normal(stddev=0.05),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
             name=None,  #'dorefa_dense',

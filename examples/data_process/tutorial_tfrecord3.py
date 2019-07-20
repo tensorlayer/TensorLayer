@@ -19,9 +19,9 @@ import json
 import os
 
 import numpy as np
-import tensorflow as tf
 from PIL import Image
 
+import tensorflow as tf
 import tensorlayer as tl
 
 

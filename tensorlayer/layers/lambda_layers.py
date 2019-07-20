@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
-from tensorlayer.layers.core import Layer
 from tensorlayer.files import utils
+from tensorlayer.layers.core import Layer
 
 # from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
@@ -188,10 +187,9 @@ class ElementwiseLambda(Layer):
     Non-parametric and with args case
     This case is supported in the Model.save() / Model.load() to save / load the whole model architecture and weights(optional).
 
-    z = mean + noise * tf.exp(std * 0.5) + foo
+    >>> # z = mean + noise * tf.exp(std * 0.5) + foo
     >>> def func(noise, mean, std, foo=42):
     >>>     return mean + noise * tf.exp(std * 0.5) + foo
-
     >>> noise = tl.layers.Input([100, 1])
     >>> mean = tl.layers.Input([100, 1])
     >>> std = tl.layers.Input([100, 1])
@@ -201,7 +199,7 @@ class ElementwiseLambda(Layer):
     Non-parametric and non-args case
     This case is supported in the Model.save() / Model.load() to save / load the whole model architecture and weights(optional).
 
-    z = mean + noise * tf.exp(std * 0.5)
+    >>> # z = mean + noise * tf.exp(std * 0.5)
     >>> noise = tl.layers.Input([100, 1])
     >>> mean = tl.layers.Input([100, 1])
     >>> std = tl.layers.Input([100, 1])
@@ -213,7 +211,7 @@ class ElementwiseLambda(Layer):
     Please avoid using Model.save() / Model.load() to save / load models that contain such ElementwiseLambda layer. Instead, you may use Model.save_weights() / Model.load_weights() to save / load model weights.
     Note: In this case, fn_weights should be a list, and then the trainable weights in this ElementwiseLambda layer can be added into the weights of the whole model.
 
-    z = mean + noise * tf.exp(std * 0.5) + vara
+    >>> # z = mean + noise * tf.exp(std * 0.5) + vara
     >>> vara = [tf.Variable(1.0)]
     >>> def func(noise, mean, std):
     >>>     return mean + noise * tf.exp(std * 0.5) + vara

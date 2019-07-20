@@ -5,7 +5,10 @@ from tensorflow.python.keras.applications import VGG16
 import tensorflow as tf
 from exp_config import random_input_generator, MONITOR_INTERVAL, NUM_ITERS, BATCH_SIZE, LERANING_RATE
 
-tf.config.gpu.set_per_process_memory_growth(True)
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    for gpu in gpus:
+        tf.config.experimental.set_memory_growth(gpu, True)
 
 # get the whole model
 vgg = VGG16(weights=None)
@@ -41,6 +44,8 @@ def train_step(x_batch, y_batch):
     grad = tape.gradient(_loss, train_weights)
     optimizer.apply_gradients(zip(grad, train_weights))
 
+    return _loss
+
 
 # begin training
 for idx, data in enumerate(gen):
@@ -48,7 +53,7 @@ for idx, data in enumerate(gen):
 
     x_batch = tf.convert_to_tensor(data[0])
     y_batch = tf.convert_to_tensor(data[1])
-    train_step(x_batch, y_batch)
+    loss = train_step(x_batch, y_batch)
 
     end_time = time.time()
     consume_time = end_time - start_time
@@ -60,8 +65,8 @@ for idx, data in enumerate(gen):
         avg_mem_usage += cur_usage
         count += 1
         tf.print(
-            "[*] {} iteration: memory usage {:.2f}MB, consume time {:.4f}s".format(
-                idx, cur_usage / (1024 * 1024), consume_time
+            "[*] {} iteration: memory usage {:.2f}MB, consume time {:.4f}s, loss {:.4f}".format(
+                idx, cur_usage / (1024 * 1024), consume_time, loss
             )
         )
 

@@ -5,7 +5,10 @@ from tensorflow.python.keras.applications import VGG16
 import tensorflow as tf
 from exp_config import random_input_generator, MONITOR_INTERVAL, NUM_ITERS, BATCH_SIZE, LERANING_RATE
 
-tf.config.gpu.set_per_process_memory_growth(True)
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    for gpu in gpus:
+        tf.config.experimental.set_memory_growth(gpu, True)
 
 # get the whole model
 vgg = VGG16(weights=None)

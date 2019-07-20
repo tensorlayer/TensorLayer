@@ -20,7 +20,7 @@ Install TensorFlow
 
 .. code-block:: bash
 
-  pip3 install tensorflow-gpu==2.0.0a0 # specific version  (YOU SHOULD INSTALL THIS ONE NOW)
+  pip3 install tensorflow-gpu==2.0.0-beta1 # specific version  (YOU SHOULD INSTALL THIS ONE NOW)
   pip3 install tensorflow-gpu # GPU version
   pip3 install tensorflow # CPU version
 
@@ -35,7 +35,7 @@ For stable version:
 .. code-block:: bash
 
   pip3 install tensorlayer
-  
+
 For latest version, please install from Github.
 
 .. code-block:: bash
@@ -87,8 +87,7 @@ If you want install TensorLayer 1.X, the simplest way to install TensorLayer 1.X
 
 .. code-block:: bash
 
-  [stable version] pip install tensorlayer
-  [master version] pip install git+https://github.com/tensorlayer/tensorlayer.git
+  [stable version] pip install tensorlayer==1.x.x
 
 However, if you want to modify or extend TensorLayer 1.X, you can download the repository from
 `Github`_ and install it as follow.
@@ -103,7 +102,7 @@ editable, then you can edit the source code in ``tensorlayer`` folder, and ``imp
 TensorLayer.
 
 
-GPU support 
+GPU support
 ==========================
 
 Thanks to NVIDIA supports, training a fully connected network on a
@@ -191,38 +190,13 @@ After extracting cuDNN, you will get three folders (bin, lib, include). Then the
 
 Installing TensorLayer
 ------------------------
-For TensorLayer 2.0, please refer to the steps mentioned above.
-
-For TensorLayer 1.X, you can easily install Tensorlayer 1.X using pip in CMD：
+For TensorLayer, please refer to the steps mentioned above.
 
 .. code-block:: bash
 
   pip install tensorflow        #CPU version
   pip install tensorflow-gpu    #GPU version (GPU version and CPU version just choose one)
   pip install tensorlayer       #Install tensorlayer
-
-Test
---------
-
-Enter “python” in CMD. Then:
-
-.. code-block:: bash
-
-  import tensorlayer
-
-If there is no error and the following output is displayed, the GPU version is successfully installed.
-
-.. code-block:: bash
-
-  successfully opened CUDA library cublas64_80.dll locally
-  successfully opened CUDA library cuDNN64_5.dll locally
-  successfully opened CUDA library cufft64_80.dll locally
-  successfully opened CUDA library nvcuda.dll locally
-  successfully opened CUDA library curand64_80.dll locally
-
-If there is no error, the CPU version is successfully installed.
-
-
 
 
 

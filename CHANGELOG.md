@@ -70,14 +70,24 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
+- Support nested layer customization (#PR 1015)
+- Support string dtype in InputLayer (#PR 1017)
+- Support Dynamic RNN in RNN (#PR 1023)
 
 ### Changed
+
+- `SpatialTransform2dAffine` auto `in_channels`
+- support TensorFlow 2.0.0-beta1
+- Update model weights property, now returns its copy (#PR 1010)
 
 ### Dependencies Update
 
 ### Deprecated
 
 ### Fixed
+- Fix `tf.models.Model._construct_graph` for list of outputs, e.g. STN case (PR #1010)
+- Enable better `in_channels` exception raise. (pR #1015)
+- Set allow_pickle=True in np.load() (#PR 1021)
 
 ### Removed
 
@@ -85,11 +95,38 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 
+- @zsdonghao
+- @ChrisWu1997: #1010 #1015
+- @warshallrho: #1017 #1021
+- @ArnoldLIULJ: #1023
+- @JingqingZ: #1023
+
+## [2.1.0]
+
+### Changed
+- Add version_info in model.config. (PR #992)
+- Replace tf.nn.func with tf.nn.func.\_\_name\_\_ in model config. (PR #994)
+- Add Reinforcement learning tutorials. (PR #995)
+- Add RNN layers with simple rnn cell, GRU cell, LSTM cell. (PR #998)
+- Update Seq2seq (#998) 
+- Add Seq2seqLuongAttention model (#998)
+
+### Fixed
+
+### Contributors
+- @warshallrho:  #992 #994
+- @quantumiracle: #995
+- @Tokarev-TT-33: #995
+- @initial-h: #995
+- @Officium: #995
+- @ArnoldLIULJ: #998
+- @JingqingZ: #998
+
+
 ## [2.0.2] - 2019-6-5
 
 ### Changed
 - change the format of network config, change related code and files; change layer act (PR #980)
-- update Seq2seq (#989) 
 
 ### Fixed
 - Fix dynamic model cannot track PRelu weights gradients problem (PR #982)
@@ -97,7 +134,6 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 - @warshallrho: #980
-- @ArnoldLIULJ: #989
 - @1FengL: #982
 
 ## [2.0.1] - 2019-5-17
@@ -112,6 +148,8 @@ A maintain release.
 ### Added
  - Layer
     - `InstanceNorm`, `InstanceNorm1d`, `InstanceNorm2d`, `InstanceNorm3d` (PR #963)
+
+* Reinforcement learning tutorials. (PR #995)
 
 ### Changed
 - remove `tl.layers.initialize_global_variables(sess)` (PR #931)
@@ -133,8 +171,15 @@ A maintain release.
 - @warshallrho: #PR966
 - @zsdonghao: #931
 - @yd-yin: #963
+<<<<<<< HEAD
+- @Tokarev-TT-33: # 995
+- @initial-h: # 995
+- @quantumiracle: #995
+- @Officium: #995
+=======
 - @1FengL: #958
 - @dvklopfenstein: #971
+>>>>>>> 560dbb8a17963023a3b1d59a79e1c2752530114a
 
 
 ## [2.0.0] - 2019-05-04
@@ -360,8 +405,10 @@ To many PR for this update, please check [here](https://github.com/tensorlayer/t
   - AtrousDeConv2dLayer added (PR #662)
   - Fix bugs of using `tf.layers` in CNN (PR #686)
 - Optimizer:
+
   - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (PR #636)
 - Setup:
+
   - Creation of installation flaggs `all`, `all_cpu`, and `all_gpu` (PR #660)
 - Test:
   - `test_utils_predict.py` added to reproduce and fix issue #288 (PR #566)
@@ -485,6 +532,7 @@ To many PR for this update, please check [here](https://github.com/tensorlayer/t
 @zsdonghao @luomai @DEKHTIARJonathan
 
 [Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/2.0....master
+[2.1.0]: https://github.com/tensorlayer/tensorlayer/compare/2.1.0...2.1.0
 [2.0.2]: https://github.com/tensorlayer/tensorlayer/compare/2.0.2...2.0.2
 [2.0.1]: https://github.com/tensorlayer/tensorlayer/compare/2.0.1...2.0.1
 [2.0.0]: https://github.com/tensorlayer/tensorlayer/compare/2.0.0...2.0.0

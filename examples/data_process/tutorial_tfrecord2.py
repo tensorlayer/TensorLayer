@@ -14,10 +14,10 @@ More:
 import os
 
 import numpy as np
+
 # import matplotlib
 # matplotlib.use('GTK')
 import tensorflow as tf
-
 import tensorlayer as tl
 
 # Download data, and convert to TFRecord format, see ```tutorial_tfrecord.py```
@@ -76,6 +76,7 @@ def read_and_decode(filename):
         # img = tf.cast(img, tf.float32) #* (1. / 255) - 0.5    # don't need to cast here, as it is float32 already
         label_batch = tf.cast(features['label'], tf.int32)
         yield img_batch, label_batch
+
 
 img_batch, label_batch = next(read_and_decode("train.tfrecords"))
 print("img_batch   : %s" % img_batch.shape)

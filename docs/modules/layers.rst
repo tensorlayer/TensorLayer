@@ -80,11 +80,15 @@ Layer list
    SwitchNorm
 
    RNN
+   SimpleRNN
+   GRURNN
+   LSTMRNN
    BiRNN
 
    retrieve_seq_length_op
    retrieve_seq_length_op2
    retrieve_seq_length_op3
+   target_mask_op
 
    Flatten
    Reshape
@@ -579,6 +583,18 @@ RNN layer
 """"""""""""""""""""""""""
 .. autoclass:: RNN
 
+RNN layer with Simple RNN Cell
+""""""""""""""""""""""""""""""""""
+.. autoclass:: SimpleRNN
+
+RNN layer with GRU Cell
+""""""""""""""""""""""""""""""""""
+.. autoclass:: GRURNN
+
+RNN layer with LSTM Cell
+""""""""""""""""""""""""""""""""""
+.. autoclass:: LSTMRNN
+
 Bidirectional layer
 """""""""""""""""""""""""""""""""
 .. autoclass:: BiRNN
@@ -593,13 +609,16 @@ Compute Sequence length 1
 .. autofunction:: retrieve_seq_length_op
 
 Compute Sequence length 2
-""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""
 .. autofunction:: retrieve_seq_length_op2
 
 Compute Sequence length 3
-""""""""""""""""""""""""""
+""""""""""""""""""""""""""""
 .. autofunction:: retrieve_seq_length_op3
 
+Compute mask of the target sequence
+"""""""""""""""""""""""""""""""""""""""
+.. autofunction:: target_mask_op
 
 
 

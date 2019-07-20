@@ -30,12 +30,12 @@ feeding images of multiple sizes is by doing center cropping.
 import os
 
 import numpy as np
-import tensorflow as tf
 
+import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.files import assign_weights, maybe_download_and_extract
-from tensorlayer.layers import (BatchNorm, Conv2d, Dense, Flatten, Input, LayerList, MaxPool2d, Lambda)
+from tensorlayer.layers import (BatchNorm, Conv2d, Dense, Flatten, Input, Lambda, LayerList, MaxPool2d)
 from tensorlayer.models import Model
 
 __all__ = [
@@ -57,14 +57,16 @@ layer_names = [
 cfg = {
     'A': [[64], 'M', [128], 'M', [256, 256], 'M', [512, 512], 'M', [512, 512], 'M', 'F', 'fc1', 'fc2', 'O'],
     'B': [[64, 64], 'M', [128, 128], 'M', [256, 256], 'M', [512, 512], 'M', [512, 512], 'M', 'F', 'fc1', 'fc2', 'O'],
-    'D': [
-        [64, 64], 'M', [128, 128], 'M', [256, 256, 256], 'M', [512, 512, 512], 'M', [512, 512, 512], 'M', 'F', 'fc1',
-        'fc2', 'O'
-    ],
-    'E': [
-        [64, 64], 'M', [128, 128], 'M', [256, 256, 256, 256], 'M', [512, 512, 512, 512], 'M', [512, 512, 512, 512], 'M',
-        'F', 'fc1', 'fc2', 'O'
-    ],
+    'D':
+        [
+            [64, 64], 'M', [128, 128], 'M', [256, 256, 256], 'M', [512, 512, 512], 'M', [512, 512, 512], 'M', 'F',
+            'fc1', 'fc2', 'O'
+        ],
+    'E':
+        [
+            [64, 64], 'M', [128, 128], 'M', [256, 256, 256, 256], 'M', [512, 512, 512, 512], 'M', [512, 512, 512, 512],
+            'M', 'F', 'fc1', 'fc2', 'O'
+        ],
 }
 
 mapped_cfg = {
@@ -158,7 +160,7 @@ def restore_model(model, layer_type):
     maybe_download_and_extract(model_saved_name[layer_type], 'models', model_urls[layer_type])
     weights = []
     if layer_type == 'vgg16':
-        npz = np.load(os.path.join('models', model_saved_name[layer_type]))
+        npz = np.load(os.path.join('models', model_saved_name[layer_type]), allow_pickle=True)
         # get weight list
         for val in sorted(npz.items()):
             logging.info("  Loading weights %s in %s" % (str(val[1].shape), val[0]))
@@ -166,7 +168,7 @@ def restore_model(model, layer_type):
             if len(model.all_weights) == len(weights):
                 break
     elif layer_type == 'vgg19':
-        npz = np.load(os.path.join('models', model_saved_name[layer_type]), encoding='latin1').item()
+        npz = np.load(os.path.join('models', model_saved_name[layer_type]), allow_pickle=True, encoding='latin1').item()
         # get weight list
         for val in sorted(npz.items()):
             logging.info("  Loading %s in %s" % (str(val[1][0].shape), val[0]))

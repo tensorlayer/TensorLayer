@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-
 from tensorlayer import logging
 from tensorlayer.layers.core import Layer
 
