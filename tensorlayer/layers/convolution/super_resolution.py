@@ -188,7 +188,6 @@ class SubpixelConv2d(Layer):
             outputs = self.act(outputs)
         return outputs
 
-    @private_method
     def _PS(self, X, r, n_out_channels):
 
         _err_log = "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
