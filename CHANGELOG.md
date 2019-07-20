@@ -108,6 +108,7 @@ To release a new version, please update the changelog as followed:
 - Fix `tf.models.Model._construct_graph` for list of outputs, e.g. STN case (PR #1010)
 - Enable better `in_channels` exception raise. (pR #1015)
 - Set allow_pickle=True in np.load() (#PR 1021)
+- Remove `private_method` decorator (#PR 1025)
 
 ### Removed
 
@@ -116,7 +117,7 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 
 - @zsdonghao
-- @ChrisWu1997: #1010 #1015
+- @ChrisWu1997: #1010 #1015 #1025
 - @warshallrho: #1017 #1021
 - @ArnoldLIULJ: #1023
 - @JingqingZ: #1023
