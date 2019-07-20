@@ -67,11 +67,32 @@ To release a new version, please update the changelog as followed:
 
 <!-- YOU CAN EDIT FROM HERE -->
 
+
 ## [Unreleased]
+
+### Added
+
+### Changed
+
+### Dependencies Update
+
+### Deprecated
+
+### Fixed
+
+### Removed
+
+### Security
+
+### Contributors
+
+
+## [2.2.1]
 
 ### Added
 - Support nested layer customization (#PR 1015)
 - Support string dtype in InputLayer (#PR 1017)
+- Support Dynamic RNN in RNN (#PR 1023)
 
 ### Changed
 
@@ -87,6 +108,7 @@ To release a new version, please update the changelog as followed:
 - Fix `tf.models.Model._construct_graph` for list of outputs, e.g. STN case (PR #1010)
 - Enable better `in_channels` exception raise. (pR #1015)
 - Set allow_pickle=True in np.load() (#PR 1021)
+- Remove `private_method` decorator (#PR 1025)
 
 ### Removed
 
@@ -95,8 +117,10 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 
 - @zsdonghao
-- @ChrisWu1997: #1010 #1015
+- @ChrisWu1997: #1010 #1015 #1025
 - @warshallrho: #1017 #1021
+- @ArnoldLIULJ: #1023
+- @JingqingZ: #1023
 
 ## [2.1.0]
 
@@ -529,6 +553,7 @@ To many PR for this update, please check [here](https://github.com/tensorlayer/t
 @zsdonghao @luomai @DEKHTIARJonathan
 
 [Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/2.0....master
+[2.1.1]: https://github.com/tensorlayer/tensorlayer/compare/2.1.1...2.1.1
 [2.1.0]: https://github.com/tensorlayer/tensorlayer/compare/2.1.0...2.1.0
 [2.0.2]: https://github.com/tensorlayer/tensorlayer/compare/2.0.2...2.0.2
 [2.0.1]: https://github.com/tensorlayer/tensorlayer/compare/2.0.1...2.0.1

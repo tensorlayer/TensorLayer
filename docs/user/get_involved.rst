@@ -5,6 +5,28 @@ Get Involved in Research
 =========================
 
 
+Center on Frontiers of Computing Studies, Peking University
+=============================================================
+
+The Center on Frontiers of Computing Studies (CFCS), Peking University (PKU), China, is a university new initiative co-founded by Professors John Hopcroft (Turing Awardee) and Wen Gao (CAE, ACM/IEEE Fellow). The center aims at developing the excellence on two fronts: research and education. On the research front, the center will provide a world-class research environment, where innovation and impactful research is the central aim, measured by professional reputation among world scholars, not by counting the number of publications and research funding. On the education front, the center deeply involves in the Turing Class, an elite undergraduate program that draws the cream of the crop from the PKU undergraduate talent pool. New curriculum and pedagogy are designed and practiced in this program, with the aim to cultivate a new generation of computer scientist/engineers that are solid in both theories and practices. 
+
+**Positions and Qualification**
+
+The center invites applications for tenured/tenure-track faculty positions. We are seeking applicants from all areas of Computer Science, spanning theoretical foundations, systems, software, and applications, with special interests in artificial intelligence and machine learning. We are especially interested in applicants conducting research at the frontiers of Computer Science with other disciplines, such as data sciences, engineering, as well as mathematical, medical, physical, and social sciences.
+ 
+Applicants are expected to have completed (or be completing) a Ph.D., have demonstrated the ability to pursue a program of research, and have a strong commitment to undergraduate and graduate teaching. A successful candidate will be expected to teach one to two courses at the undergraduate and graduate levels in each semester, and to build and lead a team of undergraduate and graduate students in innovative research.
+ 
+We are also seeking qualified candidates for postdoctoral positions. Candidates should have a Ph.D. in a relevant discipline or expect a Ph. D within a year, with a substantive record of research accomplishments, and the ability to work collaboratively with faculty members in the center.
+
+**To Apply**
+
+Applicants should send a full curriculum vitae; copies of 3-5 key publications; 3-5 names and contact information of references; and a statement of research and teaching to: CFCS_recruiting[at]pku[dot]edu[dot]cn . To expedite the process, please arrange to have the reference letters sent directly to the above email address. 
+ 
+Application for a postdoctoral position should include a curriculum vita, brief statement of research, and three to five names and contact information of recommendation, and can be directly addressed to an individual faculty member.
+ 
+We conduct review of applications monthly, immediately upon the recipient of all application materials at the beginning of each month. However, it is highly recommended that applicants submit complete applications sooner than later, as the positions are to be filled quickly. 
+ 
+
 Data Science Institute, Imperial College London
 ==================================================
 
