@@ -512,6 +512,8 @@ class ModelLayer(Layer):
 
         # Layer weight state
         self._all_weights = model.all_weights
+        self._trainable_weights = model.trainable_weights
+        self._nontrainable_weights = model.nontrainable_weights
 
         # Layer training state
         self.is_train = True
