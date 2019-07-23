@@ -432,6 +432,24 @@ class Model(object):
         return self._all_weights.copy()
 
     @property
+    def n_weights(self):
+        """Return the number of weights (parameters) in this network."""
+        n_weights = 0
+        for i, w in enumerate(self.all_weights):
+            n = 1
+            # for s in p.eval().shape:
+            for s in w.get_shape():
+                try:
+                    s = int(s)
+                except:
+                    s = 1
+                if s:
+                    n = n * s
+            n_weights = n_weights + n
+        # print("num of weights (parameters) %d" % n_weights)
+        return n_weights
+
+    @property
     def config(self):
         if self._config is not None and len(self._config) > 0:
             return self._config
