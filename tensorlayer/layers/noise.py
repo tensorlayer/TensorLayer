@@ -72,7 +72,7 @@ class GaussianNoise(Layer):
         pass
 
     def forward(self, inputs):
-        if (self.is_train and self.is_always) is False:
+        if (self.is_train or self.is_always) is False:
             return inputs
         else:
             # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
