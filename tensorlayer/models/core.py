@@ -358,7 +358,12 @@ class Model(object):
             attr_list.remove("all_weights")
             attr_list.remove("trainable_weights")
             attr_list.remove("nontrainable_weights")
+            attr_list.remove("_all_weights")
+            attr_list.remove("_trainable_weights")
+            attr_list.remove("_nontrainable_weights")
             attr_list.remove("all_layers")
+            attr_list.remove("_all_layers")
+            attr_list.remove("n_weights")
             for idx, attr in enumerate(attr_list):
                 try:
                     if isinstance(getattr(self, attr), Layer):
