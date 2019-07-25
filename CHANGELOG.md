@@ -110,6 +110,8 @@ To release a new version, please update the changelog as followed:
 - Set allow_pickle=True in np.load() (#PR 1021)
 - Remove `private_method` decorator (#PR 1025)
 - Copy original model's `trainable_weights` and `nontrainable_weights` when initializing `ModelLayer` (#PR 1026)
+- Copy original model's `trainable_weights` and `nontrainable_weights` when initializing `LayerList` (#PR 1029)
+- remove redundant parts in `model.all_layers` (#PR 1029)
 
 ### Removed
 
@@ -119,7 +121,7 @@ To release a new version, please update the changelog as followed:
 
 - @zsdonghao
 - @ChrisWu1997: #1010 #1015 #1025
-- @warshallrho: #1017 #1021 #1026
+- @warshallrho: #1017 #1021 #1026 #1029
 - @ArnoldLIULJ: #1023
 - @JingqingZ: #1023
 
