@@ -31,12 +31,11 @@ The fully-connected layer is `a = f(x*W+b)`, the most simple implementation is a
     def __init__(
             self,
             n_units,   # the number of units/channels of this layer
-            act=None,  # None: no activation, tf.nn.relu: ReLU ...
+            act=None,  # None: no activation, tf.nn.relu or 'relu': ReLU ...
             name=None, # the name of this layer (optional)
     ):
-        super(Dense, self).__init__(name) # auto naming, dense_1, dense_2 ...
+        super(Dense, self).__init__(name, act=act) # auto naming, dense_1, dense_2 ...
         self.n_units = n_units
-        self.act = act
         
     def build(self, inputs_shape): # initialize the model weights here
         shape = [inputs_shape[1], self.n_units]
