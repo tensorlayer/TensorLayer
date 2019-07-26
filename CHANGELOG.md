@@ -93,6 +93,7 @@ To release a new version, please update the changelog as followed:
 - Support nested layer customization (#PR 1015)
 - Support string dtype in InputLayer (#PR 1017)
 - Support Dynamic RNN in RNN (#PR 1023)
+- Add ResNet50 static model (#PR 1030)
 
 ### Changed
 
@@ -120,7 +121,7 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 
 - @zsdonghao
-- @ChrisWu1997: #1010 #1015 #1025
+- @ChrisWu1997: #1010 #1015 #1025 #1030
 - @warshallrho: #1017 #1021 #1026 #1029
 - @ArnoldLIULJ: #1023
 - @JingqingZ: #1023
