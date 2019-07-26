@@ -105,8 +105,8 @@ def conv_block(input, kernel_size, n_filters, stage, block, strides=(2, 2)):
     return x
 
 
-block_names = ['2a', '2b', '2c', '3a', '3b', '3c', '3d', '4a', '4b', '4c', '4d', '4e', '4f',
-               '5a', '5b', '5c'] + ['avg_pool', 'fc1000']
+block_names = ['2a', '2b', '2c', '3a', '3b', '3c', '3d', '4a', '4b', '4c', '4d', '4e', '4f', '5a', '5b', '5c'
+              ] + ['avg_pool', 'fc1000']
 block_filters = [[64, 64, 256], [128, 128, 512], [256, 256, 1024], [512, 512, 2048]]
 
 
@@ -178,7 +178,8 @@ def ResNet50(pretrained=False, end_with='fc1000', n_classes=1000, name=None):
 def restore_params(network, path='models'):
     logging.info("Restore pre-trained parameters")
     maybe_download_and_extract(
-        'resnet50_weights_tf_dim_ordering_tf_kernels.h5', path,
+        'resnet50_weights_tf_dim_ordering_tf_kernels.h5',
+        path,
         'https://github.com/fchollet/deep-learning-models/releases/download/v0.2/',
     )  # ls -al
     try:
