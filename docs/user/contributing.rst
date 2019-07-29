@@ -4,14 +4,12 @@
 Contributing
 ===============
 
-TensorLayer is a major ongoing research project in Data Science Institute, Imperial College London. 
+TensorLayer 2.0 is a major ongoing research project in CFCS, Peking Univeristy, and the first version was established at Imperial College in 2016.
 The goal of the project is to develop a compositional language while complex learning systems
 can be built through composition of neural network modules.
 
-Numerous contributors come from various horizons such as: Tsinghua University, Carnegie Mellon University, University of Technology of Compiegne, 
+Numerous contributors come from various horizons such as: Imperial College, Tsinghua University, Carnegie Mellon University, University of Technology of Compiegne, 
 Google, Microsoft, Bloomberg and etc.
-
-There are many functions need to be contributed such as Maxout, Neural Turing Machine, Attention, TensorLayer Mobile and etc.
 
 You can easily open a Pull Request (PR) on `GitHub`_, every little step counts and will be credited.
 As an open-source project, we highly welcome and value contributions!
