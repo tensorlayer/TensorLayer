@@ -37,7 +37,7 @@ For each tutorial, open a terminal and run:
 The tutorial algorithms follow the same basic structure, as shown in file: [`./tutorial_format.py`](https://github.com/tensorlayer/tensorlayer/blob/reinforcement-learning/examples/reinforcement_learning/tutorial_format.py)
 
 ## Table of Contents:
-### value-based
+
 | Algorithms      | Action Space | Tutorial Env   | Papers |
 | --------------- | ------------ | -------------- | -------|
 |**value-based**||||
