@@ -72,6 +72,7 @@ if env_id == 'CartPole-v0':
     buffer_size = 1000  # replay buffer size
     target_q_update_freq = 50  # how frequency target q net update
     ob_scale = 1.0  # scale observations
+    clipnorm = None
 else:
     # reward will increase obviously after 1e5 time steps
     qnet_type = 'CNN'
@@ -83,6 +84,7 @@ else:
     buffer_size = 10000  # replay buffer size
     target_q_update_freq = 200  # how frequency target q net update
     ob_scale = 1.0 / 255  # scale observations
+    clipnorm = 10
 
 in_dim = env.observation_space.shape
 out_dim = env.action_space.n
@@ -93,7 +95,7 @@ prioritized_replay_alpha = 0.6  # alpha in PER
 prioritized_replay_beta0 = 0.4  # initial beta in PER
 
 
-# ##############################  PER  ####################################
+# ##############################  Network  ####################################
 class MLP(tl.models.Model):
 
     def __init__(self, name):
@@ -134,6 +136,7 @@ class CNN(tl.models.Model):
         return self.qvalue(self.preq(feature))
 
 
+# ##############################  Replay  ####################################
 class SegmentTree(object):
 
     def __init__(self, capacity, operation, neutral_element):
@@ -368,7 +371,7 @@ class PrioritizedReplayBuffer(ReplayBuffer):
         p_samples = np.asarray([self._it_sum[idx] for idx in idxes]) / it_sum
         weights = (p_samples * len(self._storage))**(-self.beta) / max_weight
         encoded_sample = self._encode_sample(idxes)
-        return encoded_sample + (weights, idxes)
+        return encoded_sample + (weights.astype('float32'), idxes)
 
     def update_priorities(self, idxes, priorities):
         """Update priorities of sampled transitions"""
@@ -382,6 +385,7 @@ class PrioritizedReplayBuffer(ReplayBuffer):
             self._max_priority = max(self._max_priority, priority)
 
 
+# #############################  Functions  ###################################
 def huber_loss(x):
     """Loss function for value"""
     return tf.where(tf.abs(x) < 1, tf.square(x) * 0.5, tf.abs(x) - 0.5)
@@ -393,30 +397,82 @@ def sync(net, net_tar):
         var_tar.assign(var)
 
 
+# ###############################  DQN  #####################################
+class DQN(object):
+    def __init__(self):
+        model = MLP if qnet_type == 'MLP' else CNN
+        self.qnet = model('q')
+        if args.mode == 'train':
+            self.qnet.train()
+            self.targetqnet = model('targetq')
+            self.targetqnet.infer()
+            sync(self.qnet, self.targetqnet)
+        else:
+            self.qnet.infer()
+            tl.files.load_and_assign_npz(name=args.save_path, network=self.qnet)
+        self.niter = 0
+        if clipnorm is not None:
+            self.optimizer = tf.optimizers.Adam(learning_rate=lr,
+                                                clipnorm=clipnorm)
+        else:
+            self.optimizer = tf.optimizers.Adam(learning_rate=lr)
+
+    def get_action(self, obv):
+        eps = epsilon(self.niter)
+        if args.mode == 'train' and random.random() < eps:
+            return int(random.random() * out_dim)
+        else:
+            obv = np.expand_dims(obv, 0).astype('float32') * ob_scale
+            return self._qvalues_func(obv).numpy().argmax(1)[0]
+
+    @tf.function
+    def _qvalues_func(self, obv):
+        return self.qnet(obv)
+
+    def train(self, b_o, b_a, b_r, b_o_, b_d, weights=None):
+        if weights is None:
+            weights = np.ones_like(b_r)
+        td_errors = self._train_func(b_o, b_a, b_r, b_o_, b_d, weights)
+
+        self.niter += 1
+        if self.niter % target_q_update_freq == 0:
+            sync(self.qnet, self.targetqnet)
+            path = os.path.join(args.save_path, '{}.npz'.format(self.niter))
+            tl.files.save_npz(self.qnet.trainable_weights, name=path)
+
+        return td_errors.numpy()
+
+    @tf.function
+    def _train_func(self, b_o, b_a, b_r, b_o_, b_d, weights):
+        with tf.GradientTape() as tape:
+            td_errors = self._tderror_func(b_o, b_a, b_r, b_o_, b_d)
+            loss = tf.reduce_mean(huber_loss(td_errors) * weights)
+
+        grad = tape.gradient(loss, self.qnet.trainable_weights)
+        self.optimizer.apply_gradients(zip(grad, self.qnet.trainable_weights))
+
+        return td_errors
+
+    @tf.function
+    def _tderror_func(self, b_o, b_a, b_r, b_o_, b_d):
+        b_q_ = (1 - b_d) * tf.reduce_max(self.targetqnet(b_o_), 1)
+        b_q = tf.reduce_sum(self.qnet(b_o) * tf.one_hot(b_a, out_dim), 1)
+        return b_q - (b_r + reward_gamma * b_q_)
+
+
+# #############################  Trainer  ###################################
 if __name__ == '__main__':
+    dqn = DQN()
     if args.mode == 'train':
-        qnet = MLP('q') if qnet_type == 'MLP' else CNN('q')
-        qnet.train()
-        trainabel_weights = qnet.trainable_weights
-        targetqnet = MLP('targetq') if qnet_type == 'MLP' else CNN('targetq')
-        targetqnet.infer()
-        sync(qnet, targetqnet)
-        optimizer = tf.optimizers.Adam(learning_rate=lr)
         buffer = PrioritizedReplayBuffer(buffer_size, prioritized_replay_alpha, prioritized_replay_beta0)
 
         o = env.reset()
         nepisode = 0
         t = time.time()
         for i in range(1, number_timesteps + 1):
-            eps = epsilon(i)
             buffer.beta += (1 - prioritized_replay_beta0) / number_timesteps
 
-            # select action
-            if random.random() < eps:
-                a = int(random.random() * out_dim)
-            else:
-                obv = np.expand_dims(o, 0).astype('float32') * ob_scale
-                a = qnet(obv).numpy().argmax(1)[0]
+            a = dqn.get_action(o)
 
             # execute action and feed to replay buffer
             # note that `_` tail in var name means next
@@ -424,30 +480,10 @@ if __name__ == '__main__':
             buffer.add(o, a, r, o_, done)
 
             if i >= warm_start:
-                # sync q net and target q net
-                if i % target_q_update_freq == 0:
-                    sync(qnet, targetqnet)
-                    path = os.path.join(args.save_path, '{}.npz'.format(i))
-                    tl.files.save_npz(qnet.trainable_weights, name=path)
-
-                # sample from replay buffer
-                b_o, b_a, b_r, b_o_, b_d, weights, idxs \
-                    = buffer.sample(batch_size)
-
-                # q estimation
-                b_q_ = (1 - b_d) * tf.reduce_max(targetqnet(b_o_), 1)
-
-                # calculate loss
-                with tf.GradientTape() as q_tape:
-                    b_q = tf.reduce_sum(qnet(b_o) * tf.one_hot(b_a, out_dim), 1)
-                    abs_td_error = tf.abs(b_q - (b_r + reward_gamma * b_q_))
-                    priorities = np.clip(abs_td_error.numpy(), 1e-6, None)
-                    buffer.update_priorities(idxs, priorities)
-                    loss = tf.reduce_mean(weights * huber_loss(abs_td_error))
-
-                # backward gradients
-                q_grad = q_tape.gradient(loss, trainabel_weights)
-                optimizer.apply_gradients(zip(q_grad, trainabel_weights))
+                *transitions, idxs = buffer.sample(batch_size)
+                priorities = dqn.train(*transitions)
+                priorities = np.clip(np.abs(priorities), 1e-6, None)
+                buffer.update_priorities(idxs, priorities)
 
             if done:
                 o = env.reset()
@@ -461,19 +497,15 @@ if __name__ == '__main__':
                 fps = int(length / (time.time() - t))
                 print(
                     'Time steps so far: {}, episode so far: {}, '
-                    'episode reward: {:.4f}, episode length: {}, FPS: {}'.format(i, nepisode, reward, length, fps)
+                    'episode reward: {:.4f}, episode length: {}, FPS: {}'
+                        .format(i, nepisode, reward, length, fps)
                 )
                 t = time.time()
     else:
-        qnet = MLP('q') if qnet_type == 'MLP' else CNN('q')
-        tl.files.load_and_assign_npz(name=args.save_path, network=qnet)
-        qnet.eval()
-
         nepisode = 0
         o = env.reset()
         for i in range(1, number_timesteps + 1):
-            obv = np.expand_dims(o, 0).astype('float32') * ob_scale
-            a = qnet(obv).numpy().argmax(1)[0]
+            a = dqn.get_action(o)
 
             # execute action
             # note that `_` tail in var name means next
@@ -490,5 +522,6 @@ if __name__ == '__main__':
                 reward, length = info['episode']['r'], info['episode']['l']
                 print(
                     'Time steps so far: {}, episode so far: {}, '
-                    'episode reward: {:.4f}, episode length: {}'.format(i, nepisode, reward, length)
+                    'episode reward: {:.4f}, episode length: {}'
+                        .format(i, nepisode, reward, length)
                 )
