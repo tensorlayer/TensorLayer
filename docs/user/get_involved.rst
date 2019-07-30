@@ -5,7 +5,7 @@ Get Involved in Research
 =========================
 
 
-Center on Frontiers of Computing Studies, Peking University
+AP Opportunity, Peking University
 =============================================================
 
 The Center on Frontiers of Computing Studies (CFCS), Peking University (PKU), China, is a university new initiative co-founded by Professors John Hopcroft (Turing Awardee) and Wen Gao (CAE, ACM/IEEE Fellow). The center aims at developing the excellence on two fronts: research and education. On the research front, the center will provide a world-class research environment, where innovation and impactful research is the central aim, measured by professional reputation among world scholars, not by counting the number of publications and research funding. On the education front, the center deeply involves in the Turing Class, an elite undergraduate program that draws the cream of the crop from the PKU undergraduate talent pool. New curriculum and pedagogy are designed and practiced in this program, with the aim to cultivate a new generation of computer scientist/engineers that are solid in both theories and practices. 
@@ -27,12 +27,12 @@ Application for a postdoctoral position should include a curriculum vita, brief 
 We conduct review of applications monthly, immediately upon the recipient of all application materials at the beginning of each month. However, it is highly recommended that applicants submit complete applications sooner than later, as the positions are to be filled quickly. 
  
 
-Data Science Institute, Imperial College London
+Postdoc Opportunity, Imperial College London
 ==================================================
 
 Data science is therefore by nature at the core of all modern transdisciplinary scientific activities, as it involves the whole life cycle of data, from acquisition and exploration to analysis and communication of the results. Data science is not only concerned with the tools and methods to obtain, manage and analyse data: it is also about extracting value from data and translating it from asset to product.
 
-Launched on 1st April 2014, the Data Science Institute at Imperial College London aims to enhance Imperial's excellence in data-driven research across its faculties by fulfilling the following objectives.
+Launched on 1st April 2014, the Data Science Institute (DSI) at Imperial College London aims to enhance Imperial's excellence in data-driven research across its faculties by fulfilling the following objectives.
 
 The Data Science Institute is housed in purpose built facilities in the heart of the Imperial College campus in South Kensington. Such a central location provides excellent access to collabroators across the College and across London.
 
