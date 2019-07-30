@@ -28,7 +28,7 @@ Project Maintainers
 
 The TensorLayer project was started by `Hao Dong <https://zsdonghao.github.io>`_ at Imperial College London in June 2016. 
 
-For TensorLayer 2.x, it is now actively developing and maintaining by the following people who has more than 50 contributions*:
+For TensorLayer 2.x, it is now actively developing and maintaining by the following people who has more than 50 contributions:
 
 - **Hao Dong** (`@zsdonghao <https://github.com/zsdonghao>`_) - `<https://zsdonghao.github.io>`_
 - **Jingqing Zhang** (`@JingqingZ <https://github.com/JingqingZ>`_) - `<https://jingqingz.github.io>`_
