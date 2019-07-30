@@ -25,7 +25,7 @@ import random
 import numpy as np
 import tensorflow as tf
 
-from common.buffer import ReplayBuffer, PrioritizedReplayBuffer
+from common.buffer import PrioritizedReplayBuffer, ReplayBuffer
 from common.wrappers import build_env
 
 

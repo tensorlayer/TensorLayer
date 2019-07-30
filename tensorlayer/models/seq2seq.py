@@ -1,12 +1,13 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-import tensorlayer as tl
 import numpy as np
-from tensorlayer.models import Model
+import tensorflow as tf
+
+import tensorlayer as tl
 from tensorlayer.layers import Dense, Dropout, Input
 from tensorlayer.layers.core import Layer
+from tensorlayer.models import Model
 
 
 class Seq2seq(Model):

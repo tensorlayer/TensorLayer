@@ -30,8 +30,8 @@ feeding images of multiple sizes is by doing center cropping.
 import os
 
 import numpy as np
-
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.files import assign_weights, maybe_download_and_extract
@@ -57,14 +57,16 @@ layer_names = [
 cfg = {
     'A': [[64], 'M', [128], 'M', [256, 256], 'M', [512, 512], 'M', [512, 512], 'M', 'F', 'fc1', 'fc2', 'O'],
     'B': [[64, 64], 'M', [128, 128], 'M', [256, 256], 'M', [512, 512], 'M', [512, 512], 'M', 'F', 'fc1', 'fc2', 'O'],
-    'D': [
-        [64, 64], 'M', [128, 128], 'M', [256, 256, 256], 'M', [512, 512, 512], 'M', [512, 512, 512], 'M', 'F', 'fc1',
-        'fc2', 'O'
-    ],
-    'E': [
-        [64, 64], 'M', [128, 128], 'M', [256, 256, 256, 256], 'M', [512, 512, 512, 512], 'M', [512, 512, 512, 512], 'M',
-        'F', 'fc1', 'fc2', 'O'
-    ],
+    'D':
+        [
+            [64, 64], 'M', [128, 128], 'M', [256, 256, 256], 'M', [512, 512, 512], 'M', [512, 512, 512], 'M', 'F',
+            'fc1', 'fc2', 'O'
+        ],
+    'E':
+        [
+            [64, 64], 'M', [128, 128], 'M', [256, 256, 256, 256], 'M', [512, 512, 512, 512], 'M', [512, 512, 512, 512],
+            'M', 'F', 'fc1', 'fc2', 'O'
+        ],
 }
 
 mapped_cfg = {

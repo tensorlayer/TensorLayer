@@ -26,17 +26,16 @@ import queue
 import threading
 import time
 
+import gym
 import matplotlib.pyplot as plt
 import numpy as np
-
-import gym
 import tensorflow as tf
 import tensorflow_probability as tfp
-import tensorlayer as tl
 
-from common.utils import *
+import tensorlayer as tl
 from common.buffer import *
 from common.networks import *
+from common.utils import *
 
 EPS = 1e-8  # epsilon
 METHOD = [

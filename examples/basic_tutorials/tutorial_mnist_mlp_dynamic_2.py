@@ -1,8 +1,8 @@
 import time
 
 import numpy as np
-
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import Dense, Dropout, Input, LayerList
 from tensorlayer.models import Model

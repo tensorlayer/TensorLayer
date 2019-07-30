@@ -45,17 +45,17 @@ import multiprocessing
 import threading
 import time
 
-import numpy as np
-
 import gym
+import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
+
 import tensorlayer as tl
-from tensorlayer.layers import DenseLayer, InputLayer
-from tensorlayer.models import Model
-from common.utils import *
 from common.buffer import *
 from common.networks import *
+from common.utils import *
+from tensorlayer.layers import DenseLayer, InputLayer
+from tensorlayer.models import Model
 
 tfd = tfp.distributions
 

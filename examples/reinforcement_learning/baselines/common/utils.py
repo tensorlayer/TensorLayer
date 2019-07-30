@@ -8,13 +8,12 @@ tensorlayer==2.0.1
 """
 import operator
 import os
-import re
 import random
-import gym
-
-
-import matplotlib.pyplot as plt
+import re
 from importlib import import_module
+
+import gym
+import matplotlib.pyplot as plt
 import numpy as np
 
 import tensorlayer as tl

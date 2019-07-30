@@ -11,9 +11,9 @@ import os
 import random
 
 import numpy as np
-
 import tensorflow as tf
 import tensorflow_probability as tfp
+
 import tensorlayer as tl
 from tensorlayer.layers import Dense, Input
 from tensorlayer.models import Model

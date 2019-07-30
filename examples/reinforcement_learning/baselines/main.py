@@ -5,9 +5,9 @@ to train with specified settings
 
 
 import argparse
-from common.utils import learn, parse_all_args
 import os
 
+from common.utils import learn, parse_all_args
 
 # """ Parse arguments """
 parser = argparse.ArgumentParser(
@@ -42,8 +42,3 @@ model = learn(
     # log_path=common_options.log_path,
     **other_options
 )
-
-
-
-
-

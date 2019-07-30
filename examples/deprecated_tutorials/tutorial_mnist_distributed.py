@@ -13,6 +13,7 @@ Note: for GPU, please set CUDA_VISIBLE_DEVICES=GPU_ID
 """
 
 import tensorflow as tf
+
 import tensorlayer as tl
 
 tf.logging.set_verbosity(tf.logging.DEBUG)

@@ -23,18 +23,20 @@ Some useful notes:
         2. `env.render` has 4 parameters where one can specify cameras or mode.
 """
 import hashlib
-import sys
 import os
-# There's some issue with Nvidia OpenGL. Render works fine on the mesa one.
-os.environ['MUJOCO_GL'] = 'osmesa'
+import sys
 
 import gym
 import numpy as np
 from dm_control import suite
 from dm_control.rl import specs
 from gym import core, spaces
-from gym.utils import seeding
 from gym.envs.registration import registry
+from gym.utils import seeding
+
+# There's some issue with Nvidia OpenGL. Render works fine on the mesa one.
+os.environ['MUJOCO_GL'] = 'osmesa'
+
 
 
 class Discrete(gym.spaces.Discrete):

@@ -44,15 +44,15 @@ tensorlayer >=2.0.0
 import argparse
 import time
 
-import numpy as np
-
 import gym
+import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
-from tensorlayer.models import Model
-from common.utils import *
 from common.buffer import *
 from common.networks import *
+from common.utils import *
+from tensorlayer.models import Model
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 

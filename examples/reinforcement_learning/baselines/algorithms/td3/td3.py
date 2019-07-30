@@ -42,19 +42,19 @@ import math
 import random
 import time
 
+import gym
 import matplotlib.pyplot as plt
 import numpy as np
-from IPython.display import clear_output
-
-import gym
 import tensorflow as tf
 import tensorflow_probability as tfp
+from IPython.display import clear_output
+
 import tensorlayer as tl
-from tensorlayer.layers import Dense
-from tensorlayer.models import Model
-from common.utils import *
 from common.buffer import *
 from common.networks import *
+from common.utils import *
+from tensorlayer.layers import Dense
+from tensorlayer.models import Model
 
 tfd = tfp.distributions
 Normal = tfd.Normal

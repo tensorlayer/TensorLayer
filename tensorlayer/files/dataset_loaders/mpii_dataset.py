@@ -4,7 +4,8 @@
 import os
 
 from tensorlayer import logging
-from tensorlayer.files.utils import (del_file, folder_exists, load_file_list, maybe_download_and_extract)
+from tensorlayer.files.utils import (del_file, folder_exists, load_file_list,
+                                     maybe_download_and_extract)
 
 __all__ = ['load_mpii_pose_dataset']
 
