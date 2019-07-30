@@ -64,6 +64,9 @@ parser.add_argument(
 )
 parser.add_argument('--seed', help='random seed', type=int, default=0)
 parser.add_argument('--env_id', default='CartPole-v0', help='CartPole-v0 or PongNoFrameskip-v4')
+parser.add_argument('--noisy_scale', type=float, default=1e-2)
+parser.add_argument('--disable_double', action='store_false', default=True)
+parser.add_argument('--disable_dueling', action='store_false', default=True)
 args = parser.parse_args()
 
 if args.mode == 'train':
@@ -73,6 +76,9 @@ np.random.seed(args.seed)
 tf.random.set_seed(args.seed)  # reproducible
 env_id = args.env_id
 env = build_env(env_id, seed=args.seed)
+noise_scale = args.noisy_scale
+double = not args.disable_double
+dueling = not args.disable_dueling
 
 # ####################  hyper parameters  ####################
 if env_id == 'CartPole-v0':
@@ -105,7 +111,6 @@ reward_gamma = 0.99  # reward discount
 batch_size = 32  # batch size for sampling from replay buffer
 warm_start = buffer_size / 10  # sample times befor learning
 noise_update_freq = 50  # how frequency param noise net update
-noise_scale = 1e-2
 
 
 # ##############################  Network  ####################################
@@ -140,9 +145,11 @@ class MLP(tl.models.Model):
                     var.assign_sub(noises[idx])
                     idx += 1
 
-        # dueling network
-        out = svalue + qvalue - tf.reduce_mean(qvalue, 1, keepdims=True)
-        return out
+        if dueling:
+            # dueling network
+            return svalue + qvalue - tf.reduce_mean(qvalue, 1, keepdims=True)
+        else:
+            return qvalue
 
 
 class CNN(tl.models.Model):
@@ -196,8 +203,11 @@ class CNN(tl.models.Model):
                     var.assign_sub(noises[idx])
                     idx += 1
 
-        # dueling network
-        return svalue + qvalue - tf.reduce_mean(qvalue, 1, keepdims=True)
+        if dueling:
+            # dueling network
+            return svalue + qvalue - tf.reduce_mean(qvalue, 1, keepdims=True)
+        else:
+            return qvalue
 
 
 # ##############################  Replay  ####################################
@@ -336,8 +346,11 @@ class DQN(object):
 
     @tf.function
     def _tderror_func(self, b_o, b_a, b_r, b_o_, b_d):
-        b_a_ = tf.one_hot(tf.argmax(self.qnet(b_o_), 1), out_dim)
-        b_q_ = (1 - b_d) * tf.reduce_sum(self.targetqnet(b_o_) * b_a_, 1)
+        if double:
+            b_a_ = tf.one_hot(tf.argmax(self.qnet(b_o_), 1), out_dim)
+            b_q_ = (1 - b_d) * tf.reduce_sum(self.targetqnet(b_o_) * b_a_, 1)
+        else:
+            b_q_ = (1 - b_d) * tf.reduce_max(self.targetqnet(b_o_), 1)
 
         b_q = tf.reduce_sum(self.qnet(b_o) * tf.one_hot(b_a, out_dim), 1)
         return b_q - (b_r + reward_gamma * b_q_)
