@@ -602,6 +602,8 @@ class LayerList(Layer):
 
         is_built = True
         for layer in self.layers:
+            self._trainable_weights.extend(layer.trainable_weights)
+            self._nontrainable_weights.extend(layer.nontrainable_weights)
             if layer._built is False:
                 is_built = False
             if layer._built and layer.all_weights is not None:
