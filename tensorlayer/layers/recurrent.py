@@ -247,11 +247,10 @@ class RNN(Layer):
             sequence_length = [i - 1 for i in sequence_length]
 
         # set warning
-        if (not self.return_last_state or not self.return_last_output) and sequence_length is not None:
+        if (not self.return_last_output) and sequence_length is not None:
             warnings.warn(
                 'return_last_output is set as %s ' % self.return_last_output +
-                'and return_last_state is set as %s. ' % self.return_last_state +
-                'When sequence_length is provided, both are recommended to set as True. ' +
+                'When sequence_length is provided, it is recommended to set as True. ' +
                 'Otherwise, padding will be considered while RNN is forwarding.'
             )
 
