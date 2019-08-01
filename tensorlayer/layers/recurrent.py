@@ -758,6 +758,7 @@ class BiRNN(Layer):
             return outputs
 
 
+'''
 class ConvRNNCell(object):
     """Abstract object representing an Convolutional RNN Cell."""
 
@@ -1071,6 +1072,7 @@ class ConvLSTM(Layer):
         self._add_layers(self.outputs)
         self._add_params(rnn_variables)
 
+'''
 
 # @tf.function
 def retrieve_seq_length_op(data):
