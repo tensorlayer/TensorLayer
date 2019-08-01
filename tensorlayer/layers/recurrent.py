@@ -244,15 +244,15 @@ class RNN(Layer):
                         "but got an actual length of a sequence %d" % i
                     )
 
-            sequence_length = [i - 1 for i in sequence_length]
+            sequence_length = [i - 1 if i >= 1 else 0 for i in sequence_length]
 
         # set warning
-        if (not self.return_last_output) and sequence_length is not None:
-            warnings.warn(
-                'return_last_output is set as %s ' % self.return_last_output +
-                'When sequence_length is provided, it is recommended to set as True. ' +
-                'Otherwise, padding will be considered while RNN is forwarding.'
-            )
+        # if (not self.return_last_output) and sequence_length is not None:
+        #     warnings.warn(
+        #         'return_last_output is set as %s ' % self.return_last_output +
+        #         'When sequence_length is provided, it is recommended to set as True. ' +
+        #         'Otherwise, padding will be considered while RNN is forwarding.'
+        #     )
 
         # return the last output, iterating each seq including padding ones. No need to store output during each
         # time step.
@@ -273,6 +273,7 @@ class RNN(Layer):
         self.cell.reset_recurrent_dropout_mask()
 
         # recurrent computation
+        # FIXME: if sequence_length is provided (dynamic rnn), only iterate max(sequence_length) times.
         for time_step in range(total_steps):
 
             cell_output, states = self.cell.call(inputs[:, time_step, :], states, training=self.is_train)
