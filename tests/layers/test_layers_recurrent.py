@@ -18,7 +18,7 @@ class Layer_RNN_Test(CustomTestCase):
     @classmethod
     def setUpClass(cls):
 
-        cls.batch_size = 10
+        cls.batch_size = 2
 
         cls.vocab_size = 20
         cls.embedding_size = 4
@@ -878,9 +878,7 @@ class Layer_RNN_Test(CustomTestCase):
             def __init__(self):
                 super(CustomisedModel, self).__init__()
                 self.rnnlayer = tl.layers.LSTMRNN(
-                    units=8, dropout=0.1, in_channels=4,
-                    return_last_output=True,
-                    return_last_state=False
+                    units=8, dropout=0.1, in_channels=4, return_last_output=True, return_last_state=False
                 )
                 self.dense = tl.layers.Dense(in_channels=8, n_units=1)
 
@@ -922,7 +920,6 @@ class Layer_RNN_Test(CustomTestCase):
 
         import os
         os.remove(filename)
-
 
 
 if __name__ == '__main__':

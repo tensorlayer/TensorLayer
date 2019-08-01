@@ -105,7 +105,10 @@ class RNN(Layer):
     Similar to the DynamicRNN in TL 1.x.
 
     If the `sequence_length` is provided in RNN's forwarding and both `return_last_output` and `return_last_state`
-    are set as `True`, the forward function will automatically ignore the paddings.
+    are set as `True`, the forward function will automatically ignore the paddings. Note that if `return_last_output`
+    is set as `False`, the synced sequence outputs will still include outputs which correspond with paddings,
+    but users are free to select which slice of outputs to be used in following procedure.
+
     The `sequence_length` should be a list of integers which indicates the length of each sequence.
     It is recommended to
     `tl.layers.retrieve_seq_length_op3 <https://tensorlayer.readthedocs.io/en/latest/modules/layers.html#compute-sequence-length-3>`__
@@ -1073,6 +1076,7 @@ class ConvLSTM(Layer):
         self._add_params(rnn_variables)
 
 '''
+
 
 # @tf.function
 def retrieve_seq_length_op(data):
