@@ -905,12 +905,20 @@ class Layer_RNN_Test(CustomTestCase):
             if (epoch + 1) % 10 == 0:
                 print("epoch %d, loss %f" % (epoch, loss))
 
+        filename = "dynamic_rnn.h5"
+        rnn_model.save_weights(filename)
+
         # Testing saving and restoring of RNN weights
         rnn_model2 = CustomisedModel()
         rnn_model2.eval()
         pred_y = rnn_model2(self.data_x)
         loss = tl.cost.mean_squared_error(pred_y, self.data_y)
         print("MODEL INIT loss %f" % (loss))
+
+        rnn_model2.load_weights(filename)
+        pred_y = rnn_model2(self.data_x)
+        loss = tl.cost.mean_squared_error(pred_y, self.data_y)
+        print("MODEL RESTORE W loss %f" % (loss))
 
 
 
