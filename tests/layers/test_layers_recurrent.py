@@ -920,6 +920,9 @@ class Layer_RNN_Test(CustomTestCase):
         loss = tl.cost.mean_squared_error(pred_y, self.data_y)
         print("MODEL RESTORE W loss %f" % (loss))
 
+        import os
+        os.remove(filename)
+
 
 
 if __name__ == '__main__':
