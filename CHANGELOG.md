@@ -79,6 +79,7 @@ To release a new version, please update the changelog as followed:
 ### Deprecated
 
 ### Fixed
+- RNN updates: remove warnings, fix if seq_len=0, unitest (#PR 1033)
 
 ### Removed
 
