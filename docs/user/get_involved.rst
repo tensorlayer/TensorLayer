@@ -9,7 +9,7 @@ Ph.D. Opportunity, Peking University
 
 
 Hi, I am Hao Dong, a new faculty member in EECS, Peking University. I now have a few Ph.D. positions per year open for international students who would like to study AI. If you or your friends are interested in it, please contact me ASAP.
-PKU is a top 30 university in the global ranking. The application is competitive, apply early is recommended. For the application of next year, you can now apply for the Chinese Government Scholarship.
+PKU is a top 30 university in the global ranking. The application is competitive, apply early is recommended. For the application of next year, please note that the DDL of Chinese Government Scholarship is in the end of each year.
 
 My homepage: https://zsdonghao.github.io 
 
