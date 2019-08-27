@@ -56,11 +56,11 @@ class Lambda(Layer):
     Please avoid using Model.save() / Model.load() to save / load models that contain such Lambda layer. Instead, you may use Model.save_weights() / Model.load_weights() to save / load model weights.
     Note: In this case, fn_weights should be a list, and then the trainable weights in this Lambda layer can be added into the weights of the whole model.
 
-    >>> a = [tf.Variable(1.0)]
+    >>> a = tf.Variable(1.0)
     >>> def func(x):
-    >>>     return x + a[0]
+    >>>     return x + a
     >>> x = tl.layers.Input([8, 3], name='input')
-    >>> y = tl.layers.Lambda(func, fn_weights=a, name='lambda')(x)
+    >>> y = tl.layers.Lambda(func, fn_weights=[a], name='lambda')(x)
 
 
     Parametric case, merge other wrappers into TensorLayer:
