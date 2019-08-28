@@ -201,4 +201,4 @@ If you use TensorLayer for any projects, please cite this paper：
 
 # License
 
-TensorLayer is released under the Apache 2.0 license.
+TensorLayer is released under the Apache 2.0 license. We also host TensorLayer on [iHub](https://code.ihub.org.cn/projects/328) and [Gitee](https://gitee.com/organizations/TensorLayer).
