@@ -221,12 +221,6 @@ class BatchNorm(Layer):
         self.axes = None
 
         if num_features is not None:
-            if not isinstance(self, BatchNorm1d) and not isinstance(self, BatchNorm2d) and not isinstance(self,
-                                                                                                          BatchNorm3d):
-                raise ValueError(
-                    "Please use BatchNorm1d or BatchNorm2d or BatchNorm3d instead of BatchNorm "
-                    "if you want to specify 'num_features'."
-                )
             self.build(None)
             self._built = True
 
