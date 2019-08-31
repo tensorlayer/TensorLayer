@@ -358,7 +358,12 @@ class Model(object):
             attr_list.remove("all_weights")
             attr_list.remove("trainable_weights")
             attr_list.remove("nontrainable_weights")
+            attr_list.remove("_all_weights")
+            attr_list.remove("_trainable_weights")
+            attr_list.remove("_nontrainable_weights")
             attr_list.remove("all_layers")
+            attr_list.remove("_all_layers")
+            attr_list.remove("n_weights")
             for idx, attr in enumerate(attr_list):
                 try:
                     if isinstance(getattr(self, attr), Layer):
@@ -430,6 +435,24 @@ class Model(object):
                     self._all_weights.extend(layer.all_weights)
 
         return self._all_weights.copy()
+
+    @property
+    def n_weights(self):
+        """Return the number of weights (parameters) in this network."""
+        n_weights = 0
+        for i, w in enumerate(self.all_weights):
+            n = 1
+            # for s in p.eval().shape:
+            for s in w.get_shape():
+                try:
+                    s = int(s)
+                except:
+                    s = 1
+                if s:
+                    n = n * s
+            n_weights = n_weights + n
+        # print("num of weights (parameters) %d" % n_weights)
+        return n_weights
 
     @property
     def config(self):

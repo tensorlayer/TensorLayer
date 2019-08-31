@@ -344,7 +344,7 @@ class Layer(object):
 
     def __setattr__(self, key, value):
         if isinstance(value, Layer):
-            value._nodes_fixed = True
+            value._fix_nodes_for_layers()
             if self._layers is None:
                 self._layers = []
             self._layers.append(value)
@@ -602,6 +602,8 @@ class LayerList(Layer):
 
         is_built = True
         for layer in self.layers:
+            self._trainable_weights.extend(layer.trainable_weights)
+            self._nontrainable_weights.extend(layer.nontrainable_weights)
             if layer._built is False:
                 is_built = False
             if layer._built and layer.all_weights is not None:

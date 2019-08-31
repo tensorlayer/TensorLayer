@@ -1,7 +1,5 @@
 import time
-
 import numpy as np
-
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import Dense, Dropout, Input, LayerList
@@ -19,9 +17,7 @@ class CustomModelHidden(Model):
 
     def __init__(self):
         super(CustomModelHidden, self).__init__()
-
         self.dropout1 = Dropout(keep=0.8)  #(self.innet)
-
         self.seq = LayerList(
             [
                 Dense(n_units=800, act=tf.nn.relu, in_channels=784),
@@ -29,7 +25,6 @@ class CustomModelHidden(Model):
                 Dense(n_units=800, act=tf.nn.relu, in_channels=800),
             ]
         )
-
         self.dropout3 = Dropout(keep=0.8)  #(self.seq)
 
     def forward(self, x):
@@ -43,7 +38,6 @@ class CustomModelOut(Model):
 
     def __init__(self):
         super(CustomModelOut, self).__init__()
-
         self.dense3 = Dense(n_units=10, act=tf.nn.relu, in_channels=800)
 
     def forward(self, x, foo=None):
@@ -74,30 +68,23 @@ optimizer = tf.optimizers.Adam(learning_rate=0.0001)
 for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
     start_time = time.time()
     ## iterate over the entire training set once (shuffle the data via training)
-
     for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
-
         MLP1.train()  # enable dropout
         MLP2.train()
-
         with tf.GradientTape() as tape:
             ## compute outputs
             _hidden = MLP1(X_batch)
             _logits = MLP2(_hidden, foo=1)
             ## compute loss and update model
             _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
-
         grad = tape.gradient(_loss, train_weights)
         optimizer.apply_gradients(zip(grad, train_weights))
 
     ## use training and evaluation sets to evaluate the model every print_freq epoch
     if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-
         MLP1.eval()  # disable dropout
         MLP2.eval()
-
         print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
-
         train_loss, train_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=False):
             _hidden = MLP1(X_batch)
