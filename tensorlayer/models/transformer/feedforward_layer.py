@@ -38,11 +38,11 @@ class FeedForwardLayer(tl.layers.Layer):
         self.filter_size = filter_size
         self.relu_dropout = 1 - keep_prob
         self.filter_dense_layer = tl.layers.Dense(
-            self.filter_size, in_channels=self.hidden_size, W_init=tf.keras.initializers.get('glorot_uniform'),
+            self.filter_size, in_channels=self.hidden_size, W_init=tf.initializers.get('glorot_uniform'),
             name="input_layer"
         )
         self.output_dense_layer = tl.layers.Dense(
-            self.hidden_size, in_channels=self.filter_size, W_init=tf.keras.initializers.get('glorot_uniform'),
+            self.hidden_size, in_channels=self.filter_size, W_init=tf.initializers.get('glorot_uniform'),
             name="output_layer"
         )
         self.build(None)

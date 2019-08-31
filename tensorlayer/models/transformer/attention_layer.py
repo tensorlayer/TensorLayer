@@ -56,16 +56,16 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
     def build(self, inputs_shape):
         # Transformation for linearly projecting the queries, keys, and values.
         self.q_transformation = self._get_weights(
-            "q_project", shape=(self.hidden_size, self.hidden_size), init=tf.keras.initializers.get('glorot_uniform')
+            "q_project", shape=(self.hidden_size, self.hidden_size), init=tf.initializers.get('glorot_uniform')
         )
         self.v_transformation = self._get_weights(
-            "v_project", shape=(self.hidden_size, self.hidden_size), init=tf.keras.initializers.get('glorot_uniform')
+            "v_project", shape=(self.hidden_size, self.hidden_size), init=tf.initializers.get('glorot_uniform')
         )
         self.k_transformation = self._get_weights(
-            "k_project", shape=(self.hidden_size, self.hidden_size), init=tf.keras.initializers.get('glorot_uniform')
+            "k_project", shape=(self.hidden_size, self.hidden_size), init=tf.initializers.get('glorot_uniform')
         )
         self.out_transformation = self._get_weights(
-            "out_project", shape=(self.hidden_size, self.hidden_size), init=tf.keras.initializers.get('glorot_uniform')
+            "out_project", shape=(self.hidden_size, self.hidden_size), init=tf.initializers.get('glorot_uniform')
         )
 
     def split_heads(self, x):
@@ -108,7 +108,7 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
             x = tf.transpose(x, [0, 2, 1, 3])  # --> [batch, length, num_heads, depth]
             return tf.reshape(x, [batch_size, length, self.hidden_size])
 
-    def forward(self, inputs, mask, cache=None):
+    def forward(self, x, y, mask, cache=None):
         """Apply attention mechanism to x and y.
 
     Args:
@@ -130,14 +130,8 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
         # multiple heads. Multi-head attention uses multiple queries, keys, and
         # values rather than regular attention (which uses a single q, k, v).
 
-        if (len(inputs) == 2):
-            q = inputs[0]
-            k = v = inputs[1]
-
-        if (len(inputs) == 3):
-            q = inputs[0]
-            k = inputs[1]
-            v = inputs[2]
+        v = k = y
+        q = x
 
         q = tf.tensordot(q, self.q_transformation, axes=[[2], [0]])
         k = tf.tensordot(k, self.k_transformation, axes=[[2], [0]])
@@ -166,6 +160,7 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
         logits = tf.matmul(q, k, transpose_b=True)  #(Batch, num_head, length_q, length_k)
         logits += mask
         weights = tf.nn.softmax(logits, name="attention_weights")  #(Batch, num_head, length_q, length_k)
+        weights_store = weights
         if self.is_train:
             weights = tf.nn.dropout(weights, rate=self.attention_dropout)
 
@@ -176,11 +171,11 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
 
         # Run the combined outputs through another linear projection layer.
         attention_output = tf.tensordot(attention_output, self.out_transformation, axes=[[2], [0]])
-        return attention_output
+        return attention_output, weights_store
 
 
 class SelfAttentionLayer(MultiHeadAttentionLayer):
     """Multiheaded self-attention layer."""
 
     def forward(self, inputs, mask, cache=None):
-        return super(SelfAttentionLayer, self).forward(inputs=[inputs, inputs], mask=mask, cache=cache)
+        return super(SelfAttentionLayer, self).forward(x=inputs, y=inputs, mask=mask, cache=cache)
