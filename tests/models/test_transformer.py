@@ -74,7 +74,7 @@ class Model_SEQ2SEQ_Test(CustomTestCase):
         pass
 
     def test_basic_simpleSeq2Seq(self):
-        
+
         model_ = Transformer(TINY_PARAMS)
 
         # print(", ".join(x for x in [t.name for t in model_.trainable_weights]))
@@ -93,7 +93,7 @@ class Model_SEQ2SEQ_Test(CustomTestCase):
                 with tf.GradientTape() as tape:
 
                     targets = Y
-                    logits = model_(inputs = X, targets = Y)
+                    logits, weights_encoder, weights_decoder = model_(inputs = X, targets = Y)
                     logits = metrics.MetricLayer(self.vocab_size)([logits, targets])
                     logits, loss = metrics.LossLayer(self.vocab_size, 0.1)([logits, targets])
                     
@@ -108,7 +108,7 @@ class Model_SEQ2SEQ_Test(CustomTestCase):
             model_.eval()
             test_sample = trainX[0:2, :]
             model_.eval()
-            prediction = model_(inputs = test_sample)
+            [prediction, weights_decoder], weights_encoder = model_(inputs = test_sample)
             
             print("Prediction: >>>>>  ", prediction["outputs"], "\n Target: >>>>>  ", trainY[0:2, :], "\n\n")
 
