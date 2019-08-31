@@ -26,7 +26,13 @@ class Layer_RNN_Test(CustomTestCase):
         cls.hidden_size = 8
         cls.num_steps = 6
 
+        cls.data_n_steps = np.random.randint(low=cls.num_steps // 2, high=cls.num_steps + 1, size=cls.batch_size)
         cls.data_x = np.random.random([cls.batch_size, cls.num_steps, cls.embedding_size]).astype(np.float32)
+
+        for i in range(cls.batch_size):
+            for j in range(cls.data_n_steps[i], cls.num_steps):
+                cls.data_x[i][j][:] = 0
+
         cls.data_y = np.zeros([cls.batch_size, 1]).astype(np.float32)
         cls.data_y2 = np.zeros([cls.batch_size, cls.num_steps]).astype(np.float32)
 
@@ -864,6 +870,56 @@ class Layer_RNN_Test(CustomTestCase):
         output, state = model(data)
         print(output.shape)
         print(state)
+
+    def test_dynamic_rnn_with_fake_data(self):
+
+        class CustomisedModel(tl.models.Model):
+
+            def __init__(self):
+                super(CustomisedModel, self).__init__()
+                self.rnnlayer = tl.layers.LSTMRNN(
+                    units=8, dropout=0.1, in_channels=4, return_last_output=True, return_last_state=False
+                )
+                self.dense = tl.layers.Dense(in_channels=8, n_units=1)
+
+            def forward(self, x):
+                z = self.rnnlayer(x, sequence_length=tl.layers.retrieve_seq_length_op3(x))
+                z = self.dense(z[:, :])
+                return z
+
+        rnn_model = CustomisedModel()
+        print(rnn_model)
+        optimizer = tf.optimizers.Adam(learning_rate=0.01)
+        rnn_model.train()
+
+        for epoch in range(50):
+            with tf.GradientTape() as tape:
+                pred_y = rnn_model(self.data_x)
+                loss = tl.cost.mean_squared_error(pred_y, self.data_y)
+
+            gradients = tape.gradient(loss, rnn_model.trainable_weights)
+            optimizer.apply_gradients(zip(gradients, rnn_model.trainable_weights))
+
+            if (epoch + 1) % 10 == 0:
+                print("epoch %d, loss %f" % (epoch, loss))
+
+        filename = "dynamic_rnn.h5"
+        rnn_model.save_weights(filename)
+
+        # Testing saving and restoring of RNN weights
+        rnn_model2 = CustomisedModel()
+        rnn_model2.eval()
+        pred_y = rnn_model2(self.data_x)
+        loss = tl.cost.mean_squared_error(pred_y, self.data_y)
+        print("MODEL INIT loss %f" % (loss))
+
+        rnn_model2.load_weights(filename)
+        pred_y = rnn_model2(self.data_x)
+        loss = tl.cost.mean_squared_error(pred_y, self.data_y)
+        print("MODEL RESTORE W loss %f" % (loss))
+
+        import os
+        os.remove(filename)
 
 
 if __name__ == '__main__':

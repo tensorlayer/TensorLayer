@@ -19,12 +19,12 @@ Static model
   def get_model(inputs_shape):
       ni = Input(inputs_shape)
       nn = Dropout(keep=0.8)(ni)
-      nn = Dense(n_units=800, act=tf.nn.relu, name="dense1")(nn)
+      nn = Dense(n_units=800, act=tf.nn.relu, name="dense1")(nn) # “name" is optional
       nn = Dropout(keep=0.8)(nn)
       nn = Dense(n_units=800, act=tf.nn.relu)(nn)
       nn = Dropout(keep=0.8)(nn)
-      nn = Dense(n_units=10, act=tf.nn.relu)(nn)
-      M = Model(inputs=ni, outputs=nn, name="mlp")
+      nn = Dense(n_units=10, act=None)(nn)
+      M = Model(inputs=ni, outputs=nn, name="mlp") # “name" is optional
       return M
 
   MLP = get_model([None, 784])
@@ -46,10 +46,10 @@ In this case, you need to manually input the output shape of the previous layer 
 
           self.dropout1 = Dropout(keep=0.8)
           self.dense1 = Dense(n_units=800, act=tf.nn.relu, in_channels=784)
-          self.dropout2 = Dropout(keep=0.8)#(self.dense1)
+          self.dropout2 = Dropout(keep=0.8)
           self.dense2 = Dense(n_units=800, act=tf.nn.relu, in_channels=800)
-          self.dropout3 = Dropout(keep=0.8)#(self.dense2)
-          self.dense3 = Dense(n_units=10, act=tf.nn.relu, in_channels=800)
+          self.dropout3 = Dropout(keep=0.8)
+          self.dense3 = Dense(n_units=10, act=None, in_channels=800)
 
       def forward(self, x, foo=False):
           z = self.dropout1(x)
@@ -59,7 +59,7 @@ In this case, you need to manually input the output shape of the previous layer 
           z = self.dropout3(z)
           out = self.dense3(z)
           if foo:
-              out = tf.nn.relu(out)
+              out = tf.nn.softmax(out)
           return out
 
   MLP = CustomModel()
@@ -156,7 +156,7 @@ Print model information
   #   (dropout_1): Dropout(keep=0.8, name='dropout_1')
   #   (dense_1): Dense(n_units=800, relu, in_channels='800', name='dense_1')
   #   (dropout_2): Dropout(keep=0.8, name='dropout_2')
-  #   (dense_2): Dense(n_units=10, relu, in_channels='800', name='dense_2')
+  #   (dense_2): Dense(n_units=10, None, in_channels='800', name='dense_2')
   # )
   
   import pprint
@@ -195,7 +195,7 @@ Print model information
   #                                   'name': 'dropout_3'},
   #                          'class': 'Dropout',
   #                          'prev_layer': ['dense_2_node_0']},
-  #                         {'args': {'act': 'relu',
+  #                         {'args': {'act': None,
   #                                   'layer_type': 'normal',
   #                                   'n_units': 10,
   #                                   'name': 'dense_3'},
