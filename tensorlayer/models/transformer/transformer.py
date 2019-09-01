@@ -77,12 +77,55 @@ class Transformer(Model):
       training: boolean, whether in training mode or not.
 
     Returns:
-      If targets is defined, then return logits for each word in the target
-      sequence. float tensor with shape [batch_size, target_length, vocab_size]
-      If target is none, then generate output sequence one token at a time.
-        returns a dictionary {
-          outputs: [batch_size, decoded length]
-          scores: [batch_size, float]}
+      If targets is defined:
+        Logits for each word in the target sequence: 
+            float tensor with shape [batch_size, target_length, vocab_size]
+        Self-attention weights for encoder part:
+            a dictionary of float tensors {
+                "layer_0": [batch_size, number_of_heads, source_length, source_length],
+                "layer_1": [batch_size, number_of_heads, source_length, source_length],
+                ...
+            }
+        Weights for decoder part:
+            a dictionary of dictionary of float tensors {
+                "self": {
+                    "layer_0": [batch_size, number_of_heads, target_length, target_length],
+                    "layer_1": [batch_size, number_of_heads, target_length, target_length],
+                    ...
+                }
+                "enc_dec": {
+                    "layer_0": [batch_size, number_of_heads, source_length, target_length],
+                    "layer_1": [batch_size, number_of_heads, source_length, target_length],
+                    ...
+                }
+            }
+    
+      If target is none:
+        Auto-regressive beam-search decoding to generate output each one time step:
+            a dictionary {
+            outputs: [batch_size, decoded length]
+            scores: [batch_size, float]}
+            }
+        Weights for decoder part:
+            a dictionary of dictionary of float tensors {
+                "self": {
+                    "layer_0": [batch_size, number_of_heads, target_length, target_length],
+                    "layer_1": [batch_size, number_of_heads, target_length, target_length],
+                    ...
+                }
+                "enc_dec": {
+                    "layer_0": [batch_size, number_of_heads, source_length, target_length],
+                    "layer_1": [batch_size, number_of_heads, source_length, target_length],
+                    ...
+                }
+            }
+        Self-attention weights for encoder part:
+            a dictionary of float tensors {
+                "layer_0": [batch_size, number_of_heads, source_length, source_length],
+                "layer_1": [batch_size, number_of_heads, source_length, source_length],
+                ...
+            }
+
     """
     # # Variance scaling is used here because it seems to work in many problems.
     # # Other reasonable initializers may also work just as well.
@@ -118,6 +161,7 @@ class Transformer(Model):
 
     Returns:
       float tensor with shape [batch_size, input_length, hidden_size]
+      
     """
     
       # Prepare inputs to the layer stack by adding positional encodings and
@@ -223,7 +267,12 @@ class Transformer(Model):
     return symbols_to_logits_fn, weights
 
   def predict(self, encoder_outputs, encoder_decoder_attention_bias):
-    """Return predicted sequence."""
+    """
+    
+    Return predicted sequence, and decoder attention weights.
+
+    
+    """
     batch_size = tf.shape(encoder_outputs)[0]
     input_length = tf.shape(encoder_outputs)[1]
     max_decode_length = input_length + self.params.extra_decode_length
@@ -263,7 +312,15 @@ class Transformer(Model):
     top_decoded_ids = decoded_ids[:, 0, 1:]
     top_scores = scores[:, 0]
 
-    return {"outputs": top_decoded_ids, "scores": top_scores}, weights
+    # post-process the weight attention
+    for i, weight in enumerate(weights):
+        if (i == 0):
+            w = weight
+        else:
+            for k in range(len(w['self'])):
+                w['self']['layer_%d' % k] = tf.concat([w['self']['layer_%d' % k], weight['self']['layer_%d' % k]], 3)
+                w['enc_dec']['layer_%d' % k] = tf.concat([w['enc_dec']['layer_%d' % k], weight['enc_dec']['layer_%d' % k]], 2)
+    return {"outputs": top_decoded_ids, "scores": top_scores}, w
 
 
 class LayerNormalization(tl.layers.Layer):

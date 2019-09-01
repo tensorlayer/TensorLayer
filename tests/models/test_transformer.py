@@ -41,7 +41,7 @@ class TINY_PARAMS(object):
 
     # Default prediction params
     extra_decode_length=5
-    beam_size=2
+    beam_size=1
     alpha=0.6 # used to calculate length normalization in beam search
 
 
@@ -64,7 +64,7 @@ class Model_SEQ2SEQ_Test(CustomTestCase):
 
         assert cls.src_len == cls.tgt_len
 
-        cls.num_epochs = 20
+        cls.num_epochs = 100
         cls.n_step = cls.src_len // cls.batch_size
 
     @classmethod
@@ -108,25 +108,34 @@ class Model_SEQ2SEQ_Test(CustomTestCase):
             model_.eval()
             [prediction, weights_decoder], weights_encoder = model_(inputs = test_sample)
             
+
             print("Prediction: >>>>>  ", prediction["outputs"], "\n Target: >>>>>  ", trainY[0:2, :], "\n\n")
 
             print('Epoch [{}/{}]: loss {:.4f}'.format(epoch + 1, self.num_epochs, total_loss / n_iter))
 
 
-        # visualise the self-attention weights at encoder 
+        # visualise the self-attention weights at encoder during training
         trainX, trainY = shuffle(self.trainX, self.trainY)
         X = [trainX[0]]
         Y = [trainY[0]]
         logits, weights_encoder, weights_decoder = model_(inputs = X, targets = Y)
         attention_visualisation.plot_attention_weights(weights_encoder["layer_0"], X[0].numpy(), X[0].numpy())
 
-        # visualise the self-attention weights at encoder 
+        # visualise the encoder-decoder-attention weights at decoder during training
         trainX, trainY = shuffle(self.trainX, self.trainY)
         X = [trainX[0]]
         Y = [trainY[0]]
         logits, weights_encoder, weights_decoder = model_(inputs = X, targets = Y)
         attention_visualisation.plot_attention_weights(weights_decoder["enc_dec"]["layer_0"], X[0].numpy(), Y[0])
 
+        # visualise the encoder-decoder-attention weights at decoder during inference
+        trainX, trainY = shuffle(self.trainX, self.trainY)
+        X = [trainX[0]]
+        # Y = [trainY[0]]
+        model_.eval()
+        [prediction, weights_decoder], weights_encoder = model_(inputs = X)
+        # print(X[0].numpy(), prediction["outputs"][0].numpy())
+        attention_visualisation.plot_attention_weights(weights_decoder["enc_dec"]["layer_0"], X[0].numpy(), prediction["outputs"][0].numpy())
 
 if __name__ == '__main__':
     unittest.main()

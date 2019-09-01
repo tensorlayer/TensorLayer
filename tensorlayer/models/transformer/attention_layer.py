@@ -124,6 +124,7 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
 
     Returns:
       Attention layer output with shape [batch_size, length_x, hidden_size]
+      Attention weights with shape [batch_size, number_of_head, length_x, length_y]
     """
         # Linearly project the query (q), key (k) and value (v) using different
         # learned projections. This is in preparation of splitting them into
