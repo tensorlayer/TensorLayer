@@ -4,8 +4,6 @@
 import os
 import unittest
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
@@ -14,8 +12,8 @@ from sklearn.utils import shuffle
 from tensorlayer.models.transformer import Transformer
 from tests.utils import CustomTestCase
 from tensorlayer.models.transformer.utils import metrics
-from tensorlayer.cost import cross_entropy_seq
 from tensorlayer.optimizers import lazyAdam as optimizer
+from tensorlayer.models.transformer.utils import attention_visualisation
 import time
 
 
@@ -51,7 +49,7 @@ class Model_SEQ2SEQ_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.batch_size = 16
+        cls.batch_size = 50
 
         cls.embedding_size = 32
         cls.dec_seq_length = 5
@@ -66,7 +64,7 @@ class Model_SEQ2SEQ_Test(CustomTestCase):
 
         assert cls.src_len == cls.tgt_len
 
-        cls.num_epochs = 1000
+        cls.num_epochs = 20
         cls.n_step = cls.src_len // cls.batch_size
 
     @classmethod
@@ -99,8 +97,8 @@ class Model_SEQ2SEQ_Test(CustomTestCase):
                     
                     grad = tape.gradient(loss, model_.all_weights)
                     optimizer.apply_gradients(zip(grad, model_.all_weights))
-                    
             
+
                 total_loss += loss
                 n_iter += 1
             print(time.time()-t)
@@ -113,6 +111,21 @@ class Model_SEQ2SEQ_Test(CustomTestCase):
             print("Prediction: >>>>>  ", prediction["outputs"], "\n Target: >>>>>  ", trainY[0:2, :], "\n\n")
 
             print('Epoch [{}/{}]: loss {:.4f}'.format(epoch + 1, self.num_epochs, total_loss / n_iter))
+
+
+        # visualise the self-attention weights at encoder 
+        trainX, trainY = shuffle(self.trainX, self.trainY)
+        X = [trainX[0]]
+        Y = [trainY[0]]
+        logits, weights_encoder, weights_decoder = model_(inputs = X, targets = Y)
+        attention_visualisation.plot_attention_weights(weights_encoder["layer_0"], X[0].numpy(), X[0].numpy())
+
+        # visualise the self-attention weights at encoder 
+        trainX, trainY = shuffle(self.trainX, self.trainY)
+        X = [trainX[0]]
+        Y = [trainY[0]]
+        logits, weights_encoder, weights_decoder = model_(inputs = X, targets = Y)
+        attention_visualisation.plot_attention_weights(weights_decoder["enc_dec"]["layer_0"], X[0].numpy(), Y[0])
 
 
 if __name__ == '__main__':
