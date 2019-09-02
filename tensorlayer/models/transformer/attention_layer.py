@@ -23,16 +23,21 @@ import tensorlayer as tl
 
 
 class MultiHeadAttentionLayer(tl.layers.Layer):
-    """Multi-headed attention layer."""
+    """The :class:`MultiHeadAttentionLayer` layer is for multi-head attention computation.
+    The weight computation is between "key" and "query", which will then matmul with "value" to generate information
+    that selectively focuses on the "query" messages.
+    Parameters
+    -----------
+    num_heads : int
+        The number of heads which allow attention computation for different features
+    hidden_size : int
+        Out dim for the layer
+    keep_prob : float
+        Keep probablity for drop-out mechanism between 0 and 1
+    """
 
     def __init__(self, num_heads, hidden_size, keep_prob):
-        """Initialize Attention.
 
-    Args:
-      hidden_size: int, output dim of hidden layer.
-      num_heads: int, number of heads to repeat the same attention structure.
-      keep_prob: float, keep rate for dropout mechanism inside attention for training.
-    """
         if hidden_size % num_heads:
             raise ValueError(
                 "Hidden size ({}) must be divisible by the number of heads ({}).".format(hidden_size, num_heads)

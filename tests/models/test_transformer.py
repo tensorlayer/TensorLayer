@@ -17,35 +17,22 @@ from tensorlayer.models.transformer.utils import attention_visualisation
 import time
 
 
-
-
-
 class TINY_PARAMS(object):
     vocab_size = 50
     encoder_num_layers = 2
     decoder_num_layers = 2
-    filter_number = 256
-    R1 = 4
-    R2 = 8
-    n_channels = 2
-    n_units = 128
-    H = 32
-    light_filter_size=(1,3)
-    filter_size = light_filter_size[-1]
     hidden_size = 64
     ff_size = 16
     num_heads = 4
     keep_prob = 0.9
 
-
-
     # Default prediction params
-    extra_decode_length=5
-    beam_size=1
-    alpha=0.6 # used to calculate length normalization in beam search
+    extra_decode_length = 5
+    beam_size = 1
+    alpha = 0.6  # used to calculate length normalization in beam search
 
 
-class Model_SEQ2SEQ_Test(CustomTestCase):
+class Model_Transformer_Test(CustomTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -56,8 +43,8 @@ class Model_SEQ2SEQ_Test(CustomTestCase):
         cls.trainX = np.random.randint(low=2, high=50, size=(50, 11))
         cls.trainY = np.random.randint(low=2, high=50, size=(50, 10))
 
-        cls.trainX[:,-1] = 1
-        cls.trainY[:,-1] = 1
+        cls.trainX[:, -1] = 1
+        cls.trainY[:, -1] = 1
         # Parameters
         cls.src_len = len(cls.trainX)
         cls.tgt_len = len(cls.trainY)
@@ -91,41 +78,38 @@ class Model_SEQ2SEQ_Test(CustomTestCase):
                 with tf.GradientTape() as tape:
 
                     targets = Y
-                    logits, weights_encoder, weights_decoder = model_(inputs = X, targets = Y)
+                    logits, weights_encoder, weights_decoder = model_(inputs=X, targets=Y)
                     logits = metrics.MetricLayer(self.vocab_size)([logits, targets])
                     logits, loss = metrics.LossLayer(self.vocab_size, 0.1)([logits, targets])
-                    
+
                     grad = tape.gradient(loss, model_.all_weights)
                     optimizer.apply_gradients(zip(grad, model_.all_weights))
-            
 
                 total_loss += loss
                 n_iter += 1
-            print(time.time()-t)
+            print(time.time() - t)
             tl.files.save_npz(model_.all_weights, name='./model_v4.npz')
             model_.eval()
             test_sample = trainX[0:2, :]
             model_.eval()
-            [prediction, weights_decoder], weights_encoder = model_(inputs = test_sample)
-            
+            [prediction, weights_decoder], weights_encoder = model_(inputs=test_sample)
 
             print("Prediction: >>>>>  ", prediction["outputs"], "\n Target: >>>>>  ", trainY[0:2, :], "\n\n")
 
             print('Epoch [{}/{}]: loss {:.4f}'.format(epoch + 1, self.num_epochs, total_loss / n_iter))
 
-
         # visualise the self-attention weights at encoder during training
         trainX, trainY = shuffle(self.trainX, self.trainY)
         X = [trainX[0]]
         Y = [trainY[0]]
-        logits, weights_encoder, weights_decoder = model_(inputs = X, targets = Y)
+        logits, weights_encoder, weights_decoder = model_(inputs=X, targets=Y)
         attention_visualisation.plot_attention_weights(weights_encoder["layer_0"], X[0].numpy(), X[0].numpy())
 
         # visualise the encoder-decoder-attention weights at decoder during training
         trainX, trainY = shuffle(self.trainX, self.trainY)
         X = [trainX[0]]
         Y = [trainY[0]]
-        logits, weights_encoder, weights_decoder = model_(inputs = X, targets = Y)
+        logits, weights_encoder, weights_decoder = model_(inputs=X, targets=Y)
         attention_visualisation.plot_attention_weights(weights_decoder["enc_dec"]["layer_0"], X[0].numpy(), Y[0])
 
         # visualise the encoder-decoder-attention weights at decoder during inference
@@ -133,9 +117,12 @@ class Model_SEQ2SEQ_Test(CustomTestCase):
         X = [trainX[0]]
         # Y = [trainY[0]]
         model_.eval()
-        [prediction, weights_decoder], weights_encoder = model_(inputs = X)
+        [prediction, weights_decoder], weights_encoder = model_(inputs=X)
         # print(X[0].numpy(), prediction["outputs"][0].numpy())
-        attention_visualisation.plot_attention_weights(weights_decoder["enc_dec"]["layer_0"], X[0].numpy(), prediction["outputs"][0].numpy())
+        attention_visualisation.plot_attention_weights(
+            weights_decoder["enc_dec"]["layer_0"], X[0].numpy(), prediction["outputs"][0].numpy()
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
