@@ -95,6 +95,7 @@ To release a new version, please update the changelog as followed:
 - Support string dtype in InputLayer (#PR 1017)
 - Support Dynamic RNN in RNN (#PR 1023)
 - Add ResNet50 static model (#PR 1030)
+_ Add performance test code in static model (#PR 1041)
 
 ### Changed
 
@@ -115,6 +116,7 @@ To release a new version, please update the changelog as followed:
 - Copy original model's `trainable_weights` and `nontrainable_weights` when initializing `LayerList` (#PR 1029)
 - Remove redundant parts in `model.all_layers` (#PR 1029)
 - Replace `tf.image.resize_image_with_crop_or_pad` with `tf.image.resize_with_crop_or_pad` (#PR 1032)
+- Fix a bug in `ResNet50` static model (#PR 1041)
 
 ### Removed
 
@@ -124,7 +126,7 @@ To release a new version, please update the changelog as followed:
 
 - @zsdonghao
 - @ChrisWu1997: #1010 #1015 #1025 #1030
-- @warshallrho: #1017 #1021 #1026 #1029 #1032
+- @warshallrho: #1017 #1021 #1026 #1029 #1032 #1041
 - @ArnoldLIULJ: #1023
 - @JingqingZ: #1023
 
