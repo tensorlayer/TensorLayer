@@ -1,7 +1,3 @@
-
-import sys
-sys.path.append("/home/ruihai/tensorlayer/")
-
 import time
 import os
 import psutil
