@@ -344,7 +344,7 @@ class Layer(object):
 
     def __setattr__(self, key, value):
         if isinstance(value, Layer):
-            value._nodes_fixed = True
+            value._fix_nodes_for_layers()
             if self._layers is None:
                 self._layers = []
             self._layers.append(value)
