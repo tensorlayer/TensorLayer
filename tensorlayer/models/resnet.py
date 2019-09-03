@@ -150,21 +150,21 @@ def ResNet50(pretrained=False, end_with='fc1000', n_classes=1000, name=None):
     n = BatchNorm(name='bn_conv1', act='relu')(n)
     n = MaxPool2d((3, 3), strides=(2, 2), name='max_pool1')(n)
 
-    for i, block_name in enumerate(block_names):
-        if len(block_name) == 2:
-            stage = int(block_name[0])
-            block = block_name[1]
+    for i, name in enumerate(block_names):
+        if len(name) == 2:
+            stage = int(name[0])
+            block = name[1]
             if block == 'a':
                 strides = (1, 1) if stage == 2 else (2, 2)
                 n = conv_block(n, 3, block_filters[stage - 2], stage=stage, block=block, strides=strides)
             else:
                 n = identity_block(n, 3, block_filters[stage - 2], stage=stage, block=block)
-        elif block_name == 'avg_pool':
+        elif name == 'avg_pool':
             n = GlobalMeanPool2d(name='avg_pool')(n)
-        elif block_name == 'fc1000':
+        elif name == 'fc1000':
             n = Dense(n_classes, name='fc1000')(n)
 
-        if block_name == end_with:
+        if name == end_with:
             break
 
     network = Model(inputs=ni, outputs=n, name=name)
