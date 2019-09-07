@@ -44,6 +44,7 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     from tensorlayer import optimizers
     from tensorlayer import rein
     from tensorlayer import utils
+    from tensorlayer import data
 
     from tensorlayer.lazy_imports import LazyImport
 
@@ -54,6 +55,7 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     prepro = LazyImport("tensorlayer.prepro")
     utils = LazyImport("tensorlayer.utils")
     visualize = LazyImport("tensorlayer.visualize")
+    data = LazyImport("tensorlayer.data")
 
     # alias
     act = activation
