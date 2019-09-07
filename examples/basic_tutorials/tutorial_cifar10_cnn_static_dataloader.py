@@ -87,14 +87,10 @@ optimizer = tf.optimizers.Adam(learning_rate)
 def _fn_train(img, target):
     # 1. Randomly crop a [height, width] section of the image.
     img = tl.prepro.crop(img, 24, 24, False)
-    # # 2. Randomly flip the image horizontally.
+    # 2. Randomly flip the image horizontally.
     img = tl.prepro.flip_axis(img, is_random=True)
-    # # 3. Randomly change brightness.
-    # # 4. Randomly change contrast.
-    # img = tl.prepro.brightness(img, is_random=True)
-    # # 5. Subtract off the mean and divide by the variance of the pixels.
+    # 3. Subtract off the mean and divide by the variance of the pixels.
     img = tl.prepro.samplewise_norm(img)
-    # img = tl.prepro.featurewise_norm(img)
     target = np.reshape(target, ())
     return img, target
 
