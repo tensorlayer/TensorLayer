@@ -9,7 +9,7 @@ from tensorlayer.files.utils import (del_file, folder_exists, load_file_list, ma
 __all__ = ['load_mpii_pose_dataset']
 
 
-def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
+def load_mpii_pose_dataset(path='raw_data', is_16_pos_only=False):
     """Load MPII Human Pose Dataset.
 
     Parameters

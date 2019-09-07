@@ -9,7 +9,7 @@ from tensorlayer.files.utils import maybe_download_and_extract
 __all__ = ['load_nietzsche_dataset']
 
 
-def load_nietzsche_dataset(path='data'):
+def load_nietzsche_dataset(path='raw_data'):
     """Load Nietzsche dataset.
 
     Parameters

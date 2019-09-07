@@ -11,7 +11,7 @@ from tensorlayer.files.utils import (del_file, folder_exists, load_file_list, ma
 __all__ = ['load_cyclegan_dataset']
 
 
-def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data'):
+def load_cyclegan_dataset(filename='summer2winter_yosemite', path='raw_data'):
     """Load images from CycleGAN's database, see `this link <https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/>`__.
 
     Parameters

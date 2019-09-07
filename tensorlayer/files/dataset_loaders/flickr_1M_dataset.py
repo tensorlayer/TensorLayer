@@ -11,7 +11,7 @@ from tensorlayer.files.utils import (
 __all__ = ['load_flickr1M_dataset']
 
 
-def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printable=False):
+def load_flickr1M_dataset(tag='sky', size=10, path="raw_data", n_threads=50, printable=False):
     """Load Flick1M dataset.
 
     Returns a list of images by a given tag from Flickr1M dataset,

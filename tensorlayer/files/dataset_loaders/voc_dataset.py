@@ -10,7 +10,7 @@ from tensorlayer.files.utils import (del_file, del_folder, folder_exists, load_f
 __all__ = ['load_voc_dataset']
 
 
-def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=False):
+def load_voc_dataset(path='raw_data', dataset='2012', contain_classes_in_person=False):
     """Pascal VOC 2007/2012 Dataset.
 
     It has 20 objects:

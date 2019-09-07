@@ -13,7 +13,7 @@ from tensorlayer.files.utils import maybe_download_and_extract
 __all__ = ['load_cifar10_dataset']
 
 
-def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
+def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='raw_data', plotable=False):
     """Load CIFAR-10 dataset.
 
     It consists of 60000 32x32 colour images in 10 classes, with

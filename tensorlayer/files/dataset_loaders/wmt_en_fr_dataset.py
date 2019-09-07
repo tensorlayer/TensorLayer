@@ -12,7 +12,7 @@ from tensorlayer.files.utils import maybe_download_and_extract
 __all__ = ['load_wmt_en_fr_dataset']
 
 
-def load_wmt_en_fr_dataset(path='data'):
+def load_wmt_en_fr_dataset(path='raw_data'):
     """Load WMT'15 English-to-French translation dataset.
 
     It will download the data from the WMT'15 Website (10^9-French-English corpus), and the 2013 news test from the same site as development set.

@@ -10,7 +10,7 @@ from tensorlayer.files.utils import (download_file_from_google_drive, exists_or_
 __all__ = ['load_celebA_dataset']
 
 
-def load_celebA_dataset(path='data'):
+def load_celebA_dataset(path='raw_data'):
     """Load CelebA dataset
 
     Return a list of image path.

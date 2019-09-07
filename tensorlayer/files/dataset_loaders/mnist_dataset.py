@@ -6,7 +6,7 @@ from tensorlayer.files.utils import _load_mnist_dataset
 __all__ = ['load_mnist_dataset']
 
 
-def load_mnist_dataset(shape=(-1, 784), path='data'):
+def load_mnist_dataset(shape=(-1, 784), path='raw_data'):
     """Load the original mnist.
 
     Automatically download MNIST dataset and return the training, validation and test set with 50000, 10000 and 10000 digit images respectively.
