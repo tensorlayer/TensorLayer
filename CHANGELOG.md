@@ -79,6 +79,7 @@ To release a new version, please update the changelog as followed:
 ### Deprecated
 
 ### Fixed
+- RNN updates: remove warnings, fix if seq_len=0, unitest (#PR 1033)
 
 ### Removed
 
@@ -93,6 +94,7 @@ To release a new version, please update the changelog as followed:
 - Support nested layer customization (#PR 1015)
 - Support string dtype in InputLayer (#PR 1017)
 - Support Dynamic RNN in RNN (#PR 1023)
+- Add ResNet50 static model (#PR 1030)
 
 ### Changed
 
@@ -110,6 +112,9 @@ To release a new version, please update the changelog as followed:
 - Set allow_pickle=True in np.load() (#PR 1021)
 - Remove `private_method` decorator (#PR 1025)
 - Copy original model's `trainable_weights` and `nontrainable_weights` when initializing `ModelLayer` (#PR 1026)
+- Copy original model's `trainable_weights` and `nontrainable_weights` when initializing `LayerList` (#PR 1029)
+- Remove redundant parts in `model.all_layers` (#PR 1029)
+- Replace `tf.image.resize_image_with_crop_or_pad` with `tf.image.resize_with_crop_or_pad` (#PR 1032)
 
 ### Removed
 
@@ -118,8 +123,8 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 
 - @zsdonghao
-- @ChrisWu1997: #1010 #1015 #1025
-- @warshallrho: #1017 #1021 #1026
+- @ChrisWu1997: #1010 #1015 #1025 #1030
+- @warshallrho: #1017 #1021 #1026 #1029 #1032
 - @ArnoldLIULJ: #1023
 - @JingqingZ: #1023
 

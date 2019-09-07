@@ -4,8 +4,20 @@
 Get Involved in Research
 =========================
 
+Ph.D. Postition @ PKU
+=============================================================
 
-Center on Frontiers of Computing Studies, Peking University
+
+Hi, I am Hao Dong, a new faculty member in EECS, Peking University. I now have a few Ph.D. positions per year open for international students who would like to study AI. If you or your friends are interested in it, please contact me ASAP.
+PKU is a top 30 university in the global ranking. The application is competitive, apply early is recommended. For the application of next year, please note that the DDL of Chinese Government Scholarship is in the end of each year, please check this `link <http://www.isd.pku.edu.cn/info/1503/5676.htm>`__ for more details.
+
+My homepage: https://zsdonghao.github.io 
+
+Contact: hao.dong11[AT]imperial.ac.uk
+
+
+
+Faculty Postition @ PKU
 =============================================================
 
 The Center on Frontiers of Computing Studies (CFCS), Peking University (PKU), China, is a university new initiative co-founded by Professors John Hopcroft (Turing Awardee) and Wen Gao (CAE, ACM/IEEE Fellow). The center aims at developing the excellence on two fronts: research and education. On the research front, the center will provide a world-class research environment, where innovation and impactful research is the central aim, measured by professional reputation among world scholars, not by counting the number of publications and research funding. On the education front, the center deeply involves in the Turing Class, an elite undergraduate program that draws the cream of the crop from the PKU undergraduate talent pool. New curriculum and pedagogy are designed and practiced in this program, with the aim to cultivate a new generation of computer scientist/engineers that are solid in both theories and practices. 
@@ -27,12 +39,12 @@ Application for a postdoctoral position should include a curriculum vita, brief 
 We conduct review of applications monthly, immediately upon the recipient of all application materials at the beginning of each month. However, it is highly recommended that applicants submit complete applications sooner than later, as the positions are to be filled quickly. 
  
 
-Data Science Institute, Imperial College London
+Postdoc Postition @ ICL
 ==================================================
 
 Data science is therefore by nature at the core of all modern transdisciplinary scientific activities, as it involves the whole life cycle of data, from acquisition and exploration to analysis and communication of the results. Data science is not only concerned with the tools and methods to obtain, manage and analyse data: it is also about extracting value from data and translating it from asset to product.
 
-Launched on 1st April 2014, the Data Science Institute at Imperial College London aims to enhance Imperial's excellence in data-driven research across its faculties by fulfilling the following objectives.
+Launched on 1st April 2014, the Data Science Institute (DSI) at Imperial College London aims to enhance Imperial's excellence in data-driven research across its faculties by fulfilling the following objectives.
 
 The Data Science Institute is housed in purpose built facilities in the heart of the Imperial College campus in South Kensington. Such a central location provides excellent access to collabroators across the College and across London.
 
@@ -48,3 +60,17 @@ and other ways to
 `get involved <https://www.imperial.ac.uk/data-science/get-involved/>`__
 , or feel free to
 `contact us <https://www.imperial.ac.uk/data-science/get-involved/contact-us/>`__.
+
+Software Engineering@SurgicalAI.cn
+=============================================================
+SurgicalAI is a startup founded by the data scientists and surgical robot experts from Imperial College. Our objective is AI democratise Surgery. By combining 5G, AI and Cloud Computing, SurgicalAI is building a platform enable junor surgeons to perfom complex procedures. As one of the most impactful startup, SurgicalAI is supported by Nvidia, AWS and top surgeons around the world.
+
+Currently based in Hangzhou, China, we are building digital solution for cardiac surgery like TAVR, LAA and Orthopedidcs like TKA and UNA. A demo can be found at here <http://demo5g.surgicalai.cn>
+
+We are activly looking for experts in robotic navigation, computer graphics and  medical image analysis experts to join us, building digitalized surgical service platform for the aging world.
+
+Home Page: http://www.surgicalai.cn
+
+Demo Page: http://demo5g.surgicalai.cn
+
+Contact: liufangde@surgicalai.cn
