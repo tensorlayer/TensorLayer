@@ -80,12 +80,14 @@ To release a new version, please update the changelog as followed:
 
 ### Fixed
 - RNN updates: remove warnings, fix if seq_len=0, unitest (#PR 1033)
+- BN updates: fix BatchNorm1d for 2D data, refactored (#PR 1040)
 
 ### Removed
 
 ### Security
 
 ### Contributors
+- @ChrisWu1997: #1040
 
 
 ## [2.2.1]
