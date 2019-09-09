@@ -4,11 +4,9 @@
     </div>
 </a>
 
-
-
-
 <!--- [![PyPI Version](https://badge.fury.io/py/tensorlayer.svg)](https://badge.fury.io/py/tensorlayer) --->
 <!--- ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/tensorlayer.svg)) --->
+
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/tensorlayer/tensorlayer/master.svg)
 [![Supported TF Version](https://img.shields.io/badge/TensorFlow-2.0.0%2B-brightgreen.svg)](https://github.com/tensorflow/tensorflow/releases)
 [![Documentation Status](https://readthedocs.org/projects/tensorlayer/badge/)](https://tensorlayer.readthedocs.io/)
@@ -19,10 +17,8 @@
 
 <!---  [![CircleCI](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master.svg?style=svg)](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master) --->
 
-<!---  [![Documentation Status](https://readthedocs.org/projects/tensorlayercn/badge/)](https://tensorlayercn.readthedocs.io/) 
+<!---  [![Documentation Status](https://readthedocs.org/projects/tensorlayercn/badge/)](https://tensorlayercn.readthedocs.io/)
 <!---  [![PyUP Updates](https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg)](https://pyup.io/repos/github/tensorlayer/tensorlayer/) --->
-
-
 
 <br/>
 
@@ -42,25 +38,25 @@ TensorLayer is a novel TensorFlow-based deep learning and reinforcement learning
 
 🔥📰🔥 [NNoM](https://github.com/majianjia/nnom): Run TensorLayer quantized models on the **MCU** (e.g., STM32) (Coming Soon)
 
+🔥📰🔥 [Free GPU and Data Storage from SurgicalAI](https://github.com/fangde/FreeGPU): SurgicalAI is sponsoring the TensorLayer Community with Cloud Computing Resources such as Free GPUs and Data Storage.
 
 # Features
 
 As deep learning practitioners, we have been looking for a library that can address various development
- purposes. This library is easy to adopt by providing diverse examples, tutorials and pre-trained models.
+purposes. This library is easy to adopt by providing diverse examples, tutorials and pre-trained models.
 Also, it allow users to easily fine-tune TensorFlow; while being suitable for production deployment. TensorLayer aims to satisfy all these purposes. It has three key features:
 
-- ***Simplicity*** : TensorLayer lifts the low-level dataflow interface of TensorFlow to *high-level* layers / models. It is very easy to learn through the rich [example codes](https://github.com/tensorlayer/awesome-tensorlayer) contributed by a wide community.
-- ***Flexibility*** : TensorLayer APIs are transparent: it does not mask TensorFlow from users; but leaving massive hooks that help *low-level tuning* and *deep customization*.
-- ***Zero-cost Abstraction*** : TensorLayer can achieve the *full power* of TensorFlow. The following table shows the training speeds of [VGG16](http://www.robots.ox.ac.uk/~vgg/research/very_deep/) using TensorLayer and native TensorFlow on a TITAN Xp.
+- **_Simplicity_** : TensorLayer lifts the low-level dataflow interface of TensorFlow to _high-level_ layers / models. It is very easy to learn through the rich [example codes](https://github.com/tensorlayer/awesome-tensorlayer) contributed by a wide community.
+- **_Flexibility_** : TensorLayer APIs are transparent: it does not mask TensorFlow from users; but leaving massive hooks that help _low-level tuning_ and _deep customization_.
+- **_Zero-cost Abstraction_** : TensorLayer can achieve the _full power_ of TensorFlow. The following table shows the training speeds of [VGG16](http://www.robots.ox.ac.uk/~vgg/research/very_deep/) using TensorLayer and native TensorFlow on a TITAN Xp.
 
-    |   Mode    |       Lib       |  Data Format  | Max GPU Memory Usage(MB)  |Max CPU Memory Usage(MB) | Avg CPU Memory Usage(MB) | Runtime (sec) |
-    | :-------: | :-------------: | :-----------: | :-----------------: | :-----------------: | :-----------------: | :-----------: |
-    | AutoGraph | TensorFlow 2.0  | channel last  | 11833 |      2161         |        2136         |      74       |
-    |           | Tensorlayer 2.0 | channel last  | 11833 |      2187         |        2169         |      76       |
-    |   Graph   |      Keras      | channel last  | 8677 |      2580         |        2576         |      101       |
-    |   Eager   | TensorFlow 2.0  | channel last  | 8723 |      2052         |        2024         |      97       |
-    |           | TensorLayer 2.0 | channel last  | 8723 |      2010         |        2007         |      95       |
-
+  |   Mode    |       Lib       | Data Format  | Max GPU Memory Usage(MB) | Max CPU Memory Usage(MB) | Avg CPU Memory Usage(MB) | Runtime (sec) |
+  | :-------: | :-------------: | :----------: | :----------------------: | :----------------------: | :----------------------: | :-----------: |
+  | AutoGraph | TensorFlow 2.0  | channel last |          11833           |           2161           |           2136           |      74       |
+  |           | Tensorlayer 2.0 | channel last |          11833           |           2187           |           2169           |      76       |
+  |   Graph   |      Keras      | channel last |           8677           |           2580           |           2576           |      101      |
+  |   Eager   | TensorFlow 2.0  | channel last |           8723           |           2052           |           2024           |      97       |
+  |           | TensorLayer 2.0 | channel last |           8723           |           2010           |           2007           |      95       |
 
 TensorLayer stands at a unique spot in the library landscape. Other wrapper libraries like Keras and TFLearn also provide high-level abstractions. They, however, often
 hide the underlying engine from users, which make them hard to customize
@@ -140,6 +136,7 @@ pip3 install --upgrade tensorlayer[all]              # all additional dependenci
 pip3 install --upgrade tensorlayer[extra]            # only the `extra` dependencies
 pip3 install --upgrade tensorlayer[contrib_loggers]  # only the `contrib_loggers` dependencies
 ```
+
 <!---
 Alternatively, you can install the latest or development version by directly pulling from github:
 
@@ -187,6 +184,7 @@ nvidia-docker run -it --rm -p 8888:8888 -p 6006:6006 -e PASSWORD=JUPYTER_NB_PASS
 Please read the [Contributor Guideline](CONTRIBUTING.md) before submitting your PRs.
 
 # Cite
+
 If you use TensorLayer for any projects, please cite this paper：
 
 ```
