@@ -2666,6 +2666,10 @@ def _load_weights_from_hdf5_group(f, layers, skip=False):
             elif isinstance(layer, tl.layers.Layer):
                 weight_names = [n.decode('utf8') for n in g.attrs['weight_names']]
                 for iid, w_name in enumerate(weight_names):
+                    # FIXME : this is only for compatibility
+                    if isinstance(layer, tl.layers.BatchNorm) and np.asarray(g[w_name]).ndim > 1:
+                        assign_tf_variable(layer.all_weights[iid], np.asarray(g[w_name]).squeeze())
+                        continue
                     assign_tf_variable(layer.all_weights[iid], np.asarray(g[w_name]))
             else:
                 raise Exception("Only layer or model can be saved into hdf5.")

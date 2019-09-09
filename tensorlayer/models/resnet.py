@@ -194,8 +194,8 @@ def restore_params(network, path='models'):
             continue
         w_names = list(f[layer.name])
         params = [f[layer.name][n][:] for n in w_names]
-        if 'bn' in layer.name:
-            params = [x.reshape(1, 1, 1, -1) for x in params]
+        # if 'bn' in layer.name:
+        #     params = [x.reshape(1, 1, 1, -1) for x in params]
         assign_weights(params, layer)
         del params
 

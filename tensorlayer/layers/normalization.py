@@ -315,6 +315,7 @@ class BatchNorm1d(BatchNorm):
     >>> bn = tl.layers.BatchNorm1d(num_features=32)
 
     """
+
     def _check_input_shape(self, inputs):
         if inputs.ndim != 2 and inputs.ndim != 3:
             raise ValueError('expected input to be 2D or 3D, but got {}D input'.format(inputs.ndim))
@@ -337,6 +338,7 @@ class BatchNorm2d(BatchNorm):
     >>> bn = tl.layers.BatchNorm2d(num_features=32)
 
     """
+
     def _check_input_shape(self, inputs):
         if inputs.ndim != 4:
             raise ValueError('expected input to be 4D, but got {}D input'.format(inputs.ndim))
@@ -359,6 +361,7 @@ class BatchNorm3d(BatchNorm):
     >>> bn = tl.layers.BatchNorm3d(num_features=32)
 
     """
+
     def _check_input_shape(self, inputs):
         if inputs.ndim != 5:
             raise ValueError('expected input to be 5D, but got {}D input'.format(inputs.ndim))

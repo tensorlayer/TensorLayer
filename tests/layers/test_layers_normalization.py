@@ -261,6 +261,7 @@ class Laye_BatchNorm_Test(CustomTestCase):
             self.assertIsInstance(e, ValueError)
             print(e)
 
+
 if __name__ == '__main__':
 
     tl.logging.set_verbosity(tl.logging.DEBUG)
