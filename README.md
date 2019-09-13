@@ -80,7 +80,7 @@ You can find a large collection of tutorials, examples and real-world applicatio
 	</div>
 </a>
 
-# Install
+# Installing TensorLayer is easy
 
 For latest code for TensorLayer 2.0, please build from the source. TensorLayer 2.0 has pre-requisites including TensorFlow 2, numpy, and others. For GPU support, CUDA and cuDNN are required.
 
