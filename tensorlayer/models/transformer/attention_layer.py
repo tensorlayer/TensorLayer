@@ -26,6 +26,7 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
     """The :class:`MultiHeadAttentionLayer` layer is for multi-head attention computation.
     The weight computation is between "key" and "query", which will then matmul with "value" to generate information
     that selectively focuses on the "query" messages.
+
     Parameters
     -----------
     num_heads : int
@@ -79,7 +80,9 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
     The tensor is transposed to insure the inner dimensions hold the correct
     values during the matrix multiplication.
 
-    Args:
+    Parameters
+    -----------
+
       x: A tensor with shape [batch_size, length, hidden_size]
 
     Returns:
@@ -106,7 +109,7 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
       x: A tensor [batch_size, num_heads, length, hidden_size/num_heads]
 
     Returns:
------------
+    -----------
       A tensor with shape [batch_size, length, hidden_size]
     """
         with tf.name_scope("combine_heads"):
