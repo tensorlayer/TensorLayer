@@ -45,20 +45,7 @@ class Transformer(Model):
     
     Examples
     ---------
-    >>> class TINY_PARAMS(object):
-    >>>     vocab_size = 50
-    >>>     encoder_num_layers = 2
-    >>>     decoder_num_layers = 2
-    >>>     hidden_size = 64
-    >>>     ff_size = 16
-    >>>     num_heads = 4
-    >>>     keep_prob = 0.9
-    >>>     extra_decode_length = 5
-    >>>     beam_size = 1
-    >>>     alpha = 0.6  
-    >>>     eos_id = 1
-    >>>     sos_id = 0
-    >>> model = Transformer(TINY_PARAMS)
+    example/translation_task/tutorial_transformer
 
     Returns
     -------
@@ -81,14 +68,16 @@ class Transformer(Model):
     def forward(self, inputs, targets=None):
         """Calculate target logits or inferred target sequences.
 
-    Args:
+    Parameters
+    ----------
       inputs: input tensor list of size 1 or 2.
         First item, inputs: int tensor with shape [batch_size, input_length].
         Second item (optional), targets: None or int tensor with shape
           [batch_size, target_length].
       training: boolean, whether in training mode or not.
 
-    Returns:
+    Returns
+    -------
       If targets is defined:
         Logits for each word in the target sequence: 
             float tensor with shape [batch_size, target_length, vocab_size]
@@ -165,12 +154,14 @@ class Transformer(Model):
     def encode(self, inputs, attention_bias):
         """Generate continuous representation for inputs.
 
-    Args:
+    Parameters
+    ----------
       inputs: int tensor with shape [batch_size, input_length].
       attention_bias: float tensor with shape [batch_size, 1, 1, input_length].
       training: boolean, whether in training mode or not.
 
-    Returns:
+    Returns
+    -------
       float tensor with shape [batch_size, input_length, hidden_size]
       Self-attention weights for encoder part:
         a dictionary of float tensors {
@@ -196,7 +187,8 @@ class Transformer(Model):
     def decode(self, targets, encoder_outputs, attention_bias):
         """Generate logits for each value in the target sequence.
 
-    Args:
+    Parameters
+    ----------
       targets: target values for the output sequence. int tensor with shape
         [batch_size, target_length]
       encoder_outputs: continuous representation of input sequence. float tensor
@@ -204,7 +196,8 @@ class Transformer(Model):
       attention_bias: float tensor with shape [batch_size, 1, 1, input_length]
       training: boolean, whether in training mode or not.
 
-    Returns:
+    Returns
+    -------
       float32 tensor with shape [batch_size, target_length, vocab_size]
       Weights for decoder part:
         a dictionary of dictionary of float tensors {
@@ -226,7 +219,8 @@ class Transformer(Model):
             decoder_inputs = self.embedding_softmax_layer(targets)
             with tf.name_scope("shift_targets"):
                 # Shift targets to the right, and remove the last element
-                decoder_inputs = tf.pad(decoder_inputs, [[0, 0], [1, 0], [0, 0]], constant_values=self.params.sos_id)[:, :-1, :]
+                decoder_inputs = tf.pad(decoder_inputs, [[0, 0], [1, 0], [0, 0]],
+                                        constant_values=self.params.sos_id)[:, :-1, :]
             with tf.name_scope("add_pos_encoding"):
                 length = tf.shape(decoder_inputs)[1]
                 decoder_inputs += positional_encoding(length, self.params.hidden_size)
@@ -254,18 +248,20 @@ class Transformer(Model):
         def symbols_to_logits_fn(ids, i, cache):
             """Generate logits for next potential IDs.
 
-      Args:
+        Parameters
+        ----------
         ids: Current decoded sequences. int tensor with shape [batch_size *
           beam_size, i + 1]
         i: Loop index
         cache: dictionary of values storing the encoder output, encoder-decoder
           attention bias, and previous decoder attention values.
 
-      Returns:
+        Returns
+        -------
         Tuple of
           (logits with shape [batch_size * beam_size, vocab_size],
            updated cache values)
-      """
+        """
             # Set decoder input to the last generated IDs
             decoder_input = ids[:, -1:]
 
@@ -296,7 +292,7 @@ class Transformer(Model):
         symbols_to_logits_fn, weights = self._get_symbols_to_logits_fn(max_decode_length)
 
         # Create initial set of IDs that will be passed into symbols_to_logits_fn.
-        initial_ids = tf.ones([batch_size], dtype=tf.int32)*self.params.sos_id
+        initial_ids = tf.ones([batch_size], dtype=tf.int32) * self.params.sos_id
 
         # Create cache storing decoder attention values for each layer.
         # pylint: disable=g-complex-comprehension
@@ -443,7 +439,8 @@ class EncoderStack(Model):
     def forward(self, inputs, input_mask):
         """Return the output of the encoder layer stacks.
 
-    Args:
+    Parameters
+    -----------
       encoder_inputs: tensor with shape [batch_size, input_length, hidden_size]
       attention_bias: bias for the encoder self-attention layer. [batch_size, 1,
         1, input_length]
@@ -451,7 +448,8 @@ class EncoderStack(Model):
         zero paddings.
       training: boolean, whether in training mode or not.
 
-    Returns:
+     Returns:
+    -----------
       Output of encoder layer stack.
       float32 tensor with shape [batch_size, input_length, hidden_size]
     """
@@ -509,7 +507,8 @@ class DecoderStack(Model):
     def forward(self, inputs, features, input_mask, target_mask, cache=None):
         """Return the output of the decoder layer stacks.
 
-    Args:
+    Parameters
+    -----------
       decoder_inputs: tensor with shape [batch_size, target_length, hidden_size]
       encoder_outputs: tensor with shape [batch_size, input_length, hidden_size]
       decoder_self_attention_bias: bias for decoder self-attention layer. [1, 1,
@@ -523,7 +522,8 @@ class DecoderStack(Model):
                      "v": tensor with shape [batch_size, i, value_channels]},
                        ...}
 
-    Returns:
+     Returns:
+    -----------
       Output of decoder layer stack.
       float32 tensor with shape [batch_size, target_length, hidden_size]
     """

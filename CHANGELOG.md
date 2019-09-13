@@ -95,6 +95,7 @@ To release a new version, please update the changelog as followed:
 - Support string dtype in InputLayer (#PR 1017)
 - Support Dynamic RNN in RNN (#PR 1023)
 - Add ResNet50 static model (#PR 1030)
+- Add Transformer model (#PR 1027)
 
 ### Changed
 
@@ -125,8 +126,8 @@ To release a new version, please update the changelog as followed:
 - @zsdonghao
 - @ChrisWu1997: #1010 #1015 #1025 #1030
 - @warshallrho: #1017 #1021 #1026 #1029 #1032
-- @ArnoldLIULJ: #1023
-- @JingqingZ: #1023
+- @ArnoldLIULJ: #1023 #1027
+- @JingqingZ: #1023 #1027
 
 ## [2.1.0]
 

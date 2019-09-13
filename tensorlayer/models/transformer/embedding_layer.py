@@ -28,7 +28,8 @@ class EmbeddingLayer(tl.layers.Layer):
     def __init__(self, vocab_size, hidden_size):
         """Specify characteristic parameters of embedding layer.
 
-    Args:
+    Parameters
+    -----------
       vocab_size: Number of tokens in the embedding. (Typically ~32,000)
       hidden_size: Dimensionality of the embedding. (Typically 512 or 1024)
     """
@@ -57,10 +58,12 @@ class EmbeddingLayer(tl.layers.Layer):
     def forward(self, inputs, mode="embedding"):
         """Get token embeddings of inputs.
 
-    Args:
+    Parameters
+    -----------
       inputs: An int64 tensor with shape [batch_size, length]
       mode: string, a valid value is one of "embedding" and "linear".
-    Returns:
+     Returns:
+    -----------
       outputs: (1) If mode == "embedding", output embedding tensor, float32 with
         shape [batch_size, length, embedding_size]; (2) mode == "linear", output
         linear tensor, float32 with shape [batch_size, length, vocab_size].
@@ -88,9 +91,11 @@ class EmbeddingLayer(tl.layers.Layer):
     def _linear(self, inputs):
         """Computes logits by running inputs through a linear layer.
 
-    Args:
+    Parameters
+    -----------
       inputs: A float32 tensor with shape [batch_size, length, hidden_size]
-    Returns:
+     Returns:
+    -----------
       float32 tensor with shape [batch_size, length, vocab_size].
     """
         with tf.name_scope("presoftmax_linear"):

@@ -28,7 +28,8 @@ class TransformerFeedForwardLayer(tl.layers.Layer):
     def __init__(self, hidden_size, filter_size, keep_prob):
         """Initialize FeedForwardNetwork.
 
-    Args:
+    Parameters
+    -----------
       hidden_size: int, output dim of hidden layer.
       filter_size: int, filter size for the inner (first) dense layer.
       relu_dropout: float, dropout rate for training.
@@ -61,11 +62,13 @@ class TransformerFeedForwardLayer(tl.layers.Layer):
     def forward(self, inputs):
         """Return outputs of the feedforward network.
 
-    Args:
+    Parameters
+    -----------
       x: tensor with shape [batch_size, length, hidden_size]
       training: boolean, whether in training mode or not.
 
     Returns:
+    -----------
       Output of the feedforward network.
       tensor with shape [batch_size, length, hidden_size]
     """

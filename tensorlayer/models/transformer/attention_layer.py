@@ -83,6 +83,7 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
       x: A tensor with shape [batch_size, length, hidden_size]
 
     Returns:
+    -----------
       A tensor with shape [batch_size, num_heads, length, hidden_size/num_heads]
     """
         with tf.name_scope("split_heads"):
@@ -105,6 +106,7 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
       x: A tensor [batch_size, num_heads, length, hidden_size/num_heads]
 
     Returns:
+-----------
       A tensor with shape [batch_size, length, hidden_size]
     """
         with tf.name_scope("combine_heads"):
@@ -128,6 +130,7 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
         where i is the current decoded length.
 
     Returns:
+    -----------
       Attention layer output with shape [batch_size, length_x, hidden_size]
       Attention weights with shape [batch_size, number_of_head, length_x, length_y]
     """

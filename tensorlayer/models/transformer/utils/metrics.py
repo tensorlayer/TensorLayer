@@ -52,12 +52,14 @@ def _pad_tensors_to_same_length(x, y):
 def padded_cross_entropy_loss(logits, labels, smoothing, vocab_size):
     """Calculate cross entropy loss while ignoring padding.
 
-  Args:
+  Parameters
+-----------
     logits: Tensor of size [batch_size, length_logits, vocab_size]
     labels: Tensor of size [batch_size, length_labels]
     smoothing: Label smoothing constant, used to determine the on and off values
     vocab_size: int size of the vocabulary
-  Returns:
+   Returns:
+-----------
     Returns the cross entropy loss and weight tensors: float32 tensors with
       shape [batch_size, max(length_logits, length_labels)]
   """
@@ -91,11 +93,13 @@ def _convert_to_eval_metric(metric_fn):
   The input metric_fn returns values for the current batch. The wrapper
   aggregates the return values collected over all of the batches evaluated.
 
-  Args:
+  Parameters
+-----------
     metric_fn: function that returns scores and weights for the current batch's
       logits and predicted labels.
 
-  Returns:
+   Returns:
+-----------
     function that aggregates the scores and weights from metric_fn.
   """
 
@@ -190,11 +194,13 @@ def bleu_score(logits, labels):
   decode the ids and tokenize the output. By default, we use ngram order of 4
   and use brevity penalty. Also, this does not have beam search.
 
-  Args:
+  Parameters
+-----------
     logits: Tensor of size [batch_size, length_logits, vocab_size]
     labels: Tensor of size [batch-size, length_labels]
 
-  Returns:
+   Returns:
+-----------
     bleu: int, approx bleu score
   """
     predictions = tf.to_int32(tf.argmax(logits, axis=-1))
@@ -206,12 +212,14 @@ def bleu_score(logits, labels):
 def _get_ngrams_with_counter(segment, max_order):
     """Extracts all n-grams up to a given maximum order from an input segment.
 
-  Args:
+  Parameters
+-----------
     segment: text segment from which n-grams will be extracted.
     max_order: maximum length in tokens of the n-grams returned by this
         methods.
 
-  Returns:
+   Returns:
+-----------
     The Counter containing all n-grams upto max_order in segment
     with a count of how many times each n-gram occurred.
   """
@@ -226,7 +234,8 @@ def _get_ngrams_with_counter(segment, max_order):
 def compute_bleu(reference_corpus, translation_corpus, max_order=4, use_bp=True):
     """Computes BLEU score of translated segments against one or more references.
 
-  Args:
+  Parameters
+-----------
     reference_corpus: list of references for each translation. Each
         reference should be tokenized into a list of tokens.
     translation_corpus: list of translations to score. Each translation
@@ -234,7 +243,8 @@ def compute_bleu(reference_corpus, translation_corpus, max_order=4, use_bp=True)
     max_order: Maximum n-gram order to use when computing BLEU score.
     use_bp: boolean, whether to apply brevity penalty.
 
-  Returns:
+   Returns:
+-----------
     BLEU score.
   """
     reference_length = 0
@@ -292,11 +302,13 @@ def rouge_2_fscore(logits, labels):
   This is an approximate ROUGE scoring method since we do not glue word pieces
   or decode the ids and tokenize the output.
 
-  Args:
+  Parameters
+-----------
     logits: tensor, model predictions
     labels: tensor, gold output.
 
-  Returns:
+   Returns:
+-----------
     rouge2_fscore: approx rouge-2 f1 score.
   """
     predictions = tf.to_int32(tf.argmax(logits, axis=-1))
@@ -308,11 +320,13 @@ def rouge_2_fscore(logits, labels):
 def _get_ngrams(n, text):
     """Calculates n-grams.
 
-  Args:
+  Parameters
+-----------
     n: which n-grams to calculate
     text: An array of tokens
 
-  Returns:
+   Returns:
+-----------
     A set of n-grams
   """
     ngram_set = set()
@@ -329,12 +343,14 @@ def rouge_n(eval_sentences, ref_sentences, n=2):
   Source: https://www.microsoft.com/en-us/research/publication/
   rouge-a-package-for-automatic-evaluation-of-summaries/
 
-  Args:
+  Parameters
+-----------
     eval_sentences: Predicted sentences.
     ref_sentences: Sentences from the reference set
     n: Size of ngram.  Defaults to 2.
 
-  Returns:
+   Returns:
+-----------
     f1 score for ROUGE-N
   """
     f1_scores = []
@@ -369,11 +385,13 @@ def rouge_l_fscore(predictions, labels):
   This is an approximate ROUGE scoring method since we do not glue word pieces
   or decode the ids and tokenize the output.
 
-  Args:
+  Parameters
+-----------
     predictions: tensor, model predictions
     labels: tensor, gold output.
 
-  Returns:
+   Returns:
+-----------
     rouge_l_fscore: approx rouge-l f1 score.
   """
     outputs = tf.to_int32(tf.argmax(predictions, axis=-1))
@@ -398,11 +416,13 @@ def rouge_l_sentence_level(eval_sentences, ref_sentences):
   m = length of reference summary
   n = length of candidate summary
 
-  Args:
+  Parameters
+-----------
     eval_sentences: The sentences that have been picked by the summarizer
     ref_sentences: The sentences from the reference set
 
-  Returns:
+   Returns:
+-----------
     A float: F_lcs
   """
 
@@ -420,7 +440,8 @@ def _len_lcs(x, y):
 
   Source: http://www.algorithmist.com/index.php/Longest_Common_Subsequence
 
-  Args:
+  Parameters
+-----------
     x: sequence of words
     y: sequence of words
 
@@ -439,11 +460,13 @@ def _lcs(x, y):
   in O(nm) time where n = len(x) and m = len(y).
   Source: http://www.algorithmist.com/index.php/Longest_Common_Subsequence
 
-  Args:
+  Parameters
+-----------
     x: collection of words
     y: collection of words
 
-  Returns:
+   Returns:
+-----------
     Table of dictionary of coord and len lcs
   """
     n, m = len(x), len(y)
@@ -465,12 +488,14 @@ def _f_lcs(llcs, m, n):
   Source: http://research.microsoft.com/en-us/um/people/cyl/download/papers/
   rouge-working-note-v1.3.1.pdf
 
-  Args:
+  Parameters
+-----------
     llcs: Length of LCS
     m: number of words in reference summary
     n: number of words in candidate summary
 
-  Returns:
+   Returns:
+-----------
     Float. LCS-based F-measure score
   """
     r_lcs = llcs / m
@@ -498,13 +523,15 @@ def _pad_tensors_to_same_length(x, y):
 def padded_cross_entropy_loss(logits, labels, smoothing, vocab_size):
     """Calculate cross entropy loss while ignoring padding.
 
-  Args:
+  Parameters
+-----------
     logits: Tensor of size [batch_size, length_logits, vocab_size]
     labels: Tensor of size [batch_size, length_labels]
     smoothing: Label smoothing constant, used to determine the on and off values
     vocab_size: int size of the vocabulary
 
-  Returns:
+   Returns:
+-----------
     Returns the cross entropy loss and weight tensors: float32 tensors with
       shape [batch_size, max(length_logits, length_labels)]
   """
@@ -617,13 +644,15 @@ class MetricLayer(tf.keras.layers.Layer):
 def transformer_loss(logits, labels, smoothing, vocab_size):
     """Calculates total loss containing cross entropy with padding ignored.
 
-  Args:
+  Parameters
+-----------
     logits: Tensor of size [batch_size, length_logits, vocab_size]
     labels: Tensor of size [batch_size, length_labels]
     smoothing: Label smoothing constant, used to determine the on and off values
     vocab_size: int size of the vocabulary
 
-  Returns:
+   Returns:
+-----------
     A scalar float tensor for loss.
   """
     xentropy, weights = padded_cross_entropy_loss(logits, labels, smoothing, vocab_size)

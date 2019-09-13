@@ -32,13 +32,15 @@ def positional_encoding(length, hidden_size, min_timescale=1.0, max_timescale=1.
   geometrically increasing wavelengths.
   Defined and formulized in Attention is All You Need, section 3.5.
 
-  Args:
+  Parameters
+-----------
     length: Sequence length.
     hidden_size: Size of the
     min_timescale: Minimum scale that will be applied at each position
     max_timescale: Maximum scale that will be applied at each position
 
-  Returns:
+   Returns:
+-----------
     Tensor with shape [length, hidden_size]
   """
     position = tf.cast(tf.range(length), tf.float32)
@@ -59,10 +61,12 @@ def get_decoder_self_attention_bias(length):
   connections, so prediction at position i cannot draw information from future
   positions.
 
-  Args:
+  Parameters
+-----------
     length: int length of sequences in batch.
 
-  Returns:
+   Returns:
+-----------
     float tensor of shape [1, 1, length, length]
   """
     with tf.name_scope("decoder_self_attention_bias"):
@@ -75,11 +79,13 @@ def get_decoder_self_attention_bias(length):
 def get_padding(x, padding_value=0):
     """Return float tensor representing the padding values in x.
 
-  Args:
+  Parameters
+-----------
     x: int tensor with any shape
     padding_value: int value that
 
-  Returns:
+   Returns:
+-----------
     float tensor with same shape as x containing values 0 or 1.
       0 -> non-padding, 1 -> padding
   """
@@ -94,10 +100,12 @@ def get_padding_bias(x):
   which has shape [batch_size, num_heads, length, length]. The tensor is zero at
   non-padding locations, and -1e9 (negative infinity) at padding locations.
 
-  Args:
+  Parameters
+-----------
     x: int tensor with shape [batch_size, length]
 
-  Returns:
+   Returns:
+-----------
     Attention bias tensor of shape [batch_size, 1, 1, length].
   """
     with tf.name_scope("attention_bias"):
