@@ -12,13 +12,12 @@ from sklearn.utils import shuffle
 from tensorlayer.models.transformer import Transformer
 from tests.utils import CustomTestCase
 from tensorlayer.models.transformer.utils import metrics
-from tensorlayer.optimizers import lazyAdam as optimizer
 from tensorlayer.models.transformer.utils import attention_visualisation
 import time
 
 
 class TINY_PARAMS(object):
-    vocab_size = 50
+    vocab_size = 50+2
     encoder_num_layers = 2
     decoder_num_layers = 2
     hidden_size = 64
@@ -31,6 +30,9 @@ class TINY_PARAMS(object):
     beam_size = 1
     alpha = 0.6  # used to calculate length normalization in beam search
 
+    eos_id = 51
+    sos_id = 0
+
 
 class Model_Transformer_Test(CustomTestCase):
 
@@ -40,11 +42,11 @@ class Model_Transformer_Test(CustomTestCase):
 
         cls.embedding_size = 32
         cls.dec_seq_length = 5
-        cls.trainX = np.random.randint(low=2, high=50, size=(50, 11))
-        cls.trainY = np.random.randint(low=2, high=50, size=(50, 10))
+        cls.trainX = np.random.randint(low=0, high=50, size=(50, 11))
+        cls.trainY = np.random.randint(low=0, high=50, size=(50, 10))
 
-        cls.trainX[:, -1] = 1
-        cls.trainY[:, -1] = 1
+        cls.trainX[:, -1] = 51
+        cls.trainY[:, -1] = 51
         # Parameters
         cls.src_len = len(cls.trainX)
         cls.tgt_len = len(cls.trainY)

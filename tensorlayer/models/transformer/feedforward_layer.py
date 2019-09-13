@@ -22,7 +22,7 @@ import tensorflow as tf
 import tensorlayer as tl
 
 
-class FeedForwardLayer(tl.layers.Layer):
+class TransformerFeedForwardLayer(tl.layers.Layer):
     """Fully connected feedforward network."""
 
     def __init__(self, hidden_size, filter_size, keep_prob):
@@ -33,7 +33,7 @@ class FeedForwardLayer(tl.layers.Layer):
       filter_size: int, filter size for the inner (first) dense layer.
       relu_dropout: float, dropout rate for training.
     """
-        super(FeedForwardLayer, self).__init__()
+        super(TransformerFeedForwardLayer, self).__init__()
         self.hidden_size = hidden_size
         self.filter_size = filter_size
         self.relu_dropout = 1 - keep_prob

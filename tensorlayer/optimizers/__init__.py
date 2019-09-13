@@ -10,3 +10,4 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
 """
 
 from .amsgrad import AMSGrad
+from .lazy_adam import LazyAdamOptimizer

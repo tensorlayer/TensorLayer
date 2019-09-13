@@ -19,7 +19,6 @@ def plot_attention_weights(attention, key, query):
     '''
 
     fig = plt.figure(figsize=(16, 8))
-
     attention = tf.squeeze(attention, axis=0)
 
     for head in range(attention.shape[0]):

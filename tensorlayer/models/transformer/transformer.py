@@ -26,7 +26,7 @@ import tensorlayer as tl
 from tensorlayer.models import Model
 import tensorlayer.models.transformer.embedding_layer as embedding_layer
 from tensorlayer.models.transformer.attention_layer import SelfAttentionLayer, MultiHeadAttentionLayer
-from tensorlayer.models.transformer.feedforward_layer import FeedForwardLayer
+from tensorlayer.models.transformer.feedforward_layer import TransformerFeedForwardLayer
 from tensorlayer.models.transformer.utils.model_utils import positional_encoding
 from tensorlayer.models.transformer.utils.model_utils import get_decoder_self_attention_bias as get_target_mask
 from tensorlayer.models.transformer.utils.model_utils import get_padding_bias as get_input_mask
@@ -56,6 +56,8 @@ class Transformer(Model):
     >>>     extra_decode_length = 5
     >>>     beam_size = 1
     >>>     alpha = 0.6  
+    >>>     eos_id = 1
+    >>>     sos_id = 0
     >>> model = Transformer(TINY_PARAMS)
 
     Returns
@@ -224,7 +226,7 @@ class Transformer(Model):
             decoder_inputs = self.embedding_softmax_layer(targets)
             with tf.name_scope("shift_targets"):
                 # Shift targets to the right, and remove the last element
-                decoder_inputs = tf.pad(decoder_inputs, [[0, 0], [1, 0], [0, 0]])[:, :-1, :]
+                decoder_inputs = tf.pad(decoder_inputs, [[0, 0], [1, 0], [0, 0]], constant_values=self.params.sos_id)[:, :-1, :]
             with tf.name_scope("add_pos_encoding"):
                 length = tf.shape(decoder_inputs)[1]
                 decoder_inputs += positional_encoding(length, self.params.hidden_size)
@@ -294,7 +296,7 @@ class Transformer(Model):
         symbols_to_logits_fn, weights = self._get_symbols_to_logits_fn(max_decode_length)
 
         # Create initial set of IDs that will be passed into symbols_to_logits_fn.
-        initial_ids = tf.zeros([batch_size], dtype=tf.int32)
+        initial_ids = tf.ones([batch_size], dtype=tf.int32)*self.params.sos_id
 
         # Create cache storing decoder attention values for each layer.
         # pylint: disable=g-complex-comprehension
@@ -314,7 +316,7 @@ class Transformer(Model):
         decoded_ids, scores = beam_search.sequence_beam_search(
             symbols_to_logits_fn=symbols_to_logits_fn, initial_ids=initial_ids, initial_cache=cache,
             vocab_size=self.params.vocab_size, beam_size=self.params.beam_size, alpha=self.params.alpha,
-            max_decode_length=max_decode_length, eos_id=1
+            max_decode_length=max_decode_length, eos_id=self.params.eos_id
         )
 
         # Get the top sequence for each batch element
@@ -421,7 +423,7 @@ class EncoderStack(Model):
         for _ in range(params.encoder_num_layers):
             # Create sublayers for each layer.
             self_attention_layer = SelfAttentionLayer(params.num_heads, params.hidden_size, params.keep_prob)
-            feed_forward_network = FeedForwardLayer(params.hidden_size, params.ff_size, params.keep_prob)
+            feed_forward_network = TransformerFeedForwardLayer(params.hidden_size, params.ff_size, params.keep_prob)
 
             self.layers.append(
                 [
@@ -488,7 +490,7 @@ class DecoderStack(Model):
         for _ in range(params.decoder_num_layers):
             self_attention_layer = SelfAttentionLayer(params.num_heads, params.hidden_size, params.keep_prob)
             enc_dec_attention_layer = MultiHeadAttentionLayer(params.num_heads, params.hidden_size, params.keep_prob)
-            feed_forward_network = FeedForwardLayer(params.hidden_size, params.ff_size, params.keep_prob)
+            feed_forward_network = TransformerFeedForwardLayer(params.hidden_size, params.ff_size, params.keep_prob)
 
             self.layers.append(
                 [

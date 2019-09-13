@@ -58,3 +58,8 @@ Seq2seq Luong Attention
 ------------------------
 
 .. autoclass:: Seq2seqLuongAttention
+
+Transformer
+------------------------
+
+.. autoclass:: Transformer
