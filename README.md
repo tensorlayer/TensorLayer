@@ -82,23 +82,22 @@ You can find a large collection of tutorials, examples and real-world applicatio
 
 # Installing TensorLayer is easy
 
-For latest code for TensorLayer 2.0, please build from the source. TensorLayer 2.0 has pre-requisites including TensorFlow 2, numpy, and others. For GPU support, CUDA and cuDNN are required.
+TensorLayer 2.0 relies on TensorFlow, numpy, and others. To use GPUs, CUDA and cuDNN are required.
 
 Install TensorFlow:
 
 ```bash
-pip3 install tensorflow-gpu==2.0.0-rc1 # specific version  (YOU SHOULD INSTALL THIS ONE NOW)
-pip3 install tensorflow-gpu # GPU version
+pip3 install tensorflow-gpu==2.0.0-rc1 # TensorFlow GPU (version 2.0 RC1)
 pip3 install tensorflow # CPU version
 ```
 
-Install the stable version of TensorLayer:
+Install the stable release of TensorLayer:
 
 ```bash
 pip3 install tensorlayer
 ```
 
-Install the latest version of TensorLayer:
+Install the unstable development version of TensorLayer:
 
 ```bash
 pip3 install git+https://github.com/tensorlayer/tensorlayer.git
@@ -111,7 +110,7 @@ pip3 install --upgrade tensorlayer[extra]            # only the `extra` dependen
 pip3 install --upgrade tensorlayer[contrib_loggers]  # only the `contrib_loggers` dependencies
 ```
 
-If you are TensorFloe 1.X users, you can use TensorLayer 1.X:
+If you are TensorFlow 1.X users, you can use TensorLayer 1.X:
 
 ```bash
 # For last stable version of TensorLayer 1.X
