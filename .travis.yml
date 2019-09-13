@@ -18,7 +18,7 @@ branches:
 
 python:
   - "3.6"
-#  - "3.5"
+  - "3.5"
 #  - "2.7"  # TensorLayer 2.0 does not support python2 now
 
 env:
