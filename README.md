@@ -102,39 +102,21 @@ Install the latest version of TensorLayer:
 
 ```bash
 pip3 install git+https://github.com/tensorlayer/tensorlayer.git
-or
-pip3 install https://github.com/tensorlayer/tensorlayer/archive/master.zip
 ```
 
-For developers, you should clone the folder to your local machine and put it along with your project scripts.
-
+If you want to install the additional dependencies, you can also run
 ```bash
-git clone https://github.com/tensorlayer/tensorlayer.git
-```
-
-If you want install TensorLayer 1.X, the simplest way to install TensorLayer 1.X is to use the **Py**thon **P**ackage **I**ndex (PyPI):
-
-```bash
-# for last stable version of TensorLayer 1.X
-pip3 install --upgrade tensorlayer==1.X
-
-# for latest release candidate of TensorLayer 1.X
-pip3 install --upgrade --pre tensorlayer
-
-# if you want to install the additional dependencies, you can also run
 pip3 install --upgrade tensorlayer[all]              # all additional dependencies
 pip3 install --upgrade tensorlayer[extra]            # only the `extra` dependencies
 pip3 install --upgrade tensorlayer[contrib_loggers]  # only the `contrib_loggers` dependencies
 ```
-<!---
-Alternatively, you can install the latest or development version by directly pulling from github:
+
+If you are TensorFloe 1.X users, you can use TensorLayer 1.X:
 
 ```bash
-pip3 install https://github.com/tensorlayer/tensorlayer/archive/master.zip
-# or
-# pip3 install https://github.com/tensorlayer/tensorlayer/archive/<branch-name>.zip
+# For last stable version of TensorLayer 1.X
+pip3 install --upgrade tensorlayer==1.X
 ```
---->
 
 <!---
 ## Using Docker
