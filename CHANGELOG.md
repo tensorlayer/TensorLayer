@@ -133,6 +133,7 @@ This release is compatible with TensorFlow 2 RC1.
 ### Contributors
 
 - @zsdonghao
+- @luomai
 - @ChrisWu1997: #1010 #1015 #1025 #1030 #1040
 - @warshallrho: #1017 #1021 #1026 #1029 #1032 #1041
 - @ArnoldLIULJ: #1023 #1027
