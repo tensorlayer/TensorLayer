@@ -33,15 +33,16 @@ def positional_encoding(length, hidden_size, min_timescale=1.0, max_timescale=1.
   Defined and formulized in Attention is All You Need, section 3.5.
 
   Parameters
------------
-    length: Sequence length.
-    hidden_size: Size of the
-    min_timescale: Minimum scale that will be applied at each position
-    max_timescale: Maximum scale that will be applied at each position
+``-----------
+    length : int
+      Sequence length.
+    hidden_size : int
+      channel number of input
+    min_timescale : float
+      Minimum scale that will be applied at each position
+    max_timescale : float
+      Maximum scale that will be applied at each position
 
-   Returns:
------------
-    Tensor with shape [length, hidden_size]
   """
     position = tf.cast(tf.range(length), tf.float32)
     num_timescales = hidden_size // 2
@@ -62,12 +63,11 @@ def get_decoder_self_attention_bias(length):
   positions.
 
   Parameters
------------
-    length: int length of sequences in batch.
+  -----------
+    length: int 
+      length of sequences in batch.
 
-   Returns:
------------
-    float tensor of shape [1, 1, length, length]
+
   """
     with tf.name_scope("decoder_self_attention_bias"):
         valid_locs = tf.linalg.band_part(tf.ones([length, length]), -1, 0)
@@ -80,14 +80,10 @@ def get_padding(x, padding_value=0):
     """Return float tensor representing the padding values in x.
 
   Parameters
------------
+  -----------
     x: int tensor with any shape
-    padding_value: int value that
+    padding_value: int 
 
-   Returns:
------------
-    float tensor with same shape as x containing values 0 or 1.
-      0 -> non-padding, 1 -> padding
   """
     with tf.name_scope("padding"):
         return tf.cast(tf.equal(x, padding_value), tf.float32)
@@ -101,12 +97,9 @@ def get_padding_bias(x):
   non-padding locations, and -1e9 (negative infinity) at padding locations.
 
   Parameters
------------
+  -----------
     x: int tensor with shape [batch_size, length]
 
-   Returns:
------------
-    Attention bias tensor of shape [batch_size, 1, 1, length].
   """
     with tf.name_scope("attention_bias"):
         padding = get_padding(x)
