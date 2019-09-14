@@ -166,15 +166,6 @@ class SequenceBeamSearch(object):
       2) when the worst score in the finished sequences is better than the best
          score in the alive sequences (i.e. the finished sequences are provably
          unchanging)
-
-    Parameters
-    -----------
-      state: A dictionary with the current loop state.
-
-    Returns:
-    -----------
-      Bool tensor with value True if loop should continue, False if loop should
-      terminate.
     """
         i = state[_StateKeys.CUR_INDEX]
         alive_log_probs = state[_StateKeys.ALIVE_LOG_PROBS]
@@ -216,13 +207,6 @@ class SequenceBeamSearch(object):
     by the length normalization factor. Without length normalization, the
     search is more likely to return shorter sequences.
 
-    Parameters
-    -----------
-      state: A dictionary with the current loop state.
-
-    Returns:
-    -----------
-      new state dictionary.
     """
         # Grow alive sequences by one token.
         new_seq, new_log_probs, new_cache = self._grow_alive_seq(state)
@@ -241,20 +225,9 @@ class SequenceBeamSearch(object):
 
     def _grow_alive_seq(self, state):
         """Grow alive sequences by one token, and collect top 2*beam_size sequences.
-
     2*beam_size sequences are collected because some sequences may have reached
     the EOS token. 2*beam_size ensures that at least beam_size sequences are
     still alive.
-
-    Parameters
-    -----------
-      state: A dictionary with the current loop state.
-    Returns:
-    -----------
-      Tuple of
-      (Top 2*beam_size sequences [batch_size, 2 * beam_size, cur_index + 1],
-       Scores of returned sequences [batch_size, 2 * beam_size],
-       New alive cache, for each of the 2 * beam_size sequences)
     """
         i = state[_StateKeys.CUR_INDEX]
         alive_seq = state[_StateKeys.ALIVE_SEQ]
@@ -384,10 +357,11 @@ def sequence_beam_search(
     eos_id: int 
         id of eos token, used to determine when a sequence has finished
     
-    Returns
+    Notes
     -------
-    Top decoded sequences [batch_size, beam_size, max_decode_length]
-    sequence scores [batch_size, beam_size]
+    The function would return:
+      Top decoded sequences [batch_size, beam_size, max_decode_length]
+      sequence scores [batch_size, beam_size]
   """
     batch_size = tf.shape(initial_ids)[0]
     sbs = SequenceBeamSearch(symbols_to_logits_fn, vocab_size, batch_size, beam_size, alpha, max_decode_length, eos_id)
@@ -449,14 +423,6 @@ def _get_shape_keep_last_dim(tensor):
 
 def _flatten_beam_dim(tensor):
     """Reshapes first two dimensions in to single dimension.
-
-  Parameters
-  -----------
-    tensor: Tensor to reshape of shape [A, B, ...]
-
-  Returns
-  -----------
-    Reshaped tensor of shape [A*B, ...]
   """
     shape = _shape_list(tensor)
     shape[0] *= shape[1]

@@ -60,6 +60,7 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
         }
 
     def build(self, inputs_shape):
+
         # Transformation for linearly projecting the queries, keys, and values.
         self.q_transformation = self._get_weights(
             "q_project", shape=(self.hidden_size, self.hidden_size), init=tf.initializers.get('glorot_uniform')
@@ -75,20 +76,7 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
         )
 
     def split_heads(self, x):
-        """Split x into different heads, and transpose the resulting value.
 
-    The tensor is transposed to insure the inner dimensions hold the correct
-    values during the matrix multiplication.
-
-    Parameters
-    -----------
-
-      x: A tensor with shape [batch_size, length, hidden_size]
-
-    Returns:
-    -----------
-      A tensor with shape [batch_size, num_heads, length, hidden_size/num_heads]
-    """
         with tf.name_scope("split_heads"):
             batch_size = tf.shape(x)[0]
             length = tf.shape(x)[1]
@@ -103,15 +91,7 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
             return tf.transpose(x, [0, 2, 1, 3])
 
     def combine_heads(self, x):
-        """Combine tensor that has been split.
 
-    Args:
-      x: A tensor [batch_size, num_heads, length, hidden_size/num_heads]
-
-    Returns:
-    -----------
-      A tensor with shape [batch_size, length, hidden_size]
-    """
         with tf.name_scope("combine_heads"):
             batch_size = tf.shape(x)[0]
             length = tf.shape(x)[2]
@@ -119,24 +99,7 @@ class MultiHeadAttentionLayer(tl.layers.Layer):
             return tf.reshape(x, [batch_size, length, self.hidden_size])
 
     def forward(self, x, y, mask, cache=None):
-        """Apply attention mechanism to x and y.
-
-    Args:
-      x: a tensor with shape [batch_size, length_x, hidden_size]
-      y: a tensor with shape [batch_size, length_y, hidden_size]
-      mask: attention bias that will be added to the result of the dot product.
-      training: boolean, whether in training mode or not.
-      cache: (Used during prediction) dictionary with tensors containing results
-        of previous attentions. The dictionary must have the items:
-            {"k": tensor with shape [batch_size, i, key_channels],
-             "v": tensor with shape [batch_size, i, value_channels]}
-        where i is the current decoded length.
-
-    Returns:
-    -----------
-      Attention layer output with shape [batch_size, length_x, hidden_size]
-      Attention weights with shape [batch_size, number_of_head, length_x, length_y]
-    """
+        """Apply attention mechanism to x and y."""
         # Linearly project the query (q), key (k) and value (v) using different
         # learned projections. This is in preparation of splitting them into
         # multiple heads. Multi-head attention uses multiple queries, keys, and

@@ -30,8 +30,10 @@ class EmbeddingLayer(tl.layers.Layer):
 
     Parameters
     -----------
-      vocab_size: Number of tokens in the embedding. (Typically ~32,000)
-      hidden_size: Dimensionality of the embedding. (Typically 512 or 1024)
+      vocab_size : int
+        Number of tokens in the embedding. (Typically ~32,000)
+      hidden_size : int
+        Dimensionality of the embedding. (Typically 512 or 1024)
     """
         super(EmbeddingLayer, self).__init__()
         self.vocab_size = vocab_size
@@ -56,20 +58,7 @@ class EmbeddingLayer(tl.layers.Layer):
         }
 
     def forward(self, inputs, mode="embedding"):
-        """Get token embeddings of inputs.
-
-    Parameters
-    -----------
-      inputs: An int64 tensor with shape [batch_size, length]
-      mode: string, a valid value is one of "embedding" and "linear".
-     Returns:
-    -----------
-      outputs: (1) If mode == "embedding", output embedding tensor, float32 with
-        shape [batch_size, length, embedding_size]; (2) mode == "linear", output
-        linear tensor, float32 with shape [batch_size, length, vocab_size].
-    Raises:
-      ValueError: if mode is not valid.
-    """
+        """Get token embeddings of inputs."""
         if mode == "embedding":
             return self._embedding(inputs)
         elif mode == "linear":
@@ -89,15 +78,7 @@ class EmbeddingLayer(tl.layers.Layer):
             return embeddings
 
     def _linear(self, inputs):
-        """Computes logits by running inputs through a linear layer.
-
-    Parameters
-    -----------
-      inputs: A float32 tensor with shape [batch_size, length, hidden_size]
-     Returns:
-    -----------
-      float32 tensor with shape [batch_size, length, vocab_size].
-    """
+        """Computes logits by running inputs through a linear layer."""
         with tf.name_scope("presoftmax_linear"):
             batch_size = tf.shape(inputs)[0]
             length = tf.shape(inputs)[1]

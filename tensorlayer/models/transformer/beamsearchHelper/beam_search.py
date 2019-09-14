@@ -72,10 +72,11 @@ def sequence_beam_search(
     eos_id: int 
         id of eos token, used to determine when a sequence has finished
     
-    Returns
+    Notes
     -------
-    Top decoded sequences [batch_size, beam_size, max_decode_length]
-    sequence scores [batch_size, beam_size]
+    The function would return:
+        Top decoded sequences [batch_size, beam_size, max_decode_length]
+        sequence scores [batch_size, beam_size]
   """
 
     batch_size = tf.shape(initial_ids)[0]

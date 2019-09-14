@@ -74,10 +74,12 @@ class Transformer(Model):
         First item, inputs: int tensor with shape [batch_size, input_length].
         Second item (optional), targets: None or int tensor with shape
           [batch_size, target_length].
-      training: boolean, whether in training mode or not.
+      training: boolean
+        whether in training mode or not.
 
-    Returns
+    Notes
     -------
+    The function would return:
       If targets is defined:
         Logits for each word in the target sequence: 
             float tensor with shape [batch_size, target_length, vocab_size]
@@ -162,13 +164,15 @@ class Transformer(Model):
 
     Returns
     -------
-      float tensor with shape [batch_size, input_length, hidden_size]
-      Self-attention weights for encoder part:
-        a dictionary of float tensors {
+      Float tensor with shape [batch_size, input_length, hidden_size]:
+        The output of encoder
+      
+      Dictionary of float tensors {
             "layer_0": [batch_size, number_of_heads, source_length, source_length],
             "layer_1": [batch_size, number_of_heads, source_length, source_length],
             ...
-        }
+        }:
+        Self-attention weights for encoder part
     """
 
         # Prepare inputs to the layer stack by adding positional encodings and
@@ -198,9 +202,10 @@ class Transformer(Model):
 
     Returns
     -------
-      float32 tensor with shape [batch_size, target_length, vocab_size]
-      Weights for decoder part:
-        a dictionary of dictionary of float tensors {
+      Float32 tensor with shape [batch_size, target_length, vocab_size]:
+        Output of decoder part
+        
+      Dictionary of dictionary of float tensors {
             "self": {
                 "layer_0": [batch_size, number_of_heads, target_length, target_length],
                 "layer_1": [batch_size, number_of_heads, target_length, target_length],
@@ -211,7 +216,8 @@ class Transformer(Model):
                 "layer_1": [batch_size, number_of_heads, source_length, target_length],
                 ...
             }
-        }
+        }:
+        Weights for decoder part
     """
         with tf.name_scope("decode"):
             # Prepare inputs to decoder layers by shifting targets, adding positional
@@ -246,22 +252,8 @@ class Transformer(Model):
         weights = []
 
         def symbols_to_logits_fn(ids, i, cache):
-            """Generate logits for next potential IDs.
+            """Generate logits for next potential IDs."""
 
-        Parameters
-        ----------
-        ids: Current decoded sequences. int tensor with shape [batch_size *
-          beam_size, i + 1]
-        i: Loop index
-        cache: dictionary of values storing the encoder output, encoder-decoder
-          attention bias, and previous decoder attention values.
-
-        Returns
-        -------
-        Tuple of
-          (logits with shape [batch_size * beam_size, vocab_size],
-           updated cache values)
-        """
             # Set decoder input to the last generated IDs
             decoder_input = ids[:, -1:]
 
@@ -282,9 +274,7 @@ class Transformer(Model):
         return symbols_to_logits_fn, weights
 
     def predict(self, encoder_outputs, encoder_decoder_attention_bias):
-        """
-    Return predicted sequence, and decoder attention weights.
-    """
+
         batch_size = tf.shape(encoder_outputs)[0]
         input_length = tf.shape(encoder_outputs)[1]
         max_decode_length = input_length + self.params.extra_decode_length
@@ -338,11 +328,10 @@ class LayerNormalization(tl.layers.Layer):
 
     Parameters
     ----------
-    hidden_size:
+    hidden_size: int
         hidden size of features
-    epsilon:
+    epsilon: float
         value to prevent division by zero
-
     """
 
     def __init__(self, hidden_size, epsilon=1e-6):
@@ -437,22 +426,7 @@ class EncoderStack(Model):
         }
 
     def forward(self, inputs, input_mask):
-        """Return the output of the encoder layer stacks.
-
-    Parameters
-    -----------
-      encoder_inputs: tensor with shape [batch_size, input_length, hidden_size]
-      attention_bias: bias for the encoder self-attention layer. [batch_size, 1,
-        1, input_length]
-      inputs_padding: tensor with shape [batch_size, input_length], inputs with
-        zero paddings.
-      training: boolean, whether in training mode or not.
-
-     Returns:
-    -----------
-      Output of encoder layer stack.
-      float32 tensor with shape [batch_size, input_length, hidden_size]
-    """
+        """Return the output of the encoder layer stacks."""
         encoder_inputs = inputs
         weights = {}
         for n, layer in enumerate(self.layers):
@@ -509,23 +483,20 @@ class DecoderStack(Model):
 
     Parameters
     -----------
-      decoder_inputs: tensor with shape [batch_size, target_length, hidden_size]
-      encoder_outputs: tensor with shape [batch_size, input_length, hidden_size]
+      decoder_inputs : tensor with shape [batch_size, target_length, hidden_size]
+      encoder_outputs : tensor with shape [batch_size, input_length, hidden_size]
       decoder_self_attention_bias: bias for decoder self-attention layer. [1, 1,
         target_len, target_length]
-      attention_bias: bias for encoder-decoder attention layer. [batch_size, 1,
+      attention_bias : bias for encoder-decoder attention layer. [batch_size, 1,
         1, input_length]
-      training: boolean, whether in training mode or not.
+      training : boolean 
+        whether in training mode or not.
       cache: (Used for fast decoding) A nested dictionary storing previous
         decoder self-attention values. The items are:
           {layer_n: {"k": tensor with shape [batch_size, i, key_channels],
                      "v": tensor with shape [batch_size, i, value_channels]},
                        ...}
 
-     Returns:
-    -----------
-      Output of decoder layer stack.
-      float32 tensor with shape [batch_size, target_length, hidden_size]
     """
         decoder_inputs = inputs
         decoder_self_attention_bias = target_mask
