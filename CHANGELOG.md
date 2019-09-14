@@ -79,7 +79,6 @@ To release a new version, please update the changelog as followed:
 ### Deprecated
 
 ### Fixed
-- RNN updates: remove warnings, fix if seq_len=0, unitest (#PR 1033)
 
 ### Removed
 
@@ -88,7 +87,11 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 
 
-## [2.2.1]
+## [2.2.0] - 2019-09-13
+
+TensorLayer 2.2.0 is a maintenance release. 
+It contains numerous API improvement and bug fixes. 
+This release is compatible with TensorFlow 2 RC1. 
 
 ### Added
 - Support nested layer customization (#PR 1015)
@@ -96,12 +99,17 @@ To release a new version, please update the changelog as followed:
 - Support Dynamic RNN in RNN (#PR 1023)
 - Add ResNet50 static model (#PR 1030)
 - Add Transformer model (#PR 1027)
+- Add performance test code in static model (#PR 1041)
 
 ### Changed
 
 - `SpatialTransform2dAffine` auto `in_channels`
-- support TensorFlow 2.0.0-beta1
+- support TensorFlow 2.0.0-rc1
 - Update model weights property, now returns its copy (#PR 1010)
+
+### Fixed
+- RNN updates: remove warnings, fix if seq_len=0, unitest (#PR 1033)
+- BN updates: fix BatchNorm1d for 2D data, refactored (#PR 1040)
 
 ### Dependencies Update
 
@@ -116,6 +124,7 @@ To release a new version, please update the changelog as followed:
 - Copy original model's `trainable_weights` and `nontrainable_weights` when initializing `LayerList` (#PR 1029)
 - Remove redundant parts in `model.all_layers` (#PR 1029)
 - Replace `tf.image.resize_image_with_crop_or_pad` with `tf.image.resize_with_crop_or_pad` (#PR 1032)
+- Fix a bug in `ResNet50` static model (#PR 1041)
 
 ### Removed
 
@@ -199,15 +208,12 @@ A maintain release.
 - @warshallrho: #PR966
 - @zsdonghao: #931
 - @yd-yin: #963
-<<<<<<< HEAD
 - @Tokarev-TT-33: # 995
 - @initial-h: # 995
 - @quantumiracle: #995
 - @Officium: #995
-=======
 - @1FengL: #958
 - @dvklopfenstein: #971
->>>>>>> 560dbb8a17963023a3b1d59a79e1c2752530114a
 
 
 ## [2.0.0] - 2019-05-04
@@ -560,7 +566,7 @@ To many PR for this update, please check [here](https://github.com/tensorlayer/t
 @zsdonghao @luomai @DEKHTIARJonathan
 
 [Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/2.0....master
-[2.1.1]: https://github.com/tensorlayer/tensorlayer/compare/2.1.1...2.1.1
+[2.2.0]: https://github.com/tensorlayer/tensorlayer/compare/2.2.0...2.2.0
 [2.1.0]: https://github.com/tensorlayer/tensorlayer/compare/2.1.0...2.1.0
 [2.0.2]: https://github.com/tensorlayer/tensorlayer/compare/2.0.2...2.0.2
 [2.0.1]: https://github.com/tensorlayer/tensorlayer/compare/2.0.1...2.0.1
