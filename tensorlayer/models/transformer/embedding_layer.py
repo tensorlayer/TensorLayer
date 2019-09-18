@@ -30,10 +30,16 @@ class EmbeddingLayer(tl.layers.Layer):
 
     Parameters
     -----------
-      vocab_size : int
+    vocab_size : int
         Number of tokens in the embedding. (Typically ~32,000)
-      hidden_size : int
+    hidden_size : int
         Dimensionality of the embedding. (Typically 512 or 1024)
+
+    Examples
+    ---------
+    with TensorLayer
+
+    
     """
         super(EmbeddingLayer, self).__init__()
         self.vocab_size = vocab_size
