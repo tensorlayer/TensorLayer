@@ -179,7 +179,3 @@ If you find TensorLayer useful for your project, please cite the following paper
     year    = {2017}
 }
 ```
-
-# License
-
-TensorLayer is released under the Apache 2.0 license. 
