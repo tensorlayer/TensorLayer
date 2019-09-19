@@ -25,13 +25,13 @@ TensorLayer can also be found at [iHub](https://code.ihub.org.cn/projects/328) a
 
 # News
 
-🔥📰🔥 Reinforcement Learning Model Zoo: [Low-level APIs for Research](https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning) and [High-level APIs for Production](https://github.com/tensorlayer/RLzoo)
+🔥 Reinforcement Learning Model Zoo: [Low-level APIs for Research](https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning) and [High-level APIs for Production](https://github.com/tensorlayer/RLzoo)
 
-🔥📰🔥 [Sipeed Maxi-EMC](https://github.com/sipeed/Maix-EMC): Run TensorLayer models on the **low-cost AI chip** (e.g., K210) (Alpha Version)
+🔥 [Sipeed Maxi-EMC](https://github.com/sipeed/Maix-EMC): Run TensorLayer models on the **low-cost AI chip** (e.g., K210) (Alpha Version)
 
-<!-- 🔥📰🔥 [NNoM](https://github.com/majianjia/nnom): Run TensorLayer quantized models on the **MCU** (e.g., STM32) (Coming Soon) -->
+<!-- 🔥 [NNoM](https://github.com/majianjia/nnom): Run TensorLayer quantized models on the **MCU** (e.g., STM32) (Coming Soon) -->
 
-🔥📰🔥 [Free GPU and storage resources](https://github.com/fangde/FreeGPU): TensorLayer users can access to free GPU and storage resources donated by SurgicalAI. Thank you SurgicalAI!
+🔥 [Free GPU and storage resources](https://github.com/fangde/FreeGPU): TensorLayer users can access to free GPU and storage resources donated by SurgicalAI. Thank you SurgicalAI!
 
 # Features
 
@@ -47,7 +47,7 @@ making it easy to learn while being flexible enough to cope with complex AI task
 TensorLayer has a fast-growing community. It has been used by researchers and engineers all over the world, including those from  Peking University,
 Imperial College London, UC Berkeley, Carnegie Mellon University, Stanford University, and companies like Google, Microsoft, Alibaba, Tencent, Xiaomi, and Bloomberg.
 
-# Multilingual documents
+# Multilingual Documents
 
 TensorLayer has extensive documentation for both beginners and professionals. The documentation is available in
 both English and Chinese.
@@ -59,7 +59,7 @@ both English and Chinese.
 If you want to try the experimental features on the the master branch, you can find the latest document
 [here](https://tensorlayer.readthedocs.io/en/latest/).
 
-# Extensive examples
+# Extensive Examples
 
 You can find a large collection of tutorials, examples and real-world applications using TensorLayer within [examples](examples/) or through the following space:
 
@@ -69,7 +69,7 @@ You can find a large collection of tutorials, examples and real-world applicatio
 	</div>
 </a> -->
 
-# Getting start
+# Getting Start
 
 TensorLayer 2.0 relies on TensorFlow, numpy, and others. To use GPUs, CUDA and cuDNN are required.
 
@@ -138,7 +138,7 @@ nvidia-docker run -it --rm -p 8888:8888 -p 6006:6006 -e PASSWORD=JUPYTER_NB_PASS
 ```
 --->
 
-# Benchmark
+# Performance Benchmark
 
 The following table shows the training speeds of [VGG16](http://www.robots.ox.ac.uk/~vgg/research/very_deep/) using TensorLayer and native TensorFlow on a TITAN Xp.
 
@@ -166,7 +166,7 @@ We suggest users to report bugs using Github issues. Users can also discuss how 
 
 <br/>
 
-# Cite
+# Citing TensorLayer
 
 If you find TensorLayer useful for your project, please cite the following paper：
 
