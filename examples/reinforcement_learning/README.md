@@ -56,7 +56,6 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 | Prioritized Experience Replay | Discrete     | Pong, CartPole | [Schaul et al. Prioritized experience replay. Schaul et al. 2015.](https://arxiv.org/abs/1511.05952) |
 |Dueling DQN|Discrete     | Pong, CartPole |[Dueling network architectures for deep reinforcement learning. Wang et al. 2015.](https://arxiv.org/abs/1511.06581)|
 |Double DQN| Discrete     | Pong, CartPole |[Deep reinforcement learning with double q-learning. Van et al. 2016.](https://arxiv.org/abs/1509.06461)|
-|Retrace|Discrete     | Pong, CartPole |[Safe and efficient off-policy reinforcement learning. Munos et al. 2016: ](https://arxiv.org/pdf/1606.02647.pdf)|
 |Noisy DQN|Discrete     | Pong, CartPole |[Noisy networks for exploration. Fortunato et al. 2017.](https://arxiv.org/pdf/1706.10295.pdf)|
 | Distributed DQN (C51)| Discrete     | Pong, CartPole | [A distributional perspective on reinforcement learning. Bellemare et al. 2017.](https://arxiv.org/pdf/1707.06887.pdf) |
 |**policy-based**||||
@@ -168,23 +167,6 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
   ```
   Categorical 51 distributional RL algorithm is a distrbuted DQN, where 51 means the number of atoms. In this algorithm, instead of estimating actual expected value, value distribution over a series of  continuous sub-intervals (atoms) is considered.
   ```
-
-
-
-
-* **Retrace(lambda) DQN**
-
-  <u>Code</u>: `./tutorial_Retrace.py`
-
-  <u>Paper</u>: [Safe and Efficient Off-Policy Reinforcement Learning](https://arxiv.org/abs/1606.02647)
-
-  <u>Description:</u>
-
-  ```
-  Retrace (lambda) is an off-policy algorithm that extend the idea of eligibility trace. It apply an importance sampling ratio truncated at 1 to several behaviour policies, which suffer from the variance explosion of standard IS and lead to safe and efficient learning.
-  ```
-
-
 
 
 * **Actor-Critic (AC)**
@@ -355,5 +337,5 @@ Our env wrapper: `./tutorial_wrappers.py`
 - @zsdonghao Hao Dong: AC, A3C, Q-Learning, DQN, PG
 - @quantumiracle Zihan Ding: SAC, TD3.
 - @Tokarev-TT-33 Tianyang Yu @initial-h Hongming Zhang : PG, DDPG, PPO, DPPO, TRPO
-- @Officium Yanhua Huang: C51, Retrace, DQN_variants, prioritized_replay, wrappers.
+- @Officium Yanhua Huang: C51, DQN_variants, prioritized_replay, wrappers.
 
