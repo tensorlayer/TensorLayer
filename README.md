@@ -61,7 +61,7 @@ If you want to try the experimental features on the the master branch, you can f
 
 # Extensive Examples
 
-You can find a large collection of tutorials, examples and real-world applications using TensorLayer within [examples](examples/) or through the following space:
+You can find a large collection of examples that use TensorLayer in [here](examples/) and the following space:
 
 <a href="https://github.com/tensorlayer/awesome-tensorlayer/blob/master/readme.md" target="\_blank">
 	<div align="center">
