@@ -33,7 +33,7 @@ TensorLayer can also be found at [iHub](https://code.ihub.org.cn/projects/328) a
 
 🔥 [Free GPU and storage resources](https://github.com/fangde/FreeGPU): TensorLayer users can access to free GPU and storage resources donated by SurgicalAI. Thank you SurgicalAI!
 
-# Features
+# Design Features
 
 TensorLayer is a new deep learning library designed with simplicity, flexibility and high-performance in mind.
 
@@ -150,7 +150,7 @@ The following table shows the training speeds of [VGG16](http://www.robots.ox.ac
 |   Eager   | TensorFlow 2.0  | channel last  | 8723 |      2052         |        2024         |      97       |
 |           | TensorLayer 2.0 | channel last  | 8723 |      2010         |        2007         |      95       |
 
-# Getting involved
+# Getting Involved
 
 Please read the [Contributor Guideline](CONTRIBUTING.md) before submitting your PRs.
 
