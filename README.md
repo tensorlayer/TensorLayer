@@ -63,11 +63,11 @@ If you want to try the experimental features on the the master branch, you can f
 
 You can find a large collection of tutorials, examples and real-world applications using TensorLayer within [examples](examples/) or through the following space:
 
-<!-- <a href="https://github.com/tensorlayer/awesome-tensorlayer/blob/master/readme.md" target="\_blank">
+<a href="https://github.com/tensorlayer/awesome-tensorlayer/blob/master/readme.md" target="\_blank">
 	<div align="center">
 		<img src="img/awesome-mentioned.png" width="40%"/>
 	</div>
-</a> -->
+</a>
 
 # Getting Start
 
