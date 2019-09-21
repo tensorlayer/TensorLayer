@@ -108,6 +108,19 @@ def _bias_add(x, b, data_format):
 
 def batch_normalization(x, mean, variance, offset, scale, variance_epsilon, data_format, name=None):
     """Data Format aware version of tf.nn.batch_normalization."""
+    if data_format == 'channels_last':
+        mean = tf.reshape(mean, [1] * (len(x.shape) - 1) + [-1])
+        variance = tf.reshape(variance, [1] * (len(x.shape) - 1) + [-1])
+        offset = tf.reshape(offset, [1] * (len(x.shape) - 1) + [-1])
+        scale = tf.reshape(scale, [1] * (len(x.shape) - 1) + [-1])
+    elif data_format == 'channels_first':
+        mean = tf.reshape(mean, [1] + [-1] + [1] * (len(x.shape) - 2))
+        variance = tf.reshape(variance, [1] + [-1] + [1] * (len(x.shape) - 2))
+        offset = tf.reshape(offset, [1] + [-1] + [1] * (len(x.shape) - 2))
+        scale = tf.reshape(scale, [1] + [-1] + [1] * (len(x.shape) - 2))
+    else:
+        raise ValueError('invalid data_format: %s' % data_format)
+
     with ops.name_scope(name, 'batchnorm', [x, mean, variance, scale, offset]):
         inv = math_ops.rsqrt(variance + variance_epsilon)
         if scale is not None:
@@ -204,13 +217,10 @@ class BatchNorm(Layer):
         self.moving_var_init = moving_var_init
         self.num_features = num_features
 
+        self.channel_axis = -1 if data_format == 'channels_last' else 1
+        self.axes = None
+
         if num_features is not None:
-            if not isinstance(self, BatchNorm1d) and not isinstance(self, BatchNorm2d) and not isinstance(self,
-                                                                                                          BatchNorm3d):
-                raise ValueError(
-                    "Please use BatchNorm1d or BatchNorm2d or BatchNorm3d instead of BatchNorm "
-                    "if you want to specify 'num_features'."
-                )
             self.build(None)
             self._built = True
 
@@ -233,21 +243,23 @@ class BatchNorm(Layer):
 
     def _get_param_shape(self, inputs_shape):
         if self.data_format == 'channels_last':
-            axis = len(inputs_shape) - 1
+            axis = -1
         elif self.data_format == 'channels_first':
             axis = 1
         else:
             raise ValueError('data_format should be either %s or %s' % ('channels_last', 'channels_first'))
 
         channels = inputs_shape[axis]
-        params_shape = [1] * len(inputs_shape)
-        params_shape[axis] = channels
+        params_shape = [channels]
 
-        axes = [i for i in range(len(inputs_shape)) if i != axis]
-        return params_shape, axes
+        return params_shape
+
+    def _check_input_shape(self, inputs):
+        if inputs.ndim <= 1:
+            raise ValueError('expected input at least 2D, but got {}D input'.format(inputs.ndim))
 
     def build(self, inputs_shape):
-        params_shape, self.axes = self._get_param_shape(inputs_shape)
+        params_shape = [self.num_features] if self.num_features is not None else self._get_param_shape(inputs_shape)
 
         self.beta, self.gamma = None, None
         if self.beta_init:
@@ -264,7 +276,12 @@ class BatchNorm(Layer):
         )
 
     def forward(self, inputs):
-        mean, var = tf.nn.moments(inputs, self.axes, keepdims=True)
+        self._check_input_shape(inputs)
+
+        if self.axes is None:
+            self.axes = [i for i in range(len(inputs.shape)) if i != self.channel_axis]
+
+        mean, var = tf.nn.moments(inputs, self.axes, keepdims=False)
         if self.is_train:
             # update moving_mean and moving_var
             self.moving_mean = moving_averages.assign_moving_average(
@@ -282,8 +299,8 @@ class BatchNorm(Layer):
 
 
 class BatchNorm1d(BatchNorm):
-    """The :class:`BatchNorm1d` applies Batch Normalization over 3D input (a mini-batch of 1D
-    inputs with additional channel dimension), of shape (N, L, C) or (N, C, L).
+    """The :class:`BatchNorm1d` applies Batch Normalization over 2D/3D input (a mini-batch of 1D
+    inputs (optional) with additional channel dimension), of shape (N, C) or (N, L, C) or (N, C, L).
     See more details in :class:`BatchNorm`.
 
     Examples
@@ -299,23 +316,9 @@ class BatchNorm1d(BatchNorm):
 
     """
 
-    def _get_param_shape(self, inputs_shape):
-        if self.data_format == 'channels_last':
-            axis = 2
-        elif self.data_format == 'channels_first':
-            axis = 1
-        else:
-            raise ValueError('data_format should be either %s or %s' % ('channels_last', 'channels_first'))
-
-        if self.num_features is None:
-            channels = inputs_shape[axis]
-        else:
-            channels = self.num_features
-        params_shape = [1] * 3
-        params_shape[axis] = channels
-
-        axes = [i for i in range(3) if i != axis]
-        return params_shape, axes
+    def _check_input_shape(self, inputs):
+        if inputs.ndim != 2 and inputs.ndim != 3:
+            raise ValueError('expected input to be 2D or 3D, but got {}D input'.format(inputs.ndim))
 
 
 class BatchNorm2d(BatchNorm):
@@ -336,23 +339,9 @@ class BatchNorm2d(BatchNorm):
 
     """
 
-    def _get_param_shape(self, inputs_shape):
-        if self.data_format == 'channels_last':
-            axis = 3
-        elif self.data_format == 'channels_first':
-            axis = 1
-        else:
-            raise ValueError('data_format should be either %s or %s' % ('channels_last', 'channels_first'))
-
-        if self.num_features is None:
-            channels = inputs_shape[axis]
-        else:
-            channels = self.num_features
-        params_shape = [1] * 4
-        params_shape[axis] = channels
-
-        axes = [i for i in range(4) if i != axis]
-        return params_shape, axes
+    def _check_input_shape(self, inputs):
+        if inputs.ndim != 4:
+            raise ValueError('expected input to be 4D, but got {}D input'.format(inputs.ndim))
 
 
 class BatchNorm3d(BatchNorm):
@@ -373,23 +362,9 @@ class BatchNorm3d(BatchNorm):
 
     """
 
-    def _get_param_shape(self, inputs_shape):
-        if self.data_format == 'channels_last':
-            axis = 4
-        elif self.data_format == 'channels_first':
-            axis = 1
-        else:
-            raise ValueError('data_format should be either %s or %s' % ('channels_last', 'channels_first'))
-
-        if self.num_features is None:
-            channels = inputs_shape[axis]
-        else:
-            channels = self.num_features
-        params_shape = [1] * 5
-        params_shape[axis] = channels
-
-        axes = [i for i in range(5) if i != axis]
-        return params_shape, axes
+    def _check_input_shape(self, inputs):
+        if inputs.ndim != 5:
+            raise ValueError('expected input to be 5D, but got {}D input'.format(inputs.ndim))
 
 
 class InstanceNorm(Layer):
