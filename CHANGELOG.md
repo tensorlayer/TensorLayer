@@ -80,11 +80,15 @@ To release a new version, please update the changelog as followed:
 
 ### Fixed
 
+- Fix README. (#PR 1044)
+
 ### Removed
 
 ### Security
 
 ### Contributors
+
+- @luomai
 
 
 ## [2.2.0] - 2019-09-13
