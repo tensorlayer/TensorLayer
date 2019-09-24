@@ -13,7 +13,7 @@ PKU is a top 30 university in the global ranking. The application is competitive
 
 My homepage: https://zsdonghao.github.io 
 
-Contact: hao.dong11[AT]imperial.ac.uk
+Contact: hao.dong[AT]pku.edu.cn
 
 
 
