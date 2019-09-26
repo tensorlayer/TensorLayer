@@ -81,6 +81,7 @@ To release a new version, please update the changelog as followed:
 ### Fixed
 
 - Fix README. (#PR 1044)
+- Fix package info. (#PR 1046)
 
 ### Removed
 
@@ -88,14 +89,14 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 
-- @luomai
+- @luomai (PR #1044, 1046)
 
 
 ## [2.2.0] - 2019-09-13
 
-TensorLayer 2.2.0 is a maintenance release. 
-It contains numerous API improvement and bug fixes. 
-This release is compatible with TensorFlow 2 RC1. 
+TensorLayer 2.2.0 is a maintenance release.
+It contains numerous API improvement and bug fixes.
+This release is compatible with TensorFlow 2 RC1.
 
 ### Added
 - Support nested layer customization (#PR 1015)
