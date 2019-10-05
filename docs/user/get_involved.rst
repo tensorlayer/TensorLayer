@@ -11,7 +11,7 @@ Ph.D. Postition @ PKU
 Hi, I am Hao Dong, a new faculty member in EECS, Peking University. I now have a few Ph.D. positions per year open for international students who would like to study AI. If you or your friends are interested in it, please contact me ASAP.
 PKU is a top 30 university in the global ranking. The application is competitive, apply early is recommended. For the application of next year, please note that the DDL of Chinese Government Scholarship is in the end of each year, please check this `link <http://www.isd.pku.edu.cn/info/1503/5676.htm>`__ for more details.
 
-My homepage: https://zsdonghao.github.io 
+My homepage: `https://zsdonghao.github.io <https://zsdonghao.github.io/>`__
 
 Contact: hao.dong[AT]pku.edu.cn
 
