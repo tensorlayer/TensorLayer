@@ -61,7 +61,7 @@ and other ways to
 , or feel free to
 `contact us <https://www.imperial.ac.uk/data-science/get-involved/contact-us/>`__.
 
-Software Engineering@SurgicalAI.cn
+Software Engineer @ SurgicalAI.cn
 =============================================================
 SurgicalAI is a startup founded by the data scientists and surgical robot experts from Imperial College. Our objective is AI democratise Surgery. By combining 5G, AI and Cloud Computing, SurgicalAI is building a platform enable junor surgeons to perfom complex procedures. As one of the most impactful startup, SurgicalAI is supported by Nvidia, AWS and top surgeons around the world.
 
