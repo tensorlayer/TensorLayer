@@ -239,7 +239,7 @@ class PolicyNetwork(Model):
             mean + std * z
         )  # TanhNormal distribution as actions; reparameterization trick
 
-        action = self.action_range * mean if deterministic else action
+        action = self.action_range * tf.math.tanh(mean) if deterministic else action
         return action.numpy()[0]
 
     def sample_action(self, ):
