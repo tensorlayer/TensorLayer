@@ -56,7 +56,6 @@ from tensorlayer.models import Model
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
-
 ###############################  Actor-Critic  ####################################
 
 
@@ -121,14 +120,15 @@ class Critic(object):
     def save_ckpt(self):  # save trained weights
         save_model(self.model, 'model_critic', 'AC')
 
-
     def load_ckpt(self):  # load trained weights
         load_model(self.model, 'model_critic', 'AC')
 
 
-def learn(env_id, train_episodes, test_episodes=1000, max_steps=1000,
-    gamma=0.9, actor_lr=1e-3, critic_lr=1e-2, actor_hidden_dim=30, actor_hidden_layer=1, critic_hidden_dim=30, critic_hidden_layer=1, seed=2, save_interval=100, mode='train', render=False):
-
+def learn(
+        env_id, train_episodes, test_episodes=1000, max_steps=1000, gamma=0.9, actor_lr=1e-3, critic_lr=1e-2,
+        actor_hidden_dim=30, actor_hidden_layer=1, critic_hidden_dim=30, critic_hidden_layer=1, seed=2,
+        save_interval=100, mode='train', render=False
+):
     '''
     parameters
     -----------
@@ -165,7 +165,7 @@ def learn(env_id, train_episodes, test_episodes=1000, max_steps=1000,
     critic = Critic(n_features=N_F, gamma=gamma, lr=critic_lr, hidden_dim=critic_hidden_dim,\
     hidden_layer = critic_hidden_layer)
 
-    if mode=='train':
+    if mode == 'train':
         t0 = time.time()
         rewards = []
         for i_episode in range(train_episodes):
@@ -173,7 +173,7 @@ def learn(env_id, train_episodes, test_episodes=1000, max_steps=1000,
             s = env.reset().astype(np.float32)
             t = 0  # number of step in this episode
             all_r = []  # rewards of all steps
-            
+
             while True:
 
                 if render: env.render()
@@ -235,17 +235,14 @@ def learn(env_id, train_episodes, test_episodes=1000, max_steps=1000,
                                 rall = 0
                     break
 
-                
-
-            if i_episode%save_interval==0: 
+            if i_episode % save_interval == 0:
                 actor.save_ckpt()
                 critic.save_ckpt()
                 plot(rewards, Algorithm_name='AC', Env_name=env_id)
         actor.save_ckpt()
         critic.save_ckpt()
 
-
-    if mode=='test':
+    if mode == 'test':
         actor.load_ckpt()
         critic.load_ckpt()
         t0 = time.time()

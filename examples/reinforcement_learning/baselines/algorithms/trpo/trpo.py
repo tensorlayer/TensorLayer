@@ -409,11 +409,10 @@ class GAEBuffer:
         adv_mean, adv_std = np.mean(self.adv_buf), np.std(self.adv_buf)
         self.adv_buf = (self.adv_buf - adv_mean) / adv_std
         return [self.obs_buf, self.act_buf, self.adv_buf, self.ret_buf, self.logp_buf
-                ] + values_as_sorted_list(self.info_bufs)
+               ] + values_as_sorted_list(self.info_bufs)
 
 
 #####################  TRPO  ####################
-
 """
 
 Trust Region Policy Optimization 
@@ -428,8 +427,10 @@ class TRPO:
     trpo class
     """
 
-    def __init__(self, obs_space, act_space, hidden_list, max_steps, gamma, lam, critic_lr, damping_coeff, cg_iters,
-                 delta, backtrack_iters, backtrack_coeff, train_critic_iters):
+    def __init__(
+            self, obs_space, act_space, hidden_list, max_steps, gamma, lam, critic_lr, damping_coeff, cg_iters, delta,
+            backtrack_iters, backtrack_coeff, train_critic_iters
+    ):
         obs_dim = obs_space.shape
         act_dim = act_space.shape
         self.damping_coeff, self.cg_iters = damping_coeff, cg_iters
@@ -634,10 +635,11 @@ class TRPO:
             self.train_vf(inputs)
 
 
-def learn(env_id='Pendulum-v0', train_episodes=500, test_episodes=100, max_steps=4000, save_interval=10,
-          critic_lr=1e-3, gamma=0.99, hidden_dim=64, num_hidden_layer=2, seed=1, mode='train',
-          render=False, c_update_steps=80, lam=0.97, damping_coeff=0.1, cg_iters=10,
-          delta=0.01, backtrack_iters=10, backtrack_coeff=0.8, max_ep_len=1000):
+def learn(
+        env_id='Pendulum-v0', train_episodes=500, test_episodes=100, max_steps=4000, save_interval=10, critic_lr=1e-3,
+        gamma=0.99, hidden_dim=64, num_hidden_layer=2, seed=1, mode='train', render=False, c_update_steps=80, lam=0.97,
+        damping_coeff=0.1, cg_iters=10, delta=0.01, backtrack_iters=10, backtrack_coeff=0.8, max_ep_len=1000
+):
     """
     learn function
     :param env_id: learning environment
@@ -669,10 +671,12 @@ def learn(env_id='Pendulum-v0', train_episodes=500, test_episodes=100, max_steps
     env = gym.make(env_id)
     env.seed(seed)
 
-    agent = TRPO(env.observation_space, env.action_space, [hidden_dim]*num_hidden_layer, max_steps, gamma, lam,
-                 critic_lr, damping_coeff, cg_iters, delta, backtrack_iters, backtrack_coeff, c_update_steps)
+    agent = TRPO(
+        env.observation_space, env.action_space, [hidden_dim] * num_hidden_layer, max_steps, gamma, lam, critic_lr,
+        damping_coeff, cg_iters, delta, backtrack_iters, backtrack_coeff, c_update_steps
+    )
 
-    if mode=='train':
+    if mode == 'train':
         start_time = time.time()
         o, r, d, ep_ret, ep_len = env.reset(), 0, False, 0, 0
 

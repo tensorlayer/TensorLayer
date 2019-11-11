@@ -55,16 +55,34 @@ class QNetwork(Model):
 
         s = s_input = Input([None, state_dim])
         for each_dim in state_hidden_list:
-            s = Dense(n_units=each_dim, act=tf.nn.relu, W_init=w_init, b_init=b_init,)(s)
+            s = Dense(
+                n_units=each_dim,
+                act=tf.nn.relu,
+                W_init=w_init,
+                b_init=b_init,
+            )(s)
 
         a = a_input = Input([None, action_dim])
         for each_dim in action_hidden_list:
-            a = Dense(n_units=each_dim, act=tf.nn.relu, W_init=w_init, b_init=b_init,)(a)
+            a = Dense(
+                n_units=each_dim,
+                act=tf.nn.relu,
+                W_init=w_init,
+                b_init=b_init,
+            )(a)
         x = tl.layers.Concat(1)([s, a])
 
         for each_dim in hidden_list:
-            x = Dense(n_units=each_dim, act=tf.nn.relu, W_init=w_init, b_init=b_init,)(x)
-        outputs = Dense(n_units=1, W_init=w_init,)(x)
+            x = Dense(
+                n_units=each_dim,
+                act=tf.nn.relu,
+                W_init=w_init,
+                b_init=b_init,
+            )(x)
+        outputs = Dense(
+            n_units=1,
+            W_init=w_init,
+        )(x)
 
         super().__init__(inputs=[s_input, a_input], outputs=outputs)
 
@@ -83,8 +101,18 @@ class DeterministicPolicyNetwork(Model):
         b_init = tf.constant_initializer(0.1)
         l = inputs = Input([None, state_dim])
         for each_dim in hidden_list:
-            l = Dense(n_units=each_dim, act=tf.nn.relu, W_init=w_init, b_init=b_init,)(l)
-        action_linear = Dense(n_units=action_dim, act=tf.nn.tanh, W_init=w_init, b_init=b_init,)(l)
+            l = Dense(
+                n_units=each_dim,
+                act=tf.nn.relu,
+                W_init=w_init,
+                b_init=b_init,
+            )(l)
+        action_linear = Dense(
+            n_units=action_dim,
+            act=tf.nn.tanh,
+            W_init=w_init,
+            b_init=b_init,
+        )(l)
         if scope:
             action_linear = tl.layers.Lambda(lambda x: np.array(scope) * x)(action_linear)
         super().__init__(inputs=inputs, outputs=action_linear)
@@ -94,8 +122,11 @@ class DDPG(object):
     """
     DDPG class
     """
-    def __init__(self, a_dim, s_dim, hidden_dim, num_hidden_layer, a_bound, gamma, lr_a, lr_c, replay_buffer_size,
-                 batch_size=32):
+
+    def __init__(
+            self, a_dim, s_dim, hidden_dim, num_hidden_layer, a_bound, gamma, lr_a, lr_c, replay_buffer_size,
+            batch_size=32
+    ):
         self.memory = np.zeros((replay_buffer_size, s_dim * 2 + a_dim + 1), dtype=np.float32)
         self.pointer = 0
         self.batch_size = batch_size
@@ -112,16 +143,16 @@ class DDPG(object):
             for i, j in zip(from_model.trainable_weights, to_model.trainable_weights):
                 j.assign(i)
 
-        self.actor = DeterministicPolicyNetwork(s_dim, a_dim, [hidden_dim]*num_hidden_layer, a_bound)
-        self.critic = QNetwork(s_dim, [], a_dim, [], [2*hidden_dim]*num_hidden_layer)
+        self.actor = DeterministicPolicyNetwork(s_dim, a_dim, [hidden_dim] * num_hidden_layer, a_bound)
+        self.critic = QNetwork(s_dim, [], a_dim, [], [2 * hidden_dim] * num_hidden_layer)
         self.actor.train()
         self.critic.train()
 
-        self.actor_target = DeterministicPolicyNetwork(s_dim, a_dim, [hidden_dim]*num_hidden_layer, a_bound)
+        self.actor_target = DeterministicPolicyNetwork(s_dim, a_dim, [hidden_dim] * num_hidden_layer, a_bound)
         copy_para(self.actor, self.actor_target)
         self.actor_target.eval()
 
-        self.critic_target = QNetwork(s_dim, [], a_dim, [], [2*hidden_dim]*num_hidden_layer)
+        self.critic_target = QNetwork(s_dim, [], a_dim, [], [2 * hidden_dim] * num_hidden_layer)
         copy_para(self.critic, self.critic_target)
         self.critic_target.eval()
 
@@ -172,7 +203,7 @@ class DDPG(object):
         with tf.GradientTape() as tape:
             a = self.actor(bs)
             q = self.critic([bs, a])
-            a_loss = - tf.reduce_mean(q)  # maximize the q
+            a_loss = -tf.reduce_mean(q)  # maximize the q
         a_grads = tape.gradient(a_loss, self.actor.trainable_weights)
         self.actor_opt.apply_gradients(zip(a_grads, self.actor.trainable_weights))
 
@@ -199,25 +230,59 @@ class DDPG(object):
         save trained weights
         :return: None
         """
-        save_model(self.actor, 'actor', 'ddpg', )
-        save_model(self.actor_target, 'actor_target', 'ddpg', )
-        save_model(self.critic, 'critic', 'ddpg', )
-        save_model(self.critic_target, 'critic_target', 'ddpg', )
+        save_model(
+            self.actor,
+            'actor',
+            'ddpg',
+        )
+        save_model(
+            self.actor_target,
+            'actor_target',
+            'ddpg',
+        )
+        save_model(
+            self.critic,
+            'critic',
+            'ddpg',
+        )
+        save_model(
+            self.critic_target,
+            'critic_target',
+            'ddpg',
+        )
 
     def load_ckpt(self):
         """
         load trained weights
         :return: None
         """
-        load_model(self.actor, 'actor', 'ddpg', )
-        load_model(self.actor_target, 'actor_target', 'ddpg', )
-        load_model(self.critic, 'critic', 'ddpg', )
-        load_model(self.critic_target, 'critic_target', 'ddpg', )
+        load_model(
+            self.actor,
+            'actor',
+            'ddpg',
+        )
+        load_model(
+            self.actor_target,
+            'actor_target',
+            'ddpg',
+        )
+        load_model(
+            self.critic,
+            'critic',
+            'ddpg',
+        )
+        load_model(
+            self.critic_target,
+            'critic_target',
+            'ddpg',
+        )
 
 
-def learn(env_id='Pendulum-v0', train_episodes=200, test_episodes=100, max_steps=200, save_interval=10,
-          actor_lr=1e-3, critic_lr=2e-3, gamma=0.9, hidden_dim=30, num_hidden_layer=1, seed=1, mode='train',
-          render=False, replay_buffer_size=10000, batch_size=32):
+def learn(
+        env_id='Pendulum-v0', train_episodes=200, test_episodes=100, max_steps=200, save_interval=10, actor_lr=1e-3,
+        critic_lr=2e-3, gamma=0.9, hidden_dim=30, num_hidden_layer=1, seed=1, mode='train', render=False,
+        replay_buffer_size=10000, batch_size=32
+):
     """
     learn function
     :param env_id: learning environment
@@ -251,8 +316,9 @@ def learn(env_id='Pendulum-v0', train_episodes=200, test_episodes=100, max_steps
     a_max = env.action_space.high
     a_min = env.action_space.low
 
-    ddpg = DDPG(a_dim, s_dim, hidden_dim, num_hidden_layer, a_max, gamma, actor_lr, critic_lr, replay_buffer_size,
-                batch_size)
+    ddpg = DDPG(
+        a_dim, s_dim, hidden_dim, num_hidden_layer, a_max, gamma, actor_lr, critic_lr, replay_buffer_size, batch_size
+    )
 
     if mode == 'train':  # train
 
@@ -267,7 +333,9 @@ def learn(env_id='Pendulum-v0', train_episodes=200, test_episodes=100, max_steps
             for j in range(max_steps):
                 # Add exploration noise
                 a = ddpg.choose_action(s)
-                a = np.clip(np.random.normal(a, VAR), a_min, a_max)  # add randomness to action selection for exploration
+                a = np.clip(
+                    np.random.normal(a, VAR), a_min, a_max
+                )  # add randomness to action selection for exploration
                 s_, r, done, info = env.step(a)
 
                 ddpg.store_transition(s, a, r / 10, s_)

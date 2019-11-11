@@ -295,8 +295,9 @@ class SAC_Trainer():
         reward = reward[:, np.newaxis]  # expand dim
         done = done[:, np.newaxis]
 
-        reward = reward_scale * (reward -
-                                 np.mean(reward, axis=0)) / (np.std(reward, axis=0)+1e-6)  # normalize with batch mean and std; plus a small number to prevent numerical problem
+        reward = reward_scale * (reward - np.mean(reward, axis=0)) / (
+            np.std(reward, axis=0) + 1e-6
+        )  # normalize with batch mean and std; plus a small number to prevent numerical problem
 
         # Training Q Function
         new_next_action, next_log_prob, _, _, _ = self.policy_net.evaluate(next_state)
@@ -353,7 +354,7 @@ class SAC_Trainer():
         tl.files.save_npz(self.target_soft_q_net1.trainable_weights, name='model_target_q_net1.npz')
         tl.files.save_npz(self.target_soft_q_net2.trainable_weights, name='model_target_q_net2.npz')
         tl.files.save_npz(self.policy_net.trainable_weights, name='model_policy_net.npz')
-        np.save('log_alpha.npy',  self.log_alpha.numpy())  # save log_alpha variable
+        np.save('log_alpha.npy', self.log_alpha.numpy())  # save log_alpha variable
 
     def load_weights(self):  # load trained weights
         tl.files.load_and_assign_npz(name='model_q_net1.npz', network=self.soft_q_net1)
@@ -362,6 +363,7 @@ class SAC_Trainer():
         tl.files.load_and_assign_npz(name='model_target_q_net2.npz', network=self.target_soft_q_net2)
         tl.files.load_and_assign_npz(name='model_policy_net.npz', network=self.policy_net)
         self.log_alpha.assign(np.load('log_alpha.npy'))  # load log_alpha variable
+
 
 def plot(frame_idx, rewards):
     clear_output(True)

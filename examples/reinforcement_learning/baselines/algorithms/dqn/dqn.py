@@ -37,15 +37,11 @@ def learn(env_id, env_type, seed, mode, **kwargs):
         return core_learn(env, mode=mode, **other_parameters(env, **kwargs))
 
 
-def core_learn(env, mode,
-               number_timesteps,
-               network, optimizer,
-               ob_scale,
-               gamma, double_q,
-               exploration_fraction, exploration_final_eps,
-               batch_size, learning_starts, target_network_update_freq,
-               buffer_size, prioritized_replay, prioritized_replay_alpha,
-               prioritized_replay_beta0, save_path='dqn', save_interval=0, **kwargs):
+def core_learn(
+        env, mode, number_timesteps, network, optimizer, ob_scale, gamma, double_q, exploration_fraction,
+        exploration_final_eps, batch_size, learning_starts, target_network_update_freq, buffer_size, prioritized_replay,
+        prioritized_replay_alpha, prioritized_replay_beta0, save_path='dqn', save_interval=0, **kwargs
+):
     """
     Parameters:
     ----------
@@ -74,8 +70,7 @@ def core_learn(env, mode,
         qnet = network
         targetqnet = tf.keras.models.clone_model(qnet)
         if prioritized_replay:
-            buffer = PrioritizedReplayBuffer(
-                buffer_size, prioritized_replay_alpha, prioritized_replay_beta0)
+            buffer = PrioritizedReplayBuffer(buffer_size, prioritized_replay_alpha, prioritized_replay_beta0)
         else:
             buffer = ReplayBuffer(buffer_size)
 
@@ -142,8 +137,11 @@ def core_learn(env, mode,
             # episode in info is real (unwrapped) message
             if info.get('episode'):
                 reward, length = info['episode']['r'], info['episode']['l']
-                print('timesteps sofar {}, epsilon {:.2f}, episode reward {:.4f}, episode length {}'
-                      .format(i, eps, reward, length))
+                print(
+                    'timesteps sofar {}, epsilon {:.2f}, episode reward {:.4f}, episode length {}'.format(
+                        i, eps, reward, length
+                    )
+                )
     else:
         qnet = network
         qnet.load_weights(save_path)
@@ -165,29 +163,16 @@ def core_learn(env, mode,
             # episode in info is real (unwrapped) message
             if info.get('episode'):
                 reward, length = info['episode']['r'], info['episode']['l']
-                print('timesteps sofar {}, episode reward {:.4f}, episode length {}'
-                      .format(i, reward, length))
+                print('timesteps sofar {}, episode reward {:.4f}, episode length {}'.format(i, reward, length))
 
 
 def atari_parameters(env, **kwargs):
     in_dim = env.observation_space.shape
     policy_dim = env.action_space.n
     params = dict(
-        lr=1e-4,
-        number_timesteps=int(1e6),
-        grad_norm=10,
-        batch_size=32,
-        double_q=True,
-        buffer_size=10000,
-        exploration_fraction=0.1,
-        exploration_final_eps=0.01,
-        learning_starts=10000,
-        target_network_update_freq=1000,
-        gamma=0.99,
-        prioritized_replay=True,
-        prioritized_replay_alpha=0.6,
-        prioritized_replay_beta0=0.4,
-        dueling=True,
+        lr=1e-4, number_timesteps=int(1e6), grad_norm=10, batch_size=32, double_q=True, buffer_size=10000,
+        exploration_fraction=0.1, exploration_final_eps=0.01, learning_starts=10000, target_network_update_freq=1000,
+        gamma=0.99, prioritized_replay=True, prioritized_replay_alpha=0.6, prioritized_replay_beta0=0.4, dueling=True,
         ob_scale=1 / 255.0
     )
     params.update(kwargs)
@@ -205,21 +190,9 @@ def other_parameters(env, **kwargs):
     in_dim = env.observation_space.shape[0]
     policy_dim = env.action_space.n
     params = dict(
-        lr=5e-3,
-        grad_norm=None,
-        batch_size=100,
-        number_timesteps=10000,
-        double_q=True,
-        buffer_size=1000,
-        exploration_fraction=0.1,
-        exploration_final_eps=0.01,
-        learning_starts=100,
-        target_network_update_freq=50,
-        gamma=0.99,
-        prioritized_replay=False,
-        prioritized_replay_alpha=0.6,
-        prioritized_replay_beta0=0.4,
-        dueling=True,
+        lr=5e-3, grad_norm=None, batch_size=100, number_timesteps=10000, double_q=True, buffer_size=1000,
+        exploration_fraction=0.1, exploration_final_eps=0.01, learning_starts=100, target_network_update_freq=50,
+        gamma=0.99, prioritized_replay=False, prioritized_replay_alpha=0.6, prioritized_replay_beta0=0.4, dueling=True,
         ob_scale=1
     )
     params.update(kwargs)

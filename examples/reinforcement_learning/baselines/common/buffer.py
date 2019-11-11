@@ -61,6 +61,7 @@ class ReplayBuffer(object):
 
 
 class SegmentTree(object):
+
     def __init__(self, capacity, operation, neutral_element):
         """Build a Segment Tree data structure.
 
@@ -195,6 +196,7 @@ class MinSegmentTree(SegmentTree):
 
 
 class PrioritizedReplayBuffer(ReplayBuffer):  # is it succeed from the ReplayBuffer above?
+
     def __init__(self, capacity, alpha, beta):
         """Create Prioritized Replay buffer.
 
@@ -228,8 +230,8 @@ class PrioritizedReplayBuffer(ReplayBuffer):  # is it succeed from the ReplayBuf
         """See ReplayBuffer.store_effect"""
         idx = self.position
         super().push(*args)
-        self._it_sum[idx] = self._max_priority ** self._alpha
-        self._it_min[idx] = self._max_priority ** self._alpha
+        self._it_sum[idx] = self._max_priority**self._alpha
+        self._it_min[idx] = self._max_priority**self._alpha
 
     def _sample_proportional(self, batch_size):
         res = []
@@ -250,7 +252,7 @@ class PrioritizedReplayBuffer(ReplayBuffer):  # is it succeed from the ReplayBuf
         max_weight = (p_min * len(self.buffer))**(-self.beta)
 
         p_samples = np.asarray([self._it_sum[idx] for idx in idxes]) / it_sum
-        weights = (p_samples * len(self.buffer)) ** (-self.beta) / max_weight
+        weights = (p_samples * len(self.buffer))**(-self.beta) / max_weight
         encoded_sample = self._encode_sample(idxes)
         return encoded_sample + (weights, idxes)
 
@@ -260,7 +262,7 @@ class PrioritizedReplayBuffer(ReplayBuffer):  # is it succeed from the ReplayBuf
         for idx, priority in zip(idxes, priorities):
             assert priority > 0
             assert 0 <= idx < len(self.buffer)
-            self._it_sum[idx] = priority ** self._alpha
-            self._it_min[idx] = priority ** self._alpha
+            self._it_sum[idx] = priority**self._alpha
+            self._it_min[idx] = priority**self._alpha
 
             self._max_priority = max(self._max_priority, priority)

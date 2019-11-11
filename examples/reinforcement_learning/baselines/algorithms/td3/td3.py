@@ -61,7 +61,6 @@ Normal = tfd.Normal
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
-
 ###############################  TD3  ####################################
 
 
@@ -134,7 +133,8 @@ class PolicyNetwork(Model):
 class TD3_Trainer():
 
     def __init__(
-            self, replay_buffer, hidden_dim, state_dim, action_dim, action_range, policy_target_update_interval=1, q_lr=3e-4, policy_lr=3e-4
+            self, replay_buffer, hidden_dim, state_dim, action_dim, action_range, policy_target_update_interval=1,
+            q_lr=3e-4, policy_lr=3e-4
     ):
         self.replay_buffer = replay_buffer
 
@@ -185,8 +185,9 @@ class TD3_Trainer():
         new_next_action = self.target_policy_net.evaluate(
             next_state, eval_noise_scale=eval_noise_scale
         )  # clipped normal noise
-        reward = reward_scale * (reward -
-                                 np.mean(reward, axis=0)) / (np.std(reward, axis=0)+1e-6)  # normalize with batch mean and std; plus a small number to prevent numerical problem
+        reward = reward_scale * (reward - np.mean(reward, axis=0)) / (
+            np.std(reward, axis=0) + 1e-6
+        )  # normalize with batch mean and std; plus a small number to prevent numerical problem
 
         # Training Q Function
         target_q_input = tf.concat([next_state, new_next_action], 1)  # the dim 0 is number of samples
@@ -292,7 +293,7 @@ def learn(env_id, train_episodes, test_episodes=1000, max_steps=150, batch_size=
     td3_trainer.target_policy_net.train()
 
     # training loop
-    if mode=='train':
+    if mode == 'train':
         frame_idx = 0
         rewards = []
         t0 = time.time()
@@ -339,7 +340,7 @@ def learn(env_id, train_episodes, test_episodes=1000, max_steps=150, batch_size=
             rewards.append(episode_reward)
         td3_trainer.save_weights()
 
-    if mode=='test':
+    if mode == 'test':
         frame_idx = 0
         rewards = []
         t0 = time.time()

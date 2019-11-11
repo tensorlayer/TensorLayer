@@ -49,8 +49,10 @@ METHOD = [
 class StochasticPolicyNetwork(Model):
     ''' stochastic continuous policy network for generating action according to the state '''
 
-    def __init__(self, state_dim, action_dim, hidden_list, a_bound, log_std_min=-20, log_std_max=2, scope=None,
-                 trainable=True):
+    def __init__(
+            self, state_dim, action_dim, hidden_list, a_bound, log_std_min=-20, log_std_max=2, scope=None,
+            trainable=True
+    ):
 
         # w_init = tf.keras.initializers.glorot_normal(
         #     seed=None
@@ -69,7 +71,10 @@ class StochasticPolicyNetwork(Model):
         mu = tl.layers.Lambda(lambda x: x * a_bound)(mean_linear)
 
         # log_std_linear = Dense(n_units=action_dim, act=tf.nn.softplus, W_init=w_init, b_init=b_init,)(l)
-        log_std_linear = Dense(n_units=action_dim, act=tf.nn.softplus, )(l)
+        log_std_linear = Dense(
+            n_units=action_dim,
+            act=tf.nn.softplus,
+        )(l)
 
         # log_std_linear = tl.layers.Lambda(lambda x: tf.clip_by_value(x, log_std_min, log_std_max))(log_std_linear)
         super().__init__(inputs=inputs, outputs=[mu, log_std_linear])
@@ -106,6 +111,7 @@ class ValueNetwork(Model):
         else:
             self.eval()
 
+
 ###############################  DPPO  ####################################
 
 
@@ -114,8 +120,9 @@ class PPO(object):
     PPO class
     '''
 
-    def __init__(self, a_dim, s_dim, hidden_list, a_max, actor_lr, critic_lr, a_update_steps, c_update_steps,
-                 save_interval):
+    def __init__(
+            self, a_dim, s_dim, hidden_list, a_max, actor_lr, critic_lr, a_update_steps, c_update_steps, save_interval
+    ):
         self.a_dim = a_dim
         self.s_dim = s_dim
         self.bound = a_max
@@ -277,18 +284,42 @@ class PPO(object):
         save trained weights
         :return: None
         """
-        save_model(self.actor, 'actor', 'ppo', )
-        save_model(self.actor_old, 'actor_old', 'ppo', )
-        save_model(self.critic, 'critic', 'ppo', )
+        save_model(
+            self.actor,
+            'actor',
+            'ppo',
+        )
+        save_model(
+            self.actor_old,
+            'actor_old',
+            'ppo',
+        )
+        save_model(
+            self.critic,
+            'critic',
+            'ppo',
+        )
 
     def load_ckpt(self):
         """
         load trained weights
         :return: None
         """
-        load_model(self.actor, 'actor', 'ppo', )
-        load_model(self.actor_old, 'actor_old', 'ppo', )
-        load_model(self.critic, 'critic', 'ppo', )
+        load_model(
+            self.actor,
+            'actor',
+            'ppo',
+        )
+        load_model(
+            self.actor_old,
+            'actor_old',
+            'ppo',
+        )
+        load_model(
+            self.critic,
+            'critic',
+            'ppo',
+        )
 
 
 class Worker(object):
@@ -360,9 +391,11 @@ class Worker(object):
             )
 
 
-def learn(env_id='Pendulum-v0', train_episodes=1000, test_episodes=100, max_steps=200, save_interval=10,
-          actor_lr=1e-4, critic_lr=2e-4, gamma=0.9, hidden_dim=100, num_hidden_layer=1, seed=1, mode='train',
-          batch_size=32, a_update_steps=10, c_update_steps=10, n_worker=4):
+def learn(
+        env_id='Pendulum-v0', train_episodes=1000, test_episodes=100, max_steps=200, save_interval=10, actor_lr=1e-4,
+        critic_lr=2e-4, gamma=0.9, hidden_dim=100, num_hidden_layer=1, seed=1, mode='train', batch_size=32,
+        a_update_steps=10, c_update_steps=10, n_worker=4
+):
     """
     learn function
     :param env_id: learning environment
@@ -392,8 +425,10 @@ def learn(env_id='Pendulum-v0', train_episodes=1000, test_episodes=100, max_step
     global GLOBAL_PPO, UPDATE_EVENT, ROLLING_EVENT, GLOBAL_UPDATE_COUNTER, GLOBAL_EP, GLOBAL_RUNNING_R, COORD, QUEUE
     global GAME, RANDOMSEED, EP_LEN, MIN_BATCH_SIZE, GAMMA, EP_MAX
     GAME, RANDOMSEED, EP_LEN, MIN_BATCH_SIZE, GAMMA, EP_MAX = env_id, seed, max_steps, batch_size, gamma, train_episodes
-    GLOBAL_PPO = PPO(a_dim, s_dim, [hidden_dim]*num_hidden_layer, a_max, actor_lr, critic_lr,
-                     a_update_steps, c_update_steps, save_interval)
+    GLOBAL_PPO = PPO(
+        a_dim, s_dim, [hidden_dim] * num_hidden_layer, a_max, actor_lr, critic_lr, a_update_steps, c_update_steps,
+        save_interval
+    )
 
     if mode == 'train':  # train
         UPDATE_EVENT, ROLLING_EVENT = threading.Event(), threading.Event()

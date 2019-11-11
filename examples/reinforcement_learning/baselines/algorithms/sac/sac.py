@@ -120,7 +120,10 @@ class PolicyNetwork(Model):
 
 class SAC_Trainer():
 
-    def __init__(self, replay_buffer, hidden_dim, state_dim, action_dim, action_range, soft_q_lr=3e-4, policy_lr=3e-4, alpha_lr=3e-4):
+    def __init__(
+            self, replay_buffer, hidden_dim, state_dim, action_dim, action_range, soft_q_lr=3e-4, policy_lr=3e-4,
+            alpha_lr=3e-4
+    ):
         self.replay_buffer = replay_buffer
 
         # initialize all networks
@@ -165,8 +168,9 @@ class SAC_Trainer():
         reward = reward[:, np.newaxis]  # expand dim
         done = done[:, np.newaxis]
 
-        reward = reward_scale * (reward -
-                                 np.mean(reward, axis=0)) / (np.std(reward, axis=0) + 1e-6)  # normalize with batch mean and std
+        reward = reward_scale * (reward - np.mean(reward, axis=0)) / (
+            np.std(reward, axis=0) + 1e-6
+        )  # normalize with batch mean and std
 
         # Training Q Function
         new_next_action, next_log_prob, _, _, _ = self.policy_net.evaluate(next_state)
@@ -217,15 +221,13 @@ class SAC_Trainer():
         self.target_soft_q_net1 = self.target_soft_update(self.soft_q_net1, self.target_soft_q_net1, soft_tau)
         self.target_soft_q_net2 = self.target_soft_update(self.soft_q_net2, self.target_soft_q_net2, soft_tau)
 
-    def save_weights(self): 
+    def save_weights(self):
         ''' save trained weights '''
         save_model(self.soft_q_net1, 'model_q_net1', 'SAC')
         save_model(self.soft_q_net2, 'model_q_net2', 'SAC')
         save_model(self.target_soft_q_net1, 'model_target_q_net1', 'SAC')
         save_model(self.target_soft_q_net2, 'model_target_q_net2', 'SAC')
         save_model(self.policy_net, 'model_policy_net', 'SAC')
-
-
 
     def load_weights(self):
         ''' load trained weights '''
@@ -283,7 +285,7 @@ def learn(env_id, train_episodes, test_episodes=1000, max_steps=150, batch_size=
     sac_trainer.policy_net.train()
 
     # training loop
-    if mode=='train':
+    if mode == 'train':
         frame_idx = 0
         rewards = []
         t0 = time.time()
@@ -330,7 +332,7 @@ def learn(env_id, train_episodes, test_episodes=1000, max_steps=150, batch_size=
             rewards.append(episode_reward)
         sac_trainer.save_weights()
 
-    if mode=='test':
+    if mode == 'test':
         frame_idx = 0
         rewards = []
         t0 = time.time()
@@ -341,7 +343,9 @@ def learn(env_id, train_episodes, test_episodes=1000, max_steps=150, batch_size=
             state = state.astype(np.float32)
             episode_reward = 0
             if frame_idx < 1:
-                _ = sac_trainer.policy_net([state])  # need an extra call to make inside functions be able to use forward
+                _ = sac_trainer.policy_net(
+                    [state]
+                )  # need an extra call to make inside functions be able to use forward
 
             for step in range(max_steps):
                 action = sac_trainer.policy_net.get_action(state, deterministic=DETERMINISTIC)

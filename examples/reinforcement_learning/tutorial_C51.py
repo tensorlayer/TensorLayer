@@ -199,6 +199,7 @@ def sync(net, net_tar):
 
 # ###############################  DQN  #####################################
 class DQN(object):
+
     def __init__(self):
         model = MLP if qnet_type == 'MLP' else CNN
         self.qnet = model('q')
@@ -212,8 +213,7 @@ class DQN(object):
             tl.files.load_and_assign_npz(name=args.save_path, network=self.qnet)
         self.niter = 0
         if clipnorm is not None:
-            self.optimizer = tf.optimizers.Adam(learning_rate=lr,
-                                                clipnorm=clipnorm)
+            self.optimizer = tf.optimizers.Adam(learning_rate=lr, clipnorm=clipnorm)
         else:
             self.optimizer = tf.optimizers.Adam(learning_rate=lr)
 
@@ -235,10 +235,7 @@ class DQN(object):
         # TODO: move q_estimation in tf.function
         b_dist_ = np.exp(self.targetqnet(b_o_).numpy())
         b_a_ = (b_dist_ * vrange).sum(-1).argmax(1)
-        b_tzj = np.clip(
-            reward_gamma * (1 - b_d[:, None]) * vrange[None, :] + b_r[:, None],
-            min_value, max_value
-        )
+        b_tzj = np.clip(reward_gamma * (1 - b_d[:, None]) * vrange[None, :] + b_r[:, None], min_value, max_value)
         b_i = (b_tzj - min_value) / deltaz
         b_l = np.floor(b_i).astype('int64')
         b_u = np.ceil(b_i).astype('int64')
@@ -306,8 +303,7 @@ if __name__ == '__main__':
                 fps = int(length / (time.time() - t))
                 print(
                     'Time steps so far: {}, episode so far: {}, '
-                    'episode reward: {:.4f}, episode length: {}, FPS: {}'
-                        .format(i, nepisode, reward, length, fps)
+                    'episode reward: {:.4f}, episode length: {}, FPS: {}'.format(i, nepisode, reward, length, fps)
                 )
                 t = time.time()
     else:
@@ -331,6 +327,5 @@ if __name__ == '__main__':
                 reward, length = info['episode']['r'], info['episode']['l']
                 print(
                     'Time steps so far: {}, episode so far: {}, '
-                    'episode reward: {:.4f}, episode length: {}'
-                        .format(i, nepisode, reward, length)
+                    'episode reward: {:.4f}, episode length: {}'.format(i, nepisode, reward, length)
                 )

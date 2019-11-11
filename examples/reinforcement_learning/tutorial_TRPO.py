@@ -447,11 +447,10 @@ class GAEBuffer:
         adv_mean, adv_std = np.mean(self.adv_buf), np.std(self.adv_buf)
         self.adv_buf = (self.adv_buf - adv_mean) / adv_std
         return [self.obs_buf, self.act_buf, self.adv_buf, self.ret_buf, self.logp_buf
-                ] + values_as_sorted_list(self.info_bufs)
+               ] + values_as_sorted_list(self.info_bufs)
 
 
 #####################  TRPO  ####################
-
 """
 
 Trust Region Policy Optimization 

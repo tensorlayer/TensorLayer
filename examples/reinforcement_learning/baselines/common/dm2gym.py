@@ -38,7 +38,6 @@ from gym.utils import seeding
 os.environ['MUJOCO_GL'] = 'osmesa'
 
 
-
 class Discrete(gym.spaces.Discrete):
     # Wrapper for discrete action space in dm_control
     def __init__(self, _minimum, _maximum):
@@ -67,8 +66,7 @@ def convert_action_space(spec, clip_inf=False):
                 return spaces.Box(_min, _max, shape=spec.shape)
             else:
                 # different min and max for every element
-                return spaces.Box(_min + np.zeros(spec.shape),
-                                  _max + np.zeros(spec.shape))
+                return spaces.Box(_min + np.zeros(spec.shape), _max + np.zeros(spec.shape))
         else:
             raise ValueError('Unknown spec type {}'.format(type(spec)))
 
@@ -94,16 +92,16 @@ def convert_observation(spec_obs):
         space_obs = np.zeros((n, ))
         i = 0
         for key in spec_obs:
-            space_obs[i:i+np.prod(spec_obs[key].shape)] = spec_obs[key].ravel()
+            space_obs[i:i + np.prod(spec_obs[key].shape)] = spec_obs[key].ravel()
             i += np.prod(spec_obs[key].shape)
         return space_obs
 
 
 class Env(core.Env):
+
     def __init__(self, domain_name, task_name, *args, **kwargs):
 
-        self.dmc_env = suite.load(
-            domain_name=domain_name, task_name=task_name, *args, **kwargs)
+        self.dmc_env = suite.load(domain_name=domain_name, task_name=task_name, *args, **kwargs)
 
         # convert spec to space
         self.action_space = \
@@ -131,12 +129,7 @@ class Env(core.Env):
             a += self.action_space.offset
         self.time_step = self.dmc_env.step(a)
 
-        return (
-            self.get_observation(),
-            self.time_step.reward,
-            self.time_step.last(),
-            {}
-        )
+        return (self.get_observation(), self.time_step.reward, self.time_step.last(), {})
 
     def render(self, mode='human', camera_ids=None, w=120, h=160):
         """
@@ -151,8 +144,7 @@ class Env(core.Env):
         """
         if camera_ids is None:
             camera_ids = [0]
-        img = np.concatenate([self.dmc_env.physics.render(w, h, camera_id)
-                              for camera_id in camera_ids], 1)
+        img = np.concatenate([self.dmc_env.physics.render(w, h, camera_id) for camera_id in camera_ids], 1)
 
         if mode == 'rgb_array':
             return img
@@ -180,12 +172,12 @@ def make(domain_name, task_name, task_kwargs=None, visualize_reward=False):
     # avoid re-registering
     if gym_id not in registry.env_specs:
         registry.register(
-            id=gym_id,
-            entry_point='dm2gym:Env',
-            kwargs={'domain_name': domain_name,
-                    'task_name': task_name,
-                    'task_kwargs': task_kwargs,
-                    'visualize_reward': visualize_reward}
+            id=gym_id, entry_point='dm2gym:Env', kwargs={
+                'domain_name': domain_name,
+                'task_name': task_name,
+                'task_kwargs': task_kwargs,
+                'visualize_reward': visualize_reward
+            }
         )
 
     # make the Open AI env

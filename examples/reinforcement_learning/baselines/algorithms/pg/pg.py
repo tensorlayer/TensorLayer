@@ -37,6 +37,7 @@ class PolicyNetwork(Model):
     """
     PolicyNetwork class
     """
+
     def __init__(self, n_features, n_actions, hidden_list):
         with tf.name_scope('inputs'):
             self.tf_obs = Input([None, n_features], tf.float32, name="observations")
@@ -51,7 +52,7 @@ class PolicyNetwork(Model):
         all_act = Dense(
             n_units=n_actions, act=None, W_init=tf.random_normal_initializer(mean=0, stddev=0.3),
             b_init=tf.constant_initializer(0.1), name='all_act'
-            )(layer)
+        )(layer)
         super().__init__(inputs=self.tf_obs, outputs=all_act, name='PG model')
 
 
@@ -67,7 +68,7 @@ class PolicyGradient:
 
         self.ep_obs, self.ep_as, self.ep_rs = [], [], []
 
-        self.model = PolicyNetwork(n_features, n_actions, [hidden_dim]*num_hidden_layer)
+        self.model = PolicyNetwork(n_features, n_actions, [hidden_dim] * num_hidden_layer)
         print('model', self.model)
 
         self.model.train()
@@ -163,8 +164,20 @@ class PolicyGradient:
         load_model(self.model, name, 'pg')
 
 
-def learn(env_id='CartPole-v0', train_episodes=3000, test_episodes=1000, max_steps=1000, lr=0.02, gamma=0.99,
-          hidden_dim=30, num_hidden_layer=1, seed=2, save_interval=100, mode='train', render=False, ):
+def learn(
+        env_id='CartPole-v0',
+        train_episodes=3000,
+        test_episodes=1000,
+        max_steps=1000,
+        lr=0.02,
+        gamma=0.99,
+        hidden_dim=30,
+        num_hidden_layer=1,
+        seed=2,
+        save_interval=100,
+        mode='train',
+        render=False,
+):
     """
     learn function
     :param env_id: learning environment
