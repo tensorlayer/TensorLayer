@@ -18,11 +18,13 @@ class Laye_BatchNorm_Test(CustomTestCase):
     @classmethod
     def setUpClass(cls):
 
+        x_0_input_shape = [None, 10]
         x_1_input_shape = [None, 100, 1]
         x_2_input_shape = [None, 100, 100, 3]
         x_3_input_shape = [None, 100, 100, 100, 3]
         batchsize = 2
 
+        cls.x0 = tf.random.normal([batchsize] + x_0_input_shape[1:])
         cls.x1 = tf.random.normal([batchsize] + x_1_input_shape[1:])
         cls.x2 = tf.random.normal([batchsize] + x_2_input_shape[1:])
         cls.x3 = tf.random.normal([batchsize] + x_3_input_shape[1:])
@@ -36,15 +38,57 @@ class Laye_BatchNorm_Test(CustomTestCase):
 
         ni_2 = Input(x_2_input_shape, name='test_ni2')
         nn_2 = Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), name='test_conv2d')(ni_2)
-        n2_b = BatchNorm2d(name='test_bn2d')(nn_2)
+        n2_b = BatchNorm(name='test_bn2d')(nn_2)
         cls.n2_b = n2_b
         cls.base_2d = Model(inputs=ni_2, outputs=n2_b, name='test_base_2d')
 
         ni_3 = Input(x_3_input_shape, name='test_ni2')
         nn_3 = Conv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), name='test_conv3d')(ni_3)
-        n3_b = BatchNorm3d(name='test_bn3d')(nn_3)
+        n3_b = BatchNorm(name='test_bn3d')(nn_3)
         cls.n3_b = n3_b
         cls.base_3d = Model(inputs=ni_3, outputs=n3_b, name='test_base_3d')
+
+        class bn_0d_model(Model):
+
+            def __init__(self):
+                super(bn_0d_model, self).__init__()
+                self.fc = Dense(32, in_channels=10)
+                self.bn = BatchNorm(num_features=32, name='test_bn1d')
+
+            def forward(self, x):
+                x = self.bn(self.fc(x))
+                return x
+
+        dynamic_base = bn_0d_model()
+        cls.n0_b = dynamic_base(cls.x0, is_train=True)
+
+        ## 0D ========================================================================
+
+        nin_0 = Input(x_0_input_shape, name='test_in1')
+
+        n0 = Dense(32)(nin_0)
+        n0 = BatchNorm1d(name='test_bn0d')(n0)
+
+        cls.n0 = n0
+
+        cls.static_0d = Model(inputs=nin_0, outputs=n0)
+
+        class bn_0d_model(Model):
+
+            def __init__(self):
+                super(bn_0d_model, self).__init__(name='test_bn_0d_model')
+                self.fc = Dense(32, in_channels=10)
+                self.bn = BatchNorm1d(num_features=32, name='test_bn1d')
+
+            def forward(self, x):
+                x = self.bn(self.fc(x))
+                return x
+
+        cls.dynamic_0d = bn_0d_model()
+
+        print("Printing BatchNorm0d")
+        print(cls.static_0d)
+        print(cls.dynamic_0d)
 
         ## 1D ========================================================================
 
@@ -147,6 +191,14 @@ class Laye_BatchNorm_Test(CustomTestCase):
         self.assertEqual(self.n3_b.shape[1:], (50, 50, 50, 32))
         out = self.base_3d(self.x3, is_train=True)
 
+        self.assertEqual(self.n0_b.shape[1:], (32))
+        print("test_BatchNorm OK")
+
+    def test_BatchNorm0d(self):
+        self.assertEqual(self.n0.shape[1:], (32))
+        out = self.static_0d(self.x0, is_train=True)
+        out = self.dynamic_0d(self.x0, is_train=True)
+
     def test_BatchNorm1d(self):
         self.assertEqual(self.n1.shape[1:], (50, 32))
         out = self.static_1d(self.x1, is_train=True)
@@ -185,6 +237,26 @@ class Laye_BatchNorm_Test(CustomTestCase):
         try:
             ni = Input([None, 100, 1], name='test_ni1')
             bn = BatchNorm(decay=1.5)(ni)
+        except Exception as e:
+            self.assertIsInstance(e, ValueError)
+            print(e)
+
+    def test_input_shape(self):
+        try:
+            bn = BatchNorm1d(num_features=32)
+            out = bn(self.x2)
+        except Exception as e:
+            self.assertIsInstance(e, ValueError)
+            print(e)
+        try:
+            bn = BatchNorm2d(num_features=32)
+            out = bn(self.x3)
+        except Exception as e:
+            self.assertIsInstance(e, ValueError)
+            print(e)
+        try:
+            bn = BatchNorm3d(num_features=32)
+            out = bn(self.x1)
         except Exception as e:
             self.assertIsInstance(e, ValueError)
             print(e)

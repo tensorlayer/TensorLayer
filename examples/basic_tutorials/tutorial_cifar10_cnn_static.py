@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import multiprocessing
 import time
-
 import numpy as np
+import multiprocessing
 import tensorflow as tf
 
 import tensorlayer as tl
@@ -81,14 +80,11 @@ learning_rate = 0.0001
 print_freq = 5
 n_step_epoch = int(len(y_train) / batch_size)
 n_step = n_epoch * n_step_epoch
-shuffle_buffer_size = 128  # 100
-# init_learning_rate = 0.1
-# learning_rate_decay_factor = 0.1
-# num_epoch_decay = 350
+shuffle_buffer_size = 128
 
 train_weights = net.trainable_weights
-# learning_rate = tf.Variable(init_learning_rate)
 optimizer = tf.optimizers.Adam(learning_rate)
+# looking for decay learning rate? see https://github.com/tensorlayer/srgan/blob/master/train.py
 
 
 def generator_train():
@@ -128,7 +124,7 @@ def _map_fn_train(img, target):
 
 def _map_fn_test(img, target):
     # 1. Crop the central [height, width] of the image.
-    img = tf.image.resize_image_with_crop_or_pad(img, 24, 24)
+    img = tf.image.resize_with_crop_or_pad(img, 24, 24)
     # 2. Subtract off the mean and divide by the variance of the pixels.
     img = tf.image.per_image_standardization(img)
     img = tf.reshape(img, (24, 24, 3))
@@ -183,14 +179,10 @@ for epoch in range(n_epoch):
 
     # use training and evaluation sets to evaluate the model every print_freq epoch
     if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-
         print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
-
         print("   train loss: {}".format(train_loss / n_iter))
         print("   train acc:  {}".format(train_acc / n_iter))
-
         net.eval()
-
         val_loss, val_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in test_ds:
             _logits = net(X_batch)  # is_train=False, disable dropout
@@ -199,10 +191,6 @@ for epoch in range(n_epoch):
             n_iter += 1
         print("   val loss: {}".format(val_loss / n_iter))
         print("   val acc:  {}".format(val_acc / n_iter))
-
-    # FIXME : how to apply lr decay in eager mode?
-    # learning_rate.assign(tf.train.exponential_decay(init_learning_rate, epoch, num_epoch_decay,
-    #                                                 learning_rate_decay_factor))
 
 # use testing data to evaluate the model
 net.eval()

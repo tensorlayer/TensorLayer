@@ -13,7 +13,7 @@ if gpus:
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 # get the whole model
-vgg = tl.models.vgg16()
+vgg = tl.models.vgg16(mode='static')
 
 # system monitor
 info = psutil.virtual_memory()
@@ -35,7 +35,6 @@ gen = random_input_generator(num_iter, batch_size)
 
 
 # training function
-@tf.function
 def train_step(x_batch, y_batch):
     # forward + backward
     with tf.GradientTape() as tape:
@@ -46,6 +45,7 @@ def train_step(x_batch, y_batch):
 
     grad = tape.gradient(_loss, train_weights)
     optimizer.apply_gradients(zip(grad, train_weights))
+    return _loss
 
 
 # begin training
@@ -54,7 +54,7 @@ vgg.train()
 for idx, data in enumerate(gen):
     start_time = time.time()
 
-    train_step(data[0], data[1])
+    loss = train_step(data[0], data[1])
 
     end_time = time.time()
     consume_time = end_time - start_time
@@ -66,8 +66,8 @@ for idx, data in enumerate(gen):
         avg_mem_usage += cur_usage
         count += 1
         tl.logging.info(
-            "[*] {} iteration: memory usage {:.2f}MB, consume time {:.4f}s".format(
-                idx, cur_usage / (1024 * 1024), consume_time
+            "[*] {} iteration: memory usage {:.2f}MB, consume time {:.4f}s, loss {:.4f}".format(
+                idx, cur_usage / (1024 * 1024), consume_time, loss
             )
         )
 

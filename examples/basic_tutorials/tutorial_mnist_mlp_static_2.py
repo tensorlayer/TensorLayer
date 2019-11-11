@@ -1,5 +1,4 @@
 import time
-
 import numpy as np
 import tensorflow as tf
 
@@ -55,27 +54,20 @@ optimizer = tf.optimizers.Adam(lr=0.0001)
 for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
     start_time = time.time()
     ## iterate over the entire training set once (shuffle the data via training)
-
     for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
-
         MLP.train()  # enable dropout
-
         with tf.GradientTape() as tape:
             ## compute outputs
             _logits = MLP(X_batch)  # alternatively, you can use MLP(x, is_train=True) and remove MLP.train()
             ## compute loss and update model
             _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
-
         grad = tape.gradient(_loss, train_weights)
         optimizer.apply_gradients(zip(grad, train_weights))
 
     ## use training and evaluation sets to evaluate the model every print_freq epoch
     if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-
         MLP.eval()  # disable dropout
-
         print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
-
         train_loss, train_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=False):
 
@@ -85,7 +77,6 @@ for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
             n_iter += 1
         print("   train loss: {}".format(train_loss / n_iter))
         print("   train acc:  {}".format(train_acc / n_iter))
-
         val_loss, val_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=False):
             _logits = MLP(X_batch)  # is_train=False, disable dropout

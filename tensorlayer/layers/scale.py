@@ -22,7 +22,7 @@ class Scale(Layer):
     name : a str
         A unique layer name.
 
-    Examples:
+    Examples
     ----------
     >>> inputs = tl.layers.Input([8, 3])
     >>> dense = tl.layers.Dense(n_units=10)(inputs)

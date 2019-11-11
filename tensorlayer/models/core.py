@@ -359,7 +359,12 @@ class Model(object):
             attr_list.remove("all_weights")
             attr_list.remove("trainable_weights")
             attr_list.remove("nontrainable_weights")
+            attr_list.remove("_all_weights")
+            attr_list.remove("_trainable_weights")
+            attr_list.remove("_nontrainable_weights")
             attr_list.remove("all_layers")
+            attr_list.remove("_all_layers")
+            attr_list.remove("n_weights")
             for idx, attr in enumerate(attr_list):
                 try:
                     if isinstance(getattr(self, attr), Layer):
@@ -402,7 +407,7 @@ class Model(object):
                 if layer.trainable_weights is not None:
                     self._trainable_weights.extend(layer.trainable_weights)
 
-        return self._trainable_weights
+        return self._trainable_weights.copy()
 
     @property
     def nontrainable_weights(self):
@@ -416,7 +421,7 @@ class Model(object):
                 if layer.nontrainable_weights is not None:
                     self._nontrainable_weights.extend(layer.nontrainable_weights)
 
-        return self._nontrainable_weights
+        return self._nontrainable_weights.copy()
 
     @property
     def all_weights(self):
@@ -430,7 +435,25 @@ class Model(object):
                 if layer.all_weights is not None:
                     self._all_weights.extend(layer.all_weights)
 
-        return self._all_weights
+        return self._all_weights.copy()
+
+    @property
+    def n_weights(self):
+        """Return the number of weights (parameters) in this network."""
+        n_weights = 0
+        for i, w in enumerate(self.all_weights):
+            n = 1
+            # for s in p.eval().shape:
+            for s in w.get_shape():
+                try:
+                    s = int(s)
+                except:
+                    s = 1
+                if s:
+                    n = n * s
+            n_weights = n_weights + n
+        # print("num of weights (parameters) %d" % n_weights)
+        return n_weights
 
     @property
     def config(self):
@@ -592,6 +615,15 @@ class Model(object):
             layer._fix_nodes_for_layers()
         self._nodes_fixed = True
 
+    def __setattr__(self, key, value):
+        if isinstance(value, Layer):
+            if value._built is False:
+                raise AttributeError(
+                    "The registered layer `{}` should be built in advance. "
+                    "Do you forget to pass the keyword argument 'in_channels'? ".format(value.name)
+                )
+        super().__setattr__(key, value)
+
     def __repr__(self):
         # tmpstr = self.__class__.__name__ + '(\n'
         tmpstr = self.name + '(\n'
@@ -670,6 +702,8 @@ class Model(object):
 
         visited_node_names = set()
         for out_node in output_nodes:
+            if out_node.visited:
+                continue
             queue_node.put(out_node)
 
             while not queue_node.empty():

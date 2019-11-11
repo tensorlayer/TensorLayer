@@ -16,7 +16,6 @@ API - Utility
    flatten_list
    exit_tensorflow
    open_tensorboard
-   clear_all_placeholder_variables
    set_gpu_fraction
 
 Training, testing and predicting
@@ -68,10 +67,6 @@ Close TF session and associated processes
 Open TensorBoard
 ----------------
 .. autofunction:: open_tensorboard
-
-Clear TensorFlow placeholder
-----------------------------
-.. autofunction:: clear_all_placeholder_variables
 
 Set GPU functions
 -----------------

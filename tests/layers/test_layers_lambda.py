@@ -101,6 +101,32 @@ class Layer_Lambda_Test(CustomTestCase):
         out, out2 = model(self.data_x, bar=2)
         self.assertTrue(np.array_equal(out2.numpy(), out.numpy()))
 
+    def test_lambda_func_with_weight(self):
+
+        a = tf.Variable(1.0)
+
+        def customize_fn(x):
+            return x + a
+
+        class CustomizeModel(tl.models.Model):
+
+            def __init__(self):
+                super(CustomizeModel, self).__init__()
+                self.dense = tl.layers.Dense(in_channels=1, n_units=5)
+                self.lambdalayer = tl.layers.Lambda(customize_fn, fn_weights=[a])
+
+            def forward(self, x):
+                z = self.dense(x)
+                z = self.lambdalayer(z)
+                return z
+
+        model = CustomizeModel()
+        print(model.lambdalayer)
+        model.train()
+
+        out = model(self.data_x)
+        print(out.shape)
+
     def test_lambda_func_without_args(self):
 
         class CustomizeModel(tl.models.Model):

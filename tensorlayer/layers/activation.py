@@ -57,7 +57,7 @@ class PRelu(Layer):
             self,
             channel_shared=False,
             in_channels=None,
-            a_init=truncated_normal(mean=0.0, stddev=0.1),
+            a_init=truncated_normal(mean=0.0, stddev=0.05),
             name=None  # "prelu"
     ):
 
@@ -144,7 +144,7 @@ class PRelu6(Layer):
             self,
             channel_shared=False,
             in_channels=None,
-            a_init=truncated_normal(mean=0.0, stddev=0.1),
+            a_init=truncated_normal(mean=0.0, stddev=0.05),
             name=None  # "prelu6"
     ):
 
@@ -232,7 +232,7 @@ class PTRelu6(Layer):
             self,
             channel_shared=False,
             in_channels=None,
-            a_init=truncated_normal(mean=0.0, stddev=0.1),
+            a_init=truncated_normal(mean=0.0, stddev=0.05),
             name=None  # "ptrelu6"
     ):
 

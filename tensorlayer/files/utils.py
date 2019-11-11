@@ -682,7 +682,7 @@ def load_cropped_svhn(path='data', include_extra=True):
         np.savez(np_file, X=X_train, y=y_train)
         del_file(filepath)
     else:
-        v = np.load(np_file)
+        v = np.load(np_file, allow_pickle=True)
         X_train = v['X']
         y_train = v['y']
     logging.info("  n_train: {}".format(len(y_train)))
@@ -699,7 +699,7 @@ def load_cropped_svhn(path='data', include_extra=True):
         np.savez(np_file, X=X_test, y=y_test)
         del_file(filepath)
     else:
-        v = np.load(np_file)
+        v = np.load(np_file, allow_pickle=True)
         X_test = v['X']
         y_test = v['y']
     logging.info("  n_test: {}".format(len(y_test)))
@@ -719,7 +719,7 @@ def load_cropped_svhn(path='data', include_extra=True):
             np.savez(np_file, X=X_extra, y=y_extra)
             del_file(filepath)
         else:
-            v = np.load(np_file)
+            v = np.load(np_file, allow_pickle=True)
             X_extra = v['X']
             y_extra = v['y']
         # print(X_train.shape, X_extra.shape)
@@ -2089,7 +2089,7 @@ def load_and_assign_npz_dict(name='model.npz', network=None, skip=False):
         logging.error("file {} doesn't exist.".format(name))
         return False
 
-    weights = np.load(name)
+    weights = np.load(name, allow_pickle=True)
     if len(weights.keys()) != len(set(weights.keys())):
         raise Exception("Duplication in model npz_dict %s" % name)
 
@@ -2281,9 +2281,9 @@ def load_npy_to_any(path='', name='file.npy'):
     """
     file_path = os.path.join(path, name)
     try:
-        return np.load(file_path).item()
+        return np.load(file_path, allow_pickle=True).item()
     except Exception:
-        return np.load(file_path)
+        return np.load(file_path, allow_pickle=True)
     raise Exception("[!] Fail to load %s" % file_path)
 
 
@@ -2659,6 +2659,10 @@ def _load_weights_from_hdf5_group(f, layers, skip=False):
             elif isinstance(layer, tl.layers.Layer):
                 weight_names = [n.decode('utf8') for n in g.attrs['weight_names']]
                 for iid, w_name in enumerate(weight_names):
+                    # FIXME : this is only for compatibility
+                    if isinstance(layer, tl.layers.BatchNorm) and np.asarray(g[w_name]).ndim > 1:
+                        assign_tf_variable(layer.all_weights[iid], np.asarray(g[w_name]).squeeze())
+                        continue
                     assign_tf_variable(layer.all_weights[iid], np.asarray(g[w_name]))
             else:
                 raise Exception("Only layer or model can be saved into hdf5.")

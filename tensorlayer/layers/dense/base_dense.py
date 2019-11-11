@@ -57,7 +57,7 @@ class Dense(Layer):
             self,
             n_units,
             act=None,
-            W_init=tl.initializers.truncated_normal(stddev=0.1),
+            W_init=tl.initializers.truncated_normal(stddev=0.05),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
             name=None,  # 'dense',

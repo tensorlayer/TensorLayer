@@ -105,7 +105,7 @@ In this tutorial, we continue our demonstration by performing inference using th
 >>>model = onnx.load('mnist.onnx')
 >>>tf_rep = prepare(model)
 >>>#Image Path
->>>img = np.load("./assets/image.npz")
+>>>img = np.load("./assets/image.npz", allow_pickle=True)
 >>>output = tf_rep.run(img.reshape([1, 784]))
 >>>print "The digit is classified as ", np.argmax(output)
 
@@ -317,7 +317,7 @@ def convert_onnx_to_model(onnx_input_path):
     model = onnx.load(onnx_input_path)
     tf_rep = prepare(model)
     # Image Path
-    img = np.load("./assets/image.npz")
+    img = np.load("./assets/image.npz", allow_pickle=True)
     output = tf_rep.run(img.reshape([1, 784]))
     print("The digit is classified as ", np.argmax(output))
 

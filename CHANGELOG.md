@@ -67,6 +67,7 @@ To release a new version, please update the changelog as followed:
 
 <!-- YOU CAN EDIT FROM HERE -->
 
+
 ## [Unreleased]
 
 ### Added
@@ -79,33 +80,95 @@ To release a new version, please update the changelog as followed:
 
 ### Fixed
 
+- Fix README. (#PR 1044)
+- Fix package info. (#PR 1046)
+
 ### Removed
 
 ### Security
 
 ### Contributors
 
-## [2.0.3]
+- @luomai (PR #1044, 1046)
+
+
+## [2.2.0] - 2019-09-13
+
+TensorLayer 2.2.0 is a maintenance release.
+It contains numerous API improvement and bug fixes.
+This release is compatible with TensorFlow 2 RC1.
+
+### Added
+- Support nested layer customization (#PR 1015)
+- Support string dtype in InputLayer (#PR 1017)
+- Support Dynamic RNN in RNN (#PR 1023)
+- Add ResNet50 static model (#PR 1030)
+- Add performance test code in static model (#PR 1041)
+
+### Changed
+
+- `SpatialTransform2dAffine` auto `in_channels`
+- support TensorFlow 2.0.0-rc1
+- Update model weights property, now returns its copy (#PR 1010)
+
+### Fixed
+- RNN updates: remove warnings, fix if seq_len=0, unitest (#PR 1033)
+- BN updates: fix BatchNorm1d for 2D data, refactored (#PR 1040)
+
+### Dependencies Update
+
+### Deprecated
+
+### Fixed
+- Fix `tf.models.Model._construct_graph` for list of outputs, e.g. STN case (PR #1010)
+- Enable better `in_channels` exception raise. (PR #1015)
+- Set allow_pickle=True in np.load() (#PR 1021)
+- Remove `private_method` decorator (#PR 1025)
+- Copy original model's `trainable_weights` and `nontrainable_weights` when initializing `ModelLayer` (#PR 1026)
+- Copy original model's `trainable_weights` and `nontrainable_weights` when initializing `LayerList` (#PR 1029)
+- Remove redundant parts in `model.all_layers` (#PR 1029)
+- Replace `tf.image.resize_image_with_crop_or_pad` with `tf.image.resize_with_crop_or_pad` (#PR 1032)
+- Fix a bug in `ResNet50` static model (#PR 1041)
+
+### Removed
+
+### Security
+
+### Contributors
+
+- @zsdonghao
+- @luomai
+- @ChrisWu1997: #1010 #1015 #1025 #1030 #1040
+- @warshallrho: #1017 #1021 #1026 #1029 #1032 #1041
+- @ArnoldLIULJ: #1023
+- @JingqingZ: #1023
+
+## [2.1.0]
 
 ### Changed
 - Add version_info in model.config. (PR #992)
-- Replace tf.nn.func with tf.nn.func.\_\_name\_\_ in model config.
+- Replace tf.nn.func with tf.nn.func.\_\_name\_\_ in model config. (PR #994)
 - Add Reinforcement learning tutorials. (PR #995)
+- Add RNN layers with simple rnn cell, GRU cell, LSTM cell. (PR #998)
+- Update Seq2seq (#998) 
+- Add Seq2seqLuongAttention model (#998)
 
 ### Fixed
 
 ### Contributors
-- @warshallrho:
+- @warshallrho:  #992 #994
 - @quantumiracle: #995
 - @Tokarev-TT-33: #995
 - @initial-h: #995
 - @Officium: #995
+- @ArnoldLIULJ: #998
+- @JingqingZ: #998
+
 
 ## [2.0.2] - 2019-6-5
 
 ### Changed
 - change the format of network config, change related code and files; change layer act (PR #980)
-- update Seq2seq (#989) 
 
 ### Fixed
 - Fix dynamic model cannot track PRelu weights gradients problem (PR #982)
@@ -113,7 +176,6 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 - @warshallrho: #980
-- @ArnoldLIULJ: #989
 - @1FengL: #982
 
 ## [2.0.1] - 2019-5-17
@@ -151,15 +213,12 @@ A maintain release.
 - @warshallrho: #PR966
 - @zsdonghao: #931
 - @yd-yin: #963
-<<<<<<< HEAD
 - @Tokarev-TT-33: # 995
 - @initial-h: # 995
 - @quantumiracle: #995
 - @Officium: #995
-=======
 - @1FengL: #958
 - @dvklopfenstein: #971
->>>>>>> 560dbb8a17963023a3b1d59a79e1c2752530114a
 
 
 ## [2.0.0] - 2019-05-04
@@ -512,6 +571,8 @@ To many PR for this update, please check [here](https://github.com/tensorlayer/t
 @zsdonghao @luomai @DEKHTIARJonathan
 
 [Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/2.0....master
+[2.2.0]: https://github.com/tensorlayer/tensorlayer/compare/2.2.0...2.2.0
+[2.1.0]: https://github.com/tensorlayer/tensorlayer/compare/2.1.0...2.1.0
 [2.0.2]: https://github.com/tensorlayer/tensorlayer/compare/2.0.2...2.0.2
 [2.0.1]: https://github.com/tensorlayer/tensorlayer/compare/2.0.1...2.0.1
 [2.0.0]: https://github.com/tensorlayer/tensorlayer/compare/2.0.0...2.0.0

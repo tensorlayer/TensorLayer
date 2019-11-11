@@ -160,7 +160,7 @@ def restore_model(model, layer_type):
     maybe_download_and_extract(model_saved_name[layer_type], 'models', model_urls[layer_type])
     weights = []
     if layer_type == 'vgg16':
-        npz = np.load(os.path.join('models', model_saved_name[layer_type]))
+        npz = np.load(os.path.join('models', model_saved_name[layer_type]), allow_pickle=True)
         # get weight list
         for val in sorted(npz.items()):
             logging.info("  Loading weights %s in %s" % (str(val[1].shape), val[0]))
@@ -168,7 +168,7 @@ def restore_model(model, layer_type):
             if len(model.all_weights) == len(weights):
                 break
     elif layer_type == 'vgg19':
-        npz = np.load(os.path.join('models', model_saved_name[layer_type]), encoding='latin1').item()
+        npz = np.load(os.path.join('models', model_saved_name[layer_type]), allow_pickle=True, encoding='latin1').item()
         # get weight list
         for val in sorted(npz.items()):
             logging.info("  Loading %s in %s" % (str(val[1][0].shape), val[0]))

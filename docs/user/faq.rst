@@ -34,64 +34,6 @@ For people from academia, TensorLayer was originally developed by PhD students w
 For research related to image processing such as image captioning, visual QA and etc., you may find it is very helpful to use the existing `Tf-Slim pre-trained models <https://github.com/tensorflow/models/tree/master/slim#Pretrained>`__ with TensorLayer (a specially layer for connecting Tf-Slim is provided).
 
 
-Exclude some layers from training
-======================================
-
-You may need to get the list of variables you want to update, TensorLayer provides two ways to get the variables list.
-
-The first way is to use the all_params of a network, by default, it will store the variables in order.
-You can print the variables information via
-``tl.layers.print_all_variables(train_only=True)`` or ``network.print_params(details=False)``.
-To choose which variables to update, you can do as below.
-
-.. code-block:: python
-
-  train_params = network.trainable_weights[3:]
-
-The second way is to get the variables by a given name. For example, if you want to get all variables which the layer name contains ``dense``, you can do as below.
-
-.. code-block:: python
-
-  train_params = network.get_layer('dense').trainable_weights
-
-After you get the variable list, you can define your optimizer like that so as to update only a part of the variables.
-
-.. code-block:: python
-
-    train_weights = network.trainable_weights
-    optimizer.apply_gradients(zip(grad, train_weights))
-
-Logging
-==========
-
-TensorLayer adopts the `Python logging module <https://docs.python.org/3/library/logging.html>`__
-to log running information.
-The logging module would print logs to the console in default.
-If you want to configure the logging module,
-you shall follow its `manual <https://docs.python.org/3/library/logging.html>`__.
-
-Visualization
-===============
-
-Cannot Save Image
------------------------
-
-If you run the script via SSH control, sometimes you may find the following error.
-
-.. code-block:: bash
-
-  _tkinter.TclError: no display name and no $DISPLAY environment variable
-
-If this happens, run ``sudo apt-get install python3-tk`` or ``import matplotlib`` and ``matplotlib.use('Agg')`` before ``import tensorlayer as tl``.
-Alternatively, add the following code into the top of ``visualize.py`` or in your own code.
-
-.. code-block:: python
-
-  import matplotlib
-  matplotlib.use('Agg')
-  import matplotlib.pyplot as plt
-
-
 Install Master Version
 ========================
 

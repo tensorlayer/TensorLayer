@@ -128,8 +128,11 @@ class Layer(object):
 
         # Layer weight state
         self._all_weights = None
-        self._trainable_weights = None
-        self._nontrainable_weights = None
+        self._trainable_weights = []
+        self._nontrainable_weights = []
+
+        # nested layers
+        self._layers = None
 
         # Layer training state
         self.is_train = True
@@ -180,26 +183,39 @@ class Layer(object):
         if self._all_weights is not None and len(self._all_weights) > 0:
             pass
         else:
-            self._all_weights = list()
-            if self._trainable_weights is not None:
-                self._all_weights.extend(self._trainable_weights)
-            if self._nontrainable_weights is not None:
-                self._all_weights.extend(self._nontrainable_weights)
+            self._all_weights = self.trainable_weights + self.nontrainable_weights
         return self._all_weights
 
     @property
     def trainable_weights(self):
-        return self._trainable_weights
+        nested = self._collect_sublayers_attr('trainable_weights')
+        return self._trainable_weights + nested
 
     @property
     def nontrainable_weights(self):
-        return self._nontrainable_weights
+        nested = self._collect_sublayers_attr('nontrainable_weights')
+        return self._nontrainable_weights + nested
 
     @property
     def weights(self):
         raise Exception(
             "no property .weights exists, do you mean .all_weights, .trainable_weights, or .nontrainable_weights ?"
         )
+
+    def _collect_sublayers_attr(self, attr):
+        if attr not in ['trainable_weights', 'nontrainable_weights']:
+            raise ValueError(
+                "Only support to collect some certain attributes of nested layers,"
+                "e.g. 'trainable_weights', 'nontrainable_weights', but got {}".format(attr)
+            )
+        if self._layers is None:
+            return []
+        nested = []
+        for layer in self._layers:
+            value = getattr(layer, attr)
+            if value is not None:
+                nested.extend(value)
+        return nested
 
     def __call__(self, inputs, *args, **kwargs):
         """
@@ -327,6 +343,20 @@ class Layer(object):
     def __delitem__(self, key):
         raise TypeError("The Layer API does not allow to use the method: `__delitem__`")
 
+    def __setattr__(self, key, value):
+        if isinstance(value, Layer):
+            value._fix_nodes_for_layers()
+            if self._layers is None:
+                self._layers = []
+            self._layers.append(value)
+        super().__setattr__(key, value)
+
+    def __delattr__(self, name):
+        value = getattr(self, name, None)
+        if isinstance(value, Layer):
+            self._layers.remove(value)
+        super().__delattr__(name)
+
     @protected_method
     def get_args(self):
         init_args = {"layer_type": "normal"}
@@ -350,6 +380,10 @@ class Layer(object):
             if values[arg] is not None and arg not in ['self', 'prev_layer', 'inputs']:
 
                 val = values[arg]
+
+                if arg == "dtype" and isinstance(val, tf.DType):
+                    params[arg] = repr(val)
+                    continue
 
                 # change function (e.g. act) into dictionary of module path and function name
                 if inspect.isfunction(val):
@@ -479,6 +513,8 @@ class ModelLayer(Layer):
 
         # Layer weight state
         self._all_weights = model.all_weights
+        self._trainable_weights = model.trainable_weights
+        self._nontrainable_weights = model.nontrainable_weights
 
         # Layer training state
         self.is_train = True
@@ -567,6 +603,8 @@ class LayerList(Layer):
 
         is_built = True
         for layer in self.layers:
+            self._trainable_weights.extend(layer.trainable_weights)
+            self._nontrainable_weights.extend(layer.nontrainable_weights)
             if layer._built is False:
                 is_built = False
             if layer._built and layer.all_weights is not None:
