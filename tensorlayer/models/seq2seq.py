@@ -10,6 +10,9 @@ from tensorlayer.layers.core import Layer
 from tensorlayer.models import Model
 
 
+__all__ = ['Seq2seq']
+
+
 class Seq2seq(Model):
     """vanilla stacked layer Seq2Seq model.
 
@@ -17,9 +20,9 @@ class Seq2seq(Model):
     ----------
     decoder_seq_length: int
         The length of your target sequence
-    cell_enc : str, tf.function
+    cell_enc : TensorFlow cell function
         The RNN function cell for your encoder stack, e.g tf.keras.layers.GRUCell
-    cell_dec : str, tf.function
+    cell_dec : TensorFlow cell function
         The RNN function cell for your decoder stack, e.g. tf.keras.layers.GRUCell
     n_layer : int
         The number of your RNN layers for both encoder and decoder block

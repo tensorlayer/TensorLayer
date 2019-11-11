@@ -1,14 +1,24 @@
 # Reinforcement Learning Tutorial with Tensorlayer
 
 <br/>
-
 <a href="https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc" target="\_blank">
 	<div align="center">
 		<img src="../../img/join_slack.png" width="40%"/>
 	</div>
+	<div align="center"><caption>Slack Invitation Link</caption></div>
 </a>
-
 <br/>
+
+<!--
+<br/>
+<a href="https://github.com/tensorlayer/tensorlayer-chinese/blob/master/docs/images/RL_Group_QR.jpeg" target="\_blank">
+	<div align="center">
+		<img src="https://github.com/tensorlayer/tensorlayer-chinese/blob/master/docs/images/RL_Group_QR.jpeg" width="20%"/>
+	</div>
+	<div align="center"><caption>WeChat QR Code</caption></div>
+</a>
+<br/>
+-->
 
 This repository contains implementation of most popular reinforcement learning algorithms with Tensorlayer 2.0, supporting [Tensorflow 2.0](https://www.tensorflow.org/alpha/guide/effective_tf2). We aim to make the reinforcement learning tutorial for each algorithm simple and straight-forward to use, as this would not only benefits new learners of reinforcement learning, but also provide convenience for senior researchers to testify their new ideas quickly.
 
@@ -37,7 +47,7 @@ For each tutorial, open a terminal and run:
 The tutorial algorithms follow the same basic structure, as shown in file: [`./tutorial_format.py`](https://github.com/tensorlayer/tensorlayer/blob/reinforcement-learning/examples/reinforcement_learning/tutorial_format.py)
 
 ## Table of Contents:
-
+### value-based
 | Algorithms      | Action Space | Tutorial Env   | Papers |
 | --------------- | ------------ | -------------- | -------|
 |**value-based**||||
@@ -46,7 +56,6 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 | Prioritized Experience Replay | Discrete     | Pong, CartPole | [Schaul et al. Prioritized experience replay. Schaul et al. 2015.](https://arxiv.org/abs/1511.05952) |
 |Dueling DQN|Discrete     | Pong, CartPole |[Dueling network architectures for deep reinforcement learning. Wang et al. 2015.](https://arxiv.org/abs/1511.06581)|
 |Double DQN| Discrete     | Pong, CartPole |[Deep reinforcement learning with double q-learning. Van et al. 2016.](https://arxiv.org/abs/1509.06461)|
-|Retrace|Discrete     | Pong, CartPole |[Safe and efficient off-policy reinforcement learning. Munos et al. 2016: ](https://arxiv.org/pdf/1606.02647.pdf)|
 |Noisy DQN|Discrete     | Pong, CartPole |[Noisy networks for exploration. Fortunato et al. 2017.](https://arxiv.org/pdf/1706.10295.pdf)|
 | Distributed DQN (C51)| Discrete     | Pong, CartPole | [A distributional perspective on reinforcement learning. Bellemare et al. 2017.](https://arxiv.org/pdf/1707.06887.pdf) |
 |**policy-based**||||
@@ -158,23 +167,6 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
   ```
   Categorical 51 distributional RL algorithm is a distrbuted DQN, where 51 means the number of atoms. In this algorithm, instead of estimating actual expected value, value distribution over a series of  continuous sub-intervals (atoms) is considered.
   ```
-
-
-
-
-* **Retrace(lambda) DQN**
-
-  <u>Code</u>: `./tutorial_Retrace.py`
-
-  <u>Paper</u>: [Safe and Efficient Off-Policy Reinforcement Learning](https://arxiv.org/abs/1606.02647)
-
-  <u>Description:</u>
-
-  ```
-  Retrace (lambda) is an off-policy algorithm that extend the idea of eligibility trace. It apply an importance sampling ratio truncated at 1 to several behaviour policies, which suffer from the variance explosion of standard IS and lead to safe and efficient learning.
-  ```
-
-
 
 
 * **Actor-Critic (AC)**
@@ -345,5 +337,5 @@ Our env wrapper: `./tutorial_wrappers.py`
 - @zsdonghao Hao Dong: AC, A3C, Q-Learning, DQN, PG
 - @quantumiracle Zihan Ding: SAC, TD3.
 - @Tokarev-TT-33 Tianyang Yu @initial-h Hongming Zhang : PG, DDPG, PPO, DPPO, TRPO
-- @Officium Yanhua Huang: C51, Retrace, DQN_variants, prioritized_replay, wrappers.
+- @Officium Yanhua Huang: C51, DQN_variants, prioritized_replay, wrappers.
 

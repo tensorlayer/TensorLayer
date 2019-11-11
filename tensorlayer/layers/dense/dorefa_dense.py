@@ -51,7 +51,7 @@ class DorefaDense(Layer):
             n_units=100,
             act=None,
             use_gemm=False,
-            W_init=tl.initializers.truncated_normal(stddev=0.1),
+            W_init=tl.initializers.truncated_normal(stddev=0.05),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
             name=None,  #'dorefa_dense',
