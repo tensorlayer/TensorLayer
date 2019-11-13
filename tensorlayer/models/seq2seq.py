@@ -9,7 +9,6 @@ from tensorlayer.layers import Dense, Dropout, Input
 from tensorlayer.layers.core import Layer
 from tensorlayer.models import Model
 
-
 __all__ = ['Seq2seq']
 
 
