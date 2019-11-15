@@ -33,15 +33,15 @@ import copy
 import os
 import time
 
+import gym
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal
-
-import gym
 import tensorflow as tf
 import tensorflow_probability as tfp
-import tensorlayer as tl
 from gym.spaces import Box, Discrete
+
+import tensorlayer as tl
 
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=True)
@@ -447,11 +447,10 @@ class GAEBuffer:
         adv_mean, adv_std = np.mean(self.adv_buf), np.std(self.adv_buf)
         self.adv_buf = (self.adv_buf - adv_mean) / adv_std
         return [self.obs_buf, self.act_buf, self.adv_buf, self.ret_buf, self.logp_buf
-                ] + values_as_sorted_list(self.info_bufs)
+               ] + values_as_sorted_list(self.info_bufs)
 
 
 #####################  TRPO  ####################
-
 """
 
 Trust Region Policy Optimization 

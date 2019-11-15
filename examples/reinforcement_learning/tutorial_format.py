@@ -31,7 +31,6 @@ import argparse
 import time
 
 import numpy as np
-
 import tensorflow as tf
 
 # import 'other package name'
