@@ -60,7 +60,7 @@ Alternatively, you can build from the source.
   cd tensorlayer
 
   # Install virtualenv if necessary
-  pip install virtualenv
+  sudo pip3 install virtualenv
   # Then create a virtualenv called `venv`
   virtualenv venv
 
@@ -73,21 +73,21 @@ Alternatively, you can build from the source.
   venv\Scripts\activate.bat
 
   # basic installation
-  pip install .
+  pip3 install .
 
   # ============= IF TENSORFLOW IS NOT ALREADY INSTALLED ============= #
 
   # for a machine **without** an NVIDIA GPU
-  pip install -e ".[all_cpu_dev]"
+  pip3 install -e ".[all_cpu_dev]"
 
   # for a machine **with** an NVIDIA GPU
-  pip install -e ".[all_gpu_dev]"
+  pip3 install -e ".[all_gpu_dev]"
 
 If you want install TensorLayer 1.X, the simplest way to install TensorLayer 1.X is as follow. It will also install the numpy and matplotlib automatically.
 
 .. code-block:: bash
 
-  [stable version] pip install tensorlayer==1.x.x
+  [stable version] pip3 install tensorlayer==1.x.x
 
 However, if you want to modify or extend TensorLayer 1.X, you can download the repository from
 `Github`_ and install it as follow.
@@ -95,7 +95,7 @@ However, if you want to modify or extend TensorLayer 1.X, you can download the r
 .. code-block:: bash
 
   cd to the root of the git tree
-  pip install -e .
+  pip3 install -e .
 
 This command will run the ``setup.py`` to install TensorLayer. The ``-e`` reflects
 editable, then you can edit the source code in ``tensorlayer`` folder, and ``import`` the edited
@@ -194,9 +194,9 @@ For TensorLayer, please refer to the steps mentioned above.
 
 .. code-block:: bash
 
-  pip install tensorflow        #CPU version
-  pip install tensorflow-gpu    #GPU version (GPU version and CPU version just choose one)
-  pip install tensorlayer       #Install tensorlayer
+  pip3 install tensorflow        #CPU version
+  pip3 install tensorflow-gpu    #GPU version (GPU version and CPU version just choose one)
+  pip3 install tensorlayer       #Install tensorlayer
 
 
 
