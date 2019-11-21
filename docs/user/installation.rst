@@ -35,6 +35,8 @@ For stable version:
 .. code-block:: bash
 
   pip3 install tensorlayer
+  
+  pip install tensorlayer -i https://pypi.tuna.tsinghua.edu.cn/simple  (faster in China)
 
 For latest version, please install from Github.
 
