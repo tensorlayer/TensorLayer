@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import base64
+import datetime
 import gzip
 import json
 import math
@@ -18,25 +19,17 @@ import zipfile
 import cloudpickle
 import h5py
 import numpy as np
-import scipy.io as sio
-from six.moves import cPickle
-
 import progressbar
+import scipy.io as sio
 import tensorflow as tf
-import tensorlayer as tl
+from six.moves import cPickle
 from tensorflow.python.keras.saving import model_config as model_config_lib
 from tensorflow.python.platform import gfile
 from tensorflow.python.util import serialization
 from tensorflow.python.util.tf_export import keras_export
-from tensorlayer import logging, nlp, utils, visualize
 
-import cloudpickle
-import base64
-from tensorflow.python.keras.saving import model_config as model_config_lib
-from tensorflow.python.util.tf_export import keras_export
-from tensorflow.python.util import serialization
-import json
-import datetime
+import tensorlayer as tl
+from tensorlayer import logging, nlp, utils, visualize
 
 # from six.moves import zip
 
