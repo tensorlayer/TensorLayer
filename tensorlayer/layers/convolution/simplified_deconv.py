@@ -118,32 +118,51 @@ class DeConv2d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        self.layer = tf.keras.layers.Conv2DTranspose(
-            filters=self.n_filter,
-            kernel_size=self.filter_size,
-            strides=self.strides,
-            padding=self.padding,
-            data_format=self.data_format,
-            dilation_rate=self.dilation_rate,
-            activation=self.act,
-            use_bias=(True if self.b_init is not None else False),
-            kernel_initializer=self.W_init,
-            bias_initializer=self.b_init,
-            # dtype=tf.float32,
-            name=self.name,
-        )
-        if self.data_format == "channels_first":
-            self.in_channels = inputs_shape[1]
+        kernel_h, kernel_w = self.filter_size
+        stride_h, stride_w = self.strides
+        if self.data_format == 'channels_last':
+            self.data_format = 'NHWC'
+            if self.in_channels is None:
+                self.in_channels = inputs_shape[-1]
+            self._strides = [1, self.strides[0], self.strides[1], 1]
+            self._dilation_rate = [1, self.dilation_rate[0], self.dilation_rate[1], 1]
+            H = deconv_length(input_length=inputs_shape[1], stride=stride_h, filter_size=kernel_h, padding=self.padding)
+            W = deconv_length(input_length=inputs_shape[2], stride=stride_w, filter_size=kernel_w, padding=self.padding)
+            self.outshape = [inputs_shape[0], H, W, self.n_filter]
+        elif self.data_format == 'channels_first':
+            self.data_format = 'NCHW'
+            if self.in_channels is None:
+                self.in_channels = inputs_shape[1]
+            self._strides = [1, 1, self.strides[0], self.strides[1]]
+            self._dilation_rate = [1, 1, self.dilation_rate[0], self.dilation_rate[1]]
+            H = deconv_length(input_length=inputs_shape[2], stride=stride_h, filter_size=kernel_h, padding=self.padding)
+            W = deconv_length(input_length=inputs_shape[3], stride=stride_w, filter_size=kernel_w, padding=self.padding)
+            self.outshape = [inputs_shape[0], self.n_filter, H, W]
         else:
-            self.in_channels = inputs_shape[-1]
-        _out = self.layer(
-            tf.convert_to_tensor(np.random.uniform(size=inputs_shape), dtype=np.float32)
-        )  #np.random.uniform([1] + list(inputs_shape)))  # initialize weights
-        outputs_shape = _out.shape
-        self._trainable_weights = self.layer.weights
+            raise Exception("data_format should be either channels_last or channels_first")
+
+        self.filter_shape = (self.filter_size[0], self.filter_size[1], self.in_channels, self.n_filter)
+
+        self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init)
+
+        if self.b_init:
+            self.b = self._get_weights("biases", shape=(self.n_filter, ), init=self.b_init)
 
     def forward(self, inputs):
-        outputs = self.layer(inputs)
+        outputs = tf.nn.conv2d_transpose(
+            input=inputs,
+            filters=self.W,
+            output_shape=self.outshape,
+            strides=self._strides,
+            padding=self.padding,
+            data_format=self.data_format,
+            dilations=self._dilation_rate,
+            name=self.name
+        )
+        if self.b_init:
+            outputs = tl.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
+        if self.act:
+            outputs = self.act(outputs)
         return outputs
 
 
@@ -164,6 +183,8 @@ class DeConv3d(Layer):
         The activation function of this layer.
     data_format : str
         "channels_last" (NDHWC, default) or "channels_first" (NCDHW).
+    dilation_rate : tuple of int
+        Specifying the dilation rate to use for dilated convolution.
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -193,10 +214,11 @@ class DeConv3d(Layer):
             padding='SAME',
             act=None,
             data_format='channels_last',
+            dilation_rate=(1, 1, 1),
             W_init=tl.initializers.truncated_normal(stddev=0.02),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
-            name=None  # 'decnn3d'
+            name=None,
     ):
         super().__init__(name, act=act)
         self.n_filter = n_filter
@@ -204,6 +226,7 @@ class DeConv3d(Layer):
         self.strides = strides
         self.padding = padding
         self.data_format = data_format
+        self.dilation_rate = dilation_rate
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = in_channels,
@@ -240,30 +263,79 @@ class DeConv3d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        self.layer = tf.keras.layers.Conv3DTranspose(
-            filters=self.n_filter,
-            kernel_size=self.filter_size,
-            strides=self.strides,
-            padding=self.padding,
-            data_format=self.data_format,
-            activation=self.act,
-            use_bias=(True if self.b_init is not None else False),
-            kernel_initializer=self.W_init,
-            bias_initializer=self.b_init,
-            name=self.name,
-        )
-        if self.data_format == "channels_first":
-            self.in_channels = inputs_shape[1]
+        kernel_d, kernel_h, kernel_w = self.filter_size
+        stride_d, stride_h, stride_w = self.strides
+        self.in_channels = self.in_channels[0]  # type : tupe ?
+        if self.data_format == 'channels_last':
+            self.data_format = 'NDHWC'
+            if self.in_channels is None:
+                self.in_channels = inputs_shape[-1]
+            self._strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
+            self._dilation_rate = [1, self.dilation_rate[0], self.dilation_rate[1], self.dilation_rate[2], 1]
+            D = deconv_length(input_length=inputs_shape[1], stride=stride_d, filter_size=kernel_d, padding=self.padding)
+            H = deconv_length(input_length=inputs_shape[2], stride=stride_h, filter_size=kernel_h, padding=self.padding)
+            W = deconv_length(input_length=inputs_shape[3], stride=stride_w, filter_size=kernel_w, padding=self.padding)
+            self.outshape = [inputs_shape[0], D, H, W, self.n_filter]
+        elif self.data_format == 'channels_first':
+            self.data_format = 'NCDHW'
+            if self.in_channels is None:
+                self.in_channels = inputs_shape[1]
+            self._strides = [1, 1, self.strides[0], self.strides[1], self.strides[2]]
+            self._dilation_rate = [1, 1, self._dilation_rate[0], self._dilation_rate[1], self._dilation_rate[2]]
+            D = deconv_length(input_length=inputs_shape[2], stride=stride_d, filter_size=kernel_d, padding=self.padding)
+            H = deconv_length(input_length=inputs_shape[3], stride=stride_h, filter_size=kernel_h, padding=self.padding)
+            W = deconv_length(input_length=inputs_shape[4], stride=stride_w, filter_size=kernel_w, padding=self.padding)
+            self.outshape = [inputs_shape[0], self.n_filter, D, H, W]
         else:
-            self.in_channels = inputs_shape[-1]
+            raise Exception("data_format should be either channels_last or channels_first")
 
-        _out = self.layer(
-            tf.convert_to_tensor(np.random.uniform(size=inputs_shape), dtype=np.float32)
-        )  #self.layer(np.random.uniform([1] + list(inputs_shape)))  # initialize weights
-        outputs_shape = _out.shape
-        # self._add_weights(self.layer.weights)
-        self._trainable_weights = self.layer.weights
+        self.filter_shape = (
+            self.filter_size[0],
+            self.filter_size[1],
+            self.filter_size[2],
+            self.in_channels,
+            self.n_filter)
+
+        self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init)
+
+        if self.b_init:
+            self.b = self._get_weights("biases", shape=(self.n_filter, ), init=self.b_init)
 
     def forward(self, inputs):
-        outputs = self.layer(inputs)
+        # outputs = self.layer(inputs)
+        outputs = tf.nn.conv3d_transpose(
+            input=inputs,
+            filters=self.W,
+            output_shape=self.outshape,
+            strides=self._strides,
+            padding=self.padding,
+            data_format=self.data_format,
+            dilations=self._dilation_rate,
+            name=self.name
+        )
+        if self.b_init:
+            outputs = tl.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
+        if self.act:
+            outputs = self.act(outputs)
         return outputs
+
+
+def deconv_length(input_length, filter_size, padding, stride):
+    """Determines output length of a transposed convolution given input length.
+    Arguments:
+        input_length: integer.
+        filter_size: integer.
+        padding: one of "same, SAME", "valid, VALID"
+        stride: integer.
+    Returns:
+        The output length (integer).
+    """
+    if input_length is None:
+        return None
+    if padding in ['valid', 'VALID']:
+        input_length = input_length * stride + max(filter_size - stride, 0)
+    elif padding in ['same', 'SAME']:
+        input_length = input_length * stride
+    else:
+        raise Exception("Unsupported padding: {}".format(padding))
+    return input_length

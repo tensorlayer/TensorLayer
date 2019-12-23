@@ -1,7 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
 import tensorlayer as tl
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import math_ops
@@ -74,7 +73,7 @@ class LocalResponseNorm(Layer):
         prev_layer : :class:`Layer`
             The previous layer with a 4D output shape.
         """
-        outputs = tf.nn.lrn(inputs, depth_radius=self.depth_radius, bias=self.bias, alpha=self.alpha, beta=self.beta)
+        outputs = tl.nn.lrn(inputs, depth_radius=self.depth_radius, bias=self.bias, alpha=self.alpha, beta=self.beta)
         return outputs
 
 
@@ -83,7 +82,7 @@ def _to_channel_first_bias(b):
     channel_size = int(b.shape[0])
     new_shape = (channel_size, 1, 1)
     # new_shape = [-1, 1, 1]  # doesn't work with tensorRT
-    return tf.reshape(b, new_shape)
+    return tl.reshape(b, new_shape)
 
 
 def _bias_scale(x, b, data_format):
@@ -99,9 +98,9 @@ def _bias_scale(x, b, data_format):
 def _bias_add(x, b, data_format):
     """Alternative implementation of tf.nn.bias_add which is compatiable with tensorRT."""
     if data_format == 'NHWC':
-        return tf.add(x, b)
+        return tl.add(x, b)
     elif data_format == 'NCHW':
-        return tf.add(x, _to_channel_first_bias(b))
+        return tl.add(x, _to_channel_first_bias(b))
     else:
         raise ValueError('invalid data_format: %s' % data_format)
 
@@ -109,15 +108,15 @@ def _bias_add(x, b, data_format):
 def batch_normalization(x, mean, variance, offset, scale, variance_epsilon, data_format, name=None):
     """Data Format aware version of tf.nn.batch_normalization."""
     if data_format == 'channels_last':
-        mean = tf.reshape(mean, [1] * (len(x.shape) - 1) + [-1])
-        variance = tf.reshape(variance, [1] * (len(x.shape) - 1) + [-1])
-        offset = tf.reshape(offset, [1] * (len(x.shape) - 1) + [-1])
-        scale = tf.reshape(scale, [1] * (len(x.shape) - 1) + [-1])
+        mean = tl.reshape(mean, [1] * (len(x.shape) - 1) + [-1])
+        variance = tl.reshape(variance, [1] * (len(x.shape) - 1) + [-1])
+        offset = tl.reshape(offset, [1] * (len(x.shape) - 1) + [-1])
+        scale = tl.reshape(scale, [1] * (len(x.shape) - 1) + [-1])
     elif data_format == 'channels_first':
-        mean = tf.reshape(mean, [1] + [-1] + [1] * (len(x.shape) - 2))
-        variance = tf.reshape(variance, [1] + [-1] + [1] * (len(x.shape) - 2))
-        offset = tf.reshape(offset, [1] + [-1] + [1] * (len(x.shape) - 2))
-        scale = tf.reshape(scale, [1] + [-1] + [1] * (len(x.shape) - 2))
+        mean = tl.reshape(mean, [1] + [-1] + [1] * (len(x.shape) - 2))
+        variance = tl.reshape(variance, [1] + [-1] + [1] * (len(x.shape) - 2))
+        offset = tl.reshape(offset, [1] + [-1] + [1] * (len(x.shape) - 2))
+        scale = tl.reshape(scale, [1] + [-1] + [1] * (len(x.shape) - 2))
     else:
         raise ValueError('invalid data_format: %s' % data_format)
 
@@ -281,7 +280,7 @@ class BatchNorm(Layer):
         if self.axes is None:
             self.axes = [i for i in range(len(inputs.shape)) if i != self.channel_axis]
 
-        mean, var = tf.nn.moments(inputs, self.axes, keepdims=False)
+        mean, var = tl.nn.moments(inputs, self.axes, keepdims=False)
         if self.is_train:
             # update moving_mean and moving_var
             self.moving_mean = moving_averages.assign_moving_average(
@@ -470,7 +469,7 @@ class InstanceNorm(Layer):
             self.gamma = self._get_weights("gamma", shape=params_shape, init=self.gamma_init)
 
     def forward(self, inputs):
-        mean, var = tf.nn.moments(inputs, self.axes, keepdims=True)
+        mean, var = tl.nn.moments(inputs, self.axes, keepdims=True)
         outputs = batch_normalization(inputs, mean, var, self.beta, self.gamma, self.epsilon, self.data_format)
         if self.act:
             outputs = self.act(outputs)
@@ -648,7 +647,7 @@ class LayerNorm(Layer):
         self.norm_axes = range(self.begin_norm_axis, len(inputs_shape))
 
     def forward(self, inputs):
-        mean, var = tf.nn.moments(inputs, self.norm_axes, keepdims=True)
+        mean, var = tl.nn.moments(inputs, self.norm_axes, keepdims=True)
         # compute layer normalization using batch_normalization function
         outputs = batch_normalization(
             inputs, mean, var, self.beta, self.gamma, self.epsilon, data_format=self.data_format
@@ -717,18 +716,18 @@ class GroupNorm(Layer):
 
         if self.data_format == 'channels_last':
             channels = inputs_shape[-1]
-            self.int_shape = tf.concat(
+            self.int_shape = tl.concat(
                 [#tf.shape(input=self.inputs)[0:3],
                 inputs_shape[0:3],
-                tf.convert_to_tensor(value=[self.groups, channels // self.groups])], axis=0
+                tl.convert_to_tensor(value=[self.groups, channels // self.groups])], axis=0
             )
         elif self.data_format == 'channels_first':
             channels = inputs_shape[1]
-            self.int_shape = tf.concat(
+            self.int_shape = tl.concat(
                 [
                     # tf.shape(input=self.inputs)[0:1],
                     inputs_shape[0:1],
-                    tf.convert_to_tensor(value=[self.groups, channels // self.groups]),
+                    tl.convert_to_tensor(value=[self.groups, channels // self.groups]),
                     # tf.shape(input=self.inputs)[2:4]
                     inputs_shape[2:4],
                 ],
@@ -757,16 +756,16 @@ class GroupNorm(Layer):
         # self.add_weights([self.gamma, self.bata])
 
     def forward(self, inputs):
-        x = tf.reshape(inputs, self.int_shape)
+        x = tl.reshape(inputs, self.int_shape)
         if self.data_format == 'channels_last':
-            mean, var = tf.nn.moments(x=x, axes=[1, 2, 4], keepdims=True)
+            mean, var = tl.nn.moments(x=x, axes=[1, 2, 4], keepdims=True)
         elif self.data_format == 'channels_first':
-            mean, var = tf.nn.moments(x=x, axes=[2, 3, 4], keepdims=True)
+            mean, var = tl.nn.moments(x=x, axes=[2, 3, 4], keepdims=True)
         else:
             raise Exception("unknown data_format")
-        x = (x - mean) / tf.sqrt(var + self.epsilon)
+        x = (x - mean) / tl.sqrt(var + self.epsilon)
 
-        outputs = tf.reshape(x, tf.shape(input=inputs)) * self.gamma + self.beta
+        outputs = tl.reshape(x, tl.shape(input=inputs)) * self.gamma + self.beta
         if self.act:
             outputs = self.act(outputs)
         return outputs
@@ -849,17 +848,17 @@ class SwitchNorm(Layer):
 
     def forward(self, inputs):
 
-        batch_mean, batch_var = tf.nn.moments(x=inputs, axes=[0, 1, 2], keepdims=True)
-        ins_mean, ins_var = tf.nn.moments(x=inputs, axes=[1, 2], keepdims=True)
-        layer_mean, layer_var = tf.nn.moments(x=inputs, axes=[1, 2, 3], keepdims=True)
+        batch_mean, batch_var = tl.nn.moments(x=inputs, axes=[0, 1, 2], keepdims=True)
+        ins_mean, ins_var = tl.nn.moments(x=inputs, axes=[1, 2], keepdims=True)
+        layer_mean, layer_var = tl.nn.moments(x=inputs, axes=[1, 2, 3], keepdims=True)
 
-        mean_weight = tf.nn.softmax(self.mean_weight_var)
-        var_weight = tf.nn.softmax(self.var_weight_var)
+        mean_weight = tl.nn.softmax(self.mean_weight_var)
+        var_weight = tl.nn.softmax(self.var_weight_var)
 
         mean = mean_weight[0] * batch_mean + mean_weight[1] * ins_mean + mean_weight[2] * layer_mean
         var = var_weight[0] * batch_var + var_weight[1] * ins_var + var_weight[2] * layer_var
 
-        inputs = (inputs - mean) / (tf.sqrt(var + self.epsilon))
+        inputs = (inputs - mean) / (tl.sqrt(var + self.epsilon))
         outputs = inputs * self.gamma + self.beta
         if self.act:
             outputs = self.act(outputs)
