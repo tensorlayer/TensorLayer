@@ -1,20 +1,34 @@
-#! /usr/bin/python
-# -*- coding: utf-8 -*-
-
+import logging
 import os
 import pickle
 import sys
-
 import numpy as np
 
-from tensorlayer import logging
-from tensorlayer.files.utils import maybe_download_and_extract
+from ..base import Dataset
+from ..utils import maybe_download_and_extract
 
-__all__ = ['load_cifar10_dataset']
+__all__ = ['load_cifar10_dataset', 'CIFAR10']
+
+CIFAR10_BASE_URL = 'https://www.cs.toronto.edu/~kriz/'
+CIFAR10_FILENAME = 'cifar-10-python.tar.gz'
 
 
-def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='raw_data', plotable=False):
-    """Load CIFAR-10 dataset.
+# Helper function to unpickle the data
+def unpickle(file):
+    fp = open(file, 'rb')
+    if sys.version_info.major == 2:
+        data = pickle.load(fp)
+    elif sys.version_info.major == 3:
+        data = pickle.load(fp, encoding='latin-1')
+    else:
+        raise RuntimeError("Sys Version Unsupported")
+    fp.close()
+    return data
+
+
+def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='raw_data', name='cifar10', plotable=False):
+    """
+    Load CIFAR-10 dataset.
 
     It consists of 60000 32x32 colour images in 10 classes, with
     6000 images per class. There are 50000 training images and 10000 test images.
@@ -27,16 +41,18 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='raw_data', plotable=False)
 
     Parameters
     ----------
-    shape : tupe
+    shape : tuple
         The shape of digit images e.g. (-1, 3, 32, 32) and (-1, 32, 32, 3).
+    name : str
+        The name of the dataset.
     path : str
-        The path that the data is downloaded to, defaults is ``data/cifar10/``.
+        The path that the data is downloaded to, defaults is ``raw_data/cifar10/``.
     plotable : boolean
         Whether to plot some image examples, False as default.
 
     Examples
     --------
-    >>> X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3))
+    >>> X_train, y_train, X_test, y_test = load_cifar10_dataset(shape=(-1, 32, 32, 3))
 
     References
     ----------
@@ -45,27 +61,13 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='raw_data', plotable=False)
     - `<https://teratail.com/questions/28932>`__
 
     """
-    path = os.path.join(path, 'cifar10')
+    path = os.path.join(path, name)
     logging.info("Load or Download cifar10 > {}".format(path))
 
-    #Helper function to unpickle the data
-    def unpickle(file):
-        fp = open(file, 'rb')
-        if sys.version_info.major == 2:
-            data = pickle.load(fp)
-        elif sys.version_info.major == 3:
-            data = pickle.load(fp, encoding='latin-1')
-        else:
-            raise RuntimeError("Sys Version Unsupported")
-        fp.close()
-        return data
+    # Download and uncompress file
+    maybe_download_and_extract(CIFAR10_FILENAME, path, CIFAR10_BASE_URL, extract=True)
 
-    filename = 'cifar-10-python.tar.gz'
-    url = 'https://www.cs.toronto.edu/~kriz/'
-    #Download and uncompress file
-    maybe_download_and_extract(filename, path, url, extract=True)
-
-    #Unpickle file and fill in data
+    # Unpickle file and fill in data
     X_train = None
     y_train = []
     for i in range(1, 6):
@@ -132,3 +134,57 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='raw_data', plotable=False)
     y_test = np.asarray(y_test, dtype=np.int32)
 
     return X_train, y_train, X_test, y_test
+
+
+class CIFAR10(Dataset):
+    """
+    Load CIFAR-10 dataset.
+
+    It consists of 60000 32x32 colour images in 10 classes, with
+    6000 images per class. There are 50000 training images and 10000 test images.
+
+    Parameters
+    ----------
+    train_or_test : str
+        Must be either 'train' or 'test'. Choose the training or test dataset.
+    name : str
+        The name of the dataset.
+    path : str
+        The path that the data is downloaded to, defaults is ``raw_data/cifar10/``.
+    shape : tuple
+        The shape of digit images e.g. (-1, 3, 32, 32) and (-1, 32, 32, 3).
+    """
+    def __init__(self, train_or_test, path='raw_data', name='cifar10', shape=(-1, 32, 32, 3)):
+        self.path = os.path.join(path, name)
+
+        # Download and read the training and test set images and labels.
+        logging.info("Load or Download {0} > {1}".format(name.upper(), self.path))
+
+        maybe_download_and_extract(CIFAR10_FILENAME, path, CIFAR10_BASE_URL, extract=True)
+
+        assert train_or_test in ['train', 'test']
+        if train_or_test == 'train':
+            # Unpickle file and fill in data
+            self.images = None
+            self.labels = []
+            for i in range(1, 6):
+                data_dic = unpickle(os.path.join(path, 'cifar-10-batches-py/', "data_batch_{}".format(i)))
+                if i == 1:
+                    self.images = data_dic['data']
+                else:
+                    self.images = np.vstack((self.images, data_dic['data']))
+                self.labels += data_dic['labels']
+        else:
+            test_data_dic = unpickle(os.path.join(path, 'cifar-10-batches-py/', "test_batch"))
+            self.images = test_data_dic['data']
+            self.labels = np.array(test_data_dic['labels'])
+
+        self.images = np.reshape(self.images, shape)
+
+    def __getitem__(self, index):
+        img = np.array(self.images[index], dtype=np.float32)
+        label = np.array(self.labels[index], dtype=np.int32)
+        return img, label
+
+    def __len__(self):
+        return self.images.shape[0]

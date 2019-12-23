@@ -4,18 +4,25 @@
 import os
 
 from tensorlayer import logging
-from tensorlayer.files.utils import (del_file, folder_exists, load_file_list, maybe_download_and_extract)
 
-__all__ = ['load_mpii_pose_dataset']
+from ..base import Dataset
+from ..utils import del_file, folder_exists, load_file_list, maybe_download_and_extract
+
+__all__ = ['load_mpii_pose_dataset', 'MPII']
+
+MPII_BASE_URL = "http://datasets.d2.mpi-inf.mpg.de/andriluka14cvpr/"
 
 
-def load_mpii_pose_dataset(path='raw_data', is_16_pos_only=False):
-    """Load MPII Human Pose Dataset.
+def load_mpii_pose_dataset(name='mpii_human_pose', path='raw_data', is_16_pos_only=False):
+    """
+    Load MPII Human Pose Dataset.
 
     Parameters
     -----------
+    name : str
+        The name of the dataset.
     path : str
-        The path that the data is downloaded to.
+        The path that the data is downloaded to, defaults is `raw_data/mpii_human_pose`.
     is_16_pos_only : boolean
         If True, only return the peoples contain 16 pose keypoints. (Usually be used for single person pose estimation)
 
@@ -34,7 +41,7 @@ def load_mpii_pose_dataset(path='raw_data', is_16_pos_only=False):
     --------
     >>> import pprint
     >>> import tensorlayer as tl
-    >>> img_train_list, ann_train_list, img_test_list, ann_test_list = tl.files.load_mpii_pose_dataset()
+    >>> img_train_list, ann_train_list, img_test_list, ann_test_list = load_mpii_pose_dataset()
     >>> image = tl.vis.read_image(img_train_list[0])
     >>> tl.vis.draw_mpii_pose_to_image(image, ann_train_list[0], 'image.png')
     >>> pprint.pprint(ann_train_list[0])
@@ -46,25 +53,23 @@ def load_mpii_pose_dataset(path='raw_data', is_16_pos_only=False):
     - `MPII Human Shape, Poselet Conditioned Pictorial Structures and etc <http://pose.mpi-inf.mpg.de/#related>`__
     - `MPII Keyponts and ID <http://human-pose.mpi-inf.mpg.de/#download>`__
     """
-    path = os.path.join(path, 'mpii_human_pose')
+    path = os.path.join(path, name)
     logging.info("Load or Download MPII Human Pose > {}".format(path))
 
     # annotation
-    url = "http://datasets.d2.mpi-inf.mpg.de/andriluka14cvpr/"
     tar_filename = "mpii_human_pose_v1_u12_2.zip"
     extracted_filename = "mpii_human_pose_v1_u12_2"
     if folder_exists(os.path.join(path, extracted_filename)) is False:
         logging.info("[MPII] (annotation) {} is nonexistent in {}".format(extracted_filename, path))
-        maybe_download_and_extract(tar_filename, path, url, extract=True)
+        maybe_download_and_extract(tar_filename, path, MPII_BASE_URL+tar_filename, extract=True)
         del_file(os.path.join(path, tar_filename))
 
     # images
-    url = "http://datasets.d2.mpi-inf.mpg.de/andriluka14cvpr/"
     tar_filename = "mpii_human_pose_v1.tar.gz"
     extracted_filename2 = "images"
     if folder_exists(os.path.join(path, extracted_filename2)) is False:
         logging.info("[MPII] (images) {} is nonexistent in {}".format(extracted_filename, path))
-        maybe_download_and_extract(tar_filename, path, url, extract=True)
+        maybe_download_and_extract(tar_filename, path, MPII_BASE_URL+tar_filename, extract=True)
         del_file(os.path.join(path, tar_filename))
 
     # parse annotation, format see http://human-pose.mpi-inf.mpg.de/#download
@@ -250,3 +255,43 @@ def load_mpii_pose_dataset(path='raw_data', is_16_pos_only=False):
     for i, value in enumerate(img_test_list):
         img_test_list[i] = os.path.join(img_dir, value)
     return img_train_list, ann_train_list, img_test_list, ann_test_list
+
+
+class MPII(Dataset):
+    """
+    Load MPII Human Pose Dataset.
+
+    Parameters
+    -----------
+    train_or_test : str
+        Must be either 'train' or 'test'. Choose the training or test dataset.
+    name : str
+        The name of the dataset.
+    path : str
+        The path that the data is downloaded to, defaults is `raw_data/mpii_human_pose`.
+    is_16_pos_only : boolean
+        If True, only return the peoples contain 16 pose keypoints. (Usually be used for single person pose estimation)
+    """
+
+    def __init__(self, train_or_test, path='raw_data', name='mpii_human_pose', is_16_pos_only=False):
+        self.path = os.path.join(path, name)
+        img_train_list, ann_train_list, img_test_list, ann_test_list = load_mpii_pose_dataset(name=name, path=path, is_16_pos_only=is_16_pos_only)
+        assert train_or_test in ['train', 'test']
+        self.train_or_test = train_or_test
+        if train_or_test == 'train':
+            self.img_list = img_train_list
+            self.ann_list = ann_train_list
+            del img_test_list
+            del ann_test_list
+        else:
+            self.img_list = img_test_list
+            self.ann_list = ann_test_list
+            del img_train_list
+            del ann_train_list
+
+    def __getitem__(self, index):
+        return self.img_list[index], self.ann_list[index]
+
+    def __len__(self):
+        assert len(self.img_list) == len(self.ann_list)
+        return len(self.img_list)

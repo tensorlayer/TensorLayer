@@ -119,7 +119,7 @@ venv_py2/
 
 # TensorLayer Directories
 checkpoints
-data/
+raw_data/
 lib_win/
 
 # Custom Scripts

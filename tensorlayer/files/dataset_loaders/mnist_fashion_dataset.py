@@ -6,7 +6,7 @@ from tensorlayer.files.utils import _load_mnist_dataset
 __all__ = ['load_fashion_mnist_dataset']
 
 
-def load_fashion_mnist_dataset(shape=(-1, 784), path='data'):
+def load_fashion_mnist_dataset(shape=(-1, 784), path='raw_data'):
     """Load the fashion mnist.
 
     Automatically download fashion-MNIST dataset and return the training, validation and test set with 50000, 10000 and 10000 fashion images respectively, `examples <http://marubon-ds.blogspot.co.uk/2017/09/fashion-mnist-exploring.html>`__.

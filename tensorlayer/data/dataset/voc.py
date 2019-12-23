@@ -4,14 +4,13 @@
 import os
 
 import tensorflow as tf
-
 from tensorlayer import logging, utils
-from tensorlayer.files.utils import (del_file, del_folder, folder_exists, load_file_list, maybe_download_and_extract)
+from ..utils import del_file, del_folder, folder_exists, load_file_list, maybe_download_and_extract
 
 __all__ = ['load_voc_dataset']
 
 
-def load_voc_dataset(path='raw_data', dataset='2012', contain_classes_in_person=False):
+def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=False):
     """Pascal VOC 2007/2012 Dataset.
 
     It has 20 objects:
@@ -162,7 +161,7 @@ def load_voc_dataset(path='raw_data', dataset='2012', contain_classes_in_person=
         from sys import platform as _platform
         if folder_exists(os.path.join(path, extracted_filename)) is False:
             logging.info("[VOC] {} is nonexistent in {}".format(extracted_filename, path))
-            maybe_download_and_extract(tar_filename, path, url, extract=True)
+            maybe_download_and_extract(tar_filename, path, url+tar_filename, extract=True)
             del_file(os.path.join(path, tar_filename))
             if dataset == "2012":
                 if _platform == "win32":

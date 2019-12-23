@@ -9,7 +9,7 @@ from tensorlayer.files.utils import maybe_download_and_extract
 __all__ = ['load_ptb_dataset']
 
 
-def load_ptb_dataset(path='data'):
+def load_ptb_dataset(path='raw_data'):
     """Load Penn TreeBank (PTB) dataset.
 
     It is used in many LANGUAGE MODELING papers,

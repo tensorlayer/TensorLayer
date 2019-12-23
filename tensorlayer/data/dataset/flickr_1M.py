@@ -4,14 +4,20 @@
 import os
 
 from tensorlayer import logging, visualize
-from tensorlayer.files.utils import (
-    del_file, folder_exists, load_file_list, load_folder_list, maybe_download_and_extract, read_file
-)
+
+from ..utils import del_file, folder_exists, load_file_list, load_folder_list, maybe_download_and_extract, read_file
 
 __all__ = ['load_flickr1M_dataset']
 
+IMAGES_ZIP = [
+    'images0.zip', 'images1.zip', 'images2.zip', 'images3.zip', 'images4.zip', 'images5.zip', 'images6.zip',
+    'images7.zip', 'images8.zip', 'images9.zip'
+]
+TAG_ZIP = 'tags.zip'
+FLICKR1M_BASE_URL = 'http://press.liacs.nl/mirflickr/mirflickr1m/'
 
-def load_flickr1M_dataset(tag='sky', size=10, path="raw_data", n_threads=50, printable=False):
+
+def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printable=False):
     """Load Flick1M dataset.
 
     Returns a list of images by a given tag from Flickr1M dataset,
@@ -49,21 +55,15 @@ def load_flickr1M_dataset(tag='sky', size=10, path="raw_data", n_threads=50, pri
 
     path = os.path.join(path, 'flickr1M')
     logging.info("[Flickr1M] using {}% of images = {}".format(size * 10, size * 100000))
-    images_zip = [
-        'images0.zip', 'images1.zip', 'images2.zip', 'images3.zip', 'images4.zip', 'images5.zip', 'images6.zip',
-        'images7.zip', 'images8.zip', 'images9.zip'
-    ]
-    tag_zip = 'tags.zip'
-    url = 'http://press.liacs.nl/mirflickr/mirflickr1m/'
 
     # download dataset
-    for image_zip in images_zip[0:size]:
+    for image_zip in IMAGES_ZIP[0:size]:
         image_folder = image_zip.split(".")[0]
         # logging.info(path+"/"+image_folder)
         if folder_exists(os.path.join(path, image_folder)) is False:
             # logging.info(image_zip)
             logging.info("[Flickr1M] {} is missing in {}".format(image_folder, path))
-            maybe_download_and_extract(image_zip, path, url, extract=True)
+            maybe_download_and_extract(image_zip, path, FLICKR1M_BASE_URL+image_zip, extract=True)
             del_file(os.path.join(path, image_zip))
             # os.system("mv {} {}".format(os.path.join(path, 'images'), os.path.join(path, image_folder)))
             shutil.move(os.path.join(path, 'images'), os.path.join(path, image_folder))
@@ -73,8 +73,8 @@ def load_flickr1M_dataset(tag='sky', size=10, path="raw_data", n_threads=50, pri
     # download tag
     if folder_exists(os.path.join(path, "tags")) is False:
         logging.info("[Flickr1M] tag files is nonexistent in {}".format(path))
-        maybe_download_and_extract(tag_zip, path, url, extract=True)
-        del_file(os.path.join(path, tag_zip))
+        maybe_download_and_extract(TAG_ZIP, path, FLICKR1M_BASE_URL+TAG_ZIP, extract=True)
+        del_file(os.path.join(path, TAG_ZIP))
     else:
         logging.info("[Flickr1M] tags exists in {}".format(path))
 
@@ -114,3 +114,15 @@ def load_flickr1M_dataset(tag='sky', size=10, path="raw_data", n_threads=50, pri
     logging.info("[Flickr1M] reading images with tag: {}".format(tag))
     images = visualize.read_images(select_images_list, '', n_threads=n_threads, printable=printable)
     return images
+
+
+# class Flickr1M(Dataset):
+#
+#     def __init__(self):
+#         pass
+#
+#     def __getitem__(self, index):
+#         pass
+#
+#     def __len__(self):
+#         pass
