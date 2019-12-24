@@ -1,11 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-<<<<<<< HEAD
-import tensorlayer as tl
-=======
-import tensorflow as tf
->>>>>>> 97df5dedc3d206d8bbb401b6b755cb66066484f8
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import math_ops
 from tensorflow.python.training import moving_averages

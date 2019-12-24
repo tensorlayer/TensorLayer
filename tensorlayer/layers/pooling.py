@@ -1,11 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-<<<<<<< HEAD
-=======
-import tensorflow as tf
 
->>>>>>> 97df5dedc3d206d8bbb401b6b755cb66066484f8
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias

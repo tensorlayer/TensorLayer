@@ -176,11 +176,13 @@ for epoch in range(n_epoch):
         train_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
         n_iter += 1
 
-    # use training and evaluation sets to evaluate the model every print_freq epoch
-    if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
         print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
         print("   train loss: {}".format(train_loss / n_iter))
         print("   train acc:  {}".format(train_acc / n_iter))
+
+    # use training and evaluation sets to evaluate the model every print_freq epoch
+    if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
+
         net.eval()
         val_loss, val_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in test_ds:

@@ -1,11 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-<<<<<<< HEAD
-=======
-import numpy as np
->>>>>>> 97df5dedc3d206d8bbb401b6b755cb66066484f8
-import tensorflow as tf
 
 import tensorlayer as tl
 from tensorlayer import logging
@@ -152,7 +147,7 @@ class DeConv2d(Layer):
             self.b = self._get_weights("biases", shape=(self.n_filter, ), init=self.b_init)
 
     def forward(self, inputs):
-        outputs = tf.nn.conv2d_transpose(
+        outputs = tl.nn.conv2d_transpose(
             input=inputs,
             filters=self.W,
             output_shape=self.outshape,
@@ -306,7 +301,7 @@ class DeConv3d(Layer):
 
     def forward(self, inputs):
         # outputs = self.layer(inputs)
-        outputs = tf.nn.conv3d_transpose(
+        outputs = tl.nn.conv3d_transpose(
             input=inputs,
             filters=self.W,
             output_shape=self.outshape,
