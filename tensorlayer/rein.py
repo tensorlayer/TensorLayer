@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from six.moves import xrange
-
 import tensorflow as tf
+from six.moves import xrange
 
 __all__ = [
     'discount_episode_rewards',

@@ -4,6 +4,7 @@
 import tensorflow as tf
 # from tensorlayer.layers.core import LayersConfig
 from tensorflow.python.training import moving_averages
+
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer

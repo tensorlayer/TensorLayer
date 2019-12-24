@@ -104,8 +104,8 @@ import sys
 import time
 
 import numpy as np
-
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.models import Model
 

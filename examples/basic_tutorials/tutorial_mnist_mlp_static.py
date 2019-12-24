@@ -1,6 +1,8 @@
+import pprint
 import time
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import Dense, Dropout, Input
 from tensorlayer.models import Model
@@ -29,7 +31,6 @@ def get_model(inputs_shape):
 
 
 MLP = get_model([None, 784])
-import pprint
 pprint.pprint(MLP.config)
 
 ## start training
