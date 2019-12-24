@@ -9,8 +9,7 @@
 """
 
 import os
-
-import tensorflow as tf
+import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.files import (assign_weights, load_npz, maybe_download_and_extract)
 from tensorlayer.layers import (BatchNorm, Conv2d, Elementwise, GlobalMeanPool2d, MaxPool2d, Input, Dense)
@@ -46,17 +45,17 @@ def identity_block(input, kernel_size, n_filters, stage, block):
     conv_name_base = 'res' + str(stage) + block + '_branch'
     bn_name_base = 'bn' + str(stage) + block + '_branch'
 
-    x = Conv2d(filters1, (1, 1), W_init=tf.initializers.he_normal(), name=conv_name_base + '2a')(input)
+    x = Conv2d(filters1, (1, 1), W_init=tl.initializers.he_normal(), name=conv_name_base + '2a')(input)
     x = BatchNorm(name=bn_name_base + '2a', act='relu')(x)
 
     ks = (kernel_size, kernel_size)
-    x = Conv2d(filters2, ks, padding='SAME', W_init=tf.initializers.he_normal(), name=conv_name_base + '2b')(x)
+    x = Conv2d(filters2, ks, padding='SAME', W_init=tl.initializers.he_normal(), name=conv_name_base + '2b')(x)
     x = BatchNorm(name=bn_name_base + '2b', act='relu')(x)
 
-    x = Conv2d(filters3, (1, 1), W_init=tf.initializers.he_normal(), name=conv_name_base + '2c')(x)
+    x = Conv2d(filters3, (1, 1), W_init=tl.initializers.he_normal(), name=conv_name_base + '2c')(x)
     x = BatchNorm(name=bn_name_base + '2c')(x)
 
-    x = Elementwise(tf.add, act='relu')([x, input])
+    x = Elementwise(tl.add, act='relu')([x, input])
     return x
 
 
@@ -87,21 +86,21 @@ def conv_block(input, kernel_size, n_filters, stage, block, strides=(2, 2)):
     conv_name_base = 'res' + str(stage) + block + '_branch'
     bn_name_base = 'bn' + str(stage) + block + '_branch'
 
-    x = Conv2d(filters1, (1, 1), strides=strides, W_init=tf.initializers.he_normal(), name=conv_name_base + '2a')(input)
+    x = Conv2d(filters1, (1, 1), strides=strides, W_init=tl.initializers.he_normal(), name=conv_name_base + '2a')(input)
     x = BatchNorm(name=bn_name_base + '2a', act='relu')(x)
 
     ks = (kernel_size, kernel_size)
-    x = Conv2d(filters2, ks, padding='SAME', W_init=tf.initializers.he_normal(), name=conv_name_base + '2b')(x)
+    x = Conv2d(filters2, ks, padding='SAME', W_init=tl.initializers.he_normal(), name=conv_name_base + '2b')(x)
     x = BatchNorm(name=bn_name_base + '2b', act='relu')(x)
 
-    x = Conv2d(filters3, (1, 1), W_init=tf.initializers.he_normal(), name=conv_name_base + '2c')(x)
+    x = Conv2d(filters3, (1, 1), W_init=tl.initializers.he_normal(), name=conv_name_base + '2c')(x)
     x = BatchNorm(name=bn_name_base + '2c')(x)
 
-    shortcut = Conv2d(filters3, (1, 1), strides=strides, W_init=tf.initializers.he_normal(),
+    shortcut = Conv2d(filters3, (1, 1), strides=strides, W_init=tl.initializers.he_normal(),
                       name=conv_name_base + '1')(input)
     shortcut = BatchNorm(name=bn_name_base + '1')(shortcut)
 
-    x = Elementwise(tf.add, act='relu')([x, shortcut])
+    x = Elementwise(tl.add, act='relu')([x, shortcut])
     return x
 
 
@@ -134,7 +133,7 @@ def ResNet50(pretrained=False, end_with='fc1000', n_classes=1000, name=None):
     >>> resnet = tl.models.ResNet50(pretrained=True)
     >>> # use for inferencing
     >>> output = resnet(img1, is_train=False)
-    >>> prob = tf.nn.softmax(output)[0].numpy()
+    >>> prob = tl.nn.softmax(output)[0].numpy()
 
     Extract the features before fc layer
     >>> resnet = tl.models.ResNet50(pretrained=True, end_with='5c')
@@ -146,7 +145,7 @@ def ResNet50(pretrained=False, end_with='fc1000', n_classes=1000, name=None):
 
     """
     ni = Input([None, 224, 224, 3], name="input")
-    n = Conv2d(64, (7, 7), strides=(2, 2), padding='SAME', W_init=tf.initializers.he_normal(), name='conv1')(ni)
+    n = Conv2d(64, (7, 7), strides=(2, 2), padding='SAME', W_init=tl.initializers.he_normal(), name='conv1')(ni)
     n = BatchNorm(name='bn_conv1', act='relu')(n)
     n = MaxPool2d((3, 3), strides=(2, 2), name='max_pool1')(n)
 

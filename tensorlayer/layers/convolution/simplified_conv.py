@@ -1,7 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
@@ -50,7 +49,7 @@ class Conv1d(Layer):
     >>> net = tl.layers.Input([8, 100, 1], name='input')
     >>> conv1d = tl.layers.Conv1d(n_filter=32, filter_size=5, stride=2, b_init=None, in_channels=1, name='conv1d_1')
     >>> print(conv1d)
-    >>> tensor = tl.layers.Conv1d(n_filter=32, filter_size=5, stride=2, act=tf.nn.relu, name='conv1d_2')(net)
+    >>> tensor = tl.layers.Conv1d(n_filter=32, filter_size=5, stride=2, act=tl.nn.relu, name='conv1d_2')(net)
     >>> print(tensor)
 
     """
@@ -128,7 +127,7 @@ class Conv1d(Layer):
             self.b = self._get_weights("biases", shape=(self.n_filter), init=self.b_init)
 
     def forward(self, inputs):
-        outputs = tf.nn.conv1d(
+        outputs = tl.nn.conv1d(
             input=inputs,
             filters=self.W,
             stride=self.stride,
@@ -138,7 +137,7 @@ class Conv1d(Layer):
             name=self.name,
         )
         if self.b_init:
-            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
+            outputs = tl.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
         if self.act:
             outputs = self.act(outputs)
         return outputs
@@ -180,7 +179,7 @@ class Conv2d(Layer):
     >>> net = tl.layers.Input([8, 400, 400, 3], name='input')
     >>> conv2d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), b_init=None, in_channels=3, name='conv2d_1')
     >>> print(conv2d)
-    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, name='conv2d_2')(net)
+    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tl.nn.relu, name='conv2d_2')(net)
     >>> print(tensor)
 
     """
@@ -261,7 +260,7 @@ class Conv2d(Layer):
             self.b = self._get_weights("biases", shape=(self.n_filter, ), init=self.b_init)
 
     def forward(self, inputs):
-        outputs = tf.nn.conv2d(
+        outputs = tl.nn.conv2d(
             input=inputs,
             filters=self.W,
             strides=self._strides,
@@ -271,7 +270,7 @@ class Conv2d(Layer):
             name=self.name,
         )
         if self.b_init:
-            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
+            outputs = tl.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
         if self.act:
             outputs = self.act(outputs)
         return outputs
@@ -313,7 +312,7 @@ class Conv3d(Layer):
     >>> net = tl.layers.Input([8, 20, 20, 20, 3], name='input')
     >>> conv3d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), b_init=None, in_channels=3, name='conv3d_1')
     >>> print(conv3d)
-    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), act=tf.nn.relu, name='conv3d_2')(net)
+    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), act=tl.nn.relu, name='conv3d_2')(net)
     >>> print(tensor)
 
     """
@@ -396,7 +395,7 @@ class Conv3d(Layer):
             self.b = self._get_weights("biases", shape=(self.n_filter, ), init=self.b_init)
 
     def forward(self, inputs):
-        outputs = tf.nn.conv3d(
+        outputs = tl.nn.conv3d(
             input=inputs,
             filters=self.W,
             strides=self._strides,
@@ -406,7 +405,7 @@ class Conv3d(Layer):
             name=self.name,
         )
         if self.b_init:
-            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
+            outputs = tl.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
         if self.act:
             outputs = self.act(outputs)
         return outputs

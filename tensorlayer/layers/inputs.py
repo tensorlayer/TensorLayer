@@ -28,7 +28,7 @@ class _InputLayer(Layer):
 
     """
 
-    def __init__(self, shape, dtype=tf.float32, name=None):  #'input'):
+    def __init__(self, shape, dtype=tl.dtypes('float32'), name=None):  #'input'):
         # super(InputLayer, self).__init__(prev_layer=inputs, name=name)
         super(_InputLayer, self).__init__(name)
 
@@ -37,7 +37,7 @@ class _InputLayer(Layer):
                 dtype = eval(dtype)
             except Exception as e:
                 raise RuntimeError("%s is not a valid dtype for InputLayer." % (dtype))
-        if not isinstance(dtype, tf.DType):
+        if not isinstance(dtype, tl.dtypes('DType')):
             raise RuntimeError("%s is not a valid dtype for InputLayer." % (dtype))
 
         logging.info("Input  %s: %s" % (self.name, str(shape)))
@@ -68,7 +68,7 @@ class _InputLayer(Layer):
         return inputs
 
 
-def Input(shape, dtype=tf.float32, name=None):
+def Input(shape, dtype=tl.dtypes('float32'), name=None):
     """
     The :class:`Input` class is the starting layer of a neural network.
 

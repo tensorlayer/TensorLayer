@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 """Deep learning and Reinforcement learning library for Researchers and Engineers"""
 
+# import backend
+from .backend import *
+from .backend import nn
+
 import os
 from distutils.version import LooseVersion
 

@@ -1,7 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
@@ -28,8 +27,8 @@ __all__ = [
 class PoolLayer(Layer):
     """
     The :class:`PoolLayer` class is a Pooling layer.
-    You can choose ``tf.nn.max_pool`` and ``tf.nn.avg_pool`` for 2D input or
-    ``tf.nn.max_pool3d`` and ``tf.nn.avg_pool3d`` for 3D input.
+    You can choose ``tl.nn.max_pool`` and ``tl.nn.avg_pool`` for 2D input or
+    ``tl.nn.max_pool3d`` and ``tl.nn.avg_pool3d`` for 3D input.
 
     Parameters
     ----------
@@ -42,7 +41,7 @@ class PoolLayer(Layer):
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     pool : pooling function
-        One of ``tf.nn.max_pool``, ``tf.nn.avg_pool``, ``tf.nn.max_pool3d`` and ``f.nn.avg_pool3d``.
+        One of ``tl.nn.max_pool``, ``tl.nn.avg_pool``, ``tl.nn.max_pool3d`` and ``f.nn.avg_pool3d``.
         See `TensorFlow pooling APIs <https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/>`__
     name : None or str
         A unique layer name.
@@ -62,7 +61,7 @@ class PoolLayer(Layer):
             filter_size=(1, 2, 2, 1),
             strides=(1, 2, 2, 1),
             padding='SAME',
-            pool=tf.nn.max_pool,
+            pool=tl.nn.max_pool,
             name=None  # 'pool_pro',
     ):
         super().__init__(name)
@@ -166,7 +165,7 @@ class MaxPool1d(Layer):
         self._dilation_rate = [self.dilation_rate]
 
     def forward(self, inputs):
-        outputs = tf.nn.pool(
+        outputs = tl.nn.pool(
             input=inputs,
             window_shape=self._filter_size,
             pooling_type="MAX",
@@ -252,7 +251,7 @@ class MeanPool1d(Layer):
         self._dilation_rate = [self.dilation_rate]
 
     def forward(self, inputs):
-        outputs = tf.nn.pool(
+        outputs = tl.nn.pool(
             input=inputs,
             window_shape=self._filter_size,
             pooling_type="AVG",
@@ -332,7 +331,7 @@ class MaxPool2d(Layer):
             raise Exception("unsupported data format")
 
     def forward(self, inputs):
-        outputs = tf.nn.max_pool(
+        outputs = tl.nn.max_pool(
             input=inputs, ksize=self.filter_size, strides=self._strides, padding=self.padding, name=self.name
         )
         return outputs
@@ -405,7 +404,7 @@ class MeanPool2d(Layer):
             raise Exception("unsupported data format")
 
     def forward(self, inputs):
-        outputs = tf.nn.avg_pool(
+        outputs = tl.nn.avg_pool(
             input=inputs, ksize=self.filter_size, strides=self._strides, padding=self.padding, name=self.name
         )
         return outputs
@@ -481,7 +480,7 @@ class MaxPool3d(Layer):
             raise Exception("unsupported data format")
 
     def forward(self, inputs):
-        outputs = tf.nn.max_pool3d(
+        outputs = tl.nn.max_pool3d(
             input=inputs,
             ksize=self.filter_size,
             strides=self._strides,
@@ -562,7 +561,7 @@ class MeanPool3d(Layer):
             raise Exception("unsupported data format")
 
     def forward(self, inputs):
-        outputs = tf.nn.avg_pool3d(
+        outputs = tl.nn.avg_pool3d(
             input=inputs,
             ksize=self.filter_size,
             strides=self._strides,
@@ -619,9 +618,9 @@ class GlobalMaxPool1d(Layer):
 
     def forward(self, inputs):
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_max(input_tensor=inputs, axis=1, name=self.name)
+            outputs = tl.reduce_max(input_tensor=inputs, axis=1, name=self.name)
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_max(input_tensor=inputs, axis=2, name=self.name)
+            outputs = tl.reduce_max(input_tensor=inputs, axis=2, name=self.name)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
@@ -674,9 +673,9 @@ class GlobalMeanPool1d(Layer):
 
     def forward(self, inputs):
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_mean(input_tensor=inputs, axis=1, name=self.name)
+            outputs = tl.reduce_mean(input_tensor=inputs, axis=1, name=self.name)
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_mean(input_tensor=inputs, axis=2, name=self.name)
+            outputs = tl.reduce_mean(input_tensor=inputs, axis=2, name=self.name)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
@@ -729,9 +728,9 @@ class GlobalMaxPool2d(Layer):
 
     def forward(self, inputs):
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_max(input_tensor=inputs, axis=[1, 2], name=self.name)
+            outputs = tl.reduce_max(input_tensor=inputs, axis=[1, 2], name=self.name)
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_max(input_tensor=inputs, axis=[2, 3], name=self.name)
+            outputs = tl.reduce_max(input_tensor=inputs, axis=[2, 3], name=self.name)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
@@ -785,9 +784,9 @@ class GlobalMeanPool2d(Layer):
 
     def forward(self, inputs):
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_mean(input_tensor=inputs, axis=[1, 2], name=self.name)
+            outputs = tl.reduce_mean(input_tensor=inputs, axis=[1, 2], name=self.name)
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_mean(input_tensor=inputs, axis=[2, 3], name=self.name)
+            outputs = tl.reduce_mean(input_tensor=inputs, axis=[2, 3], name=self.name)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
@@ -841,9 +840,9 @@ class GlobalMaxPool3d(Layer):
 
     def forward(self, inputs):
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_max(input_tensor=inputs, axis=[1, 2, 3], name=self.name)
+            outputs = tl.reduce_max(input_tensor=inputs, axis=[1, 2, 3], name=self.name)
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_max(input_tensor=inputs, axis=[2, 3, 4], name=self.name)
+            outputs = tl.reduce_max(input_tensor=inputs, axis=[2, 3, 4], name=self.name)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
@@ -896,9 +895,9 @@ class GlobalMeanPool3d(Layer):
 
     def forward(self, inputs):
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_mean(input_tensor=inputs, axis=[1, 2, 3], name=self.name)
+            outputs = tl.reduce_mean(input_tensor=inputs, axis=[1, 2, 3], name=self.name)
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_mean(input_tensor=inputs, axis=[2, 3, 4], name=self.name)
+            outputs = tl.reduce_mean(input_tensor=inputs, axis=[2, 3, 4], name=self.name)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
@@ -952,27 +951,27 @@ class CornerPool2d(Layer):
     def forward(self, inputs):
         input_width = inputs.shape[2]
         input_height = inputs.shape[1]
-        batch_min = tf.reduce_min(inputs)
+        batch_min = tl.reduce_min(inputs)
         if self.mode == 'TopLeft':
-            temp_bottom = tf.pad(
-                inputs, tf.constant([[0, 0], [0, input_height - 1], [0, 0], [0, 0]]), constant_values=batch_min
+            temp_bottom = tl.pad(
+                inputs, tl.constant([[0, 0], [0, input_height - 1], [0, 0], [0, 0]]), constant_values=batch_min
             )
-            temp_right = tf.pad(
-                inputs, tf.constant([[0, 0], [0, 0], [0, input_width - 1], [0, 0]]), constant_values=batch_min
+            temp_right = tl.pad(
+                inputs, tl.constant([[0, 0], [0, 0], [0, input_width - 1], [0, 0]]), constant_values=batch_min
             )
-            temp_bottom = tf.nn.max_pool(temp_bottom, ksize=(input_height, 1), strides=(1, 1), padding='VALID')
-            temp_right = tf.nn.max_pool(temp_right, ksize=(1, input_width), strides=(1, 1), padding='VALID')
-            outputs = tf.add(temp_bottom, temp_right, name=self.name)
+            temp_bottom = tl.nn.max_pool(temp_bottom, ksize=(input_height, 1), strides=(1, 1), padding='VALID')
+            temp_right = tl.nn.max_pool(temp_right, ksize=(1, input_width), strides=(1, 1), padding='VALID')
+            outputs = tl.add(temp_bottom, temp_right, name=self.name)
         elif self.mode == 'BottomRight':
-            temp_top = tf.pad(
-                inputs, tf.constant([[0, 0], [input_height - 1, 0], [0, 0], [0, 0]]), constant_values=batch_min
+            temp_top = tl.pad(
+                inputs, tl.constant([[0, 0], [input_height - 1, 0], [0, 0], [0, 0]]), constant_values=batch_min
             )
-            temp_left = tf.pad(
-                inputs, tf.constant([[0, 0], [0, 0], [input_width - 1, 0], [0, 0]]), constant_values=batch_min
+            temp_left = tl.pad(
+                inputs, tl.constant([[0, 0], [0, 0], [input_width - 1, 0], [0, 0]]), constant_values=batch_min
             )
-            temp_top = tf.nn.max_pool(temp_top, ksize=(input_height, 1), strides=(1, 1), padding='VALID')
-            temp_left = tf.nn.max_pool(temp_left, ksize=(1, input_width), strides=(1, 1), padding='VALID')
-            outputs = tf.add(temp_top, temp_left, name=self.name)
+            temp_top = tl.nn.max_pool(temp_top, ksize=(input_height, 1), strides=(1, 1), padding='VALID')
+            temp_left = tl.nn.max_pool(temp_left, ksize=(1, input_width), strides=(1, 1), padding='VALID')
+            outputs = tl.add(temp_top, temp_left, name=self.name)
         else:
-            outputs = tf.identity(inputs, name=self.name)
+            outputs = tl.identity(inputs, name=self.name)
         return outputs

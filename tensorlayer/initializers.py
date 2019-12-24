@@ -223,6 +223,19 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     # assign numpy array to constant_initalizer and pass to get_variable
     return tf.constant_initializer(value=weights)
 
+def he_normal(seed=None):
+    """
+    He normal initializer.
+
+    Parameters
+    ----------
+    seed
+    A Python integer. Used to seed the random generator.
+    Returns
+    -------
+    An initializer.
+    """
+    return tf.initializers.he_normal(seed=None)
 
 # Alias
 zeros = Zeros

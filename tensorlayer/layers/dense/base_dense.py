@@ -3,7 +3,6 @@
 
 import numpy as np
 
-import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
@@ -40,10 +39,10 @@ class Dense(Layer):
     With TensorLayer
 
     >>> net = tl.layers.Input([100, 50], name='input')
-    >>> dense = tl.layers.Dense(n_units=800, act=tf.nn.relu, in_channels=50, name='dense_1')
+    >>> dense = tl.layers.Dense(n_units=800, act=tl.nn.relu, in_channels=50, name='dense_1')
     >>> print(dense)
     Dense(n_units=800, relu, in_channels='50', name='dense_1')
-    >>> tensor = tl.layers.Dense(n_units=800, act=tf.nn.relu, name='dense_2')(net)
+    >>> tensor = tl.layers.Dense(n_units=800, act=tl.nn.relu, name='dense_2')(net)
     >>> print(tensor)
     tf.Tensor([...], shape=(100, 800), dtype=float32)
 
@@ -103,9 +102,9 @@ class Dense(Layer):
 
     # @tf.function
     def forward(self, inputs):
-        z = tf.matmul(inputs, self.W)
+        z = tl.matmul(inputs, self.W)
         if self.b_init:
-            z = tf.add(z, self.b)
+            z = tl.add(z, self.b)
         if self.act:
             z = self.act(z)
         return z
