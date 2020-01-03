@@ -16,6 +16,7 @@ TensorLayer provides many pretrained models, you can easily use the whole or a p
     ResNet50
     Seq2seq
     Seq2seqLuongAttention
+    Transorformer
 
 
 Base Model
@@ -57,3 +58,8 @@ Seq2seq Luong Attention
 ------------------------
 
 .. autoclass:: Seq2seqLuongAttention
+
+Transformer
+------------------------
+
+.. autoclass:: Transformer
