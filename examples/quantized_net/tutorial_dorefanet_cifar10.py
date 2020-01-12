@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 
-- 1. This model has 1,068,298 paramters and quantization compression strategy(weight:8 bits, active: 8 bits here, you can change the setting),
-after 705 epoches' training with GPU, test accurcy of 84.0% was found.
+- 1. This model has 1,068,298 paramters and Dorefa compression strategy(weight:1 bit, active: 3 bits),
+after 500 epoches' training with GPU,accurcy of 81.1% was found.
 
 - 2. For simplified CNN layers see "Convolutional layer (Simplified)"
 in read the docs website.
@@ -12,8 +12,8 @@ in read the docs website.
 
 Links
 -------
-.. paper:https://arxiv.org/abs/1712.05877
-
+.. paper:https://arxiv.org/abs/1606.06160
+.. code:https://github.com/XJTUWYD/DoReFa_Cifar10
 
 Note
 ------
@@ -38,13 +38,14 @@ of processing time. To prevent these operations from slowing down training,
 we run them inside 16 separate threads which continuously fill a TensorFlow queue.
 
 """
+
 import time
 import numpy as np
 import multiprocessing
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.models import Model
-from tensorlayer.layers import (Input, MaxPool2d, QuanConv2dWithBN, QuanDense, Flatten, Dense)
+from tensorlayer.layers import (Input, Conv2d, MaxPool2d, LocalResponseNorm, DorefaConv2d, DorefaDense, Flatten, Dense)
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
@@ -52,23 +53,24 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
 
 
-def model(input_shape, n_classes, bitW, bitA):
+def dorefanet_model(input_shape, n_classes):
     in_net = Input(shape=input_shape, name='input')
-    net = QuanConv2dWithBN(64, (5, 5), (1, 1), act='relu', padding='SAME', bitW=bitW, bitA=bitA, name='qcnnbn1')(in_net)
+    net = Conv2d(32, (5, 5), (1, 1), act='relu', padding='SAME', name='conv1')(in_net)
     net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(net)
-    net = QuanConv2dWithBN(64, (5, 5), (1, 1), padding='SAME', act='relu', bitW=bitW, bitA=bitA, name='qcnnbn2')(net)
+    net = LocalResponseNorm(4, 1.0, 0.001 / 9.0, 0.75, name='norm1')(net)
+    net = tl.layers.Sign("sign")(net)
+    net = DorefaConv2d(8, 32, 64, (5, 5), (1, 1), act='relu', padding='SAME', name='DorefaConv1')(net)
+    net = LocalResponseNorm(4, 1.0, 0.001 / 9.0, 0.75, name='norm2')(net)
     net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(net)
     net = Flatten(name='flatten')(net)
-    net = QuanDense(384, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd1relu')(net)
-    net = QuanDense(192, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd2relu')(net)
+    net = DorefaDense(8, 16, 384, act='relu', name='DorefaDense1')(net)
+    net = DorefaDense(8, 16, 192, act='relu', name='DorefaDense2')(net)
     net = Dense(n_classes, act=None, name='output')(net)
     net = Model(inputs=in_net, outputs=net, name='dorefanet')
     return net
 
 # training settings
-bitW = 8
-bitA = 8
-net = model([None, 24, 24, 3], n_classes=10, bitW=bitW, bitA=bitA)
+net = dorefanet_model([None, 24, 24, 3], n_classes=10)
 batch_size = 128
 n_epoch = 50000
 learning_rate = 0.0001
@@ -78,6 +80,7 @@ n_step = n_epoch * n_step_epoch
 shuffle_buffer_size = 128
 
 optimizer = tf.optimizers.Adam(learning_rate)
+# optimizer = tf.optimizers.SGD(learning_rate)
 cost = tl.cost.cross_entropy
 
 def generator_train():
@@ -200,4 +203,3 @@ for X_batch, y_batch in test_ds:
     n_iter += 1
 print("   test loss: {}".format(test_loss / n_iter))
 print("   test acc:  {}".format(test_acc / n_iter))
-
