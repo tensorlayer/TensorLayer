@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import numpy as np
@@ -50,10 +50,6 @@ class QuanConv2dWithBN(Layer):
         The bits of this layer's parameter
     bitA : int
         The bits of the output of previous layer
-    epsilon : float
-        Eplison.
-    is_train : boolean
-        Is being used for training or inference.
     use_gemm : boolean
         If True, use gemm instead of ``tf.matmul`` for inferencing. (TODO).
     W_init : initializer
@@ -62,6 +58,10 @@ class QuanConv2dWithBN(Layer):
         The arguments for the weight matrix initializer.
     data_format : str
         "NHWC" or "NCHW", default is "NHWC".
+    dilation_rate : tuple of int
+        Specifying the dilation rate to use for dilated convolution.
+    in_channels : int
+        The number of in channels.
     name : str
         A unique layer name.
 
@@ -98,7 +98,6 @@ class QuanConv2dWithBN(Layer):
             name='quan_cnn2d_bn',
     ):
         super(QuanConv2dWithBN, self).__init__(act=act, name=name)
-        # self.prev_layer = prev_layer
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = strides
@@ -133,7 +132,7 @@ class QuanConv2dWithBN(Layer):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
         s = (
             '{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
-            ', strides={strides}, padding={padding}'+ actstr
+            ', strides={strides}, padding={padding}' + actstr
         )
         if self.dilation_rate != (1, ) * len(self.dilation_rate):
             s += ', dilation={dilation_rate}'
