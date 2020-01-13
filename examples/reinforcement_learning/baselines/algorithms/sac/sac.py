@@ -14,9 +14,6 @@ tensorlayer 2.0.0
 
 &&
 pip install box2d box2d-kengz --user
-
-To run:
-python tutorial_sac.py --train/test
 '''
 
 import argparse
@@ -24,52 +21,24 @@ import math
 import random
 import time
 
+import gym
 import matplotlib.pyplot as plt
 import numpy as np
-from IPython.display import clear_output
-
-import gym
 import tensorflow as tf
 import tensorflow_probability as tfp
+from IPython.display import clear_output
+
 import tensorlayer as tl
+from common.buffer import *
+from common.networks import *
+from common.utils import *
 from tensorlayer.layers import Dense
 from tensorlayer.models import Model
-from utils import *
-from wrappers import NormalizedActions
 
 tfd = tfp.distributions
 Normal = tfd.Normal
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
-
-np.random.seed(2)
-tf.random.set_seed(2)  # reproducible
-
-parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
-parser.add_argument('--train', dest='train', action='store_true', default=False)
-parser.add_argument('--test', dest='test', action='store_true', default=True)
-args = parser.parse_args()
-
-
-class SoftQNetwork(Model):
-
-    def __init__(self, num_inputs, num_actions, hidden_dim, init_w=3e-3):
-        super(SoftQNetwork, self).__init__()
-        input_dim = num_inputs + num_actions
-        w_init = tf.keras.initializers.glorot_normal(
-            seed=None
-        )  # glorot initialization is better than uniform in practice
-        # w_init = tf.random_uniform_initializer(-init_w, init_w)
-
-        self.linear1 = Dense(n_units=hidden_dim, act=tf.nn.relu, W_init=w_init, in_channels=input_dim, name='q1')
-        self.linear2 = Dense(n_units=hidden_dim, act=tf.nn.relu, W_init=w_init, in_channels=hidden_dim, name='q2')
-        self.linear3 = Dense(n_units=1, W_init=w_init, in_channels=hidden_dim, name='q3')
-
-    def forward(self, input):
-        x = self.linear1(input)
-        x = self.linear2(x)
-        x = self.linear3(x)
-        return x
 
 
 class PolicyNetwork(Model):
@@ -151,14 +120,17 @@ class PolicyNetwork(Model):
 
 class SAC_Trainer():
 
-    def __init__(self, replay_buffer, hidden_dim, action_range, soft_q_lr=3e-4, policy_lr=3e-4, alpha_lr=3e-4):
+    def __init__(
+            self, replay_buffer, hidden_dim, state_dim, action_dim, action_range, soft_q_lr=3e-4, policy_lr=3e-4,
+            alpha_lr=3e-4
+    ):
         self.replay_buffer = replay_buffer
 
         # initialize all networks
-        self.soft_q_net1 = SoftQNetwork(state_dim, action_dim, hidden_dim)
-        self.soft_q_net2 = SoftQNetwork(state_dim, action_dim, hidden_dim)
-        self.target_soft_q_net1 = SoftQNetwork(state_dim, action_dim, hidden_dim)
-        self.target_soft_q_net2 = SoftQNetwork(state_dim, action_dim, hidden_dim)
+        self.soft_q_net1 = QNetwork(state_dim, action_dim, hidden_dim)
+        self.soft_q_net2 = QNetwork(state_dim, action_dim, hidden_dim)
+        self.target_soft_q_net1 = QNetwork(state_dim, action_dim, hidden_dim)
+        self.target_soft_q_net2 = QNetwork(state_dim, action_dim, hidden_dim)
         self.policy_net = PolicyNetwork(state_dim, action_dim, hidden_dim, action_range)
         self.log_alpha = tf.Variable(0, dtype=np.float32, name='log_alpha')
         self.alpha = tf.math.exp(self.log_alpha)
@@ -196,8 +168,9 @@ class SAC_Trainer():
         reward = reward[:, np.newaxis]  # expand dim
         done = done[:, np.newaxis]
 
-        reward = reward_scale * (reward -
-                                 np.mean(reward, axis=0)) / np.std(reward, axis=0)  # normalize with batch mean and std
+        reward = reward_scale * (reward - np.mean(reward, axis=0)) / (
+            np.std(reward, axis=0) + 1e-6
+        )  # normalize with batch mean and std
 
         # Training Q Function
         new_next_action, next_log_prob, _, _, _ = self.policy_net.evaluate(next_state)
@@ -248,25 +221,16 @@ class SAC_Trainer():
         self.target_soft_q_net1 = self.target_soft_update(self.soft_q_net1, self.target_soft_q_net1, soft_tau)
         self.target_soft_q_net2 = self.target_soft_update(self.soft_q_net2, self.target_soft_q_net2, soft_tau)
 
-    def save_weights(self):  # save trained weights
+    def save_weights(self):
+        ''' save trained weights '''
         save_model(self.soft_q_net1, 'model_q_net1', 'SAC')
         save_model(self.soft_q_net2, 'model_q_net2', 'SAC')
         save_model(self.target_soft_q_net1, 'model_target_q_net1', 'SAC')
         save_model(self.target_soft_q_net2, 'model_target_q_net2', 'SAC')
         save_model(self.policy_net, 'model_policy_net', 'SAC')
 
-        # tl.files.save_npz(self.soft_q_net1.trainable_weights, name='model_q_net1.npz')
-        # tl.files.save_npz(self.soft_q_net2.trainable_weights, name='model_q_net2.npz')
-        # tl.files.save_npz(self.target_soft_q_net1.trainable_weights, name='model_target_q_net1.npz')
-        # tl.files.save_npz(self.target_soft_q_net2.trainable_weights, name='model_target_q_net2.npz')
-        # tl.files.save_npz(self.policy_net.trainable_weights, name='model_policy_net.npz')
-
-    def load_weights(self):  # load trained weights
-        # tl.files.load_and_assign_npz(name='model_q_net1.npz', network=self.soft_q_net1)
-        # tl.files.load_and_assign_npz(name='model_q_net2.npz', network=self.soft_q_net2)
-        # tl.files.load_and_assign_npz(name='model_target_q_net1.npz', network=self.target_soft_q_net1)
-        # tl.files.load_and_assign_npz(name='model_target_q_net2.npz', network=self.target_soft_q_net2)
-        # tl.files.load_and_assign_npz(name='model_policy_net.npz', network=self.policy_net)
+    def load_weights(self):
+        ''' load trained weights '''
         load_model(self.soft_q_net1, 'model_q_net1', 'SAC')
         load_model(self.soft_q_net2, 'model_q_net2', 'SAC')
         load_model(self.target_soft_q_net1, 'model_target_q_net1', 'SAC')
@@ -274,131 +238,131 @@ class SAC_Trainer():
         load_model(self.policy_net, 'model_policy_net', 'SAC')
 
 
-# def plot(frame_idx, rewards):
-#     clear_output(True)
-#     plt.figure(figsize=(20,5))
-#     plt.title('frame %s. reward: %s' % (frame_idx, rewards[-1]))
-#     plt.plot(rewards)
-#     plt.xlabel('Episode')
-#     plt.ylabel('Episode Reward')
-#     plt.savefig('sac.png')
-# plt.show()
+def learn(env_id, train_episodes, test_episodes=1000, max_steps=150, batch_size=64, explore_steps=500, update_itr=3, hidden_dim=32, \
+    soft_q_lr = 3e-4, policy_lr = 3e-4, alpha_lr = 3e-4, policy_target_update_interval = 3, action_range = 1., \
+    replay_buffer_size = 5e5, reward_scale = 1. , seed=2, save_interval=500, mode='train', AUTO_ENTROPY = True, DETERMINISTIC = False):
+    '''
+    parameters
+    ----------
+    env: learning environment
+    train_episodes:  total number of episodes for training
+    test_episodes:  total number of episodes for testing
+    max_steps:  maximum number of steps for one episode
+    batch_size:  udpate batchsize
+    explore_steps:  for random action sampling in the beginning of training
+    update_itr: repeated updates for single step
+    hidden_dim:  size of hidden layers for networks
+    soft_q_lr: q_net learning rate
+    policy_lr: policy_net learning rate
+    alpha_lr: alpha learning rate
+    policy_target_update_interval: delayed update for the policy network and target networks
+    action_range: range of action value
+    replay_buffer_size: size of replay buffer
+    reward_scale: value range of reward
+    save_interval: timesteps for saving the weights and plotting the results
+    mode: train or test
+    AUTO_ENTROPY: automatically udpating variable alpha for entropy
+    DETERMINISTIC: stochastic action policy if False, otherwise deterministic
 
-# choose env
-ENV = 'Pendulum-v0'
-env = NormalizedActions(gym.make(ENV))
-action_dim = env.action_space.shape[0]
-state_dim = env.observation_space.shape[0]
-action_range = 1.
+    '''
+    env = make_env(env_id)
+    action_dim = env.action_space.shape[0]
+    state_dim = env.observation_space.shape[0]
 
-replay_buffer_size = 5e5
-replay_buffer = ReplayBuffer(replay_buffer_size)
+    np.random.seed(seed)
+    tf.random.set_seed(seed)  # reproducible
 
-# hyper-parameters for RL training
-max_frames = 30000  # total number of steps for training
-test_frames = 300  # total number of steps for testing
-max_steps = 150  # maximum number of steps for one episode
-batch_size = 64  # udpate batchsize
-explore_steps = 100  # 500 for random action sampling in the beginning of training
-update_itr = 3  # repeated updates for single step
-hidden_dim = 32  # size of hidden layers for networks
-soft_q_lr = 3e-4  # q_net learning rate
-policy_lr = 3e-4  # policy_net learning rate
-alpha_lr = 3e-4  # alpha learning rate
-policy_target_update_interval = 3  # delayed update for the policy network and target networks
-# explore_noise_scale = 1.0           # range of action noise for exploration
-# eval_noise_scale = 0.5              # range of action noise for evaluation of action value
-reward_scale = 1.  # value range of reward
+    replay_buffer = ReplayBuffer(replay_buffer_size)
 
-AUTO_ENTROPY = True  # automatically udpating variable alpha for entropy
-DETERMINISTIC = False  # stochastic action policy if False, otherwise deterministic
+    sac_trainer=SAC_Trainer(replay_buffer, hidden_dim=hidden_dim, action_dim=action_dim, state_dim=state_dim, action_range=action_range, \
+    soft_q_lr=soft_q_lr, policy_lr=policy_lr, alpha_lr=alpha_lr )
 
+    #set train mode
+    sac_trainer.soft_q_net1.train()
+    sac_trainer.soft_q_net2.train()
+    sac_trainer.target_soft_q_net1.train()
+    sac_trainer.target_soft_q_net2.train()
+    sac_trainer.policy_net.train()
 
-sac_trainer=SAC_Trainer(replay_buffer, hidden_dim=hidden_dim, action_range=action_range, \
-soft_q_lr=soft_q_lr, policy_lr=policy_lr, alpha_lr=alpha_lr )
+    # training loop
+    if mode == 'train':
+        frame_idx = 0
+        rewards = []
+        t0 = time.time()
+        for eps in range(train_episodes):
+            state = env.reset()
+            state = state.astype(np.float32)
+            episode_reward = 0
+            if frame_idx < 1:
+                _ = sac_trainer.policy_net(
+                    [state]
+                )  # need an extra call here to make inside functions be able to use model.forward
 
-#set train mode
-sac_trainer.soft_q_net1.train()
-sac_trainer.soft_q_net2.train()
-sac_trainer.target_soft_q_net1.train()
-sac_trainer.target_soft_q_net2.train()
-sac_trainer.policy_net.train()
+            for step in range(max_steps):
+                if frame_idx > explore_steps:
+                    action = sac_trainer.policy_net.get_action(state, deterministic=DETERMINISTIC)
+                else:
+                    action = sac_trainer.policy_net.sample_action()
 
-# training loop
-if args.train:
-    frame_idx = 0
-    rewards = []
-    while frame_idx < max_frames:
-        state = env.reset()
-        state = state.astype(np.float32)
-        episode_reward = 0
-        if frame_idx < 1:
-            print('intialize')
-            _ = sac_trainer.policy_net(
-                [state]
-            )  # need an extra call here to make inside functions be able to use model.forward
+                next_state, reward, done, _ = env.step(action)
+                next_state = next_state.astype(np.float32)
+                env.render()
+                done = 1 if done ==True else 0
 
-        for step in range(max_steps):
-            if frame_idx > explore_steps:
+                replay_buffer.push(state, action, reward, next_state, done)
+
+                state = next_state
+                episode_reward += reward
+                frame_idx += 1
+
+                if len(replay_buffer) > batch_size:
+                    for i in range(update_itr):
+                        sac_trainer.update(
+                            batch_size, reward_scale=reward_scale, auto_entropy=AUTO_ENTROPY,
+                            target_entropy=-1. * action_dim
+                        )
+
+                if done:
+                    break
+            if eps % int(save_interval) == 0:
+                plot(rewards, Algorithm_name='SAC', Env_name=env_id)
+                sac_trainer.save_weights()
+            print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
+            .format(eps, train_episodes, episode_reward, time.time()-t0 ))
+            rewards.append(episode_reward)
+        sac_trainer.save_weights()
+
+    if mode == 'test':
+        frame_idx = 0
+        rewards = []
+        t0 = time.time()
+        sac_trainer.load_weights()
+
+        for eps in range(test_episodes):
+            state = env.reset()
+            state = state.astype(np.float32)
+            episode_reward = 0
+            if frame_idx < 1:
+                _ = sac_trainer.policy_net(
+                    [state]
+                )  # need an extra call to make inside functions be able to use forward
+
+            for step in range(max_steps):
                 action = sac_trainer.policy_net.get_action(state, deterministic=DETERMINISTIC)
-            else:
-                action = sac_trainer.policy_net.sample_action()
+                next_state, reward, done, _ = env.step(action)
+                next_state = next_state.astype(np.float32)
+                env.render()
+                done = 1 if done ==True else 0
 
-            next_state, reward, done, _ = env.step(action)
-            next_state = next_state.astype(np.float32)
-            env.render()
-            done = 1 if done ==True else 0
+                state = next_state
+                episode_reward += reward
+                frame_idx += 1
 
-            replay_buffer.push(state, action, reward, next_state, done)
+                # if frame_idx % 50 == 0:
+                #     plot(frame_idx, rewards)
 
-            state = next_state
-            episode_reward += reward
-            frame_idx += 1
-
-            if len(replay_buffer) > batch_size:
-                for i in range(update_itr):
-                    sac_trainer.update(
-                        batch_size, reward_scale=reward_scale, auto_entropy=AUTO_ENTROPY,
-                        target_entropy=-1. * action_dim
-                    )
-
-            if frame_idx % 500 == 0:
-                plot(rewards, Algorithm_name='SAC', Env_name=ENV)
-
-            if done:
-                break
-        print('Episode: ', frame_idx / max_steps, '| Episode Reward: ', episode_reward)
-        rewards.append(episode_reward)
-    sac_trainer.save_weights()
-
-if args.test:
-    frame_idx = 0
-    rewards = []
-    sac_trainer.load_weights()
-
-    while frame_idx < test_frames:
-        state = env.reset()
-        state = state.astype(np.float32)
-        episode_reward = 0
-        if frame_idx < 1:
-            print('intialize')
-            _ = sac_trainer.policy_net([state])  # need an extra call to make inside functions be able to use forward
-
-        for step in range(max_steps):
-            action = sac_trainer.policy_net.get_action(state, deterministic=DETERMINISTIC)
-            next_state, reward, done, _ = env.step(action)
-            next_state = next_state.astype(np.float32)
-            env.render()
-            done = 1 if done ==True else 0
-
-            state = next_state
-            episode_reward += reward
-            frame_idx += 1
-
-            # if frame_idx % 50 == 0:
-            #     plot(frame_idx, rewards)
-
-            if done:
-                break
-        print('Episode: ', frame_idx / max_steps, '| Episode Reward: ', episode_reward)
-        rewards.append(episode_reward)
+                if done:
+                    break
+            print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
+            .format(eps, test_episodes, episode_reward, time.time()-t0 ) )
+            rewards.append(episode_reward)
