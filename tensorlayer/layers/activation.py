@@ -54,11 +54,11 @@ class PRelu(Layer):
     """
 
     def __init__(
-        self,
-        channel_shared=False,
-        in_channels=None,
-        a_init=truncated_normal(mean=0.0, stddev=0.05),
-        name=None  # "prelu"
+            self,
+            channel_shared=False,
+            in_channels=None,
+            a_init=truncated_normal(mean=0.0, stddev=0.05),
+            name=None  # "prelu"
     ):
 
         super(PRelu, self).__init__(name)
@@ -141,11 +141,11 @@ class PRelu6(Layer):
     """
 
     def __init__(
-        self,
-        channel_shared=False,
-        in_channels=None,
-        a_init=truncated_normal(mean=0.0, stddev=0.05),
-        name=None  # "prelu6"
+            self,
+            channel_shared=False,
+            in_channels=None,
+            a_init=truncated_normal(mean=0.0, stddev=0.05),
+            name=None  # "prelu6"
     ):
 
         super(PRelu6, self).__init__(name)
@@ -229,11 +229,11 @@ class PTRelu6(Layer):
     """
 
     def __init__(
-        self,
-        channel_shared=False,
-        in_channels=None,
-        a_init=truncated_normal(mean=0.0, stddev=0.05),
-        name=None  # "ptrelu6"
+            self,
+            channel_shared=False,
+            in_channels=None,
+            a_init=truncated_normal(mean=0.0, stddev=0.05),
+            name=None  # "ptrelu6"
     ):
 
         super(PTRelu6, self).__init__(name)

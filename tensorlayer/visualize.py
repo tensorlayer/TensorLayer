@@ -146,7 +146,7 @@ def save_images(images, size, image_path='_temp.png'):
 
 
 def draw_boxes_and_labels_to_image(
-    image, classes, coords, scores, classes_list, is_center=True, is_rescale=True, save_name=None
+        image, classes, coords, scores, classes_list, is_center=True, is_rescale=True, save_name=None
 ):
     """Draw bboxes and class labels on image. Return or save the image with bboxes, example in the docs of ``tl.prepro``.
 

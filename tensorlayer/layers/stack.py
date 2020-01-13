@@ -38,9 +38,9 @@ class Stack(Layer):
     """
 
     def __init__(
-        self,
-        axis=1,
-        name=None,  #'stack',
+            self,
+            axis=1,
+            name=None,  #'stack',
     ):
         super().__init__(name)
         self.axis = axis
