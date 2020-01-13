@@ -12,9 +12,9 @@ from sys import platform as _platform
 
 import numpy as np
 import tensorflow as tf
-from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 
 import tensorlayer as tl
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 
 __all__ = [
     'fit', 'test', 'predict', 'evaluation', 'dict_to_one', 'flatten_list', 'class_balancing_oversample',

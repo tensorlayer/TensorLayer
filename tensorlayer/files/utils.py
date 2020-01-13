@@ -16,11 +16,8 @@ import tarfile
 import time
 import zipfile
 
-import cloudpickle
 import h5py
 import numpy as np
-import progressbar
-import scipy.io as sio
 import tensorflow as tf
 from six.moves import cPickle
 from tensorflow.python.keras.saving import model_config as model_config_lib
@@ -28,6 +25,9 @@ from tensorflow.python.platform import gfile
 from tensorflow.python.util import serialization
 from tensorflow.python.util.tf_export import keras_export
 
+import cloudpickle
+import progressbar
+import scipy.io as sio
 import tensorlayer as tl
 from tensorlayer import logging, nlp, utils, visualize
 

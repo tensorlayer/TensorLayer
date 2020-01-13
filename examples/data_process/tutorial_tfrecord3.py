@@ -20,9 +20,9 @@ import os
 
 import numpy as np
 import tensorflow as tf
-from PIL import Image
 
 import tensorlayer as tl
+from PIL import Image
 
 
 def _int64_feature(value):

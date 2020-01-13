@@ -8,21 +8,21 @@ import threading
 import time
 
 import numpy as np
+from six.moves import range
+
 import PIL
 import scipy
 import scipy.ndimage as ndi
 import skimage
+import tensorlayer as tl
 from scipy import linalg
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
-from six.moves import range
 from skimage import exposure, transform
 from skimage.morphology import binary_dilation as _binary_dilation
 from skimage.morphology import binary_erosion as _binary_erosion
 from skimage.morphology import disk
 from skimage.morphology import erosion as _erosion
-
-import tensorlayer as tl
 from tensorlayer.lazy_imports import LazyImport
 
 cv2 = LazyImport("cv2")

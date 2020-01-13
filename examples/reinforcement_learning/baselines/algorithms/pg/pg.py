@@ -20,11 +20,11 @@ tensorlayer >=2.0.0
 """
 import time
 
-import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
 import gym
+import matplotlib.pyplot as plt
 import tensorlayer as tl
 from common.buffer import *
 from common.networks import *

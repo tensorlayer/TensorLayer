@@ -3,9 +3,9 @@
 
 import os
 
-import imageio
 import numpy as np
 
+import imageio
 import tensorlayer as tl
 from tensorlayer.lazy_imports import LazyImport
 
