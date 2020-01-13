@@ -50,8 +50,7 @@ class StochasticPolicyNetwork(Model):
     ''' stochastic continuous policy network for generating action according to the state '''
 
     def __init__(
-            self, state_dim, action_dim, hidden_list, a_bound, log_std_min=-20, log_std_max=2, scope=None,
-            trainable=True
+        self, state_dim, action_dim, hidden_list, a_bound, log_std_min=-20, log_std_max=2, scope=None, trainable=True
     ):
 
         # w_init = tf.keras.initializers.glorot_normal(
@@ -121,7 +120,7 @@ class PPO(object):
     '''
 
     def __init__(
-            self, a_dim, s_dim, hidden_list, a_max, actor_lr, critic_lr, a_update_steps, c_update_steps, save_interval
+        self, a_dim, s_dim, hidden_list, a_max, actor_lr, critic_lr, a_update_steps, c_update_steps, save_interval
     ):
         self.a_dim = a_dim
         self.s_dim = s_dim
@@ -392,9 +391,9 @@ class Worker(object):
 
 
 def learn(
-        env_id='Pendulum-v0', train_episodes=1000, test_episodes=100, max_steps=200, save_interval=10, actor_lr=1e-4,
-        critic_lr=2e-4, gamma=0.9, hidden_dim=100, num_hidden_layer=1, seed=1, mode='train', batch_size=32,
-        a_update_steps=10, c_update_steps=10, n_worker=4
+    env_id='Pendulum-v0', train_episodes=1000, test_episodes=100, max_steps=200, save_interval=10, actor_lr=1e-4,
+    critic_lr=2e-4, gamma=0.9, hidden_dim=100, num_hidden_layer=1, seed=1, mode='train', batch_size=32,
+    a_update_steps=10, c_update_steps=10, n_worker=4
 ):
     """
     learn function

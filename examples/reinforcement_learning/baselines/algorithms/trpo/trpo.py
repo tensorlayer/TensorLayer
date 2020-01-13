@@ -297,8 +297,7 @@ Actor-Critics
 
 
 def mlp_actor_critic(
-        x: 'env.observation_space', a: 'env.action_space', hidden_sizes=(64, 64), activation=tf.tanh,
-        output_activation=None
+    x: 'env.observation_space', a: 'env.action_space', hidden_sizes=(64, 64), activation=tf.tanh, output_activation=None
 ):
     """
     create actor and critic
@@ -428,8 +427,8 @@ class TRPO:
     """
 
     def __init__(
-            self, obs_space, act_space, hidden_list, max_steps, gamma, lam, critic_lr, damping_coeff, cg_iters, delta,
-            backtrack_iters, backtrack_coeff, train_critic_iters
+        self, obs_space, act_space, hidden_list, max_steps, gamma, lam, critic_lr, damping_coeff, cg_iters, delta,
+        backtrack_iters, backtrack_coeff, train_critic_iters
     ):
         obs_dim = obs_space.shape
         act_dim = act_space.shape
@@ -636,9 +635,9 @@ class TRPO:
 
 
 def learn(
-        env_id='Pendulum-v0', train_episodes=500, test_episodes=100, max_steps=4000, save_interval=10, critic_lr=1e-3,
-        gamma=0.99, hidden_dim=64, num_hidden_layer=2, seed=1, mode='train', render=False, c_update_steps=80, lam=0.97,
-        damping_coeff=0.1, cg_iters=10, delta=0.01, backtrack_iters=10, backtrack_coeff=0.8, max_ep_len=1000
+    env_id='Pendulum-v0', train_episodes=500, test_episodes=100, max_steps=4000, save_interval=10, critic_lr=1e-3,
+    gamma=0.99, hidden_dim=64, num_hidden_layer=2, seed=1, mode='train', render=False, c_update_steps=80, lam=0.97,
+    damping_coeff=0.1, cg_iters=10, delta=0.01, backtrack_iters=10, backtrack_coeff=0.8, max_ep_len=1000
 ):
     """
     learn function

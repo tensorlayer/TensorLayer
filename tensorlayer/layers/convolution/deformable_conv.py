@@ -71,17 +71,17 @@ class DeformableConv2d(Layer):
 
     # @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            offset_layer=None,
-            # shape=(3, 3, 1, 100),
-            n_filter=32,
-            filter_size=(3, 3),
-            act=None,
-            padding='SAME',
-            W_init=tl.initializers.truncated_normal(stddev=0.02),
-            b_init=tl.initializers.constant(value=0.0),
-            in_channels=None,
-            name=None  # 'deformable_conv_2d',
+        self,
+        offset_layer=None,
+        # shape=(3, 3, 1, 100),
+        n_filter=32,
+        filter_size=(3, 3),
+        act=None,
+        padding='SAME',
+        W_init=tl.initializers.truncated_normal(stddev=0.02),
+        b_init=tl.initializers.constant(value=0.0),
+        in_channels=None,
+        name=None  # 'deformable_conv_2d',
     ):
         super().__init__(name, act=act)
 

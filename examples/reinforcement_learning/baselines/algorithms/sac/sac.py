@@ -44,7 +44,7 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 class PolicyNetwork(Model):
 
     def __init__(
-            self, num_inputs, num_actions, hidden_dim, action_range=1., init_w=3e-3, log_std_min=-20, log_std_max=2
+        self, num_inputs, num_actions, hidden_dim, action_range=1., init_w=3e-3, log_std_min=-20, log_std_max=2
     ):
         super(PolicyNetwork, self).__init__()
 
@@ -121,8 +121,8 @@ class PolicyNetwork(Model):
 class SAC_Trainer():
 
     def __init__(
-            self, replay_buffer, hidden_dim, state_dim, action_dim, action_range, soft_q_lr=3e-4, policy_lr=3e-4,
-            alpha_lr=3e-4
+        self, replay_buffer, hidden_dim, state_dim, action_dim, action_range, soft_q_lr=3e-4, policy_lr=3e-4,
+        alpha_lr=3e-4
     ):
         self.replay_buffer = replay_buffer
 

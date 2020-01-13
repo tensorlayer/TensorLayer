@@ -7,8 +7,7 @@ import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.utils import (quantize_active_overflow,
-                                      quantize_weight_overflow)
+from tensorlayer.layers.utils import (quantize_active_overflow, quantize_weight_overflow)
 
 __all__ = [
     'QuanDense',
@@ -44,16 +43,16 @@ class QuanDense(Layer):
     """
 
     def __init__(
-            self,
-            n_units=100,
-            act=None,
-            bitW=8,
-            bitA=8,
-            use_gemm=False,
-            W_init=tl.initializers.truncated_normal(stddev=0.05),
-            b_init=tl.initializers.constant(value=0.0),
-            in_channels=None,
-            name=None,  #'quan_dense',
+        self,
+        n_units=100,
+        act=None,
+        bitW=8,
+        bitA=8,
+        use_gemm=False,
+        W_init=tl.initializers.truncated_normal(stddev=0.05),
+        b_init=tl.initializers.constant(value=0.0),
+        in_channels=None,
+        name=None,  #'quan_dense',
     ):
         super().__init__(name, act=act)
         self.n_units = n_units

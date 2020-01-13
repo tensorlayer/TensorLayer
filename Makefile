@@ -21,9 +21,8 @@ format:
 	isort -rc examples
 	isort -rc tensorlayer
 
-	yapf -i examples/*.py
-	yapf -i tensorlayer/*.py
-	yapf -i tensorlayer/**/*.py
+	yapf -ir examples
+	yapf -ir tensorlayer
 
 install3:
 	pip3 install -U . --user

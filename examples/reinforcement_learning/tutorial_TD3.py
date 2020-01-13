@@ -242,7 +242,7 @@ class PolicyNetwork(Model):
 class TD3_Trainer():
 
     def __init__(
-            self, replay_buffer, hidden_dim, action_range, policy_target_update_interval=1, q_lr=3e-4, policy_lr=3e-4
+        self, replay_buffer, hidden_dim, action_range, policy_target_update_interval=1, q_lr=3e-4, policy_lr=3e-4
     ):
         self.replay_buffer = replay_buffer
 

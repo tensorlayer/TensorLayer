@@ -165,18 +165,18 @@ class PolicyGradient:
 
 
 def learn(
-        env_id='CartPole-v0',
-        train_episodes=3000,
-        test_episodes=1000,
-        max_steps=1000,
-        lr=0.02,
-        gamma=0.99,
-        hidden_dim=30,
-        num_hidden_layer=1,
-        seed=2,
-        save_interval=100,
-        mode='train',
-        render=False,
+    env_id='CartPole-v0',
+    train_episodes=3000,
+    test_episodes=1000,
+    max_steps=1000,
+    lr=0.02,
+    gamma=0.99,
+    hidden_dim=30,
+    num_hidden_layer=1,
+    seed=2,
+    save_interval=100,
+    mode='train',
+    render=False,
 ):
     """
     learn function

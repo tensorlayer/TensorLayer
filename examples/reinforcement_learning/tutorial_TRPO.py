@@ -335,8 +335,7 @@ Actor-Critics
 
 
 def mlp_actor_critic(
-        x: 'env.observation_space', a: 'env.action_space', hidden_sizes=(64, 64), activation=tf.tanh,
-        output_activation=None
+    x: 'env.observation_space', a: 'env.action_space', hidden_sizes=(64, 64), activation=tf.tanh, output_activation=None
 ):
     """
     create actor and critic

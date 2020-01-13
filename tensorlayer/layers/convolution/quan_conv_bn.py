@@ -7,8 +7,7 @@ from tensorflow.python.training import moving_averages
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.utils import (quantize_active_overflow,
-                                      quantize_weight_overflow)
+from tensorlayer.layers.utils import (quantize_active_overflow, quantize_weight_overflow)
 
 # from tensorlayer.layers.core import LayersConfig
 
@@ -93,26 +92,26 @@ class QuanConv2dWithBN(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            n_filter=32,
-            filter_size=(3, 3),
-            strides=(1, 1),
-            padding='SAME',
-            act=None,
-            decay=0.9,
-            epsilon=1e-5,
-            is_train=False,
-            gamma_init=tf.compat.v1.initializers.ones,
-            beta_init=tf.compat.v1.initializers.zeros,
-            bitW=8,
-            bitA=8,
-            use_gemm=False,
-            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
-            W_init_args=None,
-            use_cudnn_on_gpu=None,
-            data_format=None,
-            name='quan_cnn2d_bn',
+        self,
+        prev_layer,
+        n_filter=32,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        padding='SAME',
+        act=None,
+        decay=0.9,
+        epsilon=1e-5,
+        is_train=False,
+        gamma_init=tf.compat.v1.initializers.ones,
+        beta_init=tf.compat.v1.initializers.zeros,
+        bitW=8,
+        bitA=8,
+        use_gemm=False,
+        W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.02),
+        W_init_args=None,
+        use_cudnn_on_gpu=None,
+        data_format=None,
+        name='quan_cnn2d_bn',
     ):
         super(QuanConv2dWithBN, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
 

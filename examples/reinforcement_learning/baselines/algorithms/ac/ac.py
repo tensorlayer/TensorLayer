@@ -125,9 +125,9 @@ class Critic(object):
 
 
 def learn(
-        env_id, train_episodes, test_episodes=1000, max_steps=1000, gamma=0.9, actor_lr=1e-3, critic_lr=1e-2,
-        actor_hidden_dim=30, actor_hidden_layer=1, critic_hidden_dim=30, critic_hidden_layer=1, seed=2,
-        save_interval=100, mode='train', render=False
+    env_id, train_episodes, test_episodes=1000, max_steps=1000, gamma=0.9, actor_lr=1e-3, critic_lr=1e-2,
+    actor_hidden_dim=30, actor_hidden_layer=1, critic_hidden_dim=30, critic_hidden_layer=1, seed=2, save_interval=100,
+    mode='train', render=False
 ):
     '''
     parameters

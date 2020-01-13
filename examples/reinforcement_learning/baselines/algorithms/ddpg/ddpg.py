@@ -124,8 +124,7 @@ class DDPG(object):
     """
 
     def __init__(
-            self, a_dim, s_dim, hidden_dim, num_hidden_layer, a_bound, gamma, lr_a, lr_c, replay_buffer_size,
-            batch_size=32
+        self, a_dim, s_dim, hidden_dim, num_hidden_layer, a_bound, gamma, lr_a, lr_c, replay_buffer_size, batch_size=32
     ):
         self.memory = np.zeros((replay_buffer_size, s_dim * 2 + a_dim + 1), dtype=np.float32)
         self.pointer = 0
@@ -279,9 +278,9 @@ class DDPG(object):
 
 
 def learn(
-        env_id='Pendulum-v0', train_episodes=200, test_episodes=100, max_steps=200, save_interval=10, actor_lr=1e-3,
-        critic_lr=2e-3, gamma=0.9, hidden_dim=30, num_hidden_layer=1, seed=1, mode='train', render=False,
-        replay_buffer_size=10000, batch_size=32
+    env_id='Pendulum-v0', train_episodes=200, test_episodes=100, max_steps=200, save_interval=10, actor_lr=1e-3,
+    critic_lr=2e-3, gamma=0.9, hidden_dim=30, num_hidden_layer=1, seed=1, mode='train', render=False,
+    replay_buffer_size=10000, batch_size=32
 ):
     """
     learn function

@@ -122,7 +122,7 @@ class ACNet(object):
 
     @tf.function  # convert numpy functions to tf.Operations in the TFgraph, return tensor
     def update_global(
-            self, buffer_s, buffer_a, buffer_v_target, globalAC
+        self, buffer_s, buffer_a, buffer_v_target, globalAC
     ):  # refer to the global Actor-Crtic network for updating it with samples
         ''' update the global critic '''
         with tf.GradientTape() as tape:
