@@ -23,12 +23,12 @@ import argparse
 import os
 import time
 
-import gym
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-import tensorflow_probability as tfp
 
+import gym
+import tensorflow_probability as tfp
 import tensorlayer as tl
 from common.buffer import *
 from common.networks import *

@@ -44,10 +44,10 @@ tensorlayer >=2.0.0
 import argparse
 import time
 
-import gym
 import numpy as np
 import tensorflow as tf
 
+import gym
 import tensorlayer as tl
 from common.buffer import *
 from common.networks import *

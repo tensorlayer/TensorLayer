@@ -7,9 +7,10 @@ from functools import partial
 from multiprocessing import Pipe, Process, cpu_count
 from sys import platform
 
+import numpy as np
+
 import cv2
 import gym
-import numpy as np
 from gym import spaces
 
 __all__ = (

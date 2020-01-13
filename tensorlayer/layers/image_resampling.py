@@ -46,12 +46,12 @@ class UpSampling2d(Layer):
     """
 
     def __init__(
-            self,
-            scale,
-            method='bilinear',
-            antialias=False,
-            data_format='channel_last',
-            name=None,
+        self,
+        scale,
+        method='bilinear',
+        antialias=False,
+        data_format='channel_last',
+        name=None,
     ):
         super(UpSampling2d, self).__init__(name)
         self.method = method
@@ -127,12 +127,12 @@ class DownSampling2d(Layer):
     """
 
     def __init__(
-            self,
-            scale,
-            method='bilinear',
-            antialias=False,
-            data_format='channel_last',
-            name=None,
+        self,
+        scale,
+        method='bilinear',
+        antialias=False,
+        data_format='channel_last',
+        name=None,
     ):
         super(DownSampling2d, self).__init__(name)
         self.method = method
