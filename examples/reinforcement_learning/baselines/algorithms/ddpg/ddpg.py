@@ -19,7 +19,6 @@ tensorlayer >=2.0.0
 
 """
 
-import os
 import time
 
 import matplotlib.pyplot as plt

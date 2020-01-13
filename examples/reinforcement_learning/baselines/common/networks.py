@@ -6,9 +6,6 @@ tensorflow==2.0.0a0
 tensorlayer==2.0.1
 
 """
-import operator
-import os
-import random
 
 import numpy as np
 import tensorflow as tf

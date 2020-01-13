@@ -19,8 +19,6 @@ tensorflow-probability 0.6.0
 tensorlayer >=2.0.0
 
 """
-import argparse
-import os
 import time
 
 import matplotlib.pyplot as plt

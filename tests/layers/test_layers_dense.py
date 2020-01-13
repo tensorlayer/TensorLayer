@@ -3,15 +3,15 @@
 import os
 import unittest
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
+import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import *
 from tensorlayer.models import *
-
 from tests.utils import CustomTestCase
-import numpy as np
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class Layer_BinaryDense_Test(CustomTestCase):

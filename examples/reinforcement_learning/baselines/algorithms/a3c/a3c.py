@@ -40,7 +40,6 @@ pip install box2d box2d-kengz --user
 
 """
 
-import argparse
 import multiprocessing
 import threading
 import time

@@ -16,9 +16,6 @@ tensorlayer 2.0.0
 pip install box2d box2d-kengz --user
 '''
 
-import argparse
-import math
-import random
 import time
 
 import matplotlib.pyplot as plt

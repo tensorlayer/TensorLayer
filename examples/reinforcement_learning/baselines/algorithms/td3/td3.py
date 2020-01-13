@@ -37,8 +37,6 @@ pip install box2d box2d-kengz --user
 
 '''
 
-import argparse
-import math
 import random
 import time
 

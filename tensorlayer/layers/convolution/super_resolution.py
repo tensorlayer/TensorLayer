@@ -80,7 +80,6 @@ class SubpixelConv1d(Layer):
         if inputs_shape is not None:
             self.in_channels = inputs_shape[-1]
         self.out_channels = int(self.in_channels / self.scale)
-        pass
 
     def forward(self, inputs):
         outputs = self._PS(inputs, r=self.scale)

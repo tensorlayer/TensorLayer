@@ -41,7 +41,6 @@ tensorflow >=2.0.0a0
 tensorlayer >=2.0.0
 
 """
-import argparse
 import time
 
 import numpy as np

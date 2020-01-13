@@ -20,8 +20,6 @@ tensorlayer >=2.0.0
 
 """
 
-import argparse
-import os
 import queue
 import threading
 import time

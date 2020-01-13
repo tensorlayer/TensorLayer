@@ -1,9 +1,11 @@
-import time
 import os
-import psutil
+import time
+
 import tensorflow as tf
+
+import psutil
 import tensorlayer as tl
-from exp_config import random_input_generator, MONITOR_INTERVAL, NUM_ITERS, BATCH_SIZE, LERANING_RATE
+from exp_config import (BATCH_SIZE, LERANING_RATE, MONITOR_INTERVAL, NUM_ITERS, random_input_generator)
 
 gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
