@@ -42,18 +42,6 @@ class QuanDenseLayerWithBN(Layer):
         The bits of this layer's parameter
     bitA : int
         The bits of the output of previous layer
-    decay : float
-        A decay factor for `ExponentialMovingAverage`.
-        Suggest to use a large value for large dataset.
-    epsilon : float
-        Eplison.
-    is_train : boolean
-        Is being used for training or inference.
-    beta_init : initializer or None
-        The initializer for initializing beta, if None, skip beta.
-        Usually you should not skip beta unless you know what happened.
-    gamma_init : initializer or None
-        The initializer for initializing gamma, if None, skip gamma.
     use_gemm : boolean
         If True, use gemm instead of ``tf.matmul`` for inferencing. (TODO).
     W_init : initializer
@@ -146,7 +134,7 @@ class QuanDenseLayerWithBN(Layer):
         self.moving_variance = self._get_weights(
             "moving_variacne",
             shape=para_bn_shape,
-            init=tf.initializers.constant(1.0),
+            init=tl.initializers.constant(1.0),
             trainable=False)
 
     def forward(self, inputs):
