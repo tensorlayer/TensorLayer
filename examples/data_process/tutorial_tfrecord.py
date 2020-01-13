@@ -23,9 +23,9 @@ import os
 
 import numpy as np
 import tensorflow as tf
+from PIL import Image
 
 import tensorlayer as tl
-from PIL import Image
 
 ## Save data ==================================================================
 # see https://www.tensorflow.org/alpha/tutorials/load_data/tf_records#writing_a_tfrecord_file

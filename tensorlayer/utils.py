@@ -12,9 +12,9 @@ from sys import platform as _platform
 
 import numpy as np
 import tensorflow as tf
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 
 import tensorlayer as tl
-from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 
 __all__ = [
     'fit', 'test', 'predict', 'evaluation', 'dict_to_one', 'flatten_list', 'class_balancing_oversample',
@@ -24,9 +24,9 @@ __all__ = [
 
 
 def fit(
-        network, train_op, cost, X_train, y_train, acc=None, batch_size=100, n_epoch=100, print_freq=5, X_val=None,
-        y_val=None, eval_train=True, tensorboard_dir=None, tensorboard_epoch_freq=5, tensorboard_weight_histograms=True,
-        tensorboard_graph_vis=True
+    network, train_op, cost, X_train, y_train, acc=None, batch_size=100, n_epoch=100, print_freq=5, X_val=None,
+    y_val=None, eval_train=True, tensorboard_dir=None, tensorboard_epoch_freq=5, tensorboard_weight_histograms=True,
+    tensorboard_graph_vis=True
 ):
     """Training a given non time-series network by the given cost function, training data, batch_size, n_epoch etc.
 
@@ -560,7 +560,7 @@ def set_gpu_fraction(gpu_fraction=0.3):
 
 
 def train_epoch(
-        network, X, y, cost, train_op=tf.optimizers.Adam(learning_rate=0.0001), acc=None, batch_size=100, shuffle=True
+    network, X, y, cost, train_op=tf.optimizers.Adam(learning_rate=0.0001), acc=None, batch_size=100, shuffle=True
 ):
     """Training a given non time-series network by the given cost function, training data, batch_size etc.
     for one epoch.

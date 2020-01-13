@@ -12,10 +12,10 @@ import random
 import re
 from importlib import import_module
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 import gym
-import matplotlib.pyplot as plt
 import tensorlayer as tl
 
 

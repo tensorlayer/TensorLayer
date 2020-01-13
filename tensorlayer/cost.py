@@ -374,7 +374,7 @@ def iou_coe(output, target, threshold=0.5, axis=(1, 2, 3), smooth=1e-5):
 
 
 def sequence_loss_by_example(
-        logits, targets, weights, average_across_timesteps=True, softmax_loss_function=None, name=None
+    logits, targets, weights, average_across_timesteps=True, softmax_loss_function=None, name=None
 ):
     """Weighted cross-entropy loss for a sequence of logits (per example). see original tensorflow code :
     <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/legacy_seq2seq/python/ops/seq2seq.py#L1057>
@@ -782,7 +782,7 @@ def maxnorm_i_regularizer(scale):
 
 
 def huber_loss(
-        output, target, is_mean=True, delta=1.0, dynamichuber=False, reverse=False, axis=-1, epsilon=0.00001, name=None
+    output, target, is_mean=True, delta=1.0, dynamichuber=False, reverse=False, axis=-1, epsilon=0.00001, name=None
 ):
     """Huber Loss operation, see ``https://en.wikipedia.org/wiki/Huber_loss`` .
     Reverse Huber Loss operation, see  ''https://statweb.stanford.edu/~owen/reports/hhu.pdf''.
