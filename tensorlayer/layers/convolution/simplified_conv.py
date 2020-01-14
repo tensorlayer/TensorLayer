@@ -57,18 +57,18 @@ class Conv1d(Layer):
     """
 
     def __init__(
-            self,
-            n_filter=32,
-            filter_size=5,
-            stride=1,
-            act=None,
-            padding='SAME',
-            data_format="channels_last",
-            dilation_rate=1,
-            W_init=tl.initializers.truncated_normal(stddev=0.02),
-            b_init=tl.initializers.constant(value=0.0),
-            in_channels=None,
-            name=None  # 'conv1d'
+        self,
+        n_filter=32,
+        filter_size=5,
+        stride=1,
+        act=None,
+        padding='SAME',
+        data_format="channels_last",
+        dilation_rate=1,
+        W_init=tl.initializers.truncated_normal(stddev=0.02),
+        b_init=tl.initializers.constant(value=0.0),
+        in_channels=None,
+        name=None  # 'conv1d'
     ):
         super().__init__(name, act=act)
         self.n_filter = n_filter
@@ -187,18 +187,18 @@ class Conv2d(Layer):
     """
 
     def __init__(
-            self,
-            n_filter=32,
-            filter_size=(3, 3),
-            strides=(1, 1),
-            act=None,
-            padding='SAME',
-            data_format='channels_last',
-            dilation_rate=(1, 1),
-            W_init=tl.initializers.truncated_normal(stddev=0.02),
-            b_init=tl.initializers.constant(value=0.0),
-            in_channels=None,
-            name=None  # 'conv2d',
+        self,
+        n_filter=32,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        act=None,
+        padding='SAME',
+        data_format='channels_last',
+        dilation_rate=(1, 1),
+        W_init=tl.initializers.truncated_normal(stddev=0.02),
+        b_init=tl.initializers.constant(value=0.0),
+        in_channels=None,
+        name=None  # 'conv2d',
     ):
         super().__init__(name, act=act)
         self.n_filter = n_filter
@@ -320,18 +320,18 @@ class Conv3d(Layer):
     """
 
     def __init__(
-            self,
-            n_filter=32,
-            filter_size=(3, 3, 3),
-            strides=(1, 1, 1),
-            act=None,
-            padding='SAME',
-            data_format='channels_last',
-            dilation_rate=(1, 1, 1),
-            W_init=tl.initializers.truncated_normal(stddev=0.02),
-            b_init=tl.initializers.constant(value=0.0),
-            in_channels=None,
-            name=None  # 'conv3d',
+        self,
+        n_filter=32,
+        filter_size=(3, 3, 3),
+        strides=(1, 1, 1),
+        act=None,
+        padding='SAME',
+        data_format='channels_last',
+        dilation_rate=(1, 1, 1),
+        W_init=tl.initializers.truncated_normal(stddev=0.02),
+        b_init=tl.initializers.constant(value=0.0),
+        in_channels=None,
+        name=None  # 'conv3d',
     ):
         super().__init__(name, act=act)
         self.n_filter = n_filter

@@ -38,9 +38,9 @@ def learn(env_id, env_type, seed, mode, **kwargs):
 
 
 def core_learn(
-        env, mode, number_timesteps, network, optimizer, ob_scale, gamma, double_q, exploration_fraction,
-        exploration_final_eps, batch_size, learning_starts, target_network_update_freq, buffer_size, prioritized_replay,
-        prioritized_replay_alpha, prioritized_replay_beta0, save_path='dqn', save_interval=0, **kwargs
+    env, mode, number_timesteps, network, optimizer, ob_scale, gamma, double_q, exploration_fraction,
+    exploration_final_eps, batch_size, learning_starts, target_network_update_freq, buffer_size, prioritized_replay,
+    prioritized_replay_alpha, prioritized_replay_beta0, save_path='dqn', save_interval=0, **kwargs
 ):
     """
     Parameters:

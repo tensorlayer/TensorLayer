@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys
-sys.path.append("/home/wurundi/workspace/tensorlayer2")
-
 import os
+import sys
 import unittest
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import *
-
 from tests.utils import CustomTestCase
+
+sys.path.append("/home/wurundi/workspace/tensorlayer2")
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class Layer_Pooling_Test(CustomTestCase):

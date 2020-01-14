@@ -230,11 +230,11 @@ class SpatialTransformer2dAffine(Layer):
     """
 
     def __init__(
-            self,
-            out_size=(40, 40),
-            in_channels=None,
-            data_format='channel_last',
-            name=None,
+        self,
+        out_size=(40, 40),
+        in_channels=None,
+        data_format='channel_last',
+        name=None,
     ):
         super(SpatialTransformer2dAffine, self).__init__(name)
 

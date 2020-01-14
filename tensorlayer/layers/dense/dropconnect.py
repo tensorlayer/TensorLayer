@@ -57,14 +57,14 @@ class DropconnectDense(Layer):
     """
 
     def __init__(
-            self,
-            keep=0.5,
-            n_units=100,
-            act=None,
-            W_init=tl.initializers.truncated_normal(stddev=0.05),
-            b_init=tl.initializers.constant(value=0.0),
-            in_channels=None,
-            name=None,  # 'dropconnect',
+        self,
+        keep=0.5,
+        n_units=100,
+        act=None,
+        W_init=tl.initializers.truncated_normal(stddev=0.05),
+        b_init=tl.initializers.constant(value=0.0),
+        in_channels=None,
+        name=None,  # 'dropconnect',
     ):
         super().__init__(name, act=act)
 

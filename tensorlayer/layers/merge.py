@@ -40,9 +40,9 @@ class Concat(Layer):
     """
 
     def __init__(
-            self,
-            concat_dim=-1,
-            name=None,  #'concat',
+        self,
+        concat_dim=-1,
+        name=None,  #'concat',
     ):
 
         super(Concat, self).__init__(name)
@@ -105,10 +105,10 @@ class Elementwise(Layer):
     """
 
     def __init__(
-            self,
-            combine_fn=tf.minimum,
-            act=None,
-            name=None,  #'elementwise',
+        self,
+        combine_fn=tf.minimum,
+        act=None,
+        name=None,  #'elementwise',
     ):
 
         super(Elementwise, self).__init__(name, act=act)

@@ -33,9 +33,9 @@ class Scale(Layer):
     """
 
     def __init__(
-            self,
-            init_scale=0.05,
-            name='scale',
+        self,
+        init_scale=0.05,
+        name='scale',
     ):
         super(Scale, self).__init__(name)
         self.init_scale = init_scale

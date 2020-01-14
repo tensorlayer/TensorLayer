@@ -1,12 +1,14 @@
+import os
+import time
+
+import numpy as np
+
+import psutil
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
+from exp_config import (BATCH_SIZE, LERANING_RATE, MONITOR_INTERVAL, NUM_ITERS, random_input_generator)
 from torchvision.models import vgg16
-import time
-import os
-import psutil
-import numpy as np
-from exp_config import random_input_generator, MONITOR_INTERVAL, NUM_ITERS, BATCH_SIZE, LERANING_RATE
 
 # set gpu_id 0
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
