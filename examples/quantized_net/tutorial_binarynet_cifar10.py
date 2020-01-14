@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 
-- 1. This model has 1,068,298 paramters and quantization compression strategy(weight:8 bits, active: 8 bits here, you can change the setting),
-after 705 epoches' training with GPU, test accurcy of 84.0% was found.
+- 1. This model has 1,068,298 paramters and Dorefa compression strategy(weight:1 bit, active: 1 bit),
+after 500 epoches' training with GPU,accurcy of 41.1% was found.
 
 - 2. For simplified CNN layers see "Convolutional layer (Simplified)"
 in read the docs website.
@@ -12,8 +12,8 @@ in read the docs website.
 
 Links
 -------
-.. paper:https://arxiv.org/abs/1712.05877
-
+.. https://www.tensorflow.org/versions/r0.9/tutorials/deep_cnn/index.html
+.. https://github.com/tensorflow/tensorflow/tree/r0.9/tensorflow/models/image/cifar10
 
 Note
 ------
@@ -38,14 +38,16 @@ of processing time. To prevent these operations from slowing down training,
 we run them inside 16 separate threads which continuously fill a TensorFlow queue.
 
 """
+
 import multiprocessing
 import time
 
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import (Dense, Flatten, Input, MaxPool2d,
-                                QuanConv2dWithBN, QuanDense)
+from tensorlayer.layers import (BinaryConv2d, BinaryDense, Conv2d, Dense,
+                                Flatten, Input, LocalResponseNorm, MaxPool2d,
+                                Sign)
 from tensorlayer.models import Model
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -55,23 +57,29 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
 
 
-def model(input_shape, n_classes, bitW, bitA):
+def binary_model(input_shape, n_classes):
     in_net = Input(shape=input_shape, name='input')
-    net = QuanConv2dWithBN(64, (5, 5), (1, 1), act='relu', padding='SAME', bitW=bitW, bitA=bitA, name='qcnnbn1')(in_net)
+
+    net = Conv2d(64, (5, 5), (1, 1), act='relu', padding='SAME', name='conv1')(in_net)
+    net = Sign(name='sign1')(net)
+
     net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(net)
-    net = QuanConv2dWithBN(64, (5, 5), (1, 1), padding='SAME', act='relu', bitW=bitW, bitA=bitA, name='qcnnbn2')(net)
+    net = LocalResponseNorm(4, 1.0, 0.001 / 9.0, 0.75, name='norm1')(net)
+    net = BinaryConv2d(64, (5, 5), (1, 1), act='relu', padding='SAME', name='bconv1')(net)
+
+    net = LocalResponseNorm(4, 1.0, 0.001 / 9.0, 0.75, name='norm2')(net)
     net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(net)
     net = Flatten(name='flatten')(net)
-    net = QuanDense(384, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd1relu')(net)
-    net = QuanDense(192, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd2relu')(net)
+    net = Sign(name='sign2')(net)
+    net = BinaryDense(384, act='relu', name='d1relu')(net)
+    net = Sign(name='sign3')(net)
+    net = BinaryDense(192, act='relu', name='d2relu')(net)
     net = Dense(n_classes, act=None, name='output')(net)
-    net = Model(inputs=in_net, outputs=net, name='dorefanet')
+    net = Model(inputs=in_net, outputs=net, name='binarynet')
     return net
 
 # training settings
-bitW = 8
-bitA = 8
-net = model([None, 24, 24, 3], n_classes=10, bitW=bitW, bitA=bitA)
+net = binary_model([None, 24, 24, 3], n_classes=10)
 batch_size = 128
 n_epoch = 50000
 learning_rate = 0.0001
@@ -80,6 +88,7 @@ n_step_epoch = int(len(y_train) / batch_size)
 n_step = n_epoch * n_step_epoch
 shuffle_buffer_size = 128
 
+train_weights = net.trainable_weights
 optimizer = tf.optimizers.Adam(learning_rate)
 cost = tl.cost.cross_entropy
 
@@ -169,20 +178,20 @@ for epoch in range(n_epoch):
     start_time = time.time()
 
     train_loss, train_acc, n_iter = 0, 0, 0
-    net.train()
     for X_batch, y_batch in train_ds:
+        net.train()
         _loss, acc = _train_step(net, X_batch, y_batch, cost=cost, train_op=optimizer, acc=accuracy)
 
         train_loss += _loss
         train_acc += acc
         n_iter += 1
 
-    # use training and evaluation sets to evaluate the model every print_freq epoch
-    if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
         print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
         print("   train loss: {}".format(train_loss / n_iter))
         print("   train acc:  {}".format(train_acc / n_iter))
 
+    # use training and evaluation sets to evaluate the model every print_freq epoch
+    if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
         net.eval()
         val_loss, val_acc, n_val_iter = 0, 0, 0
         for X_batch, y_batch in test_ds:
