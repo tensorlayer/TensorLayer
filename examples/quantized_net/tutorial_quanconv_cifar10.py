@@ -38,16 +38,19 @@ of processing time. To prevent these operations from slowing down training,
 we run them inside 16 separate threads which continuously fill a TensorFlow queue.
 
 """
-import time
-import numpy as np
 import multiprocessing
+import time
+
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
+from tensorlayer.layers import (Dense, Flatten, Input, MaxPool2d,
+                                QuanConv2dWithBN, QuanDense)
 from tensorlayer.models import Model
-from tensorlayer.layers import (Input, MaxPool2d, QuanConv2dWithBN, QuanDense, Flatten, Dense)
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
+# Download data, and convert to TFRecord format, see ```tutorial_tfrecord.py```
 # prepare cifar10 data
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
 
@@ -200,4 +203,3 @@ for X_batch, y_batch in test_ds:
     n_iter += 1
 print("   test loss: {}".format(test_loss / n_iter))
 print("   test acc:  {}".format(test_acc / n_iter))
-

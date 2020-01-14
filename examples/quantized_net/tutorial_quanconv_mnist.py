@@ -3,12 +3,13 @@
 
 import time
 
-import tensorflow as tf
 import numpy as np
-
+import tensorflow as tf
 import tensorlayer as tl
+from tensorlayer.layers import (Dense, Dropout, Flatten, Input, MaxPool2d,
+                                QuanConv2d, QuanConv2dWithBN, QuanDense,
+                                QuanDenseLayerWithBN)
 from tensorlayer.models import Model
-from tensorlayer.layers import (Input, Dense, Dropout, Flatten, QuanConv2dWithBN, QuanDenseLayerWithBN, MaxPool2d, QuanConv2d, QuanDense)
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 

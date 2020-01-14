@@ -39,14 +39,16 @@ we run them inside 16 separate threads which continuously fill a TensorFlow queu
 
 """
 
-import time
-import numpy as np
 import multiprocessing
+import time
+
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
+from tensorlayer.layers import (BinaryConv2d, BinaryDense, Conv2d, Dense,
+                                Flatten, Input, LocalResponseNorm, MaxPool2d,
+                                Sign)
 from tensorlayer.models import Model
-from tensorlayer.layers import (Input, Conv2d, Sign, MaxPool2d, LocalResponseNorm, BinaryConv2d, BinaryDense, Flatten, Dense)
-
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 

@@ -39,16 +39,19 @@ we run them inside 16 separate threads which continuously fill a TensorFlow queu
 
 """
 
-import time
-import numpy as np
 import multiprocessing
+import time
+
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
+from tensorlayer.layers import (Conv2d, Dense, DorefaConv2d, DorefaDense,
+                                Flatten, Input, LocalResponseNorm, MaxPool2d)
 from tensorlayer.models import Model
-from tensorlayer.layers import (Input, Conv2d, MaxPool2d, LocalResponseNorm, DorefaConv2d, DorefaDense, Flatten, Dense)
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
+# Download data, and convert to TFRecord format, see ```tutorial_tfrecord.py```
 # prepare cifar10 data
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
 

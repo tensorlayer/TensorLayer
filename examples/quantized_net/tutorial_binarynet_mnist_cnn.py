@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import time
+
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
+from tensorlayer.layers import (BatchNorm, BinaryConv2d, BinaryDense, Flatten,
+                                Input, MaxPool2d, Sign)
 from tensorlayer.models import Model
-from tensorlayer.layers import (Input, BinaryConv2d, MaxPool2d, BatchNorm, Sign, Flatten, BinaryDense)
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
