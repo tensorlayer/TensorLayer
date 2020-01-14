@@ -16,22 +16,19 @@ tensorlayer 2.0.0
 pip install box2d box2d-kengz --user
 '''
 
-import argparse
-import math
-import random
 import time
 
-import gym
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-import tensorflow_probability as tfp
-from IPython.display import clear_output
 
+import gym
+import tensorflow_probability as tfp
 import tensorlayer as tl
 from common.buffer import *
 from common.networks import *
 from common.utils import *
+from IPython.display import clear_output
 from tensorlayer.layers import Dense
 from tensorlayer.models import Model
 
@@ -44,7 +41,7 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 class PolicyNetwork(Model):
 
     def __init__(
-            self, num_inputs, num_actions, hidden_dim, action_range=1., init_w=3e-3, log_std_min=-20, log_std_max=2
+        self, num_inputs, num_actions, hidden_dim, action_range=1., init_w=3e-3, log_std_min=-20, log_std_max=2
     ):
         super(PolicyNetwork, self).__init__()
 
@@ -121,8 +118,8 @@ class PolicyNetwork(Model):
 class SAC_Trainer():
 
     def __init__(
-            self, replay_buffer, hidden_dim, state_dim, action_dim, action_range, soft_q_lr=3e-4, policy_lr=3e-4,
-            alpha_lr=3e-4
+        self, replay_buffer, hidden_dim, state_dim, action_dim, action_range, soft_q_lr=3e-4, policy_lr=3e-4,
+        alpha_lr=3e-4
     ):
         self.replay_buffer = replay_buffer
 

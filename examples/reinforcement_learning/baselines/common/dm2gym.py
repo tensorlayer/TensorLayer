@@ -26,8 +26,9 @@ import hashlib
 import os
 import sys
 
-import gym
 import numpy as np
+
+import gym
 from dm_control import suite
 from dm_control.rl import specs
 from gym import core, spaces

@@ -20,11 +20,11 @@ tensorlayer >=2.0.0
 """
 import time
 
-import gym
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
+import gym
 import tensorlayer as tl
 from common.buffer import *
 from common.networks import *
@@ -165,18 +165,18 @@ class PolicyGradient:
 
 
 def learn(
-        env_id='CartPole-v0',
-        train_episodes=3000,
-        test_episodes=1000,
-        max_steps=1000,
-        lr=0.02,
-        gamma=0.99,
-        hidden_dim=30,
-        num_hidden_layer=1,
-        seed=2,
-        save_interval=100,
-        mode='train',
-        render=False,
+    env_id='CartPole-v0',
+    train_episodes=3000,
+    test_episodes=1000,
+    max_steps=1000,
+    lr=0.02,
+    gamma=0.99,
+    hidden_dim=30,
+    num_hidden_layer=1,
+    seed=2,
+    save_interval=100,
+    mode='train',
+    render=False,
 ):
     """
     learn function

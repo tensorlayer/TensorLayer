@@ -41,18 +41,17 @@ python tutorial_TD3.py --train/test
 '''
 
 import argparse
-import math
 import random
 import time
 
-import gym
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-import tensorflow_probability as tfp
-from IPython.display import clear_output
 
+import gym
+import tensorflow_probability as tfp
 import tensorlayer as tl
+from IPython.display import clear_output
 from tensorlayer.layers import Dense
 from tensorlayer.models import Model
 
@@ -242,7 +241,7 @@ class PolicyNetwork(Model):
 class TD3_Trainer():
 
     def __init__(
-            self, replay_buffer, hidden_dim, action_range, policy_target_update_interval=1, q_lr=3e-4, policy_lr=3e-4
+        self, replay_buffer, hidden_dim, action_range, policy_target_update_interval=1, q_lr=3e-4, policy_lr=3e-4
     ):
         self.replay_buffer = replay_buffer
 

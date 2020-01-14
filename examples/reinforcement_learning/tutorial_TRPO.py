@@ -33,15 +33,15 @@ import copy
 import os
 import time
 
-import gym
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal
 import tensorflow as tf
-import tensorflow_probability as tfp
-from gym.spaces import Box, Discrete
 
+import gym
+import tensorflow_probability as tfp
 import tensorlayer as tl
+from gym.spaces import Box, Discrete
 
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=True)
@@ -335,8 +335,7 @@ Actor-Critics
 
 
 def mlp_actor_critic(
-        x: 'env.observation_space', a: 'env.action_space', hidden_sizes=(64, 64), activation=tf.tanh,
-        output_activation=None
+    x: 'env.observation_space', a: 'env.action_space', hidden_sizes=(64, 64), activation=tf.tanh, output_activation=None
 ):
     """
     create actor and critic

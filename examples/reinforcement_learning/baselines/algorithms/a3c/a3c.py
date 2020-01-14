@@ -40,16 +40,15 @@ pip install box2d box2d-kengz --user
 
 """
 
-import argparse
 import multiprocessing
 import threading
 import time
 
-import gym
 import numpy as np
 import tensorflow as tf
-import tensorflow_probability as tfp
 
+import gym
+import tensorflow_probability as tfp
 import tensorlayer as tl
 from common.buffer import *
 from common.networks import *
@@ -66,8 +65,8 @@ tfd = tfp.distributions
 class ACNet(object):
 
     def __init__(
-            self, scope, entropy_beta, action_dim, state_dim, actor_hidden_dim, actor_hidden_layer, critic_hidden_dim,
-            critic_hidden_layer, action_bound, globalAC=None
+        self, scope, entropy_beta, action_dim, state_dim, actor_hidden_dim, actor_hidden_layer, critic_hidden_dim,
+        critic_hidden_layer, action_bound, globalAC=None
     ):
         self.scope = scope  # the scope is for naming networks for each worker differently
         self.save_path = './model'
@@ -107,7 +106,7 @@ class ACNet(object):
 
     @tf.function  # convert numpy functions to tf.Operations in the TFgraph, return tensor
     def update_global(
-            self, buffer_s, buffer_a, buffer_v_target, globalAC
+        self, buffer_s, buffer_a, buffer_v_target, globalAC
     ):  # refer to the global Actor-Crtic network for updating it with samples
         ''' update the global critic '''
         with tf.GradientTape() as tape:
@@ -164,8 +163,8 @@ class ACNet(object):
 class Worker(object):
 
     def __init__(
-            self, env_id, name, globalAC, train_episodes, gamma, update_itr, entropy_beta, action_dim, state_dim,
-            actor_hidden_dim, actor_hidden_layer, critic_hidden_dim, critic_hidden_layer, action_bound
+        self, env_id, name, globalAC, train_episodes, gamma, update_itr, entropy_beta, action_dim, state_dim,
+        actor_hidden_dim, actor_hidden_layer, critic_hidden_dim, critic_hidden_layer, action_bound
     ):
         self.env = make_env(env_id)
         self.name = name
@@ -242,9 +241,9 @@ class Worker(object):
 
 
 def learn(
-        env_id, train_episodes, test_episodes=1000, max_steps=150, number_workers=0, update_itr=10, gamma=0.99,
-        entropy_beta=0.005, actor_lr=5e-5, critic_lr=1e-4, actor_hidden_dim=300, actor_hidden_layer=2,
-        critic_hidden_dim=300, critic_hidden_layer=2, seed=2, save_interval=500, mode='train'
+    env_id, train_episodes, test_episodes=1000, max_steps=150, number_workers=0, update_itr=10, gamma=0.99,
+    entropy_beta=0.005, actor_lr=5e-5, critic_lr=1e-4, actor_hidden_dim=300, actor_hidden_layer=2,
+    critic_hidden_dim=300, critic_hidden_layer=2, seed=2, save_interval=500, mode='train'
 ):
     '''
     parameters
