@@ -68,17 +68,17 @@ class DeConv1dLayer(Layer):
     """
 
     def __init__(
-            self,
-            act=None,
-            shape=(3, 128, 256),
-            outputs_shape=(1, 256, 128),
-            strides=(1, 2, 1),
-            padding='SAME',
-            data_format='NWC',
-            dilation_rate=(1, 1, 1),
-            W_init=tl.initializers.truncated_normal(stddev=0.02),
-            b_init=tl.initializers.constant(value=0.0),
-            name=None  # 'decnn1d_layer',
+        self,
+        act=None,
+        shape=(3, 128, 256),
+        outputs_shape=(1, 256, 128),
+        strides=(1, 2, 1),
+        padding='SAME',
+        data_format='NWC',
+        dilation_rate=(1, 1, 1),
+        W_init=tl.initializers.truncated_normal(stddev=0.02),
+        b_init=tl.initializers.constant(value=0.0),
+        name=None  # 'decnn1d_layer',
     ):
         super().__init__(name, act=act)
         self.shape = shape
@@ -202,17 +202,17 @@ class DeConv2dLayer(Layer):
     """
 
     def __init__(
-            self,
-            act=None,
-            shape=(3, 3, 128, 256),
-            outputs_shape=(1, 256, 256, 128),
-            strides=(1, 2, 2, 1),
-            padding='SAME',
-            data_format='NHWC',
-            dilation_rate=(1, 1, 1, 1),
-            W_init=tl.initializers.truncated_normal(stddev=0.02),
-            b_init=tl.initializers.constant(value=0.0),
-            name=None  # 'decnn2d_layer',
+        self,
+        act=None,
+        shape=(3, 3, 128, 256),
+        outputs_shape=(1, 256, 256, 128),
+        strides=(1, 2, 2, 1),
+        padding='SAME',
+        data_format='NHWC',
+        dilation_rate=(1, 1, 1, 1),
+        W_init=tl.initializers.truncated_normal(stddev=0.02),
+        b_init=tl.initializers.constant(value=0.0),
+        name=None  # 'decnn2d_layer',
     ):
         super().__init__(name, act=act)
         self.shape = shape
@@ -328,17 +328,17 @@ class DeConv3dLayer(Layer):
     """
 
     def __init__(
-            self,
-            act=None,
-            shape=(2, 2, 2, 128, 256),
-            outputs_shape=(1, 12, 32, 32, 128),
-            strides=(1, 2, 2, 2, 1),
-            padding='SAME',
-            data_format='NDHWC',
-            dilation_rate=(1, 1, 1, 1, 1),
-            W_init=tl.initializers.truncated_normal(stddev=0.02),
-            b_init=tl.initializers.constant(value=0.0),
-            name=None  # 'decnn3d_layer',
+        self,
+        act=None,
+        shape=(2, 2, 2, 128, 256),
+        outputs_shape=(1, 12, 32, 32, 128),
+        strides=(1, 2, 2, 2, 1),
+        padding='SAME',
+        data_format='NDHWC',
+        dilation_rate=(1, 1, 1, 1, 1),
+        W_init=tl.initializers.truncated_normal(stddev=0.02),
+        b_init=tl.initializers.constant(value=0.0),
+        name=None  # 'decnn3d_layer',
     ):
         super().__init__(name, act=act)
         self.shape = shape

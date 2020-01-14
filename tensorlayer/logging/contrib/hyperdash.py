@@ -46,10 +46,10 @@ class HyperDashHandler(object):
 class Experiment(hd.Experiment):
 
     def __init__(
-            self,
-            model_name,
-            api_key=None,
-            capture_io=True,
+        self,
+        model_name,
+        api_key=None,
+        capture_io=True,
     ):
 
         if api_key is not None:

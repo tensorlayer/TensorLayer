@@ -3,16 +3,16 @@
 import os
 import unittest
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
+import numpy as np
 import tensorflow as tf
+from tensorflow.python.ops.rnn_cell import LSTMCell
+
 import tensorlayer as tl
 from tensorlayer.layers import *
 from tensorlayer.models import Model
-from tensorflow.python.ops.rnn_cell import LSTMCell
-import numpy as np
-
 from tests.utils import CustomTestCase
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class LayerNode_Test(CustomTestCase):

@@ -46,10 +46,10 @@ python tutorial_DQN.py --train/test
 import argparse
 import time
 
-import gym
 import numpy as np
 import tensorflow as tf
 
+import gym
 import tensorlayer as tl
 
 # add arguments in command  --train/test

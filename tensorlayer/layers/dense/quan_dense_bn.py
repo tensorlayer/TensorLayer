@@ -68,21 +68,21 @@ class QuanDenseLayerWithBN(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            n_units=100,
-            act=None,
-            decay=0.9,
-            epsilon=1e-5,
-            is_train=False,
-            bitW=8,
-            bitA=8,
-            gamma_init=tf.compat.v1.initializers.ones,
-            beta_init=tf.compat.v1.initializers.zeros,
-            use_gemm=False,
-            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.05),
-            W_init_args=None,
-            name=None,  #'quan_dense_with_bn',
+        self,
+        prev_layer,
+        n_units=100,
+        act=None,
+        decay=0.9,
+        epsilon=1e-5,
+        is_train=False,
+        bitW=8,
+        bitA=8,
+        gamma_init=tf.compat.v1.initializers.ones,
+        beta_init=tf.compat.v1.initializers.zeros,
+        use_gemm=False,
+        W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.05),
+        W_init_args=None,
+        name=None,  #'quan_dense_with_bn',
     ):
         super(QuanDenseLayerWithBN, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
 

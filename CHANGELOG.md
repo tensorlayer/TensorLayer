@@ -80,8 +80,9 @@ To release a new version, please update the changelog as followed:
 
 ### Fixed
 
-- Fix README. (#PR 1044)
-- Fix package info. (#PR 1046)
+- Fix README. (#1044)
+- Fix package info. (#1046)
+- Fix build test (Using YAPF 0.29) (#1057)
 
 ### Removed
 
@@ -89,7 +90,7 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 
-- @luomai (PR #1044, 1046)
+- @luomai (#1044, #1046, #1057)
 
 
 ## [2.2.0] - 2019-09-13
@@ -150,7 +151,7 @@ This release is compatible with TensorFlow 2 RC1.
 - Replace tf.nn.func with tf.nn.func.\_\_name\_\_ in model config. (PR #994)
 - Add Reinforcement learning tutorials. (PR #995)
 - Add RNN layers with simple rnn cell, GRU cell, LSTM cell. (PR #998)
-- Update Seq2seq (#998) 
+- Update Seq2seq (#998)
 - Add Seq2seqLuongAttention model (#998)
 
 ### Fixed

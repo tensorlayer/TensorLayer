@@ -30,11 +30,11 @@ import argparse
 import os
 import time
 
-import gym
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
+import gym
 import tensorlayer as tl
 
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')

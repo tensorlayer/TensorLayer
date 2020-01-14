@@ -4,7 +4,6 @@ to train with specified settings
 '''
 
 import argparse
-import os
 
 from common.utils import learn, parse_all_args
 

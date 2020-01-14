@@ -6,16 +6,14 @@ tensorflow==2.0.0a0
 tensorlayer==2.0.1
 
 """
-import operator
 import os
-import random
 import re
 from importlib import import_module
 
-import gym
 import matplotlib.pyplot as plt
 import numpy as np
 
+import gym
 import tensorlayer as tl
 
 
