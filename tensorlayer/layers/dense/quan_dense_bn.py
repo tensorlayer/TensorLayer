@@ -8,8 +8,7 @@ from tensorflow.python.training import moving_averages
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.utils import (quantize_active_overflow,
-                                      quantize_weight_overflow)
+from tensorlayer.layers.utils import (quantize_active_overflow, quantize_weight_overflow)
 
 __all__ = [
     'QuanDenseLayerWithBN',
@@ -62,20 +61,20 @@ class QuanDenseLayerWithBN(Layer):
     """
 
     def __init__(
-            self,
-            n_units=100,
-            act=None,
-            decay=0.9,
-            epsilon=1e-5,
-            is_train=False,
-            bitW=8,
-            bitA=8,
-            gamma_init=tl.initializers.truncated_normal(stddev=0.05),
-            beta_init=tl.initializers.truncated_normal(stddev=0.05),
-            use_gemm=False,
-            W_init=tl.initializers.truncated_normal(stddev=0.05),
-            W_init_args=None,
-            name=None,  # 'quan_dense_with_bn',
+        self,
+        n_units=100,
+        act=None,
+        decay=0.9,
+        epsilon=1e-5,
+        is_train=False,
+        bitW=8,
+        bitA=8,
+        gamma_init=tl.initializers.truncated_normal(stddev=0.05),
+        beta_init=tl.initializers.truncated_normal(stddev=0.05),
+        use_gemm=False,
+        W_init=tl.initializers.truncated_normal(stddev=0.05),
+        W_init_args=None,
+        name=None,  # 'quan_dense_with_bn',
     ):
         super(QuanDenseLayerWithBN, self).__init__(act=act, W_init_args=W_init_args, name=name)
         self.n_units = n_units
@@ -115,7 +114,7 @@ class QuanDenseLayerWithBN(Layer):
         n_in = inputs_shape[-1]
         self.W = self._get_weights("weights", shape=(n_in, self.n_units), init=self.W_init)
 
-        para_bn_shape = (self.n_units,)
+        para_bn_shape = (self.n_units, )
         if self.gamma_init:
             self.scale_para = self._get_weights("gamm_weights", shape=para_bn_shape, init=self.gamma_init)
         else:
@@ -127,15 +126,11 @@ class QuanDenseLayerWithBN(Layer):
             self.offset_para = None
 
         self.moving_mean = self._get_weights(
-            "moving_mean",
-            shape=para_bn_shape,
-            init=tl.initializers.constant(1.0),
-            trainable=False)
+            "moving_mean", shape=para_bn_shape, init=tl.initializers.constant(1.0), trainable=False
+        )
         self.moving_variance = self._get_weights(
-            "moving_variacne",
-            shape=para_bn_shape,
-            init=tl.initializers.constant(1.0),
-            trainable=False)
+            "moving_variacne", shape=para_bn_shape, init=tl.initializers.constant(1.0), trainable=False
+        )
 
     def forward(self, inputs):
         x = inputs

@@ -7,8 +7,7 @@ import tensorlayer as tl
 from tensorflow.python.training import moving_averages
 from tensorlayer import logging
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.utils import (quantize_active_overflow,
-                                      quantize_weight_overflow)
+from tensorlayer.layers.utils import (quantize_active_overflow, quantize_weight_overflow)
 
 # from tensorlayer.layers.core import LayersConfig
 
@@ -76,26 +75,26 @@ class QuanConv2dWithBN(Layer):
     """
 
     def __init__(
-            self,
-            n_filter=32,
-            filter_size=(3, 3),
-            strides=(1, 1),
-            padding='SAME',
-            act=None,
-            decay=0.9,
-            epsilon=1e-5,
-            is_train=False,
-            gamma_init=tl.initializers.truncated_normal(stddev=0.02),
-            beta_init=tl.initializers.truncated_normal(stddev=0.02),
-            bitW=8,
-            bitA=8,
-            use_gemm=False,
-            W_init=tl.initializers.truncated_normal(stddev=0.02),
-            W_init_args=None,
-            data_format="channels_last",
-            dilation_rate=(1, 1),
-            in_channels=None,
-            name='quan_cnn2d_bn',
+        self,
+        n_filter=32,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        padding='SAME',
+        act=None,
+        decay=0.9,
+        epsilon=1e-5,
+        is_train=False,
+        gamma_init=tl.initializers.truncated_normal(stddev=0.02),
+        beta_init=tl.initializers.truncated_normal(stddev=0.02),
+        bitW=8,
+        bitA=8,
+        use_gemm=False,
+        W_init=tl.initializers.truncated_normal(stddev=0.02),
+        W_init_args=None,
+        data_format="channels_last",
+        dilation_rate=(1, 1),
+        in_channels=None,
+        name='quan_cnn2d_bn',
     ):
         super(QuanConv2dWithBN, self).__init__(act=act, name=name)
         self.n_filter = n_filter
@@ -160,22 +159,18 @@ class QuanConv2dWithBN(Layer):
         self.filter_shape = (self.filter_size[0], self.filter_size[1], self.in_channels, self.n_filter)
         self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init)
 
-        para_bn_shape = (self.n_filter,)
+        para_bn_shape = (self.n_filter, )
         if self.gamma_init:
             self.scale_para = self._get_weights(
-                "scale_para",
-                shape=para_bn_shape,
-                init=self.gamma_init,
-                trainable=self.is_train)
+                "scale_para", shape=para_bn_shape, init=self.gamma_init, trainable=self.is_train
+            )
         else:
             self.scale_para = None
 
         if self.beta_init:
             self.offset_para = self._get_weights(
-                "offset_para",
-                shape=para_bn_shape,
-                init=self.beta_init,
-                trainable=self.is_train)
+                "offset_para", shape=para_bn_shape, init=self.beta_init, trainable=self.is_train
+            )
         else:
             self.offset_para = None
 
@@ -190,21 +185,18 @@ class QuanConv2dWithBN(Layer):
         x = inputs
         inputs = quantize_active_overflow(inputs, self.bitA)  # Do not remove
         outputs = tf.nn.conv2d(
-            input=x,
-            filters=self.W,
-            strides=self._strides,
-            padding=self.padding,
-            data_format=self.data_format,
-            dilations=self._dilation_rate,
-            name=self.name
+            input=x, filters=self.W, strides=self._strides, padding=self.padding, data_format=self.data_format,
+            dilations=self._dilation_rate, name=self.name
         )
 
         mean, variance = tf.nn.moments(outputs, axes=list(range(len(outputs.get_shape()) - 1)))
 
         update_moving_mean = moving_averages.assign_moving_average(
-            self.moving_mean, mean, self.decay, zero_debias=False)  # if zero_debias=True, has bias
+            self.moving_mean, mean, self.decay, zero_debias=False
+        )  # if zero_debias=True, has bias
         update_moving_variance = moving_averages.assign_moving_average(
-            self.moving_variance, mean, self.decay, zero_debias=False)  # if zero_debias=True, has bias
+            self.moving_variance, mean, self.decay, zero_debias=False
+        )  # if zero_debias=True, has bias
 
         if self.is_train:
             mean, var = self.mean_var_with_update(update_moving_mean, update_moving_variance, mean, variance)
@@ -215,9 +207,7 @@ class QuanConv2dWithBN(Layer):
 
         W_ = quantize_weight_overflow(w_fold, self.bitW)
 
-        conv_fold = tf.nn.conv2d(
-            inputs, W_, strides=self.strides, padding=self.padding, data_format=self.data_format
-        )
+        conv_fold = tf.nn.conv2d(inputs, W_, strides=self.strides, padding=self.padding, data_format=self.data_format)
 
         if self.beta_init:
             bias_fold = self._bias_fold(self.offset_para, self.scale_para, mean, var, self.epsilon)
