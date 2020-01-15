@@ -44,8 +44,7 @@ import time
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import (Dense, Flatten, Input, MaxPool2d,
-                                QuanConv2dWithBN, QuanDense)
+from tensorlayer.layers import (Dense, Flatten, Input, MaxPool2d, QuanConv2dWithBN, QuanDense)
 from tensorlayer.models import Model
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -68,6 +67,7 @@ def model(input_shape, n_classes, bitW, bitA):
     net = Model(inputs=in_net, outputs=net, name='dorefanet')
     return net
 
+
 # training settings
 bitW = 8
 bitA = 8
@@ -82,6 +82,7 @@ shuffle_buffer_size = 128
 
 optimizer = tf.optimizers.Adam(learning_rate)
 cost = tl.cost.cross_entropy
+
 
 def generator_train():
     inputs = X_train
@@ -128,7 +129,6 @@ def _map_fn_test(img, target):
     return img, target
 
 
-
 def _train_step(network, X_batch, y_batch, cost, train_op=tf.optimizers.Adam(learning_rate=0.0001), acc=None):
     with tf.GradientTape() as tape:
         y_pred = network(X_batch)
@@ -141,8 +141,10 @@ def _train_step(network, X_batch, y_batch, cost, train_op=tf.optimizers.Adam(lea
     else:
         return _loss, None
 
+
 def accuracy(_logits, y_batch):
     return np.mean(np.equal(np.argmax(_logits, 1), y_batch))
+
 
 # dataset API and augmentation
 train_ds = tf.data.Dataset.from_generator(

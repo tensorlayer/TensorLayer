@@ -6,8 +6,7 @@ import time
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import (BatchNorm, BinaryConv2d, BinaryDense, Flatten,
-                                Input, MaxPool2d, Sign)
+from tensorlayer.layers import (BatchNorm, BinaryConv2d, BinaryDense, Flatten, Input, MaxPool2d, Sign)
 from tensorlayer.models import Model
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -16,10 +15,11 @@ X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(sha
 
 batch_size = 128
 
+
 def model(inputs_shape, n_class=10):
     # In BNN, all the layers inputs are binary, with the exception of the first layer.
     # ref: https://github.com/itayhubara/BinaryNet.tf/blob/master/models/BNN_cifar10.py
-    net_in = Input(inputs_shape,name='input')
+    net_in = Input(inputs_shape, name='input')
     net = BinaryConv2d(32, (5, 5), (1, 1), padding='SAME', b_init=None, name='bcnn1')(net_in)
     net = MaxPool2d((2, 2), (2, 2), padding='SAME', name='pool1')(net)
     net = BatchNorm(act=tl.act.htanh, name='bn1')(net)
@@ -53,8 +53,10 @@ def _train_step(network, X_batch, y_batch, cost, train_op=tf.optimizers.Adam(lea
     else:
         return _loss, None
 
+
 def accuracy(_logits, y_batch):
     return np.mean(np.equal(np.argmax(_logits, 1), y_batch))
+
 
 n_epoch = 200
 print_freq = 5
@@ -62,7 +64,6 @@ print_freq = 5
 net = model([None, 28, 28, 1])
 train_op = tf.optimizers.Adam(learning_rate=0.0001)
 cost = tl.cost.cross_entropy
-
 
 for epoch in range(n_epoch):
     start_time = time.time()
@@ -92,7 +93,6 @@ for epoch in range(n_epoch):
             val_batch += 1
         print("   val loss: {}".format(val_loss / val_batch))
         print("   val acc:  {}".format(val_acc / val_batch))
-
 
 net.test()
 test_loss, test_acc, n_test_batch = 0, 0, 0

@@ -6,27 +6,31 @@ import time
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import (Dense, Dropout, Flatten, Input, MaxPool2d,
-                                QuanConv2d, QuanConv2dWithBN, QuanDense,
-                                QuanDenseLayerWithBN)
+from tensorlayer.layers import (
+    Dense, Dropout, Flatten, Input, MaxPool2d, QuanConv2d, QuanConv2dWithBN, QuanDense, QuanDenseLayerWithBN
+)
 from tensorlayer.models import Model
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
-
 
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
 # X_train, y_train, X_test, y_test = tl.files.load_cropped_svhn(include_extra=False)
 
 batch_size = 128
 
+
 def model(inputs_shape, n_class=10):
     net_in = Input(inputs_shape, name="input")
 
-    net = QuanConv2dWithBN(n_filter=32, filter_size=(5,5),strides=(1,1),padding='SAME',act=tl.nn.relu, name='qconvbn1')(net_in)
-    net = MaxPool2d(filter_size=(2,2),strides=(2,2),padding='SAME',name='pool1')(net)
+    net = QuanConv2dWithBN(
+        n_filter=32, filter_size=(5, 5), strides=(1, 1), padding='SAME', act=tl.nn.relu, name='qconvbn1'
+    )(net_in)
+    net = MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1')(net)
 
-    net = QuanConv2dWithBN(n_filter=64, filter_size=(5,5),strides=(1,1),padding='SAME',act=tl.nn.relu, name='qconvbn2')(net)
-    net = MaxPool2d(filter_size=(2,2),strides=(2,2),padding='SAME',name='pool2')(net)
+    net = QuanConv2dWithBN(
+        n_filter=64, filter_size=(5, 5), strides=(1, 1), padding='SAME', act=tl.nn.relu, name='qconvbn2'
+    )(net)
+    net = MaxPool2d(filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2')(net)
 
     net = Flatten(name='ft')(net)
 
@@ -42,6 +46,7 @@ def model(inputs_shape, n_class=10):
     net = Model(inputs=net_in, outputs=net, name='quan')
     return net
 
+
 def _train_step(network, X_batch, y_batch, cost, train_op=tf.optimizers.Adam(learning_rate=0.0001), acc=None):
     with tf.GradientTape() as tape:
         y_pred = network(X_batch)
@@ -54,8 +59,10 @@ def _train_step(network, X_batch, y_batch, cost, train_op=tf.optimizers.Adam(lea
     else:
         return _loss, None
 
+
 def accuracy(_logits, y_batch):
     return np.mean(np.equal(np.argmax(_logits, 1), y_batch))
+
 
 n_epoch = 200
 print_freq = 1
@@ -96,7 +103,6 @@ for epoch in range(n_epoch):
             n_eval += 1
         print("   val loss: {}".format(val_loss / n_eval))
         print("   val acc:  {}".format(val_acc / n_eval))
-
 
 # net.eval()
 test_loss, test_acc, n_test_batch = 0, 0, 0
