@@ -44,6 +44,7 @@ import time
 
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import (Conv2d, Dense, DorefaConv2d, DorefaDense, Flatten, Input, LocalResponseNorm, MaxPool2d)
 from tensorlayer.models import Model

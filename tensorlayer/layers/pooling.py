@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
@@ -58,12 +59,12 @@ class PoolLayer(Layer):
     """
 
     def __init__(
-            self,
-            filter_size=(1, 2, 2, 1),
-            strides=(1, 2, 2, 1),
-            padding='SAME',
-            pool=tf.nn.max_pool,
-            name=None  # 'pool_pro',
+        self,
+        filter_size=(1, 2, 2, 1),
+        strides=(1, 2, 2, 1),
+        padding='SAME',
+        pool=tf.nn.max_pool,
+        name=None  # 'pool_pro',
     ):
         super().__init__(name)
         self.filter_size = filter_size
@@ -121,13 +122,13 @@ class MaxPool1d(Layer):
     """
 
     def __init__(
-            self,
-            filter_size=3,
-            strides=2,
-            padding='SAME',
-            data_format='channels_last',
-            dilation_rate=1,
-            name=None  # 'maxpool1d'
+        self,
+        filter_size=3,
+        strides=2,
+        padding='SAME',
+        data_format='channels_last',
+        dilation_rate=1,
+        name=None  # 'maxpool1d'
     ):
         super().__init__(name)
         self.filter_size = self._filter_size = filter_size
@@ -206,13 +207,13 @@ class MeanPool1d(Layer):
     """
 
     def __init__(
-            self,
-            filter_size=3,
-            strides=2,
-            padding='SAME',
-            data_format='channels_last',
-            dilation_rate=1,
-            name=None  # 'meanpool1d'
+        self,
+        filter_size=3,
+        strides=2,
+        padding='SAME',
+        data_format='channels_last',
+        dilation_rate=1,
+        name=None  # 'meanpool1d'
     ):
         super().__init__(name)
         self.filter_size = self._filter_size = filter_size
@@ -292,12 +293,12 @@ class MaxPool2d(Layer):
     """
 
     def __init__(
-            self,
-            filter_size=(3, 3),
-            strides=(2, 2),
-            padding='SAME',
-            data_format='channels_last',
-            name=None  # 'maxpool2d'
+        self,
+        filter_size=(3, 3),
+        strides=(2, 2),
+        padding='SAME',
+        data_format='channels_last',
+        name=None  # 'maxpool2d'
     ):
         super().__init__(name)
         self.filter_size = filter_size
@@ -365,12 +366,12 @@ class MeanPool2d(Layer):
     """
 
     def __init__(
-            self,
-            filter_size=(3, 3),
-            strides=(2, 2),
-            padding='SAME',
-            data_format='channels_last',
-            name=None  # 'meanpool2d'
+        self,
+        filter_size=(3, 3),
+        strides=(2, 2),
+        padding='SAME',
+        data_format='channels_last',
+        name=None  # 'meanpool2d'
     ):
         super().__init__(name)
         self.filter_size = filter_size
@@ -443,12 +444,12 @@ class MaxPool3d(Layer):
     """
 
     def __init__(
-            self,
-            filter_size=(3, 3, 3),
-            strides=(2, 2, 2),
-            padding='VALID',
-            data_format='channels_last',
-            name=None  # 'maxpool3d'
+        self,
+        filter_size=(3, 3, 3),
+        strides=(2, 2, 2),
+        padding='VALID',
+        data_format='channels_last',
+        name=None  # 'maxpool3d'
     ):
         super().__init__(name)
         self.filter_size = filter_size
@@ -524,12 +525,12 @@ class MeanPool3d(Layer):
     """
 
     def __init__(
-            self,
-            filter_size=(3, 3, 3),
-            strides=(2, 2, 2),
-            padding='VALID',
-            data_format='channels_last',
-            name=None  # 'meanpool3d'
+        self,
+        filter_size=(3, 3, 3),
+        strides=(2, 2, 2),
+        padding='VALID',
+        data_format='channels_last',
+        name=None  # 'meanpool3d'
     ):
         super().__init__(name)
         self.filter_size = filter_size
@@ -594,9 +595,9 @@ class GlobalMaxPool1d(Layer):
     """
 
     def __init__(
-            self,
-            data_format="channels_last",
-            name=None  # 'globalmaxpool1d'
+        self,
+        data_format="channels_last",
+        name=None  # 'globalmaxpool1d'
     ):
         super().__init__(name)
 
@@ -650,9 +651,9 @@ class GlobalMeanPool1d(Layer):
     """
 
     def __init__(
-            self,
-            data_format='channels_last',
-            name=None  # 'globalmeanpool1d'
+        self,
+        data_format='channels_last',
+        name=None  # 'globalmeanpool1d'
     ):
         super().__init__(name)
         self.data_format = data_format
@@ -705,9 +706,9 @@ class GlobalMaxPool2d(Layer):
     """
 
     def __init__(
-            self,
-            data_format='channels_last',
-            name=None  # 'globalmaxpool2d'
+        self,
+        data_format='channels_last',
+        name=None  # 'globalmaxpool2d'
     ):
         super().__init__(name)
         self.data_format = data_format
@@ -760,9 +761,9 @@ class GlobalMeanPool2d(Layer):
     """
 
     def __init__(
-            self,
-            data_format='channels_last',
-            name=None  # 'globalmeanpool2d'
+        self,
+        data_format='channels_last',
+        name=None  # 'globalmeanpool2d'
     ):
         super().__init__(name)
 
@@ -816,9 +817,9 @@ class GlobalMaxPool3d(Layer):
     """
 
     def __init__(
-            self,
-            data_format='channels_last',
-            name=None  # 'globalmaxpool3d'
+        self,
+        data_format='channels_last',
+        name=None  # 'globalmaxpool3d'
     ):
         super().__init__(name)
 
@@ -872,9 +873,9 @@ class GlobalMeanPool3d(Layer):
     """
 
     def __init__(
-            self,
-            data_format='channels_last',
-            name=None  # 'globalmeanpool3d'
+        self,
+        data_format='channels_last',
+        name=None  # 'globalmeanpool3d'
     ):
         super().__init__(name)
         self.data_format = data_format
@@ -928,9 +929,9 @@ class CornerPool2d(Layer):
     """
 
     def __init__(
-            self,
-            mode='TopLeft',
-            name=None  # 'cornerpool2d'
+        self,
+        mode='TopLeft',
+        name=None  # 'cornerpool2d'
     ):
         super().__init__(name)
         self.mode = mode

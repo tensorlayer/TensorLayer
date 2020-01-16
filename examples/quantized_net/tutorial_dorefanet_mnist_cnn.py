@@ -5,6 +5,7 @@ import time
 
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import (BatchNorm, Dense, DorefaConv2d, DorefaDense, Flatten, Input, MaxPool2d)
 from tensorlayer.models import Model

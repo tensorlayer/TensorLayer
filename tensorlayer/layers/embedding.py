@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.layers.core import Layer
@@ -186,16 +186,16 @@ class Word2vecEmbedding(Layer):
     """
 
     def __init__(
-            self,
-            vocabulary_size,
-            embedding_size,
-            num_sampled=64,
-            activate_nce_loss=True,
-            nce_loss_args=None,
-            E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
-            nce_W_init=tl.initializers.truncated_normal(stddev=0.03),
-            nce_b_init=tl.initializers.constant(value=0.0),
-            name=None,  #'word2vec',
+        self,
+        vocabulary_size,
+        embedding_size,
+        num_sampled=64,
+        activate_nce_loss=True,
+        nce_loss_args=None,
+        E_init=tl.initializers.random_uniform(minval=-1.0, maxval=1.0),
+        nce_W_init=tl.initializers.truncated_normal(stddev=0.03),
+        nce_b_init=tl.initializers.constant(value=0.0),
+        name=None,  #'word2vec',
     ):
 
         super(Word2vecEmbedding, self).__init__(name)
@@ -352,11 +352,11 @@ class Embedding(Layer):
     """
 
     def __init__(
-            self,
-            vocabulary_size,
-            embedding_size,
-            E_init=tl.initializers.random_uniform(-0.1, 0.1),
-            name=None,  #'embedding',
+        self,
+        vocabulary_size,
+        embedding_size,
+        E_init=tl.initializers.random_uniform(-0.1, 0.1),
+        name=None,  #'embedding',
     ):
         super(Embedding, self).__init__(name)
         self.vocabulary_size = vocabulary_size
@@ -446,12 +446,12 @@ class AverageEmbedding(Layer):
     """
 
     def __init__(
-            self,
-            vocabulary_size,
-            embedding_size,
-            pad_value=0,
-            E_init=tl.initializers.random_uniform(-0.1, 0.1),
-            name=None,  # 'average_embedding',
+        self,
+        vocabulary_size,
+        embedding_size,
+        pad_value=0,
+        E_init=tl.initializers.random_uniform(-0.1, 0.1),
+        name=None,  # 'average_embedding',
     ):
 
         super(AverageEmbedding, self).__init__(name)

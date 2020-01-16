@@ -6,6 +6,7 @@ import time
 
 import tensorflow as tf
 from tensorflow.python.training import session_run_hook
+
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated
 from tensorlayer.lazy_imports import LazyImport
@@ -93,9 +94,9 @@ class Trainer(object):
     """
 
     def __init__(
-            self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32, prefetch_size=None,
-            checkpoint_dir=None, scaling_learning_rate=True, log_step_size=1, validation_dataset=None,
-            build_validation_func=None, max_iteration=float('inf')
+        self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32, prefetch_size=None,
+        checkpoint_dir=None, scaling_learning_rate=True, log_step_size=1, validation_dataset=None,
+        build_validation_func=None, max_iteration=float('inf')
     ):
         # Initialize Horovod.
         hvd.init()
@@ -394,9 +395,9 @@ def create_task_spec_def():
 
 @deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 def create_distributed_session(
-        task_spec=None, checkpoint_dir=None, scaffold=None, hooks=None, chief_only_hooks=None, save_checkpoint_secs=600,
-        save_summaries_steps=object(), save_summaries_secs=object(), config=None, stop_grace_period_secs=120,
-        log_step_count_steps=100
+    task_spec=None, checkpoint_dir=None, scaffold=None, hooks=None, chief_only_hooks=None, save_checkpoint_secs=600,
+    save_summaries_steps=object(), save_summaries_secs=object(), config=None, stop_grace_period_secs=120,
+    log_step_count_steps=100
 ):
     """Creates a distributed session.
 

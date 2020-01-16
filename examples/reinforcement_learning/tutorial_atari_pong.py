@@ -1,37 +1,30 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 """Monte-Carlo Policy Network π(a|s)  (REINFORCE).
-
 To understand Reinforcement Learning, we let computer to learn how to play
 Pong game from the original screen inputs. Before we start, we highly recommend
 you to go through a famous blog called “Deep Reinforcement Learning: Pong from
 Pixels” which is a minimalistic implementation of deep reinforcement learning by
 using python-numpy and OpenAI gym environment.
-
 The code here is the reimplementation of Karpathy's Blog by using TensorLayer.
-
 Compare with Karpathy's code, we store observation for a batch, he store
 observation for a episode only, they store gradients instead. (so we will use
 more memory if the observation is very large.)
-
 FEEL FREE TO JOIN US !
-
 TODO
 -----
 - update grads every step rather than storing all observation!
 - tensorlayer@gmail.com
-
 References
 ------------
 - http://karpathy.github.io/2016/05/31/rl/
-
 """
 import time
 
 import numpy as np
+import tensorflow as tf
 
 import gym
-import tensorflow as tf
 import tensorlayer as tl
 
 tl.logging.set_verbosity(tl.logging.DEBUG)

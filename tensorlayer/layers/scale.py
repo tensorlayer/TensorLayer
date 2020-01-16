@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 from tensorlayer import logging
 from tensorlayer.initializers import constant
 from tensorlayer.layers.core import Layer
@@ -32,9 +33,9 @@ class Scale(Layer):
     """
 
     def __init__(
-            self,
-            init_scale=0.05,
-            name='scale',
+        self,
+        init_scale=0.05,
+        name='scale',
     ):
         super(Scale, self).__init__(name)
         self.init_scale = init_scale

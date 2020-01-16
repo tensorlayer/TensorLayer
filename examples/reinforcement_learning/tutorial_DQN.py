@@ -47,9 +47,9 @@ import argparse
 import time
 
 import numpy as np
+import tensorflow as tf
 
 import gym
-import tensorflow as tf
 import tensorlayer as tl
 
 # add arguments in command  --train/test

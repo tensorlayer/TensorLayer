@@ -33,9 +33,9 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
+import tensorflow as tf
 
 import gym
-import tensorflow as tf
 import tensorlayer as tl
 
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
@@ -176,7 +176,7 @@ class DDPG(object):
         with tf.GradientTape() as tape:
             a = self.actor(bs)
             q = self.critic([bs, a])
-            a_loss = - tf.reduce_mean(q)  # maximize the q
+            a_loss = -tf.reduce_mean(q)  # maximize the q
         a_grads = tape.gradient(a_loss, self.actor.trainable_weights)
         self.actor_opt.apply_gradients(zip(a_grads, self.actor.trainable_weights))
 

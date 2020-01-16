@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
@@ -43,12 +44,12 @@ class GaussianNoise(Layer):
     """
 
     def __init__(
-            self,
-            mean=0.0,
-            stddev=1.0,
-            is_always=True,
-            seed=None,
-            name=None,  # 'gaussian_noise',
+        self,
+        mean=0.0,
+        stddev=1.0,
+        is_always=True,
+        seed=None,
+        name=None,  # 'gaussian_noise',
     ):
         super().__init__(name)
         self.mean = mean

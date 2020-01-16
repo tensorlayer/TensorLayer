@@ -43,6 +43,7 @@ import time
 
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import (
     Conv2d, Dense, Flatten, Input, LocalResponseNorm, MaxPool2d, TernaryConv2d, TernaryDense

@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
@@ -58,18 +58,18 @@ class DeConv2d(Layer):
     """
 
     def __init__(
-            self,
-            n_filter=32,
-            filter_size=(3, 3),
-            strides=(2, 2),
-            act=None,
-            padding='SAME',
-            dilation_rate=(1, 1),
-            data_format='channels_last',
-            W_init=tl.initializers.truncated_normal(stddev=0.02),
-            b_init=tl.initializers.constant(value=0.0),
-            in_channels=None,
-            name=None  # 'decnn2d'
+        self,
+        n_filter=32,
+        filter_size=(3, 3),
+        strides=(2, 2),
+        act=None,
+        padding='SAME',
+        dilation_rate=(1, 1),
+        data_format='channels_last',
+        W_init=tl.initializers.truncated_normal(stddev=0.02),
+        b_init=tl.initializers.constant(value=0.0),
+        in_channels=None,
+        name=None  # 'decnn2d'
     ):
         super().__init__(name, act=act)
         self.n_filter = n_filter
@@ -186,17 +186,17 @@ class DeConv3d(Layer):
     """
 
     def __init__(
-            self,
-            n_filter=32,
-            filter_size=(3, 3, 3),
-            strides=(2, 2, 2),
-            padding='SAME',
-            act=None,
-            data_format='channels_last',
-            W_init=tl.initializers.truncated_normal(stddev=0.02),
-            b_init=tl.initializers.constant(value=0.0),
-            in_channels=None,
-            name=None  # 'decnn3d'
+        self,
+        n_filter=32,
+        filter_size=(3, 3, 3),
+        strides=(2, 2, 2),
+        padding='SAME',
+        act=None,
+        data_format='channels_last',
+        W_init=tl.initializers.truncated_normal(stddev=0.02),
+        b_init=tl.initializers.constant(value=0.0),
+        in_channels=None,
+        name=None  # 'decnn3d'
     ):
         super().__init__(name, act=act)
         self.n_filter = n_filter

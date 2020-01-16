@@ -49,9 +49,9 @@ import argparse
 import time
 
 import numpy as np
+import tensorflow as tf
 
 import gym
-import tensorflow as tf
 import tensorlayer as tl
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     2. DeepMind Control Suite:
     env = dm_control2gym.make()
     '''
-    env = gym.make('CartPole-v0')
+    env = gym.make('CartPole-v1')
     # dm_control2gym.create_render_mode('example mode', show=True, return_pixel=False, height=240, width=320, camera_id=-1, overlays=(),
     #              depth=False, scene_option=None)
     # env = dm_control2gym.make(domain_name="cartpole", task_name="balance")

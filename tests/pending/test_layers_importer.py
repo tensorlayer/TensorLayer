@@ -4,19 +4,16 @@
 import os
 import unittest
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 import tensorflow as tf
+from tensorflow.contrib.slim.python.slim.nets.inception_v3 import (inception_v3, inception_v3_arg_scope)
 
-from tensorflow.contrib.slim.python.slim.nets.inception_v3 import inception_v3
-from tensorflow.contrib.slim.python.slim.nets.inception_v3 import inception_v3_arg_scope
+import tensorlayer as tl
+from tests.utils import CustomTestCase
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 slim = tf.contrib.slim
 keras = tf.keras
-
-import tensorlayer as tl
-
-from tests.utils import CustomTestCase
 
 
 class Layer_Importer_Test(CustomTestCase):

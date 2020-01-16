@@ -117,13 +117,13 @@ You will get the information in your console:
 import time
 
 import numpy as np
+import tensorflow as tf
+from tensorflow.python.tools.freeze_graph import freeze_graph as _freeze_graph
 
 import onnx
-import tensorflow as tf
 import tensorlayer as tl
 from onnx_tf.backend import prepare
 from onnx_tf.frontend import tensorflow_graph_to_onnx_model
-from tensorflow.python.tools.freeze_graph import freeze_graph as _freeze_graph
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)

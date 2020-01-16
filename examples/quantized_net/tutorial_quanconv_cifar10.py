@@ -43,6 +43,7 @@ import time
 
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import (Dense, Flatten, Input, MaxPool2d, QuanConv2dWithBN, QuanDense)
 from tensorlayer.models import Model

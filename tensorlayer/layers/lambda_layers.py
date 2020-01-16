@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.files import utils
@@ -101,11 +102,11 @@ class Lambda(Layer):
     """
 
     def __init__(
-            self,
-            fn,
-            fn_weights=None,
-            fn_args=None,
-            name=None,
+        self,
+        fn,
+        fn_weights=None,
+        fn_args=None,
+        name=None,
     ):
 
         super(Lambda, self).__init__(name=name)
@@ -223,11 +224,11 @@ class ElementwiseLambda(Layer):
     """
 
     def __init__(
-            self,
-            fn,
-            fn_weights=None,
-            fn_args=None,
-            name=None,  #'elementwiselambda',
+        self,
+        fn,
+        fn_weights=None,
+        fn_args=None,
+        name=None,  #'elementwiselambda',
     ):
 
         super(ElementwiseLambda, self).__init__(name=name)

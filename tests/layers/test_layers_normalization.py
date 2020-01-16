@@ -4,13 +4,14 @@
 import os
 import unittest
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import *
 from tensorlayer.models import Model
 from tests.utils import CustomTestCase
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class Laye_BatchNorm_Test(CustomTestCase):
