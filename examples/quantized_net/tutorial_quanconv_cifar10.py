@@ -38,105 +38,171 @@ of processing time. To prevent these operations from slowing down training,
 we run them inside 16 separate threads which continuously fill a TensorFlow queue.
 
 """
+import multiprocessing
 import time
 
 import numpy as np
 import tensorflow as tf
 
 import tensorlayer as tl
+from tensorlayer.layers import (Dense, Flatten, Input, MaxPool2d, QuanConv2dWithBN, QuanDense)
+from tensorlayer.models import Model
 
-bitW = 8
-bitA = 8
-
-tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
-sess = tf.InteractiveSession()
-
+# Download data, and convert to TFRecord format, see ```tutorial_tfrecord.py```
+# prepare cifar10 data
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
 
 
-def model(x, y_, reuse, is_train, bitW, bitA):
-    with tf.variable_scope("model", reuse=reuse):
-        net = tl.layers.InputLayer(x, name='input')
-        net = tl.layers.QuanConv2dWithBN(
-            net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', is_train=is_train, bitW=bitW, bitA=bitA,
-            name='qcnnbn1'
-        )
-        net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
-        # net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn1')
-        net = tl.layers.QuanConv2dWithBN(
-            net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train=is_train, bitW=bitW, bitA=bitA,
-            name='qcnnbn2'
-        )
-        # net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn2')
-        net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
-        net = tl.layers.FlattenLayer(net, name='flatten')
-        net = tl.layers.QuanDenseLayer(net, 384, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd1relu')
-        net = tl.layers.QuanDenseLayer(net, 192, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd2relu')
-        net = tl.layers.DenseLayer(net, 10, act=None, name='output')
-        y = net.outputs
-
-        ce = tl.cost.cross_entropy(y, y_, name='cost')
-        L2 = 0
-        for p in tl.layers.get_variables_with_name('relu/W', True, True):
-            L2 += tf.contrib.layers.l2_regularizer(0.004)(p)
-        cost = ce + L2
-
-        # correct_prediction = tf.equal(tf.argmax(tf.nn.softmax(y), 1), y_)
-        correct_prediction = tf.equal(tf.cast(tf.argmax(y, 1), tf.int64), y_)
-        acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-
-        return net, cost, acc
+def model(input_shape, n_classes, bitW, bitA):
+    in_net = Input(shape=input_shape, name='input')
+    net = QuanConv2dWithBN(64, (5, 5), (1, 1), act='relu', padding='SAME', bitW=bitW, bitA=bitA, name='qcnnbn1')(in_net)
+    net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1')(net)
+    net = QuanConv2dWithBN(64, (5, 5), (1, 1), padding='SAME', act='relu', bitW=bitW, bitA=bitA, name='qcnnbn2')(net)
+    net = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2')(net)
+    net = Flatten(name='flatten')(net)
+    net = QuanDense(384, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd1relu')(net)
+    net = QuanDense(192, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd2relu')(net)
+    net = Dense(n_classes, act=None, name='output')(net)
+    net = Model(inputs=in_net, outputs=net, name='dorefanet')
+    return net
 
 
-def distort_fn(x, is_train=False):
-    x = tl.prepro.crop(x, 24, 24, is_random=is_train)
-    if is_train:
-        x = tl.prepro.flip_axis(x, axis=1, is_random=True)
-        x = tl.prepro.brightness(x, gamma=0.1, gain=1, is_random=True)
-    x = (x - np.mean(x)) / max(np.std(x), 1e-5)  # avoid values divided by 0
-    return x
-
-
-x = tf.placeholder(dtype=tf.float32, shape=[None, 24, 24, 3], name='x')
-y_ = tf.placeholder(dtype=tf.int64, shape=[None], name='y_')
-
-network, cost, _ = model(x, y_, False, True, bitW=bitW, bitA=bitA)
-_, cost_test, acc = model(x, y_, True, False, bitW=bitW, bitA=bitA)
-
-# train
+# training settings
+bitW = 8
+bitA = 8
+net = model([None, 24, 24, 3], n_classes=10, bitW=bitW, bitA=bitA)
+batch_size = 128
 n_epoch = 50000
 learning_rate = 0.0001
-print_freq = 1
-batch_size = 128
+print_freq = 5
+n_step_epoch = int(len(y_train) / batch_size)
+n_step = n_epoch * n_step_epoch
+shuffle_buffer_size = 128
 
-train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08,
-                                  use_locking=False).minimize(cost)
+optimizer = tf.optimizers.Adam(learning_rate)
+cost = tl.cost.cross_entropy
 
-sess.run(tf.global_variables_initializer())
 
-network.print_params(False)
-network.print_layers()
+def generator_train():
+    inputs = X_train
+    targets = y_train
+    if len(inputs) != len(targets):
+        raise AssertionError("The length of inputs and targets should be equal")
+    for _input, _target in zip(inputs, targets):
+        # yield _input.encode('utf-8'), _target.encode('utf-8')
+        yield _input, _target
 
-print('   learning_rate: %f' % learning_rate)
-print('   batch_size: %d' % batch_size)
-print('   bitW: %d,   bitA: %d' % (bitW, bitA))
+
+def generator_test():
+    inputs = X_test
+    targets = y_test
+    if len(inputs) != len(targets):
+        raise AssertionError("The length of inputs and targets should be equal")
+    for _input, _target in zip(inputs, targets):
+        # yield _input.encode('utf-8'), _target.encode('utf-8')
+        yield _input, _target
+
+
+def _map_fn_train(img, target):
+    # 1. Randomly crop a [height, width] section of the image.
+    img = tf.image.random_crop(img, [24, 24, 3])
+    # 2. Randomly flip the image horizontally.
+    img = tf.image.random_flip_left_right(img)
+    # 3. Randomly change brightness.
+    img = tf.image.random_brightness(img, max_delta=63)
+    # 4. Randomly change contrast.
+    img = tf.image.random_contrast(img, lower=0.2, upper=1.8)
+    # 5. Subtract off the mean and divide by the variance of the pixels.
+    img = tf.image.per_image_standardization(img)
+    target = tf.reshape(target, ())
+    return img, target
+
+
+def _map_fn_test(img, target):
+    # 1. Crop the central [height, width] of the image.
+    img = tf.image.resize_with_pad(img, 24, 24)
+    # 2. Subtract off the mean and divide by the variance of the pixels.
+    img = tf.image.per_image_standardization(img)
+    img = tf.reshape(img, (24, 24, 3))
+    target = tf.reshape(target, ())
+    return img, target
+
+
+def _train_step(network, X_batch, y_batch, cost, train_op=tf.optimizers.Adam(learning_rate=0.0001), acc=None):
+    with tf.GradientTape() as tape:
+        y_pred = network(X_batch)
+        _loss = cost(y_pred, y_batch)
+    grad = tape.gradient(_loss, network.trainable_weights)
+    train_op.apply_gradients(zip(grad, network.trainable_weights))
+    if acc is not None:
+        _acc = acc(y_pred, y_batch)
+        return _loss, _acc
+    else:
+        return _loss, None
+
+
+def accuracy(_logits, y_batch):
+    return np.mean(np.equal(np.argmax(_logits, 1), y_batch))
+
+
+# dataset API and augmentation
+train_ds = tf.data.Dataset.from_generator(
+    generator_train, output_types=(tf.float32, tf.int32)
+)  # , output_shapes=((24, 24, 3), (1)))
+train_ds = train_ds.map(_map_fn_train, num_parallel_calls=multiprocessing.cpu_count())
+# train_ds = train_ds.repeat(n_epoch)
+train_ds = train_ds.shuffle(shuffle_buffer_size)
+train_ds = train_ds.prefetch(buffer_size=4096)
+train_ds = train_ds.batch(batch_size)
+# value = train_ds.make_one_shot_iterator().get_next()
+
+test_ds = tf.data.Dataset.from_generator(
+    generator_test, output_types=(tf.float32, tf.int32)
+)  # , output_shapes=((24, 24, 3), (1)))
+# test_ds = test_ds.shuffle(shuffle_buffer_size)
+test_ds = test_ds.map(_map_fn_test, num_parallel_calls=multiprocessing.cpu_count())
+# test_ds = test_ds.repeat(n_epoch)
+test_ds = test_ds.prefetch(buffer_size=4096)
+test_ds = test_ds.batch(batch_size)
+# value_test = test_ds.make_one_shot_iterator().get_next()
 
 for epoch in range(n_epoch):
     start_time = time.time()
-    for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
-        X_train_a = tl.prepro.threading_data(X_train_a, fn=distort_fn, is_train=True)  # data augmentation for training
-        sess.run(train_op, feed_dict={x: X_train_a, y_: y_train_a})
 
+    train_loss, train_acc, n_iter = 0, 0, 0
+    net.train()
+    for X_batch, y_batch in train_ds:
+        _loss, acc = _train_step(net, X_batch, y_batch, cost=cost, train_op=optimizer, acc=accuracy)
+
+        train_loss += _loss
+        train_acc += acc
+        n_iter += 1
+
+    # use training and evaluation sets to evaluate the model every print_freq epoch
     if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-        print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
-        test_loss, test_acc, n_batch = 0, 0, 0
-        for X_test_a, y_test_a in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=False):
-            X_test_a = tl.prepro.threading_data(X_test_a, fn=distort_fn, is_train=False)  # central crop
-            err, ac = sess.run([cost_test, acc], feed_dict={x: X_test_a, y_: y_test_a})
-            test_loss += err
-            test_acc += ac
-            n_batch += 1
-        print("   test loss: %f" % (test_loss / n_batch))
-        print("   test acc: %f" % (test_acc / n_batch))
+        print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
+        print("   train loss: {}".format(train_loss / n_iter))
+        print("   train acc:  {}".format(train_acc / n_iter))
+
+        net.eval()
+        val_loss, val_acc, n_val_iter = 0, 0, 0
+        for X_batch, y_batch in test_ds:
+            _logits = net(X_batch)  # is_train=False, disable dropout
+            val_loss += tl.cost.cross_entropy(_logits, y_batch, name='eval_loss')
+            val_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
+            n_val_iter += 1
+        print("   val loss: {}".format(val_loss / n_val_iter))
+        print("   val acc:  {}".format(val_acc / n_val_iter))
+
+# use testing data to evaluate the model
+net.eval()
+test_loss, test_acc, n_iter = 0, 0, 0
+for X_batch, y_batch in test_ds:
+    _logits = net(X_batch)
+    test_loss += tl.cost.cross_entropy(_logits, y_batch, name='test_loss')
+    test_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
+    n_iter += 1
+print("   test loss: {}".format(test_loss / n_iter))
+print("   test acc:  {}".format(test_acc / n_iter))
