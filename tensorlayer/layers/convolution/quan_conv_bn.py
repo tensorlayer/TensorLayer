@@ -121,6 +121,10 @@ class QuanConv2dWithBN(Layer):
             )
         )
 
+        if self.in_channels:
+            self.build(None)
+            self._built = True
+
         if use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 

@@ -4,14 +4,14 @@
 import os
 import unittest
 
-import tensorflow as tf
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
 from tensorlayer.models import *
-from tests.utils import CustomTestCase
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+from tests.utils import CustomTestCase
 
 
 class Layer_Convolution_1D_Test(CustomTestCase):
@@ -208,7 +208,11 @@ class Layer_Convolution_2D_Test(CustomTestCase):
 
         cls.n14 = tl.layers.SubpixelConv2d(scale=2, act=tf.nn.relu, name='subpixelconv2d')(cls.n13)
 
-        cls.model = Model(cls.input_layer, cls.n14)
+        cls.n15 = tl.layers.QuanConv2dWithBN(
+            n_filter=64, filter_size=(5, 5), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='quancnnbn2d'
+        )(cls.n14)
+
+        cls.model = Model(cls.input_layer, cls.n15)
         print("Testing Conv2d model: \n", cls.model)
 
         # cls.n12 = tl.layers.QuanConv2d(cls.n11, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='quancnn')
@@ -320,6 +324,10 @@ class Layer_Convolution_2D_Test(CustomTestCase):
 
     def test_layer_n14(self):
         self.assertEqual(self.n14.get_shape().as_list()[1:], [24, 24, 8])
+
+    def test_layer_n15(self):
+        self.assertEqual(len(self.n15._info[0].layer.all_weights), 5)
+        self.assertEqual(self.n15.get_shape().as_list()[1:], [24, 24, 64])
 
     # def test_layer_n8(self):
     #

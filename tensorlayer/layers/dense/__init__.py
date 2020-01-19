@@ -24,5 +24,5 @@ __all__ = [
     'DropconnectDense',
     'TernaryDense',
     'QuanDense',
-    'QuanDenseLayerWithBN',
+    'QuanDenseWithBN',
 ]

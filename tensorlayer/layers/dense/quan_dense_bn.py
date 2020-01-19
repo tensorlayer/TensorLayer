@@ -11,12 +11,12 @@ from tensorlayer.layers.core import Layer
 from tensorlayer.layers.utils import (quantize_active_overflow, quantize_weight_overflow)
 
 __all__ = [
-    'QuanDenseLayerWithBN',
+    'QuanDenseWithBN',
 ]
 
 
-class QuanDenseLayerWithBN(Layer):
-    """The :class:`QuanDenseLayerWithBN` class is a quantized fully connected layer with BN, which weights are 'bitW' bits and the output of the previous layer
+class QuanDenseWithBN(Layer):
+    """The :class:`QuanDenseWithBN` class is a quantized fully connected layer with BN, which weights are 'bitW' bits and the output of the previous layer
     are 'bitA' bits while inferencing.
 
     Parameters
@@ -47,6 +47,9 @@ class QuanDenseLayerWithBN(Layer):
         The initializer for the the weight matrix.
     W_init_args : dictionary
         The arguments for the weight matrix initializer.
+    in_channels: int
+        The number of channels of the previous layer.
+        If None, it will be automatically detected when the layer is forwarded for the first time.
     name : a str
         A unique layer name.
 
@@ -54,9 +57,9 @@ class QuanDenseLayerWithBN(Layer):
     ---------
     >>> import tensorlayer as tl
     >>> net = tl.layers.Input([50, 256])
-    >>> layer = tl.layers.QuanDenseLayerWithBN(128, act='relu', name='qdbn1')(net)
+    >>> layer = tl.layers.QuanDenseWithBN(128, act='relu', name='qdbn1')(net)
     >>> print(layer)
-    >>> net = tl.layers.QuanDenseLayerWithBN(256, act='relu', name='qdbn2')(net)
+    >>> net = tl.layers.QuanDenseWithBN(256, act='relu', name='qdbn2')(net)
     >>> print(net)
     """
 
@@ -74,9 +77,10 @@ class QuanDenseLayerWithBN(Layer):
         use_gemm=False,
         W_init=tl.initializers.truncated_normal(stddev=0.05),
         W_init_args=None,
+        in_channels=None,
         name=None,  # 'quan_dense_with_bn',
     ):
-        super(QuanDenseLayerWithBN, self).__init__(act=act, W_init_args=W_init_args, name=name)
+        super(QuanDenseWithBN, self).__init__(act=act, W_init_args=W_init_args, name=name)
         self.n_units = n_units
         self.decay = decay
         self.epsilon = epsilon
@@ -87,6 +91,11 @@ class QuanDenseLayerWithBN(Layer):
         self.beta_init = beta_init
         self.use_gemm = use_gemm
         self.W_init = W_init
+        self.in_channels = in_channels
+
+        if self.in_channels is not None:
+            self.build((None, self.in_channels))
+            self._built = True
 
         logging.info(
             "QuanDenseLayerWithBN  %s: %d %s" %
@@ -105,8 +114,11 @@ class QuanDenseLayerWithBN(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        if len(inputs_shape) != 2:
+        if self.in_channels is None and len(inputs_shape) != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
+
+        if self.in_channels is None:
+            self.in_channels = inputs_shape[1]
 
         if self.use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")

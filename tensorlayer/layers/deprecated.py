@@ -91,6 +91,16 @@ def DropconnectDenseLayer(*args, **kwargs):
     raise NonExistingLayerError("DropconnectDenseLayer(net, name='a') --> DropconnectDense(name='a')(net)" + __log__)
 
 
+# dense/quan_dense_bn.py
+__all__ += [
+    'QuanDenseLayerWithBN',
+]
+
+
+def QuanDenseLayerWithBN(*args, **kwargs):
+    raise NonExistingLayerError("QuanDenseLayerWithBN(net, name='a') --> QuanDenseWithBN(name='a')(net)" + __log__)
+
+
 # dense/ternary_dense.py
 __all__ += [
     'TernaryDenseLayer',
