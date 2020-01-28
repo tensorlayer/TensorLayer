@@ -36,9 +36,15 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal
+<<<<<<< HEAD
 import tensorflow as tf
 
 import gym
+=======
+
+import gym
+import tensorflow as tf
+>>>>>>> 2a12a04b... fix opt and make format
 import tensorflow_probability as tfp
 import tensorlayer as tl
 from gym.spaces import Box, Discrete
@@ -335,7 +341,12 @@ Actor-Critics
 
 
 def mlp_actor_critic(
+<<<<<<< HEAD
     x: 'env.observation_space', a: 'env.action_space', hidden_sizes=(64, 64), activation=tf.tanh, output_activation=None
+=======
+        x: 'env.observation_space', a: 'env.action_space', hidden_sizes=(64, 64), activation=tf.tanh,
+        output_activation=None
+>>>>>>> 2a12a04b... fix opt and make format
 ):
     """
     create actor and critic
@@ -446,7 +457,11 @@ class GAEBuffer:
         adv_mean, adv_std = np.mean(self.adv_buf), np.std(self.adv_buf)
         self.adv_buf = (self.adv_buf - adv_mean) / adv_std
         return [self.obs_buf, self.act_buf, self.adv_buf, self.ret_buf, self.logp_buf
+<<<<<<< HEAD
                ] + values_as_sorted_list(self.info_bufs)
+=======
+                ] + values_as_sorted_list(self.info_bufs)
+>>>>>>> 2a12a04b... fix opt and make format
 
 
 #####################  TRPO  ####################
