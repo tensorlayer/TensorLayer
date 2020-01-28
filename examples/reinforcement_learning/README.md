@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Reinforcement Learning Tutorial with Tensorlayer
 
 <br/>
