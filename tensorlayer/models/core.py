@@ -74,7 +74,7 @@ class Model(object):
     >>> from tensorlayer.layers import Input, Dense, Dropout
     >>> from tensorlayer.models import Model
 
-    Define dynamic model
+    Define static model
 
     >>> class CustomModel(Model):
     >>>     def __init__(self):
