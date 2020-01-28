@@ -21,7 +21,7 @@
 <br/>
 -->
 
-This repository contains implementation of most popular reinforcement learning algorithms with Tensorlayer 2.0, supporting [Tensorflow 2.0](https://www.tensorflow.org/alpha/guide/effective_tf2). We aim to make the reinforcement learning tutorial for each algorithm simple and straight-forward to use, as this would not only benefits new learners of reinforcement learning, but also provide convenience for senior researchers to testify their new ideas quickly.
+This repository contains the implementation of most popular reinforcement learning algorithms with Tensorlayer 2.0, supporting [Tensorflow 2.0](https://www.tensorflow.org/alpha/guide/effective_tf2). We aim to make the reinforcement learning tutorial for each algorithm simple and straight-forward to use, as this would not only benefit new learners of reinforcement learning but also provide convenience for senior researchers to testify their new ideas quickly. In addition to this project, we also released a [RL zoo](https://github.com/tensorlayer/RLzoo) for industrial users.
 
 ## Prerequisites:
 

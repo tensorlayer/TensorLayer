@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
@@ -54,13 +54,13 @@ class Dense(Layer):
     """
 
     def __init__(
-            self,
-            n_units,
-            act=None,
-            W_init=tl.initializers.truncated_normal(stddev=0.05),
-            b_init=tl.initializers.constant(value=0.0),
-            in_channels=None,
-            name=None,  # 'dense',
+        self,
+        n_units,
+        act=None,
+        W_init=tl.initializers.truncated_normal(stddev=0.05),
+        b_init=tl.initializers.constant(value=0.0),
+        in_channels=None,
+        name=None,  # 'dense',
     ):
 
         super(Dense, self).__init__(name, act=act)

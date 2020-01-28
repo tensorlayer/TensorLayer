@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
@@ -32,9 +33,9 @@ class ExpandDims(Layer):
     """
 
     def __init__(
-            self,
-            axis,
-            name=None  # 'expand_dims',
+        self,
+        axis,
+        name=None  # 'expand_dims',
     ):
         super(ExpandDims, self).__init__(name)
         self.axis = axis

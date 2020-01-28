@@ -4,9 +4,9 @@
 import os
 import unittest
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 from sphinx.application import Sphinx
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class DocTest(unittest.TestCase):

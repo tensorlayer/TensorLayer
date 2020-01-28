@@ -19,9 +19,9 @@ import json
 import os
 
 import numpy as np
+import tensorflow as tf
 from PIL import Image
 
-import tensorflow as tf
 import tensorlayer as tl
 
 
@@ -231,8 +231,8 @@ def distort_image(image, thread_id):
 
 
 def prefetch_input_data(
-        reader, file_pattern, is_training, batch_size, values_per_shard, input_queue_capacity_factor=16,
-        num_reader_threads=1, shard_queue_name="filename_queue", value_queue_name="input_queue"
+    reader, file_pattern, is_training, batch_size, values_per_shard, input_queue_capacity_factor=16,
+    num_reader_threads=1, shard_queue_name="filename_queue", value_queue_name="input_queue"
 ):
     """Prefetches string values from disk into an input queue.
 

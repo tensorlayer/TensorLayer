@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
@@ -37,9 +38,9 @@ class Stack(Layer):
     """
 
     def __init__(
-            self,
-            axis=1,
-            name=None,  #'stack',
+        self,
+        axis=1,
+        name=None,  #'stack',
     ):
         super().__init__(name)
         self.axis = axis

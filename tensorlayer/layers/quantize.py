@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
@@ -24,8 +25,8 @@ class Sign(Layer):
 
     # @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            name=None  # 'sign',
+        self,
+        name=None  # 'sign',
     ):
         super().__init__(name)
         logging.info("Sign  %s" % self.name)

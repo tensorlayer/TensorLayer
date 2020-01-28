@@ -35,18 +35,17 @@ python tutorial_SAC.py --train/test
 '''
 
 import argparse
-import math
 import random
 import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-from IPython.display import clear_output
+import tensorflow as tf
 
 import gym
-import tensorflow as tf
 import tensorflow_probability as tfp
 import tensorlayer as tl
+from IPython.display import clear_output
 from tensorlayer.layers import Dense
 from tensorlayer.models import Model
 
@@ -74,7 +73,7 @@ action_range = 1.  # scale action, [-action_range, action_range]
 max_frames = 40000  # total number of steps for training
 test_frames = 300  # total number of steps for testing
 max_steps = 150  # maximum number of steps for one episode
-batch_size = 64  # udpate batchsize
+batch_size = 256  # udpate batchsize
 explore_steps = 100  # 500 for random action sampling in the beginning of training
 update_itr = 3  # repeated updates for single step
 hidden_dim = 32  # size of hidden layers for networks
@@ -175,7 +174,7 @@ class PolicyNetwork(Model):
     ''' the network for generating non-determinstic (Gaussian distributed) action from the state input '''
 
     def __init__(
-            self, num_inputs, num_actions, hidden_dim, action_range=1., init_w=3e-3, log_std_min=-20, log_std_max=2
+        self, num_inputs, num_actions, hidden_dim, action_range=1., init_w=3e-3, log_std_min=-20, log_std_max=2
     ):
         super(PolicyNetwork, self).__init__()
 
@@ -239,7 +238,7 @@ class PolicyNetwork(Model):
             mean + std * z
         )  # TanhNormal distribution as actions; reparameterization trick
 
-        action = self.action_range * mean if deterministic else action
+        action = self.action_range * tf.math.tanh(mean) if deterministic else action
         return action.numpy()[0]
 
     def sample_action(self, ):
@@ -295,8 +294,9 @@ class SAC_Trainer():
         reward = reward[:, np.newaxis]  # expand dim
         done = done[:, np.newaxis]
 
-        reward = reward_scale * (reward -
-                                 np.mean(reward, axis=0)) / np.std(reward, axis=0)  # normalize with batch mean and std
+        reward = reward_scale * (reward - np.mean(reward, axis=0)) / (
+            np.std(reward, axis=0) + 1e-6
+        )  # normalize with batch mean and std; plus a small number to prevent numerical problem
 
         # Training Q Function
         new_next_action, next_log_prob, _, _, _ = self.policy_net.evaluate(next_state)
@@ -353,6 +353,7 @@ class SAC_Trainer():
         tl.files.save_npz(self.target_soft_q_net1.trainable_weights, name='model_target_q_net1.npz')
         tl.files.save_npz(self.target_soft_q_net2.trainable_weights, name='model_target_q_net2.npz')
         tl.files.save_npz(self.policy_net.trainable_weights, name='model_policy_net.npz')
+        np.save('log_alpha.npy', self.log_alpha.numpy())  # save log_alpha variable
 
     def load_weights(self):  # load trained weights
         tl.files.load_and_assign_npz(name='model_q_net1.npz', network=self.soft_q_net1)
@@ -360,6 +361,7 @@ class SAC_Trainer():
         tl.files.load_and_assign_npz(name='model_target_q_net1.npz', network=self.target_soft_q_net1)
         tl.files.load_and_assign_npz(name='model_target_q_net2.npz', network=self.target_soft_q_net2)
         tl.files.load_and_assign_npz(name='model_policy_net.npz', network=self.policy_net)
+        self.log_alpha.assign(np.load('log_alpha.npy'))  # load log_alpha variable
 
 
 def plot(frame_idx, rewards):
@@ -375,7 +377,8 @@ def plot(frame_idx, rewards):
 
 if __name__ == '__main__':
     # initialization of env
-    env = NormalizedActions(gym.make(ENV))
+    # env = NormalizedActions(gym.make(ENV))
+    env = gym.make(ENV).unwrapped
     action_dim = env.action_space.shape[0]
     state_dim = env.observation_space.shape[0]
     # initialization of buffer
@@ -400,7 +403,6 @@ if __name__ == '__main__':
             state = state.astype(np.float32)
             episode_reward = 0
             if frame_idx < 1:
-                print('intialize')
                 _ = sac_trainer.policy_net(
                     [state]
                 )  # need an extra call here to make inside functions be able to use model.forward
@@ -457,7 +459,6 @@ if __name__ == '__main__':
             state = state.astype(np.float32)
             episode_reward = 0
             if frame_idx < 1:
-                print('intialize')
                 _ = sac_trainer.policy_net(
                     [state]
                 )  # need an extra call to make inside functions be able to use forward

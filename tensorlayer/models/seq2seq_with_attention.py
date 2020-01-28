@@ -3,6 +3,7 @@
 
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import Dense, Dropout, Input
 from tensorlayer.layers.core import Layer

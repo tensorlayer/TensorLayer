@@ -9,9 +9,9 @@ import multiprocessing
 import time
 
 import numpy as np
+import tensorflow as tf
 
 import cv2
-import tensorflow as tf
 import tensorlayer as tl
 
 # tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -98,7 +98,6 @@ def example3():
     st = time.time()
     for img, target in dataset:
         n_step += 1
-        pass
     assert n_step == n_epoch * n_data / batch_size
     print("dataset APIs took %fs for each image" % ((time.time() - st) / batch_size / n_step))  # CPU ~ 100%
 

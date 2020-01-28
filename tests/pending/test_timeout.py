@@ -3,21 +3,15 @@
 
 import os
 import time
-
 import unittest
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 import tensorflow as tf
+
 import tensorlayer as tl
-
-from tests.utils import WindowsError
-from tests.utils import TimeoutError
-
-from tests.utils import TimeoutContext
-from tests.utils import CustomTestCase
-
+from tests.utils import (CustomTestCase, TimeoutContext, TimeoutError, WindowsError)
 from tests.utils.custom_networks import InceptionV4_Network
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 if os.getenv("TRAVIS", None) is not None:
     NETWORK_CREATION_TIMEOUT = 120  # Seconds before timeout

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias, private_method
@@ -46,11 +47,11 @@ class SubpixelConv1d(Layer):
     """
 
     def __init__(
-            self,
-            scale=2,
-            act=None,
-            in_channels=None,
-            name=None  # 'subpixel_conv1d'
+        self,
+        scale=2,
+        act=None,
+        in_channels=None,
+        name=None  # 'subpixel_conv1d'
     ):
         super().__init__(name, act=act)
         self.scale = scale
@@ -79,7 +80,6 @@ class SubpixelConv1d(Layer):
         if inputs_shape is not None:
             self.in_channels = inputs_shape[-1]
         self.out_channels = int(self.in_channels / self.scale)
-        pass
 
     def forward(self, inputs):
         outputs = self._PS(inputs, r=self.scale)
@@ -141,12 +141,12 @@ class SubpixelConv2d(Layer):
 
     # github/Tetrachrome/subpixel  https://github.com/Tetrachrome/subpixel/blob/master/subpixel.py
     def __init__(
-            self,
-            scale=2,
-            n_out_channels=None,
-            act=None,
-            in_channels=None,
-            name=None  # 'subpixel_conv2d'
+        self,
+        scale=2,
+        n_out_channels=None,
+        act=None,
+        in_channels=None,
+        name=None  # 'subpixel_conv2d'
     ):
         super().__init__(name, act=act)
         self.scale = scale

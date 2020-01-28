@@ -5,9 +5,9 @@ import time
 
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
-from tensorlayer.layers import (BatchNorm, Dense, DorefaConv2d, DorefaDense,
-                                Flatten, Input, MaxPool2d)
+from tensorlayer.layers import (BatchNorm, Dense, DorefaConv2d, DorefaDense, Flatten, Input, MaxPool2d)
 from tensorlayer.models import Model
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -15,6 +15,7 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
 
 batch_size = 128
+
 
 def model(inputs_shape, n_class=10):
     in_net = Input(inputs_shape, name='input')
@@ -48,8 +49,10 @@ def _train_step(network, X_batch, y_batch, cost, train_op=tf.optimizers.Adam(lea
     else:
         return _loss, None
 
+
 def accuracy(_logits, y_batch):
     return np.mean(np.equal(np.argmax(_logits, 1), y_batch))
+
 
 n_epoch = 200
 print_freq = 5
@@ -57,7 +60,6 @@ print_freq = 5
 net = model([None, 28, 28, 1])
 train_op = tf.optimizers.Adam(learning_rate=0.0001)
 cost = tl.cost.cross_entropy
-
 
 for epoch in range(n_epoch):
     start_time = time.time()
@@ -87,7 +89,6 @@ for epoch in range(n_epoch):
             val_batch += 1
         print("   val loss: {}".format(val_loss / val_batch))
         print("   val acc:  {}".format(val_acc / val_batch))
-
 
 net.test()
 test_loss, test_acc, n_test_batch = 0, 0, 0

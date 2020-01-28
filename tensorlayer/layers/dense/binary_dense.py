@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
@@ -39,14 +40,14 @@ class BinaryDense(Layer):
     """
 
     def __init__(
-            self,
-            n_units=100,
-            act=None,
-            use_gemm=False,
-            W_init=tl.initializers.truncated_normal(stddev=0.05),
-            b_init=tl.initializers.constant(value=0.0),
-            in_channels=None,
-            name=None,  #'binary_dense',
+        self,
+        n_units=100,
+        act=None,
+        use_gemm=False,
+        W_init=tl.initializers.truncated_normal(stddev=0.05),
+        b_init=tl.initializers.constant(value=0.0),
+        in_channels=None,
+        name=None,  #'binary_dense',
     ):
         super().__init__(name, act=act)
         self.n_units = n_units

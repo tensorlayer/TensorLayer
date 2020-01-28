@@ -243,6 +243,61 @@ class Layer_QuanDense_Test(CustomTestCase):
             print(e)
 
 
+class Layer_QuanDenseWithBN_Test(CustomTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        print("-" * 20, "Layer_QuanDenseWithBN_Test", "-" * 20)
+        cls.batch_size = 4
+        cls.inputs_shape = [cls.batch_size, 10]
+
+        cls.ni = Input(cls.inputs_shape, name='input_layer')
+        cls.layer1 = QuanDenseWithBN(n_units=5)
+        nn = cls.layer1(cls.ni)
+        cls.layer1._nodes_fixed = True
+        cls.M = Model(inputs=cls.ni, outputs=nn)
+
+        cls.layer2 = QuanDenseWithBN(n_units=5, in_channels=10)
+        cls.layer2._nodes_fixed = True
+
+        cls.inputs = tf.random.uniform((cls.inputs_shape))
+        cls.n1 = cls.layer1(cls.inputs)
+        cls.n2 = cls.layer2(cls.inputs)
+        cls.n3 = cls.M(cls.inputs, is_train=True)
+
+        print(cls.layer1)
+        print(cls.layer2)
+
+    @classmethod
+    def tearDownClass(cls):
+        pass
+
+    def test_layer_n1(self):
+        print(self.n1[0])
+
+    def test_layer_n2(self):
+        print(self.n2[0])
+
+    def test_model_n3(self):
+        print(self.n3[0])
+
+    def test_exception(self):
+        try:
+            layer = QuanDenseWithBN(n_units=5)
+            inputs = Input([4, 10, 5], name='ill_inputs')
+            out = layer(inputs)
+            self.fail('ill inputs')
+        except Exception as e:
+            print(e)
+
+        try:
+            layer = QuanDenseWithBN(n_units=5, use_gemm=True)
+            out = layer(self.ni)
+            self.fail('use gemm')
+        except Exception as e:
+            print(e)
+
+
 class Layer_TernaryDense_Test(CustomTestCase):
 
     @classmethod
