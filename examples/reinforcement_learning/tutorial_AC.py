@@ -47,6 +47,8 @@ python tutorial_AC.py --train/test
 """
 import argparse
 import time
+import matplotlib.pyplot as plt
+import os
 
 import gym
 import numpy as np
@@ -56,9 +58,6 @@ import tensorlayer as tl
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
-np.random.seed(2)
-tf.random.set_seed(2)  # reproducible
-
 # add arguments in command  --train/test
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=False)
@@ -67,102 +66,94 @@ args = parser.parse_args()
 
 #####################  hyper parameters  ####################
 
-OUTPUT_GRAPH = False
-MAX_EPISODE = 3000  # number of overall episodes for training
-DISPLAY_REWARD_THRESHOLD = 100  # renders environment if running reward is greater then this threshold
-MAX_EP_STEPS = 1000  # maximum time step in one episode
-RENDER = False  # rendering wastes time
-LAMBDA = 0.9  # reward discount in TD error
+ENV_ID = 'CartPole-v1'  # environment id
+RANDOM_SEED = 1  # random seed
+RENDER = False  # render while training
+
+TRAIN_EPISODES = 200  # number of overall episodes for training
+TEST_EPISODES = 10  # number of overall episodes for testing
+MAX_STEPS = 500  # maximum time step in one episode
+LAM = 0.9  # reward discount in TD error
 LR_A = 0.001  # learning rate for actor
 LR_C = 0.01  # learning rate for critic
+
+
 
 ###############################  Actor-Critic  ####################################
 
 
 class Actor(object):
 
-    def __init__(self, n_features, n_actions, lr=0.001):
+    def __init__(self, state_dim, action_num, lr=0.001):
 
-        def get_model(inputs_shape):
-            ni = tl.layers.Input(inputs_shape, name='state')
-            nn = tl.layers.Dense(
-                n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden'
-            )(ni)
-            nn = tl.layers.Dense(
-                n_units=10, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2'
-            )(nn)
-            nn = tl.layers.Dense(n_units=n_actions, name='actions')(nn)
-            return tl.models.Model(inputs=ni, outputs=nn, name="Actor")
+        input_layer = tl.layers.Input([None, state_dim], name='state')
+        layer = tl.layers.Dense(
+            n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden'
+        )(input_layer)
+        layer = tl.layers.Dense(n_units=action_num, name='actions')(layer)
+        self.model = tl.models.Model(inputs=input_layer, outputs=layer, name="Actor")
 
-        self.model = get_model([None, n_features])
         self.model.train()
         self.optimizer = tf.optimizers.Adam(lr)
 
-    def learn(self, s, a, td):
+    def learn(self, state, action, td_error):
         with tf.GradientTape() as tape:
-            _logits = self.model(np.array([s]))
+            _logits = self.model(np.array([state]))
             ## cross-entropy loss weighted by td-error (advantage),
             # the cross-entropy mearsures the difference of two probability distributions: the predicted logits and sampled action distribution,
             # then weighted by the td-error: small difference of real and predict actions for large td-error (advantage); and vice versa.
-            _exp_v = tl.rein.cross_entropy_reward_loss(logits=_logits, actions=[a], rewards=td[0])
+            _exp_v = tl.rein.cross_entropy_reward_loss(logits=_logits, actions=[action], rewards=td_error[0])
         grad = tape.gradient(_exp_v, self.model.trainable_weights)
         self.optimizer.apply_gradients(zip(grad, self.model.trainable_weights))
         return _exp_v
 
-    def choose_action(self, s):
-        _logits = self.model(np.array([s]))
+    def get_action(self, state, greedy=False):
+        _logits = self.model(np.array([state]))
         _probs = tf.nn.softmax(_logits).numpy()
+        if greedy:
+            return np.argmax(_probs.ravel())
         return tl.rein.choice_action_by_probs(_probs.ravel())  # sample according to probability distribution
 
-    def choose_action_greedy(self, s):
-        _logits = self.model(np.array([s]))  # logits: probability distribution of actions
-        _probs = tf.nn.softmax(_logits).numpy()
-        return np.argmax(_probs.ravel())
+    def save(self):  # save trained weights
+        if not os.path.exists(os.path.join('model', 'ac')):
+            os.makedirs(os.path.join('model', 'ac'))
+        tl.files.save_npz(self.model.trainable_weights, name=os.path.join('model', 'ac', 'model_actor.npz'))
 
-    def save_ckpt(self):  # save trained weights
-        tl.files.save_npz(self.model.trainable_weights, name='model_actor.npz')
-
-    def load_ckpt(self):  # load trained weights
-        tl.files.load_and_assign_npz(name='model_actor.npz', network=self.model)
+    def load(self):  # load trained weights
+        tl.files.load_and_assign_npz(name=os.path.join('model', 'ac', 'model_actor.npz'), network=self.model)
 
 
 class Critic(object):
 
-    def __init__(self, n_features, lr=0.01):
-
-        def get_model(inputs_shape):
-            ni = tl.layers.Input(inputs_shape, name='state')
-            nn = tl.layers.Dense(
-                n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden'
-            )(ni)
-            nn = tl.layers.Dense(
-                n_units=5, act=tf.nn.relu, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2'
-            )(nn)
-            nn = tl.layers.Dense(n_units=1, act=None, name='value')(nn)
-            return tl.models.Model(inputs=ni, outputs=nn, name="Critic")
-
-        self.model = get_model([1, n_features])
+    def __init__(self, state_dim, lr=0.01):
+        input_layer = tl.layers.Input([1, state_dim], name='state')
+        layer = tl.layers.Dense(
+            n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden'
+        )(input_layer)
+        layer = tl.layers.Dense(n_units=1, act=None, name='value')(layer)
+        self.model = tl.models.Model(inputs=input_layer, outputs=layer, name="Critic")
         self.model.train()
 
         self.optimizer = tf.optimizers.Adam(lr)
 
-    def learn(self, s, r, s_):
-        v_ = self.model(np.array([s_]))
+    def learn(self, state, reward, state_):
+        v_ = self.model(np.array([state_]))
         with tf.GradientTape() as tape:
-            v = self.model(np.array([s]))
-            ## TD_error = r + lambd * V(newS) - V(S)
-            td_error = r + LAMBDA * v_ - v
+            v = self.model(np.array([state]))
+            ## TD_error = r + lambda * V(newS) - V(S)
+            td_error = reward + LAM * v_ - v
             loss = tf.square(td_error)
         grad = tape.gradient(loss, self.model.trainable_weights)
         self.optimizer.apply_gradients(zip(grad, self.model.trainable_weights))
-
         return td_error
 
-    def save_ckpt(self):  # save trained weights
-        tl.files.save_npz(self.model.trainable_weights, name='model_critic.npz')
+    def save(self):  # save trained weights
+        if not os.path.exists(os.path.join('model', 'ac')):
+            os.makedirs(os.path.join('model', 'ac'))
+        tl.files.save_npz(self.model.trainable_weights, name=os.path.join('model', 'ac', 'model_critic.npz'))
 
-    def load_ckpt(self):  # load trained weights
-        tl.files.load_and_assign_npz(name='model_critic.npz', network=self.model)
+    def load(self):  # load trained weights
+        tl.files.load_and_assign_npz(name=os.path.join('model', 'ac', 'model_critic.npz'), network=self.model)
 
 
 if __name__ == '__main__':
@@ -173,14 +164,16 @@ if __name__ == '__main__':
     2. DeepMind Control Suite:
     env = dm_control2gym.make()
     '''
-    env = gym.make('CartPole-v1')
+    env = gym.make(ENV_ID).unwrapped
     # dm_control2gym.create_render_mode('example mode', show=True, return_pixel=False, height=240, width=320, camera_id=-1, overlays=(),
     #              depth=False, scene_option=None)
     # env = dm_control2gym.make(domain_name="cartpole", task_name="balance")
-    env.seed(2)  # reproducible
-    # env = env.unwrapped
+
+    env.seed(RANDOM_SEED)  # reproducible
+    np.random.seed(RANDOM_SEED)
+    tf.random.set_seed(RANDOM_SEED)  # reproducible
+
     N_F = env.observation_space.shape[0]
-    # N_A = env.action_space.shape[0]
     N_A = env.action_space.n
 
     print("observation dimension: %d" % N_F)  # 4
@@ -188,27 +181,26 @@ if __name__ == '__main__':
     print("observation low : %s" % env.observation_space.low)  # [-2.4 , -inf , -0.41887902 , -inf]
     print("num of actions: %d" % N_A)  # 2 : left or right
 
-    actor = Actor(n_features=N_F, n_actions=N_A, lr=LR_A)
+    actor = Actor(state_dim=N_F, action_num=N_A, lr=LR_A)
     # we need a good teacher, so the teacher should learn faster than the actor
-    critic = Critic(n_features=N_F, lr=LR_C)
+    critic = Critic(state_dim=N_F, lr=LR_C)
 
+    t0 = time.time()
     if args.train:
-        t0 = time.time()
-        for i_episode in range(MAX_EPISODE):
-            # episode_time = time.time()
-            s = env.reset().astype(np.float32)
-            t = 0  # number of step in this episode
-            all_r = []  # rewards of all steps
+        all_episode_reward = []
+        for episode in range(TRAIN_EPISODES):
+            state = env.reset().astype(np.float32)
+            step = 0  # number of step in this episode
+            episode_reward = 0  # rewards of all steps
             while True:
-
                 if RENDER: env.render()
 
-                a = actor.choose_action(s)
+                action = actor.get_action(state)
 
-                s_new, r, done, info = env.step(a)
-                s_new = s_new.astype(np.float32)
+                state_new, reward, done, info = env.step(action)
+                state_new = state_new.astype(np.float32)
 
-                if done: r = -20
+                if done: reward = -20
                 # these may helpful in some tasks
                 # if abs(s_new[0]) >= env.observation_space.high[0]:
                 # #  cart moves more than 2.4 units from the center
@@ -216,72 +208,78 @@ if __name__ == '__main__':
                 # reward for the distance between cart to the center
                 # r -= abs(s_new[0])  * .1
 
-                all_r.append(r)
+                episode_reward += reward
 
-                td_error = critic.learn(
-                    s, r, s_new
-                )  # learn Value-function : gradient = grad[r + lambda * V(s_new) - V(s)]
                 try:
-                    actor.learn(s, a, td_error)  # learn Policy : true_gradient = grad[logPi(s, a) * td_error]
+                    td_error = critic.learn(
+                        state, reward, state_new
+                    )  # learn Value-function : gradient = grad[r + lambda * V(s_new) - V(s)]
+                    actor.learn(state, action, td_error)  # learn Policy : true_gradient = grad[logPi(s, a) * td_error]
                 except KeyboardInterrupt:  # if Ctrl+C at running actor.learn(), then save model, or exit if not at actor.learn()
-                    actor.save_ckpt()
-                    critic.save_ckpt()
-                    # logging
+                    actor.save()
+                    critic.save()
 
-                s = s_new
-                t += 1
+                state = state_new
+                step += 1
 
-                if done or t >= MAX_EP_STEPS:
-                    ep_rs_sum = sum(all_r)
-
-                    if 'running_reward' not in globals():
-                        running_reward = ep_rs_sum
-                    else:
-                        running_reward = running_reward * 0.95 + ep_rs_sum * 0.05
-                    # start rending if running_reward greater than a threshold
-                    # if running_reward > DISPLAY_REWARD_THRESHOLD: RENDER = True
-                    # print("Episode: %d reward: %f running_reward %f took: %.5f" % \
-                    #     (i_episode, ep_rs_sum, running_reward, time.time() - episode_time))
-                    print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
-                    .format(i_episode, MAX_EPISODE, ep_rs_sum, time.time()-t0 ))
-
-                    # Early Stopping for quick check
-                    if t >= MAX_EP_STEPS:
-                        print("Early Stopping")
-                        s = env.reset().astype(np.float32)
-                        rall = 0
-                        while True:
-                            env.render()
-                            # a = actor.choose_action(s)
-                            a = actor.choose_action_greedy(s)  # Hao Dong: it is important for this task
-                            s_new, r, done, info = env.step(a)
-                            s_new = np.concatenate((s_new[0:N_F], s[N_F:]), axis=0).astype(np.float32)
-                            rall += r
-                            s = s_new
-                            if done:
-                                print("reward", rall)
-                                s = env.reset().astype(np.float32)
-                                rall = 0
+                if done or step >= MAX_STEPS:
                     break
-        actor.save_ckpt()
-        critic.save_ckpt()
+
+            if episode == 0:
+                all_episode_reward.append(episode_reward)
+            else:
+                all_episode_reward.append(all_episode_reward[-1] * 0.9 + episode_reward * 0.1)
+
+            print('Training  | Episode: {}/{}  | Episode Reward: {:.0f}  | Running Time: {:.4f}' \
+                  .format(episode + 1, TRAIN_EPISODES, episode_reward, time.time() - t0))
+
+            # Early Stopping for quick check
+            if step >= MAX_STEPS:
+                print("Early Stopping")
+                actor.save()
+                critic.save()
+
+                plt.plot(all_episode_reward)
+                if not os.path.exists('image'):
+                    os.makedirs('image')
+                plt.savefig(os.path.join('image', 'ac.png'))
+
+                state = env.reset().astype(np.float32)
+                episode_reward = 0
+                while True:
+                    env.render()
+                    action = actor.get_action(state, greedy=True)  # Hao Dong: it is important for this task
+                    state_new, reward, done, info = env.step(action)
+                    state_new = np.concatenate((state_new[0:N_F], state[N_F:]), axis=0).astype(np.float32)
+                    episode_reward += reward
+                    state = state_new
+                    if done:
+                        print("reward", episode_reward)
+                        state = env.reset().astype(np.float32)
+                        episode_reward = 0
+        actor.save()
+        critic.save()
+
+        plt.plot(all_episode_reward)
+        if not os.path.exists('image'):
+            os.makedirs('image')
+        plt.savefig(os.path.join('image', 'ac.png'))
 
     if args.test:
-        actor.load_ckpt()
-        critic.load_ckpt()
-        t0 = time.time()
+        actor.load()
+        critic.load()
 
-        for i_episode in range(MAX_EPISODE):
+        for episode in range(TEST_EPISODES):
             episode_time = time.time()
-            s = env.reset().astype(np.float32)
+            state = env.reset().astype(np.float32)
             t = 0  # number of step in this episode
-            all_r = []  # rewards of all steps
+            episode_reward = 0
             while True:
-                if RENDER: env.render()
-                a = actor.choose_action(s)
-                s_new, r, done, info = env.step(a)
-                s_new = s_new.astype(np.float32)
-                if done: r = -20
+                env.render()
+                action = actor.get_action(state, greedy=True)
+                state_new, reward, done, info = env.step(action)
+                state_new = state_new.astype(np.float32)
+                if done: reward = -20
                 # these may helpful in some tasks
                 # if abs(s_new[0]) >= env.observation_space.high[0]:
                 # #  cart moves more than 2.4 units from the center
@@ -289,39 +287,11 @@ if __name__ == '__main__':
                 # reward for the distance between cart to the center
                 # r -= abs(s_new[0])  * .1
 
-                all_r.append(r)
-                s = s_new
+                episode_reward += reward
+                state = state_new
                 t += 1
 
-                if done or t >= MAX_EP_STEPS:
-                    ep_rs_sum = sum(all_r)
-
-                    if 'running_reward' not in globals():
-                        running_reward = ep_rs_sum
-                    else:
-                        running_reward = running_reward * 0.95 + ep_rs_sum * 0.05
-                    # start rending if running_reward greater than a threshold
-                    # if running_reward > DISPLAY_REWARD_THRESHOLD: RENDER = True
-                    # print("Episode: %d reward: %f running_reward %f took: %.5f" % \
-                    #     (i_episode, ep_rs_sum, running_reward, time.time() - episode_time))
-                    print('Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
-                    .format(i_episode, MAX_EPISODE, ep_rs_sum, time.time()-t0 ))
-
-                    # Early Stopping for quick check
-                    if t >= MAX_EP_STEPS:
-                        print("Early Stopping")
-                        s = env.reset().astype(np.float32)
-                        rall = 0
-                        while True:
-                            env.render()
-                            # a = actor.choose_action(s)
-                            a = actor.choose_action_greedy(s)  # Hao Dong: it is important for this task
-                            s_new, r, done, info = env.step(a)
-                            s_new = np.concatenate((s_new[0:N_F], s[N_F:]), axis=0).astype(np.float32)
-                            rall += r
-                            s = s_new
-                            if done:
-                                print("reward", rall)
-                                s = env.reset().astype(np.float32)
-                                rall = 0
+                if done or t >= MAX_STEPS:
+                    print('Testing  | Episode: {}/{}  | Episode Reward: {:.0f}  | Running Time: {:.4f}' \
+                          .format(episode + 1, TEST_EPISODES, episode_reward, time.time() - t0))
                     break

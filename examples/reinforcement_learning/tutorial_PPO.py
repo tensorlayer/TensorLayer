@@ -4,28 +4,23 @@ Proximal Policy Optimization (PPO)
 A simple version of Proximal Policy Optimization (PPO) using single thread.
 PPO is a family of first-order methods that use a few other tricks to keep new policies close to old.
 PPO methods are significantly simpler to implement, and empirically seem to perform at least as well as TRPO.
-
 Reference
 ---------
 Proximal Policy Optimization Algorithms, Schulman et al. 2017
 High Dimensional Continuous Control Using Generalized Advantage Estimation, Schulman et al. 2016
 Emergence of Locomotion Behaviours in Rich Environments, Heess et al. 2017
 MorvanZhou's tutorial page: https://morvanzhou.github.io/tutorials
-
 Environment
 -----------
 Openai Gym Pendulum-v0, continual action space
-
 Prerequisites
 --------------
 tensorflow >=2.0.0a0
 tensorflow-probability 0.6.0
 tensorlayer >=2.0.0
-
 To run
 ------
 python tutorial_PPO.py --train/test
-
 """
 import argparse
 import os
@@ -41,293 +36,284 @@ import tensorlayer as tl
 
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=True)
-parser.add_argument('--test', dest='train', action='store_false')
+parser.add_argument('--test', dest='test', action='store_true', default=True)
 args = parser.parse_args()
 
 #####################  hyper parameters  ####################
 
-ENV_NAME = 'Pendulum-v0'  # environment name
-RANDOMSEED = 1  # random seed
+ENV_ID = 'Pendulum-v0'  # environment id
+RANDOM_SEED = 1  # random seed
+RENDER = False  # render while training
 
-EP_MAX = 1000  # total number of episodes for training
-EP_LEN = 200  # total number of steps for each episode
+TRAIN_EPISODES = 1000  # total number of episodes for training
+TEST_EPISODES = 10  # total number of episodes for testing
+MAX_STEPS = 200  # total number of steps for each episode
 GAMMA = 0.9  # reward discount
-A_LR = 0.0001  # learning rate for actor
-C_LR = 0.0002  # learning rate for critic
-BATCH = 32  # update batchsize
-A_UPDATE_STEPS = 10  # actor update steps
-C_UPDATE_STEPS = 10  # critic update steps
-S_DIM, A_DIM = 3, 1  # state dimension, action dimension
-EPS = 1e-8  # epsilon
-METHOD = [
-    dict(name='kl_pen', kl_target=0.01, lam=0.5),  # KL penalty
-    dict(name='clip', epsilon=0.2),  # Clipped surrogate objective, find this is better
-][1]  # choose the method for optimization
+LR_A = 0.0001  # learning rate for actor
+LR_C = 0.0002  # learning rate for critic
+BATCH_SIZE = 32  # update batch size
+ACTOR_UPDATE_STEPS = 10  # actor update steps
+CRITIC_UPDATE_STEPS = 10  # critic update steps
+
+# ppo-penalty parameters
+KL_TARGET = 0.01
+LAM = 0.5
+
+# ppo-clip parameters
+EPSILON = 0.2
+
 
 ###############################  PPO  ####################################
 
 
 class PPO(object):
-    '''
+    """
     PPO class
-    '''
-
-    def __init__(self):
-
+    """
+    def __init__(self, state_dim, action_dim, action_bound, method='clip'):
         # critic
-        tfs = tl.layers.Input([None, S_DIM], tf.float32, 'state')
-        l1 = tl.layers.Dense(100, tf.nn.relu)(tfs)
-        v = tl.layers.Dense(1)(l1)
-        self.critic = tl.models.Model(tfs, v)
+        with tf.name_scope('critic'):
+            inputs = tl.layers.Input([None, state_dim], tf.float32, 'state')
+            layer = tl.layers.Dense(64, tf.nn.relu)(inputs)
+            layer = tl.layers.Dense(64, tf.nn.relu)(layer)
+            v = tl.layers.Dense(1)(layer)
+        self.critic = tl.models.Model(inputs, v)
         self.critic.train()
 
         # actor
-        self.actor = self._build_anet('pi', trainable=True)
-        self.actor_old = self._build_anet('oldpi', trainable=False)
-        self.actor_opt = tf.optimizers.Adam(A_LR)
-        self.critic_opt = tf.optimizers.Adam(C_LR)
+        with tf.name_scope('actor'):
+            inputs = tl.layers.Input([None, state_dim], tf.float32, 'state')
+            layer = tl.layers.Dense(64, tf.nn.relu)(inputs)
+            layer = tl.layers.Dense(64, tf.nn.relu)(layer)
+            a = tl.layers.Dense(action_dim, tf.nn.tanh)(layer)
+            mean = tl.layers.Lambda(lambda x: x * action_bound, name='lambda')(a)
+            logstd = tf.Variable(np.zeros(action_dim, dtype=np.float32))
+        self.actor = tl.models.Model(inputs, mean)
+        self.actor.trainable_weights.append(logstd)
+        self.actor.logstd = logstd
+        self.actor.train()
+        self.actor_opt = tf.optimizers.Adam(LR_A)
+        self.critic_opt = tf.optimizers.Adam(LR_C)
 
-    def a_train(self, tfs, tfa, tfadv):
-        '''
+        self.method = method
+        if method == 'penalty':
+            self.kl_target = KL_TARGET
+            self.lam = LAM
+        elif method == 'clip':
+            self.epsilon = EPSILON
+
+        self.state_buffer, self.action_buffer = [], []
+        self.reward_buffer, self.cumulative_reward_buffer = [], []
+        self.action_bound = action_bound
+
+    def train_actor(self, state, action, adv, old_pi):
+        """
         Update policy network
-        :param tfs: state
-        :param tfa: act
-        :param tfadv: advantage
-        :return:
-        '''
-        tfs = np.array(tfs, np.float32)
-        tfa = np.array(tfa, np.float32)
-        tfadv = np.array(tfadv, np.float32)
+        :param state: state batch
+        :param action: action batch
+        :param adv: advantage batch
+        :param old_pi: old pi distribution
+        :return: kl_mean or None
+        """
         with tf.GradientTape() as tape:
-            mu, sigma = self.actor(tfs)
-            pi = tfp.distributions.Normal(mu, sigma)
+            mean, std = self.actor(state), tf.exp(self.actor.logstd)
+            pi = tfp.distributions.Normal(mean, std)
 
-            mu_old, sigma_old = self.actor_old(tfs)
-            oldpi = tfp.distributions.Normal(mu_old, sigma_old)
-
-            # ratio = tf.exp(pi.log_prob(self.tfa) - oldpi.log_prob(self.tfa))
-            ratio = pi.prob(tfa) / (oldpi.prob(tfa) + EPS)
-            surr = ratio * tfadv
-            if METHOD['name'] == 'kl_pen':
-                tflam = METHOD['lam']
-                kl = tfp.distributions.kl_divergence(oldpi, pi)
+            ratio = tf.exp(pi.log_prob(action) - old_pi.log_prob(action))
+            surr = ratio * adv
+            if self.method == 'penalty':  # ppo penalty
+                kl = tfp.distributions.kl_divergence(old_pi, pi)
                 kl_mean = tf.reduce_mean(kl)
-                aloss = -(tf.reduce_mean(surr - tflam * kl))
-            else:  # clipping method, find this is better
-                aloss = -tf.reduce_mean(
+                loss = -(tf.reduce_mean(surr - self.lam * kl))
+            else:  # ppo clip
+                loss = -tf.reduce_mean(
                     tf.minimum(surr,
-                               tf.clip_by_value(ratio, 1. - METHOD['epsilon'], 1. + METHOD['epsilon']) * tfadv)
+                               tf.clip_by_value(ratio, 1. - self.epsilon, 1. + self.epsilon) * adv)
                 )
-        a_gard = tape.gradient(aloss, self.actor.trainable_weights)
-
+        a_gard = tape.gradient(loss, self.actor.trainable_weights)
         self.actor_opt.apply_gradients(zip(a_gard, self.actor.trainable_weights))
 
-        if METHOD['name'] == 'kl_pen':
+        if self.method == 'kl_pen':
             return kl_mean
 
-    def update_old_pi(self):
-        '''
-        Update old policy parameter
-        :return: None
-        '''
-        for p, oldp in zip(self.actor.trainable_weights, self.actor_old.trainable_weights):
-            oldp.assign(p)
-
-    def c_train(self, tfdc_r, s):
-        '''
+    def train_critic(self, reward, state):
+        """
         Update actor network
-        :param tfdc_r: cumulative reward
-        :param s: state
+        :param reward: cumulative reward batch
+        :param state: state batch
         :return: None
-        '''
-        tfdc_r = np.array(tfdc_r, dtype=np.float32)
+        """
+        reward = np.array(reward, dtype=np.float32)
         with tf.GradientTape() as tape:
-            v = self.critic(s)
-            advantage = tfdc_r - v
-            closs = tf.reduce_mean(tf.square(advantage))
-        # print('tfdc_r value', tfdc_r)
-        grad = tape.gradient(closs, self.critic.trainable_weights)
+            advantage = reward - self.critic(state)
+            loss = tf.reduce_mean(tf.square(advantage))
+        grad = tape.gradient(loss, self.critic.trainable_weights)
         self.critic_opt.apply_gradients(zip(grad, self.critic.trainable_weights))
 
-    def cal_adv(self, tfs, tfdc_r):
-        '''
-        Calculate advantage
-        :param tfs: state
-        :param tfdc_r: cumulative reward
-        :return: advantage
-        '''
-        tfdc_r = np.array(tfdc_r, dtype=np.float32)
-        advantage = tfdc_r - self.critic(tfs)
-        return advantage.numpy()
-
-    def update(self, s, a, r):
-        '''
+    def update(self):
+        """
         Update parameter with the constraint of KL divergent
-        :param s: state
-        :param a: act
-        :param r: reward
         :return: None
-        '''
-        s, a, r = s.astype(np.float32), a.astype(np.float32), r.astype(np.float32)
-
-        self.update_old_pi()
-        adv = self.cal_adv(s, r)
-        # adv = (adv - adv.mean())/(adv.std()+1e-6)  # sometimes helpful
+        """
+        s = np.array(self.state_buffer, np.float32)
+        a = np.array(self.action_buffer, np.float32)
+        r = np.array(self.cumulative_reward_buffer, np.float32)
+        mean, std = self.actor(s), tf.exp(self.actor.logstd)
+        pi = tfp.distributions.Normal(mean, std)
+        adv = r - self.critic(s)
 
         # update actor
-        if METHOD['name'] == 'kl_pen':
-            for _ in range(A_UPDATE_STEPS):
-                kl = self.a_train(s, a, adv)
-                if kl > 4 * METHOD['kl_target']:  # this in in google's paper
-                    break
-            if kl < METHOD['kl_target'] / 1.5:  # adaptive lambda, this is in OpenAI's paper
-                METHOD['lam'] /= 2
-            elif kl > METHOD['kl_target'] * 1.5:
-                METHOD['lam'] *= 2
-            METHOD['lam'] = np.clip(
-                METHOD['lam'], 1e-4, 10
-            )  # sometimes explode, this clipping is MorvanZhou's solution
-        else:  # clipping method, find this is better (OpenAI's paper)
-            for _ in range(A_UPDATE_STEPS):
-                self.a_train(s, a, adv)
+        if self.method == 'kl_pen':
+            for _ in range(ACTOR_UPDATE_STEPS):
+                kl = self.train_actor(s, a, adv, pi)
+            if kl < self.kl_target / 1.5:
+                self.lam /= 2
+            elif kl > self.kl_target * 1.5:
+                self.lam *= 2
+        else:
+            for _ in range(ACTOR_UPDATE_STEPS):
+                self.train_actor(s, a, adv, pi)
 
         # update critic
-        for _ in range(C_UPDATE_STEPS):
-            self.c_train(r, s)
+        for _ in range(CRITIC_UPDATE_STEPS):
+            self.train_critic(r, s)
 
-    def _build_anet(self, name, trainable):
-        '''
-        Build policy network
-        :param name: name
-        :param trainable: trainable flag
-        :return: policy network
-        '''
-        tfs = tl.layers.Input([None, S_DIM], tf.float32, name + '_state')
-        l1 = tl.layers.Dense(100, tf.nn.relu, name=name + '_l1')(tfs)
-        a = tl.layers.Dense(A_DIM, tf.nn.tanh, name=name + '_a')(l1)
-        mu = tl.layers.Lambda(lambda x: x * 2, name=name + '_lambda')(a)
-        sigma = tl.layers.Dense(A_DIM, tf.nn.softplus, name=name + '_sigma')(l1)
-        model = tl.models.Model(tfs, [mu, sigma], name)
+        self.state_buffer.clear()
+        self.action_buffer.clear()
+        self.cumulative_reward_buffer.clear()
+        self.reward_buffer.clear()
 
-        if trainable:
-            model.train()
-        else:
-            model.eval()
-        return model
-
-    def choose_action(self, s):
-        '''
+    def get_action(self, state, greedy=False):
+        """
         Choose action
-        :param s: state
-        :return: clipped act
-        '''
-        s = s[np.newaxis, :].astype(np.float32)
-        mu, sigma = self.actor(s)
-        pi = tfp.distributions.Normal(mu, sigma)
-        a = tf.squeeze(pi.sample(1), axis=0)[0]  # choosing action
-        return np.clip(a, -2, 2)
+        :param state: state
+        :param greedy: choose action greedy or not
+        :return: clipped action
+        """
+        state = state[np.newaxis, :].astype(np.float32)
+        mean, std = self.actor(state), tf.exp(self.actor.logstd)
+        if greedy:
+            action = mean[0]
+        else:
+            pi = tfp.distributions.Normal(mean, std)
+            action = tf.squeeze(pi.sample(1), axis=0)[0]  # choosing action
+        return np.clip(action, -self.action_bound, self.action_bound)
 
-    def get_v(self, s):
-        '''
-        Compute value
-        :param s: state
-        :return: value
-        '''
-        s = s.astype(np.float32)
-        if s.ndim < 2: s = s[np.newaxis, :]
-        return self.critic(s)[0, 0]
-
-    def save_ckpt(self):
+    def save(self):
         """
         save trained weights
         :return: None
         """
-        if not os.path.exists('model'):
-            os.makedirs('model')
-        tl.files.save_weights_to_hdf5('model/ppo_actor.hdf5', self.actor)
-        tl.files.save_weights_to_hdf5('model/ppo_actor_old.hdf5', self.actor_old)
-        tl.files.save_weights_to_hdf5('model/ppo_critic.hdf5', self.critic)
+        path = os.path.join('model', 'ppo')
+        if not os.path.exists(path):
+            os.makedirs(path)
+        tl.files.save_weights_to_hdf5(os.path.join(path, 'actor.hdf5'), self.actor)
+        tl.files.save_weights_to_hdf5(os.path.join(path, 'critic.hdf5'), self.critic)
 
-    def load_ckpt(self):
+    def load(self):
         """
         load trained weights
         :return: None
         """
-        tl.files.load_hdf5_to_weights_in_order('model/ppo_actor.hdf5', self.actor)
-        tl.files.load_hdf5_to_weights_in_order('model/ppo_actor_old.hdf5', self.actor_old)
-        tl.files.load_hdf5_to_weights_in_order('model/ppo_critic.hdf5', self.critic)
+        path = os.path.join('model', 'ppo')
+        if not os.path.exists(path):
+            os.makedirs(path)
+        tl.files.load_hdf5_to_weights_in_order(os.path.join(path, 'actor.hdf5'), self.actor)
+        tl.files.load_hdf5_to_weights_in_order(os.path.join(path, 'critic.hdf5'), self.critic)
+
+    def store_transition(self, state, action, reward):
+        """
+        Store state, action, reward at each step
+        :param state:
+        :param action:
+        :param reward:
+        :return: None
+        """
+        self.state_buffer.append(state)
+        self.action_buffer.append(action)
+        self.reward_buffer.append(reward)
+
+    def finish_path(self, next_state):
+        """
+        Calculate cumulative reward
+        :param next_state:
+        :return: None
+        """
+        v_s_ = self.critic(np.array([next_state], np.float32))[0, 0]
+        discounted_r = []
+        for r in self.reward_buffer[::-1]:
+            v_s_ = r + GAMMA * v_s_
+            discounted_r.append(v_s_)
+        discounted_r.reverse()
+        discounted_r = np.array(discounted_r)[:, np.newaxis]
+        self.cumulative_reward_buffer.extend(discounted_r)
+        self.reward_buffer.clear()
 
 
 if __name__ == '__main__':
-
-    env = gym.make(ENV_NAME).unwrapped
+    env = gym.make(ENV_ID).unwrapped
 
     # reproducible
-    env.seed(RANDOMSEED)
-    np.random.seed(RANDOMSEED)
-    tf.random.set_seed(RANDOMSEED)
+    env.seed(RANDOM_SEED)
+    np.random.seed(RANDOM_SEED)
+    tf.random.set_seed(RANDOM_SEED)
 
-    ppo = PPO()
+    state_dim = env.observation_space.shape[0]
+    action_dim = env.action_space.shape[0]
+    action_bound = env.action_space.high
 
+    agent = PPO(state_dim, action_dim, action_bound)
+
+    t0 = time.time()
     if args.train:
-        all_ep_r = []
-        for ep in range(EP_MAX):
-            s = env.reset()
-            buffer_s, buffer_a, buffer_r = [], [], []
-            ep_r = 0
-            t0 = time.time()
-            for t in range(EP_LEN):  # in one episode
-                # env.render()
-                a = ppo.choose_action(s)
-                s_, r, done, _ = env.step(a)
-                buffer_s.append(s)
-                buffer_a.append(a)
-                buffer_r.append((r + 8) / 8)  # normalize reward, find to be useful
-                s = s_
-                ep_r += r
+        all_episode_reward = []
+        for episode in range(TRAIN_EPISODES):
+            state = env.reset()
+            episode_reward = 0
+            for step in range(MAX_STEPS):  # in one episode
+                if RENDER:
+                    env.render()
+                action = agent.get_action(state)
+                state_, reward, done, info = env.step(action)
+                agent.store_transition(state, action, reward)
+                state = state_
+                episode_reward += reward
 
                 # update ppo
-                if (t + 1) % BATCH == 0 or t == EP_LEN - 1:
-                    v_s_ = ppo.get_v(s_)
-                    discounted_r = []
-                    for r in buffer_r[::-1]:
-                        v_s_ = r + GAMMA * v_s_
-                        discounted_r.append(v_s_)
-                    discounted_r.reverse()
-
-                    bs, ba, br = np.vstack(buffer_s), np.vstack(buffer_a), np.array(discounted_r)[:, np.newaxis]
-                    buffer_s, buffer_a, buffer_r = [], [], []
-                    ppo.update(bs, ba, br)
-            if ep == 0:
-                all_ep_r.append(ep_r)
-            else:
-                all_ep_r.append(all_ep_r[-1] * 0.9 + ep_r * 0.1)
+                if (step + 1) % BATCH_SIZE == 0:
+                    agent.finish_path(state_)
+                    agent.update()
+                if done:
+                    break
+            agent.finish_path(state_)
             print(
-                'Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                    ep, EP_MAX, ep_r,
-                    time.time() - t0
-                )
+                'Training  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
+                    episode + 1, TRAIN_EPISODES, episode_reward, time.time() - t0)
             )
+            if episode == 0:
+                all_episode_reward.append(episode_reward)
+            else:
+                all_episode_reward.append(all_episode_reward[-1] * 0.9 + episode_reward * 0.1)
+        agent.save()
 
-            plt.ion()
-            plt.cla()
-            plt.title('PPO')
-            plt.plot(np.arange(len(all_ep_r)), all_ep_r)
-            plt.ylim(-2000, 0)
-            plt.xlabel('Episode')
-            plt.ylabel('Moving averaged episode reward')
-            plt.show()
-            plt.pause(0.1)
-        ppo.save_ckpt()
-        plt.ioff()
-        plt.show()
+        plt.plot(all_episode_reward)
+        if not os.path.exists('image'):
+            os.makedirs('image')
+        plt.savefig(os.path.join('image', 'ppo.png'))
 
-    # test
-    ppo.load_ckpt()
-    while True:
-        s = env.reset()
-        for i in range(EP_LEN):
-            env.render()
-            s, r, done, _ = env.step(ppo.choose_action(s))
-            if done:
-                break
+    if args.test:
+        # test
+        agent.load()
+        for episode in range(TEST_EPISODES):
+            state = env.reset()
+            episode_reward = 0
+            for step in range(MAX_STEPS):
+                env.render()
+                state, reward, done, info = env.step(agent.get_action(state, greedy=True))
+                episode_reward += reward
+                if done:
+                    break
+            print(
+                'Testing  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
+                    episode + 1, TEST_EPISODES, episode_reward,
+                    time.time() - t0))
