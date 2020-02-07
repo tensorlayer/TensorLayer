@@ -4,26 +4,18 @@ C51 Algorithm
 Categorical 51 distributional RL algorithm, 51 means the number of atoms. In
 this algorithm, instead of estimating actual expected value, value distribution
 over a series of continuous sub-intervals (atoms) is considered.
-
-
 Reference:
 ------------------------
 Bellemare M G, Dabney W, Munos R. A distributional perspective on reinforcement
 learning[C]//Proceedings of the 34th International Conference on Machine
 Learning-Volume 70. JMLR. org, 2017: 449-458.
-
-
 Environment:
 ------------------------
 Cartpole and Pong in OpenAI Gym
-
-
 Requirements:
 ------------------------
 tensorflow>=2.0.0a0
 tensorlayer>=2.0.0
-
-
 To run:
 ------------------------
 python tutorial_C51.py --mode=train
@@ -36,6 +28,7 @@ import time
 
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
 
 import tensorlayer as tl
 from tutorial_wrappers import build_env
@@ -43,20 +36,19 @@ from tutorial_wrappers import build_env
 parser = argparse.ArgumentParser()
 parser.add_argument('--mode', help='train or test', default='train')
 parser.add_argument(
-    '--save_path', default='c51', help='folder to save if mode == train else model path,'
+    '--save_path', default=None, help='folder to save if mode == train else model path,'
     'qnet will be saved once target net update'
 )
 parser.add_argument('--seed', help='random seed', type=int, default=0)
 parser.add_argument('--env_id', default='CartPole-v0', help='CartPole-v0 or PongNoFrameskip-v4')
 args = parser.parse_args()
 
-if args.mode == 'train':
-    os.makedirs(args.save_path, exist_ok=True)
 random.seed(args.seed)
 np.random.seed(args.seed)
 tf.random.set_seed(args.seed)  # reproducible
 env_id = args.env_id
 env = build_env(env_id, seed=args.seed)
+alg_name = 'C51'
 
 # ####################  hyper parameters  ####################
 if env_id == 'CartPole-v0':
@@ -210,7 +202,7 @@ class DQN(object):
             sync(self.qnet, self.targetqnet)
         else:
             self.qnet.infer()
-            tl.files.load_and_assign_npz(name=args.save_path, network=self.qnet)
+            self.load(args.save_path)
         self.niter = 0
         if clipnorm is not None:
             self.optimizer = tf.optimizers.Adam(learning_rate=lr, clipnorm=clipnorm)
@@ -256,8 +248,19 @@ class DQN(object):
         self.niter += 1
         if self.niter % target_q_update_freq == 0:
             sync(self.qnet, self.targetqnet)
-            path = os.path.join(args.save_path, '{}.npz'.format(self.niter))
-            tl.files.save_npz(self.qnet.trainable_weights, name=path)
+            self.save(args.save_path)
+
+    def save(self, path):
+        if path is None:
+            path = os.path.join('model', '_'.join([alg_name, env_id]))
+        if not os.path.exists(path):
+            os.makedirs(path)
+        tl.files.save_weights_to_hdf5(os.path.join(path, 'q_net.hdf5'), self.qnet)
+
+    def load(self, path):
+        if path is None:
+            path = os.path.join('model', '_'.join([alg_name, env_id]))
+        tl.files.load_hdf5_to_weights_in_order(os.path.join(path, 'q_net.hdf5'), self.qnet)
 
     @tf.function
     def _train_func(self, b_o, b_index, b_m):
@@ -278,6 +281,7 @@ if __name__ == '__main__':
         o = env.reset()
         nepisode = 0
         t = time.time()
+        all_episode_reward = []
         for i in range(1, number_timesteps + 1):
 
             a = dqn.get_action(o)
@@ -292,6 +296,11 @@ if __name__ == '__main__':
                 dqn.train(*transitions)
 
             if done:
+                episode_reward = info['episode']['r']
+                if nepisode == 0:
+                    all_episode_reward.append(episode_reward)
+                else:
+                    all_episode_reward.append(all_episode_reward[-1] * 0.9 + episode_reward * 0.1)
                 o = env.reset()
             else:
                 o = o_
@@ -300,12 +309,20 @@ if __name__ == '__main__':
             if info.get('episode'):
                 nepisode += 1
                 reward, length = info['episode']['r'], info['episode']['l']
-                fps = int(length / (time.time() - t))
+                try:
+                    fps = int(length / (time.time() - t))
+                except:
+                    fps = 0
                 print(
                     'Time steps so far: {}, episode so far: {}, '
                     'episode reward: {:.4f}, episode length: {}, FPS: {}'.format(i, nepisode, reward, length, fps)
                 )
                 t = time.time()
+
+        plt.plot(all_episode_reward)
+        if not os.path.exists('image'):
+            os.makedirs('image')
+        plt.savefig(os.path.join('image', '_'.join([alg_name, env_id])))
     else:
         nepisode = 0
         o = env.reset()
