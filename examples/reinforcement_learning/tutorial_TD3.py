@@ -71,6 +71,7 @@ RANDOM_SEED = 2  # random seed
 RENDER = False  # render while training
 
 # RL training
+ALG_NAME = 'TD3'
 TRAIN_EPISODES = 100  # total number of episodes for training
 TEST_EPISODES = 10  # total number of episodes for training
 MAX_STEPS = 200  # maximum number of steps for one episode
@@ -312,7 +313,7 @@ class TD3:
             self.target_policy_net = self.target_soft_update(self.policy_net, self.target_policy_net, soft_tau)
 
     def save(self):  # save trained weights
-        path = os.path.join('model', 'td3')
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
         if not os.path.exists(path):
             os.makedirs(path)
         extend_path = lambda s: os.path.join(path, s)
@@ -324,7 +325,7 @@ class TD3:
         tl.files.save_npz(self.target_policy_net.trainable_weights, extend_path('model_target_policy_net.npz'))
 
     def load(self):  # load trained weights
-        path = os.path.join('model', 'td3')
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
         extend_path = lambda s: os.path.join(path, s)
         tl.files.load_and_assign_npz(extend_path('model_q_net1.npz'), self.q_net1)
         tl.files.load_and_assign_npz(extend_path('model_q_net2.npz'), self.q_net2)
@@ -405,7 +406,7 @@ if __name__ == '__main__':
         plt.plot(all_episode_reward)
         if not os.path.exists('image'):
             os.makedirs('image')
-        plt.savefig(os.path.join('image', 'td3.png'))
+        plt.savefig(os.path.join('image', '_'.join([ALG_NAME, ENV_ID])))
 
     if args.test:
         agent.load()

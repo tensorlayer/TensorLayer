@@ -67,9 +67,10 @@ args = parser.parse_args()
 #####################  hyper parameters  ####################
 
 ENV_ID = 'CartPole-v1'  # environment id
-RANDOM_SEED = 1  # random seed
+RANDOM_SEED = 2  # random seed, can be either an int number or None
 RENDER = False  # render while training
 
+ALG_NAME = 'AC'
 TRAIN_EPISODES = 200  # number of overall episodes for training
 TEST_EPISODES = 10  # number of overall episodes for testing
 MAX_STEPS = 500  # maximum time step in one episode
@@ -115,12 +116,14 @@ class Actor(object):
         return tl.rein.choice_action_by_probs(_probs.ravel())  # sample according to probability distribution
 
     def save(self):  # save trained weights
-        if not os.path.exists(os.path.join('model', 'ac')):
-            os.makedirs(os.path.join('model', 'ac'))
-        tl.files.save_npz(self.model.trainable_weights, name=os.path.join('model', 'ac', 'model_actor.npz'))
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
+        if not os.path.exists(path):
+            os.makedirs(path)
+        tl.files.save_npz(self.model.trainable_weights, name=os.path.join(path, 'model_actor.npz'))
 
     def load(self):  # load trained weights
-        tl.files.load_and_assign_npz(name=os.path.join('model', 'ac', 'model_actor.npz'), network=self.model)
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
+        tl.files.load_and_assign_npz(name=os.path.join(path, 'model_actor.npz'), network=self.model)
 
 
 class Critic(object):
@@ -148,12 +151,14 @@ class Critic(object):
         return td_error
 
     def save(self):  # save trained weights
-        if not os.path.exists(os.path.join('model', 'ac')):
-            os.makedirs(os.path.join('model', 'ac'))
-        tl.files.save_npz(self.model.trainable_weights, name=os.path.join('model', 'ac', 'model_critic.npz'))
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
+        if not os.path.exists(path):
+            os.makedirs(path)
+        tl.files.save_npz(self.model.trainable_weights, name=os.path.join(path, 'model_critic.npz'))
 
     def load(self):  # load trained weights
-        tl.files.load_and_assign_npz(name=os.path.join('model', 'ac', 'model_critic.npz'), network=self.model)
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
+        tl.files.load_and_assign_npz(name=os.path.join(path, 'model_critic.npz'), network=self.model)
 
 
 if __name__ == '__main__':
@@ -200,7 +205,7 @@ if __name__ == '__main__':
                 state_new, reward, done, info = env.step(action)
                 state_new = state_new.astype(np.float32)
 
-                if done: reward = -20
+                if done: reward = -20   # reward shaping trick
                 # these may helpful in some tasks
                 # if abs(s_new[0]) >= env.observation_space.high[0]:
                 # #  cart moves more than 2.4 units from the center
@@ -235,35 +240,15 @@ if __name__ == '__main__':
 
             # Early Stopping for quick check
             if step >= MAX_STEPS:
-                print("Early Stopping")
-                actor.save()
-                critic.save()
-
-                plt.plot(all_episode_reward)
-                if not os.path.exists('image'):
-                    os.makedirs('image')
-                plt.savefig(os.path.join('image', 'ac.png'))
-
-                state = env.reset().astype(np.float32)
-                episode_reward = 0
-                while True:
-                    env.render()
-                    action = actor.get_action(state, greedy=True)  # Hao Dong: it is important for this task
-                    state_new, reward, done, info = env.step(action)
-                    state_new = np.concatenate((state_new[0:N_F], state[N_F:]), axis=0).astype(np.float32)
-                    episode_reward += reward
-                    state = state_new
-                    if done:
-                        print("reward", episode_reward)
-                        state = env.reset().astype(np.float32)
-                        episode_reward = 0
+                print("Early Stopping")     # Hao Dong: it is important for this task
+                break
         actor.save()
         critic.save()
 
         plt.plot(all_episode_reward)
         if not os.path.exists('image'):
             os.makedirs('image')
-        plt.savefig(os.path.join('image', 'ac.png'))
+        plt.savefig(os.path.join('image', '_'.join([ALG_NAME, ENV_ID])))
 
     if args.test:
         actor.load()
@@ -280,12 +265,6 @@ if __name__ == '__main__':
                 state_new, reward, done, info = env.step(action)
                 state_new = state_new.astype(np.float32)
                 if done: reward = -20
-                # these may helpful in some tasks
-                # if abs(s_new[0]) >= env.observation_space.high[0]:
-                # #  cart moves more than 2.4 units from the center
-                #     r = -20
-                # reward for the distance between cart to the center
-                # r -= abs(s_new[0])  * .1
 
                 episode_reward += reward
                 state = state_new

@@ -48,9 +48,10 @@ args = parser.parse_args()
 #####################  hyper parameters  ####################
 
 ENV_ID = 'Pendulum-v0'  # environment id
-RANDOM_SEED = 2  # random seed
+RANDOM_SEED = 2  # random seed, can be either an int number or None
 RENDER = False  # render while training
 
+ALG_NAME = 'DDPG'
 TRAIN_EPISODES = 100  # total number of episodes for training
 TEST_EPISODES = 10  # total number of episodes for training
 MAX_STEPS = 200  # total number of steps for each episode
@@ -213,10 +214,9 @@ class DDPG(object):
         save trained weights
         :return: None
         """
-        path = os.path.join('model', 'ddpg')
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
         if not os.path.exists(path):
             os.makedirs(path)
-
         tl.files.save_weights_to_hdf5(os.path.join(path, 'actor.hdf5'), self.actor)
         tl.files.save_weights_to_hdf5(os.path.join(path, 'actor_target.hdf5'), self.actor_target)
         tl.files.save_weights_to_hdf5(os.path.join(path, 'critic.hdf5'), self.critic)
@@ -227,7 +227,7 @@ class DDPG(object):
         load trained weights
         :return: None
         """
-        path = os.path.join('model', 'ddpg')
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
         tl.files.load_hdf5_to_weights_in_order(os.path.join(path, 'actor.hdf5'), self.actor)
         tl.files.load_hdf5_to_weights_in_order(os.path.join(path, 'actor_target.hdf5'), self.actor_target)
         tl.files.load_hdf5_to_weights_in_order(os.path.join(path, 'critic.hdf5'), self.critic)
@@ -284,7 +284,7 @@ if __name__ == '__main__':
         plt.plot(all_episode_reward)
         if not os.path.exists('image'):
             os.makedirs('image')
-        plt.savefig(os.path.join('image', 'ddpg.png'))
+        plt.savefig(os.path.join('image', '_'.join([ALG_NAME, ENV_ID])))
 
     if args.test:
         # test

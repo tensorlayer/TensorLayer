@@ -65,17 +65,17 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 
 # add arguments in command  --train/test
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
-parser.add_argument('--train', dest='train', action='store_true', default=True)
+parser.add_argument('--train', dest='train', action='store_true', default=False)
 parser.add_argument('--test', dest='test', action='store_true', default=True)
 args = parser.parse_args()
 
 #####################  hyper parameters  ####################
 
 ENV_ID = 'BipedalWalker-v2'  # BipedalWalkerHardcore-v2   BipedalWalker-v2  LunarLanderContinuous-v2
-RANDOM_SEED = 2  # random seed
+RANDOM_SEED = 2  # random seed, can be either an int number or None
 RENDER = False  # render while training
 
-LOG_DIR = './log'  # the log file
+ALG_NAME = 'A3C'
 N_WORKERS = multiprocessing.cpu_count()  # number of workers according to number of cores in cpu
 # N_WORKERS = 2     # manually set number of workers
 MAX_GLOBAL_EP = 15000  # number of training episodes
@@ -172,14 +172,16 @@ class ACNet(object):
         return self.A.numpy()[0]
 
     def save(self):  # save trained weights
-        if not os.path.exists(os.path.join('model', 'a3c')):
-            os.makedirs(os.path.join('model', 'a3c'))
-        tl.files.save_npz(self.actor.trainable_weights, name=os.path.join('model', 'a3c', 'model_actor.npz'))
-        tl.files.save_npz(self.critic.trainable_weights, name=os.path.join('model', 'a3c', 'model_critic.npz'))
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
+        if not os.path.exists(path):
+            os.makedirs(path)
+        tl.files.save_npz(self.actor.trainable_weights, name=os.path.join(path, 'model_actor.npz'))
+        tl.files.save_npz(self.critic.trainable_weights, name=os.path.join(path, 'model_critic.npz'))
         
     def load(self):  # load trained weights
-        tl.files.load_and_assign_npz(name=os.path.join('model', 'a3c', 'model_actor.npz'), network=self.actor)
-        tl.files.load_and_assign_npz(name=os.path.join('model', 'a3c', 'model_critic.npz'), network=self.critic)
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
+        tl.files.load_and_assign_npz(name=os.path.join(path, 'model_actor.npz'), network=self.actor)
+        tl.files.load_and_assign_npz(name=os.path.join(path, 'model_critic.npz'), network=self.critic)
 
 
 class Worker(object):
@@ -298,7 +300,7 @@ if __name__ == "__main__":
         plt.plot(GLOBAL_RUNNING_R)
         if not os.path.exists('image'):
             os.makedirs('image')
-        plt.savefig(os.path.join('image', 'a3c.png'))
+        plt.savefig(os.path.join('image', '_'.join([ALG_NAME, ENV_ID])))
 
     if args.test:
         # ============================= EVALUATION =============================

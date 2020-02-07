@@ -53,6 +53,7 @@ ENV_ID = 'Pendulum-v0'  # environment id
 RANDOM_SEED = 2  # random seed
 RENDER = False
 
+ALG_NAME = 'TRPO'
 TRAIN_EPISODES = 1000  # total number of episodes for training
 TEST_EPISODES = 100  # total number of episodes for testing
 MAX_STEPS = 200  # total number of steps for each episode
@@ -331,7 +332,7 @@ class TRPO:
         save trained weights
         :return: None
         """
-        path = os.path.join('model', 'trpo')
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
         if not os.path.exists(path):
             os.makedirs(path)
         tl.files.save_weights_to_hdf5(os.path.join(path, 'actor.hdf5'), self.actor)
@@ -342,7 +343,7 @@ class TRPO:
         load trained weights
         :return: None
         """
-        path = os.path.join('model', 'trpo')
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
         tl.files.load_hdf5_to_weights_in_order(os.path.join(path, 'actor.hdf5'), self.actor)
         tl.files.load_hdf5_to_weights_in_order(os.path.join(path, 'critic.hdf5'), self.critic)
 
@@ -487,7 +488,7 @@ if __name__ == '__main__':
         plt.plot(all_episode_reward)
         if not os.path.exists('image'):
             os.makedirs('image')
-        plt.savefig(os.path.join('image', 'trpo.png'))
+        plt.savefig(os.path.join('image', '_'.join([ALG_NAME, ENV_ID])))
 
     if args.test:
         # test

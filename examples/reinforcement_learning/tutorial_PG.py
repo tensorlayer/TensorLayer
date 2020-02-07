@@ -44,10 +44,11 @@ args = parser.parse_args()
 #####################  hyper parameters  ####################
 
 ENV_ID = 'CartPole-v1'  # environment id
-RANDOM_SEED = 1  # random seed
+RANDOM_SEED = 1  # random seed, can be either an int number or None
 RENDER = False  # render while training
 
-TRAIN_EPISODES = 100
+ALG_NAME = 'PG'
+TRAIN_EPISODES = 200
 TEST_EPISODES = 10
 MAX_STEPS = 500
 
@@ -142,16 +143,18 @@ class PolicyGradient:
         save trained weights
         :return: None
         """
-        if not os.path.exists(os.path.join('model', 'pg')):
-            os.makedirs(os.path.join('model', 'pg'))
-        tl.files.save_weights_to_hdf5(os.path.join('model', 'pg', 'pg_policy.hdf5'), self.model)
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
+        if not os.path.exists(path):
+            os.makedirs(path)
+        tl.files.save_weights_to_hdf5(os.path.join(path, 'pg_policy.hdf5'), self.model)
 
     def load(self):
         """
         load trained weights
         :return: None
         """
-        tl.files.load_hdf5_to_weights_in_order(os.path.join('model', 'pg', 'pg_policy.hdf5'), self.model)
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
+        tl.files.load_hdf5_to_weights_in_order(os.path.join(path, 'pg_policy.hdf5'), self.model)
 
 
 if __name__ == '__main__':
@@ -202,7 +205,7 @@ if __name__ == '__main__':
         plt.plot(all_episode_reward)
         if not os.path.exists('image'):
             os.makedirs('image')
-        plt.savefig(os.path.join('image', 'pg.png'))
+        plt.savefig(os.path.join('image', '_'.join([ALG_NAME, ENV_ID])))
 
     if args.test:
         # test

@@ -59,6 +59,7 @@ RANDOM_SEED = 2  # random seed
 RENDER = False  # render while training
 
 # RL training
+ALG_NAME = 'SAC'
 TRAIN_EPISODES = 100  # total number of episodes for training
 TEST_EPISODES = 10  # total number of episodes for training
 MAX_STEPS = 200  # total number of steps for each episode
@@ -329,7 +330,7 @@ class SAC:
         self.target_soft_q_net2 = self.target_soft_update(self.soft_q_net2, self.target_soft_q_net2, soft_tau)
 
     def save(self):  # save trained weights
-        path = os.path.join('model', 'sac')
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
         if not os.path.exists(path):
             os.makedirs(path)
         extend_path = lambda s: os.path.join(path, s)
@@ -341,7 +342,7 @@ class SAC:
         np.save(extend_path('log_alpha.npy'), self.log_alpha.numpy())  # save log_alpha variable
 
     def load_weights(self):  # load trained weights
-        path = os.path.join('model', 'sac')
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
         extend_path = lambda s: os.path.join(path, s)
         tl.files.load_and_assign_npz(extend_path('model_q_net1.npz'), self.soft_q_net1)
         tl.files.load_and_assign_npz(extend_path('model_q_net2.npz'), self.soft_q_net2)
@@ -423,7 +424,7 @@ if __name__ == '__main__':
         plt.plot(all_episode_reward)
         if not os.path.exists('image'):
             os.makedirs('image')
-        plt.savefig(os.path.join('image', 'sac.png'))
+        plt.savefig(os.path.join('image', '_'.join([ALG_NAME, ENV_ID])))
 
     if args.test:
         agent.load_weights()
