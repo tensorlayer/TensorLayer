@@ -34,7 +34,7 @@ import tensorlayer as tl
 from tutorial_wrappers import build_env
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--mode', help='train or test', default='train')
+parser.add_argument('--mode', help='train or test', default='test')
 parser.add_argument(
     '--save_path', default=None, help='folder to save if mode == train else model path,'
     'qnet will be saved once target net update'
@@ -319,6 +319,7 @@ if __name__ == '__main__':
                 )
                 t = time.time()
 
+        dqn.save(args.save_path)
         plt.plot(all_episode_reward)
         if not os.path.exists('image'):
             os.makedirs('image')
@@ -332,6 +333,7 @@ if __name__ == '__main__':
             # execute action
             # note that `_` tail in var name means next
             o_, r, done, info = env.step(a)
+            env.render()
 
             if done:
                 o = env.reset()

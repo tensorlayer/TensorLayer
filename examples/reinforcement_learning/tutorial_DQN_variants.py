@@ -72,6 +72,7 @@ dueling = not args.disable_dueling
 alg_name = 'DQN'
 if dueling: alg_name = 'Dueling_' + alg_name
 if double: alg_name = 'Double_' + alg_name
+if noise_scale != 0: alg_name = 'Noisy_' + alg_name
 print(alg_name)
 # ####################  hyper parameters  ####################
 if env_id == 'CartPole-v0':
@@ -407,6 +408,7 @@ if __name__ == '__main__':
                 )
                 t = time.time()
 
+        dqn.save(args.save_path)
         plt.plot(all_episode_reward)
         if not os.path.exists('image'):
             os.makedirs('image')
