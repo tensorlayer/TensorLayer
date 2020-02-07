@@ -4,28 +4,19 @@ Prioritized Experience Replay
 Prioritized experience replay is an efficient replay method that replay
 important transitions more frequently. Segment tree data structure is used to
 speed up indexing.
-
-
 Reference:
 ------------------------
 Schaul T, Quan J, Antonoglou I, et al. Prioritized experience replay[J]. arXiv
 preprint arXiv:1511.05952, 2015.
-
 Dhariwal P, Hesse C, Klimov O, et al. Openai baselines (2017)[J]. URL
 https://github. com/opfenai/baselines.
-
-
 Environment:
 ------------------------
 Cartpole and Pong in OpenAI Gym
-
-
 Requirements:
 ------------------------
 tensorflow>=2.0.0a0
 tensorlayer>=2.0.0
-
-
 To run:
 ------------------------
 python tutorial_prioritized_replay.py --mode=train
@@ -39,6 +30,7 @@ import time
 
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
 
 import tensorlayer as tl
 from tutorial_wrappers import build_env
@@ -46,20 +38,20 @@ from tutorial_wrappers import build_env
 parser = argparse.ArgumentParser()
 parser.add_argument('--mode', help='train or test', default='train')
 parser.add_argument(
-    '--save_path', default='per', help='folder to save if mode == train else model path,'
+    '--save_path', default=None, help='folder to save if mode == train else model path,'
     'qnet will be saved once target net update'
 )
 parser.add_argument('--seed', help='random seed', type=int, default=0)
 parser.add_argument('--env_id', default='CartPole-v0', help='CartPole-v0 or PongNoFrameskip-v4')
 args = parser.parse_args()
 
-if args.mode == 'train':
-    os.makedirs(args.save_path, exist_ok=True)
 random.seed(args.seed)
 np.random.seed(args.seed)
 tf.random.set_seed(args.seed)  # reproducible
 env_id = args.env_id
 env = build_env(env_id, seed=args.seed)
+alg_name = 'prioritized_replay'
+
 
 # ####################  hyper parameters  ####################
 if env_id == 'CartPole-v0':
@@ -141,18 +133,14 @@ class SegmentTree(object):
 
     def __init__(self, capacity, operation, neutral_element):
         """Build a Segment Tree data structure.
-
         https://en.wikipedia.org/wiki/Segment_tree
-
         Can be used as regular array, but with two
         important differences:
-
             a) setting item's value is slightly slower.
                It is O(lg capacity) instead of O(1).
             b) user has access to an efficient ( O(log segment size) )
                `reduce` operation which reduces `operation` over
                a contiguous subsequence of items in the array.
-
         Paramters
         ---------
         capacity: int
@@ -189,14 +177,12 @@ class SegmentTree(object):
     def reduce(self, start=0, end=None):
         """Returns result of applying `self.operation`
         to a contiguous subsequence of the array.
-
         Parameters
         ----------
         start: int
             beginning of the subsequence
         end: int
             end of the subsequences
-
         Returns
         -------
         reduced: obj
@@ -235,16 +221,13 @@ class SumSegmentTree(SegmentTree):
     def find_prefixsum_idx(self, prefixsum):
         """Find the highest index `i` in the array such that
             sum(arr[0] + arr[1] + ... + arr[i - i]) <= prefixsum
-
         if array values are probabilities, this function
         allows to sample indexes according to the discrete
         probability efficiently.
-
         Parameters
         ----------
         perfixsum: float
             upperbound on the sum of array prefix
-
         Returns
         -------
         idx: int
@@ -316,7 +299,6 @@ class PrioritizedReplayBuffer(ReplayBuffer):
 
     def __init__(self, size, alpha, beta):
         """Create Prioritized Replay buffer.
-
         Parameters
         ----------
         size: int
@@ -325,7 +307,6 @@ class PrioritizedReplayBuffer(ReplayBuffer):
         alpha: float
             how much prioritization is used
             (0 - no prioritization, 1 - full prioritization)
-
         See Also
         --------
         ReplayBuffer.__init__
@@ -410,7 +391,7 @@ class DQN(object):
             sync(self.qnet, self.targetqnet)
         else:
             self.qnet.infer()
-            tl.files.load_and_assign_npz(name=args.save_path, network=self.qnet)
+            self.load(args.save_path)
         self.niter = 0
         if clipnorm is not None:
             self.optimizer = tf.optimizers.Adam(learning_rate=lr, clipnorm=clipnorm)
@@ -437,10 +418,20 @@ class DQN(object):
         self.niter += 1
         if self.niter % target_q_update_freq == 0:
             sync(self.qnet, self.targetqnet)
-            path = os.path.join(args.save_path, '{}.npz'.format(self.niter))
-            tl.files.save_npz(self.qnet.trainable_weights, name=path)
-
+            self.save(args.save_path)
         return td_errors.numpy()
+
+    def save(self, path):
+        if path is None:
+            path = os.path.join('model', '_'.join([alg_name, env_id]))
+        if not os.path.exists(path):
+            os.makedirs(path)
+        tl.files.save_weights_to_hdf5(os.path.join(path, 'q_net.hdf5'), self.qnet)
+
+    def load(self, path):
+        if path is None:
+            path = os.path.join('model', '_'.join([alg_name, env_id]))
+        tl.files.load_hdf5_to_weights_in_order(os.path.join(path, 'q_net.hdf5'), self.qnet)
 
     @tf.function
     def _train_func(self, b_o, b_a, b_r, b_o_, b_d, weights):
@@ -469,6 +460,7 @@ if __name__ == '__main__':
         o = env.reset()
         nepisode = 0
         t = time.time()
+        all_episode_reward = []
         for i in range(1, number_timesteps + 1):
             buffer.beta += (1 - prioritized_replay_beta0) / number_timesteps
 
@@ -486,6 +478,11 @@ if __name__ == '__main__':
                 buffer.update_priorities(idxs, priorities)
 
             if done:
+                episode_reward = info['episode']['r']
+                if nepisode == 0:
+                    all_episode_reward.append(episode_reward)
+                else:
+                    all_episode_reward.append(all_episode_reward[-1] * 0.9 + episode_reward * 0.1)
                 o = env.reset()
             else:
                 o = o_
@@ -494,12 +491,21 @@ if __name__ == '__main__':
             if info.get('episode'):
                 nepisode += 1
                 reward, length = info['episode']['r'], info['episode']['l']
-                fps = int(length / (time.time() - t))
+                try:
+                    fps = int(length / (time.time() - t))
+                except:
+                    fps = 0
                 print(
                     'Time steps so far: {}, episode so far: {}, '
                     'episode reward: {:.4f}, episode length: {}, FPS: {}'.format(i, nepisode, reward, length, fps)
                 )
                 t = time.time()
+
+        dqn.save(args.save_path)
+        plt.plot(all_episode_reward)
+        if not os.path.exists('image'):
+            os.makedirs('image')
+        plt.savefig(os.path.join('image', '_'.join([alg_name, env_id])))
     else:
         nepisode = 0
         o = env.reset()
@@ -509,6 +515,7 @@ if __name__ == '__main__':
             # execute action
             # note that `_` tail in var name means next
             o_, r, done, info = env.step(a)
+            env.render()
 
             if done:
                 o = env.reset()
