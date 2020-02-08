@@ -17,7 +17,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--train', dest='train', action='store_true', default=False)
+parser.add_argument('--train', dest='train', action='store_true', default=True)
 parser.add_argument('--test', dest='test', action='store_true', default=True)
 
 parser.add_argument(
@@ -62,8 +62,11 @@ if args.train:
             s = s1
             if d is True:
                 break
-        print("Episode [%d/%d] sum reward: %f took: %.5fs " % (i, num_episodes, rAll, time.time() - t0))
-
+        print(
+            'Training  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
+                i + 1, num_episodes, rAll, time.time() - t0
+            )
+        )
         if i == 0:
             all_episode_reward.append(rAll)
         else:
@@ -100,4 +103,8 @@ if args.test:
             s = s1
             if d is True:
                 break
-        print("Episode [%d/%d] sum reward: %f took: %.5fs " % (i, num_episodes, rAll, time.time() - t0))
+        print(
+            'Testing  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
+                i + 1, num_episodes, rAll, time.time() - t0
+            )
+        )

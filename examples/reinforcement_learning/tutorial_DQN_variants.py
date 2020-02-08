@@ -47,7 +47,7 @@ import tensorlayer as tl
 import gym
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--train', dest='train', action='store_true', default=False)
+parser.add_argument('--train', dest='train', action='store_true', default=True)
 parser.add_argument('--test', dest='test', action='store_true', default=True)
 parser.add_argument(
     '--save_path', default=None, help='folder to save if mode == train else model path,'
@@ -381,6 +381,7 @@ if __name__ == '__main__':
                 # note that `_` tail in var name means next
                 o_, r, done, info = env.step(a)
                 buffer.add(o, a, r, o_, done)
+                episode_reward += r
 
                 if i >= warm_start:
                     transitions = buffer.sample(batch_size)

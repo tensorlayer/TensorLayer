@@ -47,7 +47,7 @@ import tensorlayer as tl
 
 # add arguments in command  --train/test
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
-parser.add_argument('--train', dest='train', action='store_true', default=False)
+parser.add_argument('--train', dest='train', action='store_true', default=True)
 parser.add_argument('--test', dest='test', action='store_true', default=True)
 args = parser.parse_args()
 
@@ -105,7 +105,6 @@ if __name__ == '__main__':
         all_episode_reward = []
         for i in range(num_episodes):
             ## Reset environment and get first new observation
-            # episode_time = time.time()
             s = env.reset()  # observation is state, integer 0 ~ 15
             rAll = 0
             if render: env.render()
@@ -164,7 +163,6 @@ if __name__ == '__main__':
         load_ckpt(qnetwork)  # load model
         for i in range(num_episodes):
             ## Reset environment and get first new observation
-            episode_time = time.time()
             s = env.reset()  # observation is state, integer 0 ~ 15
             rAll = 0
             if render: env.render()

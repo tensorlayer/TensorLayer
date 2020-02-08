@@ -37,7 +37,7 @@ import tensorlayer as tl
 
 parser = argparse.ArgumentParser()
 # add arguments in command  --train/test
-parser.add_argument('--train', dest='train', action='store_true', default=False)
+parser.add_argument('--train', dest='train', action='store_true', default=True)
 parser.add_argument('--test', dest='test', action='store_true', default=True)
 parser.add_argument(
     '--save_path', default=None, help='folder to save if mode == train else model path,'
