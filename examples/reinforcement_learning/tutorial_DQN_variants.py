@@ -44,10 +44,11 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 
 import tensorlayer as tl
-from tutorial_wrappers import build_env
+import gym
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--mode', help='train or test', default='train')
+parser.add_argument('--train', dest='train', action='store_true', default=False)
+parser.add_argument('--test', dest='test', action='store_true', default=True)
 parser.add_argument(
     '--save_path', default=None, help='folder to save if mode == train else model path,'
     'qnet will be saved once target net update'
@@ -64,7 +65,8 @@ np.random.seed(args.seed)
 tf.random.set_seed(args.seed)  # reproducible
 
 env_id = args.env_id
-env = build_env(env_id, seed=args.seed)
+env = gym.make(env_id)
+env.seed(args.seed)
 noise_scale = args.noisy_scale
 double = not args.disable_double
 dueling = not args.disable_dueling
@@ -273,7 +275,7 @@ class DQN(object):
     def __init__(self):
         model = MLP if qnet_type == 'MLP' else CNN
         self.qnet = model('q')
-        if args.mode == 'train':
+        if args.train:
             self.qnet.train()
             self.targetqnet = model('targetq')
             self.targetqnet.infer()
@@ -290,7 +292,7 @@ class DQN(object):
 
     def get_action(self, obv):
         eps = epsilon(self.niter)
-        if args.mode == 'train':
+        if args.train:
             if random.random() < eps:
                 return int(random.random() * out_dim)
             obv = np.expand_dims(obv, 0).astype('float32') * ob_scale
@@ -364,49 +366,41 @@ class DQN(object):
 # #############################  Trainer  ###################################
 if __name__ == '__main__':
     dqn = DQN()
-    if args.mode == 'train':
+    t0 = time.time()
+    if args.train:
         buffer = ReplayBuffer(buffer_size)
-
-        o = env.reset()
         nepisode = 0
-        t = time.time()
         all_episode_reward = []
         for i in range(1, number_timesteps + 1):
+            o = env.reset()
+            episode_reward = 0
+            while True:
+                a = dqn.get_action(o)
 
-            a = dqn.get_action(o)
+                # execute action and feed to replay buffer
+                # note that `_` tail in var name means next
+                o_, r, done, info = env.step(a)
+                buffer.add(o, a, r, o_, done)
 
-            # execute action and feed to replay buffer
-            # note that `_` tail in var name means next
-            o_, r, done, info = env.step(a)
-            buffer.add(o, a, r, o_, done)
+                if i >= warm_start:
+                    transitions = buffer.sample(batch_size)
+                    dqn.train(*transitions)
 
-            if i >= warm_start:
-                transitions = buffer.sample(batch_size)
-                dqn.train(*transitions)
-
-            if done:
-                episode_reward = info['episode']['r']
-                if nepisode == 0:
-                    all_episode_reward.append(episode_reward)
+                if done:
+                    break
                 else:
-                    all_episode_reward.append(all_episode_reward[-1] * 0.9 + episode_reward * 0.1)
-                o = env.reset()
-            else:
-                o = o_
+                    o = o_
 
-            # episode in info is real (unwrapped) message
-            if info.get('episode'):
-                nepisode += 1
-                reward, length = info['episode']['r'], info['episode']['l']
-                try:
-                    fps = int(length / (time.time() - t))
-                except:
-                    fps = 0
-                print(
-                    'Time steps so far: {}, episode so far: {}, '
-                    'episode reward: {:.4f}, episode length: {}, FPS: {}'.format(i, nepisode, reward, length, fps)
+            if nepisode == 0:
+                all_episode_reward.append(episode_reward)
+            else:
+                all_episode_reward.append(all_episode_reward[-1] * 0.9 + episode_reward * 0.1)
+            nepisode += 1
+            print(
+                'Training  | Episode: {}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
+                    nepisode, episode_reward, time.time() - t0
                 )
-                t = time.time()
+            )  # episode num starts from 1 in print
 
         dqn.save(args.save_path)
         plt.plot(all_episode_reward)
@@ -414,27 +408,23 @@ if __name__ == '__main__':
             os.makedirs('image')
         plt.savefig(os.path.join('image', '_'.join([alg_name, env_id])))
 
-    else:
+    if args.test:
         nepisode = 0
-        o = env.reset()
         for i in range(1, number_timesteps + 1):
-            a = dqn.get_action(o)
-
-            # execute action
-            # note that `_` tail in var name means next
-            o_, r, done, info = env.step(a)
-            env.render()
-
-            if done:
-                o = env.reset()
-            else:
-                o = o_
-
-            # episode in info is real (unwrapped) message
-            if info.get('episode'):
-                nepisode += 1
-                reward, length = info['episode']['r'], info['episode']['l']
-                print(
-                    'Time steps so far: {}, episode so far: {}, '
-                    'episode reward: {:.4f}, episode length: {}'.format(i, nepisode, reward, length)
+            o = env.reset()
+            episode_reward = 0
+            while True:
+                env.render()
+                a = dqn.get_action(o)
+                o_, r, done, info = env.step(a)
+                episode_reward += r
+                if done:
+                    break
+                else:
+                    o = o_
+            nepisode += 1
+            print(
+                'Testing  | Episode: {}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
+                    nepisode, episode_reward, time.time() - t0
                 )
+            )
