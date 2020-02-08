@@ -29,8 +29,8 @@ python tutorial_DDPG.py --train/test
 
 import argparse
 import os
-import time
 import threading
+import time
 
 import gym
 import matplotlib.pyplot as plt

@@ -46,11 +46,11 @@ python tutorial_AC.py --train/test
 
 """
 import argparse
-import time
-import matplotlib.pyplot as plt
 import os
+import time
 
 import gym
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 

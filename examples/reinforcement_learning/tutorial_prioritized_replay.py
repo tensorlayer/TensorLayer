@@ -28,11 +28,11 @@ import os
 import random
 import time
 
+import gym
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-import matplotlib.pyplot as plt
 
-import gym
 import tensorlayer as tl
 
 parser = argparse.ArgumentParser()

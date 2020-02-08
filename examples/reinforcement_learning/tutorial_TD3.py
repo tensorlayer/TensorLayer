@@ -41,16 +41,16 @@ python tutorial_TD3.py --train/test
 """
 
 import argparse
+import os
 import random
 import time
-import os
 
 import gym
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-import tensorflow_probability as tfp
 
+import tensorflow_probability as tfp
 import tensorlayer as tl
 from tensorlayer.layers import Dense
 from tensorlayer.models import Model
@@ -430,4 +430,3 @@ if __name__ == '__main__':
                 'Testing  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
                     episode + 1, TEST_EPISODES, episode_reward,
                     time.time() - t0))
-

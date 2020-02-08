@@ -39,12 +39,12 @@ import os
 import random
 import time
 
+import gym
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-import matplotlib.pyplot as plt
 
 import tensorlayer as tl
-import gym
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--train', dest='train', action='store_true', default=True)

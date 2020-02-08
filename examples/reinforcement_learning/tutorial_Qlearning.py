@@ -9,12 +9,13 @@ tensorflow==2.0.0a0
 tensorlayer==2.0.0
 """
 
-import os
-import gym
-import time
 import argparse
-import numpy as np
+import os
+import time
+
+import gym
 import matplotlib.pyplot as plt
+import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--train', dest='train', action='store_true', default=True)

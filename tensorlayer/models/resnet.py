@@ -11,9 +11,10 @@
 import os
 
 import tensorflow as tf
+
 from tensorlayer import logging
 from tensorlayer.files import (assign_weights, load_npz, maybe_download_and_extract)
-from tensorlayer.layers import (BatchNorm, Conv2d, Elementwise, GlobalMeanPool2d, MaxPool2d, Input, Dense)
+from tensorlayer.layers import (BatchNorm, Conv2d, Dense, Elementwise, GlobalMeanPool2d, Input, MaxPool2d)
 from tensorlayer.models import Model
 
 __all__ = [

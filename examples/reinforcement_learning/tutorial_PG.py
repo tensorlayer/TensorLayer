@@ -34,6 +34,7 @@ import gym
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
 
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
@@ -223,4 +224,3 @@ if __name__ == '__main__':
                 'Testing  | Episode: {}/{}  | Episode Reward: {:.0f}  | Running Time: {:.4f}'.format(
                     episode + 1, TEST_EPISODES, episode_reward,
                     time.time() - t0))
-
