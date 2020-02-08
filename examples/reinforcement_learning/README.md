@@ -46,7 +46,7 @@ For each tutorial, open a terminal and run:
 
 The tutorial algorithms follow the same basic structure, as shown in file: [`./tutorial_format.py`](https://github.com/tensorlayer/tensorlayer/blob/reinforcement-learning/examples/reinforcement_learning/tutorial_format.py)
 
-The pretrained models for each algorithm are stored [here](https://github.com/tensorlayer/pretrained-models). You can download the models and load the weights in the policies for tests.
+The pretrained models and learning curves for each algorithm are stored [here](https://github.com/tensorlayer/pretrained-models). You can download the models and load the weights in the policies for tests.
 
 ## Table of Contents:
 ### value-based
