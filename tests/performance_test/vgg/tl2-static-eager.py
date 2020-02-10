@@ -1,9 +1,9 @@
 import os
 import time
 
+import psutil
 import tensorflow as tf
 
-import psutil
 import tensorlayer as tl
 from exp_config import (BATCH_SIZE, LERANING_RATE, MONITOR_INTERVAL, NUM_ITERS, random_input_generator)
 

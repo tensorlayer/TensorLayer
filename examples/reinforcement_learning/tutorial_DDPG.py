@@ -29,7 +29,6 @@ python tutorial_DDPG.py --train/test
 
 import argparse
 import os
-import threading
 import time
 
 import gym
@@ -159,9 +158,9 @@ class DDPG(object):
         a = self.actor(np.array([s], dtype=np.float32))[0]
         if greedy:
             return a
-        return np.clip(np.random.normal(a, self.var),
-                             -self.action_range,
-                             self.action_range)  # add randomness to action selection for exploration
+        return np.clip(
+            np.random.normal(a, self.var), -self.action_range, self.action_range
+        )  # add randomness to action selection for exploration
 
     def learn(self):
         """
@@ -276,7 +275,7 @@ if __name__ == '__main__':
                 all_episode_reward.append(all_episode_reward[-1] * 0.9 + episode_reward * 0.1)
             print(
                 'Training  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                    episode+1, TRAIN_EPISODES, episode_reward,
+                    episode + 1, TRAIN_EPISODES, episode_reward,
                     time.time() - t0
                 )
             )
@@ -301,4 +300,6 @@ if __name__ == '__main__':
             print(
                 'Testing  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
                     episode + 1, TEST_EPISODES, episode_reward,
-                    time.time() - t0))
+                    time.time() - t0
+                )
+            )

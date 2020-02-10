@@ -60,6 +60,7 @@ class PolicyGradient:
     """
     PG class
     """
+
     def __init__(self, state_dim, action_num, learning_rate=0.02, gamma=0.99):
         self.gamma = gamma
 
@@ -113,7 +114,9 @@ class PolicyGradient:
 
         with tf.GradientTape() as tape:
             _logits = self.model(np.vstack(self.state_buffer))
-            neg_log_prob = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=_logits, labels=np.array(self.action_buffer))
+            neg_log_prob = tf.nn.sparse_softmax_cross_entropy_with_logits(
+                logits=_logits, labels=np.array(self.action_buffer)
+            )
             loss = tf.reduce_mean(neg_log_prob * discounted_reward_buffer_norm)
 
         grad = tape.gradient(loss, self.model.trainable_weights)
@@ -195,7 +198,9 @@ if __name__ == '__main__':
             print(
                 'Training  | Episode: {}/{}  | Episode Reward: {:.0f}  | Running Time: {:.4f}'.format(
                     episode + 1, TRAIN_EPISODES, episode_reward,
-                    time.time() - t0))
+                    time.time() - t0
+                )
+            )
 
             if episode == 0:
                 all_episode_reward.append(episode_reward)
@@ -223,4 +228,6 @@ if __name__ == '__main__':
             print(
                 'Testing  | Episode: {}/{}  | Episode Reward: {:.0f}  | Running Time: {:.4f}'.format(
                     episode + 1, TEST_EPISODES, episode_reward,
-                    time.time() - t0))
+                    time.time() - t0
+                )
+            )

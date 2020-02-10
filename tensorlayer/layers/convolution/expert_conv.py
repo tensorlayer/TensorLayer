@@ -60,16 +60,16 @@ class Conv1dLayer(Layer):
     """
 
     def __init__(
-        self,
-        act=None,
-        shape=(5, 1, 5),
-        stride=1,
-        padding='SAME',
-        data_format='NWC',
-        dilation_rate=1,
-        W_init=tl.initializers.truncated_normal(stddev=0.02),
-        b_init=tl.initializers.constant(value=0.0),
-        name=None  # 'cnn1d_layer',
+            self,
+            act=None,
+            shape=(5, 1, 5),
+            stride=1,
+            padding='SAME',
+            data_format='NWC',
+            dilation_rate=1,
+            W_init=tl.initializers.truncated_normal(stddev=0.02),
+            b_init=tl.initializers.constant(value=0.0),
+            name=None  # 'cnn1d_layer',
     ):
         super().__init__(name, act=act)
         self.n_filter = shape[-1]
@@ -179,16 +179,16 @@ class Conv2dLayer(Layer):
     """
 
     def __init__(
-        self,
-        act=None,
-        shape=(5, 5, 1, 100),
-        strides=(1, 1, 1, 1),
-        padding='SAME',
-        data_format='NHWC',
-        dilation_rate=(1, 1, 1, 1),
-        W_init=tl.initializers.truncated_normal(stddev=0.02),
-        b_init=tl.initializers.constant(value=0.0),
-        name=None  # 'cnn2d_layer',
+            self,
+            act=None,
+            shape=(5, 5, 1, 100),
+            strides=(1, 1, 1, 1),
+            padding='SAME',
+            data_format='NHWC',
+            dilation_rate=(1, 1, 1, 1),
+            W_init=tl.initializers.truncated_normal(stddev=0.02),
+            b_init=tl.initializers.constant(value=0.0),
+            name=None  # 'cnn2d_layer',
     ):
         super().__init__(name, act=act)
         self.n_filter = shape[-1]
@@ -297,16 +297,16 @@ class Conv3dLayer(Layer):
     """
 
     def __init__(
-        self,
-        act=None,
-        shape=(2, 2, 2, 3, 32),
-        strides=(1, 2, 2, 2, 1),
-        padding='SAME',
-        data_format='NDHWC',
-        dilation_rate=(1, 1, 1, 1, 1),
-        W_init=tl.initializers.truncated_normal(stddev=0.02),
-        b_init=tl.initializers.constant(value=0.0),
-        name=None  # 'cnn3d_layer'
+            self,
+            act=None,
+            shape=(2, 2, 2, 3, 32),
+            strides=(1, 2, 2, 2, 1),
+            padding='SAME',
+            data_format='NDHWC',
+            dilation_rate=(1, 1, 1, 1, 1),
+            W_init=tl.initializers.truncated_normal(stddev=0.02),
+            b_init=tl.initializers.constant(value=0.0),
+            name=None  # 'cnn3d_layer'
     ):
         super().__init__(name, act=act)
         self.n_filter = shape[-1]

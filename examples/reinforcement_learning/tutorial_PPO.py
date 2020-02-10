@@ -63,7 +63,6 @@ LAM = 0.5
 # ppo-clip parameters
 EPSILON = 0.2
 
-
 ###############################  PPO  ####################################
 
 
@@ -71,6 +70,7 @@ class PPO(object):
     """
     PPO class
     """
+
     def __init__(self, state_dim, action_dim, action_bound, method='clip'):
         # critic
         with tf.name_scope('critic'):
@@ -288,7 +288,9 @@ if __name__ == '__main__':
             agent.finish_path(state_)
             print(
                 'Training  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                    episode + 1, TRAIN_EPISODES, episode_reward, time.time() - t0)
+                    episode + 1, TRAIN_EPISODES, episode_reward,
+                    time.time() - t0
+                )
             )
             if episode == 0:
                 all_episode_reward.append(episode_reward)
@@ -316,4 +318,6 @@ if __name__ == '__main__':
             print(
                 'Testing  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
                     episode + 1, TEST_EPISODES, episode_reward,
-                    time.time() - t0))
+                    time.time() - t0
+                )
+            )

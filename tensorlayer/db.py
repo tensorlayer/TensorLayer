@@ -48,7 +48,7 @@ class TensorHub(object):
 
     # @deprecated_alias(db_name='dbname', user_name='username', end_support_version=2.1)
     def __init__(
-        self, ip='localhost', port=27017, dbname='dbname', username='None', password='password', project_name=None
+            self, ip='localhost', port=27017, dbname='dbname', username='None', password='password', project_name=None
     ):
         self.ip = ip
         self.port = port

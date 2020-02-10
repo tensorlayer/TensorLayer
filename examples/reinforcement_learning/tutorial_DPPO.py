@@ -73,7 +73,6 @@ LAM = 0.5
 # ppo-clip parameters
 EPSILON = 0.2
 
-
 ###############################  DPPO  ####################################
 
 
@@ -305,7 +304,8 @@ class Worker(object):
 
             print(
                 'Training  | Episode: {}/{}  | Worker: {} | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                    GLOBAL_EP + 1, TRAIN_EPISODES, self.wid, ep_r, time.time() - T0
+                    GLOBAL_EP + 1, TRAIN_EPISODES, self.wid, ep_r,
+                    time.time() - T0
                 )
             )
             # record reward changes, plot later
@@ -372,4 +372,6 @@ if __name__ == '__main__':
             print(
                 'Testing  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
                     episode + 1, TEST_EPISODES, episode_reward,
-                    time.time() - T0))
+                    time.time() - T0
+                )
+            )

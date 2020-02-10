@@ -41,10 +41,10 @@ class PadLayer(Layer):
     """
 
     def __init__(
-        self,
-        padding=None,
-        mode='CONSTANT',
-        name=None,  # 'pad_layer',
+            self,
+            padding=None,
+            mode='CONSTANT',
+            name=None,  # 'pad_layer',
     ):
         super().__init__(name)
         self.padding = padding
@@ -99,9 +99,9 @@ class ZeroPad1d(Layer):
     """
 
     def __init__(
-        self,
-        padding,
-        name=None,  # 'zeropad1d',
+            self,
+            padding,
+            name=None,  # 'zeropad1d',
     ):
         super().__init__(name)
         self.padding = padding
@@ -153,9 +153,9 @@ class ZeroPad2d(Layer):
     """
 
     def __init__(
-        self,
-        padding,
-        name=None,  # 'zeropad2d',
+            self,
+            padding,
+            name=None,  # 'zeropad2d',
     ):
         super().__init__(name)
 
@@ -208,9 +208,9 @@ class ZeroPad3d(Layer):
     """
 
     def __init__(
-        self,
-        padding,
-        name=None,  # 'zeropad3d',
+            self,
+            padding,
+            name=None,  # 'zeropad3d',
     ):
         super().__init__(name)
         self.padding = padding

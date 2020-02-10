@@ -62,7 +62,6 @@ tfd = tfp.distributions
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
-
 # add arguments in command  --train/test
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=False)
@@ -177,7 +176,7 @@ class ACNet(object):
             os.makedirs(path)
         tl.files.save_npz(self.actor.trainable_weights, name=os.path.join(path, 'model_actor.npz'))
         tl.files.save_npz(self.critic.trainable_weights, name=os.path.join(path, 'model_critic.npz'))
-        
+
     def load(self):  # load trained weights
         path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
         tl.files.load_and_assign_npz(name=os.path.join(path, 'model_actor.npz'), network=self.actor)
@@ -296,7 +295,7 @@ if __name__ == "__main__":
         COORD.join(worker_threads)
 
         GLOBAL_AC.save()
-        
+
         plt.plot(GLOBAL_RUNNING_R)
         if not os.path.exists('image'):
             os.makedirs('image')
@@ -319,4 +318,6 @@ if __name__ == "__main__":
             print(
                 'Testing  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
                     episode + 1, TEST_EPISODES, episode_reward,
-                    time.time() - T0))
+                    time.time() - T0
+                )
+            )

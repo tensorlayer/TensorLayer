@@ -1,10 +1,10 @@
 import os
 import time
 
+import psutil
 import tensorflow as tf
 
 import keras
-import psutil
 from exp_config import (BATCH_SIZE, LERANING_RATE, MONITOR_INTERVAL, NUM_ITERS, random_input_generator)
 from keras.applications.vgg16 import VGG16
 from keras.backend.tensorflow_backend import set_session

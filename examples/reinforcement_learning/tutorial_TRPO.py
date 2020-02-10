@@ -73,7 +73,6 @@ SAVE_FREQ = 10  # How often (in terms of gap between epochs) to save the current
 EPS = 1e-8  # epsilon
 BATCH_SIZE = 512  # batch size
 
-
 #####################  functions  ####################
 
 
@@ -182,6 +181,7 @@ class TRPO:
     """
     trpo class
     """
+
     def __init__(self, state_dim, action_dim, action_bound):
         # critic
         with tf.name_scope('critic'):
@@ -275,7 +275,7 @@ class TRPO:
         """
         with tf.GradientTape() as tape:
             value = self.critic(states)
-            loss = tf.reduce_mean((rewards_to_go - value[:, 0]) ** 2)
+            loss = tf.reduce_mean((rewards_to_go - value[:, 0])**2)
         grad = tape.gradient(loss, self.critic.trainable_weights)
         self.critic_optimizer.apply_gradients(zip(grad, self.critic.trainable_weights))
 
@@ -306,7 +306,7 @@ class TRPO:
         :param xs: a list of tensor
         :return: flat tensor
         """
-        return tf.concat([tf.reshape(x, (-1,)) for x in xs], axis=0)
+        return tf.concat([tf.reshape(x, (-1, )) for x in xs], axis=0)
 
     def get_pi_params(self):
         """
@@ -410,7 +410,7 @@ class TRPO:
 
         # trpo with backtracking line search, hard kl
         for j in range(BACKTRACK_ITERS):
-            kl, pi_l_new = set_and_eval(step=BACKTRACK_COEFF ** j)
+            kl, pi_l_new = set_and_eval(step=BACKTRACK_COEFF**j)
             if kl <= DELTA and pi_l_new <= pi_l_old:
                 # Accepting new params at step of line search
                 break
@@ -444,11 +444,11 @@ if __name__ == '__main__':
     np.random.seed(RANDOM_SEED)
     tf.random.set_seed(RANDOM_SEED)
     env.seed(RANDOM_SEED)
-    
+
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.shape[0]
     action_bound = env.action_space.high
-    
+
     agent = TRPO(state_dim, action_dim, action_bound)
 
     t0 = time.time()
@@ -479,7 +479,7 @@ if __name__ == '__main__':
                 all_episode_reward.append(all_episode_reward[-1] * 0.9 + episode_reward * 0.1)
             print(
                 'Training  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                    episode+1, TRAIN_EPISODES, episode_reward,
+                    episode + 1, TRAIN_EPISODES, episode_reward,
                     time.time() - t0
                 )
             )
@@ -507,4 +507,6 @@ if __name__ == '__main__':
             print(
                 'Testing  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
                     episode + 1, TEST_EPISODES, episode_reward,
-                    time.time() - t0))
+                    time.time() - t0
+                )
+            )

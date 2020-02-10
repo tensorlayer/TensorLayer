@@ -399,7 +399,8 @@ if __name__ == '__main__':
             nepisode += 1
             print(
                 'Training  | Episode: {}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                    nepisode, episode_reward, time.time() - t0
+                    nepisode, episode_reward,
+                    time.time() - t0
                 )
             )  # episode num starts from 1 in print
 
@@ -426,6 +427,7 @@ if __name__ == '__main__':
             nepisode += 1
             print(
                 'Testing  | Episode: {}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                    nepisode, episode_reward, time.time() - t0
+                    nepisode, episode_reward,
+                    time.time() - t0
                 )
             )

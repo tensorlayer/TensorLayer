@@ -23,7 +23,7 @@ parser.add_argument('--test', dest='test', action='store_true', default=True)
 
 parser.add_argument(
     '--save_path', default=None, help='folder to save if mode == train else model path,'
-                                      'qnet will be saved once target net update'
+    'qnet will be saved once target net update'
 )
 parser.add_argument('--seed', help='random seed', type=int, default=0)
 parser.add_argument('--env_id', default='FrozenLake-v0')
@@ -65,7 +65,8 @@ if args.train:
                 break
         print(
             'Training  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                i + 1, num_episodes, rAll, time.time() - t0
+                i + 1, num_episodes, rAll,
+                time.time() - t0
             )
         )
         if i == 0:
@@ -106,6 +107,7 @@ if args.test:
                 break
         print(
             'Testing  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                i + 1, num_episodes, rAll, time.time() - t0
+                i + 1, num_episodes, rAll,
+                time.time() - t0
             )
         )

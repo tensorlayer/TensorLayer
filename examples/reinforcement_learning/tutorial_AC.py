@@ -78,8 +78,6 @@ LAM = 0.9  # reward discount in TD error
 LR_A = 0.001  # learning rate for actor
 LR_C = 0.01  # learning rate for critic
 
-
-
 ###############################  Actor-Critic  ####################################
 
 
@@ -205,7 +203,7 @@ if __name__ == '__main__':
                 state_new, reward, done, info = env.step(action)
                 state_new = state_new.astype(np.float32)
 
-                if done: reward = -20   # reward shaping trick
+                if done: reward = -20  # reward shaping trick
                 # these may helpful in some tasks
                 # if abs(s_new[0]) >= env.observation_space.high[0]:
                 # #  cart moves more than 2.4 units from the center
@@ -240,7 +238,7 @@ if __name__ == '__main__':
 
             # Early Stopping for quick check
             if step >= MAX_STEPS:
-                print("Early Stopping")     # Hao Dong: it is important for this task
+                print("Early Stopping")  # Hao Dong: it is important for this task
                 break
         actor.save()
         critic.save()

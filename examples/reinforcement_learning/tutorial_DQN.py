@@ -61,7 +61,6 @@ e = 0.1  # e-Greedy Exploration, the larger the more random
 num_episodes = 10000
 render = False  # display the game environment
 
-
 ##################### DQN ##########################
 
 
@@ -140,7 +139,7 @@ if __name__ == '__main__':
                 rAll += r
                 s = s1
                 ## Reduce chance of random action if an episode is done.
-                if d == True:
+                if d ==True:
                     e = 1. / ((i / 50) + 10)  # reduce e, GLIE: Greey in the limit with infinite Exploration
                     break
 

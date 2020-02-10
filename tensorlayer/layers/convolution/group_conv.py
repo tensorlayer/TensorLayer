@@ -59,19 +59,19 @@ class GroupConv2d(Layer):
     """
 
     def __init__(
-        self,
-        n_filter=32,
-        filter_size=(3, 3),
-        strides=(2, 2),
-        n_group=2,
-        act=None,
-        padding='SAME',
-        data_format='channels_last',
-        dilation_rate=(1, 1),
-        W_init=tl.initializers.truncated_normal(stddev=0.02),
-        b_init=tl.initializers.constant(value=0.0),
-        in_channels=None,
-        name=None  # 'groupconv',
+            self,
+            n_filter=32,
+            filter_size=(3, 3),
+            strides=(2, 2),
+            n_group=2,
+            act=None,
+            padding='SAME',
+            data_format='channels_last',
+            dilation_rate=(1, 1),
+            W_init=tl.initializers.truncated_normal(stddev=0.02),
+            b_init=tl.initializers.constant(value=0.0),
+            in_channels=None,
+            name=None  # 'groupconv',
     ):  # Windaway
         super().__init__(name, act=act)
         self.n_filter = n_filter

@@ -88,7 +88,6 @@ EVAL_NOISE_SCALE = 0.5  # range of action noise for evaluation of action value
 REWARD_SCALE = 1.  # value range of reward
 REPLAY_BUFFER_SIZE = 5e5  # size of replay buffer
 
-
 ###############################  TD3  ####################################
 
 
@@ -158,9 +157,10 @@ class PolicyNetwork(Model):
         self.linear1 = Dense(n_units=hidden_dim, act=tf.nn.relu, W_init=w_init, in_channels=num_inputs, name='policy1')
         self.linear2 = Dense(n_units=hidden_dim, act=tf.nn.relu, W_init=w_init, in_channels=hidden_dim, name='policy2')
         self.linear3 = Dense(n_units=hidden_dim, act=tf.nn.relu, W_init=w_init, in_channels=hidden_dim, name='policy3')
-        self.output_linear = Dense(n_units=num_actions, W_init=w_init,
-                                   b_init=tf.random_uniform_initializer(-init_w, init_w), in_channels=hidden_dim,
-                                   name='policy_output')
+        self.output_linear = Dense(
+            n_units=num_actions, W_init=w_init, b_init=tf.random_uniform_initializer(-init_w, init_w),
+            in_channels=hidden_dim, name='policy_output'
+        )
         self.action_range = action_range
         self.num_actions = num_actions
 
@@ -208,9 +208,10 @@ class PolicyNetwork(Model):
 
 
 class TD3:
+
     def __init__(
-            self, state_dim, action_dim, action_range, hidden_dim, replay_buffer,
-            policy_target_update_interval=1, q_lr=3e-4, policy_lr=3e-4
+            self, state_dim, action_dim, action_range, hidden_dim, replay_buffer, policy_target_update_interval=1,
+            q_lr=3e-4, policy_lr=3e-4
     ):
         self.replay_buffer = replay_buffer
 
@@ -270,7 +271,7 @@ class TD3:
             next_state, eval_noise_scale=eval_noise_scale
         )  # clipped normal noise
         reward = reward_scale * (reward - np.mean(reward, axis=0)) / (
-                np.std(reward, axis=0) + 1e-6
+            np.std(reward, axis=0) + 1e-6
         )  # normalize with batch mean and std; plus a small number to prevent numerical problem
 
         # Training Q Function
@@ -341,18 +342,19 @@ if __name__ == '__main__':
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.shape[0]
     action_range = env.action_space.high  # scale action, [-action_range, action_range]
-    
+
     # reproducible
     env.seed(RANDOM_SEED)
     random.seed(RANDOM_SEED)
     np.random.seed(RANDOM_SEED)
-    tf.random.set_seed(RANDOM_SEED)  
-    
+    tf.random.set_seed(RANDOM_SEED)
+
     # initialization of buffer
     replay_buffer = ReplayBuffer(REPLAY_BUFFER_SIZE)
     # initialization of trainer
-    agent = TD3(state_dim, action_dim, action_range, HIDDEN_DIM, replay_buffer,
-              POLICY_TARGET_UPDATE_INTERVAL, Q_LR, POLICY_LR)
+    agent = TD3(
+        state_dim, action_dim, action_range, HIDDEN_DIM, replay_buffer, POLICY_TARGET_UPDATE_INTERVAL, Q_LR, POLICY_LR
+    )
     t0 = time.time()
 
     # training loop
@@ -398,7 +400,7 @@ if __name__ == '__main__':
                 all_episode_reward.append(all_episode_reward[-1] * 0.9 + episode_reward * 0.1)
             print(
                 'Training  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                    episode+1, TRAIN_EPISODES, episode_reward,
+                    episode + 1, TRAIN_EPISODES, episode_reward,
                     time.time() - t0
                 )
             )
@@ -429,4 +431,6 @@ if __name__ == '__main__':
             print(
                 'Testing  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
                     episode + 1, TEST_EPISODES, episode_reward,
-                    time.time() - t0))
+                    time.time() - t0
+                )
+            )

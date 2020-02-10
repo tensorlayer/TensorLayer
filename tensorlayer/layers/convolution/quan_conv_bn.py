@@ -3,12 +3,12 @@
 
 import numpy as np
 import tensorflow as tf
-import tensorlayer as tl
 from tensorflow.python.training import moving_averages
+
+import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.utils import (quantize_active_overflow,
-                                      quantize_weight_overflow)
+from tensorlayer.layers.utils import (quantize_active_overflow, quantize_weight_overflow)
 
 # from tensorlayer.layers.core import LayersConfig
 
@@ -76,26 +76,26 @@ class QuanConv2dWithBN(Layer):
     """
 
     def __init__(
-        self,
-        n_filter=32,
-        filter_size=(3, 3),
-        strides=(1, 1),
-        padding='SAME',
-        act=None,
-        decay=0.9,
-        epsilon=1e-5,
-        is_train=False,
-        gamma_init=tl.initializers.truncated_normal(stddev=0.02),
-        beta_init=tl.initializers.truncated_normal(stddev=0.02),
-        bitW=8,
-        bitA=8,
-        use_gemm=False,
-        W_init=tl.initializers.truncated_normal(stddev=0.02),
-        W_init_args=None,
-        data_format="channels_last",
-        dilation_rate=(1, 1),
-        in_channels=None,
-        name='quan_cnn2d_bn',
+            self,
+            n_filter=32,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            padding='SAME',
+            act=None,
+            decay=0.9,
+            epsilon=1e-5,
+            is_train=False,
+            gamma_init=tl.initializers.truncated_normal(stddev=0.02),
+            beta_init=tl.initializers.truncated_normal(stddev=0.02),
+            bitW=8,
+            bitA=8,
+            use_gemm=False,
+            W_init=tl.initializers.truncated_normal(stddev=0.02),
+            W_init_args=None,
+            data_format="channels_last",
+            dilation_rate=(1, 1),
+            in_channels=None,
+            name='quan_cnn2d_bn',
     ):
         super(QuanConv2dWithBN, self).__init__(act=act, name=name)
         self.n_filter = n_filter

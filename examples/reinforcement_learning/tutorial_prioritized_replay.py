@@ -55,7 +55,6 @@ env = gym.make(env_id)
 env.seed(args.seed)
 alg_name = 'prioritized_replay'
 
-
 # ####################  hyper parameters  ####################
 if env_id == 'CartPole-v0':
     qnet_type = 'MLP'
@@ -494,7 +493,8 @@ if __name__ == '__main__':
             nepisode += 1
             print(
                 'Training  | Episode: {}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                    nepisode, episode_reward, time.time() - t0
+                    nepisode, episode_reward,
+                    time.time() - t0
                 )
             )  # episode num starts from 1 in print
 
@@ -521,6 +521,7 @@ if __name__ == '__main__':
             nepisode += 1
             print(
                 'Testing  | Episode: {}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                    nepisode, episode_reward, time.time() - t0
+                    nepisode, episode_reward,
+                    time.time() - t0
                 )
             )

@@ -69,18 +69,18 @@ class DepthwiseConv2d(Layer):
 
     # https://zhuanlan.zhihu.com/p/31551004  https://github.com/xiaohu2015/DeepLearning_tutorials/blob/master/CNNs/MobileNet.py
     def __init__(
-        self,
-        filter_size=(3, 3),
-        strides=(1, 1),
-        act=None,
-        padding='SAME',
-        data_format='channels_last',
-        dilation_rate=(1, 1),
-        depth_multiplier=1,
-        W_init=tl.initializers.truncated_normal(stddev=0.02),
-        b_init=tl.initializers.constant(value=0.0),
-        in_channels=None,
-        name=None  # 'depthwise_conv2d'
+            self,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=None,
+            padding='SAME',
+            data_format='channels_last',
+            dilation_rate=(1, 1),
+            depth_multiplier=1,
+            W_init=tl.initializers.truncated_normal(stddev=0.02),
+            b_init=tl.initializers.constant(value=0.0),
+            in_channels=None,
+            name=None  # 'depthwise_conv2d'
     ):
         super().__init__(name, act=act)
         self.filter_size = filter_size

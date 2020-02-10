@@ -839,8 +839,8 @@ def load_matt_mahoney_text8_dataset(path='data'):
 
 
 def load_imdb_dataset(
-    path='data', nb_words=None, skip_top=0, maxlen=None, test_split=0.2, seed=113, start_char=1, oov_char=2,
-    index_from=3
+        path='data', nb_words=None, skip_top=0, maxlen=None, test_split=0.2, seed=113, start_char=1, oov_char=2,
+        index_from=3
 ):
     """Load IMDB dataset.
 

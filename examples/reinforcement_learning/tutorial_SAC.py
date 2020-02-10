@@ -45,7 +45,6 @@ from tensorlayer.models import Model
 Normal = tfp.distributions.Normal
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
-
 # add arguments in command  --train/test
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
 parser.add_argument('--train', dest='train', action='store_true', default=False)
@@ -73,10 +72,9 @@ POLICY_LR = 3e-4  # policy_net learning rate
 ALPHA_LR = 3e-4  # alpha learning rate
 POLICY_TARGET_UPDATE_INTERVAL = 3  # delayed update for the policy network and target networks
 REWARD_SCALE = 1.  # value range of reward
-REPLAY_BUFFER_SIZE = 5e5    # size of the replay buffer
+REPLAY_BUFFER_SIZE = 5e5  # size of the replay buffer
 
 AUTO_ENTROPY = True  # automatically updating variable alpha for entropy
-
 
 ###############################  SAC  ####################################
 
@@ -157,12 +155,14 @@ class PolicyNetwork(Model):
         self.linear2 = Dense(n_units=hidden_dim, act=tf.nn.relu, W_init=w_init, in_channels=hidden_dim, name='policy2')
         self.linear3 = Dense(n_units=hidden_dim, act=tf.nn.relu, W_init=w_init, in_channels=hidden_dim, name='policy3')
 
-        self.mean_linear = Dense(n_units=num_actions, W_init=w_init,
-                                 b_init=tf.random_uniform_initializer(-init_w, init_w), in_channels=hidden_dim,
-                                 name='policy_mean')
-        self.log_std_linear = Dense(n_units=num_actions, W_init=w_init,
-                                    b_init=tf.random_uniform_initializer(-init_w, init_w), in_channels=hidden_dim,
-                                    name='policy_logstd')
+        self.mean_linear = Dense(
+            n_units=num_actions, W_init=w_init, b_init=tf.random_uniform_initializer(-init_w, init_w),
+            in_channels=hidden_dim, name='policy_mean'
+        )
+        self.log_std_linear = Dense(
+            n_units=num_actions, W_init=w_init, b_init=tf.random_uniform_initializer(-init_w, init_w),
+            in_channels=hidden_dim, name='policy_logstd'
+        )
 
         self.action_range = action_range
         self.num_actions = num_actions
@@ -189,7 +189,7 @@ class PolicyNetwork(Model):
         action_0 = tf.math.tanh(mean + std * z)  # TanhNormal distribution as actions; reparameterization trick
         action = self.action_range * action_0
         # according to original paper, with an extra last term for normalizing different action range
-        log_prob = Normal(mean, std).log_prob(mean + std * z) - tf.math.log(1. - action_0 ** 2 +
+        log_prob = Normal(mean, std).log_prob(mean + std * z) - tf.math.log(1. - action_0**2 +
                                                                             epsilon) - np.log(self.action_range)
         # both dims of normal.log_prob and -log(1-a**2) are (N,dim_of_action);
         # the Normal.log_prob outputs the same dim of input features instead of 1 dim probability,
@@ -219,8 +219,11 @@ class PolicyNetwork(Model):
 
 
 class SAC:
-    def __init__(self, state_dim, action_dim, action_range, hidden_dim, replay_buffer,
-                 SOFT_Q_LR=3e-4, POLICY_LR=3e-4, ALPHA_LR=3e-4):
+
+    def __init__(
+            self, state_dim, action_dim, action_range, hidden_dim, replay_buffer, SOFT_Q_LR=3e-4, POLICY_LR=3e-4,
+            ALPHA_LR=3e-4
+    ):
         self.replay_buffer = replay_buffer
 
         # initialize all networks
@@ -277,7 +280,7 @@ class SAC:
         done = done[:, np.newaxis]
 
         reward = reward_scale * (reward - np.mean(reward, axis=0)) / (
-                np.std(reward, axis=0) + 1e-6
+            np.std(reward, axis=0) + 1e-6
         )  # normalize with batch mean and std; plus a small number to prevent numerical problem
 
         # Training Q Function
@@ -368,8 +371,7 @@ if __name__ == '__main__':
     # initialization of buffer
     replay_buffer = ReplayBuffer(REPLAY_BUFFER_SIZE)
     # initialization of trainer
-    agent = SAC(state_dim, action_dim, action_range, HIDDEN_DIM,
-                        replay_buffer, SOFT_Q_LR, POLICY_LR, ALPHA_LR)
+    agent = SAC(state_dim, action_dim, action_range, HIDDEN_DIM, replay_buffer, SOFT_Q_LR, POLICY_LR, ALPHA_LR)
 
     t0 = time.time()
     # training loop
@@ -416,7 +418,7 @@ if __name__ == '__main__':
                 all_episode_reward.append(all_episode_reward[-1] * 0.9 + episode_reward * 0.1)
             print(
                 'Training  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                    episode+1, TRAIN_EPISODES, episode_reward,
+                    episode + 1, TRAIN_EPISODES, episode_reward,
                     time.time() - t0
                 )
             )
@@ -446,4 +448,6 @@ if __name__ == '__main__':
             print(
                 'Testing  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
                     episode + 1, TEST_EPISODES, episode_reward,
-                    time.time() - t0))
+                    time.time() - t0
+                )
+            )
