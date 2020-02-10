@@ -44,9 +44,9 @@ def restore_params(network, path='models'):
         expected_bytes=25600116
     )  # ls -al
     params = load_npz(name=os.path.join(path, 'mobilenet.npz'))
-    for idx, net_weight in enumerate(network.all_weights):
-        if 'batchnorm' in net_weight.name:
-            params[idx] = params[idx].reshape(1, 1, 1, -1)
+    # for idx, net_weight in enumerate(network.all_weights):
+    #     if 'batchnorm' in net_weight.name:
+    #         params[idx] = params[idx].reshape(1, 1, 1, -1)
     assign_weights(params[:len(network.all_weights)], network)
     del params
 

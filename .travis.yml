@@ -26,7 +26,7 @@ env:
   # Backward Compatibility in insured for release less than 1 year old.
   # https://pypi.org/project/tensorflow/#history
   matrix:
-    - _TF_VERSION=2.0.0a0
+    - _TF_VERSION=2.0.0-rc1
 #     - _TF_VERSION=1.12.0 # Remove on Oct 22, 2019
 #     - _TF_VERSION=1.11.0 # Remove on Sep 28, 2019
 #     - _TF_VERSION=1.10.1 # Remove on Aug 24, 2019
@@ -63,7 +63,7 @@ matrix:
 install:
   - |
     if [[ -v _DOC_AND_YAPF_TEST ]]; then
-        pip install tensorflow==2.0.0a0
+        pip install tensorflow==2.0.0-rc1
         pip install yapf
         pip install -e .[doc]
     else
@@ -101,7 +101,7 @@ deploy:
   on:
     tags: true
     python: '3.6'
-    condition: '$_TF_VERSION = 2.0.0a0'
+    condition: '$_TF_VERSION = 2.0.0-rc1'
 #     condition: '$_TF_VERSION = 1.11.0'
 
 # Documentation: https://docs.travis-ci.com/user/deployment/releases/
@@ -115,6 +115,5 @@ deploy:
   on:
     tags: true
     python: '3.6'
-    condition: '$_TF_VERSION = 2.0.0a0'
+    condition: '$_TF_VERSION = 2.0.0-rc1'
 #     condition: '$_TF_VERSION = 1.11.0'
-

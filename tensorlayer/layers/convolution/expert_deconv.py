@@ -80,8 +80,7 @@ class DeConv1dLayer(Layer):
             b_init=tl.initializers.constant(value=0.0),
             name=None  # 'decnn1d_layer',
     ):
-        super().__init__(name)
-        self.act = act
+        super().__init__(name, act=act)
         self.shape = shape
         self.outputs_shape = outputs_shape
         self.strides = strides
@@ -215,8 +214,7 @@ class DeConv2dLayer(Layer):
             b_init=tl.initializers.constant(value=0.0),
             name=None  # 'decnn2d_layer',
     ):
-        super().__init__(name)
-        self.act = act
+        super().__init__(name, act=act)
         self.shape = shape
         self.outputs_shape = outputs_shape
         self.strides = strides
@@ -342,8 +340,7 @@ class DeConv3dLayer(Layer):
             b_init=tl.initializers.constant(value=0.0),
             name=None  # 'decnn3d_layer',
     ):
-        super().__init__(name)
-        self.act = act
+        super().__init__(name, act=act)
         self.shape = shape
         self.outputs_shape = outputs_shape
         self.strides = strides

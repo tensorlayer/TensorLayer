@@ -7,15 +7,15 @@ import sys
 import time
 from datetime import datetime
 
-import gridfs
 import numpy as np
-import pymongo
 import tensorflow as tf
 
+import gridfs
+import pymongo
 from tensorlayer import logging
-from tensorlayer.files import net2static_graph, static_graph2net, assign_weights
-from tensorlayer.files import save_weights_to_hdf5, load_hdf5_to_weights
-from tensorlayer.files import del_folder, exists_or_mkdir
+from tensorlayer.files import (
+    assign_weights, del_folder, exists_or_mkdir, load_hdf5_to_weights, save_weights_to_hdf5, static_graph2net
+)
 
 
 class TensorHub(object):
@@ -153,7 +153,7 @@ class TensorHub(object):
         s = time.time()
 
         # kwargs.update({'architecture': network.all_graphs, 'time': datetime.utcnow()})
-        kwargs.update({'architecture': net2static_graph(network), 'time': datetime.utcnow()})
+        kwargs.update({'architecture': network.config, 'time': datetime.utcnow()})
 
         try:
             params_id = self.model_fs.put(self._serialization(params))
@@ -640,7 +640,7 @@ class TensorHub(object):
         logging.info("[Database] Start Task: key: {} sort: {} push time: {}".format(task_name, sort, _datetime))
         _script = _script.decode('utf-8')
         with tf.Graph().as_default():  #  # as graph: # clear all TF graphs
-            exec(_script, globals())
+            exec (_script, globals())
 
         # set status to finished
         _ = self.db.Task.find_one_and_update({'_id': _id}, {'$set': {'status': 'finished'}})

@@ -70,11 +70,10 @@ class Conv1d(Layer):
             in_channels=None,
             name=None  # 'conv1d'
     ):
-        super().__init__(name)
+        super().__init__(name, act=act)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.stride = stride
-        self.act = act
         self.padding = padding
         self.data_format = data_format
         self.dilation_rate = dilation_rate
@@ -180,9 +179,9 @@ class Conv2d(Layer):
     With TensorLayer
 
     >>> net = tl.layers.Input([8, 400, 400, 3], name='input')
-    >>> conv2d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), stride=(2, 2), b_init=None, in_channels=3, name='conv2d_1')
+    >>> conv2d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), b_init=None, in_channels=3, name='conv2d_1')
     >>> print(conv2d)
-    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), stride=(2, 2), act=tf.nn.relu, name='conv2d_2')(net)
+    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, name='conv2d_2')(net)
     >>> print(tensor)
 
     """
@@ -201,11 +200,10 @@ class Conv2d(Layer):
             in_channels=None,
             name=None  # 'conv2d',
     ):
-        super().__init__(name)
+        super().__init__(name, act=act)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self._strides = self.strides = strides
-        self.act = act
         self.padding = padding
         self.data_format = data_format
         self._dilation_rate = self.dilation_rate = dilation_rate
@@ -314,9 +312,9 @@ class Conv3d(Layer):
     With TensorLayer
 
     >>> net = tl.layers.Input([8, 20, 20, 20, 3], name='input')
-    >>> conv3d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3, 3), stride=(2, 2, 2), b_init=None, in_channels=3, name='conv3d_1')
+    >>> conv3d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), b_init=None, in_channels=3, name='conv3d_1')
     >>> print(conv3d)
-    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3, 3), stride=(2, 2, 2), act=tf.nn.relu, name='conv3d_2')(net)
+    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), act=tf.nn.relu, name='conv3d_2')(net)
     >>> print(tensor)
 
     """
@@ -335,11 +333,10 @@ class Conv3d(Layer):
             in_channels=None,
             name=None  # 'conv3d',
     ):
-        super().__init__(name)
+        super().__init__(name, act=act)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self._strides = self.strides = strides
-        self.act = act
         self.padding = padding
         self.data_format = data_format
         self._dilation_rate = self.dilation_rate = dilation_rate

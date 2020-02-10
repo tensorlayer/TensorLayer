@@ -1,44 +1,13 @@
-Something you need to know:
+# Before You Start
 
-### 1. Static and dynamic model
+TensorLayer has two types of models.
+Static model allows you to build model in a fluent way while dynamic model allows you to fully control the forward process.
+Please read this [DOCS](https://tensorlayer.readthedocs.io/en/latest/user/get_start_model.html#) before you start.
 
-1) `tutorial_mnist_mlp_static.py`: static model
-
-2) `tutorial_mnist_mlp_dynamic.py`: dynamic model
-
-### 2. Switching Training and testing
-
-There are two ways to switch the training and testing mode: 
-
-1 ) use Pytorch-like method, turn on and off the training/evaluation as follow:
-
-```python
-model.train() # enable dropout, batch norm decay and etc
-y1 = model(x)
-model.eval() # disable dropout, fix batch norm weights and etc
-y2 = model(x)
-```
-
-2) use TensorLayer 1.x method, input `is_train` to the model while inferencing.
-
-```python
-y1 = model(x, is_train=True)
-y2 = model(x, is_train=False)
-```
-
-
-
-### Data augmentation
-
-- Data augmentation is essential for training, while if the augmentation is complex, it will slow down the training.
-We used CIFAR10 classification as example of data augmentation. 
-- For the best performance, please use `tutorial_cifar10_datasetapi.py`.
-- It is suggested to use TensorFlow's DataSet API (`tf.data` and `tf.image`) and TFRecord for the sake of performance and generalibity.
-- For TFRecord and Dataset API,
-TFRecord needs to first store all data into TFRecord format, while Dataset API is simpler that can directly use data XXXX.
-
-### Float16
-- For Float16, some GPUs can speed up but some cannot.
-
-### Others
-- For distributed training
+- [MNIST Simplest Example](https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_simple.py)
+- [MNIST Static Example](https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_mlp_static.py)
+- [MNIST Static Example for Reused Model](https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_mlp_static_2.py)
+- [MNIST Dynamic Example](https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_mlp_dynamic.py)
+- [MNIST Dynamic Example for Seperated Models](https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_mlp_dynamic_2.py)
+- [MNIST Static Siamese Model Example](https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_mnist_siamese.py)
+- [CIFAR10 Static Example with Data Augmentation](https://github.com/tensorlayer/tensorlayer/blob/master/examples/basic_tutorials/tutorial_cifar10_cnn_static.py)

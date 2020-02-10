@@ -53,9 +53,8 @@ class SubpixelConv1d(Layer):
             in_channels=None,
             name=None  # 'subpixel_conv1d'
     ):
-        super().__init__(name)
+        super().__init__(name, act=act)
         self.scale = scale
-        self.act = act
         self.in_channels = in_channels
         self.out_channels = int(self.in_channels / self.scale)
 
@@ -89,7 +88,6 @@ class SubpixelConv1d(Layer):
             outputs = self.act(outputs)
         return outputs
 
-    @private_method
     def _PS(self, I, r):
         X = tf.transpose(a=I, perm=[2, 1, 0])  # (r, w, b)
         X = tf.batch_to_space(input=X, block_shape=[r], crops=[[0, 0]])  # (1, r*w, b)
@@ -151,10 +149,9 @@ class SubpixelConv2d(Layer):
             in_channels=None,
             name=None  # 'subpixel_conv2d'
     ):
-        super().__init__(name)
+        super().__init__(name, act=act)
         self.scale = scale
         self.n_out_channels = n_out_channels
-        self.act = act
         self.in_channels = in_channels
 
         if self.in_channels is not None:
@@ -191,7 +188,6 @@ class SubpixelConv2d(Layer):
             outputs = self.act(outputs)
         return outputs
 
-    @private_method
     def _PS(self, X, r, n_out_channels):
 
         _err_log = "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"

@@ -1,6 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import inspect
 from abc import abstractmethod
 
 import tensorflow as tf
@@ -8,14 +9,42 @@ import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import (deprecated_alias, private_method, protected_method)
-from tensorlayer.layers.utils import (get_variable_with_initializer, list_remove_repeat)
 from tensorlayer.files import utils
-
-import inspect
+from tensorlayer.layers.utils import (get_variable_with_initializer, list_remove_repeat)
 
 __all__ = ['Layer', 'ModelLayer', 'LayerList']
 
 _global_layer_name_dict = {}  # TODO: better implementation?
+
+_act_dict = {
+    "relu": tf.nn.relu,
+    "relu6": tf.nn.relu6,
+    "leaky_relu": tf.nn.leaky_relu,
+    "lrelu": tf.nn.leaky_relu,
+    "softplus": tf.nn.softplus,
+    "tanh": tf.nn.tanh,
+    "sigmoid": tf.nn.sigmoid,
+}
+
+
+def str2act(act):
+    if len(act) > 5 and act[0:5] == "lrelu":
+        try:
+            alpha = float(act[5:])
+            return lambda x: tf.nn.leaky_relu(x, alpha=alpha)
+        except Exception as e:
+            raise Exception("{} can not be parsed as a float".format(act[5:]))
+
+    if len(act) > 10 and act[0:10] == "leaky_relu":
+        try:
+            alpha = float(act[10:])
+            return lambda x: tf.nn.leaky_relu(x, alpha=alpha)
+        except Exception as e:
+            raise Exception("{} can not be parsed as a float".format(act[10:]))
+
+    if act not in _act_dict.keys():
+        raise Exception("Unsupported act: {}".format(act))
+    return _act_dict[act]
 
 
 class Layer(object):
@@ -47,11 +76,12 @@ class Layer(object):
 
     """
 
-    def __init__(self, name=None, *args, **kwargs):
+    def __init__(self, name=None, act=None, *args, **kwargs):
         """
         Initializing the Layer.
 
         :param name: str or None
+        :param name: str or function or None
         """
 
         # Layer constants
@@ -84,6 +114,10 @@ class Layer(object):
                 _global_layer_name_dict[name] = 0
 
         self.name = name
+        if isinstance(act, str):
+            self.act = str2act(act)
+        else:
+            self.act = act
 
         # Layer building state
         self._built = False
@@ -94,8 +128,11 @@ class Layer(object):
 
         # Layer weight state
         self._all_weights = None
-        self._trainable_weights = None
-        self._nontrainable_weights = None
+        self._trainable_weights = []
+        self._nontrainable_weights = []
+
+        # nested layers
+        self._layers = None
 
         # Layer training state
         self.is_train = True
@@ -146,20 +183,39 @@ class Layer(object):
         if self._all_weights is not None and len(self._all_weights) > 0:
             pass
         else:
-            self._all_weights = list()
-            if self._trainable_weights is not None:
-                self._all_weights.extend(self._trainable_weights)
-            if self._nontrainable_weights is not None:
-                self._all_weights.extend(self._nontrainable_weights)
+            self._all_weights = self.trainable_weights + self.nontrainable_weights
         return self._all_weights
 
     @property
     def trainable_weights(self):
-        return self._trainable_weights
+        nested = self._collect_sublayers_attr('trainable_weights')
+        return self._trainable_weights + nested
 
     @property
     def nontrainable_weights(self):
-        return self._nontrainable_weights
+        nested = self._collect_sublayers_attr('nontrainable_weights')
+        return self._nontrainable_weights + nested
+
+    @property
+    def weights(self):
+        raise Exception(
+            "no property .weights exists, do you mean .all_weights, .trainable_weights, or .nontrainable_weights ?"
+        )
+
+    def _collect_sublayers_attr(self, attr):
+        if attr not in ['trainable_weights', 'nontrainable_weights']:
+            raise ValueError(
+                "Only support to collect some certain attributes of nested layers,"
+                "e.g. 'trainable_weights', 'nontrainable_weights', but got {}".format(attr)
+            )
+        if self._layers is None:
+            return []
+        nested = []
+        for layer in self._layers:
+            value = getattr(layer, attr)
+            if value is not None:
+                nested.extend(value)
+        return nested
 
     def __call__(self, inputs, *args, **kwargs):
         """
@@ -287,6 +343,20 @@ class Layer(object):
     def __delitem__(self, key):
         raise TypeError("The Layer API does not allow to use the method: `__delitem__`")
 
+    def __setattr__(self, key, value):
+        if isinstance(value, Layer):
+            value._fix_nodes_for_layers()
+            if self._layers is None:
+                self._layers = []
+            self._layers.append(value)
+        super().__setattr__(key, value)
+
+    def __delattr__(self, name):
+        value = getattr(self, name, None)
+        if isinstance(value, Layer):
+            self._layers.remove(value)
+        super().__delattr__(name)
+
     @protected_method
     def get_args(self):
         init_args = {"layer_type": "normal"}
@@ -311,9 +381,17 @@ class Layer(object):
 
                 val = values[arg]
 
+                if arg == "dtype" and isinstance(val, tf.DType):
+                    params[arg] = repr(val)
+                    continue
+
                 # change function (e.g. act) into dictionary of module path and function name
                 if inspect.isfunction(val):
-                    params[arg] = ('is_Func', utils.func2str(val))
+                    if ("__module__" in dir(val)) and (len(val.__module__) >
+                                                       10) and (val.__module__[0:10] == "tensorflow"):
+                        params[arg] = val.__name__
+                    else:
+                        params[arg] = ('is_Func', utils.func2str(val))
                     # if val.__name__ == "<lambda>":
                     #     params[arg] = utils.lambda2str(val)
                     # else:
@@ -435,6 +513,8 @@ class ModelLayer(Layer):
 
         # Layer weight state
         self._all_weights = model.all_weights
+        self._trainable_weights = model.trainable_weights
+        self._nontrainable_weights = model.nontrainable_weights
 
         # Layer training state
         self.is_train = True
@@ -479,7 +559,8 @@ class ModelLayer(Layer):
     def get_args(self):
         init_args = {}
         init_args.update({"layer_type": "modellayer"})
-        init_args["model"] = utils.net2static_graph(self.layer_args["model"])
+        # init_args["model"] = utils.net2static_graph(self.layer_args["model"])
+        init_args["model"] = self.layer_args["model"].config
         return init_args
 
 
@@ -522,6 +603,8 @@ class LayerList(Layer):
 
         is_built = True
         for layer in self.layers:
+            self._trainable_weights.extend(layer.trainable_weights)
+            self._nontrainable_weights.extend(layer.nontrainable_weights)
             if layer._built is False:
                 is_built = False
             if layer._built and layer.all_weights is not None:

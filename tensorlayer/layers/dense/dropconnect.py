@@ -1,13 +1,14 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-import tensorlayer as tl
+import numbers
 
+import tensorflow as tf
+
+import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
-import numbers
 
 __all__ = [
     'DropconnectDense',
@@ -60,19 +61,18 @@ class DropconnectDense(Layer):
             keep=0.5,
             n_units=100,
             act=None,
-            W_init=tl.initializers.truncated_normal(stddev=0.1),
+            W_init=tl.initializers.truncated_normal(stddev=0.05),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
             name=None,  # 'dropconnect',
     ):
-        super().__init__(name)
+        super().__init__(name, act=act)
 
         if isinstance(keep, numbers.Real) and not (keep > 0 and keep <= 1):
             raise ValueError("keep must be a scalar tensor or a float in the " "range (0, 1], got %g" % keep)
 
         self.keep = keep
         self.n_units = n_units
-        self.act = act
         self.W_init = W_init
         self.b_init = b_init
         self.in_channels = in_channels

@@ -1,8 +1,10 @@
 #! /usr/bin/python
 # -*- coding: utf8 -*-
 import time
+
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import *
 from tensorlayer.models import Model
@@ -53,6 +55,7 @@ tl.vis.save_images(X_test_40[0:32], [4, 8], '_imgs_distorted.png')
 
 ##================== DEFINE MODEL ============================================##
 class Net(Model):
+
     def __init__(self):
         super(Net, self).__init__()
 

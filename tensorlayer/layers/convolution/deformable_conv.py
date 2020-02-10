@@ -83,12 +83,11 @@ class DeformableConv2d(Layer):
             in_channels=None,
             name=None  # 'deformable_conv_2d',
     ):
-        super().__init__(name)
+        super().__init__(name, act=act)
 
         self.offset_layer = offset_layer
         self.n_filter = n_filter
         self.filter_size = filter_size
-        self.act = act
         self.padding = padding
         self.W_init = W_init
         self.b_init = b_init
@@ -237,26 +236,22 @@ class DeformableConv2d(Layer):
             outputs = self.act(outputs)
         return outputs
 
-    @private_method
     def _to_bc_h_w(self, x, x_shape):
         """(b, h, w, c) -> (b*c, h, w)"""
         x = tf.transpose(a=x, perm=[0, 3, 1, 2])
         x = tf.reshape(x, (-1, x_shape[1], x_shape[2]))
         return x
 
-    @private_method
     def _to_b_h_w_n_c(self, x, x_shape):
         """(b*c, h, w, n) -> (b, h, w, n, c)"""
         x = tf.reshape(x, (-1, x_shape[4], x_shape[1], x_shape[2], x_shape[3]))
         x = tf.transpose(a=x, perm=[0, 2, 3, 4, 1])
         return x
 
-    @private_method
     def tf_flatten(self, a):
         """Flatten tensor"""
         return tf.reshape(a, [-1])
 
-    @private_method
     def _get_vals_by_coords(self, inputs, coords, idx, out_shape):
         indices = tf.stack(
             [idx, self.tf_flatten(coords[:, :, :, :, 0]),
@@ -266,7 +261,6 @@ class DeformableConv2d(Layer):
         vals = tf.reshape(vals, out_shape)
         return vals
 
-    @private_method
     def _tf_repeat(self, a, repeats):
         """Tensorflow version of np.repeat for 1D"""
         # https://github.com/tensorflow/tensorflow/issues/8521
@@ -279,7 +273,6 @@ class DeformableConv2d(Layer):
         a = self.tf_flatten(a)
         return a
 
-    @private_method
     def _tf_batch_map_coordinates(self, inputs, coords):
         """Batch version of tf_map_coordinates
 
@@ -326,7 +319,6 @@ class DeformableConv2d(Layer):
 
         return mapped_vals
 
-    @private_method
     def _tf_batch_map_offsets(self, inputs, offsets, grid_offset):
         """Batch map offsets into input
 

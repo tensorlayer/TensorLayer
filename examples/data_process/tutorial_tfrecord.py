@@ -79,8 +79,7 @@ def read_and_decode(filename):
     raw_dataset = tf.data.TFRecordDataset([filename]).shuffle(1000).batch(4)
     for serialized_example in raw_dataset:
         features = tf.io.parse_example(
-            serialized_example,
-            features={
+            serialized_example, features={
                 'label': tf.io.FixedLenFeature([], tf.int64),
                 'img_raw': tf.io.FixedLenFeature([], tf.string),
             }
@@ -97,4 +96,3 @@ img_batch, label_batch = next(read_and_decode("train.tfrecords"))
 print("img_batch   : %s" % img_batch.shape)
 print("label_batch : %s" % label_batch.shape)
 tl.visualize.images2d(img_batch, second=1, saveable=False, name='batch', dtype=None, fig_idx=2020121)
-

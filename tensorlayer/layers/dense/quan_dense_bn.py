@@ -8,7 +8,8 @@ from tensorflow.python.training import moving_averages
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.utils import (quantize_active_overflow, quantize_weight_overflow)
+from tensorlayer.layers.utils import (quantize_active_overflow,
+                                      quantize_weight_overflow)
 
 __all__ = [
     'QuanDenseLayerWithBN',
@@ -80,7 +81,7 @@ class QuanDenseLayerWithBN(Layer):
             gamma_init=tf.compat.v1.initializers.ones,
             beta_init=tf.compat.v1.initializers.zeros,
             use_gemm=False,
-            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.1),
+            W_init=tf.compat.v1.initializers.truncated_normal(stddev=0.05),
             W_init_args=None,
             name=None,  #'quan_dense_with_bn',
     ):

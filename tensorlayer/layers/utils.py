@@ -3,9 +3,9 @@
 
 import numpy as np
 import tensorflow as tf
-import tensorlayer as tl
 from tensorflow.python.ops.rnn_cell import LSTMStateTuple
 
+import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated, deprecated_alias
 

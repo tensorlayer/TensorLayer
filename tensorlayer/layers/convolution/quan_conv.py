@@ -7,7 +7,8 @@ import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.utils import (quantize_active_overflow, quantize_weight_overflow)
+from tensorlayer.layers.utils import (quantize_active_overflow,
+                                      quantize_weight_overflow)
 
 __all__ = ['QuanConv2d']
 
@@ -82,13 +83,12 @@ class QuanConv2d(Layer):
             in_channels=None,
             name=None  # 'quan_cnn2d',
     ):
-        super().__init__(name)
+        super().__init__(name, act=act)
         self.bitW = bitW
         self.bitA = bitA
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = self._strides = strides
-        self.act = act
         self.padding = padding
         self.use_gemm = use_gemm
         self.data_format = data_format

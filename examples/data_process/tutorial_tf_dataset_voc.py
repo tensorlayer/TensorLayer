@@ -108,5 +108,6 @@ for a in annbyte:
 ## save all images
 for i in range(len(im)):
     print(ann[i][1])
-    tl.vis.draw_boxes_and_labels_to_image(im[i] * 255, ann[i][0], ann[i][1], [], classes,
-                                          True, save_name='_bbox_vis_%d.png' % i)
+    tl.vis.draw_boxes_and_labels_to_image(
+        im[i] * 255, ann[i][0], ann[i][1], [], classes, True, save_name='_bbox_vis_%d.png' % i
+    )

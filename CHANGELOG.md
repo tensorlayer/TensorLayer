@@ -67,14 +67,135 @@ To release a new version, please update the changelog as followed:
 
 <!-- YOU CAN EDIT FROM HERE -->
 
+
 ## [Unreleased]
+
+### Added
+
+### Changed
+
+### Dependencies Update
+
+### Deprecated
+
+### Fixed
+
+- Fix README. (#PR 1044)
+- Fix package info. (#PR 1046)
+
+### Removed
+
+### Security
+
+### Contributors
+
+- @luomai (PR #1044, 1046)
+
+
+## [2.2.0] - 2019-09-13
+
+TensorLayer 2.2.0 is a maintenance release.
+It contains numerous API improvement and bug fixes.
+This release is compatible with TensorFlow 2 RC1.
+
+### Added
+- Support nested layer customization (#PR 1015)
+- Support string dtype in InputLayer (#PR 1017)
+- Support Dynamic RNN in RNN (#PR 1023)
+- Add ResNet50 static model (#PR 1030)
+- Add performance test code in static model (#PR 1041)
+
+### Changed
+
+- `SpatialTransform2dAffine` auto `in_channels`
+- support TensorFlow 2.0.0-rc1
+- Update model weights property, now returns its copy (#PR 1010)
+
+### Fixed
+- RNN updates: remove warnings, fix if seq_len=0, unitest (#PR 1033)
+- BN updates: fix BatchNorm1d for 2D data, refactored (#PR 1040)
+
+### Dependencies Update
+
+### Deprecated
+
+### Fixed
+- Fix `tf.models.Model._construct_graph` for list of outputs, e.g. STN case (PR #1010)
+- Enable better `in_channels` exception raise. (PR #1015)
+- Set allow_pickle=True in np.load() (#PR 1021)
+- Remove `private_method` decorator (#PR 1025)
+- Copy original model's `trainable_weights` and `nontrainable_weights` when initializing `ModelLayer` (#PR 1026)
+- Copy original model's `trainable_weights` and `nontrainable_weights` when initializing `LayerList` (#PR 1029)
+- Remove redundant parts in `model.all_layers` (#PR 1029)
+- Replace `tf.image.resize_image_with_crop_or_pad` with `tf.image.resize_with_crop_or_pad` (#PR 1032)
+- Fix a bug in `ResNet50` static model (#PR 1041)
+
+### Removed
+
+### Security
+
+### Contributors
+
+- @zsdonghao
+- @luomai
+- @ChrisWu1997: #1010 #1015 #1025 #1030 #1040
+- @warshallrho: #1017 #1021 #1026 #1029 #1032 #1041
+- @ArnoldLIULJ: #1023
+- @JingqingZ: #1023
+
+## [2.1.0]
+
+### Changed
+- Add version_info in model.config. (PR #992)
+- Replace tf.nn.func with tf.nn.func.\_\_name\_\_ in model config. (PR #994)
+- Add Reinforcement learning tutorials. (PR #995)
+- Add RNN layers with simple rnn cell, GRU cell, LSTM cell. (PR #998)
+- Update Seq2seq (#998) 
+- Add Seq2seqLuongAttention model (#998)
+
+### Fixed
+
+### Contributors
+- @warshallrho:  #992 #994
+- @quantumiracle: #995
+- @Tokarev-TT-33: #995
+- @initial-h: #995
+- @Officium: #995
+- @ArnoldLIULJ: #998
+- @JingqingZ: #998
+
+
+## [2.0.2] - 2019-6-5
+
+### Changed
+- change the format of network config, change related code and files; change layer act (PR #980)
+
+### Fixed
+- Fix dynamic model cannot track PRelu weights gradients problem (PR #982)
+- Raise .weights warning (commit)
+
+### Contributors
+- @warshallrho: #980
+- @1FengL: #982
+
+## [2.0.1] - 2019-5-17
+
+
+A maintain release.
+
+### Changed
+- remove `tl.layers.initialize_global_variables(sess)` (PR #931)
+- support `trainable_weights` (PR #966)
 
 ### Added
  - Layer
     - `InstanceNorm`, `InstanceNorm1d`, `InstanceNorm2d`, `InstanceNorm3d` (PR #963)
 
+* Reinforcement learning tutorials. (PR #995)
+
 ### Changed
 - remove `tl.layers.initialize_global_variables(sess)` (PR #931)
+- update `tutorial_generate_text.py`, `tutorial_ptb_lstm.py`. remove `tutorial_ptb_lstm_state_is_tuple.py` (PR #958)
 - change `tl.layers.core`, `tl.models.core` (PR #966)
 - change `weights` into `all_weights`, `trainable_weights`, `nontrainable_weights`
 
@@ -84,23 +205,25 @@ To release a new version, please update the changelog as followed:
 - yapf>=0.22,<0.25 => yapf==0.25.0 (PR #896)
 - imageio==2.5.0 progressbar2==3.39.3  scikit-learn==0.21.0 scikit-image==0.15.0 scipy==1.2.1 wrapt==1.11.1 pymongo==3.8.0 sphinx==2.0.1 wrapt==1.11.1 opencv-python==4.1.0.25 requests==2.21.0 tqdm==4.31.1	lxml==4.3.3 pycodestyle==2.5.0 sphinx==2.0.1 yapf==0.27.0(PR #967)
 
-### Deprecated
-
 ### Fixed
 - fix docs of models @zsdonghao #957
 - In `BatchNorm`, keep dimensions of mean and variance to suit `channels first` (PR #963)
 
-
-### Removed
-
-### Security
-
 ### Contributors
+- @warshallrho: #PR966
 - @zsdonghao: #931
 - @yd-yin: #963
+- @Tokarev-TT-33: # 995
+- @initial-h: # 995
+- @quantumiracle: #995
+- @Officium: #995
+- @1FengL: #958
+- @dvklopfenstein: #971
 
 
-## [2.0.0-alpha] - 2019-05-04
+## [2.0.0] - 2019-05-04
+
+To many PR for this update, please check [here](https://github.com/tensorlayer/tensorlayer/releases/tag/2.0.0) for more details.
 
 ### Changed
 * update for TensorLayer 2.0.0 alpha version (PR #952)
@@ -118,6 +241,7 @@ To release a new version, please update the changelog as followed:
 - @JingqingZ
 - @ChrisWu1997
 - @warshallrho
+
 
 ## [1.11.1] - 2018-11-15
 
@@ -320,8 +444,10 @@ To release a new version, please update the changelog as followed:
   - AtrousDeConv2dLayer added (PR #662)
   - Fix bugs of using `tf.layers` in CNN (PR #686)
 - Optimizer:
+
   - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (PR #636)
 - Setup:
+
   - Creation of installation flaggs `all`, `all_cpu`, and `all_gpu` (PR #660)
 - Test:
   - `test_utils_predict.py` added to reproduce and fix issue #288 (PR #566)
@@ -444,7 +570,12 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.11....master
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/2.0....master
+[2.2.0]: https://github.com/tensorlayer/tensorlayer/compare/2.2.0...2.2.0
+[2.1.0]: https://github.com/tensorlayer/tensorlayer/compare/2.1.0...2.1.0
+[2.0.2]: https://github.com/tensorlayer/tensorlayer/compare/2.0.2...2.0.2
+[2.0.1]: https://github.com/tensorlayer/tensorlayer/compare/2.0.1...2.0.1
+[2.0.0]: https://github.com/tensorlayer/tensorlayer/compare/2.0.0...2.0.0
 [1.11.1]: https://github.com/tensorlayer/tensorlayer/compare/1.11.0...1.11.0
 [1.11.0]: https://github.com/tensorlayer/tensorlayer/compare/1.10.1...1.11.0
 [1.10.1]: https://github.com/tensorlayer/tensorlayer/compare/1.10.0...1.10.1

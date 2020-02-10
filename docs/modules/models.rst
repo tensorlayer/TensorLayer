@@ -13,6 +13,10 @@ TensorLayer provides many pretrained models, you can easily use the whole or a p
     VGG19
     SqueezeNetV1
     MobileNetV1
+    ResNet50
+    Seq2seq
+    Seq2seqLuongAttention
+
 
 Base Model
 -----------
@@ -37,3 +41,19 @@ MobileNetV1
 ----------------
 
 .. autofunction:: MobileNetV1
+
+ResNet50
+----------------
+
+.. autofunction:: ResNet50
+
+Seq2seq
+------------------------
+
+.. autoclass:: Seq2seq
+
+
+Seq2seq Luong Attention
+------------------------
+
+.. autoclass:: Seq2seqLuongAttention

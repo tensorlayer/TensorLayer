@@ -1,3 +1,4 @@
+import pprint
 import time
 
 import numpy as np
@@ -21,17 +22,17 @@ X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(sha
 def get_model(inputs_shape):
     ni = Input(inputs_shape)
     nn = Dropout(keep=0.8)(ni)
-    nn = Dense(n_units=800, act=tf.nn.relu, in_channels=784)(nn) # in_channels is optional in this case as it can be inferred by the previous layer
+    nn = Dense(n_units=800, act=tf.nn.relu)(nn)
     nn = Dropout(keep=0.8)(nn)
-    nn = Dense(n_units=800, act=tf.nn.relu, in_channels=800)(nn) # in_channels is optional in this case as it can be inferred by the previous layer
+    nn = Dense(n_units=800, act=tf.nn.relu)(nn)
     nn = Dropout(keep=0.8)(nn)
-    nn = Dense(n_units=10, act=tf.nn.relu, in_channels=800)(nn) # in_channels is optional in this case as it can be inferred by the previous layer
+    nn = Dense(n_units=10, act=tf.nn.relu)(nn)
     M = Model(inputs=ni, outputs=nn, name="mlp")
     return M
 
+
 MLP = get_model([None, 784])
-# MLP.print_layers()
-# MLP.print_weights()
+pprint.pprint(MLP.config)
 
 ## start training
 n_epoch = 500
@@ -44,31 +45,23 @@ optimizer = tf.optimizers.Adam(lr=0.0001)
 for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
     start_time = time.time()
     ## iterate over the entire training set once (shuffle the data via training)
-
     for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
-
         MLP.train()  # enable dropout
-
         with tf.GradientTape() as tape:
             ## compute outputs
-            _logits = MLP(X_batch)  # alternatively, you can use MLP(x, is_train=True) and remove MLP.train()
+            _logits = MLP(X_batch)
             ## compute loss and update model
             _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
-
         grad = tape.gradient(_loss, train_weights)
         optimizer.apply_gradients(zip(grad, train_weights))
 
     ## use training and evaluation sets to evaluate the model every print_freq epoch
     if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-
         MLP.eval()  # disable dropout
-
         print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
-
         train_loss, train_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=False):
-
-            _logits = MLP(X_batch)  # alternatively, you can use MLP(x, is_train=False) and remove MLP.eval()
+            _logits = MLP(X_batch)
             train_loss += tl.cost.cross_entropy(_logits, y_batch, name='eval_loss')
             train_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
             n_iter += 1

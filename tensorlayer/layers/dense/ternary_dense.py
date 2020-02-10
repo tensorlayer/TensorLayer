@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-import tensorlayer as tl
 
+import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
@@ -44,14 +44,13 @@ class TernaryDense(Layer):
             n_units=100,
             act=None,
             use_gemm=False,
-            W_init=tl.initializers.truncated_normal(stddev=0.1),
+            W_init=tl.initializers.truncated_normal(stddev=0.05),
             b_init=tl.initializers.constant(value=0.0),
             in_channels=None,
             name=None,  #'ternary_dense',
     ):
-        super().__init__(name)
+        super().__init__(name, act=act)
         self.n_units = n_units
-        self.act = act
         self.use_gemm = use_gemm
         self.W_init = W_init
         self.b_init = b_init

@@ -4,28 +4,28 @@
 Contributing
 ===============
 
-TensorLayer is a major ongoing research project in Data Science Institute, Imperial College London. 
-The goal of the project is to develop a compositional language while complex learning systems
-can be build through composition of neural network modules.
+TensorLayer 2.0 is a major ongoing research project in CFCS, Peking University, the first version was established at Imperial College London in 2016. The goal of the project is to develop a compositional language while complex learning systems
+can be built through composition of neural network modules.
 
-Numerous contributors come from various horizons such as: Tsinghua University, Carnegie Mellon University, University of Technology of Compiegne, 
-Google, Microsoft, Bloomberg and etc.
-
-There are many functions need to be contributed such as Maxout, Neural Turing Machine, Attention, TensorLayer Mobile and etc.
+Numerous contributors come from various horizons such as: Imperial College London, Tsinghua University, Carnegie Mellon University, Stanford, University of Technology of Compiegne, Google, Microsoft, Bloomberg and etc.
 
 You can easily open a Pull Request (PR) on `GitHub`_, every little step counts and will be credited.
 As an open-source project, we highly welcome and value contributions!
 
 **If you are interested in working with us, please contact us at:** `tensorlayer@gmail.com <tensorlayer@gmail.com>`_.
 
+.. image:: ../../img/join_slack.png
+  :width: 30 %
+  :align: center
+  :target: https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc
+
 
 Project Maintainers
 --------------------------
 
-
 The TensorLayer project was started by `Hao Dong <https://zsdonghao.github.io>`_ at Imperial College London in June 2016. 
 
-For TensorLayer 2.x, it is now actively developing and maintaining by the following people who has more than 50 contributions*:
+For TensorLayer 2.x, it is now actively developing and maintaining by the following people who has more than 50 contributions:
 
 - **Hao Dong** (`@zsdonghao <https://github.com/zsdonghao>`_) - `<https://zsdonghao.github.io>`_
 - **Jingqing Zhang** (`@JingqingZ <https://github.com/JingqingZ>`_) - `<https://jingqingz.github.io>`_
@@ -51,10 +51,9 @@ What to contribute
 Your method and example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you have a new method or example in term of Deep learning and Reinforcement learning,
-you are welcome to contribute.
+If you have a new method or example in terms of Deep learning or Reinforcement learning, you are welcome to contribute.
 
-* Provide your layer or example, so everyone can use it.
+* Provide your layers or examples, so everyone can use it.
 * Explain how it would work, and link to a scientific paper if applicable.
 * Keep the scope as narrow as possible, to make it easier to implement.
 

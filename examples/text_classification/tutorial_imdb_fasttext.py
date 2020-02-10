@@ -82,6 +82,7 @@ class FastTextModel(Model):
         z = self.dense2(z)
         return z
 
+
 def augment_with_ngrams(unigrams, unigram_vocab_size, n_buckets, n=2):
     """Augment unigram features with hashed n-gram features."""
 
@@ -148,11 +149,12 @@ def train_test_and_save_model():
 
                 train_accuracy.append(accuracy)
                 if len(train_accuracy) % N_STEPS_TO_PRINT == 0:
-                    print("\t[%d/%d][%d]accuracy " % (epoch + 1, N_EPOCH, len(train_accuracy)),
-                          np.mean(train_accuracy[-N_STEPS_TO_PRINT:]))
+                    print(
+                        "\t[%d/%d][%d]accuracy " % (epoch + 1, N_EPOCH, len(train_accuracy)),
+                        np.mean(train_accuracy[-N_STEPS_TO_PRINT:])
+                    )
 
-            print("\tSummary: time %.5fs, overall accuracy" % (time.time() - start_time),
-                  np.mean(train_accuracy))
+            print("\tSummary: time %.5fs, overall accuracy" % (time.time() - start_time), np.mean(train_accuracy))
 
     # evaluation and testing
     model.eval()
