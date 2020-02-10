@@ -32,11 +32,7 @@ if __name__ == "__main__":
     logger.debug("prerelease: %s" % args.prerelease)
     logger.debug("debug: %s" % args.debug)
 
-    finder = pip._internal.index.PackageFinder(
-        [],
-        ['https://pypi.python.org/simple'],
-        session=requests.Session()
-    )
+    finder = pip._internal.index.PackageFinder([], ['https://pypi.python.org/simple'], session=requests.Session())
     results = finder.find_all_candidates(args.package)
     tmp_versions = [str(p.version) for p in results]
 
