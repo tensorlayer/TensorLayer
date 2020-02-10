@@ -39,7 +39,6 @@ https://www.tensorflow.org/versions/r0.9/tutorials/word2vec/index.html#vector-re
 
 import argparse
 import os
-import sys
 import time
 
 import numpy as np

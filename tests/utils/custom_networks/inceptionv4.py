@@ -3,20 +3,15 @@
 
 import os
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 import tensorflow as tf
+
 import tensorlayer as tl
+from tests.utils.custom_layers.basic_layers import conv_module, dense_module
+from tests.utils.custom_layers.inception_blocks import (
+    block_inception_a, block_inception_b, block_inception_c, block_reduction_a, block_reduction_b
+)
 
-from tests.utils.custom_layers.basic_layers import conv_module
-from tests.utils.custom_layers.basic_layers import dense_module
-
-from tests.utils.custom_layers.inception_blocks import block_inception_a
-from tests.utils.custom_layers.inception_blocks import block_inception_b
-from tests.utils.custom_layers.inception_blocks import block_inception_c
-
-from tests.utils.custom_layers.inception_blocks import block_reduction_a
-from tests.utils.custom_layers.inception_blocks import block_reduction_b
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 __all__ = ['InceptionV4_Network']
 

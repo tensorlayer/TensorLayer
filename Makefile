@@ -14,16 +14,17 @@ test:
 	python3 tests/files/test_utils_saveload.py
 
 format:
-	autoflake -i examples/*.py
-	autoflake -i tensorlayer/*.py
-	autoflake -i tensorlayer/**/*.py
+	autoflake -ir examples
+	autoflake -ir tensorlayer
+	autoflake -ir tests
 
 	isort -rc examples
 	isort -rc tensorlayer
+	isort -rc tests
 
-	yapf -i examples/*.py
-	yapf -i tensorlayer/*.py
-	yapf -i tensorlayer/**/*.py
+	yapf -ir examples
+	yapf -ir tensorlayer
+	yapf -ir tests
 
 install3:
 	pip3 install -U . --user

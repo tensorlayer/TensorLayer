@@ -48,12 +48,12 @@ class LocalResponseNorm(Layer):
     """
 
     def __init__(
-            self,
-            depth_radius=None,
-            bias=None,
-            alpha=None,
-            beta=None,
-            name=None,  #'lrn',
+        self,
+        depth_radius=None,
+        bias=None,
+        alpha=None,
+        beta=None,
+        name=None,  #'lrn',
     ):
         # super(LocalResponseNorm, self).__init__(prev_layer=prev_layer, name=name)
         super().__init__(name)
@@ -195,18 +195,18 @@ class BatchNorm(Layer):
     """
 
     def __init__(
-            self,
-            decay=0.9,
-            epsilon=0.00001,
-            act=None,
-            is_train=False,
-            beta_init=tl.initializers.zeros(),
-            gamma_init=tl.initializers.random_normal(mean=1.0, stddev=0.002),
-            moving_mean_init=tl.initializers.zeros(),
-            moving_var_init=tl.initializers.zeros(),
-            num_features=None,
-            data_format='channels_last',
-            name=None,
+        self,
+        decay=0.9,
+        epsilon=0.00001,
+        act=None,
+        is_train=False,
+        beta_init=tl.initializers.zeros(),
+        gamma_init=tl.initializers.random_normal(mean=1.0, stddev=0.002),
+        moving_mean_init=tl.initializers.zeros(),
+        moving_var_init=tl.initializers.zeros(),
+        num_features=None,
+        data_format='channels_last',
+        name=None,
     ):
         super(BatchNorm, self).__init__(name=name, act=act)
         self.decay = decay
@@ -411,9 +411,9 @@ class InstanceNorm(Layer):
     """
 
     def __init__(
-            self, act=None, epsilon=0.00001, beta_init=tl.initializers.zeros(),
-            gamma_init=tl.initializers.random_normal(mean=1.0, stddev=0.002), num_features=None,
-            data_format='channels_last', name=None
+        self, act=None, epsilon=0.00001, beta_init=tl.initializers.zeros(),
+        gamma_init=tl.initializers.random_normal(mean=1.0, stddev=0.002), num_features=None,
+        data_format='channels_last', name=None
     ):
         super(InstanceNorm, self).__init__(name=name, act=act)
         self.epsilon = epsilon
@@ -606,21 +606,21 @@ class LayerNorm(Layer):
     """
 
     def __init__(
-            self,  #prev_layer,
-            center=True,
-            scale=True,
-            act=None,
-            # reuse=None,
-            # variables_collections=None,
-            # outputs_collections=None,
-            # trainable=True,
-            epsilon=1e-12,
-            begin_norm_axis=1,
-            begin_params_axis=-1,
-            beta_init=tl.initializers.zeros(),
-            gamma_init=tl.initializers.ones(),
-            data_format='channels_last',
-            name=None,
+        self,  #prev_layer,
+        center=True,
+        scale=True,
+        act=None,
+        # reuse=None,
+        # variables_collections=None,
+        # outputs_collections=None,
+        # trainable=True,
+        epsilon=1e-12,
+        begin_norm_axis=1,
+        begin_params_axis=-1,
+        beta_init=tl.initializers.zeros(),
+        gamma_init=tl.initializers.ones(),
+        data_format='channels_last',
+        name=None,
     ):
 
         # super(LayerNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
@@ -805,17 +805,17 @@ class SwitchNorm(Layer):
     """
 
     def __init__(
-            self,
-            act=None,
-            epsilon=1e-5,
-            beta_init=tl.initializers.constant(0.0),
-            gamma_init=tl.initializers.constant(1.0),
-            moving_mean_init=tl.initializers.zeros(),
-            # beta_init=tf.compat.v1.initializers.constant(0.0),
-            # gamma_init=tf.compat.v1.initializers.constant(1.0),
-            # moving_mean_init=tf.compat.v1.initializers.zeros(),
-            data_format='channels_last',
-            name=None,  #'switchnorm',
+        self,
+        act=None,
+        epsilon=1e-5,
+        beta_init=tl.initializers.constant(0.0),
+        gamma_init=tl.initializers.constant(1.0),
+        moving_mean_init=tl.initializers.zeros(),
+        # beta_init=tf.compat.v1.initializers.constant(0.0),
+        # gamma_init=tf.compat.v1.initializers.constant(1.0),
+        # moving_mean_init=tf.compat.v1.initializers.zeros(),
+        data_format='channels_last',
+        name=None,  #'switchnorm',
     ):
         # super(SwitchNorm, self).__init__(prev_layer=prev_layer, act=act, name=name)
         super().__init__(name, act=act)

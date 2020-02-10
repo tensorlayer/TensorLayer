@@ -46,12 +46,12 @@ class UpSampling2d(Layer):
     """
 
     def __init__(
-            self,
-            scale,
-            method='bilinear',
-            antialias=False,
-            data_format='channel_last',
-            name=None,
+        self,
+        scale,
+        method='bilinear',
+        antialias=False,
+        data_format='channel_last',
+        name=None,
     ):
         super(UpSampling2d, self).__init__(name)
         self.method = method
@@ -89,7 +89,7 @@ class UpSampling2d(Layer):
         inputs : :class:`Tensor`
             Inputs tensors with 4-D Tensor of the shape (batch, height, width, channels)
         """
-        output_size = [inputs.shape[1] * self.scale[0], inputs.shape[2] * self.scale[1]]
+        output_size = [int(inputs.shape[1] * self.scale[0]), int(inputs.shape[2] * self.scale[1])]
         outputs = tf.image.resize(inputs, size=output_size, method=self.method, antialias=self.antialias)
         return outputs
 
@@ -127,12 +127,12 @@ class DownSampling2d(Layer):
     """
 
     def __init__(
-            self,
-            scale,
-            method='bilinear',
-            antialias=False,
-            data_format='channel_last',
-            name=None,
+        self,
+        scale,
+        method='bilinear',
+        antialias=False,
+        data_format='channel_last',
+        name=None,
     ):
         super(DownSampling2d, self).__init__(name)
         self.method = method

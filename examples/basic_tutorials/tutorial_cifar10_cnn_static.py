@@ -125,7 +125,7 @@ def _map_fn_train(img, target):
 
 def _map_fn_test(img, target):
     # 1. Crop the central [height, width] of the image.
-    img = tf.image.resize_with_crop_or_pad(img, 24, 24)
+    img = tf.image.resize_with_pad(img, 24, 24)
     # 2. Subtract off the mean and divide by the variance of the pixels.
     img = tf.image.per_image_standardization(img)
     img = tf.reshape(img, (24, 24, 3))

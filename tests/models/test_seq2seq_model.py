@@ -4,16 +4,17 @@
 import os
 import unittest
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 import numpy as np
 import tensorflow as tf
-import tensorlayer as tl
-from tqdm import tqdm
 from sklearn.utils import shuffle
+
+import tensorlayer as tl
+from tensorlayer.cost import cross_entropy_seq
 from tensorlayer.models.seq2seq import Seq2seq
 from tests.utils import CustomTestCase
-from tensorlayer.cost import cross_entropy_seq
+from tqdm import tqdm
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class Model_SEQ2SEQ_Test(CustomTestCase):
