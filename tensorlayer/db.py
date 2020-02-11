@@ -48,7 +48,7 @@ class TensorHub(object):
 
     # @deprecated_alias(db_name='dbname', user_name='username', end_support_version=2.1)
     def __init__(
-            self, ip='localhost', port=27017, dbname='dbname', username='None', password='password', project_name=None
+        self, ip='localhost', port=27017, dbname='dbname', username='None', password='password', project_name=None
     ):
         self.ip = ip
         self.port = port
@@ -640,7 +640,7 @@ class TensorHub(object):
         logging.info("[Database] Start Task: key: {} sort: {} push time: {}".format(task_name, sort, _datetime))
         _script = _script.decode('utf-8')
         with tf.Graph().as_default():  #  # as graph: # clear all TF graphs
-            exec (_script, globals())
+            exec(_script, globals())
 
         # set status to finished
         _ = self.db.Task.find_one_and_update({'_id': _id}, {'$set': {'status': 'finished'}})

@@ -65,21 +65,21 @@ class QuanDenseWithBN(Layer):
     """
 
     def __init__(
-            self,
-            n_units=100,
-            act=None,
-            decay=0.9,
-            epsilon=1e-5,
-            is_train=False,
-            bitW=8,
-            bitA=8,
-            gamma_init=tl.initializers.truncated_normal(stddev=0.05),
-            beta_init=tl.initializers.truncated_normal(stddev=0.05),
-            use_gemm=False,
-            W_init=tl.initializers.truncated_normal(stddev=0.05),
-            W_init_args=None,
-            in_channels=None,
-            name=None,  # 'quan_dense_with_bn',
+        self,
+        n_units=100,
+        act=None,
+        decay=0.9,
+        epsilon=1e-5,
+        is_train=False,
+        bitW=8,
+        bitA=8,
+        gamma_init=tl.initializers.truncated_normal(stddev=0.05),
+        beta_init=tl.initializers.truncated_normal(stddev=0.05),
+        use_gemm=False,
+        W_init=tl.initializers.truncated_normal(stddev=0.05),
+        W_init_args=None,
+        in_channels=None,
+        name=None,  # 'quan_dense_with_bn',
     ):
         super(QuanDenseWithBN, self).__init__(act=act, W_init_args=W_init_args, name=name)
         self.n_units = n_units
