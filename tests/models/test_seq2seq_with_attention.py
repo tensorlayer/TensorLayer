@@ -7,12 +7,12 @@ import unittest
 import numpy as np
 import tensorflow as tf
 from sklearn.utils import shuffle
+from tqdm import tqdm
 
 import tensorlayer as tl
 from tensorlayer.cost import cross_entropy_seq
 from tensorlayer.models.seq2seq_with_attention import Seq2seqLuongAttention
 from tests.utils import CustomTestCase
-from tqdm import tqdm
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 

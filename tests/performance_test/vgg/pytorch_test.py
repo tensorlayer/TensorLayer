@@ -2,11 +2,11 @@ import os
 import time
 
 import numpy as np
-
 import psutil
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
+
 from exp_config import (BATCH_SIZE, LERANING_RATE, MONITOR_INTERVAL, NUM_ITERS, random_input_generator)
 from torchvision.models import vgg16
 

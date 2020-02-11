@@ -26,10 +26,10 @@ import os
 import re
 import time
 
+import nltk
 import numpy as np
 import tensorflow as tf
 
-import nltk
 import tensorlayer as tl
 from tensorlayer.layers import *
 from tensorlayer.models import Model
