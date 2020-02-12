@@ -357,7 +357,8 @@ def mish(x):
 
     References
     ----------
-    - `Mish: A Self Regularized Non-Monotonic Neural Activation Function <https://arxiv.org/abs/1908.08681>`__
+    - `Mish: A Self Regularized Non-Monotonic Neural Activation Function, Diganta Misra. (2019)`
+    https://arxiv.org/abs/1908.08681
 
     """
     return x * tf.math.tanh(tf.math.softplus(x))
