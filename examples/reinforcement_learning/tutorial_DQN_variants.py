@@ -2,20 +2,15 @@
 DQN and its variants
 ------------------------
 We implement Double DQN, Dueling DQN and Noisy DQN here.
-
 The max operator in standard DQN uses the same values both to select and to
 evaluate an action by
 Q(s_t, a_t) = R_{t+1} + \gamma * max_{a}Q_{tar}(s_{t+1}, a).
 Double DQN propose to use following evaluation to address overestimation problem
 of max operator:
 Q(s_t, a_t) = R_{t+1} + \gamma * Q_{tar}(s_{t+1}, max_{a}Q(s_{t+1}, a)).
-
 Dueling DQN uses dueling architecture where the value of state and the advantage
 of each action is estimated separately.
-
 Noisy DQN propose to explore by adding parameter noises.
-
-
 Reference:
 ------------------------
 1. Double DQN
@@ -27,19 +22,13 @@ Reference:
 3. Noisy DQN
     Plappert M, Houthooft R, Dhariwal P, et al. Parameter space noise for
     exploration[J]. arXiv preprint arXiv:1706.01905, 2017.
-
-
 Environment:
 ------------------------
 Cartpole and Pong in OpenAI Gym
-
-
 Requirements:
 ------------------------
 tensorflow>=2.0.0a0
 tensorlayer>=2.0.0
-
-
 To run:
 ------------------------
 python tutorial_DQN_variantes.py --mode=train
@@ -50,36 +39,43 @@ import os
 import random
 import time
 
+import gym
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
 import tensorlayer as tl
-from tutorial_wrappers import build_env
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--mode', help='train or test', default='train')
+parser.add_argument('--train', dest='train', action='store_true', default=True)
+parser.add_argument('--test', dest='test', action='store_true', default=True)
 parser.add_argument(
-    '--save_path', default='dqn_variants', help='folder to save if mode == train else model path,'
+    '--save_path', default=None, help='folder to save if mode == train else model path,'
     'qnet will be saved once target net update'
 )
 parser.add_argument('--seed', help='random seed', type=int, default=0)
 parser.add_argument('--env_id', default='CartPole-v0', help='CartPole-v0 or PongNoFrameskip-v4')
 parser.add_argument('--noisy_scale', type=float, default=1e-2)
-parser.add_argument('--disable_double', action='store_false', default=True)
-parser.add_argument('--disable_dueling', action='store_false', default=True)
+parser.add_argument('--disable_double', action='store_true', default=False)
+parser.add_argument('--disable_dueling', action='store_true', default=False)
 args = parser.parse_args()
 
-if args.mode == 'train':
-    os.makedirs(args.save_path, exist_ok=True)
 random.seed(args.seed)
 np.random.seed(args.seed)
 tf.random.set_seed(args.seed)  # reproducible
+
 env_id = args.env_id
-env = build_env(env_id, seed=args.seed)
+env = gym.make(env_id)
+env.seed(args.seed)
 noise_scale = args.noisy_scale
 double = not args.disable_double
 dueling = not args.disable_dueling
 
+alg_name = 'DQN'
+if dueling: alg_name = 'Dueling_' + alg_name
+if double: alg_name = 'Double_' + alg_name
+if noise_scale != 0: alg_name = 'Noisy_' + alg_name
+print(alg_name)
 # ####################  hyper parameters  ####################
 if env_id == 'CartPole-v0':
     qnet_type = 'MLP'
@@ -279,14 +275,14 @@ class DQN(object):
     def __init__(self):
         model = MLP if qnet_type == 'MLP' else CNN
         self.qnet = model('q')
-        if args.mode == 'train':
+        if args.train:
             self.qnet.train()
             self.targetqnet = model('targetq')
             self.targetqnet.infer()
             sync(self.qnet, self.targetqnet)
         else:
             self.qnet.infer()
-            tl.files.load_and_assign_npz(name=args.save_path, network=self.qnet)
+            self.load(args.save_path)
         self.niter = 0
         if clipnorm is not None:
             self.optimizer = tf.optimizers.Adam(learning_rate=lr, clipnorm=clipnorm)
@@ -296,7 +292,7 @@ class DQN(object):
 
     def get_action(self, obv):
         eps = epsilon(self.niter)
-        if args.mode == 'train':
+        if args.train:
             if random.random() < eps:
                 return int(random.random() * out_dim)
             obv = np.expand_dims(obv, 0).astype('float32') * ob_scale
@@ -330,8 +326,7 @@ class DQN(object):
         self.niter += 1
         if self.niter % target_q_update_freq == 0:
             sync(self.qnet, self.targetqnet)
-            path = os.path.join(args.save_path, '{}.npz'.format(self.niter))
-            tl.files.save_npz(self.qnet.trainable_weights, name=path)
+            self.save(args.save_path)
 
     @tf.function
     def _train_func(self, b_o, b_a, b_r, b_o_, b_d):
@@ -355,64 +350,84 @@ class DQN(object):
         b_q = tf.reduce_sum(self.qnet(b_o) * tf.one_hot(b_a, out_dim), 1)
         return b_q - (b_r + reward_gamma * b_q_)
 
+    def save(self, path):
+        if path is None:
+            path = os.path.join('model', '_'.join([alg_name, env_id]))
+        if not os.path.exists(path):
+            os.makedirs(path)
+        tl.files.save_weights_to_hdf5(os.path.join(path, 'q_net.hdf5'), self.qnet)
+
+    def load(self, path):
+        if path is None:
+            path = os.path.join('model', '_'.join([alg_name, env_id]))
+        tl.files.load_hdf5_to_weights_in_order(os.path.join(path, 'q_net.hdf5'), self.qnet)
+
 
 # #############################  Trainer  ###################################
 if __name__ == '__main__':
     dqn = DQN()
-    if args.mode == 'train':
+    t0 = time.time()
+    if args.train:
         buffer = ReplayBuffer(buffer_size)
-
-        o = env.reset()
         nepisode = 0
-        t = time.time()
+        all_episode_reward = []
         for i in range(1, number_timesteps + 1):
+            o = env.reset()
+            episode_reward = 0
+            while True:
+                a = dqn.get_action(o)
 
-            a = dqn.get_action(o)
+                # execute action and feed to replay buffer
+                # note that `_` tail in var name means next
+                o_, r, done, info = env.step(a)
+                buffer.add(o, a, r, o_, done)
+                episode_reward += r
 
-            # execute action and feed to replay buffer
-            # note that `_` tail in var name means next
-            o_, r, done, info = env.step(a)
-            buffer.add(o, a, r, o_, done)
+                if i >= warm_start:
+                    transitions = buffer.sample(batch_size)
+                    dqn.train(*transitions)
 
-            if i >= warm_start:
-                transitions = buffer.sample(batch_size)
-                dqn.train(*transitions)
+                if done:
+                    break
+                else:
+                    o = o_
 
-            if done:
-                o = env.reset()
+            if nepisode == 0:
+                all_episode_reward.append(episode_reward)
             else:
-                o = o_
-
-            # episode in info is real (unwrapped) message
-            if info.get('episode'):
-                nepisode += 1
-                reward, length = info['episode']['r'], info['episode']['l']
-                fps = int(length / (time.time() - t))
-                print(
-                    'Time steps so far: {}, episode so far: {}, '
-                    'episode reward: {:.4f}, episode length: {}, FPS: {}'.format(i, nepisode, reward, length, fps)
+                all_episode_reward.append(all_episode_reward[-1] * 0.9 + episode_reward * 0.1)
+            nepisode += 1
+            print(
+                'Training  | Episode: {}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
+                    nepisode, episode_reward,
+                    time.time() - t0
                 )
-                t = time.time()
-    else:
+            )  # episode num starts from 1 in print
+
+        dqn.save(args.save_path)
+        plt.plot(all_episode_reward)
+        if not os.path.exists('image'):
+            os.makedirs('image')
+        plt.savefig(os.path.join('image', '_'.join([alg_name, env_id])))
+
+    if args.test:
         nepisode = 0
-        o = env.reset()
         for i in range(1, number_timesteps + 1):
-            a = dqn.get_action(o)
-
-            # execute action
-            # note that `_` tail in var name means next
-            o_, r, done, info = env.step(a)
-
-            if done:
-                o = env.reset()
-            else:
-                o = o_
-
-            # episode in info is real (unwrapped) message
-            if info.get('episode'):
-                nepisode += 1
-                reward, length = info['episode']['r'], info['episode']['l']
-                print(
-                    'Time steps so far: {}, episode so far: {}, '
-                    'episode reward: {:.4f}, episode length: {}'.format(i, nepisode, reward, length)
+            o = env.reset()
+            episode_reward = 0
+            while True:
+                env.render()
+                a = dqn.get_action(o)
+                o_, r, done, info = env.step(a)
+                episode_reward += r
+                if done:
+                    break
+                else:
+                    o = o_
+            nepisode += 1
+            print(
+                'Testing  | Episode: {}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
+                    nepisode, episode_reward,
+                    time.time() - t0
                 )
+            )

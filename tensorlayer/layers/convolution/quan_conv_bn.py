@@ -3,8 +3,9 @@
 
 import numpy as np
 import tensorflow as tf
-import tensorlayer as tl
 from tensorflow.python.training import moving_averages
+
+import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.utils import (quantize_active_overflow, quantize_weight_overflow)

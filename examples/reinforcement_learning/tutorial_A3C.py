@@ -46,23 +46,21 @@ python tutorial_A3C.py --train/test
 
 import argparse
 import multiprocessing
+import os
 import threading
 import time
 
+import gym
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
-import gym
 import tensorflow_probability as tfp
 import tensorlayer as tl
-from tensorlayer.layers import DenseLayer, InputLayer
 
 tfd = tfp.distributions
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
-
-np.random.seed(2)
-tf.random.set_seed(2)  # reproducible
 
 # add arguments in command  --train/test
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
@@ -72,11 +70,15 @@ args = parser.parse_args()
 
 #####################  hyper parameters  ####################
 
-GAME = 'BipedalWalker-v2'  # BipedalWalkerHardcore-v2   BipedalWalker-v2  LunarLanderContinuous-v2
-LOG_DIR = './log'  # the log file
-N_WORKERS = multiprocessing.cpu_count()  # number of workers accroding to number of cores in cpu
+ENV_ID = 'BipedalWalker-v2'  # BipedalWalkerHardcore-v2   BipedalWalker-v2  LunarLanderContinuous-v2
+RANDOM_SEED = 2  # random seed, can be either an int number or None
+RENDER = False  # render while training
+
+ALG_NAME = 'A3C'
+N_WORKERS = multiprocessing.cpu_count()  # number of workers according to number of cores in cpu
 # N_WORKERS = 2     # manually set number of workers
-MAX_GLOBAL_EP = 8  # number of training episodes
+MAX_GLOBAL_EP = 15000  # number of training episodes
+TEST_EPISODES = 10  # number of training episodes
 GLOBAL_NET_SCOPE = 'Global_Net'
 UPDATE_GLOBAL_ITER = 10  # update global policy after several episodes
 GAMMA = 0.99  # reward discount factor
@@ -91,9 +93,8 @@ GLOBAL_EP = 0  # will increase during training, stop training when it >= MAX_GLO
 
 class ACNet(object):
 
-    def __init__(self, scope, globalAC=None):
+    def __init__(self, scope):
         self.scope = scope
-        self.save_path = './model'
 
         w_init = tf.keras.initializers.glorot_normal(seed=None)  # initializer, glorot=xavier
 
@@ -122,7 +123,7 @@ class ACNet(object):
 
     @tf.function  # convert numpy functions to tf.Operations in the TFgraph, return tensor
     def update_global(
-        self, buffer_s, buffer_a, buffer_v_target, globalAC
+            self, buffer_s, buffer_a, buffer_v_target, globalAC
     ):  # refer to the global Actor-Crtic network for updating it with samples
         ''' update the global critic '''
         with tf.GradientTape() as tape:
@@ -157,31 +158,37 @@ class ACNet(object):
         for l_p, g_p in zip(self.critic.trainable_weights, globalAC.critic.trainable_weights):
             l_p.assign(g_p)
 
-    def choose_action(self, s):  # run by a local
+    def get_action(self, s, greedy=False):  # run by a local
         s = s[np.newaxis, :]
         self.mu, self.sigma = self.actor(s)
 
         with tf.name_scope('wrap_a_out'):
             self.mu, self.sigma = self.mu * A_BOUND[1], self.sigma + 1e-5
+        if greedy:
+            return self.mu.numpy()[0]
         normal_dist = tfd.Normal(self.mu, self.sigma)  # for continuous action space
         self.A = tf.clip_by_value(tf.squeeze(normal_dist.sample(1), axis=0), *A_BOUND)
         return self.A.numpy()[0]
 
-    def save_ckpt(self):  # save trained weights
-        tl.files.save_npz(self.actor.trainable_weights, name='model_actor.npz')
-        tl.files.save_npz(self.critic.trainable_weights, name='model_critic.npz')
+    def save(self):  # save trained weights
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
+        if not os.path.exists(path):
+            os.makedirs(path)
+        tl.files.save_npz(self.actor.trainable_weights, name=os.path.join(path, 'model_actor.npz'))
+        tl.files.save_npz(self.critic.trainable_weights, name=os.path.join(path, 'model_critic.npz'))
 
-    def load_ckpt(self):  # load trained weights
-        tl.files.load_and_assign_npz(name='model_actor.npz', network=self.actor)
-        tl.files.load_and_assign_npz(name='model_critic.npz', network=self.critic)
+    def load(self):  # load trained weights
+        path = os.path.join('model', '_'.join([ALG_NAME, ENV_ID]))
+        tl.files.load_and_assign_npz(name=os.path.join(path, 'model_actor.npz'), network=self.actor)
+        tl.files.load_and_assign_npz(name=os.path.join(path, 'model_critic.npz'), network=self.critic)
 
 
 class Worker(object):
 
-    def __init__(self, name, globalAC):
-        self.env = gym.make(GAME)
+    def __init__(self, name):
+        self.env = gym.make(ENV_ID)
         self.name = name
-        self.AC = ACNet(name, globalAC)
+        self.AC = ACNet(name)
 
     # def work(self):
     def work(self, globalAC):
@@ -193,10 +200,10 @@ class Worker(object):
             ep_r = 0
             while True:
                 # visualize Worker_0 during training
-                if self.name == 'Worker_0' and total_step % 30 == 0:
+                if RENDER and self.name == 'Worker_0' and total_step % 30 == 0:
                     self.env.render()
                 s = s.astype('float32')  # double to float
-                a = self.AC.choose_action(s)
+                a = self.AC.get_action(s)
                 s_, r, done, _info = self.env.step(a)
 
                 s_ = s_.astype('float32')  # double to float
@@ -223,11 +230,12 @@ class Worker(object):
 
                     buffer_v_target.reverse()
 
-                    buffer_s, buffer_a, buffer_v_target = (
-                        np.vstack(buffer_s), np.vstack(buffer_a), np.vstack(buffer_v_target)
-                    )
+                    buffer_s = tf.convert_to_tensor(np.vstack(buffer_s))
+                    buffer_a = tf.convert_to_tensor(np.vstack(buffer_a))
+                    buffer_v_target = tf.convert_to_tensor(np.vstack(buffer_v_target).astype('float32'))
+
                     # update gradients on global network
-                    self.AC.update_global(buffer_s, buffer_a, buffer_v_target.astype('float32'), globalAC)
+                    self.AC.update_global(buffer_s, buffer_a, buffer_v_target, globalAC)
                     buffer_s, buffer_a, buffer_r = [], [], []
 
                     # update local network from global network
@@ -240,25 +248,18 @@ class Worker(object):
                         GLOBAL_RUNNING_R.append(ep_r)
                     else:  # moving average
                         GLOBAL_RUNNING_R.append(0.95 * GLOBAL_RUNNING_R[-1] + 0.05 * ep_r)
-                    # print(
-                    #     self.name,
-                    #     "Episode: ",
-                    #     GLOBAL_EP,
-                    #     # "| pos: %i" % self.env.unwrapped.hull.position[0],  # number of move
-                    #     '| reward: %.1f' % ep_r,
-                    #     "| running_reward: %.1f" % GLOBAL_RUNNING_R[-1],
-                    #     # '| sigma:', test, # debug
-                    #     # 'WIN ' * 5 if self.env.unwrapped.hull.position[0] >= 88 else '',
-                    # )
-                    print('{}, Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'\
-                    .format(self.name, GLOBAL_EP, MAX_GLOBAL_EP, ep_r, time.time()-t0 ))
+                    print('Training  | {}, Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}' \
+                          .format(self.name, GLOBAL_EP, MAX_GLOBAL_EP, ep_r, time.time() - T0))
                     GLOBAL_EP += 1
                     break
 
 
 if __name__ == "__main__":
 
-    env = gym.make(GAME)
+    env = gym.make(ENV_ID)
+    # reproducible
+    np.random.seed(RANDOM_SEED)
+    tf.random.set_seed(RANDOM_SEED)
 
     N_S = env.observation_space.shape[0]
     N_A = env.action_space.shape[0]
@@ -266,56 +267,57 @@ if __name__ == "__main__":
     A_BOUND = [env.action_space.low, env.action_space.high]
     A_BOUND[0] = A_BOUND[0].reshape(1, N_A)
     A_BOUND[1] = A_BOUND[1].reshape(1, N_A)
-    # print(A_BOUND)
+
+    with tf.device("/cpu:0"):
+        GLOBAL_AC = ACNet(GLOBAL_NET_SCOPE)  # we only need its params
+
+    T0 = time.time()
     if args.train:
         # ============================= TRAINING ===============================
-        t0 = time.time()
         with tf.device("/cpu:0"):
-
             OPT_A = tf.optimizers.RMSprop(LR_A, name='RMSPropA')
             OPT_C = tf.optimizers.RMSprop(LR_C, name='RMSPropC')
-
-            GLOBAL_AC = ACNet(GLOBAL_NET_SCOPE)  # we only need its params
             workers = []
             # Create worker
             for i in range(N_WORKERS):
                 i_name = 'Worker_%i' % i  # worker name
-                workers.append(Worker(i_name, GLOBAL_AC))
+                workers.append(Worker(i_name))
 
         COORD = tf.train.Coordinator()
 
         # start TF threading
         worker_threads = []
         for worker in workers:
-            # t = threading.Thread(target=worker.work)
             job = lambda: worker.work(GLOBAL_AC)
             t = threading.Thread(target=job)
             t.start()
             worker_threads.append(t)
         COORD.join(worker_threads)
-        import matplotlib.pyplot as plt
-        plt.plot(GLOBAL_RUNNING_R)
-        plt.xlabel('episode')
-        plt.ylabel('global running reward')
-        plt.savefig('a3c.png')
-        plt.show()
 
-        GLOBAL_AC.save_ckpt()
+        GLOBAL_AC.save()
+
+        plt.plot(GLOBAL_RUNNING_R)
+        if not os.path.exists('image'):
+            os.makedirs('image')
+        plt.savefig(os.path.join('image', '_'.join([ALG_NAME, ENV_ID])))
 
     if args.test:
         # ============================= EVALUATION =============================
-        # env = gym.make(GAME)
-        # GLOBAL_AC = ACNet(GLOBAL_NET_SCOPE)
-        GLOBAL_AC.load_ckpt()
-        while True:
+        GLOBAL_AC.load()
+        for episode in range(TEST_EPISODES):
             s = env.reset()
-            rall = 0
+            episode_reward = 0
             while True:
                 env.render()
                 s = s.astype('float32')  # double to float
-                a = GLOBAL_AC.choose_action(s)
+                a = GLOBAL_AC.get_action(s, greedy=True)
                 s, r, d, _ = env.step(a)
-                rall += r
+                episode_reward += r
                 if d:
-                    print("reward", rall)
                     break
+            print(
+                'Testing  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
+                    episode + 1, TEST_EPISODES, episode_reward,
+                    time.time() - T0
+                )
+            )

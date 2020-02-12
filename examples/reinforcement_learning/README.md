@@ -20,7 +20,7 @@
 <br/>
 -->
 
-This repository contains the implementation of most popular reinforcement learning algorithms with Tensorlayer 2.0, supporting [Tensorflow 2.0](https://www.tensorflow.org/alpha/guide/effective_tf2). We aim to make the reinforcement learning tutorial for each algorithm simple and straight-forward to use, as this would not only benefit new learners of reinforcement learning but also provide convenience for senior researchers to testify their new ideas quickly. In addition to this project, we also released a [RL zoo](https://github.com/tensorlayer/RLzoo) for industrial users.
+This repository contains implementation of most popular reinforcement learning algorithms with Tensorlayer 2.0, supporting [Tensorflow 2.0](https://www.tensorflow.org/alpha/guide/effective_tf2). We aim to make the reinforcement learning tutorial for each algorithm simple and straight-forward to use, as this would not only benefits new learners of reinforcement learning, but also provide convenience for senior researchers to testify their new ideas quickly.
 
 ## Prerequisites:
 
@@ -45,6 +45,8 @@ For each tutorial, open a terminal and run:
  `python ***.py --train` for training and `python ***.py --test` for testing.
 
 The tutorial algorithms follow the same basic structure, as shown in file: [`./tutorial_format.py`](https://github.com/tensorlayer/tensorlayer/blob/reinforcement-learning/examples/reinforcement_learning/tutorial_format.py)
+
+The pretrained models and learning curves for each algorithm are stored [here](https://github.com/tensorlayer/pretrained-models). You can download the models and load the weights in the policies for tests.
 
 ## Table of Contents:
 ### value-based
@@ -123,18 +125,19 @@ The tutorial algorithms follow the same basic structure, as shown in file: [`./t
 
   ```
   We implement Double DQN, Dueling DQN and Noisy DQN here.
-
+  
   -The max operator in standard DQN uses the same values both to select and to evaluate an action by:
-
+  
      Q(s_t, a_t) = R\_{t+1\} + gamma \* max\_{a}Q\_\{target\}(s_{t+1}, a).
-
+  
   -Double DQN proposes to use following evaluation to address overestimation problem of max operator:
-
+  
      Q(s_t, a_t) = R\_{t+1\} + gamma \* Q\_{target}(s\_\{t+1\}, max{a}Q(s_{t+1}, a)).
-
+  
   -Dueling DQN uses dueling architecture where the value of state and the advantage of each action is estimated separately.
-
+  
   -Noisy DQN propose to explore by adding parameter noises.
+  ```
 
 
   ```
@@ -339,3 +342,5 @@ Our env wrapper: `./tutorial_wrappers.py`
 - @Tokarev-TT-33 Tianyang Yu @initial-h Hongming Zhang : PG, DDPG, PPO, DPPO, TRPO
 - @Officium Yanhua Huang: C51, DQN_variants, prioritized_replay, wrappers.
 
+
+  ```

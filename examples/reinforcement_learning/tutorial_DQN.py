@@ -2,20 +2,15 @@
 Deep Q-Network Q(a, s)
 -----------------------
 TD Learning, Off-Policy, e-Greedy Exploration (GLIE).
-
 Q(S, A) <- Q(S, A) + alpha * (R + lambda * Q(newS, newA) - Q(S, A))
 delta_w = R + lambda * Q(newS, newA)
-
 See David Silver RL Tutorial Lecture 5 - Q-Learning for more details.
-
 Reference
 ----------
 original paper: https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf
 EN: https://medium.com/emergent-future/simple-reinforcement-learning-with-tensorflow-part-0-q-learning-with-tables-and-neural-networks-d195264329d0#.5m3361vlw
 CN: https://zhuanlan.zhihu.com/p/25710327
-
 Note: Policy Network has been proved to be better than Q-Learning, see tutorial_atari_pong.py
-
 Environment
 -----------
 # The FrozenLake v0 environment
@@ -31,41 +26,40 @@ FFFH       (H: hole, fall to your doom)
 HFFG       (G: goal, where the frisbee is located)
 The episode ends when you reach the goal or fall in a hole. You receive a reward
 of 1 if you reach the goal, and zero otherwise.
-
 Prerequisites
 --------------
 tensorflow>=2.0.0a0
 tensorlayer>=2.0.0
-
 To run
 -------
 python tutorial_DQN.py --train/test
-
-
 """
 import argparse
+import os
 import time
 
+import gym
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
-import gym
 import tensorlayer as tl
 
 # add arguments in command  --train/test
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
-parser.add_argument('--train', dest='train', action='store_true', default=False)
+parser.add_argument('--train', dest='train', action='store_true', default=True)
 parser.add_argument('--test', dest='test', action='store_true', default=True)
 args = parser.parse_args()
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 #####################  hyper parameters  ####################
+env_id = 'FrozenLake-v0'
+alg_name = 'DQN'
 lambd = .99  # decay factor
 e = 0.1  # e-Greedy Exploration, the larger the more random
 num_episodes = 10000
 render = False  # display the game environment
-running_reward = None
 
 ##################### DQN ##########################
 
@@ -85,11 +79,15 @@ def get_model(inputs_shape):
 
 
 def save_ckpt(model):  # save trained weights
-    tl.files.save_npz(model.trainable_weights, name='dqn_model.npz')
+    path = os.path.join('model', '_'.join([alg_name, env_id]))
+    if not os.path.exists(path):
+        os.makedirs(path)
+    tl.files.save_weights_to_hdf5(os.path.join(path, 'dqn_model.hdf5'), model)
 
 
 def load_ckpt(model):  # load trained weights
-    tl.files.load_and_assign_npz(name='dqn_model.npz', network=model)
+    path = os.path.join('model', '_'.join([alg_name, env_id]))
+    tl.files.save_weights_to_hdf5(os.path.join(path, 'dqn_model.hdf5'), model)
 
 
 if __name__ == '__main__':
@@ -99,17 +97,17 @@ if __name__ == '__main__':
     train_weights = qnetwork.trainable_weights
 
     optimizer = tf.optimizers.SGD(learning_rate=0.1)
-    env = gym.make('FrozenLake-v0')
+    env = gym.make(env_id)
 
+    t0 = time.time()
     if args.train:
-        t0 = time.time()
+        all_episode_reward = []
         for i in range(num_episodes):
             ## Reset environment and get first new observation
-            # episode_time = time.time()
             s = env.reset()  # observation is state, integer 0 ~ 15
             rAll = 0
+            if render: env.render()
             for j in range(99):  # step index, maximum step is 99
-                if render: env.render()
                 ## Choose an action by greedily (with e chance of random action) from the Q-network
                 allQ = qnetwork(np.asarray([to_one_hot(s, 16)], dtype=np.float32)).numpy()
                 a = np.argmax(allQ, 1)
@@ -119,6 +117,7 @@ if __name__ == '__main__':
                     a[0] = env.action_space.sample()
                 ## Get new state and reward from environment
                 s1, r, d, _ = env.step(a[0])
+                if render: env.render()
                 ## Obtain the Q' values by feeding the new state through our network
                 Q1 = qnetwork(np.asarray([to_one_hot(s1, 16)], dtype=np.float32)).numpy()
 
@@ -145,23 +144,28 @@ if __name__ == '__main__':
                     break
 
             ## Note that, the rewards here with random action
-            running_reward = rAll if running_reward is None else running_reward * 0.99 + rAll * 0.01
-            # print("Episode [%d/%d] sum reward: %f running reward: %f took: %.5fs " % \
-            #     (i, num_episodes, rAll, running_reward, time.time() - episode_time))
-            print('Episode: {}/{}  | Episode Reward: {:.4f} | Running Average Reward: {:.4f}  | Running Time: {:.4f}'\
-            .format(i, num_episodes, rAll, running_reward,  time.time()-t0 ))
+            print('Training  | Episode: {}/{}  | Episode Reward: {:.4f} | Running Time: {:.4f}' \
+                  .format(i, num_episodes, rAll, time.time() - t0))
+
+            if i == 0:
+                all_episode_reward.append(rAll)
+            else:
+                all_episode_reward.append(all_episode_reward[-1] * 0.9 + rAll * 0.1)
+
         save_ckpt(qnetwork)  # save model
+        plt.plot(all_episode_reward)
+        if not os.path.exists('image'):
+            os.makedirs('image')
+        plt.savefig(os.path.join('image', '_'.join([alg_name, env_id])))
 
     if args.test:
-        t0 = time.time()
         load_ckpt(qnetwork)  # load model
         for i in range(num_episodes):
             ## Reset environment and get first new observation
-            episode_time = time.time()
             s = env.reset()  # observation is state, integer 0 ~ 15
             rAll = 0
+            if render: env.render()
             for j in range(99):  # step index, maximum step is 99
-                if render: env.render()
                 ## Choose an action by greedily (with e chance of random action) from the Q-network
                 allQ = qnetwork(np.asarray([to_one_hot(s, 16)], dtype=np.float32)).numpy()
                 a = np.argmax(allQ, 1)  # no epsilon, only greedy for testing
@@ -170,14 +174,9 @@ if __name__ == '__main__':
                 s1, r, d, _ = env.step(a[0])
                 rAll += r
                 s = s1
+                if render: env.render()
                 ## Reduce chance of random action if an episode is done.
-                if d ==True:
-                    e = 1. / ((i / 50) + 10)  # reduce e, GLIE: Greey in the limit with infinite Exploration
-                    break
+                if d: break
 
-            ## Note that, the rewards here with random action
-            running_reward = rAll if running_reward is None else running_reward * 0.99 + rAll * 0.01
-            # print("Episode [%d/%d] sum reward: %f running reward: %f took: %.5fs " % \
-            #     (i, num_episodes, rAll, running_reward, time.time() - episode_time))
-            print('Episode: {}/{}  | Episode Reward: {:.4f} | Running Average Reward: {:.4f}  | Running Time: {:.4f}'\
-            .format(i, num_episodes, rAll, running_reward,  time.time()-t0 ))
+            print('Testing  | Episode: {}/{}  | Episode Reward: {:.4f} | Running Time: {:.4f}' \
+                  .format(i, num_episodes, rAll, time.time() - t0))
