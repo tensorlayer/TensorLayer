@@ -1,10 +1,10 @@
 import os
 import time
 
+import psutil
 import tensorflow as tf
 from tensorflow.python.keras.applications import VGG16
 
-import psutil
 from exp_config import (BATCH_SIZE, LERANING_RATE, MONITOR_INTERVAL, NUM_ITERS, random_input_generator)
 
 gpus = tf.config.experimental.list_physical_devices('GPU')

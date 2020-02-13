@@ -19,7 +19,6 @@ import zipfile
 import cloudpickle
 import h5py
 import numpy as np
-import progressbar
 import scipy.io as sio
 import tensorflow as tf
 from six.moves import cPickle
@@ -28,6 +27,7 @@ from tensorflow.python.platform import gfile
 from tensorflow.python.util import serialization
 from tensorflow.python.util.tf_export import keras_export
 
+import progressbar
 import tensorlayer as tl
 from tensorlayer import logging, nlp, utils, visualize
 

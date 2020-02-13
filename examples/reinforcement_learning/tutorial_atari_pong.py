@@ -21,10 +21,10 @@ References
 """
 import time
 
+import gym
 import numpy as np
 import tensorflow as tf
 
-import gym
 import tensorlayer as tl
 
 tl.logging.set_verbosity(tl.logging.DEBUG)
