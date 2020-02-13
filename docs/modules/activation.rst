@@ -37,6 +37,7 @@ For more complex activation, TensorFlow API will be required.
    pixel_wise_softmax
    mish
 
+
 Ramp
 ------
 .. autofunction:: ramp
