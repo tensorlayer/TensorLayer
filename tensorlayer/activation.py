@@ -342,19 +342,24 @@ def pixel_wise_softmax(x, name='pixel_wise_softmax'):
 
 def mish(x):
     """Mish activation function.
+
     Mish is a novel smooth and non-monotonic neural activation function.
+
     Parameters
     ----------
     x : Tensor
         input.
+
     Returns
     -------
     Tensor
         A ``Tensor`` in the same type as ``x``.
+
     References
     ----------
     - `Mish: A Self Regularized Non-Monotonic Neural Activation Function, Diganta Misra. (2019)`
     https://arxiv.org/abs/1908.08681
+    
     """
 
     return x * tf.math.tanh(tf.math.softplus(x))
