@@ -345,6 +345,9 @@ def mish(x):
 
     Mish is a novel smooth and non-monotonic neural activation function.
 
+    This activation function is a `Mish` .introduced by the following paper:
+    `Mish: A Self Regularized Non-Monotonic Neural Activation Function [Diganta Misra, 2019]<https://arxiv.org/abs/1908.08681>`__
+
     Parameters
     ----------
     x : Tensor
