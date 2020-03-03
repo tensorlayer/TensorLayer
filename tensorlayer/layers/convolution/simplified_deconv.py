@@ -1,14 +1,11 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import numpy as np
-import tensorflow as tf
-
 import tensorlayer as tl
+
+import tensorflow as tf
 from tensorlayer import logging
-from tensorlayer.decorators import deprecated_alias
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.utils import get_collection_trainable
 
 __all__ = [
     # 'DeConv1d'  # TODO: Shall be implemented
@@ -52,7 +49,7 @@ class DeConv2d(Layer):
     >>> net = tl.layers.Input([5, 100, 100, 32], name='input')
     >>> deconv2d = tl.layers.DeConv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), in_channels=32, name='DeConv2d_1')
     >>> print(deconv2d)
-    >>> tensor = tl.layers.DeConv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), name='DeConv2d_2')(net)
+    >>> tensor = tl.layers.DeConv2d(n_filter=64, filter_size=(3, 3), strides=(2, 2), name='DeConv2d_2')(net)
     >>> print(tensor)
 
     """
@@ -118,32 +115,50 @@ class DeConv2d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        self.layer = tf.keras.layers.Conv2DTranspose(
-            filters=self.n_filter,
-            kernel_size=self.filter_size,
-            strides=self.strides,
-            padding=self.padding,
-            data_format=self.data_format,
-            dilation_rate=self.dilation_rate,
-            activation=self.act,
-            use_bias=(True if self.b_init is not None else False),
-            kernel_initializer=self.W_init,
-            bias_initializer=self.b_init,
-            # dtype=tf.float32,
-            name=self.name,
-        )
+        kernel_h, kernel_w = self.filter_size
+        stride_h, stride_w = self.strides
+        if self.data_format == 'channels_last':
+            self.data_format = 'NHWC'
+            if self.in_channels is None:
+                self.in_channels = inputs_shape[-1]
+            self._strides = [1, self.strides[0], self.strides[1], 1]
+            self._dilation_rate = [1, self.dilation_rate[0], self.dilation_rate[1], 1]
+            H = deconv_length(input_length=inputs_shape[1], stride=stride_h, filter_size=kernel_h, padding=self.padding)
+            W = deconv_length(input_length=inputs_shape[2], stride=stride_w, filter_size=kernel_w, padding=self.padding)
+            self.outshape = [inputs_shape[0], H, W, self.n_filter]
+        elif self.data_format == 'channels_first':
+            self.data_format = 'NCHW'
+            if self.in_channels is None:
+                self.in_channels = inputs_shape[1]
+            self._strides = [1, 1, self.strides[0], self.strides[1]]
+            self._dilation_rate = [1, 1, self.dilation_rate[0], self.dilation_rate[1]]
+            H = deconv_length(input_length=inputs_shape[2], stride=stride_h, filter_size=kernel_h, padding=self.padding)
+            W = deconv_length(input_length=inputs_shape[3], stride=stride_w, filter_size=kernel_w, padding=self.padding)
+            self.outshape = [inputs_shape[0], self.n_filter, H, W]
+        else:
+            raise Exception("data_format should be either channels_last or channels_first")
+
+        self.filter_shape = (self.filter_size[0], self.filter_size[1], self.n_filter, self.in_channels)
+
+        self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init)
+
+        if self.b_init:
+            self.b = self._get_weights("biases", shape=(self.n_filter, ), init=self.b_init)
+
         if self.data_format == "channels_first":
             self.in_channels = inputs_shape[1]
         else:
             self.in_channels = inputs_shape[-1]
-        _out = self.layer(
-            tf.convert_to_tensor(np.random.uniform(size=inputs_shape), dtype=np.float32)
-        )  #np.random.uniform([1] + list(inputs_shape)))  # initialize weights
-        outputs_shape = _out.shape
-        self._trainable_weights = self.layer.weights
 
     def forward(self, inputs):
-        outputs = self.layer(inputs)
+        outputs = tf.nn.conv2d_transpose(
+            input=inputs, filters=self.W, output_shape=self.outshape, strides=self._strides, padding=self.padding,
+            data_format=self.data_format, dilations=self._dilation_rate, name=self.name
+        )
+        if self.b_init:
+            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
+        if self.act:
+            outputs = self.act(outputs)
         return outputs
 
 
@@ -177,10 +192,10 @@ class DeConv3d(Layer):
     --------
     With TensorLayer
 
-    >>> net = tl.layers.Input([5, 100, 100, 100, 32], name='input')
+    >>> net = tl.layers.Input([5, 10, 10, 10, 32], name='input')
     >>> deconv3d = tl.layers.DeConv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), in_channels=32, name='DeConv3d_1')
     >>> print(deconv3d)
-    >>> tensor = tl.layers.DeConv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), name='DeConv3d_2')(net)
+    >>> tensor = tl.layers.DeConv3d(n_filter=64, filter_size=(3, 3, 3), strides=(2, 2, 2), name='DeConv3d_2')(net)
     >>> print(tensor)
 
     """
@@ -206,7 +221,7 @@ class DeConv3d(Layer):
         self.data_format = data_format
         self.W_init = W_init
         self.b_init = b_init
-        self.in_channels = in_channels,
+        self.in_channels = in_channels
 
         # Attention: To build, we need not only the in_channels!
         # if self.in_channels:
@@ -240,30 +255,66 @@ class DeConv3d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        self.layer = tf.keras.layers.Conv3DTranspose(
-            filters=self.n_filter,
-            kernel_size=self.filter_size,
-            strides=self.strides,
-            padding=self.padding,
-            data_format=self.data_format,
-            activation=self.act,
-            use_bias=(True if self.b_init is not None else False),
-            kernel_initializer=self.W_init,
-            bias_initializer=self.b_init,
-            name=self.name,
-        )
-        if self.data_format == "channels_first":
-            self.in_channels = inputs_shape[1]
+        kernel_d, kernel_h, kernel_w = self.filter_size
+        stride_d, stride_h, stride_w = self.strides
+        if self.data_format == 'channels_last':
+            self.data_format = 'NDHWC'
+            if self.in_channels is None:
+                self.in_channels = inputs_shape[-1]
+            self._strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
+            D = deconv_length(input_length=inputs_shape[1], stride=stride_d, filter_size=kernel_d, padding=self.padding)
+            H = deconv_length(input_length=inputs_shape[2], stride=stride_h, filter_size=kernel_h, padding=self.padding)
+            W = deconv_length(input_length=inputs_shape[3], stride=stride_w, filter_size=kernel_w, padding=self.padding)
+            self.outshape = [inputs_shape[0], D, H, W, self.n_filter]
+        elif self.data_format == 'channels_first':
+            self.data_format = 'NCDHW'
+            if self.in_channels is None:
+                self.in_channels = inputs_shape[1]
+            self._strides = [1, 1, self.strides[0], self.strides[1], self.strides[2]]
+            D = deconv_length(input_length=inputs_shape[2], stride=stride_d, filter_size=kernel_d, padding=self.padding)
+            H = deconv_length(input_length=inputs_shape[3], stride=stride_h, filter_size=kernel_h, padding=self.padding)
+            W = deconv_length(input_length=inputs_shape[4], stride=stride_w, filter_size=kernel_w, padding=self.padding)
+            self.outshape = [inputs_shape[0], self.n_filter, D, H, W]
         else:
-            self.in_channels = inputs_shape[-1]
+            raise Exception("data_format should be either channels_last or channels_first")
 
-        _out = self.layer(
-            tf.convert_to_tensor(np.random.uniform(size=inputs_shape), dtype=np.float32)
-        )  #self.layer(np.random.uniform([1] + list(inputs_shape)))  # initialize weights
-        outputs_shape = _out.shape
-        # self._add_weights(self.layer.weights)
-        self._trainable_weights = self.layer.weights
+        self.filter_shape = (
+            self.filter_size[0], self.filter_size[1], self.filter_size[2], self.n_filter, self.in_channels
+        )
+
+        self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init)
+
+        if self.b_init:
+            self.b = self._get_weights("biases", shape=(self.n_filter, ), init=self.b_init)
 
     def forward(self, inputs):
-        outputs = self.layer(inputs)
+        outputs = tf.nn.conv3d_transpose(
+            input=inputs, filters=self.W, output_shape=self.outshape, strides=self._strides, padding=self.padding,
+            data_format=self.data_format, name=self.name
+        )
+        if self.b_init:
+            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
+        if self.act:
+            outputs = self.act(outputs)
         return outputs
+
+
+def deconv_length(input_length, filter_size, padding, stride):
+    """Determines output length of a transposed convolution given input length.
+    Arguments:
+        input_length: integer.
+        filter_size: integer.
+        padding: one of "same, SAME", "valid, VALID"
+        stride: integer.
+    Returns:
+        The output length (integer).
+    """
+    if input_length is None:
+        return None
+    if padding in ['valid', 'VALID']:
+        input_length = input_length * stride + max(filter_size - stride, 0)
+    elif padding in ['same', 'SAME']:
+        input_length = input_length * stride
+    else:
+        raise Exception("Unsupported padding: {}".format(padding))
+    return input_length
