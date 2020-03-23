@@ -26,6 +26,8 @@ from tensorflow.python.keras.saving import model_config as model_config_lib
 from tensorflow.python.platform import gfile
 from tensorflow.python.util import serialization
 from tensorflow.python.util.tf_export import keras_export
+from tensorflow.python import pywrap_tensorflow
+
 
 import progressbar
 import tensorlayer as tl
@@ -76,6 +78,8 @@ __all__ = [
     'static_graph2net',
     # 'save_pkl_graph',
     # 'load_pkl_graph',
+    'load_and_assign_ckpt',
+    'ckpt_to_npz_dict',
 ]
 
 
@@ -2775,3 +2779,89 @@ def load_hdf5_to_weights(filepath, network, skip=False):
 
     f.close()
     logging.info("[*] Load %s SUCCESS!" % filepath)
+
+
+def load_and_assign_ckpt(model_dir, network=None, skip=True):
+    """Load weights by name from a given file of ckpt format
+
+    Parameters
+    ----------
+    model_dir : str
+        Filename to which the weights will be loaded, should be of ckpt format.
+        Examples: model_dir = /root/cnn_model/
+    network : Model
+        TL model.
+    skip : bool
+        If 'skip' == True, loaded weights whose name is not found in 'weights' will be skipped. If 'skip' is False,
+        error will be raised when mismatch is found. Default False.
+
+    Returns
+    -------
+
+    """
+    model_dir = model_dir
+    model_path = None
+    for root, dirs, files in os.walk(model_dir):
+        for file in files:
+            filename, extension = os.path.splitext(file)
+            if extension in ['.data-00000-of-00001', '.index', '.meta']:
+                model_path = model_dir + '/' + filename
+                break
+        if model_path == None:
+            raise Exception('The ckpt file is not found')
+
+    reader = pywrap_tensorflow.NewCheckpointReader(model_path)
+    var_to_shape_map = reader.get_variable_to_shape_map()
+
+    net_weights_name = [w.name for w in network.all_weights]
+
+    for key in var_to_shape_map:
+        if key not in net_weights_name:
+            if skip:
+                logging.warning("Weights named '%s' not found in network. Skip it." % key)
+            else:
+                raise RuntimeError(
+                    "Weights named '%s' not found in network. Hint: set argument skip=Ture "
+                    "if you want to skip redundant or mismatch weights." % key
+                )
+        else:
+            assign_tf_variable(network.all_weights[net_weights_name.index(key)], reader.get_tensor(key))
+    logging.info("[*] Model restored from ckpt %s" % filename)
+
+
+def ckpt_to_npz_dict(model_dir, save_name='model.npz'):
+    """ Save ckpt weights to npz file
+
+    Parameters
+    ----------
+    model_dir : str
+        Filename to which the weights will be loaded, should be of ckpt format.
+        Examples: model_dir = /root/cnn_model/
+    save_name : str
+        The save_name of the `.npz` file.
+
+    Returns
+    -------
+
+    """
+    model_dir = model_dir
+    model_path = None
+    for root, dirs, files in os.walk(model_dir):
+        for file in files:
+            filename, extension = os.path.splitext(file)
+            if extension in ['.data-00000-of-00001', '.index', '.meta']:
+                model_path = model_dir + '/' + filename
+                break
+        if model_path == None:
+            raise Exception('The ckpt file is not found')
+
+    reader = pywrap_tensorflow.NewCheckpointReader(model_path)
+    var_to_shape_map = reader.get_variable_to_shape_map()
+
+    parameters_dict = {}
+    for key in sorted(var_to_shape_map):
+        parameters_dict[key] = reader.get_tensor(key)
+    np.savez(save_name, **parameters_dict)
+    parameters_dict = None
+    del parameters_dict
+    logging.info("[*] Ckpt weights saved in npz_dict %s" % save_name)
