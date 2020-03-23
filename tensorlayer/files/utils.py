@@ -28,7 +28,6 @@ from tensorflow.python.util import serialization
 from tensorflow.python.util.tf_export import keras_export
 from tensorflow.python import pywrap_tensorflow
 
-
 import progressbar
 import tensorlayer as tl
 from tensorlayer import logging, nlp, utils, visualize
