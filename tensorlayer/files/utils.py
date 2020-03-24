@@ -2780,6 +2780,46 @@ def load_hdf5_to_weights(filepath, network, skip=False):
     logging.info("[*] Load %s SUCCESS!" % filepath)
 
 
+def check_ckpt_file(model_dir):
+    model_dir = model_dir
+    model_path = None
+    count_extension = 0
+    for root, dirs, files in os.walk(model_dir):
+        for file in files:
+            filename, extension = os.path.splitext(file)
+            if extension in ['.data-00000-of-00001', '.index', '.meta']:
+                count_extension += 1
+        if count_extension == 3:
+            model_path = model_dir + '/' + filename
+        else:
+            raise Exception("Check the file extension for missing .data-00000-of-00001, .index, .meta")
+        if model_path is None:
+            raise Exception('The ckpt file is not found')
+    return model_path, filename
+
+
+def rename_weight_or_biases(variable_name):
+    if variable_name is None:
+        return variable_name
+    split_var = variable_name.split('/')
+
+    str_temp = ''
+    for i in range(len(split_var)):
+        if 'w' in split_var[i]:
+            split_var[i] = 'filters:0'
+        elif 'b' in split_var[i]:
+            split_var[i] = 'biases:0'
+        else:
+            pass
+
+        if i < len(split_var) - 1:
+            str_temp = str_temp + split_var[i] + '/'
+        else:
+            str_temp = str_temp + split_var[i]
+
+    return str_temp
+
+
 def load_and_assign_ckpt(model_dir, network=None, skip=True):
     """Load weights by name from a given file of ckpt format
 
@@ -2798,16 +2838,7 @@ def load_and_assign_ckpt(model_dir, network=None, skip=True):
     -------
 
     """
-    model_dir = model_dir
-    model_path = None
-    for root, dirs, files in os.walk(model_dir):
-        for file in files:
-            filename, extension = os.path.splitext(file)
-            if extension in ['.data-00000-of-00001', '.index', '.meta']:
-                model_path = model_dir + '/' + filename
-                break
-        if model_path == None:
-            raise Exception('The ckpt file is not found')
+    model_path, filename = check_ckpt_file(model_dir)
 
     reader = pywrap_tensorflow.NewCheckpointReader(model_path)
     var_to_shape_map = reader.get_variable_to_shape_map()
@@ -2828,7 +2859,7 @@ def load_and_assign_ckpt(model_dir, network=None, skip=True):
     logging.info("[*] Model restored from ckpt %s" % filename)
 
 
-def ckpt_to_npz_dict(model_dir, save_name='model.npz'):
+def ckpt_to_npz_dict(model_dir, save_name='model.npz', rename_key=False):
     """ Save ckpt weights to npz file
 
     Parameters
@@ -2838,28 +2869,27 @@ def ckpt_to_npz_dict(model_dir, save_name='model.npz'):
         Examples: model_dir = /root/cnn_model/
     save_name : str
         The save_name of the `.npz` file.
+    rename_key : bool
+        Modify parameter naming,  used to match TL naming rule.
+        Examples: conv1_1/b_b --> conv1_1/biases:0 ; conv1_1/w_w --> conv1_1/filters:0
 
     Returns
     -------
 
     """
-    model_dir = model_dir
-    model_path = None
-    for root, dirs, files in os.walk(model_dir):
-        for file in files:
-            filename, extension = os.path.splitext(file)
-            if extension in ['.data-00000-of-00001', '.index', '.meta']:
-                model_path = model_dir + '/' + filename
-                break
-        if model_path == None:
-            raise Exception('The ckpt file is not found')
+    model_path, _ = check_ckpt_file(model_dir)
 
     reader = pywrap_tensorflow.NewCheckpointReader(model_path)
     var_to_shape_map = reader.get_variable_to_shape_map()
 
     parameters_dict = {}
-    for key in sorted(var_to_shape_map):
-        parameters_dict[key] = reader.get_tensor(key)
+    if rename_key is False:
+        for key in sorted(var_to_shape_map):
+            parameters_dict[key] = reader.get_tensor(key)
+    elif rename_key is True:
+        for key in sorted(var_to_shape_map):
+            parameters_dict[rename_weight_or_biases(key)] = reader.get_tensor(key)
+
     np.savez(save_name, **parameters_dict)
     parameters_dict = None
     del parameters_dict
