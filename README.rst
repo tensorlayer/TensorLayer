@@ -17,52 +17,20 @@ to build real-world AI applications. TensorLayer is awarded the 2017
 Best Open Source Software by the `ACM Multimedia
 Society <http://www.acmmm.org/2017/mm-2017-awardees/>`__.
 
-Why another deep learning library: TensorLayer
-==============================================
+Design Features
+=================
 
-As deep learning practitioners, we have been looking for a library that
-can address various development purposes. This library is easy to adopt
-by providing diverse examples, tutorials and pre-trained models. Also,
-it allow users to easily fine-tune TensorFlow; while being suitable for
-production deployment. TensorLayer aims to satisfy all these purposes.
-It has three key features:
+TensorLayer is a new deep learning library designed with simplicity, flexibility and high-performance in mind.
 
--  **Simplicity** : TensorLayer lifts the low-level dataflow interface
-   of TensorFlow to *high-level* layers / models. It is very easy to
-   learn through the rich `example
-   codes <https://github.com/tensorlayer/awesome-tensorlayer>`__
-   contributed by a wide community.
--  **Flexibility** : TensorLayer APIs are transparent: it does not
-   mask TensorFlow from users; but leaving massive hooks that help
-   *low-level tuning* and *deep customization*.
--  **Zero-cost Abstraction** : TensorLayer can achieve the *full
-   power* of TensorFlow. The following table shows the training speeds
-   of classic models using TensorLayer and native TensorFlow on a Titan
-   X Pascal GPU.
+- **Simplicity** : TensorLayer has a high-level layer/model abstraction which is effortless to learn. You can learn how deep learning can benefit your AI tasks in minutes through the massive [examples](https://github.com/tensorlayer/awesome-tensorlayer).
+- **Flexibility** : TensorLayer APIs are transparent and flexible, inspired by the emerging PyTorch library. Compared to the Keras abstraction, TensorLayer makes it much easier to build and train complex AI models.
+- **Zero-cost Abstraction** : Though simple to use, TensorLayer does not require you to make any compromise in the performance of TensorFlow (Check the following benchmark section for more details).
 
-   +---------------+-----------------+-----------------+-----------------+
-   |               | CIFAR-10        | PTB LSTM        | Word2Vec        |
-   +===============+=================+=================+=================+
-   | TensorLayer   | 2528 images/s   | 18063 words/s   | 58167 words/s   |
-   +---------------+-----------------+-----------------+-----------------+
-   | TensorFlow    | 2530 images/s   | 18075 words/s   | 58181 words/s   |
-   +---------------+-----------------+-----------------+-----------------+
-
-TensorLayer stands at a unique spot in the library landscape. Other
-wrapper libraries like Keras and TFLearn also provide high-level
-abstractions. They, however, often hide the underlying engine from
-users, which make them hard to customize and fine-tune. On the contrary,
-TensorLayer APIs are generally flexible and transparent. Users often
-find it easy to start with the examples and tutorials, and then dive
-into TensorFlow seamlessly. In addition, TensorLayer does not create
-library lock-in through native supports for importing components from
-Keras, TFSlim and TFLearn.
-
-TensorLayer has a fast growing usage among top researchers and
-engineers, from universities like Imperial College London, UC Berkeley,
-Carnegie Mellon University, Stanford University, and University of
-Technology of Compiegne (UTC), and companies like Google, Microsoft,
-Alibaba, Tencent, Xiaomi, and Bloomberg.
+TensorLayer stands at a unique spot in the TensorFlow wrappers. Other wrappers like Keras and TFLearn
+hide many powerful features of TensorFlow and provide little support for writing custom AI models. Inspired by PyTorch, TensorLayer APIs are simple, flexible and Pythonic,
+making it easy to learn while being flexible enough to cope with complex AI tasks.
+TensorLayer has a fast-growing community. It has been used by researchers and engineers all over the world, including those from  Peking University,
+Imperial College London, UC Berkeley, Carnegie Mellon University, Stanford University, and companies like Google, Microsoft, Alibaba, Tencent, Xiaomi, and Bloomberg.
 
 Install
 =======
