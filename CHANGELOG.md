@@ -88,6 +88,7 @@ To release a new version, please update the changelog as followed:
 ## [2.2.2] - 2020-04-26
 
 TensorLayer 2.2.2 is a maintenance release.
+
 ### Added
 
 - Reinforcement learning(#1065)
@@ -111,8 +112,8 @@ TensorLayer 2.2.2 is a maintenance release.
 ### Contributors
 
 - @zsdonghao
-- @quantumiracle
-- @Laicheng0830
+- @quantumiracle(1065)
+- @Laicheng0830(#1068)
 
 ## [2.2.1] - 2020-01-14
 
