@@ -4,6 +4,7 @@ jobs:
 
   ###################################################################################
   #  TEST BUILDS with TensorLayer installed from Source - NOT PUSHED TO DOCKER HUB  #
+  #  tensorlayer@gmail.com                                                          #
   ###################################################################################
 
   test_sources_py2_cpu:

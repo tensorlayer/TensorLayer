@@ -35,6 +35,7 @@ For more complex activation, TensorFlow API will be required.
    sign
    hard_tanh
    pixel_wise_softmax
+   mish
 
 Ramp
 ------
@@ -67,6 +68,10 @@ Hard Tanh
 Pixel-wise softmax
 --------------------
 .. autofunction:: pixel_wise_softmax
+
+mish
+---------
+.. autofunction:: mish
 
 Parametric activation
 ------------------------------

@@ -145,7 +145,7 @@ The following table shows the training speeds of [VGG16](http://www.robots.ox.ac
 |   Mode    |       Lib       |  Data Format  | Max GPU Memory Usage(MB)  |Max CPU Memory Usage(MB) | Avg CPU Memory Usage(MB) | Runtime (sec) |
 | :-------: | :-------------: | :-----------: | :-----------------: | :-----------------: | :-----------------: | :-----------: |
 | AutoGraph | TensorFlow 2.0  | channel last  | 11833 |      2161         |        2136         |      74       |
-|           | Tensorlayer 2.0 | channel last  | 11833 |      2187         |        2169         |      76       |
+|           | TensorLayer 2.0 | channel last  | 11833 |      2187         |        2169         |      76       |
 |   Graph   |      Keras      | channel last  | 8677 |      2580         |        2576         |      101       |
 |   Eager   | TensorFlow 2.0  | channel last  | 8723 |      2052         |        2024         |      97       |
 |           | TensorLayer 2.0 | channel last  | 8723 |      2010         |        2007         |      95       |
