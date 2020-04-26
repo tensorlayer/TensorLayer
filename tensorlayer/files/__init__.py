@@ -72,4 +72,6 @@ __all__ = [
     #'load_graph',
     #'save_graph_and_params',
     #'load_graph_and_params',
+    'load_and_assign_ckpt',
+    'ckpt_to_npz_dict'
 ]
