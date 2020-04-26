@@ -90,6 +90,9 @@ To release a new version, please update the changelog as followed:
 TensorLayer 2.2.2 is a maintenance release.
 ### Added
 
+- Reinforcement learning(#1065)
+- Mish activation(#1068)
+
 ### Changed
 
 ### Dependencies Update
@@ -108,6 +111,7 @@ TensorLayer 2.2.2 is a maintenance release.
 ### Contributors
 
 - @zsdonghao
+- @quantumiracle
 - @Laicheng0830
 
 ## [2.2.1] - 2020-01-14
@@ -616,6 +620,7 @@ To many PR for this update, please check [here](https://github.com/tensorlayer/t
 @zsdonghao @luomai @DEKHTIARJonathan
 
 [Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/2.0....master
+[2.2.2]: https://github.com/tensorlayer/tensorlayer/compare/2.2.1...2.2.2
 [2.2.1]: https://github.com/tensorlayer/tensorlayer/compare/2.2.0...2.2.1
 [2.2.0]: https://github.com/tensorlayer/tensorlayer/compare/2.1.0...2.2.0
 [2.1.0]: https://github.com/tensorlayer/tensorlayer/compare/2.0.2...2.1.0
