@@ -85,6 +85,31 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 
+## [2.2.2] - 2020-04-26
+
+TensorLayer 2.2.2 is a maintenance release.
+### Added
+
+### Changed
+
+### Dependencies Update
+
+### Deprecated
+
+### Fixed
+
+- Fix README.
+- Fix package info.
+
+### Removed
+
+### Security
+
+### Contributors
+
+- @zsdonghao
+- @Laicheng0830
+
 ## [2.2.1] - 2020-01-14
 
 TensorLayer 2.2.1 is a maintenance release.
