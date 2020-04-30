@@ -1,4 +1,4 @@
-# Reinforcement Learning Tutorial with Tensorlayer
+# Comprehensive Reinforcement Learning Tutorial
 
 <br/>
 <a href="https://deepreinforcementlearningbook.org" target="\_blank">
