@@ -1,11 +1,11 @@
 # Reinforcement Learning Tutorial with Tensorlayer
 
 <br/>
-<a href="https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc" target="\_blank">
+<a href="https://deepreinforcementlearningbook.org" target="\_blank">
 	<div align="center">
-		<img src="../../img/join_slack.png" width="40%"/>
+		<img src="https://deepreinforcementlearningbook.org/assets/images/cover_v1.png" width="25%"/>
 	</div>
-	<div align="center"><caption>Slack Invitation Link</caption></div>
+<!-- 	<div align="center"><caption>Slack Invitation Link</caption></div> -->
 </a>
 <br/>
 
@@ -21,6 +21,15 @@
 -->
 
 This repository contains implementation of most popular reinforcement learning algorithms with Tensorlayer 2.0, supporting [Tensorflow 2.0](https://www.tensorflow.org/alpha/guide/effective_tf2). We aim to make the reinforcement learning tutorial for each algorithm simple and straight-forward to use, as this would not only benefits new learners of reinforcement learning, but also provide convenience for senior researchers to testify their new ideas quickly.
+
+<br/>
+<a href="https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc" target="\_blank">
+	<div align="center">
+		<img src="../../img/join_slack.png" width="20%"/>
+	</div>
+<!-- 	<div align="center"><caption>Slack Invitation Link</caption></div> -->
+</a>
+<br/>
 
 ## Prerequisites:
 
