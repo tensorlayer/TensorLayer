@@ -1,9 +1,15 @@
 # Comprehensive Reinforcement Learning Tutorial
 
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/tensorlayer/tensorlayer/master.svg)
+[![Supported TF Version](https://img.shields.io/badge/TensorFlow-2.0.0%2B-brightgreen.svg)](https://github.com/tensorflow/tensorflow/releases)
+[![Documentation Status](https://readthedocs.org/projects/tensorlayer/badge/)](https://tensorlayer.readthedocs.io/)
+[![Build Status](https://travis-ci.org/tensorlayer/tensorlayer.svg?branch=master)](https://travis-ci.org/tensorlayer/tensorlayer)
+[![Downloads](http://pepy.tech/badge/tensorlayer)](http://pepy.tech/project/tensorlayer)
+
 <br/>
 <a href="https://deepreinforcementlearningbook.org" target="\_blank">
 	<div align="center">
-		<img src="http://deep-reinforcement-learning-book.github.io/assets/images/cover_v1.png" width="25%"/>
+		<img src="http://deep-reinforcement-learning-book.github.io/assets/images/cover_v1.png" width="22%"/>
 	</div>
 <!-- 	<div align="center"><caption>Slack Invitation Link</caption></div> -->
 </a>
