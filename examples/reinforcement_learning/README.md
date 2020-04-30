@@ -3,7 +3,7 @@
 <br/>
 <a href="https://deepreinforcementlearningbook.org" target="\_blank">
 	<div align="center">
-		<img src="https://deepreinforcementlearningbook.org/assets/images/cover_v1.png" width="25%"/>
+		<img src="http://deep-reinforcement-learning-book.github.io/assets/images/cover_v1.png" width="25%"/>
 	</div>
 <!-- 	<div align="center"><caption>Slack Invitation Link</caption></div> -->
 </a>
