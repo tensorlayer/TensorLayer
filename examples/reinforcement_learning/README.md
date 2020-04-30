@@ -357,5 +357,10 @@ Our env wrapper: `./tutorial_wrappers.py`
 - @Tokarev-TT-33 Tianyang Yu @initial-h Hongming Zhang : PG, DDPG, PPO, DPPO, TRPO
 - @Officium Yanhua Huang: C51, DQN_variants, prioritized_replay, wrappers.
 
+## Recommended Materials
 
-  ```
+- [李宏毅RL视频](https://www.bilibili.com/video/av58458003?from=search&seid=962941912089186406)
+- [CS885 Spring 2018 - Reinforcement Learning by Pascal Poupart](https://cs.uwaterloo.ca/~ppoupart/teaching/cs885-spring18/schedule.html)
+- [Youtube Video By David Silver, 2015 @ UCL](https://www.youtube.com/playlist?list=PLzuuYNsE1EZAXYR4FJ75jcJseBmo4KQ9-)
+- [Teaching Materials By David Silver @ UCL](http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Teaching.html)
+- [Deep Reinforcement Learning: Fundamentals, Research and Applications By Hao Dong, Zihan Ding, Shanghang Zhang etc](http://deep-reinforcement-learning-book.github.io/)
