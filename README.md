@@ -26,13 +26,11 @@ This project can also be found at [iHub](https://code.ihub.org.cn/projects/328) 
 
 # News
 
-🔥 Reinforcement Learning Model Zoo: [Low-level APIs for Research](https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning) and [High-level APIs for Production](https://github.com/tensorlayer/RLzoo)
+🔥 Reinforcement Learning Zoo: [Low-level APIs](https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning) for professional usage, [High-level APIs](https://github.com/tensorlayer/RLzoo) for simple usage, and a corresponding [Springer textbook](http://springer.com/gp/book/9789811540943)
 
 🔥 [Sipeed Maxi-EMC](https://github.com/sipeed/Maix-EMC): Run TensorLayer models on the **low-cost AI chip** (e.g., K210) (Alpha Version)
 
 <!-- 🔥 [NNoM](https://github.com/majianjia/nnom): Run TensorLayer quantized models on the **MCU** (e.g., STM32) (Coming Soon) -->
-
-🔥 [Free GPU and storage resources](https://github.com/fangde/FreeGPU): TensorLayer users can access to free GPU and storage resources donated by SurgicalAI. Thank you SurgicalAI!
 
 # Design Features
 
