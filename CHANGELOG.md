@@ -78,12 +78,15 @@ To release a new version, please update the changelog as followed:
 ### Deprecated
 
 ### Fixed
+- pretrained model VGG: fix logic of `in_channels` initialization (#1078)
 
 ### Removed
 
 ### Security
 
 ### Contributors
+
+- @tiancheng2000(#1078)
 
 ## [2.2.2] - 2020-04-26
 
