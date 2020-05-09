@@ -291,9 +291,9 @@ class BatchNorm(Layer):
         if self.axes is None:
             self.axes = [i for i in range(len(inputs.shape)) if i != self.channel_axis]
 
-        mean, var = tf.nn.moments(inputs, self.axes, keepdims=False)
         if self.is_train:
             # update moving_mean and moving_var
+            mean, var = tf.nn.moments(inputs, self.axes, keepdims=False)
             self.moving_mean = moving_averages.assign_moving_average(
                 self.moving_mean, mean, self.decay, zero_debias=False
             )
