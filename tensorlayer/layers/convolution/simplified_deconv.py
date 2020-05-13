@@ -135,7 +135,8 @@ class DeConv2d(Layer):
         if inputs_shape is not None:
             self.in_channels = inputs_shape[1 if self.data_format == "channels_first" else -1]
         elif self.in_channels is not None:
-            inputs_shape = [1, self.in_channels, 1, 1] if self.data_format == "channels_first" else [1, 1, 1, self.in_channels]
+            inputs_shape = [1, self.in_channels, 1, 1
+                           ] if self.data_format == "channels_first" else [1, 1, 1, self.in_channels]
         else:
             raise ValueError("Either inputs_shape or in_channels must be specified for build.")
         _out = self.layer(
@@ -257,7 +258,8 @@ class DeConv3d(Layer):
         if inputs_shape is not None:
             self.in_channels = inputs_shape[1 if self.data_format == "channels_first" else -1]
         elif self.in_channels is not None:
-            inputs_shape = [1, self.in_channels, 1, 1, 1] if self.data_format == "channels_first" else [1, 1, 1, 1, self.in_channels]
+            inputs_shape = [1, self.in_channels, 1, 1, 1
+                           ] if self.data_format == "channels_first" else [1, 1, 1, 1, self.in_channels]
         else:
             raise ValueError("Either inputs_shape or in_channels must be specified for build.")
         _out = self.layer(
