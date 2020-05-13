@@ -83,7 +83,7 @@ class DeConv2d(Layer):
         self.in_channels = in_channels
 
         # Attention: To build, we need not only the in_channels! Solved.
-        if self.in_channels:
+        if self.in_channels is not None:
             self.build(None)
             self._built = True
 
@@ -208,10 +208,10 @@ class DeConv3d(Layer):
         self.data_format = data_format
         self.W_init = W_init
         self.b_init = b_init
-        self.in_channels = in_channels,
+        self.in_channels = in_channels
 
         # Attention: To build, we need not only the in_channels! Solved.
-        if self.in_channels:
+        if self.in_channels is not None:
             self.build(None)
             self._built = True
 
