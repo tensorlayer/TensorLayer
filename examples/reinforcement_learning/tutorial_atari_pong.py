@@ -7,14 +7,15 @@ you to go through a famous blog called “Deep Reinforcement Learning: Pong from
 Pixels” which is a minimalistic implementation of deep reinforcement learning by
 using python-numpy and OpenAI gym environment.
 The code here is the reimplementation of Karpathy's Blog by using TensorLayer.
-Compare with Karpathy's code, we store observation for a batch, he store
-observation for a episode only, they store gradients instead. (so we will use
+Compare with Karpathy's code, we store observation for a batch, but he store
+observation for only one episode and gradients. (so we will use
 more memory if the observation is very large.)
-FEEL FREE TO JOIN US !
+
 TODO
 -----
 - update grads every step rather than storing all observation!
 - tensorlayer@gmail.com
+
 References
 ------------
 - http://karpathy.github.io/2016/05/31/rl/
