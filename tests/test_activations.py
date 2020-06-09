@@ -5,7 +5,7 @@ import os
 import unittest
 
 import tensorflow as tf
-
+import numpy as np
 import tensorlayer as tl
 from tests.utils import CustomTestCase
 
@@ -113,6 +113,14 @@ class Test_Leaky_ReLUs(CustomTestCase):
             good_output = i / (1 + np.math.exp(-i))
 
             computed_output = tl.act.swish(float(i))
+
+            self.assertAlmostEqual(computed_output.numpy(), good_output, places=5)
+
+    def test_mish(self):
+        for i in range(-5, 15):
+            good_output = i * np.tanh(np.math.log(1 + np.math.exp(i)))
+
+            computed_output = tl.act.mish(float(i))
 
             self.assertAlmostEqual(computed_output.numpy(), good_output, places=5)
 

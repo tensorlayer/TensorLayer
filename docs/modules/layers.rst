@@ -13,6 +13,9 @@ Layer list
 .. autosummary::
 
    Layer
+   
+   ModelLayer
+   LayerList
 
    Input
 
@@ -131,7 +134,17 @@ Layer list
 Base Layer
 -----------
 
+Base Layer
+^^^^^^^^^^^^^^^^
 .. autoclass:: Layer
+
+Model Layer
+^^^^^^^^^^^^^^^^
+.. autoclass:: ModelLayer
+
+Layer List
+^^^^^^^^^^^^^^^^
+.. autoclass:: LayerList
 
 .. -----------------------------------------------------------
 ..                        Input Layer

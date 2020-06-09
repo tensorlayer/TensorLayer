@@ -37,8 +37,8 @@ import gym
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-
 import tensorflow_probability as tfp
+
 import tensorlayer as tl
 
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
@@ -72,6 +72,7 @@ LAM = 0.5
 
 # ppo-clip parameters
 EPSILON = 0.2
+
 
 ###############################  DPPO  ####################################
 
@@ -282,7 +283,10 @@ class Worker(object):
                 GLOBAL_UPDATE_COUNTER += 1  # count to minimum batch size, no need to wait other workers
                 if t == MAX_STEPS - 1 or GLOBAL_UPDATE_COUNTER >= MIN_BATCH_SIZE:
                     # finish patyh
-                    v_s_ = self.ppo.critic(np.array([s_], np.float32))[0][0]
+                    if done:
+                        v_s_ = 0
+                    else:
+                        v_s_ = self.ppo.critic(np.array([s_], np.float32))[0][0]
                     discounted_r = []  # compute discounted reward
                     for r in buffer_r[::-1]:
                         v_s_ = r + GAMMA * v_s_
@@ -304,8 +308,7 @@ class Worker(object):
 
             print(
                 'Training  | Episode: {}/{}  | Worker: {} | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                    GLOBAL_EP + 1, TRAIN_EPISODES, self.wid, ep_r,
-                    time.time() - T0
+                    GLOBAL_EP + 1, TRAIN_EPISODES, self.wid, ep_r, time.time() - T0
                 )
             )
             # record reward changes, plot later
@@ -372,6 +375,4 @@ if __name__ == '__main__':
             print(
                 'Testing  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
                     episode + 1, TEST_EPISODES, episode_reward,
-                    time.time() - T0
-                )
-            )
+                    time.time() - T0))

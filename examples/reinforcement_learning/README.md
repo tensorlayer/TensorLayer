@@ -1,11 +1,17 @@
-# Reinforcement Learning Tutorial with Tensorlayer
+# Comprehensive Reinforcement Learning Tutorial
+
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/tensorlayer/tensorlayer/master.svg)
+[![Supported TF Version](https://img.shields.io/badge/TensorFlow-2.0.0%2B-brightgreen.svg)](https://github.com/tensorflow/tensorflow/releases)
+[![Documentation Status](https://readthedocs.org/projects/tensorlayer/badge/)](https://tensorlayer.readthedocs.io/)
+[![Build Status](https://travis-ci.org/tensorlayer/tensorlayer.svg?branch=master)](https://travis-ci.org/tensorlayer/tensorlayer)
+[![Downloads](http://pepy.tech/badge/tensorlayer)](http://pepy.tech/project/tensorlayer)
 
 <br/>
-<a href="https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc" target="\_blank">
+<a href="https://deepreinforcementlearningbook.org" target="\_blank">
 	<div align="center">
-		<img src="../../img/join_slack.png" width="40%"/>
+		<img src="http://deep-reinforcement-learning-book.github.io/assets/images/cover_v1.png" width="22%"/>
 	</div>
-	<div align="center"><caption>Slack Invitation Link</caption></div>
+<!-- 	<div align="center"><caption>Slack Invitation Link</caption></div> -->
 </a>
 <br/>
 
@@ -20,7 +26,18 @@
 <br/>
 -->
 
-This repository contains implementation of most popular reinforcement learning algorithms with Tensorlayer 2.0, supporting [Tensorflow 2.0](https://www.tensorflow.org/alpha/guide/effective_tf2). We aim to make the reinforcement learning tutorial for each algorithm simple and straight-forward to use, as this would not only benefits new learners of reinforcement learning, but also provide convenience for senior researchers to testify their new ideas quickly.
+This repository contains implementations of the most popular reinforcement learning algorithms, powered by [Tensorflow 2.0](https://www.tensorflow.org/alpha/guide/effective_tf2) and Tensorlayer 2.0. We aim to make the reinforcement learning tutorial simple, transparent and straight-forward, as this would not only benefits new learners of reinforcement learning, but also provide convenience for senior researchers to testify their new ideas quickly. 
+
+A corresponding [Springer textbook](https://deepreinforcementlearningbook.org) is also provided, you can get the free PDF if your institute has Springer license. We also released an [RLzoo](https://github.com/tensorlayer/RLzoo) for simple usage.
+
+<br/>
+<a href="https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc" target="\_blank">
+	<div align="center">
+		<img src="../../img/join_slack.png" width="20%"/>
+	</div>
+<!-- 	<div align="center"><caption>Slack Invitation Link</caption></div> -->
+</a>
+<br/>
 
 ## Prerequisites:
 
@@ -342,5 +359,10 @@ Our env wrapper: `./tutorial_wrappers.py`
 - @Tokarev-TT-33 Tianyang Yu @initial-h Hongming Zhang : PG, DDPG, PPO, DPPO, TRPO
 - @Officium Yanhua Huang: C51, DQN_variants, prioritized_replay, wrappers.
 
+## Recommended Materials
 
-  ```
+- [李宏毅RL视频](https://www.bilibili.com/video/av58458003?from=search&seid=962941912089186406)
+- [CS885 Spring 2018 - Reinforcement Learning by Pascal Poupart](https://cs.uwaterloo.ca/~ppoupart/teaching/cs885-spring18/schedule.html)
+- [Youtube Video By David Silver, 2015 @ UCL](https://www.youtube.com/playlist?list=PLzuuYNsE1EZAXYR4FJ75jcJseBmo4KQ9-)
+- [Teaching Materials By David Silver @ UCL](http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Teaching.html)
+- [Deep Reinforcement Learning: Fundamentals, Research and Applications By Hao Dong, Zihan Ding, Shanghang Zhang etc](http://deep-reinforcement-learning-book.github.io/)
