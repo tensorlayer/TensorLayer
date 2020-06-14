@@ -18,9 +18,7 @@ __all__ = [
 
 class SeparableConv1d(Layer):
     """The :class:`SeparableConv1d` class is a 1D depthwise separable convolutional layer.
-
     This layer performs a depthwise convolution that acts separately on channels, followed by a pointwise convolution that mixes channels.
-
     Parameters
     ------------
     n_filter : int
@@ -47,16 +45,13 @@ class SeparableConv1d(Layer):
         The number of in channels.
     name : None or str
         A unique layer name.
-
     Examples
     --------
     With TensorLayer
-
     >>> net = tl.layers.Input([8, 50, 64], name='input')
     >>> separableconv1d = tl.layers.Conv1d(n_filter=32, filter_size=3, strides=2, padding='SAME', act=tf.nn.relu, name='separable_1d')(net)
     >>> print(separableconv1d)
     >>> output shape : (8, 25, 32)
-
     """
 
     # @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -164,10 +159,8 @@ class SeparableConv1d(Layer):
 
 class SeparableConv2d(Layer):
     """The :class:`SeparableConv2d` class is a 2D depthwise separable convolutional layer.
-
     This layer performs a depthwise convolution that acts separately on channels, followed by a pointwise convolution that mixes channels.
     While :class:`DepthwiseConv2d` performs depthwise convolution only, which allow us to add batch normalization between depthwise and pointwise convolution.
-
     Parameters
     ------------
     n_filter : int
@@ -194,16 +187,13 @@ class SeparableConv2d(Layer):
         The number of in channels.
     name : None or str
         A unique layer name.
-
     Examples
     --------
     With TensorLayer
-
     >>> net = tl.layers.Input([8, 50, 50, 64], name='input')
     >>> separableconv2d = tl.layers.Conv1d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, padding='VALID', name='separableconv2d')(net)
     >>> print(separableconv2d)
     >>> output shape : (8, 24, 24, 32)
-
     """
 
     # @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
