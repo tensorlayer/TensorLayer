@@ -85,6 +85,43 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 
+## [2.2.3] - 2020-06-18
+
+TensorLayer 2.2.3 is a maintenance release.
+It contains numerous bug fixes.
+
+### Added
+
+### Changed
+
+### Dependencies Update
+
+### Deprecated
+
+### Fixed
+
+- Fix VGG. (#1078, 1079, 1089)
+- Fix norm layer. (#1080)
+- Fix DeCov2d layer. (#1081)
+- Fix ModelLayer and LayerList doc. (#1083)
+- Fix bug in SAC. (#1085)
+- Fix refactoring: Deduplication. (#1086)
+- Fix maxpool, batchnorm Data format fixed, vgg forward. (#1089)
+- Fix package info. (#1090)
+
+### Removed
+
+### Security
+
+### Contributors
+- @zsdonghao
+- @tiancheng2000 (#1078 #1079 #1080 #1081)
+- @ChrisWu1997 (#1083)
+- @quantumiracle (#1085)
+- @marload (#1086)
+- @Gyx-One (#1089)
+- @Laicheng0830 (#1090)
+
 ## [2.2.1] - 2020-01-14
 
 TensorLayer 2.2.1 is a maintenance release.
@@ -591,6 +628,8 @@ To many PR for this update, please check [here](https://github.com/tensorlayer/t
 @zsdonghao @luomai @DEKHTIARJonathan
 
 [Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/2.0....master
+[2.2.3]: https://github.com/tensorlayer/tensorlayer/compare/2.2.2...2.2.3
+[2.2.2]: https://github.com/tensorlayer/tensorlayer/compare/2.2.1...2.2.2
 [2.2.1]: https://github.com/tensorlayer/tensorlayer/compare/2.2.0...2.2.1
 [2.2.0]: https://github.com/tensorlayer/tensorlayer/compare/2.1.0...2.2.0
 [2.1.0]: https://github.com/tensorlayer/tensorlayer/compare/2.0.2...2.1.0
