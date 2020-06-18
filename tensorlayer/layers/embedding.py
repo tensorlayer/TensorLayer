@@ -284,10 +284,8 @@ class Word2vecEmbedding(Layer):
             The nce_cost is returned only if the nce_loss is used.
         """
 
-        if isinstance(inputs, list):
-            outputs = tf.nn.embedding_lookup(params=self.embeddings, ids=inputs[0])
-        else:
-            outputs = tf.nn.embedding_lookup(params=self.embeddings, ids=inputs)
+        ids = inputs[0] if isinstance(inputs, list) else inputs
+        outputs = tf.nn.embedding_lookup(params=self.embeddings, ids=ids)
 
         if use_nce_loss is True and not self.activate_nce_loss:
             raise AttributeError(

@@ -1,7 +1,10 @@
 API - Reinforcement Learning
 ==============================
 
-Reinforcement Learning.
+We provide two reinforcement learning libraries:
+
+- `RL-tutorial <https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning>`__ for professional users with low-level APIs.
+- `RLzoo <https://rlzoo.readthedocs.io/en/latest/>`__ for simple usage with high-level APIs.
 
 .. automodule:: tensorlayer.rein
 

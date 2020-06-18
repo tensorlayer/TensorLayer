@@ -122,6 +122,36 @@ It contains numerous bug fixes.
 - @Gyx-One (#1089)
 - @Laicheng0830 (#1090)
 
+## [2.2.2] - 2020-04-26
+
+TensorLayer 2.2.2 is a maintenance release.
+
+### Added
+
+- Reinforcement learning(#1065)
+- Mish activation(#1068)
+
+### Changed
+
+### Dependencies Update
+
+### Deprecated
+
+### Fixed
+
+- Fix README.
+- Fix package info.
+
+### Removed
+
+### Security
+
+### Contributors
+
+- @zsdonghao
+- @quantumiracle(1065)
+- @Laicheng0830(#1068)
+
 ## [2.2.1] - 2020-01-14
 
 TensorLayer 2.2.1 is a maintenance release.
