@@ -319,11 +319,7 @@ class MaxPool2d(Layer):
 
     def forward(self, inputs):
         outputs = tf.nn.max_pool(
-            input=inputs,
-            ksize=self.filter_size,
-            strides=self._strides,
-            padding=self.padding,
-            name=self.name,
+            input=inputs, ksize=self.filter_size, strides=self._strides, padding=self.padding, name=self.name,
             data_format=self.data_format
         )
         return outputs
@@ -394,11 +390,7 @@ class MeanPool2d(Layer):
 
     def forward(self, inputs):
         outputs = tf.nn.avg_pool(
-            input=inputs,
-            ksize=self.filter_size,
-            strides=self._strides,
-            padding=self.padding,
-            name=self.name,
+            input=inputs, ksize=self.filter_size, strides=self._strides, padding=self.padding, name=self.name,
             data_format=self.data_format
         )
         return outputs
