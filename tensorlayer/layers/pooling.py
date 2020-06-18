@@ -324,17 +324,19 @@ class MaxPool2d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        self._strides = [1, self.strides[0], self.strides[1], 1]
         if self.data_format == 'channels_last':
+            self._strides = [1, self.strides[0], self.strides[1], 1]
             self.data_format = 'NHWC'
         elif self.data_format == 'channels_first':
             self.data_format = 'NCHW'
+            self._strides = [1, 1, self.strides[0], self.strides[1]]
         else:
             raise Exception("unsupported data format")
 
     def forward(self, inputs):
         outputs = tf.nn.max_pool(
-            input=inputs, ksize=self.filter_size, strides=self._strides, padding=self.padding, name=self.name
+            input=inputs, ksize=self.filter_size, strides=self._strides, padding=self.padding, name=self.name,
+            data_format=self.data_format
         )
         return outputs
 
@@ -397,17 +399,19 @@ class MeanPool2d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        self._strides = [1, self.strides[0], self.strides[1], 1]
         if self.data_format == 'channels_last':
             self.data_format = 'NHWC'
+            self._strides = [1, self.strides[0], self.strides[1], 1]
         elif self.data_format == 'channels_first':
             self.data_format = 'NCHW'
+            self._strides = [1, 1, self.strides[0], self.strides[1]]
         else:
             raise Exception("unsupported data format")
 
     def forward(self, inputs):
         outputs = tf.nn.avg_pool(
-            input=inputs, ksize=self.filter_size, strides=self._strides, padding=self.padding, name=self.name
+            input=inputs, ksize=self.filter_size, strides=self._strides, padding=self.padding, name=self.name,
+            data_format=self.data_format
         )
         return outputs
 
@@ -473,11 +477,12 @@ class MaxPool3d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        self._strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
         if self.data_format == 'channels_last':
             self.data_format = 'NDHWC'
+            self._strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
         elif self.data_format == 'channels_first':
             self.data_format = 'NCDHW'
+            self._strides = [1, 1, self.strides[0], self.strides[1], self.strides[2]]
         else:
             raise Exception("unsupported data format")
 
@@ -554,11 +559,12 @@ class MeanPool3d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        self._strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
         if self.data_format == 'channels_last':
             self.data_format = 'NDHWC'
+            self._strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
         elif self.data_format == 'channels_first':
             self.data_format = 'NCDHW'
+            self._strides = [1, 1, self.strides[0], self.strides[1], self.strides[2]]
         else:
             raise Exception("unsupported data format")
 
