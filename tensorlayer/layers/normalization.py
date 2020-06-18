@@ -92,7 +92,7 @@ def _bias_scale(x, b, data_format):
     if data_format == 'NHWC':
         return x * b
     elif data_format == 'NCHW':
-        return x * _to_channel_first_bias(b)
+        return x * b
     else:
         raise ValueError('invalid data_format: %s' % data_format)
 
@@ -102,7 +102,7 @@ def _bias_add(x, b, data_format):
     if data_format == 'NHWC':
         return tf.add(x, b)
     elif data_format == 'NCHW':
-        return tf.add(x, _to_channel_first_bias(b))
+        return tf.add(x, b)
     else:
         raise ValueError('invalid data_format: %s' % data_format)
 
@@ -291,9 +291,9 @@ class BatchNorm(Layer):
         if self.axes is None:
             self.axes = [i for i in range(len(inputs.shape)) if i != self.channel_axis]
 
+        mean, var = tf.nn.moments(inputs, self.axes, keepdims=False)
         if self.is_train:
             # update moving_mean and moving_var
-            mean, var = tf.nn.moments(inputs, self.axes, keepdims=False)
             self.moving_mean = moving_averages.assign_moving_average(
                 self.moving_mean, mean, self.decay, zero_debias=False
             )
