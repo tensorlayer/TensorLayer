@@ -162,13 +162,9 @@ for epoch in range(n_epoch):
             # compute outputs
             _logits = net(X_batch)
             # compute loss and update model
-            _loss_ce = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
-            _loss_L2 = 0
-            _loss = _loss_ce + _loss_L2
-
+            _loss = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
         grad = tape.gradient(_loss, train_weights)
         optimizer.apply_gradients(zip(grad, train_weights))
-
         train_loss += _loss
         train_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
         n_iter += 1
