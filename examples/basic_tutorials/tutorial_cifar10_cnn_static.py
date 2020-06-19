@@ -155,19 +155,15 @@ test_ds = test_ds.batch(batch_size)
 
 for epoch in range(n_epoch):
     start_time = time.time()
-
     train_loss, train_acc, n_iter = 0, 0, 0
     for X_batch, y_batch in train_ds:
         net.train()
-
         with tf.GradientTape() as tape:
             # compute outputs
             _logits = net(X_batch)
             # compute loss and update model
             _loss_ce = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
             _loss_L2 = 0
-            # for p in tl.layers.get_variables_with_name('relu/W', True, True):
-            #      _loss_L2 += tl.cost.lo_regularizer(1.0)(p)
             _loss = _loss_ce + _loss_L2
 
         grad = tape.gradient(_loss, train_weights)
