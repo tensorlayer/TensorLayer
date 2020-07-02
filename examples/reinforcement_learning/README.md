@@ -108,7 +108,6 @@ The pretrained models and learning curves for each algorithm are stored [here](h
   See David Silver RL Tutorial Lecture 5 - Q-Learning for more details.
   ```
 
-  ​    
 
 * **Deep Q-Network (DQN)**
 
@@ -156,8 +155,6 @@ The pretrained models and learning curves for each algorithm are stored [here](h
   -Noisy DQN propose to explore by adding parameter noises.
   ```
 
-
-  ```
 
 
 
