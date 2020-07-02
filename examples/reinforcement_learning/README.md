@@ -45,7 +45,6 @@ A corresponding [Springer textbook](https://deepreinforcementlearningbook.org) i
 * tensorflow >= 2.0.0 or tensorflow-gpu >= 2.0.0a0
 * tensorlayer >= 2.0.1
 * tensorflow-probability
-* tf-nightly-2.0-preview
 
 *** If you meet the error`AttributeError: module 'tensorflow' has no attribute 'contrib'` when running the code after installing tensorflow-probability, try:
 
