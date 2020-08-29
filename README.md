@@ -26,6 +26,8 @@ This project can also be found at [iHub](https://code.ihub.org.cn/projects/328) 
 
 # News
 
+🔥 **3.0.0 will supports multiple backends, such as TensorFlow, MindSpore and more, allowing users to run the code on different hardware like Nvidia-GPU and Huawei-Ascend. We need more people to join the dev team, if you are interested, please email hao.dong@pku.edu.cn**
+
 🔥 Reinforcement Learning Zoo: [Low-level APIs](https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning) for professional usage, [High-level APIs](https://github.com/tensorlayer/RLzoo) for simple usage, and a corresponding [Springer textbook](http://springer.com/gp/book/9789811540943)
 
 🔥 [Sipeed Maxi-EMC](https://github.com/sipeed/Maix-EMC): Run TensorLayer models on the **low-cost AI chip** (e.g., K210) (Alpha Version)
