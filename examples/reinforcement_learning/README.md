@@ -45,7 +45,6 @@ A corresponding [Springer textbook](https://deepreinforcementlearningbook.org) i
 * tensorflow >= 2.0.0 or tensorflow-gpu >= 2.0.0a0
 * tensorlayer >= 2.0.1
 * tensorflow-probability
-* tf-nightly-2.0-preview
 
 *** If you meet the error`AttributeError: module 'tensorflow' has no attribute 'contrib'` when running the code after installing tensorflow-probability, try:
 
@@ -108,7 +107,6 @@ The pretrained models and learning curves for each algorithm are stored [here](h
   See David Silver RL Tutorial Lecture 5 - Q-Learning for more details.
   ```
 
-  ​    
 
 * **Deep Q-Network (DQN)**
 
@@ -156,8 +154,6 @@ The pretrained models and learning curves for each algorithm are stored [here](h
   -Noisy DQN propose to explore by adding parameter noises.
   ```
 
-
-  ```
 
 
 
