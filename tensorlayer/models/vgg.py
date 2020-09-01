@@ -82,7 +82,7 @@ mapped_cfg = {
 
 model_urls = {
     'vgg16': 'http://www.cs.toronto.edu/~frossard/vgg16/',
-    'vgg19': 'https://media.githubusercontent.com/media/tensorlayer/pretrained-models/master/models/'
+    'vgg19': 'https://github.com/tensorlayer/pretrained-models/blob/master/models/vgg19.npy'
 }
 
 model_saved_name = {'vgg16': 'vgg16_weights.npz', 'vgg19': 'vgg19.npy'}
