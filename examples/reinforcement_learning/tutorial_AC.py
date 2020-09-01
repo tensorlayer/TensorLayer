@@ -46,11 +46,11 @@ python tutorial_AC.py --train/test
 
 """
 import argparse
-import os
 import time
+import matplotlib.pyplot as plt
+import os
 
 import gym
-import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
@@ -77,6 +77,8 @@ MAX_STEPS = 500  # maximum time step in one episode
 LAM = 0.9  # reward discount in TD error
 LR_A = 0.001  # learning rate for actor
 LR_C = 0.01  # learning rate for critic
+
+
 
 ###############################  Actor-Critic  ####################################
 
@@ -137,12 +139,13 @@ class Critic(object):
 
         self.optimizer = tf.optimizers.Adam(lr)
 
-    def learn(self, state, reward, state_):
+    def learn(self, state, reward, state_, done):
+        d = 0 if done else 1
         v_ = self.model(np.array([state_]))
         with tf.GradientTape() as tape:
             v = self.model(np.array([state]))
-            ## TD_error = r + lambda * V(newS) - V(S)
-            td_error = reward + LAM * v_ - v
+            ## TD_error = r + d * lambda * V(newS) - V(S)
+            td_error = reward + d * LAM * v_ - v
             loss = tf.square(td_error)
         grad = tape.gradient(loss, self.model.trainable_weights)
         self.optimizer.apply_gradients(zip(grad, self.model.trainable_weights))
@@ -203,7 +206,7 @@ if __name__ == '__main__':
                 state_new, reward, done, info = env.step(action)
                 state_new = state_new.astype(np.float32)
 
-                if done: reward = -20  # reward shaping trick
+                if done: reward = -20   # reward shaping trick
                 # these may helpful in some tasks
                 # if abs(s_new[0]) >= env.observation_space.high[0]:
                 # #  cart moves more than 2.4 units from the center
@@ -215,7 +218,7 @@ if __name__ == '__main__':
 
                 try:
                     td_error = critic.learn(
-                        state, reward, state_new
+                        state, reward, state_new, done
                     )  # learn Value-function : gradient = grad[r + lambda * V(s_new) - V(s)]
                     actor.learn(state, action, td_error)  # learn Policy : true_gradient = grad[logPi(s, a) * td_error]
                 except KeyboardInterrupt:  # if Ctrl+C at running actor.learn(), then save model, or exit if not at actor.learn()
@@ -238,7 +241,7 @@ if __name__ == '__main__':
 
             # Early Stopping for quick check
             if step >= MAX_STEPS:
-                print("Early Stopping")  # Hao Dong: it is important for this task
+                print("Early Stopping")     # Hao Dong: it is important for this task
                 break
         actor.save()
         critic.save()

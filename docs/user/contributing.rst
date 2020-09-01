@@ -40,7 +40,9 @@ For TensorLayer 1.x, it was actively developed and maintained by the following p
 - **Hao Dong** (`@zsdonghao <https://github.com/zsdonghao>`_) - `<https://zsdonghao.github.io>`_
 - **Jonathan Dekhtiar** (`@DEKHTIARJonathan <https://github.com/DEKHTIARJonathan>`_) - `<https://www.jonathandekhtiar.eu>`_
 - **Luo Mai** (`@luomai <https://github.com/luomai>`_) - `<http://www.doc.ic.ac.uk/~lm111/>`_
+- **Pan Wang** (`@FerociousPanda <http://github.com/FerociousPanda>`_) - `<http://github.com/FerociousPanda>`_  (UI)
 - **Simiao Yu** (`@nebulaV <https://github.com/nebulaV>`_) - `<https://nebulav.github.io>`_
+
 
 Numerous other contributors can be found in the `Github Contribution Graph <https://github.com/tensorlayer/tensorlayer/graphs/contributors>`_.
 

@@ -185,7 +185,7 @@ class PolicyNetwork(Model):
         std = tf.math.exp(log_std)  # no clip in evaluation, clip affects gradients flow
 
         normal = Normal(0, 1)
-        z = normal.sample()
+        z = normal.sample(mean.shape)
         action_0 = tf.math.tanh(mean + std * z)  # TanhNormal distribution as actions; reparameterization trick
         action = self.action_range * action_0
         # according to original paper, with an extra last term for normalizing different action range
@@ -204,7 +204,7 @@ class PolicyNetwork(Model):
         std = tf.math.exp(log_std)
 
         normal = Normal(0, 1)
-        z = normal.sample()
+        z = normal.sample(mean.shape)
         action = self.action_range * tf.math.tanh(
             mean + std * z
         )  # TanhNormal distribution as actions; reparameterization trick

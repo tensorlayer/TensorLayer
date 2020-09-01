@@ -92,7 +92,7 @@ def _bias_scale(x, b, data_format):
     if data_format == 'NHWC':
         return x * b
     elif data_format == 'NCHW':
-        return x * _to_channel_first_bias(b)
+        return x * b
     else:
         raise ValueError('invalid data_format: %s' % data_format)
 
@@ -102,9 +102,17 @@ def _bias_add(x, b, data_format):
     if data_format == 'NHWC':
         return tf.add(x, b)
     elif data_format == 'NCHW':
-        return tf.add(x, _to_channel_first_bias(b))
+        return tf.add(x, b)
     else:
         raise ValueError('invalid data_format: %s' % data_format)
+
+
+def _compute_shape(tensors):
+    if isinstance(tensors, list):
+        shape_mem = [t.get_shape().as_list() for t in tensors]
+    else:
+        shape_mem = tensors.get_shape().as_list()
+    return shape_mem
 
 
 def batch_normalization(x, mean, variance, offset, scale, variance_epsilon, data_format, name=None):
@@ -256,7 +264,8 @@ class BatchNorm(Layer):
         return params_shape
 
     def _check_input_shape(self, inputs):
-        if inputs.ndim <= 1:
+        inputs_shape = _compute_shape(inputs)
+        if len(inputs_shape) <= 1:
             raise ValueError('expected input at least 2D, but got {}D input'.format(inputs.ndim))
 
     def build(self, inputs_shape):
@@ -318,7 +327,8 @@ class BatchNorm1d(BatchNorm):
     """
 
     def _check_input_shape(self, inputs):
-        if inputs.ndim != 2 and inputs.ndim != 3:
+        inputs_shape = _compute_shape(inputs)
+        if len(inputs_shape) != 2 and len(inputs_shape) != 3:
             raise ValueError('expected input to be 2D or 3D, but got {}D input'.format(inputs.ndim))
 
 
@@ -341,7 +351,8 @@ class BatchNorm2d(BatchNorm):
     """
 
     def _check_input_shape(self, inputs):
-        if inputs.ndim != 4:
+        inputs_shape = _compute_shape(inputs)
+        if len(inputs_shape) != 4:
             raise ValueError('expected input to be 4D, but got {}D input'.format(inputs.ndim))
 
 
@@ -364,7 +375,8 @@ class BatchNorm3d(BatchNorm):
     """
 
     def _check_input_shape(self, inputs):
-        if inputs.ndim != 5:
+        inputs_shape = _compute_shape(inputs)
+        if len(inputs_shape) != 5:
             raise ValueError('expected input to be 5D, but got {}D input'.format(inputs.ndim))
 
 

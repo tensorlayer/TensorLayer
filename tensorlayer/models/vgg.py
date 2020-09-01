@@ -105,7 +105,7 @@ class VGG(Model):
 
         inputs = inputs * 255 - np.array([123.68, 116.779, 103.939], dtype=np.float32).reshape([1, 1, 1, 3])
 
-        out = self.layers(inputs)
+        out = self.layers.forward(inputs)
         return out
 
 
@@ -123,7 +123,7 @@ def make_layers(config, batch_norm=False, end_with='outputs'):
                     else:
                         in_channels = 3
                 else:
-                    in_channels = layer
+                    in_channels = layer_group[idx - 1]
                 layer_list.append(
                     Conv2d(
                         n_filter=n_filter, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME',

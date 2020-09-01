@@ -30,8 +30,8 @@ import gym
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-
 import tensorflow_probability as tfp
+
 import tensorlayer as tl
 
 parser = argparse.ArgumentParser(description='Train or test neural net motor controller.')
@@ -63,6 +63,7 @@ LAM = 0.5
 # ppo-clip parameters
 EPSILON = 0.2
 
+
 ###############################  PPO  ####################################
 
 
@@ -70,7 +71,6 @@ class PPO(object):
     """
     PPO class
     """
-
     def __init__(self, state_dim, action_dim, action_bound, method='clip'):
         # critic
         with tf.name_scope('critic'):
@@ -233,13 +233,16 @@ class PPO(object):
         self.action_buffer.append(action)
         self.reward_buffer.append(reward)
 
-    def finish_path(self, next_state):
+    def finish_path(self, next_state, done):
         """
         Calculate cumulative reward
         :param next_state:
         :return: None
         """
-        v_s_ = self.critic(np.array([next_state], np.float32))[0, 0]
+        if done:
+            v_s_ = 0
+        else:
+            v_s_ = self.critic(np.array([next_state], np.float32))[0, 0]
         discounted_r = []
         for r in self.reward_buffer[::-1]:
             v_s_ = r + GAMMA * v_s_
@@ -280,17 +283,15 @@ if __name__ == '__main__':
                 episode_reward += reward
 
                 # update ppo
-                if (step + 1) % BATCH_SIZE == 0:
-                    agent.finish_path(state_)
+                if len(agent.state_buffer) >= BATCH_SIZE:
+                    agent.finish_path(state_, done)
                     agent.update()
                 if done:
                     break
-            agent.finish_path(state_)
+            agent.finish_path(state_, done)
             print(
                 'Training  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
-                    episode + 1, TRAIN_EPISODES, episode_reward,
-                    time.time() - t0
-                )
+                    episode + 1, TRAIN_EPISODES, episode_reward, time.time() - t0)
             )
             if episode == 0:
                 all_episode_reward.append(episode_reward)
@@ -318,6 +319,4 @@ if __name__ == '__main__':
             print(
                 'Testing  | Episode: {}/{}  | Episode Reward: {:.4f}  | Running Time: {:.4f}'.format(
                     episode + 1, TEST_EPISODES, episode_reward,
-                    time.time() - t0
-                )
-            )
+                    time.time() - t0))
