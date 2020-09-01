@@ -210,7 +210,8 @@ class Model(object):
             # check type of inputs and outputs
             check_order = ['inputs', 'outputs']
             for co, check_argu in enumerate([inputs, outputs]):
-                if isinstance(check_argu, (tf.Tensor, tf.SparseTensor, tf.Variable)) or tf_ops.is_dense_tensor_like(check_argu):
+                if isinstance(check_argu,
+                              (tf.Tensor, tf.SparseTensor, tf.Variable)) or tf_ops.is_dense_tensor_like(check_argu):
                     pass
                 elif isinstance(check_argu, list):
                     if len(check_argu) == 0:
@@ -219,8 +220,9 @@ class Model(object):
                             "It should be either Tensor or a list of Tensor."
                         )
                     for idx in range(len(check_argu)):
-                        if not isinstance(check_argu[idx], (tf.Tensor, tf.SparseTensor, tf.Variable)) or not tf_ops.is_dense_tensor_like(
-                                check_argu[idx]):
+                        if not isinstance(check_argu[idx],
+                                          (tf.Tensor, tf.SparseTensor, tf.Variable)) or not tf_ops.is_dense_tensor_like(
+                                              check_argu[idx]):
                             raise TypeError(
                                 "The argument `%s` should be either Tensor or a list of Tensor " % (check_order[co]) +
                                 "but the %s[%d] is detected as %s" % (check_order[co], idx, type(check_argu[idx]))
