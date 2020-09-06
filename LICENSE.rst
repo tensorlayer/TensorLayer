@@ -1,7 +1,7 @@
 License
 =======
 
-Copyright (c) 2016~2018 The TensorLayer contributors.  All rights reserved.
+Copyright (c) 2016~2020 The TensorLayer contributors.  All rights reserved.
 
                                  Apache License
                            Version 2.0, January 2004
@@ -208,4 +208,4 @@ Copyright (c) 2016~2018 The TensorLayer contributors.  All rights reserved.
 
 Contact
 =======
-Questions? Please contact hao.dong11@imperial.ac.uk
+Questions? Please contact hao.dong@pku.edu.cn
