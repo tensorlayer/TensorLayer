@@ -287,7 +287,7 @@ class BatchNorm(Layer):
     def forward(self, inputs):
         self._check_input_shape(inputs)
 
-        self.channel_axis = len(inputs.shape)-1 if self.data_format == 'channels_last' else 1
+        self.channel_axis = len(inputs.shape) - 1 if self.data_format == 'channels_last' else 1
         if self.axes is None:
             self.axes = [i for i in range(len(inputs.shape)) if i != self.channel_axis]
 
