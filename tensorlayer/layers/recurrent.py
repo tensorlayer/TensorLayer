@@ -231,7 +231,7 @@ class RNN(Layer):
            
          We test this code that sequence_length is not passed to the model whatever it is, which induce a lower accuracy for training and validation
          '''        
-         sequence_length = tl.layers.retrieve_seq_length_op3(inputs)
+        sequence_length = tl.layers.retrieve_seq_length_op3(inputs)
 
         # checking the type and values of sequence_length
         if sequence_length is not None:
