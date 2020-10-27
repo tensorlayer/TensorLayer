@@ -247,10 +247,8 @@ class RNN(Layer):
                         "but got an actual length of a sequence %d" % i
                     )
 
-        '''
-        Since sequence_length is not passed into computational graph when build a static model, we force sequence_length to be not None to get dynamic RNN.            
-        We test this code that sequence_length is not passed to the model whatever it is, which induce a lower accuracy for training and validation
-        '''
+        # Since sequence_length is not passed into computational graph when build a static model, we force sequence_length to be not None to get dynamic RNN.            
+        # We test this code that sequence_length is not passed to the model whatever it is, which induce a lower accuracy for training and validation
         sequence_length = tl.layers.retrieve_seq_length_op3(inputs)
 
         sequence_length = [i - 1 if i >= 1 else 0 for i in sequence_length]
