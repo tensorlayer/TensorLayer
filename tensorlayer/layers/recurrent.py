@@ -215,19 +215,7 @@ class RNN(Layer):
         batch_size = inputs.get_shape().as_list()[0]
         total_steps = inputs.get_shape().as_list()[1]
         '''
-        Since sequence_length is not passed into computational graph when build a static model, we force sequence_length to be not None to get dynamic RNN. 
-        Here is an example:
-         
-        ni = tl.layers.Input(inputs_shape, name='input_layer')
-        seq = tl.layers.retrieve_seq_length_op3(ni)
-        cell = tf.keras.layers.LSTMCell(units=n_hidden, recurrent_dropout=0)
-        out = RNN(cell=cell, 
-                    return_last_output=True, 
-                    return_last_state=False,
-                    return_seq_2d=True)(ni,sequence_length=seq)
-        nn = tl.layers.Dense(n_units=2, act=tf.nn.softmax, name="dense")(out)
-        model = tl.models.Model(inputs=ni, outputs=nn, name='rnn')
-           
+        Since sequence_length is not passed into computational graph when build a static model, we force sequence_length to be not None to get dynamic RNN.            
         We test this code that sequence_length is not passed to the model whatever it is, which induce a lower accuracy for training and validation
         '''
         sequence_length = tl.layers.retrieve_seq_length_op3(inputs)
