@@ -215,10 +215,6 @@ class RNN(Layer):
         batch_size = inputs.get_shape().as_list()[0]
         total_steps = inputs.get_shape().as_list()[1]
 
-        # Since sequence_length is not passed into computational graph when build a static model, we force sequence_length to be not None to get dynamic RNN.            
-        # We checked that sequence_length is not passed to the model whatever it is, which induces a lower accuracy for training and validation
-        sequence_length = tl.layers.retrieve_seq_length_op3(inputs)
-
         # checking the type and values of sequence_length
         if sequence_length is not None:
             if isinstance(sequence_length, list):
@@ -251,7 +247,13 @@ class RNN(Layer):
                         "but got an actual length of a sequence %d" % i
                     )
 
-            sequence_length = [i - 1 if i >= 1 else 0 for i in sequence_length]
+        '''
+        Since sequence_length is not passed into computational graph when build a static model, we force sequence_length to be not None to get dynamic RNN.            
+        We test this code that sequence_length is not passed to the model whatever it is, which induce a lower accuracy for training and validation
+        '''
+        sequence_length = tl.layers.retrieve_seq_length_op3(inputs)
+
+        sequence_length = [i - 1 if i >= 1 else 0 for i in sequence_length]
 
         # set warning
         # if (not self.return_last_output) and sequence_length is not None:
