@@ -85,6 +85,32 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 
+## [2.2.4] - 2020-12-09
+
+TensorLayer 2.2.4 is a maintenance release.
+
+### Added
+
+### Changed
+
+### Dependencies Update
+
+### Deprecated
+
+### Fixed
+
+- Fix batchnorm (#1104)
+- Fix recurrent (#1106)
+
+### Removed
+
+### Security
+
+### Contributors
+- @zsdonghao
+- @Laicheng0830 (#1104,#1101)
+- @Thinkre(#1106)
+
 ## [2.2.3] - 2020-06-18
 
 TensorLayer 2.2.3 is a maintenance release.
@@ -658,6 +684,7 @@ To many PR for this update, please check [here](https://github.com/tensorlayer/t
 @zsdonghao @luomai @DEKHTIARJonathan
 
 [Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/2.0....master
+[2.2.4]: https://github.com/tensorlayer/tensorlayer/compare/2.2.3...2.2.4
 [2.2.3]: https://github.com/tensorlayer/tensorlayer/compare/2.2.2...2.2.3
 [2.2.2]: https://github.com/tensorlayer/tensorlayer/compare/2.2.1...2.2.2
 [2.2.1]: https://github.com/tensorlayer/tensorlayer/compare/2.2.0...2.2.1
