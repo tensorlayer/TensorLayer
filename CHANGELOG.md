@@ -101,6 +101,7 @@ TensorLayer 2.2.4 is a maintenance release.
 
 - Fix batchnorm (#1104)
 - Fix recurrent (#1106)
+- Fix is_tensor (#1001)
 
 ### Removed
 
