@@ -247,7 +247,9 @@ class RNN(Layer):
                         "but got an actual length of a sequence %d" % i
                     )
 
-            sequence_length = [i - 1 if i >= 1 else 0 for i in sequence_length]
+        sequence_length = tl.layers.retrieve_seq_length_op3(inputs)
+
+        sequence_length = [i - 1 if i >= 1 else 0 for i in sequence_length]
 
         # set warning
         # if (not self.return_last_output) and sequence_length is not None:
