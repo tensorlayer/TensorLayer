@@ -17,7 +17,7 @@ branches:
     - /^\d+\.\d+(\.\d+)?(\S*)?$/
 
 python:
-  - "3.6.4"
+  - "3.7"
   - "3.5"
 #  - "2.7"  # TensorLayer 2.0 does not support python2 now
 
@@ -56,7 +56,7 @@ env:
 
 matrix:
   include:
-    - python: '3.6.4'
+    - python: '3.6'
       env:
         - _DOC_AND_YAPF_TEST=True
 
@@ -100,7 +100,7 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    python: '3.6.4'
+    python: '3.6'
     condition: '$_TF_VERSION = 2.0.0-rc1'
 #     condition: '$_TF_VERSION = 1.11.0'
 
@@ -114,6 +114,6 @@ deploy:
   api_key: '$GITHUB_PERSONAL_TOKEN'
   on:
     tags: true
-    python: '3.6.4'
+    python: '3.6'
     condition: '$_TF_VERSION = 2.0.0-rc1'
 #     condition: '$_TF_VERSION = 1.11.0'
