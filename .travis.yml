@@ -17,7 +17,7 @@ branches:
     - /^\d+\.\d+(\.\d+)?(\S*)?$/
 
 python:
-  - "3.7"
+#  - "3.7"
   - "3.5"
 #  - "2.7"  # TensorLayer 2.0 does not support python2 now
 
