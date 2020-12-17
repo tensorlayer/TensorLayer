@@ -1,12 +1,11 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer import logging
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import Module
+
+# TODO ADD INPUT CHECK
 
 __all__ = [
     'PoolLayer',
@@ -22,15 +21,15 @@ __all__ = [
     'GlobalMeanPool2d',
     'GlobalMaxPool3d',
     'GlobalMeanPool3d',
-    'CornerPool2d',
+    # 'CornerPool2d',
 ]
 
 
-class PoolLayer(Layer):
+class PoolLayer(Module):
     """
     The :class:`PoolLayer` class is a Pooling layer.
-    You can choose ``tf.nn.max_pool`` and ``tf.nn.avg_pool`` for 2D input or
-    ``tf.nn.max_pool3d`` and ``tf.nn.avg_pool3d`` for 3D input.
+    You can choose ``tl.ops.max_pool`` and ``tl.ops.avg_pool`` for 2D input or
+    ``tl.ops.max_pool3d`` and ``tl.ops.avg_pool3d`` for 3D input.
 
     Parameters
     ----------
@@ -43,7 +42,7 @@ class PoolLayer(Layer):
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     pool : pooling function
-        One of ``tf.nn.max_pool``, ``tf.nn.avg_pool``, ``tf.nn.max_pool3d`` and ``f.nn.avg_pool3d``.
+        One of ``tl.ops.max_pool``, ``tl.ops.avg_pool``, ``tl.ops.max_pool3d`` and ``f.ops.avg_pool3d``.
         See `TensorFlow pooling APIs <https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/>`__
     name : None or str
         A unique layer name.
@@ -63,7 +62,7 @@ class PoolLayer(Layer):
         filter_size=(1, 2, 2, 1),
         strides=(1, 2, 2, 1),
         padding='SAME',
-        pool=tf.nn.max_pool,
+        pool=tl.ops.MaxPool,
         name=None  # 'pool_pro',
     ):
         super().__init__(name)
@@ -88,14 +87,14 @@ class PoolLayer(Layer):
         return s.format(classname=self.__class__.__name__, poolname=self.pool.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        pass
+        self._pool = self.pool(ksize=self.filter_size, strides=self.strides, padding=self.padding)
 
     def forward(self, inputs):
-        outputs = self.pool(inputs, ksize=self.filter_size, strides=self.strides, padding=self.padding, name=self.name)
+        outputs = self._pool(inputs)
         return outputs
 
 
-class MaxPool1d(Layer):
+class MaxPool1d(Module):
     """Max pooling for 1D signal.
 
     Parameters
@@ -167,7 +166,7 @@ class MaxPool1d(Layer):
         self._dilation_rate = [self.dilation_rate]
 
     def forward(self, inputs):
-        outputs = tf.nn.pool(
+        outputs = tl.ops.pool(
             input=inputs,
             window_shape=self._filter_size,
             pooling_type="MAX",
@@ -175,12 +174,11 @@ class MaxPool1d(Layer):
             padding=self.padding,
             data_format=self.data_format,
             dilations=self._dilation_rate,
-            name=self.name,
         )
         return outputs
 
 
-class MeanPool1d(Layer):
+class MeanPool1d(Module):
     """Mean pooling for 1D signal.
 
     Parameters
@@ -240,7 +238,6 @@ class MeanPool1d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        # pass
         # https://tensorflow.google.cn/versions/r2.0/api_docs/python/tf/nn/pool
         if self.data_format == 'channels_last':
             self.data_format = 'NWC'
@@ -253,20 +250,14 @@ class MeanPool1d(Layer):
         self._dilation_rate = [self.dilation_rate]
 
     def forward(self, inputs):
-        outputs = tf.nn.pool(
-            input=inputs,
-            window_shape=self._filter_size,
-            pooling_type="AVG",
-            padding=self.padding,
-            dilations=None,  # TODO: support dilations
-            strides=self._strides,
-            name=self.name,
-            data_format=self.data_format
+        outputs = tl.ops.pool(
+            input=inputs, window_shape=self._filter_size, pooling_type="AVG", padding=self.padding,
+            dilations=self._dilation_rate, strides=self._strides, data_format=self.data_format
         )
         return outputs
 
 
-class MaxPool2d(Layer):
+class MaxPool2d(Module):
     """Max pooling for 2D image.
 
     Parameters
@@ -325,23 +316,24 @@ class MaxPool2d(Layer):
 
     def build(self, inputs_shape=None):
         if self.data_format == 'channels_last':
-            self._strides = [1, self.strides[0], self.strides[1], 1]
             self.data_format = 'NHWC'
+            self._strides = [1, self.strides[0], self.strides[1], 1]
         elif self.data_format == 'channels_first':
             self.data_format = 'NCHW'
             self._strides = [1, 1, self.strides[0], self.strides[1]]
         else:
             raise Exception("unsupported data format")
 
-    def forward(self, inputs):
-        outputs = tf.nn.max_pool(
-            input=inputs, ksize=self.filter_size, strides=self._strides, padding=self.padding, name=self.name,
-            data_format=self.data_format
+        self.max_pool = tl.ops.MaxPool(
+            ksize=self.filter_size, strides=self._strides, padding=self.padding, data_format=self.data_format
         )
+
+    def forward(self, inputs):
+        outputs = self.max_pool(inputs)
         return outputs
 
 
-class MeanPool2d(Layer):
+class MeanPool2d(Module):
     """Mean pooling for 2D image [batch, height, width, channel].
 
     Parameters
@@ -407,16 +399,16 @@ class MeanPool2d(Layer):
             self._strides = [1, 1, self.strides[0], self.strides[1]]
         else:
             raise Exception("unsupported data format")
+        self.avg_pool = tl.ops.AvgPool(
+            ksize=self.filter_size, strides=self._strides, padding=self.padding, data_format=self.data_format
+        )
 
     def forward(self, inputs):
-        outputs = tf.nn.avg_pool(
-            input=inputs, ksize=self.filter_size, strides=self._strides, padding=self.padding, name=self.name,
-            data_format=self.data_format
-        )
+        outputs = self.avg_pool(inputs)
         return outputs
 
 
-class MaxPool3d(Layer):
+class MaxPool3d(Module):
     """Max pooling for 3D volume.
 
     Parameters
@@ -487,18 +479,17 @@ class MaxPool3d(Layer):
             raise Exception("unsupported data format")
 
     def forward(self, inputs):
-        outputs = tf.nn.max_pool3d(
+        outputs = tl.ops.max_pool3d(
             input=inputs,
             ksize=self.filter_size,
             strides=self._strides,
             padding=self.padding,
             data_format=self.data_format,
-            name=self.name,
         )
         return outputs
 
 
-class MeanPool3d(Layer):
+class MeanPool3d(Module):
     """Mean pooling for 3D volume.
 
     Parameters
@@ -559,28 +550,26 @@ class MeanPool3d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
+        self._strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
         if self.data_format == 'channels_last':
             self.data_format = 'NDHWC'
-            self._strides = [1, self.strides[0], self.strides[1], self.strides[2], 1]
         elif self.data_format == 'channels_first':
             self.data_format = 'NCDHW'
-            self._strides = [1, 1, self.strides[0], self.strides[1], self.strides[2]]
         else:
             raise Exception("unsupported data format")
 
     def forward(self, inputs):
-        outputs = tf.nn.avg_pool3d(
+        outputs = tl.ops.avg_pool3d(
             input=inputs,
             ksize=self.filter_size,
             strides=self._strides,
             padding=self.padding,
             data_format=self.data_format,
-            name=self.name,
         )
         return outputs
 
 
-class GlobalMaxPool1d(Layer):
+class GlobalMaxPool1d(Module):
     """The :class:`GlobalMaxPool1d` class is a 1D Global Max Pooling layer.
 
     Parameters
@@ -622,21 +611,21 @@ class GlobalMaxPool1d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        pass
-
-    def forward(self, inputs):
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_max(input_tensor=inputs, axis=1, name=self.name)
+            self.reduce_max = tl.ReduceMax(axis=1)
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_max(input_tensor=inputs, axis=2, name=self.name)
+            self.reduce_max = tl.ReduceMax(axis=2)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
             )
+
+    def forward(self, inputs):
+        outputs = self.reduce_max(inputs)
         return outputs
 
 
-class GlobalMeanPool1d(Layer):
+class GlobalMeanPool1d(Module):
     """The :class:`GlobalMeanPool1d` class is a 1D Global Mean Pooling layer.
 
     Parameters
@@ -677,21 +666,21 @@ class GlobalMeanPool1d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        pass
-
-    def forward(self, inputs):
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_mean(input_tensor=inputs, axis=1, name=self.name)
+            self.reduce_mean = tl.ReduceMean(axis=1)
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_mean(input_tensor=inputs, axis=2, name=self.name)
+            self.reduce_mean = tl.ReduceMean(axis=2)
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
             )
+
+    def forward(self, inputs):
+        outputs = self.reduce_mean(inputs)
         return outputs
 
 
-class GlobalMaxPool2d(Layer):
+class GlobalMaxPool2d(Module):
     """The :class:`GlobalMaxPool2d` class is a 2D Global Max Pooling layer.
 
     Parameters
@@ -732,21 +721,21 @@ class GlobalMaxPool2d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        pass
-
-    def forward(self, inputs):
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_max(input_tensor=inputs, axis=[1, 2], name=self.name)
+            self.reduce_max = tl.ReduceMax(axis=[1, 2])
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_max(input_tensor=inputs, axis=[2, 3], name=self.name)
+            self.reduce_max = tl.ReduceMax(axis=[2, 3])
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
             )
+
+    def forward(self, inputs):
+        outputs = self.reduce_max(inputs)
         return outputs
 
 
-class GlobalMeanPool2d(Layer):
+class GlobalMeanPool2d(Module):
     """The :class:`GlobalMeanPool2d` class is a 2D Global Mean Pooling layer.
 
     Parameters
@@ -788,21 +777,21 @@ class GlobalMeanPool2d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        pass
-
-    def forward(self, inputs):
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_mean(input_tensor=inputs, axis=[1, 2], name=self.name)
+            self.reduce_mean = tl.ReduceMean(axis=[1, 2])
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_mean(input_tensor=inputs, axis=[2, 3], name=self.name)
+            self.reduce_mean = tl.ReduceMean(axis=[2, 3])
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
             )
+
+    def forward(self, inputs):
+        outputs = self.reduce_mean(inputs)
         return outputs
 
 
-class GlobalMaxPool3d(Layer):
+class GlobalMaxPool3d(Module):
     """The :class:`GlobalMaxPool3d` class is a 3D Global Max Pooling layer.
 
     Parameters
@@ -844,21 +833,21 @@ class GlobalMaxPool3d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        pass
-
-    def forward(self, inputs):
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_max(input_tensor=inputs, axis=[1, 2, 3], name=self.name)
+            self.reduce_max = tl.ReduceMax(axis=[1, 2, 3])
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_max(input_tensor=inputs, axis=[2, 3, 4], name=self.name)
+            self.reduce_max = tl.ReduceMax(axis=[2, 3, 4])
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
             )
+
+    def forward(self, inputs):
+        outputs = self.reduce_max(inputs)
         return outputs
 
 
-class GlobalMeanPool3d(Layer):
+class GlobalMeanPool3d(Module):
     """The :class:`GlobalMeanPool3d` class is a 3D Global Mean Pooling layer.
 
     Parameters
@@ -903,9 +892,9 @@ class GlobalMeanPool3d(Layer):
 
     def forward(self, inputs):
         if self.data_format == 'channels_last':
-            outputs = tf.reduce_mean(input_tensor=inputs, axis=[1, 2, 3], name=self.name)
+            outputs = tl.reduce_mean(input_tensor=inputs, axis=[1, 2, 3])
         elif self.data_format == 'channels_first':
-            outputs = tf.reduce_mean(input_tensor=inputs, axis=[2, 3, 4], name=self.name)
+            outputs = tl.reduce_mean(input_tensor=inputs, axis=[2, 3, 4])
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
@@ -913,73 +902,73 @@ class GlobalMeanPool3d(Layer):
         return outputs
 
 
-class CornerPool2d(Layer):
-    """Corner pooling for 2D image [batch, height, width, channel], see `here <https://arxiv.org/abs/1808.01244>`__.
-
-    Parameters
-    ----------
-    mode : str
-        TopLeft for the top left corner,
-        Bottomright for the bottom right corner.
-    name : None or str
-        A unique layer name.
-
-    Examples
-    ---------
-    With TensorLayer
-
-    >>> net = tl.layers.Input([None, 32, 32, 8], name='input')
-    >>> net = tl.layers.CornerPool2d(mode='TopLeft',name='cornerpool2d')(net)
-    >>> output shape : [None, 32, 32, 8]
-
-    """
-
-    def __init__(
-        self,
-        mode='TopLeft',
-        name=None  # 'cornerpool2d'
-    ):
-        super().__init__(name)
-        self.mode = mode
-        self.build()
-        self._built = True
-
-        logging.info("CornerPool2d %s : mode: %s" % (self.name, str(mode)))
-
-    def __repr__(self):
-        s = ('{classname}(mode={mode}')
-        if self.name is not None:
-            s += ', name=\'{name}\''
-        s += ')'
-        return s.format(classname=self.__class__.__name__, **self.__dict__)
-
-    def build(self, inputs_shape=None):
-        pass
-
-    def forward(self, inputs):
-        input_width = inputs.shape[2]
-        input_height = inputs.shape[1]
-        batch_min = tf.reduce_min(inputs)
-        if self.mode == 'TopLeft':
-            temp_bottom = tf.pad(
-                inputs, tf.constant([[0, 0], [0, input_height - 1], [0, 0], [0, 0]]), constant_values=batch_min
-            )
-            temp_right = tf.pad(
-                inputs, tf.constant([[0, 0], [0, 0], [0, input_width - 1], [0, 0]]), constant_values=batch_min
-            )
-            temp_bottom = tf.nn.max_pool(temp_bottom, ksize=(input_height, 1), strides=(1, 1), padding='VALID')
-            temp_right = tf.nn.max_pool(temp_right, ksize=(1, input_width), strides=(1, 1), padding='VALID')
-            outputs = tf.add(temp_bottom, temp_right, name=self.name)
-        elif self.mode == 'BottomRight':
-            temp_top = tf.pad(
-                inputs, tf.constant([[0, 0], [input_height - 1, 0], [0, 0], [0, 0]]), constant_values=batch_min
-            )
-            temp_left = tf.pad(
-                inputs, tf.constant([[0, 0], [0, 0], [input_width - 1, 0], [0, 0]]), constant_values=batch_min
-            )
-            temp_top = tf.nn.max_pool(temp_top, ksize=(input_height, 1), strides=(1, 1), padding='VALID')
-            temp_left = tf.nn.max_pool(temp_left, ksize=(1, input_width), strides=(1, 1), padding='VALID')
-            outputs = tf.add(temp_top, temp_left, name=self.name)
-        else:
-            outputs = tf.identity(inputs, name=self.name)
-        return outputs
+# class CornerPool2d(Layer):
+#     """Corner pooling for 2D image [batch, height, width, channel], see `here <https://arxiv.org/abs/1808.01244>`__.
+#
+#     Parameters
+#     ----------
+#     mode : str
+#         TopLeft for the top left corner,
+#         Bottomright for the bottom right corner.
+#     name : None or str
+#         A unique layer name.
+#
+#     Examples
+#     ---------
+#     With TensorLayer
+#
+#     >>> net = tl.layers.Input([None, 32, 32, 8], name='input')
+#     >>> net = tl.layers.CornerPool2d(mode='TopLeft',name='cornerpool2d')(net)
+#     >>> output shape : [None, 32, 32, 8]
+#
+#     """
+#
+#     def __init__(
+#             self,
+#             mode='TopLeft',
+#             name=None  # 'cornerpool2d'
+#     ):
+#         super().__init__(name)
+#         self.mode = mode
+#         self.build()
+#         self._built = True
+#
+#         logging.info("CornerPool2d %s : mode: %s" % (self.name, str(mode)))
+#
+#     def __repr__(self):
+#         s = ('{classname}(mode={mode}')
+#         if self.name is not None:
+#             s += ', name=\'{name}\''
+#         s += ')'
+#         return s.format(classname=self.__class__.__name__, **self.__dict__)
+#
+#     def build(self, inputs_shape=None):
+#         pass
+#
+#     def forward(self, inputs):
+#         input_width = inputs.shape[2]
+#         input_height = inputs.shape[1]
+#         batch_min = tl.reduce_min(inputs)
+#         if self.mode == 'TopLeft':
+#             temp_bottom = tl.pad(
+#                 inputs, tl.constant([[0, 0], [0, input_height - 1], [0, 0], [0, 0]]), constant_values=batch_min
+#             )
+#             temp_right = tl.pad(
+#                 inputs, tl.constant([[0, 0], [0, 0], [0, input_width - 1], [0, 0]]), constant_values=batch_min
+#             )
+#             temp_bottom = tl.ops.max_pool(temp_bottom, ksize=(input_height, 1), strides=(1, 1), padding='VALID')
+#             temp_right = tl.ops.max_pool(temp_right, ksize=(1, input_width), strides=(1, 1), padding='VALID')
+#             outputs = tl.add(temp_bottom, temp_right)#, name=self.name)
+#         elif self.mode == 'BottomRight':
+#             temp_top = tl.pad(
+#                 inputs, tl.constant([[0, 0], [input_height - 1, 0], [0, 0], [0, 0]]), constant_values=batch_min
+#             )
+#             temp_left = tl.pad(
+#                 inputs, tl.constant([[0, 0], [0, 0], [input_width - 1, 0], [0, 0]]), constant_values=batch_min
+#             )
+#             temp_top = tl.ops.max_pool(temp_top, ksize=(input_height, 1), strides=(1, 1), padding='VALID')
+#             temp_left = tl.ops.max_pool(temp_left, ksize=(1, input_width), strides=(1, 1), padding='VALID')
+#             outputs = tl.add(temp_top, temp_left, name=self.name)
+#         else:
+#             outputs = tl.identity(inputs, name=self.name)
+#         return outputs

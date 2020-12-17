@@ -19,6 +19,7 @@ import zipfile
 import cloudpickle
 import h5py
 import numpy as np
+import progressbar
 import scipy.io as sio
 import tensorflow as tf
 from six.moves import cPickle
@@ -28,11 +29,14 @@ from tensorflow.python.util import serialization
 from tensorflow.python.util.tf_export import keras_export
 from tensorflow.python import pywrap_tensorflow
 
-import progressbar
 import tensorlayer as tl
 from tensorlayer import logging, nlp, utils, visualize
 
-# from six.moves import zip
+if tl.BACKEND == 'mindspore':
+    from mindspore.ops.operations import Assign
+    from mindspore.nn import Cell
+    from mindspore import Tensor
+    import mindspore as ms
 
 if sys.version_info[0] == 2:
     from urllib import urlretrieve
@@ -67,7 +71,9 @@ __all__ = [
     'save_npz',
     'save_npz_dict',
     'tf_variables_to_numpy',
+    'ms_variables_to_numpy',
     'assign_tf_variable',
+    'assign_ms_variable',
     'save_weights_to_hdf5',
     'load_hdf5_to_weights_in_order',
     'load_hdf5_to_weights',
@@ -78,7 +84,7 @@ __all__ = [
     # 'save_pkl_graph',
     # 'load_pkl_graph',
     'load_and_assign_ckpt',
-    'ckpt_to_npz_dict',
+    'ckpt_to_npz_dict'
 ]
 
 
@@ -1950,7 +1956,13 @@ def save_npz(save_list=None, name='model.npz'):
     if save_list is None:
         save_list = []
 
-    save_list_var = tf_variables_to_numpy(save_list)
+    if tl.BACKEND == 'tensorflow':
+        save_list_var = tf_variables_to_numpy(save_list)
+    elif tl.BACKEND == 'mindspore':
+        save_list_var = ms_variables_to_numpy(save_list)
+    else:
+        raise NotImplementedError("This backend is not supported")
+    # print(name, save_list_var)
     np.savez(name, params=save_list_var)
     save_list_var = None
     del save_list_var
@@ -2015,8 +2027,25 @@ def assign_weights(weights, network):
 
     """
     ops = []
-    for idx, param in enumerate(weights):
-        ops.append(network.all_weights[idx].assign(param))
+    if tl.BACKEND == 'tensorflow':
+        for idx, param in enumerate(weights):
+            ops.append(network.all_weights[idx].assign(param))
+    elif tl.BACKEND == 'mindspore':
+
+        class Assign_net(Cell):
+
+            def __init__(self, y):
+                super(Assign_net, self).__init__()
+                self.y = y
+
+            def construct(self, x):
+                Assign()(self.y, x)
+
+        for idx, param in enumerate(weights):
+            assign_param = Tensor(param, dtype=ms.float32)
+            # net = Assign_net(network.all_weights[idx])
+            # net(assign_param)
+            Assign()(network.all_weights[idx], assign_param)
     return ops
 
 
@@ -2064,7 +2093,12 @@ def save_npz_dict(save_list=None, name='model.npz'):
         save_list = []
 
     save_list_names = [tensor.name for tensor in save_list]
-    save_list_var = tf_variables_to_numpy(save_list)
+    if tl.BACKEND == 'tensorflow':
+        save_list_var = tf_variables_to_numpy(save_list)
+    elif tl.BACKEND == 'mindspore':
+        save_list_var = ms_variables_to_numpy(save_list)
+    else:
+        raise NotImplementedError('Not implemented')
     save_var_dict = {save_list_names[idx]: val for idx, val in enumerate(save_list_var)}
     np.savez(name, **save_var_dict)
     save_list_var = None
@@ -2108,7 +2142,11 @@ def load_and_assign_npz_dict(name='model.npz', network=None, skip=False):
                     "if you want to skip redundant or mismatch weights." % key
                 )
         else:
-            assign_tf_variable(network.all_weights[net_weights_name.index(key)], weights[key])
+            if tl.BACKEND == 'tensorflow':
+                assign_tf_variable(network.all_weights[net_weights_name.index(key)], weights[key])
+            elif tl.BACKEND == 'mindspore':
+                assign_param = Tensor(weights[key], dtype=ms.float32)
+                assign_ms_variable(network.all_weights[net_weights_name.index(key)], assign_param)
     logging.info("[*] Model restored from npz_dict %s" % name)
 
 
@@ -2544,9 +2582,36 @@ def tf_variables_to_numpy(variables):
     return results
 
 
+def ms_variables_to_numpy(variables):
+    """Convert MS tensor or list of tensors into a list of numpy array"""
+    if not isinstance(variables, list):
+        var_list = [variables]
+    else:
+        var_list = variables
+
+    results = [v.data.asnumpy() for v in var_list]
+    return results
+
+
 def assign_tf_variable(variable, value):
     """Assign value to a TF variable"""
     variable.assign(value)
+
+
+def assign_ms_variable(variable, value):
+
+    class Assign_net(Cell):
+
+        def __init__(self, y):
+            super(Assign_net, self).__init__()
+            self.y = y
+
+        def construct(self, x):
+            Assign()(self.y, x)
+
+    # net = Assign_net(variable)
+    # net(value)
+    Assign()(variable, value)
 
 
 def _save_weights_to_hdf5_group(f, layers):
@@ -2780,46 +2845,6 @@ def load_hdf5_to_weights(filepath, network, skip=False):
     logging.info("[*] Load %s SUCCESS!" % filepath)
 
 
-def check_ckpt_file(model_dir):
-    model_dir = model_dir
-    model_path = None
-    count_extension = 0
-    for root, dirs, files in os.walk(model_dir):
-        for file in files:
-            filename, extension = os.path.splitext(file)
-            if extension in ['.data-00000-of-00001', '.index', '.meta']:
-                count_extension += 1
-        if count_extension == 3:
-            model_path = model_dir + '/' + filename
-        else:
-            raise Exception("Check the file extension for missing .data-00000-of-00001, .index, .meta")
-        if model_path is None:
-            raise Exception('The ckpt file is not found')
-    return model_path, filename
-
-
-def rename_weight_or_biases(variable_name):
-    if variable_name is None:
-        return variable_name
-    split_var = variable_name.split('/')
-
-    str_temp = ''
-    for i in range(len(split_var)):
-        if 'w' in split_var[i]:
-            split_var[i] = 'filters:0'
-        elif 'b' in split_var[i]:
-            split_var[i] = 'biases:0'
-        else:
-            pass
-
-        if i < len(split_var) - 1:
-            str_temp = str_temp + split_var[i] + '/'
-        else:
-            str_temp = str_temp + split_var[i]
-
-    return str_temp
-
-
 def load_and_assign_ckpt(model_dir, network=None, skip=True):
     """Load weights by name from a given file of ckpt format
 
@@ -2838,7 +2863,16 @@ def load_and_assign_ckpt(model_dir, network=None, skip=True):
     -------
 
     """
-    model_path, filename = check_ckpt_file(model_dir)
+    model_dir = model_dir
+    model_path = None
+    for root, dirs, files in os.walk(model_dir):
+        for file in files:
+            filename, extension = os.path.splitext(file)
+            if extension in ['.data-00000-of-00001', '.index', '.meta']:
+                model_path = model_dir + '/' + filename
+                break
+        if model_path == None:
+            raise Exception('The ckpt file is not found')
 
     reader = pywrap_tensorflow.NewCheckpointReader(model_path)
     var_to_shape_map = reader.get_variable_to_shape_map()
@@ -2859,7 +2893,7 @@ def load_and_assign_ckpt(model_dir, network=None, skip=True):
     logging.info("[*] Model restored from ckpt %s" % filename)
 
 
-def ckpt_to_npz_dict(model_dir, save_name='model.npz', rename_key=False):
+def ckpt_to_npz_dict(model_dir, save_name='model.npz'):
     """ Save ckpt weights to npz file
 
     Parameters
@@ -2869,27 +2903,28 @@ def ckpt_to_npz_dict(model_dir, save_name='model.npz', rename_key=False):
         Examples: model_dir = /root/cnn_model/
     save_name : str
         The save_name of the `.npz` file.
-    rename_key : bool
-        Modify parameter naming,  used to match TL naming rule.
-        Examples: conv1_1/b_b --> conv1_1/biases:0 ; conv1_1/w_w --> conv1_1/filters:0
 
     Returns
     -------
 
     """
-    model_path, _ = check_ckpt_file(model_dir)
+    model_dir = model_dir
+    model_path = None
+    for root, dirs, files in os.walk(model_dir):
+        for file in files:
+            filename, extension = os.path.splitext(file)
+            if extension in ['.data-00000-of-00001', '.index', '.meta']:
+                model_path = model_dir + '/' + filename
+                break
+        if model_path == None:
+            raise Exception('The ckpt file is not found')
 
     reader = pywrap_tensorflow.NewCheckpointReader(model_path)
     var_to_shape_map = reader.get_variable_to_shape_map()
 
     parameters_dict = {}
-    if rename_key is False:
-        for key in sorted(var_to_shape_map):
-            parameters_dict[key] = reader.get_tensor(key)
-    elif rename_key is True:
-        for key in sorted(var_to_shape_map):
-            parameters_dict[rename_weight_or_biases(key)] = reader.get_tensor(key)
-
+    for key in sorted(var_to_shape_map):
+        parameters_dict[key] = reader.get_tensor(key)
     np.savez(save_name, **parameters_dict)
     parameters_dict = None
     del parameters_dict

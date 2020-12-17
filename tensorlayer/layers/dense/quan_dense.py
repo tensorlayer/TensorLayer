@@ -1,12 +1,9 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer import logging
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import Module
 from tensorlayer.layers.utils import (quantize_active_overflow, quantize_weight_overflow)
 
 __all__ = [
@@ -14,7 +11,7 @@ __all__ = [
 ]
 
 
-class QuanDense(Layer):
+class QuanDense(Module):
     """The :class:`QuanDense` class is a quantized fully connected layer with BN, which weights are 'bitW' bits and the output of the previous layer
     are 'bitA' bits while inferencing.
 
@@ -97,6 +94,9 @@ class QuanDense(Layer):
         self.W = self._get_weights("weights", shape=(n_in, self.n_units), init=self.W_init)
         if self.b_init is not None:
             self.b = self._get_weights("biases", shape=int(self.n_units), init=self.b_init)
+            self.bias_add = tl.ops.BiasAdd()
+
+        self.matmul = tl.ops.MatMul()
 
     def forward(self, inputs):
 
@@ -105,10 +105,10 @@ class QuanDense(Layer):
         W_ = quantize_weight_overflow(self.W, self.bitW)
 
         # outputs = tf.matmul(inputs, self.W)
-        outputs = tf.matmul(inputs, W_)  # hao dong change to this
+        outputs = self.matmul(inputs, W_)  # hao dong change to this
 
         if self.b_init is not None:
-            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+            outputs = self.bias_add(outputs, self.b)
         if self.act:
             outputs = self.act(outputs)
         return outputs

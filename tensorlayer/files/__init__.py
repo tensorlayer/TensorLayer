@@ -5,7 +5,7 @@ TensorLayer provides rich layer implementations trailed for
 various benchmarks and domain-specific problems. In addition, we also
 support transparent access to native TensorFlow parameters.
 For example, we provide not only layers for local response normalization, but also
-layers that allow user to apply ``tf.nn.lrn`` on ``network.outputs``.
+layers that allow user to apply ``tf.ops.lrn`` on ``network.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`__.
 """
 
@@ -68,10 +68,10 @@ __all__ = [
     'save_ckpt',
     'save_npz',
     'save_npz_dict',
+    'load_and_assign_ckpt',
+    'ckpt_to_npz_dict'
     #'save_graph',
     #'load_graph',
     #'save_graph_and_params',
     #'load_graph_and_params',
-    'load_and_assign_ckpt',
-    'ckpt_to_npz_dict'
 ]

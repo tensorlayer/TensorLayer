@@ -1,19 +1,16 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer import logging
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import Module
 
 __all__ = [
     'GaussianNoise',
 ]
 
 
-class GaussianNoise(Layer):
+class GaussianNoise(Module):
     """
     The :class:`GaussianNoise` class is noise layer that adding noise with
     gaussian distribution to the activation.
@@ -36,7 +33,7 @@ class GaussianNoise(Layer):
     With TensorLayer
 
     >>> net = tl.layers.Input([64, 200], name='input')
-    >>> net = tl.layers.Dense(n_units=100, act=tf.nn.relu, name='dense')(net)
+    >>> net = tl.layers.Dense(in_channels=200, n_units=100, act=tl.ReLU, name='dense')(net)
     >>> gaussianlayer = tl.layers.GaussianNoise(name='gaussian')(net)
     >>> print(gaussianlayer)
     >>> output shape : (64, 100)
@@ -76,7 +73,15 @@ class GaussianNoise(Layer):
         if (self.is_train or self.is_always) is False:
             return inputs
         else:
-            # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
-            noise = tf.random.normal(shape=inputs.get_shape(), mean=self.mean, stddev=self.stddev, seed=self.seed)
+            shapes = tl.get_tensor_shape(inputs)
+            noise = tl.ops.random_normal(shape=shapes, mean=self.mean, stddev=self.stddev, seed=self.seed)
             outputs = inputs + noise
         return outputs
+
+
+# if __name__ == '__main__':
+#     from tensorlayer.layers import Dense, Input
+#     net = Input([64, 200], name='input')
+#     net = Dense(in_channels=200, n_units=100, act=tl.ReLU, name='dense')(net)
+#     gaussianlayer = GaussianNoise(name='gaussian')(net)
+#     print(gaussianlayer)

@@ -1,11 +1,9 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-
+import tensorlayer as tl
 from tensorlayer import logging
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import Module
 
 __all__ = [
     'UpSampling2d',
@@ -13,7 +11,7 @@ __all__ = [
 ]
 
 
-class UpSampling2d(Layer):
+class UpSampling2d(Module):
     """The :class:`UpSampling2d` class is a up-sampling 2D layer.
 
     See `tf.image.resize_images <https://www.tensorflow.org/api_docs/python/tf/image/resize_images>`__.
@@ -45,30 +43,23 @@ class UpSampling2d(Layer):
 
     """
 
-    def __init__(
-        self,
-        scale,
-        method='bilinear',
-        antialias=False,
-        data_format='channel_last',
-        name=None,
-    ):
+    def __init__(self, scale, method='bilinear', antialias=False, data_format='channel_last', name=None, ksize=None):
         super(UpSampling2d, self).__init__(name)
         self.method = method
         self.antialias = antialias
         self.data_format = data_format
+        self.ksize = ksize
 
         logging.info(
             "UpSampling2d %s: scale: %s method: %s antialias: %s" % (self.name, scale, self.method, self.antialias)
         )
 
-        self.build(None)
-        self._built = True
-
         if isinstance(scale, (list, tuple)) and len(scale) != 2:
             raise ValueError("scale must be int or tuple/list of length 2")
 
         self.scale = (scale, scale) if isinstance(scale, int) else scale
+        self.build(None)
+        self._built = True
 
     def __repr__(self):
         s = '{classname}(scale={scale}, method={method}'
@@ -78,8 +69,10 @@ class UpSampling2d(Layer):
         return s.format(classname=self.__class__.__name__, scale=self.scale, method=self.method, name=self.name)
 
     def build(self, inputs_shape):
-        if self.data_format != 'channel_last':
-            raise Exception("UpSampling2d tf.image.resize_images only support channel_last")
+        self.resize = tl.ops.Resize(
+            scale=self.scale, method=self.method, antialias=self.antialias, data_format=self.data_format,
+            ksize=self.ksize
+        )
 
     def forward(self, inputs):
         """
@@ -89,12 +82,17 @@ class UpSampling2d(Layer):
         inputs : :class:`Tensor`
             Inputs tensors with 4-D Tensor of the shape (batch, height, width, channels)
         """
-        output_size = [int(inputs.shape[1] * self.scale[0]), int(inputs.shape[2] * self.scale[1])]
-        outputs = tf.image.resize(inputs, size=output_size, method=self.method, antialias=self.antialias)
+        outputs = self.resize(inputs)
         return outputs
 
 
-class DownSampling2d(Layer):
+if __name__ == '__main__':
+    ni = tl.layers.Input([10, 32, 50, 50], name='input')
+    y = UpSampling2d(scale=(2, 2), data_format='channels_first', ksize=(50, 50))(ni)
+    print(y)
+
+
+class DownSampling2d(Module):
     """The :class:`DownSampling2d` class is down-sampling 2D layer.
 
     See `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
@@ -171,5 +169,5 @@ class DownSampling2d(Layer):
             Inputs tensors with 4-D Tensor of the shape (batch, height, width, channels)
         """
         output_size = [int(inputs.shape[1] * 1.0 / self.scale[0]), int(inputs.shape[2] * 1.0 / self.scale[1])]
-        outputs = tf.image.resize(inputs, size=output_size, method=self.method, antialias=self.antialias)
+        outputs = tl.ops.resize(inputs, output_size=output_size, method=self.method, antialias=self.antialias)
         return outputs

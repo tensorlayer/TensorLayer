@@ -1,11 +1,10 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer import logging
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import Module
 
 __all__ = [
     'ExpandDims',
@@ -13,7 +12,7 @@ __all__ = [
 ]
 
 
-class ExpandDims(Layer):
+class ExpandDims(Module):
     """
     The :class:`ExpandDims` class inserts a dimension of 1 into a tensor's shape,
     see `tf.expand_dims() <https://www.tensorflow.org/api_docs/python/tf/expand_dims>`__ .
@@ -53,15 +52,15 @@ class ExpandDims(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        pass
+        self.expand_dims = tl.ops.ExpandDims(axis=self.axis)
 
     # @tf.function
     def forward(self, inputs):
-        outputs = tf.expand_dims(inputs, axis=self.axis, name=self.name)
+        outputs = self.expand_dims(inputs)
         return outputs
 
 
-class Tile(Layer):
+class Tile(Module):
     """
     The :class:`Tile` class constructs a tensor by tiling a given tensor,
     see `tf.tile() <https://www.tensorflow.org/api_docs/python/tf/tile>`__ .
@@ -78,7 +77,6 @@ class Tile(Layer):
     --------
     >>> x = tl.layers.Input([10, 3], name='in')
     >>> y = tl.layers.Tile(multiples=[2, 3])(x)
-    [20, 9]
     """
 
     def __init__(self, multiples=None, name=None):  #'tile'):
@@ -99,9 +97,9 @@ class Tile(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        pass
+        self.tile = tl.ops.Tile()
 
     # @tf.function
     def forward(self, inputs):
-        outputs = tf.tile(inputs, multiples=self.multiples, name=self.name)
+        outputs = self.tile(inputs, multiples=self.multiples)
         return outputs

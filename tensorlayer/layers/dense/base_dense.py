@@ -1,22 +1,16 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import numpy as np
-import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer import logging
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.layers.core import Layer
-
-# from tensorlayer.layers.core import LayersConfig
+from tensorlayer.layers.core import Module
 
 __all__ = [
     'Dense',
 ]
 
 
-class Dense(Layer):
+class Dense(Module):
     """The :class:`Dense` class is a fully connected layer.
 
     Parameters
@@ -40,10 +34,10 @@ class Dense(Layer):
     With TensorLayer
 
     >>> net = tl.layers.Input([100, 50], name='input')
-    >>> dense = tl.layers.Dense(n_units=800, act=tf.nn.relu, in_channels=50, name='dense_1')
+    >>> dense = tl.layers.Dense(n_units=800, act=tl.ops.relu, in_channels=50, name='dense_1')
     >>> print(dense)
     Dense(n_units=800, relu, in_channels='50', name='dense_1')
-    >>> tensor = tl.layers.Dense(n_units=800, act=tf.nn.relu, name='dense_2')(net)
+    >>> tensor = tl.layers.Dense(n_units=800, act=tl.ops.relu, name='dense_2')(net)
     >>> print(tensor)
     tf.Tensor([...], shape=(100, 800), dtype=float32)
 
@@ -53,6 +47,7 @@ class Dense(Layer):
 
     """
 
+    # @cell_attr_register
     def __init__(
         self,
         n_units,
@@ -76,11 +71,11 @@ class Dense(Layer):
 
         logging.info(
             "Dense  %s: %d %s" %
-            (self.name, self.n_units, self.act.__name__ if self.act is not None else 'No Activation')
+            (self.name, self.n_units, self.act.__class__.__name__ if self.act is not None else 'No Activation')
         )
 
     def __repr__(self):
-        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        actstr = self.act.__class__.__name__ if self.act is not None else 'No Activation'
         s = ('{classname}(n_units={n_units}, ' + actstr)
         if self.in_channels is not None:
             s += ', in_channels=\'{in_channels}\''
@@ -97,15 +92,25 @@ class Dense(Layer):
         else:
             self.in_channels = inputs_shape[1]
             shape = [inputs_shape[1], self.n_units]
+
         self.W = self._get_weights("weights", shape=tuple(shape), init=self.W_init)
+
+        self.b_init_flag = False
         if self.b_init:
             self.b = self._get_weights("biases", shape=(self.n_units, ), init=self.b_init)
+            self.b_init_flag = True
+            self.bias_add = tl.ops.BiasAdd()
 
-    # @tf.function
-    def forward(self, inputs):
-        z = tf.matmul(inputs, self.W)
-        if self.b_init:
-            z = tf.add(z, self.b)
+        self.act_init_flag = False
         if self.act:
+            self.act_init_flag = True
+
+        self.matmul = tl.ops.MatMul()
+
+    def forward(self, inputs):
+        z = self.matmul(inputs, self.W)
+        if self.b_init_flag:
+            z = self.bias_add(z, self.b)
+        if self.act_init_flag:
             z = self.act(z)
         return z

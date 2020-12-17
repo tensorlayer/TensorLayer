@@ -2,20 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import numbers
-
-import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer import logging
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import Module
 
 __all__ = [
     'DropconnectDense',
 ]
 
 
-class DropconnectDense(Layer):
+class DropconnectDense(Module):
     """
     The :class:`DropconnectDense` class is :class:`Dense` with DropConnect
     behaviour which randomly removes connections between this layer and the previous
@@ -83,7 +79,7 @@ class DropconnectDense(Layer):
 
         logging.info(
             "DropconnectDense %s: %d %s" %
-            (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
+            (self.name, n_units, self.act.__class__.__name__ if self.act is not None else 'No Activation')
         )
 
     def __repr__(self):
@@ -109,11 +105,15 @@ class DropconnectDense(Layer):
         if self.b_init:
             self.b = self._get_weights("biases", shape=(self.n_units), init=self.b_init)
 
+        self.dropout = tl.ops.Dropout(keep=self.keep)
+        self.matmul = tl.ops.MatMul()
+        self.bias_add = tl.ops.BiasAdd()
+
     def forward(self, inputs):
-        W_dropcon = tf.nn.dropout(self.W, 1 - (self.keep))
-        outputs = tf.matmul(inputs, W_dropcon)
+        W_dropcon = self.dropout(self.W)
+        outputs = self.matmul(inputs, W_dropcon)
         if self.b_init:
-            outputs = tf.nn.bias_add(outputs, self.b, name='bias_add')
+            outputs = self.bias_add(outputs, self.b)
         if self.act:
             outputs = self.act(outputs)
         return outputs

@@ -1,11 +1,9 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-
+import tensorlayer as tl
 from tensorlayer import logging
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import Module
 
 __all__ = [
     'Stack',
@@ -13,7 +11,7 @@ __all__ = [
 ]
 
 
-class Stack(Layer):
+class Stack(Module):
     """
     The :class:`Stack` class is a layer for stacking a list of rank-R tensors into one rank-(R+1) tensor, see `tf.stack() <https://www.tensorflow.org/api_docs/python/tf/stack>`__.
 
@@ -57,14 +55,14 @@ class Stack(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        pass
+        self.stack = tl.ops.Stack(axis=self.axis)
 
     def forward(self, inputs):
-        outputs = tf.stack(inputs, axis=self.axis, name=self.name)
+        outputs = self.stack(inputs)
         return outputs
 
 
-class UnStack(Layer):
+class UnStack(Module):
     """
     The :class:`UnStack` class is a layer for unstacking the given dimension of a rank-R tensor into rank-(R-1) tensors., see `tf.unstack() <https://www.tensorflow.org/api_docs/python/tf/unstack>`__.
 
@@ -109,8 +107,8 @@ class UnStack(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        pass
+        self.unstack = tl.ops.Unstack(num=self.num, axis=self.axis)
 
     def forward(self, inputs):
-        outputs = tf.unstack(inputs, num=self.num, axis=self.axis, name=self.name)
+        outputs = self.unstack(inputs)
         return outputs

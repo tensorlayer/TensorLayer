@@ -1,12 +1,9 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-
 from tensorlayer import logging
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.layers.core import Layer
-from tensorlayer.layers.utils import flatten_reshape
+from tensorlayer.layers.core import Module
+import tensorlayer as tl
 
 __all__ = [
     'Flatten',
@@ -16,7 +13,7 @@ __all__ = [
 ]
 
 
-class Flatten(Layer):
+class Flatten(Module):
     """A layer that reshapes high-dimension input into a vector.
 
     Then we often apply Dense, RNN, Concat and etc on the top of a flatten layer.
@@ -50,15 +47,15 @@ class Flatten(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        pass
+        self.flatten_reshape = tl.ops.FlattenReshape()
 
     # @tf.function
     def forward(self, inputs):
-        outputs = flatten_reshape(inputs, name=self.name)
+        outputs = self.flatten_reshape(inputs)
         return outputs
 
 
-class Reshape(Layer):
+class Reshape(Module):
     """A layer that reshapes a given tensor.
 
     Parameters
@@ -93,15 +90,14 @@ class Reshape(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        pass
+        self.reshape = tl.ops.Reshape(self.shape)
 
-    # @tf.function
     def forward(self, inputs):
-        outputs = tf.reshape(inputs, shape=self.shape, name=self.name)
+        outputs = self.reshape(inputs)
         return outputs
 
 
-class Transpose(Layer):
+class Transpose(Module):
     """A layer that transposes the dimension of a tensor.
 
     See `tf.transpose() <https://www.tensorflow.org/api_docs/python/tf/transpose>`__ .
@@ -144,15 +140,15 @@ class Transpose(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        pass
+        self.transpose = tl.ops.Transpose(perm=self.perm, conjugate=self.conjugate)
 
     # @tf.function
     def forward(self, inputs):
-        outputs = tf.transpose(a=inputs, perm=self.perm, conjugate=self.conjugate, name=self.name)
+        outputs = self.transpose(a=inputs)
         return outputs
 
 
-class Shuffle(Layer):
+class Shuffle(Module):
     """A layer that shuffle a 2D image [batch, height, width, channel], see `here <https://arxiv.org/abs/1707.01083>`__.
 
     Parameters
@@ -170,9 +166,10 @@ class Shuffle(Layer):
 
     """
 
-    def __init__(self, group, name=None):  #'reshape'):
+    def __init__(self, group, in_channels=None, name=None):  #'reshape'):
         super(Shuffle, self).__init__(name)
         self.group = group
+        self.inchannels = in_channels
 
         logging.info("Shuffle %s" % (self.name))
 
@@ -187,18 +184,36 @@ class Shuffle(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        pass
+        self.transpose = tl.ops.Transpose([0, 1, 2, 4, 3])
+        inputs_shape = self.inchannels
+        if tl.BACKEND == 'mindspore' and inputs_shape == None:
+            raise ValueError("Do you forget to pass the keyword argument 'in_channels")
+        if tl.BACKEND == 'mindspore':
+            h, w, in_channel = inputs_shape[1:]
+            if in_channel % self.group != 0:
+                raise ValueError(
+                    "The in_channel must be a multiple of the number of groups. The in_channel got %d and the number of groups is %d."
+                    % (in_channel, self.group)
+                )
+            self.reshape1 = tl.ops.Reshape([-1, h, w, in_channel // self.group, self.group])
+            self.reshape2 = tl.ops.Reshape([-1, h, w, in_channel])
 
-    # @tf.function
     def forward(self, inputs):
-        in_shape = inputs.get_shape().as_list()
-        h, w, in_channel = in_shape[1:]
-        if in_channel % self.group != 0:
-            raise ValueError(
-                "The in_channel must be a multiple of the number of groups. The in_channel got %d and the number of groups is %d."
-                % (in_channel, self.group)
-            )
-        temp = tf.reshape(inputs, [-1, h, w, in_channel // self.group, self.group])
-        temp = tf.transpose(temp, [0, 1, 2, 4, 3])
-        outputs = tf.reshape(temp, [-1, h, w, in_channel], name=self.name)
+        if tl.BACKEND == 'tensorflow':
+            in_shape = tl.get_tensor_shape(inputs)
+            h, w, in_channel = in_shape[1:]
+            # if in_channel % self.group != 0:
+            #     raise ValueError(
+            #         "The in_channel must be a multiple of the number of groups. The in_channel got %d and the number of groups is %d."
+            #         % (in_channel, self.group)
+            #     )
+            reshape1 = tl.ops.Reshape([-1, h, w, in_channel // self.group, self.group])
+            temp = reshape1(inputs)
+            temp = self.transpose(temp)
+            reshape2 = tl.ops.Reshape([-1, h, w, in_channel])
+            outputs = reshape2(temp)
+        else:
+            temp = self.reshape1(inputs)
+            temp = self.transpose(temp)
+            outputs = self.reshape2(temp)
         return outputs

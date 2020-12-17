@@ -1,10 +1,10 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer import logging
-from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import Module
 
 __all__ = [
     'Concat',
@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-class Concat(Layer):
+class Concat(Module):
     """A layer that concats multiple tensors according to given axis.
 
     Parameters
@@ -24,7 +24,7 @@ class Concat(Layer):
 
     Examples
     ----------
-    >>> class CustomModel(tl.models.Model):
+    >>> class CustomModel(Module):
     >>>     def __init__(self):
     >>>         super(CustomModel, self).__init__(name="custom")
     >>>         self.dense1 = tl.layers.Dense(in_channels=20, n_units=10, act=tf.nn.relu, name='relu1_1')
@@ -58,7 +58,7 @@ class Concat(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        pass
+        self.concat = tl.ops.Concat(self.concat_dim)
 
     # @tf.function
     def forward(self, inputs):
@@ -67,12 +67,11 @@ class Concat(Layer):
         prev_layer : list of :class:`Layer`
             List of layers to concatenate.
         """
-        outputs = tf.concat(inputs, self.concat_dim, name=self.name)
-
+        outputs = self.concat(inputs)
         return outputs
 
 
-class Elementwise(Layer):
+class Elementwise(Module):
     """A layer that combines multiple :class:`Layer` that have the same output shapes
     according to an element-wise operation.
     If the element-wise operation is complicated, please consider to use :class:`ElementwiseLambda`.
@@ -106,7 +105,7 @@ class Elementwise(Layer):
 
     def __init__(
         self,
-        combine_fn=tf.minimum,
+        combine_fn=tl.ops.minimum,
         act=None,
         name=None,  #'elementwise',
     ):
@@ -119,7 +118,7 @@ class Elementwise(Layer):
 
         logging.info(
             "Elementwise %s: fn: %s act: %s" %
-            (self.name, combine_fn.__name__, ('No Activation' if self.act is None else self.act.__name__))
+            (self.name, combine_fn.__name__, ('No Activation' if self.act is None else self.act.__class__.__name__))
         )
 
     def __repr__(self):
@@ -137,7 +136,26 @@ class Elementwise(Layer):
     def forward(self, inputs):
         outputs = inputs[0]
         for input in inputs[1:]:
-            outputs = self.combine_fn(outputs, input, name=self.name)
+            outputs = self.combine_fn(outputs, input)
         if self.act:
             outputs = self.act(outputs)
         return outputs
+
+
+# if __name__ == '__main__':
+#     from tensorlayer.layers import Dense, Input
+#     class CustomModel(Module):
+#         def __init__(self):
+#             super(CustomModel, self).__init__(name="custom")
+#             self.dense1 = Dense(in_channels=20, n_units=50, act=tl.ReLU, name='relu1_1')
+#             self.dense2 = Dense(in_channels=20, n_units=50, act=tl.ReLU, name='relu2_1')
+#             self.concat = Elementwise(combine_fn=tl.ops.minimum, name='minimum', act=tl.ReLU)
+#
+#         def forward(self, inputs):
+#             d1 = self.dense1(inputs)
+#             d2 = self.dense2(inputs)
+#             outputs = self.concat([d1, d2])
+#             return outputs
+#     input = Input(shape=[20, 20])
+#     net = CustomModel()
+#     print(net(input))

@@ -81,10 +81,10 @@ def cross_entropy_reward_loss(logits, actions, rewards, name=None):
     ----------
     >>> states_batch_pl = tf.placeholder(tf.float32, shape=[None, D])
     >>> network = InputLayer(states_batch_pl, name='input')
-    >>> network = DenseLayer(network, n_units=H, act=tf.nn.relu, name='relu1')
+    >>> network = DenseLayer(network, n_units=H, act=tf.ops.relu, name='relu1')
     >>> network = DenseLayer(network, n_units=3, name='out')
     >>> probs = network.outputs
-    >>> sampling_prob = tf.nn.softmax(probs)
+    >>> sampling_prob = tf.ops.softmax(probs)
     >>> actions_batch_pl = tf.placeholder(tf.int32, shape=[None])
     >>> discount_rewards_batch_pl = tf.placeholder(tf.float32, shape=[None])
     >>> loss = tl.rein.cross_entropy_reward_loss(probs, actions_batch_pl, discount_rewards_batch_pl)

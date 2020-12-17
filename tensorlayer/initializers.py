@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import tensorflow as tf
+import tensorlayer as tl
 
 __all__ = [
     'Initializer', 'Zeros', 'Ones', 'Constant', 'RandomUniform', 'RandomNormal', 'TruncatedNormal',
-    'deconv2d_bilinear_upsampling_initializer'
+    'deconv2d_bilinear_upsampling_initializer', 'He_Normal'
 ]
 
 
@@ -22,7 +22,7 @@ class Initializer(object):
         shape : tuple of int.
             The shape of the tensor.
         dtype : Optional dtype of the tensor.
-            If not provided will return tensor of `tf.float32`.
+            If not provided will return tensor of `tl.float32`.
 
         Returns
         -------
@@ -61,16 +61,16 @@ class Zeros(Initializer):
     """Initializer that generates tensors initialized to 0.
     """
 
-    def __call__(self, shape, dtype=tf.float32):
-        return tf.zeros(shape, dtype=dtype)
+    def __call__(self, shape, dtype=tl.float32):
+        return tl.zeros(shape, dtype=dtype)
 
 
 class Ones(Initializer):
     """Initializer that generates tensors initialized to 1.
     """
 
-    def __call__(self, shape, dtype=tf.float32):
-        return tf.ones(shape, dtype=dtype)
+    def __call__(self, shape, dtype=tl.float32):
+        return tl.ones(shape, dtype=dtype)
 
 
 class Constant(Initializer):
@@ -86,8 +86,8 @@ class Constant(Initializer):
     def __init__(self, value=0):
         self.value = value
 
-    def __call__(self, shape, dtype=None):
-        return tf.constant(self.value, shape=shape, dtype=dtype)
+    def __call__(self, shape, dtype=tl.float32):
+        return tl.constant(self.value, shape=shape, dtype=dtype)
 
     def get_config(self):
         return {"value": self.value}
@@ -112,8 +112,8 @@ class RandomUniform(Initializer):
         self.maxval = maxval
         self.seed = seed
 
-    def __call__(self, shape, dtype=tf.float32):
-        return tf.random.uniform(shape, self.minval, self.maxval, dtype=dtype, seed=self.seed)
+    def __call__(self, shape, dtype=tl.float32):
+        return tl.random_uniform(shape, self.minval, self.maxval, dtype=dtype, seed=self.seed)
 
     def get_config(self):
         return {"minval": self.minval, "maxval": self.maxval, "seed": self.seed}
@@ -137,8 +137,8 @@ class RandomNormal(Initializer):
         self.stddev = stddev
         self.seed = seed
 
-    def __call__(self, shape, dtype=tf.float32):
-        return tf.random.normal(shape, self.mean, self.stddev, dtype=dtype, seed=self.seed)
+    def __call__(self, shape, dtype=tl.float32):
+        return tl.random_normal(shape, self.mean, self.stddev, dtype=dtype, seed=self.seed)
 
     def get_config(self):
         return {"mean": self.mean, "stddev": self.stddev, "seed": self.seed}
@@ -168,11 +168,31 @@ class TruncatedNormal(Initializer):
         self.stddev = stddev
         self.seed = seed
 
-    def __call__(self, shape, dtype=tf.float32):
-        return tf.random.truncated_normal(shape, self.mean, self.stddev, dtype=dtype, seed=self.seed)
+    def __call__(self, shape, dtype=tl.float32):
+        return tl.truncated_normal(shape, self.mean, self.stddev, dtype=dtype, seed=self.seed)
 
     def get_config(self):
         return {"mean": self.mean, "stddev": self.stddev, "seed": self.seed}
+
+
+class He_Normal(Initializer):
+    """He normal initializer.
+
+    Parameters
+    ----------
+    seed : A Python integer.
+        Used to seed the random generator.
+
+    """
+
+    def __init__(self, seed=None):
+        self.seed = seed
+
+    def __call__(self, shape, dtype=tl.float32):
+        return tl.he_normal(seed=self.seed, shape=shape, dtype=dtype)
+
+    def get_config(self):
+        return {"seed", self.seed}
 
 
 def deconv2d_bilinear_upsampling_initializer(shape):
@@ -220,7 +240,7 @@ def deconv2d_bilinear_upsampling_initializer(shape):
         weights[:, :, i, i] = bilinear_kernel
 
     # assign numpy array to constant_initalizer and pass to get_variable
-    return tf.constant_initializer(value=weights)
+    return Constant(value=weights)
 
 
 # Alias
@@ -230,3 +250,4 @@ constant = Constant
 random_uniform = RandomUniform
 random_normal = RandomNormal
 truncated_normal = TruncatedNormal
+he_normal = He_Normal

@@ -1,18 +1,16 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-
+import tensorlayer as tl
 from tensorlayer import logging
-from tensorlayer.initializers import constant
-from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import Module
 
 __all__ = [
     'Scale',
 ]
 
 
-class Scale(Layer):
+class Scale(Module):
     """The :class:`Scale` class is to multiple a trainable scale value to the layer outputs. Usually be used on the output of binary net.
 
     Parameters
@@ -25,10 +23,8 @@ class Scale(Layer):
     Examples
     ----------
     >>> inputs = tl.layers.Input([8, 3])
-    >>> dense = tl.layers.Dense(n_units=10)(inputs)
+    >>> dense = tl.layers.Dense(n_units=10, in_channels=3)(inputs)
     >>> outputs = tl.layers.Scale(init_scale=0.5)(dense)
-    >>> model = tl.models.Model(inputs=inputs, outputs=[dense, outputs])
-    >>> dense_out, scale_out = model(data, is_train=True)
 
     """
 
@@ -53,7 +49,7 @@ class Scale(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        self.scale = self._get_weights("scale", shape=[1], init=constant(value=self.init_scale))
+        self.scale = self._get_weights("scale", shape=[1], init=tl.initializers.constant(value=self.init_scale))
 
     # @tf.function
     def forward(self, inputs):

@@ -1,12 +1,9 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer import logging
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import Module
 
 __all__ = [
     'PadLayer',
@@ -16,7 +13,7 @@ __all__ = [
 ]
 
 
-class PadLayer(Layer):
+class PadLayer(Module):
     """The :class:`PadLayer` class is a padding layer for any mode and dimension.
     Please see `tf.pad <https://www.tensorflow.org/versions/r2.0/api_docs/python/tf/pad>`__ for usage.
 
@@ -36,7 +33,7 @@ class PadLayer(Layer):
     >>> net = tl.layers.Input([None, 224, 224, 3], name='input')
     >>> padlayer = tl.layers.PadLayer([[0, 0], [3, 3], [3, 3], [0, 0]], "REFLECT", name='inpad')(net)
     >>> print(padlayer)
-    >>> output shape : (None, 106, 106, 3)
+    >>> output shape : (None, 230, 230, 3)
 
     """
 
@@ -71,11 +68,11 @@ class PadLayer(Layer):
         pass
 
     def forward(self, inputs):
-        outputs = tf.pad(tensor=inputs, paddings=self.padding, mode=self.mode, name=self.name)
+        outputs = tl.ops.pad(tensor=inputs, paddings=self.padding, mode=self.mode)
         return outputs
 
 
-class ZeroPad1d(Layer):
+class ZeroPad1d(Module):
     """
     The :class:`ZeroPad1d` class is a 1D padding layer for signal [batch, length, channel].
 
@@ -92,7 +89,7 @@ class ZeroPad1d(Layer):
     With TensorLayer
 
     >>> net = tl.layers.Input([None, 100, 1], name='input')
-    >>> pad1d = tl.layers.ZeroPad1d(padding=(2, 3))(net)
+    >>> pad1d = tl.layers.ZeroPad1d(padding=(3, 3))(net)
     >>> print(pad1d)
     >>> output shape : (None, 106, 1)
 
@@ -121,14 +118,14 @@ class ZeroPad1d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        self.layer = tf.keras.layers.ZeroPadding1D(padding=self.padding, name=self.name)
+        self.layer = tl.ops.ZeroPadding1D(padding=self.padding)
 
     def forward(self, inputs):
         outputs = self.layer(inputs)
         return outputs
 
 
-class ZeroPad2d(Layer):
+class ZeroPad2d(Module):
     """
     The :class:`ZeroPad2d` class is a 2D padding layer for image [batch, height, width, channel].
 
@@ -176,14 +173,14 @@ class ZeroPad2d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        self.layer = tf.keras.layers.ZeroPadding2D(padding=self.padding, name=self.name)
+        self.layer = tl.ops.ZeroPadding2D(padding=self.padding)
 
     def forward(self, inputs):
         outputs = self.layer(inputs)
         return outputs
 
 
-class ZeroPad3d(Layer):
+class ZeroPad3d(Module):
     """
     The :class:`ZeroPad3d` class is a 3D padding layer for volume [batch, depth, height, width, channel].
 
@@ -231,7 +228,7 @@ class ZeroPad3d(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        self.layer = tf.keras.layers.ZeroPadding3D(padding=self.padding, name=self.name)
+        self.layer = tl.ops.ZeroPadding3D(padding=self.padding)
 
     def forward(self, inputs):
         outputs = self.layer(inputs)

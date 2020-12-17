@@ -1,20 +1,16 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-
+import tensorlayer as tl
 from tensorlayer import logging
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.layers.core import Layer
-
-# from tensorlayer.layers.core import LayersConfig
+from tensorlayer.layers.core import Module
 
 __all__ = [
     'Dropout',
 ]
 
 
-class Dropout(Layer):
+class Dropout(Module):
     """
     The :class:`Dropout` class is a noise layer which randomly set some
     activations to zero according to a keeping probability.
@@ -31,7 +27,7 @@ class Dropout(Layer):
 
     """
 
-    def __init__(self, keep, seed=None, name=None):  #"dropout"):
+    def __init__(self, keep, seed=0, name=None):  #"dropout"):
         super(Dropout, self).__init__(name)
         self.keep = keep
         self.seed = seed
@@ -49,12 +45,22 @@ class Dropout(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        pass
+        self.dropout = tl.ops.Dropout(keep=self.keep, seed=self.seed)
 
     # @tf.function
     def forward(self, inputs):
         if self.is_train:
-            outputs = tf.nn.dropout(inputs, rate=1 - (self.keep), seed=self.seed, name=self.name)
+            outputs = self.dropout(inputs)
         else:
             outputs = inputs
         return outputs
+
+
+if __name__ == '__main__':
+    shapes_do = (20, 16, 50)
+    from tensorlayer.layers.inputs import Input
+    # from mindspore import context
+    # context.set_context(mode=context.GRAPH_MODE)
+    inputs_do = Input(shapes_do)
+    dropout = Dropout(keep=0.1)(inputs_do)
+    print(dropout)

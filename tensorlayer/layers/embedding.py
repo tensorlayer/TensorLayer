@@ -1,24 +1,15 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import numpy as np
-import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer import logging
-from tensorlayer.layers.core import Layer
-
+from tensorlayer.layers.core import Module
 # from tensorlayer.layers.core import LayersConfig
 
-__all__ = [
-    'OneHot',
-    'Word2vecEmbedding',
-    'Embedding',
-    'AverageEmbedding',
-]
+__all__ = ['OneHot', 'Word2vecEmbedding', 'Embedding', 'AverageEmbedding']
 
 
-class OneHot(Layer):
+class OneHot(Module):
     """
     The :class:`OneHot` class is the starting layer of a neural network, see ``tf.one_hot``.
     Useful link: `https://www.tensorflow.org/api_docs/python/tf/one_hot`.
@@ -42,7 +33,7 @@ class OneHot(Layer):
     ---------
     >>> import tensorflow as tf
     >>> import tensorlayer as tl
-    >>> net = tl.layers.Input([32], dtype=tf.int32)
+    >>> net = tl.layers.Input([32], dtype=tl.int32)
     >>> onehot = tl.layers.OneHot(depth=8)
     >>> print(onehot)
     OneHot(depth=8, name='onehot')
@@ -52,8 +43,7 @@ class OneHot(Layer):
 
     """
 
-    def __init__(self, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name=None):  #'input'):
-
+    def __init__(self, depth=None, on_value=1.0, off_value=0.0, axis=-1, dtype=tl.float32, name=None):
         super(OneHot, self).__init__(name)
         self.depth = depth
         self.on_value = on_value
@@ -62,9 +52,8 @@ class OneHot(Layer):
         self.dtype = dtype
         logging.info("OneHotInput  %s" % (self.name))
 
-        if not self._built:
-            self.build(tuple())
-            self._built = True
+        self.build()
+        self._built = True
 
         if self.depth is None:
             raise RuntimeError(self.__class__.__name__ + ": depth == None the number of output units is undefined")
@@ -82,10 +71,11 @@ class OneHot(Layer):
         s += ')'
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
-    def build(self, inputs_shape):
-        pass
+    def build(self, inputs_shape=None):
+        self.onehot = tl.ops.OneHot(
+            depth=self.depth, on_value=self.on_value, off_value=self.off_value, axis=self.axis, dtype=self.dtype
+        )
 
-    # @tf.function
     def forward(self, inputs):
         """
         Parameters
@@ -93,13 +83,11 @@ class OneHot(Layer):
         inputs : input tensor
             The inputs are indices. The locations represented by indices in indices take value on_value, while all other locations take value off_value.
         """
-        outputs = tf.one_hot(
-            inputs, self.depth, on_value=self.on_value, off_value=self.off_value, axis=self.axis, dtype=self.dtype
-        )
+        outputs = self.onehot(inputs)
         return outputs
 
 
-class Word2vecEmbedding(Layer):
+class Word2vecEmbedding(Module):
     """
     The :class:`Word2vecEmbedding` class is a fully connected layer.
     For Word Embedding, words are input as integer index.
@@ -128,7 +116,7 @@ class Word2vecEmbedding(Layer):
         In a static model, once the model is constructed, the computation of nce loss
         cannot be changed (always computed or not computed).
     nce_loss_args : dictionary
-        The arguments for tf.nn.nce_loss()
+        The arguments for tf.ops.nce_loss()
     E_init : initializer
         The initializer for initializing the embedding matrix
     nce_W_init : initializer
@@ -248,7 +236,7 @@ class Word2vecEmbedding(Layer):
             init=self.E_init,
         )
 
-        self.normalized_embeddings = tf.nn.l2_normalize(self.embeddings, 1)
+        self.normalized_embeddings = tl.L2Normalize(axis=1)(self.embeddings)
 
         if self.activate_nce_loss:
             # Construct the variables for the NCE loss (i.e. negative sampling)
@@ -264,7 +252,9 @@ class Word2vecEmbedding(Layer):
                 init=self.nce_b_init,
             )
 
-    # @tf.function
+        self.embedding_lookup = tl.EmbeddingLookup()
+        self.nce_loss = tl.NCELoss(**self.nce_loss_args)
+
     def forward(self, inputs, use_nce_loss=None):
         """
         Parameters
@@ -284,8 +274,10 @@ class Word2vecEmbedding(Layer):
             The nce_cost is returned only if the nce_loss is used.
         """
 
-        ids = inputs[0] if isinstance(inputs, list) else inputs
-        outputs = tf.nn.embedding_lookup(params=self.embeddings, ids=ids)
+        if isinstance(inputs, list):
+            outputs = self.embedding_lookup(params=self.embeddings, ids=inputs[0])
+        else:
+            outputs = self.embedding_lookup(params=self.embeddings, ids=inputs)
 
         if use_nce_loss is True and not self.activate_nce_loss:
             raise AttributeError(
@@ -297,10 +289,10 @@ class Word2vecEmbedding(Layer):
             if not isinstance(inputs, list):
                 raise ValueError("If nce loss is used, the labels of inputs must be provided.")
 
-            nce_cost = tf.reduce_mean(
-                input_tensor=tf.nn.nce_loss(
+            nce_cost = tl.reduce_mean(
+                input_tensor=self.nce_loss(
                     weights=self.nce_weights, biases=self.nce_biases, inputs=outputs, labels=inputs[1],
-                    num_sampled=self.num_sampled, num_classes=self.vocabulary_size, **self.nce_loss_args
+                    num_sampled=self.num_sampled, num_classes=self.vocabulary_size
                 )
             )
 
@@ -309,7 +301,7 @@ class Word2vecEmbedding(Layer):
         return outputs
 
 
-class Embedding(Layer):
+class Embedding(Module):
     """
     The :class:`Embedding` class is a look-up table for word embedding.
 
@@ -387,8 +379,8 @@ class Embedding(Layer):
             shape=(self.vocabulary_size, self.embedding_size),
             init=self.E_init,
         )
+        self.embedding_lookup = tl.EmbeddingLookup()
 
-    # @tf.function
     def forward(self, inputs):
         """
         Parameters
@@ -396,11 +388,11 @@ class Embedding(Layer):
         inputs : Tensor
             The input of a network.
         """
-        outputs = tf.nn.embedding_lookup(params=self.embeddings, ids=inputs)
+        outputs = self.embedding_lookup(params=self.embeddings, ids=inputs)
         return outputs
 
 
-class AverageEmbedding(Layer):
+class AverageEmbedding(Module):
     """The :class:`AverageEmbedding` averages over embeddings of inputs.
     This is often used as the input layer for models like DAN[1] and FastText[2].
 
@@ -487,8 +479,13 @@ class AverageEmbedding(Layer):
             shape=(self.vocabulary_size, self.embedding_size),
             init=self.E_init,
         )
+        self.embedding_lookup = tl.EmbeddingLookup()
+        self.not_equal = tl.Not_equal()
+        self.cast = tl.Cast(tl.float32)
+        self.expand_dims = tl.ExpandDims(axis=-1)
+        self.reduce_sum = tl.ReduceSum(axis=1)
+        self.count_nonzero = tl.Count_nonzero(keepdims=True, dtype=tl.float32)
 
-    # @tf.function
     def forward(self, inputs):
         """
         Parameters
@@ -497,25 +494,15 @@ class AverageEmbedding(Layer):
             The network input.
             For word inputs, please use integer index format, 2D tensor: (batch_size, sentence_length).
         """
-        word_embeddings = tf.nn.embedding_lookup(
-            params=self.embeddings,
-            ids=inputs,
-            name='word_embeddings',
-        )
+        word_embeddings = self.embedding_lookup(params=self.embeddings, ids=inputs)
 
         # Zero out embeddings of pad value
-        masks = tf.not_equal(inputs, self.pad_value, name='masks')
-        word_embeddings *= tf.cast(tf.expand_dims(masks, axis=-1), dtype=tf.float32)
-        sum_word_embeddings = tf.reduce_sum(input_tensor=word_embeddings, axis=1)
+        masks = self.not_equal(inputs, self.pad_value)
+        word_embeddings *= self.cast(self.expand_dims(masks))
+        sum_word_embeddings = self.reduce_sum(input=word_embeddings)
 
         # Count number of non-padding words in each sentence
-        sentence_lengths = tf.math.count_nonzero(
-            masks,
-            axis=1,
-            keepdims=True,
-            dtype=tf.float32,
-            name='sentence_lengths',
-        )
+        sentence_lengths = self.count_nonzero(masks, axis=1)
 
         sentence_embeddings = tf.divide(
             sum_word_embeddings,
@@ -526,3 +513,16 @@ class AverageEmbedding(Layer):
         outputs = sentence_embeddings
 
         return outputs
+
+
+if __name__ == '__main__':
+    import tensorflow as tf
+    import tensorlayer as tl
+    batch_size = 8
+    length = 5
+    input = tl.layers.Input([batch_size, length], dtype=tl.int32)
+    avgembed = AverageEmbedding(vocabulary_size=1000, embedding_size=50, name='avg')
+    print(avgembed)
+    AverageEmbedding(vocabulary_size=1000, embedding_size=50, pad_value=0)
+    tensor = avgembed(input)
+    print(tensor)

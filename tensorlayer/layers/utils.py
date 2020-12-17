@@ -1,13 +1,13 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import numpy as np
 import tensorflow as tf
 from tensorflow.python.ops.rnn_cell import LSTMStateTuple
 
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated, deprecated_alias
+from tensorlayer.backend.ops.load_backend import BACKEND
 
 __all__ = [
     'cabs',
@@ -74,9 +74,9 @@ def flatten_reshape(variable, name='flatten'):
 
     """
     dim = 1
-    for d in variable.get_shape()[1:].as_list():
+    for d in tl.get_tensor_shape(variable)[1:]:  # variable.get_shape()[1:].as_list():
         dim *= d
-    return tf.reshape(variable, shape=[-1, dim], name=name)
+    return tl.reshape(variable, shape=[-1, dim])
 
 
 def get_collection_trainable(name=''):
@@ -129,22 +129,23 @@ def get_layers_with_name(net, name="", verbose=False):
     return layers
 
 
-def get_variable_with_initializer(scope_name, var_name, shape, init=tl.initializers.random_normal()):
+def get_variable_with_initializer(scope_name, var_name, shape, init=tl.initializers.random_normal(), trainable=True):
     # FIXME: documentation needed
-    # if tf.executing_eagerly():
     var_name = scope_name + "/" + var_name
-    # if init_args is not None and len(init_args) != 0:
-    #     initial_value = init(**init_args)(shape=shape)
-    # else:
-    #     initial_value = init()(shape=shape)
-    # var = tf.Variable(initial_value=initial_value, name=var_name)
     # FIXME: not sure whether this is correct?
-    initial_value = init(shape=shape)
-    var = tf.Variable(initial_value=initial_value, name=var_name)  #, **init_args)
+    # TODO mindspore weights shape : [out_channel, in_channel, kernel_h, kernel_w]
+    if BACKEND == 'mindspore':
+        if len(shape) == 2:
+            pass
+        else:
+            shape = shape[::-1]
 
-    # else:
-    #     with tf.variable_scope(scope_name, reuse=tf.AUTO_REUSE):
-    #         var = tf.get_variable(name=var_name, initializer=tf.zeros(shape), trainable=train)
+    initial_value = init(shape=shape)
+
+    if BACKEND == 'dragon':
+        return initial_value
+
+    var = tl.Variable(initial_value=initial_value, name=var_name, trainable=trainable)
     return var
 
 

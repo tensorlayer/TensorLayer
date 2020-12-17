@@ -1,22 +1,14 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-
+from tensorlayer.layers.core import Module
 import tensorlayer as tl
 from tensorlayer import logging
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.layers.core import Layer
-from tensorlayer.layers.utils import get_collection_trainable
 
-__all__ = [
-    'Conv1d',
-    'Conv2d',
-    'Conv3d',
-]
+__all__ = ['Conv1d', 'Conv2d', 'Conv3d']
 
 
-class Conv1d(Layer):
+class Conv1d(Module):
     """Simplified version of :class:`Conv1dLayer`.
 
     Parameters
@@ -51,7 +43,7 @@ class Conv1d(Layer):
     >>> net = tl.layers.Input([8, 100, 1], name='input')
     >>> conv1d = tl.layers.Conv1d(n_filter=32, filter_size=5, stride=2, b_init=None, in_channels=1, name='conv1d_1')
     >>> print(conv1d)
-    >>> tensor = tl.layers.Conv1d(n_filter=32, filter_size=5, stride=2, act=tf.nn.relu, name='conv1d_2')(net)
+    >>> tensor = tl.layers.Conv1d(n_filter=32, filter_size=5, stride=2, act=tl.ops.relu, name='conv1d_2')(net)
     >>> print(tensor)
 
     """
@@ -88,12 +80,12 @@ class Conv1d(Layer):
         logging.info(
             "Conv1d %s: n_filter: %d filter_size: %s stride: %d pad: %s act: %s" % (
                 self.name, n_filter, filter_size, stride, padding,
-                self.act.__name__ if self.act is not None else 'No Activation'
+                self.act.__class__.__name__ if self.act is not None else 'No Activation'
             )
         )
 
     def __repr__(self):
-        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        actstr = self.act.__class__.__name__ if self.act is not None else 'No Activation'
         s = (
             '{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
             ', stride={stride}, padding={padding}'
@@ -125,27 +117,32 @@ class Conv1d(Layer):
         # TODO : check
         self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init)
 
+        self.b_init_flag = False
         if self.b_init:
             self.b = self._get_weights("biases", shape=(self.n_filter), init=self.b_init)
+            self.bias_add = tl.ops.BiasAdd(self.data_format)
+            self.b_init_flag = True
+
+        self.conv1d = tl.ops.Conv1D(
+            stride=self.stride, padding=self.padding, data_format=self.data_format, dilations=self.dilation_rate,
+            out_channel=self.n_filter, k_size=self.filter_size
+        )
+
+        self.act_init_flag = False
+        if self.act:
+            self.activate = self.act
+            self.act_init_flag = True
 
     def forward(self, inputs):
-        outputs = tf.nn.conv1d(
-            input=inputs,
-            filters=self.W,
-            stride=self.stride,
-            padding=self.padding,
-            data_format=self.data_format,
-            dilations=self.dilation_rate,
-            name=self.name,
-        )
-        if self.b_init:
-            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
-        if self.act:
-            outputs = self.act(outputs)
+        outputs = self.conv1d(inputs, self.W)
+        if self.b_init_flag:
+            outputs = tl.ops.bias_add(outputs, self.b, data_format=self.data_format)
+        if self.act_init_flag:
+            outputs = self.activate(outputs)
         return outputs
 
 
-class Conv2d(Layer):
+class Conv2d(Module):
     """Simplified version of :class:`Conv2dLayer`.
 
     Parameters
@@ -178,10 +175,10 @@ class Conv2d(Layer):
     --------
     With TensorLayer
 
-    >>> net = tl.layers.Input([8, 400, 400, 3], name='input')
+    >>> net = tl.layers.Input([8, 3, 400, 400], name='input')
     >>> conv2d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), b_init=None, in_channels=3, name='conv2d_1')
     >>> print(conv2d)
-    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, name='conv2d_2')(net)
+    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tl.ops.relu, name='conv2d_2')(net)
     >>> print(tensor)
 
     """
@@ -198,9 +195,9 @@ class Conv2d(Layer):
         W_init=tl.initializers.truncated_normal(stddev=0.02),
         b_init=tl.initializers.constant(value=0.0),
         in_channels=None,
-        name=None  # 'conv2d',
+        name=None,  # 'conv2d',
     ):
-        super().__init__(name, act=act)
+        super(Conv2d, self).__init__(name, act=act)
         self.n_filter = n_filter
         self.filter_size = filter_size
         self._strides = self.strides = strides
@@ -218,12 +215,12 @@ class Conv2d(Layer):
         logging.info(
             "Conv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
                 self.name, n_filter, str(filter_size), str(strides), padding,
-                self.act.__name__ if self.act is not None else 'No Activation'
+                self.act.__class__.__name__ if self.act is not None else 'No Activation'
             )
         )
 
     def __repr__(self):
-        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        actstr = self.act.__class__.__name__ if self.act is not None else 'No Activation'
         s = (
             '{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
             ', strides={strides}, padding={padding}'
@@ -254,35 +251,41 @@ class Conv2d(Layer):
         else:
             raise Exception("data_format should be either channels_last or channels_first")
 
+        #TODO channels first filter shape [out_channel, in_channel, filter_h, filter_w]
         self.filter_shape = (self.filter_size[0], self.filter_size[1], self.in_channels, self.n_filter)
-
         self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init)
 
+        self.b_init_flag = False
         if self.b_init:
             self.b = self._get_weights("biases", shape=(self.n_filter, ), init=self.b_init)
+            self.bias_add = tl.ops.BiasAdd(self.data_format)
+            self.b_init_flag = True
+
+        self.conv2d = tl.ops.Conv2D(
+            strides=self._strides, padding=self.padding, data_format=self.data_format, dilations=self._dilation_rate,
+            out_channel=self.n_filter, k_size=(self.filter_size[0], self.filter_size[1])
+        )
+
+        self.act_init_flag = False
+        if self.act:
+            self.act_init_flag = True
 
     def forward(self, inputs):
-        outputs = tf.nn.conv2d(
-            input=inputs,
-            filters=self.W,
-            strides=self._strides,
-            padding=self.padding,
-            data_format=self.data_format,  #'NHWC',
-            dilations=self._dilation_rate,  #[1, 1, 1, 1],
-            name=self.name,
-        )
-        if self.b_init:
-            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
-        if self.act:
+        outputs = self.conv2d(inputs, self.W)
+        if self.b_init_flag:
+            outputs = self.bias_add(outputs, self.b)
+        if self.act_init_flag:
             outputs = self.act(outputs)
         return outputs
 
 
-class Conv3d(Layer):
+class Conv3d(Module):
     """Simplified version of :class:`Conv3dLayer`.
 
     Parameters
-    ----------
+    ---AppData\Local\Continuum\anaconda3\envs\ms_tf\lib\site-packages\mindspore\common\api.py", line 412, in compile
+    result = self._executor.compile(obj, args_list, phase, use_vm)
+RuntimeError: Unable to cast from non-held to held instance (T& to Holder<T>) of type 'std:-------
     n_filter : int
         The number of filters.
     filter_size : tuple of int
@@ -312,9 +315,9 @@ class Conv3d(Layer):
     With TensorLayer
 
     >>> net = tl.layers.Input([8, 20, 20, 20, 3], name='input')
-    >>> conv3d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), b_init=None, in_channels=3, name='conv3d_1')
+    >>> conv3d = tl.layers.Conv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), b_init=None, in_channels=3, name='conv3d_1')
     >>> print(conv3d)
-    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), act=tf.nn.relu, name='conv3d_2')(net)
+    >>> tensor = tl.layers.Conv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), act=tl.ops.relu, name='conv3d_2')(net)
     >>> print(tensor)
 
     """
@@ -351,12 +354,12 @@ class Conv3d(Layer):
         logging.info(
             "Conv3d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
                 self.name, n_filter, str(filter_size), str(strides), padding,
-                self.act.__name__ if self.act is not None else 'No Activation'
+                self.act.__class__.__name__ if self.act is not None else 'No Activation'
             )
         )
 
     def __repr__(self):
-        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        actstr = self.act.__class__.__name__ if self.act is not None else 'No Activation'
         s = (
             '{classname}(in_channels={in_channels}, out_channels={n_filter}, kernel_size={filter_size}'
             ', strides={strides}, padding={padding}'
@@ -396,18 +399,26 @@ class Conv3d(Layer):
         if self.b_init:
             self.b = self._get_weights("biases", shape=(self.n_filter, ), init=self.b_init)
 
-    def forward(self, inputs):
-        outputs = tf.nn.conv3d(
-            input=inputs,
-            filters=self.W,
-            strides=self._strides,
-            padding=self.padding,
-            data_format=self.data_format,  #'NDHWC',
-            dilations=self._dilation_rate,  #[1, 1, 1, 1, 1],
-            name=self.name,
-        )
+        self.b_init_flag = False
         if self.b_init:
-            outputs = tf.nn.bias_add(outputs, self.b, data_format=self.data_format, name='bias_add')
+            self.b = self._get_weights("biases", shape=(self.n_filter, ), init=self.b_init)
+            self.bias_add = tl.ops.BiasAdd(self.data_format)
+            self.b_init_flag = True
+
+        self.conv3d = tl.ops.Conv3D(
+            strides=self._strides, padding=self.padding, data_format=self.data_format, dilations=self._dilation_rate,
+            out_channel=self.n_filter, k_size=(self.filter_size[0], self.filter_size[1])
+        )
+
+        self.act_init_flag = False
         if self.act:
-            outputs = self.act(outputs)
+            self.activate = self.act()
+            self.act_init_flag = True
+
+    def forward(self, inputs):
+        outputs = self.conv3d(inputs, self.W)
+        if self.b_init_flag:
+            outputs = tl.ops.bias_add(outputs, self.b, data_format=self.data_format)
+        if self.act_init_flag:
+            outputs = self.activate(outputs)
         return outputs

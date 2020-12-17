@@ -1,11 +1,11 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+import os
+os.environ['TL_BACKEND'] = 'tensorflow'
 
-import tensorflow as tf
-
+import tensorlayer as tl
 from tensorlayer import logging
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import Module
 from tensorlayer.layers.utils import quantize
 
 __all__ = [
@@ -13,7 +13,7 @@ __all__ = [
 ]
 
 
-class Sign(Layer):
+class Sign(Module):
     """The :class:`SignLayer` class is for quantizing the layer outputs to -1 or 1 while inferencing.
 
     Parameters
@@ -45,8 +45,5 @@ class Sign(Layer):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def forward(self, inputs):
-        # with tf.variable_scope(name):
-        ## self.outputs = tl.act.sign(self.inputs)
-        # self.outputs = quantize(self.inputs)
         outputs = quantize(inputs)
         return outputs

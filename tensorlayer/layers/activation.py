@@ -1,15 +1,10 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-
 from tensorlayer import logging
-from tensorlayer.activation import leaky_relu6, leaky_twice_relu6
-from tensorlayer.decorators import deprecated_alias
+import tensorlayer as tl
 from tensorlayer.initializers import truncated_normal
-from tensorlayer.layers.core import Layer
-
-# from tensorlayer.layers.core import LayersConfig
+from tensorlayer.layers.core import Module
 
 __all__ = [
     'PRelu',
@@ -18,7 +13,7 @@ __all__ = [
 ]
 
 
-class PRelu(Layer):
+class PRelu(Module):
     """
     The :class:`PRelu` class is Parametric Rectified Linear layer.
     It follows f(x) = alpha * x for x < 0, f(x) = x for x >= 0,
@@ -54,17 +49,16 @@ class PRelu(Layer):
     """
 
     def __init__(
-        self,
-        channel_shared=False,
-        in_channels=None,
-        a_init=truncated_normal(mean=0.0, stddev=0.05),
-        name=None  # "prelu"
+        self, channel_shared=False, in_channels=None, a_init=truncated_normal(mean=0.0, stddev=0.05), name=None,
+        data_format='channels_last', dim=2
     ):
 
         super(PRelu, self).__init__(name)
         self.channel_shared = channel_shared
         self.in_channels = in_channels
         self.a_init = a_init
+        self.data_format = data_format
+        self.dim = dim
 
         if self.channel_shared:
             self.build((None, ))
@@ -86,22 +80,29 @@ class PRelu(Layer):
     def build(self, inputs_shape):
         if self.channel_shared:
             w_shape = (1, )
-        else:
-            w_shape = (inputs_shape[-1], )
+        elif self.data_format == 'channels_last':
+            w_shape = (self.in_channels, )
+        elif self.data_format == 'channels_first':
+            if self.dim == 2:
+                w_shape = (1, self.in_channels, 1, 1)
+            elif self.dim == 1:
+                w_shape = (1, self.in_channels, 1)
+            elif self.dim == 3:
+                w_shape = (1, self.in_channels, 1, 1, 1)
+            else:
+                raise Exception("Dim should be equal to 1, 2 or 3")
         self.alpha_var = self._get_weights("alpha", shape=w_shape, init=self.a_init)
-        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
+        self.relu = tl.ops.ReLU()
+        self.sigmoid = tl.ops.Sigmoid()
 
-    # @tf.function
     def forward(self, inputs):
-
-        pos = tf.nn.relu(inputs)
-        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
-        neg = -self.alpha_var_constrained * tf.nn.relu(-inputs)
-
+        pos = self.relu(inputs)
+        alpha_var_constrained = self.sigmoid(self.alpha_var)
+        neg = -alpha_var_constrained * self.relu(-inputs)
         return pos + neg
 
 
-class PRelu6(Layer):
+class PRelu6(Module):
     """
     The :class:`PRelu6` class is Parametric Rectified Linear layer integrating ReLU6 behaviour.
 
@@ -145,13 +146,17 @@ class PRelu6(Layer):
         channel_shared=False,
         in_channels=None,
         a_init=truncated_normal(mean=0.0, stddev=0.05),
-        name=None  # "prelu6"
+        name=None,  # "prelu6"
+        data_format='channels_last',
+        dim=2
     ):
 
         super(PRelu6, self).__init__(name)
         self.channel_shared = channel_shared
         self.in_channels = in_channels
         self.a_init = a_init
+        self.data_format = data_format
+        self.dim = dim
 
         if self.channel_shared:
             self.build((None, ))
@@ -173,21 +178,31 @@ class PRelu6(Layer):
     def build(self, inputs_shape):
         if self.channel_shared:
             w_shape = (1, )
-        else:
-            w_shape = (inputs_shape[-1], )
+        elif self.data_format == 'channels_last':
+            w_shape = (self.in_channels, )
+        elif self.data_format == 'channels_first':
+            if self.dim == 2:
+                w_shape = (1, self.in_channels, 1, 1)
+            elif self.dim == 1:
+                w_shape = (1, self.in_channels, 1)
+            elif self.dim == 3:
+                w_shape = (1, self.in_channels, 1, 1, 1)
+            else:
+                raise Exception("Dim should be equal to 1, 2 or 3")
         self.alpha_var = self._get_weights("alpha", shape=w_shape, init=self.a_init)
-        self.alpha_var_constrained = tf.nn.sigmoid(self.alpha_var, name="constraining_alpha_var_in_0_1")
+        self.sigmoid = tl.ops.Sigmoid()
+        self.relu = tl.ops.ReLU()
 
     # @tf.function
     def forward(self, inputs):
-        pos = tf.nn.relu(inputs)
-        pos_6 = -tf.nn.relu(inputs - 6)
-        neg = -self.alpha_var_constrained * tf.nn.relu(-inputs)
-
+        alpha_var_constrained = self.sigmoid(self.alpha_var)
+        pos = self.relu(inputs)
+        pos_6 = -self.relu(inputs - 6)
+        neg = -alpha_var_constrained * self.relu(-inputs)
         return pos + pos_6 + neg
 
 
-class PTRelu6(Layer):
+class PTRelu6(Module):
     """
     The :class:`PTRelu6` class is Parametric Rectified Linear layer integrating ReLU6 behaviour.
 
@@ -261,21 +276,30 @@ class PTRelu6(Layer):
     def build(self, inputs_shape):
         if self.channel_shared:
             w_shape = (1, )
-        else:
-            w_shape = (inputs_shape[-1], )
+        elif self.data_format == 'channels_last':
+            w_shape = (self.in_channels, )
+        elif self.data_format == 'channels_first':
+            if self.dim == 2:
+                w_shape = (1, self.in_channels, 1, 1)
+            elif self.dim == 1:
+                w_shape = (1, self.in_channels, 1)
+            elif self.dim == 3:
+                w_shape = (1, self.in_channels, 1, 1, 1)
+            else:
+                raise Exception("Dim should be equal to 1, 2 or 3")
 
         # Alpha for outputs lower than zeros
         self.alpha_low = self._get_weights("alpha_low", shape=w_shape, init=self.a_init)
-        self.alpha_low_constrained = tf.nn.sigmoid(self.alpha_low, name="constraining_alpha_low_in_0_1")
-
+        self.sigmoid = tl.ops.Sigmoid()
+        self.relu = tl.ops.ReLU()
         # Alpha for outputs higher than 6
         self.alpha_high = self._get_weights("alpha_high", shape=w_shape, init=self.a_init)
-        self.alpha_high_constrained = tf.nn.sigmoid(self.alpha_high, name="constraining_alpha_high_in_0_1")
 
     # @tf.function
     def forward(self, inputs):
-        pos = tf.nn.relu(inputs)
-        pos_6 = -tf.nn.relu(inputs - 6) + self.alpha_high_constrained * tf.nn.relu(inputs - 6)
-        neg = -self.alpha_low_constrained * tf.nn.relu(-inputs)
-
+        alpha_low_constrained = self.sigmoid(self.alpha_low)
+        alpha_high_constrained = self.sigmoid(self.alpha_high)
+        pos = self.relu(inputs)
+        pos_6 = -self.relu(inputs - 6) + alpha_high_constrained * self.relu(inputs - 6)
+        neg = -alpha_low_constrained * self.relu(-inputs)
         return pos + pos_6 + neg

@@ -19,7 +19,6 @@ __all__ = [
     'htanh',
     'hard_tanh',
     'pixel_wise_softmax',
-    'mish',
 ]
 
 
@@ -48,7 +47,7 @@ def ramp(x, v_min=0, v_max=1, name=None):
     return tf.clip_by_value(x, clip_value_min=v_min, clip_value_max=v_max, name=name)
 
 
-# @deprecated(date="2018-09-30", instructions="This API is deprecated. Please use as `tf.nn.leaky_relu`")
+# @deprecated(date="2018-09-30", instructions="This API is deprecated. Please use as `tf.ops.leaky_relu`")
 def leaky_relu(x, alpha=0.2, name="leaky_relu"):
     """leaky_relu can be used through its shortcut: :func:`tl.act.lrelu`.
 
@@ -98,7 +97,7 @@ def leaky_relu6(x, alpha=0.2, name="leaky_relu6"):
     This activation function is a modified version :func:`leaky_relu` introduced by the following paper:
     `Rectifier Nonlinearities Improve Neural Network Acoustic Models [A. L. Maas et al., 2013] <https://ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf>`__
 
-    This activation function also follows the behaviour of the activation function :func:`tf.nn.relu6` introduced by the following paper:
+    This activation function also follows the behaviour of the activation function :func:`tf.ops.relu6` introduced by the following paper:
     `Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky, 2010] <http://www.cs.utoronto.ca/~kriz/conv-cifar10-aug2010.pdf>`__
 
     The function return the following results:
@@ -145,7 +144,7 @@ def leaky_twice_relu6(x, alpha_low=0.2, alpha_high=0.2, name="leaky_relu6"):
     This activation function is a modified version :func:`leaky_relu` introduced by the following paper:
     `Rectifier Nonlinearities Improve Neural Network Acoustic Models [A. L. Maas et al., 2013] <https://ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf>`__
 
-    This activation function also follows the behaviour of the activation function :func:`tf.nn.relu6` introduced by the following paper:
+    This activation function also follows the behaviour of the activation function :func:`tf.ops.relu6` introduced by the following paper:
     `Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky, 2010] <http://www.cs.utoronto.ca/~kriz/conv-cifar10-aug2010.pdf>`__
 
     This function push further the logic by adding `leaky` behaviour both below zero and above six.
@@ -278,7 +277,7 @@ def sign(x):
 #             A ``Tensor`` in the same type as ``x``.
 #
 #         """
-#         tao = tf.nn.sigmoid(x)
+#         tao = tf.ops.sigmoid(x)
 #         def grad():
 #             return tao * (1 - tao)
 #         return tf.sign(x), grad
@@ -306,7 +305,7 @@ def hard_tanh(x, name='htanh'):
     return tf.clip_by_value(x, -1, 1, name=name)
 
 
-@deprecated(date="2018-06-30", instructions="This API will be deprecated soon as tf.nn.softmax can do the same thing")
+@deprecated(date="2018-06-30", instructions="This API will be deprecated soon as tf.ops.softmax can do the same thing")
 def pixel_wise_softmax(x, name='pixel_wise_softmax'):
     """Return the softmax outputs of images, every pixels have multiple label, the sum of a pixel is 1.
 
@@ -338,25 +337,6 @@ def pixel_wise_softmax(x, name='pixel_wise_softmax'):
     """
     with tf.name_scope(name):
         return tf.nn.softmax(x)
-
-
-def mish(x):
-    """Mish activation function.
-
-    Reference: [Mish: A Self Regularized Non-Monotonic Neural Activation Function .Diganta Misra, 2019]<https://arxiv.org/abs/1908.08681>
-
-    Parameters
-    ----------
-    x : Tensor
-        input.
-
-    Returns
-    -------
-    Tensor
-        A ``Tensor`` in the same type as ``x``.
-
-    """
-    return x * tf.math.tanh(tf.math.softplus(x))
 
 
 # Alias
