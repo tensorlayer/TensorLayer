@@ -57,8 +57,8 @@ elif BACKEND == 'mindspore':
     import mindspore.context as context
     import os
     os.environ['DEVICE_ID'] = '0'
-    #context.set_context(mode=context.PYNATIVE_MODE,device_target='GPU'),
-    context.set_context(mode=context.GRAPH_MODE, device_target='CPU'),
+    context.set_context(mode=context.PYNATIVE_MODE,device_target='GPU'),
+    # context.set_context(mode=context.GRAPH_MODE, device_target='CPU'),
     # enable_task_sink=True, enable_loop_sink=True)
     # context.set_context(mode=context.GRAPH_MODE, backend_policy='ms',
     #                     device_target='Ascend', enable_task_sink=True, enable_loop_sink=True)
