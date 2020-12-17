@@ -950,6 +950,66 @@ def depthwise_conv2d(input, filter, strides, padding, data_format=None, dilation
     return outputs
 
 
+class Conv1d_transpose(object):
+
+    def __init__(
+        self, strides, padding, data_format='NWC', dilations=None, out_channel=None, k_size=None, in_channels=None
+    ):
+        self.strides = strides
+        self.dilations = dilations
+        self.data_format, self.padding = preprocess_1d_format(data_format, padding)
+
+    def __call__(self, input, filters):
+        batch_size = input.shape[0]
+        if self.data_format == 'NWC':
+            w_axis, c_axis = 1, 2
+        else:
+            w_axis, c_axis = 2, 1
+
+        input_shape = input.shape.as_list()
+        filters_shape = filters.shape.as_list()
+        input_w = input_shape[w_axis]
+        filters_w = filters_shape[0]
+        output_channels = filters_shape[1]
+        dilations_w = 1
+
+        if isinstance(self.strides, int):
+            strides_w = self.strides
+        else:
+            strides_list = list(self.strides)
+            strides_w = strides_list[w_axis]
+
+        if self.dilations is not None:
+            if isinstance(self.dilations, int):
+                dilations_w = self.dilations
+            else:
+                dilations_list = list(self.dilations)
+                dilations_w = dilations_list[w_axis]
+
+        filters_w = filters_w + (filters_w - 1) * (dilations_w - 1)
+        assert self.padding in {'SAME', 'VALID'}
+        if self.padding == 'VALID':
+            output_w = input_w * strides_w + max(filters_w - strides_w, 0)
+        elif self.padding == 'SAME':
+            output_w = input_w * strides_w
+
+        if self.data_format == 'NCW':
+            output_shape = (batch_size, output_channels, output_w)
+        else:
+            output_shape = (batch_size, output_w, output_channels)
+        output_shape = tf.stack(output_shape)
+        outputs = tf.nn.conv1d_transpose(
+            input=input,
+            filters=filters,
+            output_shape=output_shape,
+            strides=self.strides,
+            padding=self.padding,
+            data_format=self.data_format,
+            dilations=self.dilations,
+        )
+        return outputs
+
+
 def conv1d_transpose(
     input, filters, output_shape, strides, padding='SAME', data_format='NWC', dilations=None, name=None
 ):
@@ -999,6 +1059,81 @@ def conv1d_transpose(
     return outputs
 
 
+class Conv2d_transpose(object):
+
+    def __init__(
+        self, strides, padding, data_format='NHWC', dilations=None, name=None, out_channel=None, k_size=None,
+        in_channels=None
+    ):
+        self.strides = strides
+        self.dilations = dilations
+        self.name = name
+        self.data_format, self.padding = preprocess_2d_format(data_format, padding)
+
+    def __call__(self, input, filters):
+        if self.data_format == 'NHWC':
+            h_axis, w_axis = 1, 2
+        else:
+            h_axis, w_axis = 2, 3
+
+        input_shape = input.shape.as_list()
+        filters_shape = filters.shape.as_list()
+        batch_size = input.shape[0]
+        input_h, input_w = input_shape[h_axis], input_shape[w_axis]
+        kernel_h, kernel_w = filters_shape[0], filters_shape[1]
+        output_channels = filters_shape[2]
+        dilations_h, dilations_w = 1, 1
+
+        if isinstance(self.strides, int):
+            strides_h = self.strides
+            strides_w = self.strides
+        else:
+            strides_list = list(self.strides)
+            if len(strides_list) != 4:
+                strides_h = strides_list[0]
+                strides_w = strides_list[1]
+            else:
+                strides_h = strides_list[h_axis]
+                strides_w = strides_list[w_axis]
+
+        if self.dilations is not None:
+            if isinstance(self.dilations, int):
+                dilations_h = self.dilations
+                dilations_w = self.dilations
+            else:
+                dilations_list = list(self.dilations)
+                if len(dilations_list) != 4:
+                    dilations_h = dilations_list[0]
+                    dilations_w = dilations_list[1]
+                else:
+                    dilations_h = dilations_list[h_axis]
+                    dilations_w = dilations_list[w_axis]
+
+        kernel_h = kernel_h + (kernel_h - 1) * (dilations_h - 1)
+        kernel_w = kernel_w + (kernel_w - 1) * (dilations_w - 1)
+
+        assert self.padding in {'SAME', 'VALID'}
+        if self.padding == 'VALID':
+            output_h = input_h * strides_h + max(kernel_h - strides_h, 0)
+            output_w = input_w * strides_w + max(kernel_w - strides_w, 0)
+        elif self.padding == 'SAME':
+            output_h = input_h * strides_h
+            output_w = input_w * strides_w
+
+        if self.data_format == 'NCHW':
+            out_shape = (batch_size, output_channels, output_h, output_w)
+        else:
+            out_shape = (batch_size, output_h, output_w, output_channels)
+
+        output_shape = tf.stack(out_shape)
+
+        outputs = tf.nn.conv2d_transpose(
+            input=input, filters=filters, output_shape=output_shape, strides=self.strides, padding=self.padding,
+            data_format=self.data_format, dilations=self.dilations, name=self.name
+        )
+        return outputs
+
+
 def conv2d_transpose(
     input, filters, output_shape, strides, padding='SAME', data_format='NHWC', dilations=None, name=None
 ):
@@ -1046,6 +1181,91 @@ def conv2d_transpose(
         name=name,
     )
     return outputs
+
+
+class Conv3d_transpose(object):
+
+    def __init__(
+        self, strides, padding, data_format='NDHWC', dilations=None, name=None, out_channel=None, k_size=None,
+        in_channels=None
+    ):
+        self.strides = strides
+        self.dilations = dilations
+        self.name = name
+        self.out_channel = out_channel
+        self.data_format, self.padding = preprocess_3d_format(data_format, padding)
+
+    def __call__(self, input, filters):
+        if self.data_format == 'NDHWC':
+            d_axis, h_axis, w_axis = 1, 2, 3
+        else:
+            d_axis, h_axis, w_axis = 2, 3, 4
+
+        input_shape = input.shape.as_list()
+        filters_shape = filters.shape.as_list()
+        batch_size = input_shape[0]
+        input_d, input_h, input_w = input_shape[d_axis], input_shape[h_axis], input_shape[w_axis]
+        kernel_d, kernel_h, kernel_w = filters_shape[0], filters_shape[1], filters_shape[2]
+        dilations_d, dilations_h, dilations_w = 1, 1, 1
+
+        if isinstance(self.strides, int):
+            strides_d, strides_h, strides_w = self.strides
+        else:
+            strides_list = list(self.strides)
+            if len(strides_list) != 5:
+                strides_d, strides_h, strides_w = \
+                    strides_list[0], \
+                    strides_list[1], \
+                    strides_list[2]
+            else:
+                strides_d, strides_h, strides_w = \
+                    strides_list[d_axis], \
+                    strides_list[h_axis], \
+                    strides_list[w_axis]
+
+        if self.dilations is not None:
+            if isinstance(self.dilations, int):
+                dilations_d, dilations_h, dilations_w = self.dilations
+            else:
+                dilations_list = list(self.dilations)
+                if len(dilations_list) != 5:
+                    dilations_d, dilations_h, dilations_w = \
+                        dilations_list[0], \
+                        dilations_list[1], \
+                        dilations_list[2]
+                else:
+                    dilations_d, dilations_h, dilations_w = \
+                        dilations_list[d_axis],\
+                        dilations_list[h_axis], \
+                        dilations_list[w_axis]
+
+        assert self.padding in {'VALID', 'SAME'}
+
+        kernel_d = kernel_d + (kernel_d - 1) * (dilations_d - 1)
+        kernel_h = kernel_h + (kernel_h - 1) * (dilations_h - 1)
+        kernel_w = kernel_w + (kernel_w - 1) * (dilations_w - 1)
+
+        if self.padding == 'VALID':
+            output_d = input_d * strides_d + max(kernel_d - strides_d, 0)
+            output_h = input_h * strides_h + max(kernel_h - strides_h, 0)
+            output_w = input_w * strides_w + max(kernel_w - strides_w, 0)
+        elif self.padding == 'SAME':
+            output_d = input_d * strides_d
+            output_h = input_h * strides_h
+            output_w = input_w * strides_w
+
+        if self.data_format == 'NDHWC':
+            output_shape = (batch_size, output_d, output_h, output_w, self.out_channel)
+        else:
+            output_shape = (batch_size, self.out_channel, output_d, output_h, output_w)
+
+        output_shape = tf.stack(output_shape)
+        outputs = tf.nn.conv3d_transpose(
+            input=input, filters=filters, output_shape=output_shape, strides=self.strides, padding=self.padding,
+            data_format=self.data_format, dilations=self.dilations, name=self.name
+        )
+
+        return outputs
 
 
 def conv3d_transpose(

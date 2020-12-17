@@ -32,8 +32,9 @@ __all__ = [
     'Conv3d',
 
     # simplified deconv
-    # 'DeConv2d',
-    # 'DeConv3d',
+    'DeConv1d',
+    'DeConv2d',
+    'DeConv3d',
 
     # expert conv
     # 'Conv1dLayer',

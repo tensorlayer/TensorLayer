@@ -7,6 +7,7 @@ import os
 os.environ['TL_BACKEND'] = 'tensorflow'
 # os.environ['TL_BACKEND'] = 'mindspore'
 
+
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import Module
@@ -45,7 +46,7 @@ def generator_train():
     if len(inputs) != len(targets):
         raise AssertionError("The length of inputs and targets should be equal")
     for _input, _target in zip(inputs, targets):
-        yield _input, _target
+        yield (_input, np.array(_target))
 
 
 MLP = CustomModel()
@@ -57,9 +58,12 @@ shuffle_buffer_size = 128
 
 train_weights = MLP.trainable_weights
 optimizer = tl.optimizers.Momentum(0.05, 0.9)
-train_ds = tf.data.Dataset.from_generator(generator_train, output_types=(tf.float32, tf.int32))
-train_ds = train_ds.shuffle(shuffle_buffer_size)
-train_ds = train_ds.batch(batch_size)
+train_ds = tl.dataflow.FromGenerator(
+    generator_train, output_types=(tl.float32, tl.int32) , column_names=['data', 'label']
+)
+train_ds = tl.dataflow.Shuffle(train_ds,shuffle_buffer_size)
+train_ds = tl.dataflow.Batch(train_ds,batch_size)
+
 
 model = tl.models.Model(network=MLP, loss_fn=tl.cost.cross_entropy, optimizer=optimizer)
 model.train(n_epoch=n_epoch, train_dataset=train_ds, print_freq=print_freq, print_train_batch=False)

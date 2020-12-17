@@ -27,9 +27,9 @@ from .load_backend import max_pool3d
 from .load_backend import avg_pool3d
 from .load_backend import pool
 from .load_backend import depthwise_conv2d
-from .load_backend import conv1d_transpose
-from .load_backend import conv2d_transpose
-from .load_backend import conv3d_transpose
+from .load_backend import Conv1d_transpose
+from .load_backend import Conv2d_transpose
+from .load_backend import Conv3d_transpose
 
 from .load_backend import ReLU
 from .load_backend import ReLU6
@@ -113,3 +113,4 @@ from .load_backend import Stack
 from .load_backend import Unstack
 from .load_backend import Sign
 from .load_backend import Resize
+

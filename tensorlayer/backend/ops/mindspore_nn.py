@@ -14,6 +14,7 @@ from mindspore._checkparam import check_int_positive
 from mindspore._extends import cell_attr_register
 
 
+
 def padding_format(padding):
     """
     Checks that the padding format correspond format.
@@ -459,8 +460,35 @@ def bias_add(x, bias):
 
 
 class Conv1D(Cell):
-    pass
-    # raise NotImplementedError
+
+    def __init__(self, stride, padding, data_format='NWC', dilations=None, out_channel=None, k_size=None):
+        super(Conv1D, self).__init__()
+        self.data_format, self.padding = preprocess_1d_format(data_format, padding)
+        self.stride = (1, stride)
+        self.dilations = (1, dilations)
+        self.k_size = (1, k_size)
+        self.out_channel = out_channel
+
+        self.conv2d = P.Conv2D(
+            out_channel=self.out_channel, kernel_size=self.k_size, pad_mode=self.padding, stride=self.stride,
+            dilation=self.dilations, mode=1, group=1
+        )
+
+        self.expand_dims = P.ExpandDims()
+        self.squeeze = P.Squeeze(2)
+        self.shape = P.Shape()
+
+    def construct(self, x, filters):
+        if self.data_format == 'NWC':
+            x = nhwc_to_nchw(x)
+
+        x = self.expand_dims(x, 2)
+        filters = self.expand_dims(filters, 2)
+
+        output = self.conv2d(x, filters)
+        output = self.squeeze(output)
+
+        return output
 
 
 def conv1d(input, filters, stride, padding, data_format='NWC', dilations=None, name=None):
@@ -843,6 +871,7 @@ def pool(input, window_shape, pooling_type, strides=None, padding='VALID', data_
     pass
 
 
+
 class DepthwiseConv2d(Cell):
 
     def __init__(self, strides, padding, data_format=None, dilations=None, ksize=None, channel_multiplier=1):
@@ -894,6 +923,51 @@ def depthwise_conv2d(input, filter, strides, padding, data_format=None, dilation
     pass
 
 
+class Conv1d_transpose(Cell):
+
+    def __init__(self, strides, padding, data_format, dilations=None, out_channel=None, k_size=None, in_channels=None):
+        super(Conv1d_transpose, self).__init__()
+        self.data_format, self.padding = preprocess_1d_format(data_format, padding)
+        self.in_channels = in_channels
+        self.out_channel = out_channel
+        self.strides = (1, strides)
+        self.dilations = (1, dilations)
+        self.k_size = (1, k_size)
+
+        self.conv2d_transpose = P.Conv2DBackpropInput(
+            out_channel=self.in_channels, kernel_size=self.k_size, pad_mode=self.padding, stride=self.strides,
+            dilation=self.dilations, mode=1, group=1
+        )
+        self.shape = P.Shape()
+        self.expand_dims = P.ExpandDims()
+        self.squeeze = P.Squeeze(2)
+
+    def _deconv_output_length(self, input_length, filter_size, stride_size, dilation_size):
+        length = 0
+        filter_size = filter_size + (filter_size - 1) * (dilation_size - 1)
+
+        if self.padding == 'same':
+            length = input_length * stride_size
+        elif self.padding == 'valid':
+            length = input_length * stride_size + max(filter_size - stride_size, 0)
+
+        return length
+
+    def construct(self, x, filters):
+        if self.data_format == 'NWC':
+            x = nhwc_to_nchw(x)
+        x = self.expand_dims(x, 2)
+        filters = self.expand_dims(filters, 2)
+        n, _, h, w = self.shape(x)
+
+        h_out = self._deconv_output_length(h, self.k_size[0], self.strides[0], self.dilations[0])
+        w_out = self._deconv_output_length(w, self.k_size[1], self.strides[1], self.dilations[1])
+        output = self.conv2d_transpose(x, filters, (n, self.out_channel, h_out, w_out))
+        output = self.squeeze(output)
+
+        return output
+
+
 def conv1d_transpose(
     input, filters, output_shape, strides, padding='SAME', data_format='NWC', dilations=None, name=None
 ):
@@ -929,6 +1003,53 @@ def conv1d_transpose(
         A Tensor with the same type as value.
     """
     pass
+
+
+class Conv2d_transpose(Cell):
+
+    def __init__(self, strides, padding, data_format, dilations=None, out_channel=None, k_size=None, in_channels=None):
+        super(Conv2d_transpose, self).__init__()
+        self.data_format, self.padding = preprocess_2d_format(data_format, padding)
+        self.in_channels = in_channels
+        self.out_channel = out_channel
+
+        self.k_size = k_size
+        if self.data_format == 'NHWC':
+            self.strides = (strides[1], strides[2])
+            self.dilations = (dilations[1], dilations[2])
+        elif self.data_format == 'NCHW':
+            self.strides = (strides[2], strides[3])
+            self.dilations = (dilations[2], dilations[3])
+
+        self.conv2d_transpose = P.Conv2DBackpropInput(
+            out_channel=self.in_channels, kernel_size=self.k_size, pad_mode=self.padding, stride=self.strides,
+            dilation=self.dilations, mode=1, group=1
+        )
+        self.shape = P.Shape()
+
+    def _deconv_output_length(self, input_length, filter_size, stride_size, dilation_size):
+        length = 0
+        filter_size = filter_size + (filter_size - 1) * (dilation_size - 1)
+
+        if self.padding == 'same':
+            length = input_length * stride_size
+        elif self.padding == 'valid':
+            length = input_length * stride_size + max(filter_size - stride_size, 0)
+
+        return length
+
+    def construct(self, x, filters):
+        if self.data_format == 'NHWC':
+            x = nhwc_to_nchw(x)
+
+        n, _, h, w = self.shape(x)
+
+        h_out = self._deconv_output_length(h, self.k_size[0], self.strides[0], self.dilations[0])
+        w_out = self._deconv_output_length(w, self.k_size[1], self.strides[1], self.dilations[1])
+
+        output = self.conv2d_transpose(x, filters, (n, self.out_channel, h_out, w_out))
+
+        return output
 
 
 def conv2d_transpose(
@@ -968,6 +1089,10 @@ def conv2d_transpose(
     pass
 
 
+class Conv3d_transpose(Cell):
+    pass
+
+
 def conv3d_transpose(
     input, filters, output_shape, strides, padding='SAME', data_format='NDHWC', dilations=None, name=None
 ):
@@ -1001,6 +1126,7 @@ def conv3d_transpose(
     """
 
     pass
+
 
 
 class BatchNorm(Cell):

@@ -926,6 +926,7 @@ class Count_nonzero(object):
         pass
 
 
+
 class Resize:
 
     def __init__(self, scale, method, antialias=False, data_format='channels_last', ksize=None):

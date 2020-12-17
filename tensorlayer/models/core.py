@@ -325,8 +325,6 @@ class Model:
             start_time = time.time()
             train_loss, train_acc, n_iter = 0, 0, 0
             for X_batch, y_batch in train_dataset:
-                X_batch = ms.Tensor(X_batch.numpy(), dtype=ms.float32)
-                y_batch = ms.Tensor(y_batch.numpy(), dtype=ms.int32)
                 output = network(X_batch)
                 loss_output = loss_fn(output, y_batch)
                 grads = train_network(X_batch, y_batch)

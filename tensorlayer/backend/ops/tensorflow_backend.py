@@ -895,6 +895,7 @@ class Count_nonzero(object):
         return tf.math.count_nonzero(input, axis=axis, keepdims=self.keepdims, dtype=self.dtype)
 
 
+
 class Resize:
 
     def __init__(self, scale, method, antialias=False, data_format='channels_last', ksize=None):

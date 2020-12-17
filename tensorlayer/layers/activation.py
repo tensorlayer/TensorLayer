@@ -302,4 +302,5 @@ class PTRelu6(Module):
         pos = self.relu(inputs)
         pos_6 = -self.relu(inputs - 6) + alpha_high_constrained * self.relu(inputs - 6)
         neg = -alpha_low_constrained * self.relu(-inputs)
+
         return pos + pos_6 + neg
