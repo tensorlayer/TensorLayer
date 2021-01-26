@@ -64,6 +64,7 @@ install:
   - |
     if [[ -v _DOC_AND_YAPF_TEST ]]; then
         pip install tensorflow==2.0.0-rc1
+        pip install opencv-python
         pip install yapf
         pip install -e .[doc]
     else
