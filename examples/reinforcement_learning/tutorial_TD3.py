@@ -148,7 +148,7 @@ class QNetwork(Model):
 
 
 class PolicyNetwork(Model):
-    """ the network for generating non-determinstic (Gaussian distributed) action from the state input """
+    """ the network for generating non-deterministic (Gaussian distributed) action from the state input """
 
     def __init__(self, num_inputs, num_actions, hidden_dim, action_range=1., init_w=3e-3):
         super(PolicyNetwork, self).__init__()
