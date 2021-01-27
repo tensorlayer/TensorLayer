@@ -10,7 +10,7 @@ import os
 import pickle
 import re
 import shutil
-# import ast
+import ast
 import sys
 import tarfile
 import time
@@ -231,7 +231,7 @@ def eval_layer(layer_kwargs):
     layer_type = args.pop('layer_type')
     if layer_type == "normal":
         generate_func(args)
-        return eval('tl.layers.' + layer_class)(**args)
+        return ast.literal_eval('tl.layers.' + layer_class)(**args)
     elif layer_type == "layerlist":
         ret_layer = []
         layers = args["layers"]
