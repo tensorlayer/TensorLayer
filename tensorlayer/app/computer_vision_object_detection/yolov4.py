@@ -1,5 +1,12 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+"""YOLOv4 for MS COCO.
+
+# Reference:
+- [tensorflow-yolov4-tflite](
+    https://github.com/hunglc007/tensorflow-yolov4-tflite)
+
+"""
 
 import tensorflow as tf
 import numpy as np
@@ -212,4 +219,3 @@ def restore_params(network, model_path='models.npz'):
     for i in range(len(line)):
         network.all_weights[i].assign(npz[line[i].strip()])
         logging.info("  Loading weights %s in %s" % (network.all_weights[i].shape, network.all_weights[i].name))
-        # print("  Loading weights %s in %s" % (network.all_weights[i].shape, network.all_weights[i].name))
