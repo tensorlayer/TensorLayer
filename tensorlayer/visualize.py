@@ -5,9 +5,9 @@ import os
 
 import imageio
 import numpy as np
-
 import tensorlayer as tl
 from tensorlayer.lazy_imports import LazyImport
+import colorsys, random
 
 cv2 = LazyImport("cv2")
 
@@ -16,18 +16,9 @@ cv2 = LazyImport("cv2")
 # matplotlib.use('Agg')
 
 __all__ = [
-    'read_image',
-    'read_images',
-    'save_image',
-    'save_images',
-    'draw_boxes_and_labels_to_image',
-    'draw_mpii_people_to_image',
-    'frame',
-    'CNN2d',
-    'images2d',
-    'tsne_embedding',
-    'draw_weights',
-    'W',
+    'read_image', 'read_images', 'save_image', 'save_images', 'draw_boxes_and_labels_to_image',
+    'draw_mpii_people_to_image', 'frame', 'CNN2d', 'images2d', 'tsne_embedding', 'draw_weights', 'W',
+    'draw_boxes_and_label_with_json'
 ]
 
 
@@ -662,3 +653,66 @@ def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig
 
 
 W = draw_weights
+
+
+def draw_boxes_and_label_with_json(image, json_result, class_list,save_name=None):
+    """Draw bboxes and class labels on image. Return the image with bboxes.
+
+    Parameters
+    -----------
+    image : numpy.array
+        The RGB image [height, width, channel].
+    json_result : list of dict
+        The object detection result with json format.
+    classes_list : list of str
+        For converting ID to string on image.
+    save_name : None or str
+        The name of image file (i.e. image.png), if None, not to save image.
+
+    Returns
+    -------
+    numpy.array
+        The saved image.
+
+    References
+    -----------
+    - OpenCV rectangle and putText.
+    - `scikit-image <http://scikit-image.org/docs/dev/api/skimage.draw.html#skimage.draw.rectangle>`__.
+
+    """
+    image_h, image_w, _ = image.shape
+    num_classes = len(class_list)
+    hsv_tuples = [(1.0 * x / num_classes, 1., 1.) for x in range(num_classes)]
+    colors = list(map(lambda x: colorsys.hsv_to_rgb(*x), hsv_tuples))
+    colors = list(map(lambda x: (int(x[0] * 255), int(x[1] * 255), int(x[2] * 255)), colors))
+    random.seed(0)
+    random.shuffle(colors)
+    random.seed(None)
+    bbox_thick = int(0.6 * (image_h + image_w) / 600)
+    fontScale = 0.5
+
+    for bbox_info in json_result:
+        image_name = bbox_info['image']
+        category_id = bbox_info['category_id']
+        if category_id < 0 or category_id > num_classes : continue
+        bbox = bbox_info['bbox'] # the order of coordinates is [x1, y2, x2, y2]
+        score = bbox_info['score']
+
+        bbox_color = colors[category_id]
+        c1, c2 = (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3]))
+        cv2.rectangle(image, c1, c2, bbox_color, bbox_thick)
+
+        bbox_mess = '%s: %.2f' % (class_list[category_id], score)
+        t_size = cv2.getTextSize(bbox_mess, 0, fontScale, thickness=bbox_thick // 2)[0]
+        c3 = (c1[0] + t_size[0], c1[1] - t_size[1] - 3)
+        cv2.rectangle(image, c1, (np.float32(c3[0]), np.float32(c3[1])), bbox_color, -1)
+
+        cv2.putText(
+            image, bbox_mess, (c1[0], np.float32(c1[1] - 2)), cv2.FONT_HERSHEY_SIMPLEX, fontScale, (0, 0, 0),
+            bbox_thick // 2, lineType=cv2.LINE_AA
+        )
+
+    if save_name is not None:
+        save_image(image, save_name)
+
+    return image

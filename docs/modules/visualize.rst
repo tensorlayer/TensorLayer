@@ -44,6 +44,9 @@ Save image for object detection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: draw_boxes_and_labels_to_image
 
+Save image for object detection with json
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: draw_boxes_and_label_with_json
 
 Save image for pose estimation (MPII)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
