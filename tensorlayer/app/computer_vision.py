@@ -88,6 +88,7 @@ def yolo4_output_processing(feature_maps):
     output = [boxes.numpy(), scores.numpy(), classes.numpy(), valid_detections.numpy()]
     return output
 
+
 def result_to_json(image, pred_bbox):
     image_h, image_w, _ = image.shape
     out_boxes, out_scores, out_classes, num_boxes = pred_bbox

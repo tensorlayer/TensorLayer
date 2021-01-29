@@ -655,7 +655,7 @@ def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig
 W = draw_weights
 
 
-def draw_boxes_and_label_with_json(image, json_result, class_list,save_name=None):
+def draw_boxes_and_label_with_json(image, json_result, class_list, save_name=None):
     """Draw bboxes and class labels on image. Return the image with bboxes.
 
     Parameters
@@ -694,8 +694,8 @@ def draw_boxes_and_label_with_json(image, json_result, class_list,save_name=None
     for bbox_info in json_result:
         image_name = bbox_info['image']
         category_id = bbox_info['category_id']
-        if category_id < 0 or category_id > num_classes : continue
-        bbox = bbox_info['bbox'] # the order of coordinates is [x1, y2, x2, y2]
+        if category_id < 0 or category_id > num_classes: continue
+        bbox = bbox_info['bbox']  # the order of coordinates is [x1, y2, x2, y2]
         score = bbox_info['score']
 
         bbox_color = colors[category_id]
