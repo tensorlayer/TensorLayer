@@ -1527,7 +1527,7 @@ def zoom_multi(x, zoom_range=(0.9, 1.1), flags=None, border_mode='constant'):
         h, w = x.shape[0], x.shape[1]
         transform_matrix = transform_matrix_offset_center(zoom_matrix, h, w)
         results.append(affine_transform_cv2(x, transform_matrix, flags=flags, border_mode=border_mode))
-    return results
+    return np.asarray(results)
 
 
 # image = tf.image.random_brightness(image, max_delta=32. / 255.)
