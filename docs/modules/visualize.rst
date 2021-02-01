@@ -19,6 +19,7 @@ to visualize the model, activations etc. Here we provide more functions for data
    frame
    images2d
    tsne_embedding
+   draw_boxes_and_labels_to_image_with_json
 
 
 Save and read images
@@ -44,6 +45,9 @@ Save image for object detection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: draw_boxes_and_labels_to_image
 
+Save image for object detection with json
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: draw_boxes_and_labels_to_image_with_json
 
 Save image for pose estimation (MPII)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
