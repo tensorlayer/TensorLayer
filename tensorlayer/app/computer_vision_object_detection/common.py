@@ -146,12 +146,6 @@ def decode_train(conv_output, output_size, NUM_CLASS, STRIDES, ANCHORS, i=0, XYS
 
     return tf.concat([pred_xywh, pred_conf, pred_prob], axis=-1)
 
-def read_class_names(class_file_name):
-	names = {}
-	with open(class_file_name, 'r') as data:
-		for ID, name in enumerate(data):
-			names[ID] = name.strip('\n')
-	return names
 
 # def weights_sorted():
 #     # download weights
