@@ -21,7 +21,8 @@ class object_detection(object):
         if self.model_name == 'yolo4-mscoco':
             batch_data = yolo4_input_processing(input_data)
             feature_maps = self.model(batch_data, is_train=False)
-            output = yolo4_output_processing(feature_maps)
+            pred_bbox = yolo4_output_processing(feature_maps)
+            output = result_to_json(input_data, pred_bbox)
         else:
             raise NotImplementedError
 
@@ -86,3 +87,29 @@ def yolo4_output_processing(feature_maps):
     )
     output = [boxes.numpy(), scores.numpy(), classes.numpy(), valid_detections.numpy()]
     return output
+
+
+def result_to_json(image, pred_bbox):
+    image_h, image_w, _ = image.shape
+    out_boxes, out_scores, out_classes, num_boxes = pred_bbox
+    class_names = {}
+    json_result = []
+    with open('model/coco.names', 'r') as data:
+        for ID, name in enumerate(data):
+            class_names[ID] = name.strip('\n')
+    nums_class = len(class_names)
+
+    for i in range(num_boxes[0]):
+        if int(out_classes[0][i]) < 0 or int(out_classes[0][i]) > nums_class: continue
+        coor = out_boxes[0][i]
+        coor[0] = int(coor[0] * image_h)
+        coor[2] = int(coor[2] * image_h)
+        coor[1] = int(coor[1] * image_w)
+        coor[3] = int(coor[3] * image_w)
+
+        score = float(out_scores[0][i])
+        class_ind = int(out_classes[0][i])
+        bbox = np.array([coor[1], coor[0], coor[3], coor[2]]).tolist()  # [x1,y1,x2,y2]
+        json_result.append({'image': None, 'category_id': class_ind, 'bbox': bbox, 'score': score})
+
+    return json_result
