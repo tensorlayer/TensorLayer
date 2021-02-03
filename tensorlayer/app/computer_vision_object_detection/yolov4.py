@@ -1,6 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-"""YOLOv4 for MS COCO.
+"""YOLOv4 for MS-COCO.
 
 # Reference:
 - [tensorflow-yolov4-tflite](
@@ -139,6 +139,29 @@ def cspdarknet53(input_data=None):
 
 
 def YOLOv4(NUM_CLASS, pretrained=False):
+    """Pre-trained YOLOv4 model.
+
+    Parameters
+    ------------
+    NUM_CLASS : int
+        Number of classes in final prediction.
+    pretrained : boolean
+        Whether to load pretrained weights. Default False.
+
+    Examples
+    ---------
+    Object Detection with YOLOv4, see `computer_vision.py
+    <https://github.com/tensorlayer/tensorlayer/blob/master/tensorlayer/app/computer_vision.py>`__
+    With TensorLayer
+
+    >>> # get the whole model, without pre-trained YOLOv4 parameters
+    >>> yolov4 = tl.app.YOLOv4(NUM_CLASS=80, pretrained=False)
+    >>> # get the whole model, restore pre-trained YOLOv4 parameters
+    >>> yolov4 = tl.app.YOLOv4(NUM_CLASS=80, pretrained=True)
+    >>> # use for inferencing
+    >>> output = yolov4(img, is_train=False)
+
+    """
 
     input_layer = Input([None, INPUT_SIZE, INPUT_SIZE, 3])
     route_1, route_2, conv = cspdarknet53(input_layer)

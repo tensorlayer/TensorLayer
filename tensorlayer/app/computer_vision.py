@@ -9,6 +9,33 @@ import cv2
 
 
 class object_detection(object):
+    """Model encapsulation.
+
+    Parameters
+    ----------
+    model_name : str
+        Choose the model to inference.
+
+    Methods
+    ---------
+    __init__()
+        Initializing the model.
+    __call__()
+        (1)Formatted input and output. (2)Inference model.
+    list()
+        Abstract method. Return available a list of model_name.
+
+    Examples
+    ---------
+    Object Detection detection MSCOCO with YOLOv4, see `tutorial_object_detection_yolov4.py
+    <https://github.com/tensorlayer/tensorlayer/blob/master/example/app_tutorials/tutorial_object_detection_yolov4.py>`__
+    With TensorLayer
+
+    >>> # get the whole model
+    >>> net = tl.app.computer_vision.object_detection('yolo4-mscoco')
+    >>> # use for inferencing
+    >>> output = net(img)
+    """
 
     def __init__(self, model_name='yolo4-mscoco'):
         self.model_name = model_name
