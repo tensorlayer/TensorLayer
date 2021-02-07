@@ -312,7 +312,7 @@ def CGCNN(pretrained=True):
 
     Examples
     ---------
-    Object Detection with YOLOv4, see `computer_vision.py
+    LCN to estimate 3D human poses from 2D poses, see `computer_vision.py
     <https://github.com/tensorlayer/tensorlayer/blob/master/tensorlayer/app/computer_vision.py>`__
     With TensorLayer
 
