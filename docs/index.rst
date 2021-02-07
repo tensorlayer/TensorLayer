@@ -9,7 +9,7 @@ Welcome to TensorLayer
 
 **Documentation Version:** |release|
 
-**Jun 2020** `Deep Reinforcement Learning Book Is Coming <http://deepreinforcementlearningbook.org>`__.
+**Jun 2020** `Deep Reinforcement Learning Book Is Released <http://deepreinforcementlearningbook.org>`__.
 
 **Good News:** We won the **Best Open Source Software Award** `@ACM Multimedia (MM) 2017 <http://www.acmmm.org/2017/mm-2017-awardees/>`_.
 
