@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from tensorlayer.app import YOLOv4, get_anchors, decode, filter_boxes
+from tensorlayer.app import CGCNN
 import numpy as np
 import tensorflow as tf
 from tensorlayer import logging
@@ -9,11 +10,40 @@ import cv2
 
 
 class object_detection(object):
+    """Model encapsulation.
+
+    Parameters
+    ----------
+    model_name : str
+        Choose the model to inference.
+
+    Methods
+    ---------
+    __init__()
+        Initializing the model.
+    __call__()
+        (1)Formatted input and output. (2)Inference model.
+    list()
+        Abstract method. Return available a list of model_name.
+
+    Examples
+    ---------
+    Object Detection detection MSCOCO with YOLOv4, see `tutorial_object_detection_yolov4.py
+    <https://github.com/tensorlayer/tensorlayer/blob/master/example/app_tutorials/tutorial_object_detection_yolov4.py>`__
+    With TensorLayer
+
+    >>> # get the whole model
+    >>> net = tl.app.computer_vision.object_detection('yolo4-mscoco')
+    >>> # use for inferencing
+    >>> output = net(img)
+    """
 
     def __init__(self, model_name='yolo4-mscoco'):
         self.model_name = model_name
         if self.model_name == 'yolo4-mscoco':
             self.model = YOLOv4(NUM_CLASS=80, pretrained=True)
+        elif self.model_name == 'lcn':
+            self.model = CGCNN(pretrained=True)
         else:
             raise ("The model does not support.")
 
@@ -23,6 +53,8 @@ class object_detection(object):
             feature_maps = self.model(batch_data, is_train=False)
             pred_bbox = yolo4_output_processing(feature_maps)
             output = result_to_json(input_data, pred_bbox)
+        elif self.model_name == 'lcn':
+            output = self.model(input_data)
         else:
             raise NotImplementedError
 
@@ -35,7 +67,7 @@ class object_detection(object):
 
     @property
     def list(self):
-        logging.info("The model name list: yolov4-mscoco")
+        logging.info("The model name list: 'yolov4-mscoco', 'lcn'")
 
 
 def yolo4_input_processing(original_image):
