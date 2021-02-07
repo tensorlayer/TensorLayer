@@ -221,10 +221,10 @@ def cgcnn_train():
 
     # === Last layer ===
     input_size4 = int(output.get_shape()[1])
-    output = Mask_layer(in_channels=input_size4, out_channels=OUT_JOINTS*3, name=["w4", "b4"])(output)
+    output = Mask_layer(in_channels=input_size4, out_channels=OUT_JOINTS * 3, name=["w4", "b4"])(output)
 
     # === End linear model ===
-    output = End_layer()([input_layer,output])
+    output = End_layer()([input_layer, output])
 
     network = Model(inputs=input_layer, outputs=output)
 
