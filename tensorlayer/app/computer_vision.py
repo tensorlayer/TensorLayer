@@ -51,11 +51,10 @@ class object_detection(object):
         if self.model_name == 'yolo4-mscoco':
             batch_data = yolo4_input_processing(input_data)
             feature_maps = self.model(batch_data, is_train=False)
-            output = yolo4_output_processing(feature_maps)
-        elif self.model_name == 'lcn':
-            output = self.model(input_data)
             pred_bbox = yolo4_output_processing(feature_maps)
             output = result_to_json(input_data, pred_bbox)
+        elif self.model_name == 'lcn':
+            output = self.model(input_data)
         else:
             raise NotImplementedError
 
