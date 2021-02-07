@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from tensorlayer.app import YOLOv4, get_anchors, decode, filter_boxes
+from tensorlayer.app import CGCNN
 import numpy as np
 import tensorflow as tf
 from tensorlayer import logging
@@ -41,6 +42,8 @@ class object_detection(object):
         self.model_name = model_name
         if self.model_name == 'yolo4-mscoco':
             self.model = YOLOv4(NUM_CLASS=80, pretrained=True)
+        elif self.model_name == 'lcn':
+            self.model = CGCNN(pretrained=True)
         else:
             raise ("The model does not support.")
 
@@ -49,6 +52,8 @@ class object_detection(object):
             batch_data = yolo4_input_processing(input_data)
             feature_maps = self.model(batch_data, is_train=False)
             output = yolo4_output_processing(feature_maps)
+        elif self.model_name == 'lcn':
+            output = self.model(input_data)
         else:
             raise NotImplementedError
 
@@ -61,7 +66,7 @@ class object_detection(object):
 
     @property
     def list(self):
-        logging.info("The model name list: yolov4-mscoco")
+        logging.info("The model name list: 'yolov4-mscoco', 'lcn'")
 
 
 def yolo4_input_processing(original_image):
