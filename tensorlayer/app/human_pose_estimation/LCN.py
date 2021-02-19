@@ -166,9 +166,8 @@ def batch_normalization_warp(y):
     _, output_size = y.get_shape()
     output_size = int(output_size)
     out_F = int(output_size / IN_JOINTS)
-
     y = Reshape([-1, IN_JOINTS, out_F])(y)
-    y = BatchNorm(act='lrelu')(y)
+    y = BatchNorm(act='lrelu', epsilon=1e-3)(y)
     y = Reshape([-1, output_size])(y)
     return y
 
