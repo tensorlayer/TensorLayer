@@ -102,7 +102,7 @@ class human_pose_estimation(object):
 
     def __call__(self, input_data):
         if self.model_name == '3D-pose':
-            output = self.model(input_data)
+            output = self.model(input_data, is_train=False)
         else:
             raise NotImplementedError
 
