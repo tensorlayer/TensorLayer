@@ -222,7 +222,7 @@ def YOLOv4(NUM_CLASS, pretrained=False):
     network = Model(input_layer, [conv_sbbox, conv_mbbox, conv_lbbox])
 
     if pretrained:
-        restore_params(network, model_path='model/model.npz')
+        restore_params(network, model_path='model/yolov4_model.npz')
 
     return network
 
@@ -236,7 +236,7 @@ def restore_params(network, model_path='models.npz'):
         print("Download the model file, placed in the /model ")
         print("Weights download: ", weights_url['link'], "password:", weights_url['password'])
 
-    txt_path = 'model/yolov4_config.txt'
+    txt_path = 'model/yolov4_weights_config.txt'
     f = open(txt_path, "r")
     line = f.readlines()
     for i in range(len(line)):
