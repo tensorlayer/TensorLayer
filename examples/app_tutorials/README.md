@@ -1,5 +1,6 @@
 # Quick Start
 TensorLayer Implementation of [YOLOv4: Optimal Speed and Accuracy of Object Detection][1]
+
 TensorLayer Implementation of [Optimizing Network Structure for 3D Human Pose Estimation][2](ICCV2019)
 
 ## YOLOv4
@@ -31,20 +32,25 @@ ${root}/examples
 ### demo
 
 1. Image
+
    Modify `image_path` in `./examples/app_tutorials/tutorial_object_detection_yolov4_image.py` according to your demand, then
-   ```bash
+   
+```bash
 python tutorial_object_detection_yolov4_image.py
-   ```
+```
 2. Video
-    Modify `video_path` in `./examples/app_tutorials/tutorial_object_detection_yolov4_video.py` according to your demand, then
+   
+   Modify `video_path` in `./examples/app_tutorials/tutorial_object_detection_yolov4_video.py` according to your demand, then
 
 ```bash
-   python tutorial_object_detection_yolov4_video.py
+python tutorial_object_detection_yolov4_video.py
 ```
 3. Output
+   
    -Image
    
    <p align="center"><img src="../../docs/images/yolov4_image_result.png" width="640"\></p>
+  
    -Video
    
    <p align="center"><img src="../../docs/images/yolov4_video_result.gif" width="640"\></p>
