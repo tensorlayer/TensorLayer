@@ -2787,12 +2787,12 @@ def check_ckpt_file(model_dir):
     for root, dirs, files in os.walk(model_dir):
         for file in files:
             filename, extension = os.path.splitext(file)
-            if extension in ['.data-00000-of-00001', '.index', '.meta']:
+            if extension in ['.data-00000-of-00001', '.index']:
                 count_extension += 1
-        if count_extension == 3:
+        if count_extension == 2:
             model_path = model_dir + '/' + filename
         else:
-            raise Exception("Check the file extension for missing .data-00000-of-00001, .index, .meta")
+            raise Exception("Check the file extension for missing .data-00000-of-00001, .index")
         if model_path is None:
             raise Exception('The ckpt file is not found')
     return model_path, filename

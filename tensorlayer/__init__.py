@@ -44,6 +44,7 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     from tensorlayer import optimizers
     from tensorlayer import rein
     from tensorlayer import utils
+    from tensorlayer import app
 
     from tensorlayer.lazy_imports import LazyImport
 
