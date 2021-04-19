@@ -29,7 +29,7 @@ def weight_variable():
     return TruncatedNormal(0.02)
 
 
-class LeNet5(nn.Cell):
+class MLP(nn.Cell):
     """
     Lenet network
     Args:
@@ -39,11 +39,11 @@ class LeNet5(nn.Cell):
         Tensor, output tensor
 
     Examples:
-        >>> LeNet(num_class=10)
+        >>> MLP(num_class=10)
     """
 
     def __init__(self, num_class=10):
-        super(LeNet5, self).__init__()
+        super(MLP, self).__init__()
         self.num_class = num_class
         self.fc1 = fc_with_initialize(784, 800)
         self.fc2 = fc_with_initialize(800, 800)
@@ -81,7 +81,7 @@ def generator_train():
         yield _input, _target
 
 
-net = LeNet5()
+net = MLP()
 optimizer = Momentum(filter(lambda x: x.requires_grad, net.get_parameters()), 0.1, 0.9)
 criterion = nn.SoftmaxCrossEntropyWithLogits(is_grad=False, sparse=True)
 net_with_criterion = WithLossCell(net, criterion)
