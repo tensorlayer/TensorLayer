@@ -1,18 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os
 import sys
+sys.path.append("/home/wurundi/workspace/tensorlayer2")
+
+import os
 import unittest
 
-import tensorflow as tf
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import tensorlayer as tl
 from tensorlayer.layers import *
+
 from tests.utils import CustomTestCase
-
-sys.path.append("/home/wurundi/workspace/tensorlayer2")
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class Layer_Pooling_Test(CustomTestCase):
@@ -42,14 +41,6 @@ class Layer_Pooling_Test(CustomTestCase):
         cls.n8_shape = n8.get_shape().as_list()
         cls.n9_shape = n9.get_shape().as_list()
         cls.n10_shape = n10.get_shape().as_list()
-
-        print("Printing UpSampling2d")
-        print(nin_2._info[0].layer)
-        print(n6._info[0].layer)
-        print(n7._info[0].layer)
-        print(n8._info[0].layer)
-        print(n9._info[0].layer)
-        print(n10._info[0].layer)
 
     @classmethod
     def tearDownClass(cls):

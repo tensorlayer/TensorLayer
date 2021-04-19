@@ -99,6 +99,11 @@ class QuanDense(Module):
         self.matmul = tl.ops.MatMul()
 
     def forward(self, inputs):
+        if self._forward_state == False:
+            if self._built == False:
+                self.build(tl.get_tensor_shape(inputs))
+                self._built = True
+            self._forward_state = True
 
         inputs = quantize_active_overflow(inputs, self.bitA)
 

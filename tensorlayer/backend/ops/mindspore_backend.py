@@ -14,6 +14,7 @@ from mindspore.common.tensor import Tensor
 from mindspore._c_expression import Tensor as Tensor_
 from mindspore.ops import operations as P
 from mindspore.ops import functional as F
+from mindspore.ops import composite as C
 import mindspore.context as context
 from mindspore.nn import Cell
 
@@ -217,6 +218,17 @@ class Normal(Initializer):
         random.seed(self.seed)
         tmp = np.random.normal(self.mean, self.stddev, arr.shape)
         _assignment(arr, tmp)
+
+
+class RandomNormal(Cell):
+    def __init__(self, mean=0.0, stddev=0.01, seed=None):
+        super(RandomNormal, self).__init__()
+        self.normal = Normal(mean=mean, stddev=stddev, seed=seed)
+
+    def construct(self, shape):
+        arr = np.ndarray(shape)
+        outputs = self.normal(arr)
+        return outputs
 
 
 def random_normal(shape, mean=0.0, stddev=1.0, dtype=mstype.float32, seed=None):
@@ -438,6 +450,26 @@ def dtypes(dt):
     if dt not in _dtypeDict.keys():
         raise Exception("Unsupported dtype: {}".format(dt))
     return _dtypeDict[dt]
+
+
+class Maximum(Cell):
+
+    def __init__(self):
+        super(Maximum, self).__init__()
+        self.maximum = P.Maximum()
+
+    def construct(self, x, y):
+        return self.maximum(x, y)
+
+
+class Minimum(Cell):
+
+    def __init__(self):
+        super(Minimum, self).__init__()
+        self.minimum = P.Minimum()
+
+    def construct(self, x, y):
+        return self.minimum(x, y)
 
 
 def minimum(x, y):
@@ -679,6 +711,16 @@ def reduce_min(input_tensor, axis=None):
     outputs = Rmin_obj(input_tensor, axis)
     return outputs
 
+class Pad(Cell):
+    def __init__(self, paddings, mode="REFLECT"):
+        super(Pad, self).__init__()
+        if mode not in ["REFLECT", "SYMMETRIC"]:
+            raise Exception("Unsupported mode: {}".format(mode))
+        self.pad = P.MirrorPad(mode=mode)
+        self.paddings = Tensor(paddings)
+
+    def construct(self, x):
+        return self.pad(x, self.paddings)
 
 def pad(tensor, paddings, mode='CONSTANT', constant_values=0):
     """
@@ -699,27 +741,27 @@ def pad(tensor, paddings, mode='CONSTANT', constant_values=0):
     -------
         A Tensor. Has the same type as tensor.
     """
-    # todo: constant value , padding mode
-    pass
+    raise NotImplementedError
 
 
 class Unstack(Cell):
-
     def __init__(self, axis, num=None):
-        self.axis = axis
-        self.num = num
+        super(Unstack, self).__init__()
+        if num is not None:
+            raise ("The num Parameters do not need to be set.")
+        self.unstack = P.Unpack(axis=axis)
 
-    def __call__(self, values):
-        raise NotImplementedError
+    def construct(self, values):
+        return self.unstack(values)
 
 
 class Stack(Cell):
+    def __init__(self, axis=0):
+        super(Stack, self).__init__()
+        self.stack = P.Pack(axis=axis)
 
-    def __init__(self, axis):
-        self.axis = axis
-
-    def __call__(self, values):
-        raise NotImplementedError
+    def construct(self, values):
+        return self.stack(values)
 
 
 def stack(values, axis=0):
@@ -738,11 +780,22 @@ def stack(values, axis=0):
     -------
         A stacked Tensor with the same type as values.
     """
-    # todo Not Implemented
-    raise NotImplementedError
+    _stack = P.Pack(axis=axis)
+    return _stack(values)
 
 
-def meshgrid(x, y):
+class Meshgrid(Cell):
+    def __init__(self, indexing='xy'):
+        super(Meshgrid, self).__init__()
+        self._meshgrid = P.Meshgrid(indexing=indexing)
+
+    def construct(self, *args):
+        inputs = tuple(*args)
+        return self._meshgrid(inputs)
+
+
+
+def meshgrid(*args, **kwargs):
     """
     Broadcasts parameters for evaluation on an N-D grid.
 
@@ -758,7 +811,9 @@ def meshgrid(x, y):
         A list of N Tensors with rank N.
     """
 
-    pass
+    _meshgrid = P.Meshgrid(**kwargs)
+    return _meshgrid(*args)
+
 
 
 def range(start, limit=None, delta=1, dtype=None):
@@ -915,7 +970,7 @@ def transpose(a, perm=None, conjugate=False):
     -------
         A transposed Tensor.
     """
-    # todo None conjugate
+    # TODO conjugate
     trans_obj = P.Transpose()
     outputs = trans_obj(a, perm)
     print(outputs)
@@ -959,8 +1014,10 @@ def clip_by_value(t, clip_value_min, clip_value_max):
     -------
         A clipped Tensor or IndexedSlices.
     """
-
-    pass
+    min_value = Tensor(clip_value_min, mstype.float32)
+    max_value = Tensor(clip_value_max, mstype.float32)
+    output = C.clip_by_value(t, min_value, max_value)
+    return output
 
 
 def split(value, num_or_size_splits, axis=0, num=None):
@@ -1074,12 +1131,15 @@ class Resize(Cell):
         if method not in ['nearest', 'bilinear']:
             raise ('The method must be "nearest" or "bilinear".')
         self.method = method
+
+        if ksize is None:
+            raise ('The "bilinear" and  "nearest" method must enter ksize. The dimension of size must be 2 (H, W).')
+
+        out_seize = (int(ksize[0] * scale[0]), int(ksize[1] * scale[1]))
         if self.method == 'nearest':
-            self.resize = P.ResizeNearestNeighbor(size=tuple(scale), align_corners=antialias)
+            self.resize = P.ResizeNearestNeighbor(size=out_seize, align_corners=antialias)
         elif self.method == 'bilinear':
-            if ksize is None:
-                raise ('The bilinear method must enter ksize. The dimension of size must be 2 (H, W).')
-            out_seize = (int(ksize[0] * scale[0]), int(ksize[1] * scale[1]))
+
             self.resize = P.ResizeBilinear(size=out_seize)
 
     def construct(self, inputs):
@@ -1096,37 +1156,59 @@ def resize(inputs, output_size, method, antialias):
 
 
 class ZeroPadding1D(Cell):
-
-    def __init__(self):
+    def __init__(self, padding):
         super(ZeroPadding1D, self).__init__()
+        if np.size(padding) == 2:
+            self.pad = P.Pad(paddings=padding)
+        else:
+            raise ("The shape of parameter paddings is (N, 2). N is the rank of input data.")
 
-    def construct(self, *inputs, **kwargs):
-        raise NotImplementedError
+    def construct(self, inputs):
+        return self.pad(inputs)
 
 
 class ZeroPadding2D(Cell):
-
-    def __init__(self):
+    def __init__(self, padding):
         super(ZeroPadding2D, self).__init__()
+        if np.size(padding) == 4:
+            self.pad = P.Pad(paddings=padding)
+        else:
+            raise ("The shape of parameter paddings is (N, 2). N is the rank of input data.")
 
-    def construct(self, *inputs, **kwargs):
-        raise NotImplementedError
+    def construct(self, inputs):
+        return self.pad(inputs)
 
 
 class ZeroPadding3D(Cell):
-
-    def __init__(self):
+    def __init__(self, padding):
         super(ZeroPadding3D, self).__init__()
+        if np.size(padding) == 6:
+            self.pad = P.Pad(paddings=padding)
+        else:
+            raise ("The shape of parameter paddings is (N, 2). N is the rank of input data.")
 
-    def construct(self, *inputs, **kwargs):
-        raise NotImplementedError
+    def construct(self, inputs):
+        return self.pad(inputs)
 
 
 class Sign(Cell):
 
     def __init__(self):
-        super(Sign).__init__()
+        super(Sign, self).__init__()
         self.sign = P.Sign()
 
     def construct(self, x):
         return self.sign(x)
+
+def ceil(x):
+    _ceil = P.Ceil()
+    return _ceil(x)
+
+def multiply(x, y):
+    raise NotImplementedError
+
+def divide(x, y):
+    raise NotImplementedError
+
+def identity(x):
+    raise NotImplementedError

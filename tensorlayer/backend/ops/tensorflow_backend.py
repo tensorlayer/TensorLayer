@@ -290,6 +290,22 @@ def dtypes(dt):
     return _dtypeDict[dt]
 
 
+class Maximum(object):
+    def __init__(self):
+        pass
+
+    def __call__(self, x, y):
+        return tf.maximum(x=x, y=y)
+
+
+class Minimum(object):
+    def __init__(self):
+        pass
+
+    def __call__(self, x, y):
+        return tf.minimum(x=x, y=y)
+
+
 def minimum(x, y):
     """
     Returns the min of x and y (i.e. x < y ? x : y) element-wise.
@@ -414,7 +430,7 @@ def sqrt(x):
 
 class ReduceSum(object):
 
-    def __init__(self, axis):
+    def __init__(self, axis=None):
         self.axis = axis
 
     def __call__(self, input):
@@ -439,7 +455,7 @@ def reduce_mean(input_tensor, axis=None):
     ----------
     input_tensor : tensor
         The tensor to reduce. Should have numeric type.
-    axis : int
+    axis : list
         The dimensions to reduce. If None (the default), reduces all dimensions.
         Must be in the range [-rank(input_tensor), rank(input_tensor)).
     name : str
@@ -507,6 +523,17 @@ def reduce_min(input_tensor, axis=None):
     return tf.reduce_min(input_tensor, axis=axis)
 
 
+class Pad(object):
+    def __init__(self, paddings, mode="REFLECT"):
+        if mode not in ['CONSTANT', 'REFLECT', 'SYMMETRIC']:
+            raise Exception("Unsupported mode: {}".format(mode))
+        self.paddings = paddings
+        self.mode = mode
+
+    def __call__(self, x):
+        outputs = tf.pad(x, self.paddings, mode=self.mode, constant_values=0)
+        return outputs
+
 def pad(tensor, paddings, mode='CONSTANT', constant_values=0):
     """
     Pads a tensor.
@@ -545,7 +572,7 @@ class Unstack(object):
 
 class Stack(object):
 
-    def __init__(self, axis):
+    def __init__(self, axis=0):
         self.axis = axis
 
     def __call__(self, values):
@@ -572,7 +599,16 @@ def stack(values, axis=0):
     return tf.stack(values, axis=axis)
 
 
-def meshgrid(x, y):
+class Meshgrid(object):
+    def __init__(self, indexing='xy'):
+        super(Meshgrid, self).__init__()
+        self.index = indexing
+
+    def __call__(self, inputs):
+        return tf.meshgrid(inputs)
+
+
+def meshgrid(*args, **kwargs):
     """
     Broadcasts parameters for evaluation on an N-D grid.
 
@@ -588,7 +624,7 @@ def meshgrid(x, y):
         A list of N Tensors with rank N.
     """
 
-    return tf.meshgrid(x, y)
+    return tf.meshgrid(*args, **kwargs)
 
 
 def range(start, limit=None, delta=1, dtype=None):
@@ -725,7 +761,7 @@ def transpose(a, perm=None, conjugate=False):
     ----------
     a : tensor
         A Tensor.
-    perm : int
+    perm : list / int
         A permutation of the dimensions of a.
     conjugate : bool
         Setting it to True is mathematically equivalent to tf.math.conj(tf.transpose(input)).
@@ -955,3 +991,15 @@ class Sign(object):
 
     def __call__(self, x):
         return tf.sign(x)
+
+def ceil(x):
+    return tf.math.ceil(x)
+
+def multiply(x, y):
+    return tf.multiply(x, y)
+
+def divide(x, y):
+    return tf.divide(x, y)
+
+def identity(x):
+    return tf.identity(x)

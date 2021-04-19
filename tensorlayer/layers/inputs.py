@@ -3,7 +3,7 @@
 
 import tensorlayer as tl
 from tensorlayer import logging
-from tensorlayer.layers.core import Module, LayerNode
+from tensorlayer.layers.core import Module
 
 __all__ = ['Input', '_InputLayer']
 
@@ -39,7 +39,7 @@ class _InputLayer(Module):
         self.dtype = dtype
         self.shape_without_none = [_ if _ is not None else 1 for _ in shape]
         self.outputs = tl.initializers.ones()(self.shape_without_none, dtype=self.dtype)
-        # self._built = True
+        self._built = True
         # self._add_node(outputs, outputs)
 
     def __repr__(self):

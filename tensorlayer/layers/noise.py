@@ -75,13 +75,6 @@ class GaussianNoise(Module):
         else:
             shapes = tl.get_tensor_shape(inputs)
             noise = tl.ops.random_normal(shape=shapes, mean=self.mean, stddev=self.stddev, seed=self.seed)
+            print(noise)
             outputs = inputs + noise
         return outputs
-
-
-# if __name__ == '__main__':
-#     from tensorlayer.layers import Dense, Input
-#     net = Input([64, 200], name='input')
-#     net = Dense(in_channels=200, n_units=100, act=tl.ReLU, name='dense')(net)
-#     gaussianlayer = GaussianNoise(name='gaussian')(net)
-#     print(gaussianlayer)

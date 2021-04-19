@@ -108,6 +108,12 @@ class Dense(Module):
         self.matmul = tl.ops.MatMul()
 
     def forward(self, inputs):
+        if self._forward_state == False:
+            if self._built == False:
+                self.build(tl.get_tensor_shape(inputs))
+                self._built = True
+            self._forward_state = True
+
         z = self.matmul(inputs, self.W)
         if self.b_init_flag:
             z = self.bias_add(z, self.b)

@@ -4,10 +4,12 @@
 import os
 import unittest
 
-from pydocstyle.checker import check, violations
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 from tests.utils import list_all_py_files
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+from pydocstyle.checker import check
+from pydocstyle.checker import violations
 
 registry = violations.ErrorRegistry
 

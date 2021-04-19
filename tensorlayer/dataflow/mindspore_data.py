@@ -29,9 +29,6 @@ class Shuffle(str, Enum):
     FILES: str = "file"
 
 
-print(Shuffle.GLOBAL)
-
-
 def Apply(dataset, transformation_func):
 
     return dataset.apply(transformation_func)

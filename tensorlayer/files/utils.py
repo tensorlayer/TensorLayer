@@ -2030,6 +2030,7 @@ def assign_weights(weights, network):
     if tl.BACKEND == 'tensorflow':
         for idx, param in enumerate(weights):
             ops.append(network.all_weights[idx].assign(param))
+
     elif tl.BACKEND == 'mindspore':
 
         class Assign_net(Cell):

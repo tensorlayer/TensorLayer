@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-
 import tensorlayer as tl
+
 from tests.utils.custom_layers.basic_layers import conv_module
 
 __all__ = [

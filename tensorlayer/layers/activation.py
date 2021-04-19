@@ -10,6 +10,13 @@ __all__ = [
     'PRelu',
     'PRelu6',
     'PTRelu6',
+    'LeakyReLU',
+    'LeakyReLU6',
+    'LeakyTwiceRelu6',
+    'Ramp',
+    'Swish',
+    'HardTanh',
+    'Mish'
 ]
 
 
@@ -35,11 +42,6 @@ class PRelu(Module):
     -----------
     >>> inputs = tl.layers.Input([10, 5])
     >>> prelulayer = tl.layers.PRelu(channel_shared=True)
-    >>> print(prelulayer)
-    PRelu(channel_shared=True,in_channels=None,name=prelu)
-    >>> prelu = prelulayer(inputs)
-    >>> model = tl.models.Model(inputs=inputs, outputs=prelu)
-    >>> out = model(data, is_train=True)
 
     References
     -----------
@@ -96,9 +98,15 @@ class PRelu(Module):
         self.sigmoid = tl.ops.Sigmoid()
 
     def forward(self, inputs):
+        if self._forward_state == False:
+            if self._built == False:
+                self.build(tl.get_tensor_shape(inputs))
+                self._built = True
+            self._forward_state = True
+
         pos = self.relu(inputs)
-        alpha_var_constrained = self.sigmoid(self.alpha_var)
-        neg = -alpha_var_constrained * self.relu(-inputs)
+        self.alpha_var_constrained = self.sigmoid(self.alpha_var)
+        neg = -self.alpha_var_constrained * self.relu(-inputs)
         return pos + neg
 
 
@@ -195,6 +203,12 @@ class PRelu6(Module):
 
     # @tf.function
     def forward(self, inputs):
+        if self._forward_state == False:
+            if self._built == False:
+                self.build(tl.get_tensor_shape(inputs))
+                self._built = True
+            self._forward_state = True
+
         alpha_var_constrained = self.sigmoid(self.alpha_var)
         pos = self.relu(inputs)
         pos_6 = -self.relu(inputs - 6)
@@ -247,6 +261,7 @@ class PTRelu6(Module):
         self,
         channel_shared=False,
         in_channels=None,
+        data_format='channels_last',
         a_init=truncated_normal(mean=0.0, stddev=0.05),
         name=None  # "ptrelu6"
     ):
@@ -254,6 +269,7 @@ class PTRelu6(Module):
         super(PTRelu6, self).__init__(name)
         self.channel_shared = channel_shared
         self.in_channels = in_channels
+        self.data_format = data_format
         self.a_init = a_init
 
         if self.channel_shared:
@@ -297,6 +313,12 @@ class PTRelu6(Module):
 
     # @tf.function
     def forward(self, inputs):
+        if self._forward_state == False:
+            if self._built == False:
+                self.build(tl.get_tensor_shape(inputs))
+                self._built = True
+            self._forward_state = True
+
         alpha_low_constrained = self.sigmoid(self.alpha_low)
         alpha_high_constrained = self.sigmoid(self.alpha_high)
         pos = self.relu(inputs)
@@ -304,3 +326,280 @@ class PTRelu6(Module):
         neg = -alpha_low_constrained * self.relu(-inputs)
 
         return pos + pos_6 + neg
+
+
+class Ramp(Module):
+    """Ramp activation function.
+
+        Reference: [tf.clip_by_value]<https://www.tensorflow.org/api_docs/python/tf/clip_by_value>
+
+        Parameters
+        ----------
+        x : Tensor
+            input.
+        v_min : float
+            cap input to v_min as a lower bound.
+        v_max : float
+            cap input to v_max as a upper bound.
+
+        Returns
+        -------
+        Tensor
+            A ``Tensor`` in the same type as ``x``.
+
+        """
+
+    def __init__(self, v_min=0, v_max=1):
+        super(Ramp, self).__init__()
+        self._built = True
+        self.v_min = v_min
+        self.v_max = v_max
+
+    def forward(self, x):
+        return tl.ops.clip_by_value(x, clip_value_min=self.v_min, clip_value_max=self.v_max)
+
+
+class LeakyReLU(Module):
+    """
+
+    This function is a modified version of ReLU, introducing a nonzero gradient for negative input. Introduced by the paper:
+    `Rectifier Nonlinearities Improve Neural Network Acoustic Models [A. L. Maas et al., 2013] <https://ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf>`__
+
+    The function return the following results:
+      - When x < 0: ``f(x) = alpha_low * x``.
+      - When x >= 0: ``f(x) = x``.
+
+    Parameters
+    ----------
+    x : Tensor
+        Support input type ``float``, ``double``, ``int32``, ``int64``, ``uint8``, ``int16``, or ``int8``.
+    alpha : float
+        Slope.
+    name : str
+        The function name (optional).
+
+    Examples
+    --------
+    >>> import tensorlayer as tl
+    >>> net = tl.layers.Input([10, 200])
+    >>> net = tl.layers.LeakyReLU(alpha=0.5)(net)
+
+    Returns
+    -------
+    Tensor
+        A ``Tensor`` in the same type as ``x``.
+
+    References
+    ----------
+    - `Rectifier Nonlinearities Improve Neural Network Acoustic Models [A. L. Maas et al., 2013] <https://ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf>`__
+
+    """
+
+    def __init__(self, alpha=0.2):
+        super(LeakyReLU, self).__init__()
+        self._built = True
+        self.alpha = alpha
+        self._leakyrelu = tl.ops.LeakyReLU(alpha=alpha)
+
+    def forward(self, x):
+        return self._leakyrelu(x)
+
+
+class LeakyReLU6(Module):
+    """
+        This activation function is a modified version :func:`leaky_relu` introduced by the following paper:
+        `Rectifier Nonlinearities Improve Neural Network Acoustic Models [A. L. Maas et al., 2013] <https://ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf>`__
+
+        This activation function also follows the behaviour of the activation function :func:`tf.ops.relu6` introduced by the following paper:
+        `Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky, 2010] <http://www.cs.utoronto.ca/~kriz/conv-cifar10-aug2010.pdf>`__
+
+        The function return the following results:
+          - When x < 0: ``f(x) = alpha_low * x``.
+          - When x in [0, 6]: ``f(x) = x``.
+          - When x > 6: ``f(x) = 6``.
+
+        Parameters
+        ----------
+        x : Tensor
+            Support input type ``float``, ``double``, ``int32``, ``int64``, ``uint8``, ``int16``, or ``int8``.
+        alpha : float
+            Slope.
+        name : str
+            The function name (optional).
+
+        Examples
+        --------
+        >>> import tensorlayer as tl
+        >>> net = tl.layers.Input([10, 200])
+        >>> net = tl.layers.LeakyReLU6(alpha=0.5)(net)
+
+        Returns
+        -------
+        Tensor
+            A ``Tensor`` in the same type as ``x``.
+
+        References
+        ----------
+        - `Rectifier Nonlinearities Improve Neural Network Acoustic Models [A. L. Maas et al., 2013] <https://ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf>`__
+        - `Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky, 2010] <http://www.cs.utoronto.ca/~kriz/conv-cifar10-aug2010.pdf>`__
+        """
+
+    def __init__(self, alpha=0.2):
+        super(LeakyReLU6, self).__init__()
+        self._built = True
+        if not (0 < alpha <= 1):
+            raise ValueError("`alpha` value must be in [0, 1]`")
+
+        self.alpha = alpha
+        self.minimum = tl.ops.Minimum()
+        self.maximum = tl.ops.Maximum()
+
+    def forward(self, x):
+        return self.minimum(self.maximum(x, self.alpha * x), 6)
+
+
+class LeakyTwiceRelu6(Module):
+    """
+
+        This activation function is a modified version :func:`leaky_relu` introduced by the following paper:
+        `Rectifier Nonlinearities Improve Neural Network Acoustic Models [A. L. Maas et al., 2013] <https://ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf>`__
+
+        This activation function also follows the behaviour of the activation function :func:`tf.ops.relu6` introduced by the following paper:
+        `Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky, 2010] <http://www.cs.utoronto.ca/~kriz/conv-cifar10-aug2010.pdf>`__
+
+        This function push further the logic by adding `leaky` behaviour both below zero and above six.
+
+        The function return the following results:
+          - When x < 0: ``f(x) = alpha_low * x``.
+          - When x in [0, 6]: ``f(x) = x``.
+          - When x > 6: ``f(x) = 6 + (alpha_high * (x-6))``.
+
+        Parameters
+        ----------
+        x : Tensor
+            Support input type ``float``, ``double``, ``int32``, ``int64``, ``uint8``, ``int16``, or ``int8``.
+        alpha_low : float
+            Slope for x < 0: ``f(x) = alpha_low * x``.
+        alpha_high : float
+            Slope for x < 6: ``f(x) = 6 (alpha_high * (x-6))``.
+        name : str
+            The function name (optional).
+
+        Examples
+        --------
+        >>> import tensorlayer as tl
+        >>> net = tl.layers.Input([10, 200])
+        >>> net = tl.layers.LeakyTwiceRelu6(alpha_low=0.5, alpha_high=0.2)(net)
+
+        Returns
+        -------
+        Tensor
+            A ``Tensor`` in the same type as ``x``.
+
+        References
+        ----------
+        - `Rectifier Nonlinearities Improve Neural Network Acoustic Models [A. L. Maas et al., 2013] <https://ai.stanford.edu/~amaas/papers/relu_hybrid_icml2013_final.pdf>`__
+        - `Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky, 2010] <http://www.cs.utoronto.ca/~kriz/conv-cifar10-aug2010.pdf>`__
+
+        """
+
+    def __init__(self, alpha_low=0.2, alpha_high=0.2):
+        super(LeakyTwiceRelu6, self).__init__()
+        self._built = True
+        if not (0 < alpha_high <= 1):
+            raise ValueError("`alpha_high` value must be in [0, 1]`")
+
+        if not (0 < alpha_low <= 1):
+            raise ValueError("`alpha_low` value must be in [0, 1]`")
+
+        self.alpha_low = alpha_low
+        self.alpha_high = alpha_high
+        self.minimum = tl.ops.Minimum()
+        self.maximum = tl.ops.Maximum()
+
+    def forward(self, x):
+        x_is_above_0 = self.minimum(x, 6 * (1 - self.alpha_high) + self.alpha_high * x)
+        x_is_below_0 = self.minimum(self.alpha_low * x, 0)
+        return self.maximum(x_is_above_0, x_is_below_0)
+
+
+class Swish(Module):
+    """Swish function.
+
+         See `Swish: a Self-Gated Activation Function <https://arxiv.org/abs/1710.05941>`__.
+
+        Parameters
+        ----------
+        x : Tensor
+            input.
+        name: str
+            function name (optional).
+
+        Returns
+        -------
+        Tensor
+            A ``Tensor`` in the same type as ``x``.
+
+        """
+
+    def __init__(self):
+        super(Swish, self).__init__()
+        self.sigmoid = tl.ops.Sigmoid()
+        self._built = True
+
+    def forward(self, x):
+        return self.sigmoid(x) * x
+
+
+class HardTanh(Module):
+    """Hard tanh activation function.
+
+        Which is a ramp function with low bound of -1 and upper bound of 1, shortcut is `htanh`.
+
+        Parameters
+        ----------
+        x : Tensor
+            input.
+        name : str
+            The function name (optional).
+
+        Returns
+        -------
+        Tensor
+            A ``Tensor`` in the same type as ``x``.
+
+        """
+
+    def __init__(self):
+        super(HardTanh, self).__init__()
+        self._built = True
+
+    def forward(self, x):
+        return tl.ops.clip_by_value(x, -1, 1)
+
+
+class Mish(Module):
+    """Mish activation function.
+
+        Reference: [Mish: A Self Regularized Non-Monotonic Neural Activation Function .Diganta Misra, 2019]<https://arxiv.org/abs/1908.08681>
+
+        Parameters
+        ----------
+        x : Tensor
+            input.
+
+        Returns
+        -------
+        Tensor
+            A ``Tensor`` in the same type as ``x``.
+
+        """
+
+    def __init__(self):
+        super(Mish, self).__init__()
+        self._tanh = tl.ops.Tanh()
+        self._softplus = tl.ops.Softplus()
+        self._built = True
+
+    def forward(self, x):
+        return x * self._tanh(self._softplus(x))

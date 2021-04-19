@@ -4,12 +4,11 @@
 import os
 import unittest
 
-import tensorflow as tf
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import tensorlayer as tl
-from tests.utils import CustomTestCase
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+from tests.utils import CustomTestCase
 
 
 class Layer_Padding_Test(CustomTestCase):
@@ -23,9 +22,6 @@ class Layer_Padding_Test(CustomTestCase):
         n1 = tl.layers.ZeroPad1d(padding=1)(cls.input_layer1)
         n2 = tl.layers.ZeroPad1d(padding=(2, 3))(cls.input_layer1)
 
-        print(n1._info[0].layer)
-        print(n2._info[0].layer)
-
         cls.n1_shape = n1.get_shape().as_list()
         cls.n2_shape = n2.get_shape().as_list()
 
@@ -37,13 +33,7 @@ class Layer_Padding_Test(CustomTestCase):
         n4 = tl.layers.ZeroPad2d(padding=(2, 3))(cls.input_layer2)
         n5 = tl.layers.ZeroPad2d(padding=((3, 3), (4, 4)))(cls.input_layer2)
 
-        print(n0._info[0].layer)
-        print(n3._info[0].layer)
-        print(n4._info[0].layer)
-        print(n5._info[0].layer)
-
         cls.n0_shape = n0.get_shape().as_list()
-        print(cls.n0_shape)
         cls.n3_shape = n3.get_shape().as_list()
         cls.n4_shape = n4.get_shape().as_list()
         cls.n5_shape = n5.get_shape().as_list()
@@ -54,10 +44,6 @@ class Layer_Padding_Test(CustomTestCase):
         n6 = tl.layers.ZeroPad3d(padding=2)(cls.input_layer3)
         n7 = tl.layers.ZeroPad3d(padding=(2, 3, 4))(cls.input_layer3)
         n8 = tl.layers.ZeroPad3d(padding=((3, 3), (4, 4), (5, 5)))(cls.input_layer3)
-
-        print(n6._info[0].layer)
-        print(n7._info[0].layer)
-        print(n8._info[0].layer)
 
         cls.n6_shape = n6.get_shape().as_list()
         cls.n7_shape = n7.get_shape().as_list()

@@ -10,19 +10,19 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
 """
 
 from .base_dense import *
-# from .binary_dense import *
-# from .dorefa_dense import *
+from .binary_dense import *
+from .dorefa_dense import *
 from .dropconnect import *
 from .quan_dense import *
-# from .quan_dense_bn import *
-# from .ternary_dense import *
+from .quan_dense_bn import *
+from .ternary_dense import *
 
 __all__ = [
-    # 'BinaryDense',
+    'BinaryDense',
     'Dense',
-    # 'DorefaDense',
+    'DorefaDense',
     'DropconnectDense',
-    # 'TernaryDense',
+    'TernaryDense',
     'QuanDense',
-    # 'QuanDenseWithBN',
+    'QuanDenseWithBN',
 ]

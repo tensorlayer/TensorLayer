@@ -4,13 +4,12 @@
 import os
 import unittest
 
-import numpy as np
-import tensorflow as tf
-
-import tensorlayer as tl
-from tests.utils import CustomTestCase
-
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import numpy as np
+import tensorlayer as tl
+
+from tests.utils import CustomTestCase
 
 
 class Layer_Merge_Test(CustomTestCase):
@@ -25,12 +24,12 @@ class Layer_Merge_Test(CustomTestCase):
 
     def test_concat(self):
 
-        class CustomModel(tl.models.Model):
+        class CustomModel(tl.layers.Module):
 
             def __init__(self):
                 super(CustomModel, self).__init__()
-                self.dense1 = tl.layers.Dense(in_channels=20, n_units=10, act=tf.nn.relu, name='relu1_1')
-                self.dense2 = tl.layers.Dense(in_channels=20, n_units=10, act=tf.nn.relu, name='relu2_1')
+                self.dense1 = tl.layers.Dense(in_channels=20, n_units=10, act=tl.ReLU, name='relu1_1')
+                self.dense2 = tl.layers.Dense(in_channels=20, n_units=10, act=tl.ReLU, name='relu2_1')
                 self.concat = tl.layers.Concat(concat_dim=1, name='concat_layer')
 
             def forward(self, inputs):
@@ -40,8 +39,8 @@ class Layer_Merge_Test(CustomTestCase):
                 return outputs
 
         model = CustomModel()
-        model.train()
-        inputs = tf.convert_to_tensor(np.random.random([4, 20]).astype(np.float32))
+        model.set_train()
+        inputs = tl.ops.convert_to_tensor(np.random.random([4, 20]).astype(np.float32))
         outputs = model(inputs)
         print(model)
 
@@ -49,13 +48,13 @@ class Layer_Merge_Test(CustomTestCase):
 
     def test_elementwise(self):
 
-        class CustomModel(tl.models.Model):
+        class CustomModel(tl.layers.Module):
 
             def __init__(self):
                 super(CustomModel, self).__init__()
-                self.dense1 = tl.layers.Dense(in_channels=20, n_units=10, act=tf.nn.relu, name='relu1_1')
-                self.dense2 = tl.layers.Dense(in_channels=20, n_units=10, act=tf.nn.relu, name='relu2_1')
-                self.element = tl.layers.Elementwise(combine_fn=tf.minimum, name='minimum', act=tf.identity)
+                self.dense1 = tl.layers.Dense(in_channels=20, n_units=10, act=tl.ReLU, name='relu1_1')
+                self.dense2 = tl.layers.Dense(in_channels=20, n_units=10, act=tl.ReLU, name='relu2_1')
+                self.element = tl.layers.Elementwise(combine_fn=tl.minimum, name='minimum', act=None)
 
             def forward(self, inputs):
                 d1 = self.dense1(inputs)
@@ -64,12 +63,12 @@ class Layer_Merge_Test(CustomTestCase):
                 return outputs, d1, d2
 
         model = CustomModel()
-        model.train()
-        inputs = tf.convert_to_tensor(np.random.random([4, 20]).astype(np.float32))
+        model.set_train()
+        inputs = tl.ops.convert_to_tensor(np.random.random([4, 20]).astype(np.float32))
         outputs, d1, d2 = model(inputs)
         print(model)
 
-        min = tf.minimum(d1, d2)
+        min = tl.ops.minimum(d1, d2)
         self.assertEqual(outputs.get_shape().as_list(), [4, 10])
         self.assertTrue(np.array_equal(min.numpy(), outputs.numpy()))
 

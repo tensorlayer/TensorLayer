@@ -3,15 +3,15 @@
 import os
 import unittest
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import numpy as np
 import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer.layers import *
 from tensorlayer.models import *
-from tests.utils import CustomTestCase
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+from tests.utils import CustomTestCase
 
 
 def basic_static_model(include_top=True):
@@ -80,6 +80,7 @@ class Model_Save_Test(CustomTestCase):
 
         print([l.name for l in cls.dynamic_basic.all_layers])
         print([l.name for l in cls.dynamic_basic_skip.all_layers])
+        pass
 
     @classmethod
     def tearDownClass(cls):

@@ -3,14 +3,14 @@
 
 import os
 import unittest
-
 import numpy as np
-import tensorflow as tf
-
-import tensorlayer as tl
-from tests.utils import CustomTestCase
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import tensorflow as tf
+import tensorlayer as tl
+
+from tests.utils import CustomTestCase
 
 
 class Layer_Lambda_Test(CustomTestCase):
@@ -34,7 +34,7 @@ class Layer_Lambda_Test(CustomTestCase):
         # in order to get trainable_variables of keras
         _ = perceptron(np.random.random([100, 5]).astype(np.float32))
 
-        class CustomizeModel(tl.models.Model):
+        class CustomizeModel(tl.layers.Module):
 
             def __init__(self):
                 super(CustomizeModel, self).__init__()
@@ -51,7 +51,7 @@ class Layer_Lambda_Test(CustomTestCase):
         model = CustomizeModel()
         print(model.lambdalayer)
 
-        model.train()
+        model.set_train()
 
         for epoch in range(10):
             with tf.GradientTape() as tape:
@@ -73,7 +73,7 @@ class Layer_Lambda_Test(CustomTestCase):
             else:
                 return tf.identity(x)
 
-        class CustomizeModel(tl.models.Model):
+        class CustomizeModel(tl.layers.Module):
 
             def __init__(self):
                 super(CustomizeModel, self).__init__()
@@ -90,7 +90,7 @@ class Layer_Lambda_Test(CustomTestCase):
 
         model = CustomizeModel()
         print(model.lambdalayer)
-        model.train()
+        model.set_train()
 
         out, out2 = model(self.data_x, bar=-1)
         self.assertTrue(np.array_equal(out2.numpy(), tf.nn.relu(out).numpy()))
@@ -108,7 +108,7 @@ class Layer_Lambda_Test(CustomTestCase):
         def customize_fn(x):
             return x + a
 
-        class CustomizeModel(tl.models.Model):
+        class CustomizeModel(tl.layers.Module):
 
             def __init__(self):
                 super(CustomizeModel, self).__init__()
@@ -122,14 +122,14 @@ class Layer_Lambda_Test(CustomTestCase):
 
         model = CustomizeModel()
         print(model.lambdalayer)
-        model.train()
+        model.set_train()
 
         out = model(self.data_x)
         print(out.shape)
 
     def test_lambda_func_without_args(self):
 
-        class CustomizeModel(tl.models.Model):
+        class CustomizeModel(tl.layers.Module):
 
             def __init__(self):
                 super(CustomizeModel, self).__init__()
@@ -143,7 +143,7 @@ class Layer_Lambda_Test(CustomTestCase):
 
         model = CustomizeModel()
         print(model.lambdalayer)
-        model.train()
+        model.set_train()
 
         out, out2 = model(self.data_x)
         self.assertTrue(np.array_equal(out2.numpy(), out.numpy() * 2))
@@ -153,7 +153,7 @@ class Layer_Lambda_Test(CustomTestCase):
         def customize_func(noise, mean, std, foo=42):
             return mean + noise * tf.exp(std * 0.5) + foo
 
-        class CustomizeModel(tl.models.Model):
+        class CustomizeModel(tl.layers.Module):
 
             def __init__(self):
                 super(CustomizeModel, self).__init__()
@@ -174,7 +174,7 @@ class Layer_Lambda_Test(CustomTestCase):
 
         model = CustomizeModel()
         print(model.lambdalayer)
-        model.train()
+        model.set_train()
 
         noise, mean, std, out = model(self.data_x)
         self.assertTrue(np.allclose(out.numpy(), customize_func(noise, mean, std, foo=1024).numpy()))
@@ -186,7 +186,7 @@ class Layer_Lambda_Test(CustomTestCase):
         def customize_func(noise, mean, std):
             return mean + noise * tf.exp(std * 0.5)
 
-        class CustomizeModel(tl.models.Model):
+        class CustomizeModel(tl.layers.Module):
 
             def __init__(self):
                 super(CustomizeModel, self).__init__()
@@ -204,7 +204,7 @@ class Layer_Lambda_Test(CustomTestCase):
 
         model = CustomizeModel()
         print(model.lambdalayer)
-        model.train()
+        model.set_train()
 
         noise, mean, std, out = model(self.data_x)
         self.assertTrue(np.array_equal(out.numpy(), customize_func(noise, mean, std).numpy()))

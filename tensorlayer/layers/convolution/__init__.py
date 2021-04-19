@@ -10,7 +10,7 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
 """
 
 # from .binary_conv import *
-# from .deformable_conv import *
+from .deformable_conv import *
 from .depthwise_conv import *
 # from .dorefa_conv import *
 # from .expert_conv import *
@@ -55,7 +55,7 @@ __all__ = [
     # 'BinaryConv2d',
 
     # deformable
-    # 'DeformableConv2d',
+    'DeformableConv2d',
 
     # depthwise
     'DepthwiseConv2d',

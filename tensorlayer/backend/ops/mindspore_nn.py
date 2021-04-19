@@ -240,7 +240,7 @@ class LeakyReLU(Cell):
         return self.leakyrelu(x)
 
 
-def leaky_relu(x):
+def leaky_relu(x, alpha=0.2):
     """
     Compute the Leaky ReLU activation function.
 
@@ -255,7 +255,9 @@ def leaky_relu(x):
         The activation value.
     """
 
-    pass
+    leaky_relu = LeakyReLU(alpha=alpha)
+    output = leaky_relu(x)
+    return leaky_relu
 
 
 class Softplus(Cell):
@@ -282,7 +284,8 @@ def softplus(x):
         A Tensor. Has the same type as features.
     """
 
-    pass
+    obj = Softplus()
+    return obj(x)
 
 
 class Tanh(Cell):
@@ -309,7 +312,8 @@ def tanh(x):
         A Tensor. Has the same type as x.
     """
 
-    pass
+    _tanh = Tanh()
+    return _tanh(x)
 
 
 class Sigmoid(Cell):
@@ -476,7 +480,6 @@ class Conv1D(Cell):
 
         self.expand_dims = P.ExpandDims()
         self.squeeze = P.Squeeze(2)
-        self.shape = P.Shape()
 
     def construct(self, x, filters):
         if self.data_format == 'NWC':
@@ -488,6 +491,8 @@ class Conv1D(Cell):
         output = self.conv2d(x, filters)
         output = self.squeeze(output)
 
+        if self.data_format == 'NWC':
+            output = nchw_to_nhwc(output)
         return output
 
 

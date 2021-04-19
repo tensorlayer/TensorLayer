@@ -70,7 +70,6 @@ class Concat(Module):
         outputs = self.concat(inputs)
         return outputs
 
-
 class Elementwise(Module):
     """A layer that combines multiple :class:`Layer` that have the same output shapes
     according to an element-wise operation.
@@ -112,6 +111,7 @@ class Elementwise(Module):
 
         super(Elementwise, self).__init__(name, act=act)
         self.combine_fn = combine_fn
+        self.combine_fn_str = str(combine_fn).split(' ')[1]
 
         self.build(None)
         self._built = True
@@ -122,8 +122,8 @@ class Elementwise(Module):
         )
 
     def __repr__(self):
-        actstr = self.act.__name__ if self.act is not None else 'No Activation'
-        s = ('{classname}(combine_fn={combine_fn}, ' + actstr)
+        actstr = self.act.__class__.__name__ if self.act is not None else 'No Activation'
+        s = ('{classname}(combine_fn={combine_fn_str}, ' + actstr)
         if self.name is not None:
             s += ', name=\'{name}\''
         s += ')'
@@ -140,22 +140,3 @@ class Elementwise(Module):
         if self.act:
             outputs = self.act(outputs)
         return outputs
-
-
-# if __name__ == '__main__':
-#     from tensorlayer.layers import Dense, Input
-#     class CustomModel(Module):
-#         def __init__(self):
-#             super(CustomModel, self).__init__(name="custom")
-#             self.dense1 = Dense(in_channels=20, n_units=50, act=tl.ReLU, name='relu1_1')
-#             self.dense2 = Dense(in_channels=20, n_units=50, act=tl.ReLU, name='relu2_1')
-#             self.concat = Elementwise(combine_fn=tl.ops.minimum, name='minimum', act=tl.ReLU)
-#
-#         def forward(self, inputs):
-#             d1 = self.dense1(inputs)
-#             d2 = self.dense2(inputs)
-#             outputs = self.concat([d1, d2])
-#             return outputs
-#     input = Input(shape=[20, 20])
-#     net = CustomModel()
-#     print(net(input))

@@ -40,9 +40,9 @@ class DropconnectDense(Module):
     --------
     >>> net = tl.layers.Input([None, 784], name='input')
     >>> net = tl.layers.DropconnectDense(keep=0.8,
-    ...         n_units=800, act=tf.nn.relu, name='relu1')(net)
+    ...         n_units=800, act=tl.ReLU, name='relu1')(net)
     >>> net = tl.layers.DropconnectDense(keep=0.5,
-    ...         n_units=800, act=tf.nn.relu, name='relu2')(net)
+    ...         n_units=800, act=tl.ReLU, name='relu2')(net)
     >>> net = tl.layers.DropconnectDense(keep=0.5,
     ...         n_units=10, name='output')(net)
 
@@ -110,6 +110,12 @@ class DropconnectDense(Module):
         self.bias_add = tl.ops.BiasAdd()
 
     def forward(self, inputs):
+        if self._forward_state == False:
+            if self._built == False:
+                self.build(tl.get_tensor_shape(inputs))
+                self._built = True
+            self._forward_state = True
+
         W_dropcon = self.dropout(self.W)
         outputs = self.matmul(inputs, W_dropcon)
         if self.b_init:

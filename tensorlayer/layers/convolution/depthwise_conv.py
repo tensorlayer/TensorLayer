@@ -156,6 +156,12 @@ class DepthwiseConv2d(Module):
             self.act_init_flag = True
 
     def forward(self, inputs):
+        if self._forward_state == False:
+            if self._built == False:
+                self.build(tl.get_tensor_shape(inputs))
+                self._built = True
+            self._forward_state = True
+
         outputs = self.depthwise_conv2d(input=inputs, filter=self.W)
         if self.b_init_flag:
             outputs = self.bias_add(outputs, self.b)

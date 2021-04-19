@@ -4,9 +4,10 @@
 import sys
 import unittest
 
-from yapf.yapflib.yapf_api import FormatCode
+from tests.utils import list_all_py_files
+from tests.utils import CustomTestCase
 
-from tests.utils import CustomTestCase, list_all_py_files
+from yapf.yapflib.yapf_api import FormatCode
 
 
 def _read_utf_8_file(filename):

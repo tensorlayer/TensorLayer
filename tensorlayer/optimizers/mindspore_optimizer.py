@@ -31,13 +31,13 @@ class Adam(Cell):
 
     def __init__(
         self,
-        lr=0.001,
+        learning_rate=0.001,
         beta_1=0.9,
         beta_2=0.999,
         epsilon=1e-8,
     ):
         self.adam = optimizer.Adam
-        self.learn_rate = lr
+        self.learn_rate = learning_rate
         self.beta_1 = beta_1
         self.beta_2 = beta_2
         self.epsilon = epsilon
@@ -121,7 +121,7 @@ class Momentum(Cell):
         optimizer_mom(grads)
 
 
-class Lamb(object):
+class Lamb(Cell):
 
     def __init__(
         self, decay_steps, warmup_steps=0, start_learning_rate=0.1, end_learning_rate=0.0001, power=1.0, beta1=0.9,

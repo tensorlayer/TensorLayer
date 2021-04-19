@@ -80,6 +80,10 @@ from .load_backend import gather
 from .load_backend import linspace
 from .load_backend import slice
 from .load_backend import add_n
+from .load_backend import ceil
+from .load_backend import multiply
+from .load_backend import divide
+from .load_backend import identity
 
 # dtype
 from .load_backend import (DType, float16, float32, float64, int8, int16, int32, int64, uint8, uint16, uint32, uint64)
@@ -113,4 +117,8 @@ from .load_backend import Stack
 from .load_backend import Unstack
 from .load_backend import Sign
 from .load_backend import Resize
+from .load_backend import Pad
+from .load_backend import Minimum
+from .load_backend import Maximum
+from .load_backend import Meshgrid
 

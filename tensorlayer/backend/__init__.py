@@ -3,3 +3,4 @@
 
 # load ops
 from .ops import *
+from tensorlayer.backend import ops

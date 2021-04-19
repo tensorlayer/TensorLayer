@@ -4,12 +4,12 @@
 import os
 import unittest
 
-import tensorflow as tf
-
-import tensorlayer as tl
-from tests.utils import CustomTestCase
-
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import tensorflow as tf
+import tensorlayer as tl
+
+from tests.utils import CustomTestCase
 
 
 class VGG_Model_Test(CustomTestCase):
@@ -26,7 +26,7 @@ class VGG_Model_Test(CustomTestCase):
             # sess = tf.InteractiveSession()
             # vgg.restore_params(sess)
             # use for inferencing
-            # probs = tf.nn.softmax(vgg1.outputs)
+            # probs = tf.ops.softmax(vgg1.outputs)
 
             cls.vgg1_layers = vgg1.all_layers
             cls.vgg1_params = vgg1.all_params

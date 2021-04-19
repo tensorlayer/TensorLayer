@@ -96,15 +96,16 @@ class BatchNorm(Module):
 
         self.axes = None
 
-        if self.num_features is None:
-            raise AttributeError(
-                "The registered layer `{}` should be built in advance. "
-                "Do you forget to pass the keyword argument 'num_feature'? "
-            )
+        # if self.num_features is None:
+        #     raise AttributeError(
+        #         "The registered layer `{}` should be built in advance. "
+        #         "Do you forget to pass the keyword argument 'num_feature'? "
+        #     )
 
         if self.num_features:
             self.build(None)
             self._built = True
+
 
         if self.decay < 0.0 or 1.0 < self.decay:
             raise ValueError("decay should be between 0 to 1")
@@ -170,6 +171,18 @@ class BatchNorm(Module):
             self.act_init_flag = True
 
     def forward(self, inputs):
+        if self._forward_state == False:
+            if self._built == False:
+                self.build(tl.get_tensor_shape(inputs))
+                self._built = True
+            self._forward_state = True
+
+        if not self.is_train:
+            self.batchnorm = tl.ops.BatchNorm(
+                decay=self.decay, epsilon=self.epsilon, beta=self.beta, gamma=self.gamma, moving_mean=self.moving_mean,
+                moving_var=self.moving_var, num_features=self.num_features, data_format=self.data_format,
+                is_train=False
+            )
         outputs = self.batchnorm(inputs=inputs)
         if self.act_init_flag:
             outputs = self.act(outputs)

@@ -47,7 +47,7 @@ class PadLayer(Module):
         self.padding = padding
         self.mode = mode
 
-        logging.info("PadLayer   %s: padding: %s mode: %s" % (self.name, list(self.padding), self.mode))
+        logging.info("PadLayer   %s: padding: %s mode: %s" % (self.name, self.padding, self.mode))
 
         if self.padding is None:
             raise Exception(
@@ -65,10 +65,10 @@ class PadLayer(Module):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        pass
+        self.pad = tl.ops.Pad(paddings=self.padding, mode=self.mode)
 
     def forward(self, inputs):
-        outputs = tl.ops.pad(tensor=inputs, paddings=self.padding, mode=self.mode)
+        outputs = self.pad(inputs)
         return outputs
 
 
@@ -131,7 +131,7 @@ class ZeroPad2d(Module):
 
     Parameters
     ----------
-    padding : int, or tuple of 2 ints, or tuple of 2 tuples of 2 ints.
+    padding : tuple of 2 ints or int, or tuple of 2 tuples of 2 ints.
             - If int, the same symmetric padding is applied to width and height.
             - If tuple of 2 ints, interpreted as two different symmetric padding values for height and width as ``(symmetric_height_pad, symmetric_width_pad)``.
             - If tuple of 2 tuples of 2 ints, interpreted as ``((top_pad, bottom_pad), (left_pad, right_pad))``.
