@@ -1,13 +1,13 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-from .common import str2act
+from .common import str2act, _save_weights, _load_weights
 from mindspore.nn import Cell
-import os
 import tensorlayer as tl
-from tensorlayer.files import utils
 from tensorlayer.layers.utils import (get_variable_with_initializer)
-from tensorlayer import logging
+from collections import OrderedDict
+
+__all__ = ['Module', 'SequentialLayer', 'LayerList']
 
 _global_layer_name_dict = {}  # TODO: better implementation?
 
@@ -39,16 +39,22 @@ class Module(Cell):
                 _global_layer_name_dict[name] = 0
 
         self.name = name
+
         if isinstance(act, str):
-            self.act = str2act(act)
-        else:
-            if act:
-                self.act = act()
+            str_act = str2act(act)
+
+        if act:
+            if isinstance(act, str) and (len(act) > 5 and act[0:5] == "lrelu" or len(act) > 10 and act[0:10] == "leaky_relu"):
+                self.act = str_act
+            elif isinstance(act, str):
+                self.act = str_act()
             else:
-                self.act = act
+                self.act = act()
+        else:
+            self.act = act
 
         # Layer building state
-        self._built = False
+        # self._built = False
 
         # Layer nodes state
         self._nodes = []
@@ -80,140 +86,12 @@ class Module(Cell):
         return weight
 
     def save_weights(self, file_path, format=None):
-        """Input file_path, save model weights into a file of given format.
-                    Use self.load_weights() to restore.
-
-                Parameters
-                ----------
-                file_path : str
-                    Filename to which the model weights will be saved.
-                format : str or None
-                    Saved file format.
-                    Value should be None, 'hdf5', 'npz', 'npz_dict' or 'ckpt'. Other format is not supported now.
-                    1) If this is set to None, then the postfix of file_path will be used to decide saved format.
-                    If the postfix is not in ['h5', 'hdf5', 'npz', 'ckpt'], then file will be saved in hdf5 format by default.
-                    2) 'hdf5' will save model weights name in a list and each layer has its weights stored in a group of
-                    the hdf5 file.
-                    3) 'npz' will save model weights sequentially into a npz file.
-                    4) 'npz_dict' will save model weights along with its name as a dict into a npz file.
-                    5) 'ckpt' will save model weights into a tensorflow ckpt file.
-
-                    Default None.
-
-                Examples
-                --------
-                1) Save model weights in hdf5 format by default.
-                >>> net = vgg16()
-                >>> net.save_weights('./model.h5')
-                ...
-                >>> net.load_weights('./model.h5')
-
-                2) Save model weights in npz/npz_dict format
-                >>> net = vgg16()
-                >>> net.save_weights('./model.npz')
-                >>> net.save_weights('./model.npz', format='npz_dict')
-
-                """
-
-        # self.all_weights = self.network.all_weights
-        if self.all_weights is None or len(self.all_weights) == 0:
-            logging.warning("Model contains no weights or layers haven't been built, nothing will be saved")
-            return
-
-        if format is None:
-            postfix = file_path.split('.')[-1]
-            if postfix in ['h5', 'hdf5', 'npz', 'ckpt']:
-                format = postfix
-            else:
-                format = 'hdf5'
-
-        if format == 'hdf5' or format == 'h5':
-            utils.save_weights_to_hdf5(file_path, self)
-        elif format == 'npz':
-            utils.save_npz(self.all_weights, file_path)
-        elif format == 'npz_dict':
-            utils.save_npz_dict(self.all_weights, file_path)
-        elif format == 'ckpt':
-            # TODO: enable this when tf save ckpt is enabled
-            raise NotImplementedError("ckpt load/save is not supported now.")
-        else:
-            raise ValueError(
-                "Save format must be 'hdf5', 'npz', 'npz_dict' or 'ckpt'."
-                "Other format is not supported now."
-            )
+        """Input file_path, save model weights into a file of given format."""
+        _save_weights(self, file_path, format)
 
     def load_weights(self, file_path, format=None, in_order=True, skip=False):
-        """Load model weights from a given file, which should be previously saved by self.save_weights().
-
-        Parameters
-        ----------
-        file_path : str
-            Filename from which the model weights will be loaded.
-        format : str or None
-            If not specified (None), the postfix of the file_path will be used to decide its format. If specified,
-            value should be 'hdf5', 'npz', 'npz_dict' or 'ckpt'. Other format is not supported now.
-            In addition, it should be the same format when you saved the file using self.save_weights().
-            Default is None.
-        in_order : bool
-            Allow loading weights into model in a sequential way or by name. Only useful when 'format' is 'hdf5'.
-            If 'in_order' is True, weights from the file will be loaded into model in a sequential way.
-            If 'in_order' is False, weights from the file will be loaded into model by matching the name
-            with the weights of the model, particularly useful when trying to restore model in eager(graph) mode from
-            a weights file which is saved in graph(eager) mode.
-            Default is True.
-        skip : bool
-            Allow skipping weights whose name is mismatched between the file and model. Only useful when 'format' is
-            'hdf5' or 'npz_dict'. If 'skip' is True, 'in_order' argument will be ignored and those loaded weights
-            whose name is not found in model weights (self.all_weights) will be skipped. If 'skip' is False, error will
-            occur when mismatch is found.
-            Default is False.
-
-        Examples
-        --------
-        1) load model from a hdf5 file.
-        >>> net = vgg16()
-        >>> net.load_weights('./model_graph.h5', in_order=False, skip=True) # load weights by name, skipping mismatch
-        >>> net.load_weights('./model_eager.h5') # load sequentially
-
-        2) load model from a npz file
-        >>> net.load_weights('./model.npz')
-
-        2) load model from a npz file, which is saved as npz_dict previously
-        >>> net.load_weights('./model.npz', format='npz_dict')
-
-        Notes
-        -------
-        1) 'in_order' is only useful when 'format' is 'hdf5'. If you are trying to load a weights file which is
-           saved in a different mode, it is recommended to set 'in_order' be True.
-        2) 'skip' is useful when 'format' is 'hdf5' or 'npz_dict'. If 'skip' is True,
-           'in_order' argument will be ignored.
-
-        """
-        if not os.path.exists(file_path):
-            raise FileNotFoundError("file {} doesn't exist.".format(file_path))
-
-        if format is None:
-            format = file_path.split('.')[-1]
-
-        if format == 'hdf5' or format == 'h5':
-            if skip ==True or in_order == False:
-                # load by weights name
-                utils.load_hdf5_to_weights(file_path, self, skip)
-            else:
-                # load in order
-                utils.load_hdf5_to_weights_in_order(file_path, self)
-        elif format == 'npz':
-            utils.load_and_assign_npz(file_path, self)
-        elif format == 'npz_dict':
-            utils.load_and_assign_npz_dict(file_path, self, skip)
-        elif format == 'ckpt':
-            # TODO: enable this when tf save ckpt is enabled
-            raise NotImplementedError("ckpt load/save is not supported now.")
-        else:
-            raise ValueError(
-                "File format must be 'hdf5', 'npz', 'npz_dict' or 'ckpt'. "
-                "Other format is not supported now."
-            )
+        """Load model weights from a given file, which should be previously saved by self.save_weights()."""
+        _load_weights(self, file_path, format, in_order, skip)
 
     @staticmethod
     def _compute_shape(tensors):
@@ -252,7 +130,7 @@ class Module(Cell):
         self.add_flags_recursive(training=True)
         return self
 
-    def eval(self):
+    def set_eval(self):
         """Set this network in evaluation mode. After calling this method,
         all layers in network are in evaluation mode, in particular, BatchNorm, Dropout, etc.
 
@@ -268,6 +146,14 @@ class Module(Cell):
         self.add_flags_recursive(training=False)
         return self
 
+    def test(self):
+        """Set this network in evaluation mode."""
+        self.eval()
+
+    def infer(self):
+        """Set this network in evaluation mode."""
+        self.eval()
+
     @property
     def trainable_weights(self):
         """
@@ -281,7 +167,8 @@ class Module(Cell):
         Returns:
             List, the list of trainable weights.
         """
-        return list(filter(lambda x: x.requires_grad, self.get_parameters(expand=True)))
+        self._trainable_weights = list(filter(lambda x: x.requires_grad, self.get_parameters(expand=True)))
+        return self._trainable_weights
 
     @property
     def nontrainable_weights(self):
@@ -304,76 +191,161 @@ class Module(Cell):
                + list(filter(lambda x: not x.requires_grad, self.get_parameters(expand=True)))
 
 
-class LayerNode(object):
+class SequentialLayer(Module):
     """
-    The class :class:`LayerNode` class represents a conceptional node for a layer.
+    Sequential layer container.
 
-    LayerNode is used for building static model and it is actually a light weighted
-    wrapper over Layer. Specifically, it is used for building static computational graph
-    (see _construct_graph() in tl.models.Model). In static model, each layer relates to
-    one or more LayerNode, and the connection relationship between layers is built upon
-    LayerNode. In addition, LayerNode eases layer reuse and weights sharing.
+    A list of Layers will be added to it in the order they are passed in the constructor.
+    Alternatively, an ordered dict of layers can also be passed in.
+
+    Args:
+        args (list, OrderedDict): List of subclass of Module.
+
+    Raises:
+        TypeError: If the type of the argument is not list or OrderedDict.
+
+    Inputs:
+        - **input** (Tensor) - Tensor with shape according to the first Module in the sequence.
+
+    Outputs:
+        Tensor, the output Tensor with shape depending on the input and defined sequence of Layers.
+
+    Examples:
+        >>> conv = tl.layers.Conv2d(3, 2, 3, pad_mode='valid')
+        >>> bn = tl.layers.BatchNorm2d(2)
+        >>> relu = tl.ReLU()
+        >>> seq = tl.layers.SequentialLayer([conv, bn, relu])
+        >>>
+        >>> x = tl.layers.Input((1, 3, 4, 4))
+        >>> seq(x)
+    """
+    def __init__(self, *args):
+        super(SequentialLayer, self).__init__()
+        # self._built = True
+        if len(args) == 1:
+            layers = args[0]
+            if isinstance(layers, list):
+                for index, layer in enumerate(layers):
+                    self.insert_child_to_layer(str(index), layer)
+            elif isinstance(layers, OrderedDict):
+                for name, layer in layers.items():
+                    self.insert_child_to_layer(name, layer)
+            else:
+                raise TypeError('Layers must be list or orderedDict')
+        else:
+            for index, layer in enumerate(args):
+                self.insert_child_to_layer(str(index), layer)
+        self.layer_list = list(self._layers.values())
+
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            return self.__class__(
+                OrderedDict(list(self._layers.items())[index]))
+        index = self._valid_index(len(self), index)
+        return list(self._layers.values())[index]
+
+    def __setitem__(self, index, layer):
+        if self._valid_module(layer):
+            index = self._valid_index(len(self), index)
+            key = list(self._layers.keys())[index]
+            self._layers[key] = layer
+            self.layer_list = list(self._layers.values())
+
+    def __delitem__(self, index):
+        if isinstance(index, int):
+            index = self._valid_index(len(self), index)
+            key = list(self._layers.keys())[index]
+            del self._layers[key]
+        elif isinstance(index, slice):
+            keys = list(self._layers.keys())[index]
+            for key in keys:
+                del self._layers[key]
+        else:
+            raise TypeError('Index {} is not int type or slice type'.format(index))
+        self.layer_list = list(self._layers.values())
+
+    def __len__(self):
+        return len(self._layers)
+
+    def set_grad(self, flag=True):
+        self.requires_grad = flag
+        for layer in self._layers.values():
+            layer.set_grad(flag)
+
+    def append(self, layer):
+        if self._valid_module(layer):
+            self._layers[str(len(self))] = layer
+        self.layer_list = list(self._layers.values())
+        return self
+
+    def build(self, inputs_shape):
+        pass
+
+    def forward(self, input_data):
+        for layer in self.layer_list:
+            input_data = layer(input_data)
+        return input_data
+
+    def _valid_index(self, layer_num, index):
+        if not isinstance(index, int):
+            raise TypeError("Index {} is not int type")
+        if not -layer_num <= index < layer_num:
+            raise IndexError("Index should be a number in range [{}, {}), but got {}"
+                             .format(-layer_num, layer_num, index))
+        return index % layer_num
+
+    def _valid_module(self, layer):
+        if issubclass(layer.__class__, Module):
+            return True
+        raise TypeError('Module {} is not subclass of Module'.format(layer))
+
+
+class LayerList(Module):
+    """
+    The class :class:`LayerList` is a linear stack of layers.
+
+    The :class:`LayerList` can be created by passing a list of layer instances.
+    The given layer instances will be automatically connected one by one.
 
     Parameters
     ----------
-    layer : tl.layers.Layer
-        A tl layer that wants to create a node.
-    node_index : int
-        Index of this node in layer._nodes.
-    in_nodes ：a list of LayerNode
-        Father nodes to this node.
-    in_tensors : a list of tensors
-        Input tensors to this node.
-    out_tensors : a list of tensors
-        Output tensors to this node.
-    in_tensor_idxes : a list of int
-        Indexes of each input tensor in its corresponding node's out_tensors.
+    layers: list of Layer
+        A list of layers.
+    name : str or None
+        A unique layer name. If None, a unique name will be automatically assigned.
 
     Methods
     ---------
     __init__()
-        Initializing the LayerNode.
-    __call__()
-        (1) Forwarding through the layer. (2) Update its input/output tensors.
+        Initializing the LayerList.
+    weights()
+        A collection of weights of all the layer instances.
+    build()
+        Build the LayerList. The layer instances will be connected automatically one by one.
+    forward()
+        Forward the computation. The computation will go through all layer instances.
     """
 
-    def __init__(self, layer, node_index, in_nodes, in_tensors, out_tensors, in_tensor_idxes):
+    def __init__(self, layers, name=None):
+        """
+        Initializing the LayerList given a list of Layer.
+
+        :param layers: list of Layer
+        :param name: str or None
         """
 
-        Parameters
-        ----------
-        layer
-        node_index
-        in_nodes
-        in_tensors
-        out_tensors
-        in_tensor_idxes
-        """
-        self.layer = layer
-        self.node_index = node_index
-        self.in_nodes = in_nodes
-        self.out_nodes = []
-        self.in_tensors = in_tensors
-        self.out_tensors = out_tensors
-        self.name = layer.name + "_node_{}".format(node_index)
+        super(LayerList, self).__init__(name=name)
+        pass
 
-        self.in_tensors_idxes = in_tensor_idxes
+    def __getitem__(self, idx):
+        pass
 
-        self.visited = False
+    def __len__(self):
+        return len(self.layers)
 
-    def __call__(self, inputs, **kwargs):
-        """(1) Forwarding through the layer. (2) Update its input/output tensors."""
-        outputs = self.layer.forward(inputs, **kwargs)
-        self.in_tensors = tolist(inputs)
-        self.out_tensors = tolist(outputs)
-        return self.out_tensors
+    def __repr__(self):
+        pass
 
+    def forward(self, inputs):
+        pass
 
-def tolist(tensors):
-    if isinstance(tensors, list) or isinstance(tensors, tuple):
-        ntensors = list()
-        for t in tensors:
-            ntensors += tolist(t)
-        return ntensors
-    else:
-        return [tensors]

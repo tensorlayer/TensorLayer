@@ -4,27 +4,25 @@
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.layers.core import Module
-from tensorlayer.layers.utils import (quantize_active_overflow, quantize_weight_overflow)
+from tensorlayer.layers.utils import compute_alpha, ternary_operation
 
 __all__ = [
-    'QuanDense',
+    'TernaryDense',
 ]
 
 
-class QuanDense(Module):
-    """The :class:`QuanDense` class is a quantized fully connected layer with BN, which weights are 'bitW' bits and the output of the previous layer
-    are 'bitA' bits while inferencing.
+class TernaryDense(Module):
+    """The :class:`TernaryDense` class is a ternary fully connected layer, which weights are either -1 or 1 or 0 while inference.
+    # TODO The TernaryDense only supports TensorFlow backend.
+
+    Note that, the bias vector would not be tenaried.
 
     Parameters
     ----------
     n_units : int
         The number of units of this layer.
     act : activation function
-        The activation function of this layer.
-    bitW : int
-        The bits of this layer's parameter
-    bitA : int
-        The bits of the output of previous layer
+        The activation function of this layer, usually set to ``tf.act.sign`` or apply :class:`SignLayer` after :class:`BatchNormLayer`.
     use_gemm : boolean
         If True, use gemm instead of ``tf.matmul`` for inference. (TODO).
     W_init : initializer
@@ -43,18 +41,14 @@ class QuanDense(Module):
         self,
         n_units=100,
         act=None,
-        bitW=8,
-        bitA=8,
         use_gemm=False,
         W_init=tl.initializers.truncated_normal(stddev=0.05),
         b_init=tl.initializers.constant(value=0.0),
         in_channels=None,
-        name=None,  #'quan_dense',
+        name=None,  #'ternary_dense',
     ):
         super().__init__(name, act=act)
         self.n_units = n_units
-        self.bitW = bitW
-        self.bitA = bitA
         self.use_gemm = use_gemm
         self.W_init = W_init
         self.b_init = b_init
@@ -65,14 +59,13 @@ class QuanDense(Module):
             self._built = True
 
         logging.info(
-            "QuanDense  %s: %d %s" %
+            "TernaryDense  %s: %d %s" %
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
     def __repr__(self):
         actstr = self.act.__name__ if self.act is not None else 'No Activation'
         s = ('{classname}(n_units={n_units}, ' + actstr)
-        s += ', bitW={bitW}, bitA={bitA}'
         if self.in_channels is not None:
             s += ', in_channels=\'{in_channels}\''
         if self.name is not None:
@@ -91,12 +84,10 @@ class QuanDense(Module):
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         n_in = inputs_shape[-1]
-        self.W = self._get_weights("weights", shape=(n_in, self.n_units), init=self.W_init)
-        if self.b_init is not None:
-            self.b = self._get_weights("biases", shape=int(self.n_units), init=self.b_init)
-            self.bias_add = tl.ops.BiasAdd()
 
-        self.matmul = tl.ops.MatMul()
+        self.W = self._get_weights(var_name="weights", shape=(n_in, self.n_units), init=self.W_init)
+        if self.b_init is not None:
+            self.b = self._get_weights(var_name="biases", shape=(self.n_units), init=self.b_init)
 
     def forward(self, inputs):
         if self._forward_state == False:
@@ -105,15 +96,14 @@ class QuanDense(Module):
                 self._built = True
             self._forward_state = True
 
-        inputs = quantize_active_overflow(inputs, self.bitA)
+        alpha = compute_alpha(self.W)
+        W_ = ternary_operation(self.W)
+        W_ = tl.ops.multiply(alpha, W_)
 
-        W_ = quantize_weight_overflow(self.W, self.bitW)
-
-        # outputs = tf.matmul(inputs, self.W)
-        outputs = self.matmul(inputs, W_)  # hao dong change to this
+        outputs = tl.ops.matmul(inputs, W_)
 
         if self.b_init is not None:
-            outputs = self.bias_add(outputs, self.b)
+            outputs = tl.ops.bias_add(outputs, self.b, name='bias_add')
         if self.act:
             outputs = self.act(outputs)
         return outputs

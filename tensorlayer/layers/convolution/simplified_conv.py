@@ -138,15 +138,20 @@ class Conv1d(Module):
 
         self.act_init_flag = False
         if self.act:
-            self.activate = self.act
             self.act_init_flag = True
 
     def forward(self, inputs):
+        if self._forward_state == False:
+            if self._built == False:
+                self.build(tl.get_tensor_shape(inputs))
+                self._built = True
+            self._forward_state = True
+
         outputs = self.conv1d(inputs, self.W)
         if self.b_init_flag:
             outputs = tl.ops.bias_add(outputs, self.b, data_format=self.data_format)
         if self.act_init_flag:
-            outputs = self.activate(outputs)
+            outputs = self.act(outputs)
         if tl.BACKEND == 'mindspore' and self.data_format == 'NWC':
             outputs = tl.nchw_to_nhwc(outputs)
 
@@ -282,6 +287,12 @@ class Conv2d(Module):
             self.act_init_flag = True
 
     def forward(self, inputs):
+        if self._forward_state == False:
+            if self._built == False:
+                self.build(tl.get_tensor_shape(inputs))
+                self._built = True
+            self._forward_state = True
+
         outputs = self.conv2d(inputs, self.W)
         if self.b_init_flag:
             outputs = self.bias_add(outputs, self.b)
@@ -423,15 +434,20 @@ RuntimeError: Unable to cast from non-held to held instance (T& to Holder<T>) of
 
         self.act_init_flag = False
         if self.act:
-            self.activate = self.act()
             self.act_init_flag = True
 
     def forward(self, inputs):
+        if self._forward_state == False:
+            if self._built == False:
+                self.build(tl.get_tensor_shape(inputs))
+                self._built = True
+            self._forward_state = True
+
         outputs = self.conv3d(inputs, self.W)
         if self.b_init_flag:
             outputs = tl.ops.bias_add(outputs, self.b, data_format=self.data_format)
         if self.act_init_flag:
-            outputs = self.activate(outputs)
+            outputs = self.act(outputs)
         return outputs
 
 
@@ -564,15 +580,20 @@ class DeConv1d(Module):
 
         self.act_init_flag = False
         if self.act:
-            self.activate = self.act
             self.act_init_flag = True
 
     def forward(self, inputs):
+        if self._forward_state == False:
+            if self._built == False:
+                self.build(tl.get_tensor_shape(inputs))
+                self._built = True
+            self._forward_state = True
+
         outputs = self.conv1d_transpose(inputs, self.W)
         if self.b_init_flag:
             outputs = self.bias_add(outputs, self.b)
         if self.act_init_flag:
-            outputs = self.activate(outputs)
+            outputs = self.act(outputs)
         if tl.BACKEND == 'mindspore' and self.data_format == 'NWC':
             outputs = tl.nchw_to_nhwc(outputs)
         return outputs
@@ -710,6 +731,12 @@ class DeConv2d(Module):
             self.act_init_flag = True
 
     def forward(self, inputs):
+        if self._forward_state == False:
+            if self._built == False:
+                self.build(tl.get_tensor_shape(inputs))
+                self._built = True
+            self._forward_state = True
+
         outputs = self.conv2d_transpose(inputs, self.W)
         if self.b_init_flag:
             outputs = self.bias_add(outputs, self.b)
@@ -726,7 +753,7 @@ class DeConv3d(Module):
     Parameters
     ---AppData\Local\Continuum\anaconda3\envs\ms_tf\lib\site-packages\mindspore\common\api.py", line 412, in compile
     result = self._executor.compile(obj, args_list, phase, use_vm)
-RuntimeError: Unable to cast from non-held to held instance (T& to Holder<T>) of type 'std:-------
+    RuntimeError: Unable to cast from non-held to held instance (T& to Holder<T>) of type 'std:-------
     n_filter : int
         The number of filters.
     filter_size : tuple of int
@@ -855,15 +882,20 @@ RuntimeError: Unable to cast from non-held to held instance (T& to Holder<T>) of
 
         self.act_init_flag = False
         if self.act:
-            self.activate = self.act()
             self.act_init_flag = True
 
     def forward(self, inputs):
+        if self._forward_state == False:
+            if self._built == False:
+                self.build(tl.get_tensor_shape(inputs))
+                self._built = True
+            self._forward_state = True
+
         outputs = self.conv3d_transpose(inputs, self.W)
         if self.b_init_flag:
             outputs = self.bias_add(outputs, self.b)
         if self.act_init_flag:
-            outputs = self.activate(outputs)
+            outputs = self.act(outputs)
         if tl.BACKEND == 'mindspore' and self.data_format == 'NDHWC':
             outputs = tl.nchw_to_nhwc(outputs)
         return outputs

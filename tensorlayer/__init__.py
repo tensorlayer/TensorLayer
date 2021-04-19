@@ -36,7 +36,6 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
             " - `pip install --upgrade tensorflow-gpu`"
         )
 
-    from tensorlayer import activation
     from tensorlayer import array_ops
     from tensorlayer import cost
     from tensorlayer import decorators
@@ -63,7 +62,6 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     visualize = LazyImport("tensorlayer.visualize")
 
     # alias
-    act = activation
     vis = visualize
 
     alphas = array_ops.alphas

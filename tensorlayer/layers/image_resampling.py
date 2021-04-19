@@ -43,7 +43,7 @@ class UpSampling2d(Module):
 
     """
 
-    def __init__(self, scale, method='bilinear', antialias=False, data_format='channel_last', name=None, ksize=None):
+    def __init__(self, scale, method='bilinear', antialias=False, data_format='channels_last', name=None, ksize=None):
         super(UpSampling2d, self).__init__(name)
         self.method = method
         self.antialias = antialias
@@ -85,13 +85,6 @@ class UpSampling2d(Module):
         outputs = self.resize(inputs)
         return outputs
 
-
-if __name__ == '__main__':
-    ni = tl.layers.Input([10, 32, 50, 50], name='input')
-    y = UpSampling2d(scale=(2, 2), data_format='channels_first', ksize=(50, 50))(ni)
-    print(y)
-
-
 class DownSampling2d(Module):
     """The :class:`DownSampling2d` class is down-sampling 2D layer.
 
@@ -129,25 +122,26 @@ class DownSampling2d(Module):
         scale,
         method='bilinear',
         antialias=False,
-        data_format='channel_last',
+        data_format='channels_last',
         name=None,
+        ksize=None
     ):
         super(DownSampling2d, self).__init__(name)
         self.method = method
         self.antialias = antialias
         self.data_format = data_format
-
+        self.ksize = ksize
         logging.info(
             "DownSampling2d %s: scale: %s method: %s antialias: %s" % (self.name, scale, self.method, self.antialias)
         )
-
-        self.build(None)
-        self._built = True
 
         if isinstance(scale, (list, tuple)) and len(scale) != 2:
             raise ValueError("scale must be int or tuple/list of length 2")
 
         self.scale = (scale, scale) if isinstance(scale, int) else scale
+
+        self.build(None)
+        self._built = True
 
     def __repr__(self):
         s = '{classname}(scale={scale}, method={method}'
@@ -157,8 +151,11 @@ class DownSampling2d(Module):
         return s.format(classname=self.__class__.__name__, scale=self.scale, method=self.method, name=self.name)
 
     def build(self, inputs_shape):
-        if self.data_format != 'channel_last':
-            raise Exception("DownSampling2d tf.image.resize_images only support channel_last")
+        scale = [1.0 / self.scale[0], 1.0 / self.scale[1]]
+        self.resize = tl.ops.Resize(
+            scale=scale, method=self.method, antialias=self.antialias, data_format=self.data_format,
+            ksize=self.ksize
+        )
 
     def forward(self, inputs):
         """
@@ -168,6 +165,6 @@ class DownSampling2d(Module):
         inputs : :class:`Tensor`
             Inputs tensors with 4-D Tensor of the shape (batch, height, width, channels)
         """
-        output_size = [int(inputs.shape[1] * 1.0 / self.scale[0]), int(inputs.shape[2] * 1.0 / self.scale[1])]
-        outputs = tl.ops.resize(inputs, output_size=output_size, method=self.method, antialias=self.antialias)
+
+        outputs = self.resize(inputs)
         return outputs

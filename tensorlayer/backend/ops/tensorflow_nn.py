@@ -232,7 +232,7 @@ class LeakyReLU(object):
         return tf.nn.leaky_relu(x, alpha=self.alpha)
 
 
-def leaky_relu(x):
+def leaky_relu(x, alpha=0.2):
     """
     Compute the Leaky ReLU activation function.
 
@@ -247,7 +247,7 @@ def leaky_relu(x):
         The activation value.
     """
 
-    return tf.nn.leaky_relu(x)
+    return tf.nn.leaky_relu(x, alpha=alpha)
 
 
 class Softplus(object):
@@ -636,7 +636,7 @@ def moments(x, axes, shift=None, keepdims=False):
     ----------
     x : tensor
         A Tensor
-    axes : ints
+    axes : list or ints
         Axes along which to compute mean and variance.
     shift : int
         Not used in the current implementation.

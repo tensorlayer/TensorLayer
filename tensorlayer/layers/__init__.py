@@ -11,7 +11,7 @@ from .embedding import *
 from .extend import *
 from .image_resampling import *
 from .inputs import *
-# from .lambda_layers import *
+from .lambda_layers import *
 from .merge import *
 from .noise import *
 from .normalization import *

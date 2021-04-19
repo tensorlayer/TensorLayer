@@ -21,6 +21,7 @@ from skimage.morphology import binary_dilation as _binary_dilation
 from skimage.morphology import binary_erosion as _binary_erosion
 from skimage.morphology import disk
 from skimage.morphology import erosion as _erosion
+from skimage.transform import resize
 
 import tensorlayer as tl
 from tensorlayer.lazy_imports import LazyImport
@@ -1840,11 +1841,13 @@ def imresize(x, size=None, interp='bicubic', mode=None):
 
     if x.shape[-1] == 1:
         # greyscale
-        x = scipy.misc.imresize(x[:, :, 0], size, interp=interp, mode=mode)
+        # x = scipy.misc.imresize(x[:, :, 0], size, interp=interp, mode=mode)
+        x = resize(x[:, :, 0], size)
         return x[:, :, np.newaxis]
     else:
         # rgb, bgr, rgba
-        return scipy.misc.imresize(x, size, interp=interp, mode=mode)
+        return resize(x, output_shape=size)
+        # return scipy.misc.imresize(x, size, interp=interp, mode=mode)
 
 
 # value scale

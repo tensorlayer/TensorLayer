@@ -253,7 +253,9 @@ class Word2vecEmbedding(Module):
             )
 
         self.embedding_lookup = tl.EmbeddingLookup()
-        self.nce_loss = tl.NCELoss(**self.nce_loss_args)
+
+        if self.activate_nce_loss:
+            self.nce_loss = tl.NCELoss(**self.nce_loss_args)
 
     def forward(self, inputs, use_nce_loss=None):
         """
@@ -504,25 +506,12 @@ class AverageEmbedding(Module):
         # Count number of non-padding words in each sentence
         sentence_lengths = self.count_nonzero(masks, axis=1)
 
-        sentence_embeddings = tf.divide(
+        sentence_embeddings = tl.ops.divide(
             sum_word_embeddings,
             sentence_lengths + 1e-8,  # Add epsilon to avoid dividing by 0
-            name='sentence_embeddings'
         )
 
         outputs = sentence_embeddings
 
         return outputs
 
-
-if __name__ == '__main__':
-    import tensorflow as tf
-    import tensorlayer as tl
-    batch_size = 8
-    length = 5
-    input = tl.layers.Input([batch_size, length], dtype=tl.int32)
-    avgembed = AverageEmbedding(vocabulary_size=1000, embedding_size=50, name='avg')
-    print(avgembed)
-    AverageEmbedding(vocabulary_size=1000, embedding_size=50, pad_value=0)
-    tensor = avgembed(input)
-    print(tensor)

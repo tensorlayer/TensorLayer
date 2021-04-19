@@ -427,3 +427,14 @@ def _compute_threshold(x):
     threshold = tf.math.divide(x_sum, tf.cast(tf.size(input=x), tf.float32), name=None)
     threshold = tf.multiply(0.7, threshold, name=None)
     return threshold
+
+
+def mean_var_with_update(update_moving_mean, update_moving_variance, mean, variance):
+    with tf.control_dependencies([update_moving_mean, update_moving_variance]):
+        return tf.identity(mean), tf.identity(variance)
+
+def w_fold(w, gama, var, epsilon):
+    return tf.compat.v1.div(tf.multiply(gama, w), tf.sqrt(var + epsilon))
+
+def bias_fold(beta, gama, mean, var, epsilon):
+    return tf.subtract(beta, tf.compat.v1.div(tf.multiply(gama, mean), tf.sqrt(var + epsilon)))

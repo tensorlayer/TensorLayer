@@ -54,13 +54,3 @@ class Dropout(Module):
         else:
             outputs = inputs
         return outputs
-
-
-if __name__ == '__main__':
-    shapes_do = (20, 16, 50)
-    from tensorlayer.layers.inputs import Input
-    # from mindspore import context
-    # context.set_context(mode=context.GRAPH_MODE)
-    inputs_do = Input(shapes_do)
-    dropout = Dropout(keep=0.1)(inputs_do)
-    print(dropout)

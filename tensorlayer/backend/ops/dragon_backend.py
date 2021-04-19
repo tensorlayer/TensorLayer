@@ -548,6 +548,18 @@ def reduce_min(input_tensor, axis=None):
     """
     return D.min(input_tensor, axis)
 
+class Pad(object):
+    def __init__(self, paddings, mode="REFLECT"):
+        if mode not in ['CONSTANT', 'REFLECT', 'SYMMETRIC']:
+            raise Exception("Unsupported mode: {}".format(mode))
+        if mode == 'SYMMETRIC':
+            mode = 'EDGE'
+        self.paddings = paddings
+        self.mode = mode
+
+    def __call__(self, x):
+        outputs = D.pad(x, pads=self.paddings, mode=self.mode, value=0)
+        return outputs
 
 def pad(tensor, paddings, mode='CONSTANT', constant_values=0):
     """
@@ -612,6 +624,15 @@ def stack(values, axis=0):
         A stacked Tensor with the same type as values.
     """
     return D.stack(values, axis=axis)
+
+
+class Meshgrid(object):
+    def __init__(self, indexing='xy'):
+        super(Meshgrid, self).__init__()
+        self.index = indexing
+
+    def __call__(self, inputs):
+        pass
 
 
 def meshgrid(x, y):
@@ -988,3 +1009,15 @@ class Sign(object):
 
     def __call__(self, x):
         return D.math.sign(x)
+
+def ceil(x):
+    raise NotImplementedError
+
+def multiply(x, y):
+    raise NotImplementedError
+
+def divide(x, y):
+    raise NotImplementedError
+
+def identity(x):
+    raise NotImplementedError
