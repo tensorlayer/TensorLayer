@@ -4,12 +4,12 @@
 import os
 import unittest
 
-import tensorflow as tf
-
-import tensorlayer as tl
-from tests.utils import CustomTestCase
-
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import tensorflow as tf
+import tensorlayer as tl
+
+from tests.utils import CustomTestCase
 
 
 def model(x, is_train, reuse):
@@ -21,8 +21,8 @@ def model(x, is_train, reuse):
         nt = tl.layers.DenseLayer(nt, n_units=20, act=tf.nn.tanh, name='dense1')
         nt = tl.layers.DropoutLayer(nt, keep=0.8, is_fix=True, is_train=is_train, name='drop1')
         # you can also use CNN instead for MLP as the localisation net
-        # nt = Conv2d(nin, 16, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME', name='tc1')
-        # nt = Conv2d(nt, 8, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME', name='tc2')
+        # nt = Conv2d(nin, 16, (3, 3), (2, 2), act=tf.ops.relu, padding='SAME', name='tc1')
+        # nt = Conv2d(nt, 8, (3, 3), (2, 2), act=tf.ops.relu, padding='SAME', name='tc2')
         ## 2. Spatial transformer module (sampler)
         n = tl.layers.SpatialTransformer2dAffineLayer(nin, theta_layer=nt, out_size=(40, 40), name='spatial')
         s = n

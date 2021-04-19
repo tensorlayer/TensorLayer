@@ -2,16 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import os
-import time
 import unittest
 
-import tensorflow as tf
-
-import tensorlayer as tl
-from tensorlayer.logging.contrib import hyperdash as hd
-from tests.utils import CustomTestCase
+import time
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import tensorflow as tf
+import tensorlayer as tl
+
+from tensorlayer.logging.contrib import hyperdash as hd
+
+from tests.utils import CustomTestCase
 
 
 class TL_Logger_Test(CustomTestCase):

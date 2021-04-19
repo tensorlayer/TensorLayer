@@ -4,12 +4,12 @@
 import os
 import unittest
 
-import tensorflow as tf
-
-import tensorlayer as tl
-from tests.utils import CustomTestCase
-
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import tensorflow as tf
+import tensorlayer as tl
+
+from tests.utils import CustomTestCase
 
 
 class Layer_Flow_Control_Test(CustomTestCase):

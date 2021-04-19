@@ -4,12 +4,12 @@
 import os
 import unittest
 
-import tensorflow as tf
-
-import tensorlayer as tl
-from tests.utils import CustomTestCase
-
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import tensorflow as tf
+import tensorlayer as tl
+
+from tests.utils import CustomTestCase
 
 
 class Simple_MNIST_Test(CustomTestCase):
@@ -31,7 +31,7 @@ class Simple_MNIST_Test(CustomTestCase):
 
         # the softmax is implemented internally in tl.cost.cross_entropy(y, y_) to
         # speed up computation, so we use identity here.
-        # see tf.nn.sparse_softmax_cross_entropy_with_logits()
+        # see tf.ops.sparse_softmax_cross_entropy_with_logits()
         cls.network = tl.layers.DenseLayer(network, n_units=10, name='output')
 
         # define cost function and metric.
@@ -41,7 +41,7 @@ class Simple_MNIST_Test(CustomTestCase):
         correct_prediction = tf.equal(tf.argmax(y, 1), cls.y_)
 
         cls.acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        # y_op = tf.argmax(tf.nn.softmax(y), 1)
+        # y_op = tf.argmax(tf.ops.softmax(y), 1)
 
         # define the optimizer
         train_params = cls.network.trainable_weights

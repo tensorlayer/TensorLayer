@@ -4,13 +4,11 @@
 import os
 import unittest
 
-import numpy as np
-import tensorflow as tf
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import tensorlayer as tl
-from tests.utils import CustomTestCase
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+from tests.utils import CustomTestCase
 
 
 class Layer_Scale_Test(CustomTestCase):
@@ -24,16 +22,22 @@ class Layer_Scale_Test(CustomTestCase):
         pass
 
     def test_scale(self):
-        inputs = tl.layers.Input([8, 3])
-        dense = tl.layers.Dense(n_units=10)(inputs)
-        scalelayer = tl.layers.Scale(init_scale=0.5)
-        outputs = scalelayer(dense)
-        model = tl.models.Model(inputs=inputs, outputs=[dense, outputs])
 
-        print(scalelayer)
+        class model(tl.layers.Module):
+            def __init__(self):
+                super(model, self).__init__()
+                self.dense = tl.layers.Dense(n_units=10)
+                self.scalelayer = tl.layers.Scale(init_scale=0.5)
 
-        data = np.random.random(size=[8, 3]).astype(np.float32)
-        dout, fout = model(data, is_train=True)
+            def forward(self, inputs):
+                output1 = self.dense(inputs)
+                output2 = self.scalelayer(output1)
+                return output1, output2
+
+        input = tl.layers.Input((8, 3), init=tl.initializers.random_normal())
+        net = model()
+        net.set_train()
+        dout, fout = net(input)
 
         for i in range(len(dout)):
             for j in range(len(dout[i])):

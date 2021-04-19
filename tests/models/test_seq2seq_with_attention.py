@@ -4,17 +4,16 @@
 import os
 import unittest
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import numpy as np
 import tensorflow as tf
-from sklearn.utils import shuffle
-from tqdm import tqdm
-
 import tensorlayer as tl
-from tensorlayer.cost import cross_entropy_seq
+from tqdm import tqdm
+from sklearn.utils import shuffle
 from tensorlayer.models.seq2seq_with_attention import Seq2seqLuongAttention
 from tests.utils import CustomTestCase
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+from tensorlayer.cost import cross_entropy_seq
 
 
 class Model_SEQ2SEQ_WITH_ATTENTION_Test(CustomTestCase):

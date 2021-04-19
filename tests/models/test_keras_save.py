@@ -1,8 +1,8 @@
-import tensorflow as tf
-from tensorflow.python.keras import Model
 from tensorflow.python.keras.applications import VGG16
-from tensorflow.python.keras.layers import Conv2D, Dense
+from tensorflow.python.keras.layers import Dense, Conv2D
+from tensorflow.python.keras import Model
 from tensorflow.python.training import saver
+import tensorflow as tf
 
 # get the whole model
 # vgg = VGG16(weights=None)

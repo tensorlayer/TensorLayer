@@ -4,212 +4,120 @@
 import os
 import unittest
 
-import numpy as np
-import tensorflow as tf
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import tensorlayer as tl
-from tests.utils import CustomTestCase
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+from tests.utils import CustomTestCase
 
 
 class Activation_Layer_Test(CustomTestCase):
 
     @classmethod
-    def setUpClass(cls):
-        cls.data = (10 + 10) * np.random.random(size=[10, 5]).astype(np.float32) - 10
-        cls.data2 = (10 + 10) * np.random.random(size=[10, 10, 5]).astype(np.float32) - 10
+    def setUpClass(self):
+        self.inputs = tl.layers.Input([10, 5])
 
     @classmethod
-    def tearDownClass(cls):
+    def tearDownClass(self):
         pass
 
     def test_prelu_1(self):
-        inputs = tl.layers.Input([10, 5])
         prelulayer = tl.layers.PRelu(channel_shared=True)
-        prelu = prelulayer(inputs)
-        model = tl.models.Model(inputs=inputs, outputs=prelu)
-        out = model(self.data, is_train=True)
+        class prelu_model(tl.layers.Module):
+            def __init__(self):
+                super(prelu_model, self).__init__()
+                self.prelu = prelulayer
 
-        print(prelulayer)
+            def forward(self, inputs):
+                return self.prelu(inputs)
+        net = prelu_model()
 
-        gt = np.zeros(shape=self.data.shape)
-        for i in range(len(gt)):
-            for j in range(len(gt[i])):
-                if self.data[i][j] >= 0:
-                    gt[i][j] = self.data[i][j]
-                else:
-                    gt[i][j] = prelulayer.alpha_var_constrained.numpy() * self.data[i][j]
-
-        self.assertTrue(np.array_equal(out.numpy(), gt))
+        self.assertTrue(tl.get_tensor_shape(net(self.inputs)), [10, 5])
 
     def test_prelu_2(self):
-        inputs = tl.layers.Input([10, 5])
         prelulayer = tl.layers.PRelu(in_channels=5)
-        prelu = prelulayer(inputs)
-        model = tl.models.Model(inputs=inputs, outputs=prelu)
-        out = model(self.data, is_train=True)
+        prelu = prelulayer(self.inputs)
 
-        print(prelulayer)
-
-        gt = np.zeros(shape=self.data.shape)
-        for i in range(len(gt)):
-            for j in range(len(gt[i])):
-                if self.data[i][j] >= 0:
-                    gt[i][j] = self.data[i][j]
-                else:
-                    gt[i][j] = prelulayer.alpha_var_constrained.numpy()[j] * self.data[i][j]
-
-        self.assertTrue(np.array_equal(out.numpy(), gt))
-
-    def test_prelu_3(self):
-        inputs = tl.layers.Input([10, 10, 5])
-        prelulayer = tl.layers.PRelu(in_channels=5)
-        prelu = prelulayer(inputs)
-        model = tl.models.Model(inputs=inputs, outputs=prelu)
-        out = model(self.data2, is_train=True)
-
-        print(prelulayer)
-
-        gt = np.zeros(shape=self.data2.shape)
-        for i in range(len(gt)):
-            for k in range(len(gt[i])):
-                for j in range(len(gt[i][k])):
-                    if self.data2[i][k][j] >= 0:
-                        gt[i][k][j] = self.data2[i][k][j]
-                    else:
-                        gt[i][k][j] = prelulayer.alpha_var_constrained.numpy()[j] * self.data2[i][k][j]
-
-        self.assertTrue(np.array_equal(out.numpy(), gt))
+        self.assertTrue(tl.get_tensor_shape(prelu), [10, 5])
 
     def test_prelu6_1(self):
-        inputs = tl.layers.Input([10, 5])
-        prelulayer = tl.layers.PRelu6(channel_shared=True)
-        prelu = prelulayer(inputs)
-        model = tl.models.Model(inputs=inputs, outputs=prelu)
-        out = model(self.data, is_train=True)
+        prelu6layer = tl.layers.PRelu6(in_channels=5)
+        prelu6 = prelu6layer(self.inputs)
 
-        print(prelulayer)
+        self.assertTrue(tl.get_tensor_shape(prelu6), [10, 5])
 
-        gt = np.zeros(shape=self.data.shape)
-        for i in range(len(gt)):
-            for j in range(len(gt[i])):
-                if self.data[i][j] >= 0 and self.data[i][j] <= 6:
-                    gt[i][j] = self.data[i][j]
-                elif self.data[i][j] > 6:
-                    gt[i][j] = 6
-                else:
-                    gt[i][j] = prelulayer.alpha_var_constrained.numpy() * self.data[i][j]
-
-        self.assertTrue(np.array_equal(out.numpy(), gt))
 
     def test_prelu6_2(self):
-        inputs = tl.layers.Input([10, 5])
-        prelulayer = tl.layers.PRelu6(in_channels=5)
-        prelu = prelulayer(inputs)
-        model = tl.models.Model(inputs=inputs, outputs=prelu)
-        out = model(self.data, is_train=True)
+        prelu6layer = tl.layers.PRelu6(channel_shared=True)
 
-        print(prelulayer)
+        class prelu6_model(tl.layers.Module):
+            def __init__(self):
+                super(prelu6_model, self).__init__()
+                self.prelu = prelu6layer
 
-        gt = np.zeros(shape=self.data.shape)
-        for i in range(len(gt)):
-            for j in range(len(gt[i])):
-                if self.data[i][j] >= 0 and self.data[i][j] <= 6:
-                    gt[i][j] = self.data[i][j]
-                elif self.data[i][j] > 6:
-                    gt[i][j] = 6
-                else:
-                    gt[i][j] = prelulayer.alpha_var_constrained.numpy()[j] * self.data[i][j]
+            def forward(self, inputs):
+                return self.prelu(inputs)
 
-        self.assertTrue(np.array_equal(out.numpy(), gt))
+        net = prelu6_model()
 
-    def test_prelu6_3(self):
-        inputs = tl.layers.Input([10, 10, 5])
-        prelulayer = tl.layers.PRelu6(in_channels=5)
-        prelu = prelulayer(inputs)
-        model = tl.models.Model(inputs=inputs, outputs=prelu)
-        out = model(self.data2, is_train=True)
-
-        print(prelulayer)
-
-        gt = np.zeros(shape=self.data2.shape)
-        for i in range(len(gt)):
-            for k in range(len(gt[i])):
-                for j in range(len(gt[i][k])):
-                    if self.data2[i][k][j] >= 0 and self.data2[i][k][j] <= 6:
-                        gt[i][k][j] = self.data2[i][k][j]
-                    elif self.data2[i][k][j] > 6:
-                        gt[i][k][j] = 6
-                    else:
-                        gt[i][k][j] = prelulayer.alpha_var_constrained.numpy()[j] * self.data2[i][k][j]
-
-        self.assertTrue(np.array_equal(out.numpy(), gt))
+        self.assertTrue(tl.get_tensor_shape(net(self.inputs)), [10, 5])
 
     def test_ptrelu6_1(self):
-        inputs = tl.layers.Input([10, 5])
-        prelulayer = tl.layers.PTRelu6(channel_shared=True)
-        prelu = prelulayer(inputs)
-        model = tl.models.Model(inputs=inputs, outputs=prelu)
-        out = model(self.data, is_train=True)
+        ptrelu6layer = tl.layers.PTRelu6(channel_shared=True)
+        ptrelu6 = ptrelu6layer(self.inputs)
 
-        print(prelulayer)
-
-        gt = np.zeros(shape=self.data.shape)
-        for i in range(len(gt)):
-            for j in range(len(gt[i])):
-                if self.data[i][j] >= 0 and self.data[i][j] <= 6:
-                    gt[i][j] = self.data[i][j]
-                elif self.data[i][j] > 6:
-                    gt[i][j] = 6 + prelulayer.alpha_high_constrained.numpy() * (self.data[i][j] - 6)
-                else:
-                    gt[i][j] = prelulayer.alpha_low_constrained.numpy() * self.data[i][j]
-
-        # FIXME: Figure out why this assert randomly fail in CI.
-        # self.assertTrue(np.array_equal(out.numpy(), gt))
+        self.assertTrue(tl.get_tensor_shape(ptrelu6), [10, 5])
 
     def test_ptrelu6_2(self):
-        inputs = tl.layers.Input([10, 5])
-        prelulayer = tl.layers.PTRelu6(in_channels=5)
-        prelu = prelulayer(inputs)
-        model = tl.models.Model(inputs=inputs, outputs=prelu)
-        out = model(self.data, is_train=True)
+        ptrelu6layer = tl.layers.PTRelu6(in_channels=5)
 
-        print(prelulayer)
+        class ptrelu6_model(tl.layers.Module):
+            def __init__(self):
+                super(ptrelu6_model, self).__init__()
+                self.prelu = ptrelu6layer
 
-        gt = np.zeros(shape=self.data.shape)
-        for i in range(len(gt)):
-            for j in range(len(gt[i])):
-                if self.data[i][j] >= 0 and self.data[i][j] <= 6:
-                    gt[i][j] = self.data[i][j]
-                elif self.data[i][j] > 6:
-                    gt[i][j] = 6 + prelulayer.alpha_high_constrained.numpy()[j] * (self.data[i][j] - 6)
-                else:
-                    gt[i][j] = prelulayer.alpha_low_constrained.numpy()[j] * self.data[i][j]
+            def forward(self, inputs):
+                return self.prelu(inputs)
 
-        self.assertTrue(np.allclose(out.numpy(), gt))
+        net = ptrelu6_model()
 
-    def test_ptrelu6_3(self):
-        inputs = tl.layers.Input([3, 2, 5])
-        prelulayer = tl.layers.PTRelu6()
-        prelu = prelulayer(inputs)
-        model = tl.models.Model(inputs=inputs, outputs=prelu)
-        out = model(self.data2, is_train=True)
+        self.assertTrue(tl.get_tensor_shape(net(self.inputs)), [10, 5])
 
-        print(prelulayer)
+    def test_lrelu(self):
+        lrelulayer = tl.layers.LeakyReLU(alpha=0.5)
+        lrelu = lrelulayer(self.inputs)
 
-        gt = np.zeros(shape=self.data2.shape)
-        for i in range(len(gt)):
-            for k in range(len(gt[i])):
-                for j in range(len(gt[i][k])):
-                    if self.data2[i][k][j] >= 0 and self.data2[i][k][j] <= 6:
-                        gt[i][k][j] = self.data2[i][k][j]
-                    elif self.data2[i][k][j] > 6:
-                        gt[i][k][j] = 6 + prelulayer.alpha_high_constrained.numpy()[j] * (self.data2[i][k][j] - 6)
-                    else:
-                        gt[i][k][j] = prelulayer.alpha_low_constrained.numpy()[j] * self.data2[i][k][j]
+        self.assertTrue(tl.get_tensor_shape(lrelu), [5, 10])
 
-        self.assertTrue(np.allclose(out.numpy(), gt))
+    def test_lrelu6(self):
+        lrelu6layer = tl.layers.LeakyReLU6(alpha=0.5)
+        lrelu6 = lrelu6layer(self.inputs)
+
+        self.assertTrue(tl.get_tensor_shape(lrelu6), [5, 10])
+
+    def test_ltrelu6(self):
+        ltrelu6layer = tl.layers.LeakyTwiceRelu6()
+        ltrelu6 = ltrelu6layer(self.inputs)
+
+        self.assertTrue(tl.get_tensor_shape(ltrelu6), [5, 10])
+
+    def test_swish(self):
+        swishlayer = tl.layers.Swish()
+        swish = swishlayer(self.inputs)
+
+        self.assertTrue(tl.get_tensor_shape(swish), [5, 10])
+
+    def test_hardtanh(self):
+        hardtanhlayer = tl.layers.HardTanh()
+        hardtanh = hardtanhlayer(self.inputs)
+
+        self.assertTrue(tl.get_tensor_shape(hardtanh), [5, 10])
+
+    def test_mish(self):
+        mishlayer = tl.layers.Mish()
+        mish = mishlayer(self.inputs)
+
+        self.assertTrue(tl.get_tensor_shape(mish), [5, 10])
 
 
 if __name__ == '__main__':

@@ -3,14 +3,12 @@
 import os
 import unittest
 
-import tensorflow as tf
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import tensorlayer as tl
 from tensorlayer.layers import *
-from tensorlayer.models import *
-from tests.utils import CustomTestCase
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+from tests.utils import CustomTestCase
 
 
 class Layer_Stack_Test(CustomTestCase):
@@ -22,16 +20,29 @@ class Layer_Stack_Test(CustomTestCase):
         cls.inputs_shape = [cls.batch_size, 10]
 
         cls.ni = Input(cls.inputs_shape, name='input_layer')
+        class model(tl.layers.Module):
+            def __init__(self):
+                super(model, self).__init__()
+                self.a = Dense(n_units=5)
+                self.b = Dense(n_units=5)
+                self.stack = Stack(axis=1)
+
+            def forward(self, inputs):
+                output1 = self.a(inputs)
+                output2 = self.b(inputs)
+                output = self.stack([output1, output2])
+                return output
+
         a = Dense(n_units=5)(cls.ni)
         b = Dense(n_units=5)(cls.ni)
         cls.layer1 = Stack(axis=1)
         cls.n1 = cls.layer1([a, b])
-        cls.M = Model(inputs=cls.ni, outputs=cls.n1)
 
-        cls.inputs = tf.random.uniform(cls.inputs_shape)
-        cls.n2 = cls.M(cls.inputs, is_train=True)
+        net = model()
+        net.set_train()
+        cls.inputs = Input(cls.inputs_shape)
+        cls.n2 = net(cls.inputs)
 
-        print(cls.layer1)
 
     @classmethod
     def tearDownClass(cls):
@@ -54,12 +65,25 @@ class Layer_UnStack_Test(CustomTestCase):
 
         cls.ni = Input(cls.inputs_shape, name='input_layer')
         a = Dense(n_units=5)(cls.ni)
-        cls.layer1 = UnStack(axis=1)  # unstack in channel axis
+        cls.layer1 = UnStack(axis=1)
         cls.n1 = cls.layer1(a)
-        cls.M = Model(inputs=cls.ni, outputs=cls.n1)
 
-        cls.inputs = tf.random.uniform(cls.inputs_shape)
-        cls.n2 = cls.M(cls.inputs, is_train=True)
+        class model(tl.layers.Module):
+            def __init__(self):
+                super(model, self).__init__()
+                self.a = Dense(n_units=5)
+                self.unstack = UnStack(axis=1)
+
+            def forward(self, inputs):
+                output1 = self.a(inputs)
+                output = self.unstack(output1)
+                return output
+
+
+        cls.inputs = Input(cls.inputs_shape)
+        net = model()
+        net.set_train()
+        cls.n2 = net(cls.inputs)
 
         print(cls.layer1)
 

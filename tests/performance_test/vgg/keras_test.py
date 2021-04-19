@@ -1,14 +1,12 @@
-import os
 import time
-
+import os
 import psutil
-import tensorflow as tf
-
 import keras
-from exp_config import (BATCH_SIZE, LERANING_RATE, MONITOR_INTERVAL, NUM_ITERS, random_input_generator)
 from keras.applications.vgg16 import VGG16
 from keras.backend.tensorflow_backend import set_session
 from keras.utils import to_categorical
+import tensorflow as tf
+from exp_config import random_input_generator, MONITOR_INTERVAL, NUM_ITERS, BATCH_SIZE, LERANING_RATE
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
