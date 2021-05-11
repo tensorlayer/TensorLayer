@@ -121,4 +121,6 @@ from .load_backend import Pad
 from .load_backend import Minimum
 from .load_backend import Maximum
 from .load_backend import Meshgrid
+from .load_backend import BatchToSpace
+from .load_backend import DepthToSpace
 

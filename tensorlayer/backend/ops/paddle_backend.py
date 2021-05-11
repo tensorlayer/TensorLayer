@@ -2,52 +2,39 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import, division, print_function
+import paddle as pd
+import paddle.nn as nn
 
-import numpy as np
-import dragon as D
-
-from dragon.core.eager import context
-from dragon.core.ops import init_ops
-from dragon.core.ops import vision_ops
-
-_dtypeDict = ['float16', 'float32', 'float64', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64']
+_dtypeDict = ["float16", "float32", "float64", "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"]
 # TODO NotImplemented
 DType = None
-float16 = 'float16'
-float32 = 'float32'
-float64 = 'float64'
-int8 = 'int8'
-int16 = 'int16'
-int32 = 'int32'
-int64 = 'int64'
-uint8 = 'uint8'
-uint16 = 'uint16'
-uint32 = 'uint32'
-uint64 = 'uint64'
-
-# isinstance input output
-# TODO NotImplemented
-# TensorLike = None
-
+float16 = "float16"
+float32 = "float32"
+float64 = "float64"
+int8 = "int8"
+int16 = "int16"
+int32 = "int32"
+int64 = "int64"
+uint8 = "uint8"
+uint16 = "uint16"
+uint32 = "uint32"
+uint64 = "uint64"
 
 def _getter(init_fn, **kwargs):
     """Return an named eager tensor."""
-    with context.eager_mode():
-        value = init_fn(**kwargs)
-        value._name = kwargs.get('name', value.id)
-    return value
+    raise NotImplementedError
 
 
 def set_context(**kwargs):
-    raise Exception("Using Dragon backend,You don't need to set context")
+    raise Exception("Using Paddle backend,You don't need to set context")
 
 
 def get_tensor_shape(x):
-    return x.shape
+    return pd.shape(x)
 
 
 # initializers
-def zeros(shape, dtype='float32'):
+def zeros(shape, dtype="float32"):
     """
     Creates a tensor with all elements set to zero.
 
@@ -63,15 +50,10 @@ def zeros(shape, dtype='float32'):
         A Tensor with all elements set to zero.
 
     """
-    return _getter(
-        init_ops.fill,
-        value=0,
-        shape=shape,
-        dtype=dtype,
-    )
+    return pd.zeros(shape=shape, dtype=dtype)
 
 
-def ones(shape, dtype='float32'):
+def ones(shape, dtype="float32"):
     """
     Creates a tensor with all elements set to ones.
 
@@ -87,15 +69,10 @@ def ones(shape, dtype='float32'):
         A Tensor with all elements set to zero.
 
     """
-    return _getter(
-        init_ops.fill,
-        value=1,
-        shape=shape,
-        dtype=dtype,
-    )
+    return pd.ones(shape=shape, dtype=dtype)
 
 
-def constant(value, shape, dtype='float32'):
+def constant(value, shape, dtype="float32"):
     """
     Creates a constant tensor from a tensor-like object.
 
@@ -113,16 +90,10 @@ def constant(value, shape, dtype='float32'):
         A Constant Tensor.
 
     """
-    # shape = shape[::-1]
-    return _getter(
-        init_ops.fill,
-        value=value,
-        shape=shape,
-        dtype=dtype,
-    )
+    return nn.initializer.constant(value=value)
 
 
-def random_uniform(shape, minval=0, maxval=None, dtype='float32', seed=None):
+def random_uniform(shape, minval=0, maxval=None, dtype="float32", seed=None):
     """
     Outputs random values from a uniform distribution.
 
@@ -143,10 +114,10 @@ def random_uniform(shape, minval=0, maxval=None, dtype='float32', seed=None):
         A tensor of the specified shape filled with random uniform values.
 
     """
-    return _getter(init_ops.random_uniform, low=minval, high=maxval, shape=shape, dtype=dtype)
+    raise NotImplementedError
 
 
-def random_normal(shape, mean=0.0, stddev=1.0, dtype='float32', seed=None):
+def random_normal(shape, mean=0.0, stddev=1.0, dtype="float32", seed=None):
     """
     Outputs random values from a normal distribution.
 
@@ -168,16 +139,10 @@ def random_normal(shape, mean=0.0, stddev=1.0, dtype='float32', seed=None):
         A tensor of the specified shape filled with random normal values.
 
     """
-    return _getter(
-        init_ops.random_normal,
-        mean=mean,
-        std=stddev,
-        shape=shape,
-        dtype=dtype,
-    )
+    raise NotImplementedError
 
 
-def truncated_normal(shape, mean=0.0, stddev=1.0, dtype='float32', seed=None):
+def truncated_normal(shape, mean=0.0, stddev=1.0, dtype="float32", seed=None):
     """
     Outputs random values from a truncated normal distribution.
 
@@ -199,13 +164,7 @@ def truncated_normal(shape, mean=0.0, stddev=1.0, dtype='float32', seed=None):
         A tensor of the specified shape filled with random truncated normal values.
 
     """
-    return _getter(
-        init_ops.truncated_normal,
-        mean=mean,
-        std=stddev,
-        shape=shape,
-        dtype=dtype,
-    )
+    raise NotImplementedError
 
 
 def he_normal(shape, dtype, seed=None):
@@ -226,7 +185,7 @@ def he_normal(shape, dtype, seed=None):
         A tensor of the specified shape filled with he normal values.
     """
     # shape = shape[::-1]
-    raise NotImplementedError("He_Normal is not implemented")
+    raise NotImplementedError
 
 
 def Variable(initial_value, name, trainable=None):
@@ -243,7 +202,7 @@ def Variable(initial_value, name, trainable=None):
     -------
         Variable
     """
-    return D.Tensor(name=name, shape=initial_value)
+    raise NotImplementedError
 
 
 class MatMul(object):
@@ -252,8 +211,7 @@ class MatMul(object):
         pass
 
     def __call__(self, a, b):
-        inputs = [a, b]
-        return D.math.matmul(inputs)
+        return pd.matmul(x=a, y=b)
 
 
 def matmul(a, b):
@@ -271,8 +229,7 @@ def matmul(a, b):
     -------
         A Tensor of the same type as a and b
     """
-    inputs = [a, b]
-    return D.math.matmul(inputs)
+    raise NotImplementedError
 
 
 def add(value, bias):
@@ -294,8 +251,7 @@ def add(value, bias):
         A Tensor. Has the same type as a.
     """
 
-    inputs = [value, bias]
-    return D.math.add(inputs)
+    raise NotImplementedError
 
 
 def dtypes(dt):
@@ -312,9 +268,23 @@ def dtypes(dt):
     -------
         Data dtypes
     """
-    if dt not in _dtypeDict:
-        raise Exception("Unsupported dtype: {}".format(dt))
-    return dt
+    raise NotImplementedError
+
+
+class Maximum(object):
+    def __init__(self):
+        pass
+
+    def __call__(self, x, y):
+        raise NotImplementedError
+
+
+class Minimum(object):
+    def __init__(self):
+        pass
+
+    def __call__(self, x, y):
+        raise NotImplementedError
 
 
 def minimum(x, y):
@@ -334,8 +304,7 @@ def minimum(x, y):
     -------
         A Tensor. Has the same type as x
     """
-    inputs = [x, y]
-    return D.math.minimum(inputs)
+    raise NotImplementedError
 
 
 class FlattenReshape(object):
@@ -344,10 +313,7 @@ class FlattenReshape(object):
         pass
 
     def __call__(self, inputs):
-        dim = 1
-        for d in get_tensor_shape(inputs)[1:]:
-            dim *= d
-        return D.reshape(inputs, [-1, dim])
+        return pd.flatten(x=inputs, start_axis=1,stop_axis=-1)
 
 
 class Reshape(object):
@@ -356,7 +322,7 @@ class Reshape(object):
         self.shape = shape
 
     def __call__(self, tensor):
-        return D.reshape(tensor, shape=self.shape)
+        raise NotImplementedError
 
 
 def reshape(tensor, shape):
@@ -373,7 +339,7 @@ def reshape(tensor, shape):
     -------
         A Tensor. Has the same type as tensor
     """
-    return D.reshape(tensor, shape=shape)
+    raise NotImplementedError
 
 
 class Concat(object):
@@ -383,7 +349,7 @@ class Concat(object):
         self.axis = axis
 
     def __call__(self, values):
-        return D.concat(values=values, axis=self.axis)
+        raise NotImplementedError
 
 
 def concat(values, axis):
@@ -400,7 +366,7 @@ def concat(values, axis):
     -------
         A Tensor resulting from concatenation of the input tensors.
     """
-    return D.concat(values, axis=axis)
+    raise NotImplementedError
 
 
 def convert_to_tensor(value, dtype=None):
@@ -418,7 +384,7 @@ def convert_to_tensor(value, dtype=None):
     -------
         A Tensor based on value.
     """
-    return D.Tensor.convert_to(value, dtype)
+    raise NotImplementedError
 
 
 def sqrt(x):
@@ -434,7 +400,7 @@ def sqrt(x):
     -------
         A Tensor. Has the same type as x.
     """
-    return D.math.sqrt(x)
+    raise NotImplementedError
 
 
 class ReduceSum(object):
@@ -457,15 +423,7 @@ class ReduceMean(object):
             raise ("`data_format` should have one of the following values: [`channels_last`, `channels_first`]")
 
     def __call__(self, inputs):
-        return vision_ops.pool2d(
-            inputs,
-            kernel_shape=1,
-            strides=1,
-            pads=0,
-            mode='AVG',
-            global_pooling=True,
-            data_format=self.data_format,
-        )
+        raise NotImplementedError
 
 
 def reduce_mean(input_tensor, axis=None):
@@ -487,7 +445,7 @@ def reduce_mean(input_tensor, axis=None):
         The reduced tensor.
     """
 
-    return D.mean(input_tensor, axes=axis)
+    raise NotImplementedError
 
 
 class ReduceMax(object):
@@ -501,9 +459,7 @@ class ReduceMax(object):
             raise ("`data_format` should have one of the following values: [`channels_last`, `channels_first`]")
 
     def __call__(self, inputs):
-        return vision_ops.pool2d(
-            inputs, kernel_shape=1, strides=1, pads=0, mode='MAX', global_pooling=True, data_format=self.data_format
-        )
+        raise NotImplementedError
 
 
 def reduce_max(input_tensor, axis=None):
@@ -525,7 +481,7 @@ def reduce_max(input_tensor, axis=None):
         The reduced tensor.
     """
 
-    return D.max(input_tensor, axis)
+    raise NotImplementedError
 
 
 def reduce_min(input_tensor, axis=None):
@@ -546,7 +502,7 @@ def reduce_min(input_tensor, axis=None):
     -------
         The reduced tensor.
     """
-    return D.min(input_tensor, axis)
+    raise NotImplementedError
 
 class Pad(object):
     def __init__(self, paddings, mode="REFLECT"):
@@ -558,8 +514,7 @@ class Pad(object):
         self.mode = mode
 
     def __call__(self, x):
-        outputs = D.pad(x, pads=self.paddings, mode=self.mode, value=0)
-        return outputs
+        raise NotImplementedError
 
 def pad(tensor, paddings, mode='CONSTANT', constant_values=0):
     """
@@ -580,12 +535,7 @@ def pad(tensor, paddings, mode='CONSTANT', constant_values=0):
     -------
         A Tensor. Has the same type as tensor.
     """
-    if mode not in ['CONSTANT', 'REFLECT', 'SYMMETRIC']:
-        raise Exception("Unsupported mode: {}".format(mode))
-    if mode == 'SYMMETRIC':
-        mode = 'EDGE'
-    outputs = D.pad(tensor, pads=paddings, mode=mode, value=constant_values)
-    return outputs
+    raise NotImplementedError
 
 
 class Unstack(object):
@@ -604,7 +554,7 @@ class Stack(object):
         self.axis = axis
 
     def __call__(self, values):
-        return D.stack(values, axis=self.axis)
+        raise NotImplementedError
 
 
 def stack(values, axis=0):
@@ -623,7 +573,7 @@ def stack(values, axis=0):
     -------
         A stacked Tensor with the same type as values.
     """
-    return D.stack(values, axis=axis)
+    raise NotImplementedError
 
 
 class Meshgrid(object):
@@ -675,13 +625,7 @@ def range(start, limit=None, delta=1, dtype=None):
     -------
         An 1-D Tensor of type dtype.
     """
-    if dtype is None:
-        dtype = 'int32'
-    if limit is None:
-        outputs = D.arange(start=0, stop=start, step=delta, dtype=dtype)
-    else:
-        outputs = D.arange(start, stop=limit, step=delta, dtype=dtype)
-    return outputs
+    raise NotImplementedError
 
 
 class ExpandDims(object):
@@ -710,7 +654,7 @@ def expand_dims(input, axis):
         A Tensor with the same data as input, but its shape has an additional dimension of size 1 added.
     """
 
-    return D.expand_dims(input, axis=axis)
+    raise NotImplementedError
 
 
 class Tile(object):
@@ -719,7 +663,7 @@ class Tile(object):
         pass
 
     def __call__(self, input, multiples):
-        return D.tile(input, multiples)
+        raise NotImplementedError
 
 
 def tile(input, multiples):
@@ -738,7 +682,7 @@ def tile(input, multiples):
     -------
         A Tensor. Has the same type as input.
     """
-    return D.tile(input, multiples)
+    raise NotImplementedError
 
 
 class Cast(object):
@@ -766,7 +710,7 @@ def cast(x, dtype):
     -------
         A Tensor or SparseTensor or IndexedSlices with same shape as x and same type as dtype.
     """
-    return D.cast(x, dtype=dtype)
+    raise NotImplementedError
 
 
 class Transpose(object):
@@ -777,7 +721,7 @@ class Transpose(object):
             raise ("The conjugate Parameters not supported")
 
     def __call__(self, a):
-        return D.transpose(a, self.perm)
+        raise NotImplementedError
 
 
 def transpose(a, perm=None, conjugate=False):
@@ -798,8 +742,7 @@ def transpose(a, perm=None, conjugate=False):
         A transposed Tensor.
     """
 
-    conjugate = conjugate
-    return D.transpose(a, perm=perm)
+    raise NotImplementedError
 
 
 def gather_nd(params, indices, batch_dims=0):
@@ -868,37 +811,33 @@ def split(value, num_or_size_splits, axis=0, num=None):
 
 
 def floor(x):
-    return D.math.floor(x)
+    raise NotImplementedError
 
 
 def gather(params, indices):
-    return NotImplementedError
+    raise NotImplementedError
 
 
 def linspace(start, stop, num):
-    return D.linspace(start, stop, num)
+    raise NotImplementedError
 
 
 def slice(inputs, starts, sizes):
-    return D.slice(inputs, starts, sizes)
+    raise NotImplementedError
 
 
 def add_n(inputs):
-    return NotImplementedError
+    raise NotImplementedError
 
 
 class OneHot(object):
 
-    def __init__(self, axis=-1, depth=1, on_value=1.0, off_value=0.0, dtype='float32'):
+    def __init__(self, axis=-1, depth=1, on_value=1.0, off_value=0.0, dtype="float32"):
         self.depth = depth
         self.dtype = dtype
 
     def __call__(self, indices):
-        outputs = np.zeros(shape=(indices.shape[0], self.depth))
-        for i in np.arange(indices.shape[0]):
-            outputs[int(i)][int(indices[int(i)].get_value())] = 1
-        outputs = D.constant(outputs, dtype=self.dtype)
-        return outputs
+        raise NotImplementedError
 
 
 class L2Normalize(object):
@@ -940,7 +879,7 @@ class Not_equal(object):
 
 class Count_nonzero(object):
 
-    def __init__(self, keepdims=None, dtype='int64'):
+    def __init__(self, keepdims=None, dtype="int64"):
         pass
 
     def __call__(self, *args, **kwargs):
@@ -962,17 +901,11 @@ class Resize:
             raise Exception("UpSampling2d resize_images only support channel_last")
 
     def __call__(self, inputs):
-        output_size = (int(inputs.shape[1] * self.scale[0]), int(inputs.shape[2] * self.scale[1]))
-        outputs = D.vision.resize(inputs, sizes=output_size, mode=self.method, align_corners=self.antialias)
-        return outputs
+        raise NotImplementedError
 
 
 def resize(inputs, output_size, method, antialias):
-    if method not in ['nearest', 'linear', 'bilinear']:
-        raise ('Current resize does not support this method.')
-    if method == 'bilinear':
-        method = 'linear'
-    return D.vision.resize(inputs, sizes=output_size, mode=method, align_corners=antialias)
+    raise NotImplementedError
 
 
 class ZeroPadding1D(object):
@@ -1008,7 +941,7 @@ class Sign(object):
         pass
 
     def __call__(self, x):
-        return D.math.sign(x)
+        raise NotImplementedError
 
 def ceil(x):
     raise NotImplementedError

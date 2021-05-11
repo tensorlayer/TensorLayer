@@ -1003,3 +1003,19 @@ def divide(x, y):
 
 def identity(x):
     return tf.identity(x)
+
+class BatchToSpace(object):
+    def __init__(self, block_size, crops):
+        self.bolock_size = block_size
+        self.crops = crops
+
+    def __call__(self, input_x):
+        return tf.batch_to_space(input=input_x, block_shape=self.bolock_size, crops=self.crops)
+
+class DepthToSpace(object):
+    def __init__(self, block_size, data_format='NHWC'):
+        self.block_size = block_size
+        self.data_format = data_format
+
+    def __call__(self, input):
+        return tf.nn.depth_to_space(input, block_size=self.block_size, data_format=self.data_format)

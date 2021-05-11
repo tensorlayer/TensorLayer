@@ -6,7 +6,7 @@ import tensorlayer as tl
 
 __all__ = [
     'Initializer', 'Zeros', 'Ones', 'Constant', 'RandomUniform', 'RandomNormal', 'TruncatedNormal',
-    'deconv2d_bilinear_upsampling_initializer', 'He_Normal'
+    'deconv2d_bilinear_upsampling_initializer', 'HeNormal'
 ]
 
 
@@ -175,7 +175,7 @@ class TruncatedNormal(Initializer):
         return {"mean": self.mean, "stddev": self.stddev, "seed": self.seed}
 
 
-class He_Normal(Initializer):
+class HeNormal(Initializer):
     """He normal initializer.
 
     Parameters
@@ -241,13 +241,3 @@ def deconv2d_bilinear_upsampling_initializer(shape):
 
     # assign numpy array to constant_initalizer and pass to get_variable
     return Constant(value=weights)
-
-
-# Alias
-zeros = Zeros
-ones = Ones
-constant = Constant
-random_uniform = RandomUniform
-random_normal = RandomNormal
-truncated_normal = TruncatedNormal
-he_normal = He_Normal

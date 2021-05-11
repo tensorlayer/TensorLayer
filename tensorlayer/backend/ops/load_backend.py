@@ -70,5 +70,12 @@ elif BACKEND == 'dragon':
     import dragon as dg
     BACKEND_VERSION = dg.__version__
     sys.stderr.write('Using Dragon backend.\n')
+
+elif BACKEND == 'paddle':
+    from .paddle_backend import *
+    from .paddle_nn import *
+    import paddle as pd
+    BACKEND_VERSION = pd.__version__
+    sys.stderr.write('Using Paddle backend.\n')
 else:
     raise NotImplementedError("This backend is not supported")

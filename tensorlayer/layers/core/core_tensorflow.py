@@ -1,25 +1,18 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 from .common import str2act, _save_weights, _load_weights
-from tensorlayer.backend.ops.load_backend import BACKEND
 from collections import OrderedDict
 import time
 import tensorlayer as tl
+import tensorflow as tf
 from tensorlayer.layers.utils import (get_variable_with_initializer)
 from tensorlayer import logging
 
 __all__ = ['Module', 'SequentialLayer', 'LayerList']
 
-_global_layer_name_dict = {}  # TODO: better implementation?
-
-if BACKEND == 'tensorflow':
-    import tensorflow as tf
-    Parameter_ = tf.Variable
-elif BACKEND == 'dragon':
-    import dragon as dg
-    Parameter_ = dg.Tensor  # TODO the dragon parameter is a initializers
-else:
-    raise NotImplementedError("This backend is not supported")
+_global_layer_name_dict = {}
+Parameter_ = tf.Variable
 
 
 class Module(object):
@@ -142,10 +135,8 @@ class Module(object):
             object.__setattr__(self, name, value)
 
     def __call__(self, inputs, *args, **kwargs):
-        if BACKEND in ['tensorflow', 'dragon']:
-            output = self.forward(inputs, *args, **kwargs)
-        else:
-            exit("Unsupported backend")
+
+        output = self.forward(inputs, *args, **kwargs)
 
         return output
 

@@ -149,11 +149,9 @@ class Conv1d(Module):
 
         outputs = self.conv1d(inputs, self.W)
         if self.b_init_flag:
-            outputs = tl.ops.bias_add(outputs, self.b, data_format=self.data_format)
+            outputs = self.bias_add(outputs, self.b)
         if self.act_init_flag:
             outputs = self.act(outputs)
-        if tl.BACKEND == 'mindspore' and self.data_format == 'NWC':
-            outputs = tl.nchw_to_nhwc(outputs)
 
         return outputs
 
@@ -445,7 +443,7 @@ RuntimeError: Unable to cast from non-held to held instance (T& to Holder<T>) of
 
         outputs = self.conv3d(inputs, self.W)
         if self.b_init_flag:
-            outputs = tl.ops.bias_add(outputs, self.b, data_format=self.data_format)
+            outputs = self.bias_add(outputs, self.b)
         if self.act_init_flag:
             outputs = self.act(outputs)
         return outputs
@@ -594,8 +592,6 @@ class DeConv1d(Module):
             outputs = self.bias_add(outputs, self.b)
         if self.act_init_flag:
             outputs = self.act(outputs)
-        if tl.BACKEND == 'mindspore' and self.data_format == 'NWC':
-            outputs = tl.nchw_to_nhwc(outputs)
         return outputs
 
 
@@ -742,8 +738,6 @@ class DeConv2d(Module):
             outputs = self.bias_add(outputs, self.b)
         if self.act_init_flag:
             outputs = self.act(outputs)
-        if tl.BACKEND == 'mindspore' and self.data_format == 'NHWC':
-            outputs = tl.nchw_to_nhwc(outputs)
         return outputs
 
 
@@ -896,6 +890,4 @@ class DeConv3d(Module):
             outputs = self.bias_add(outputs, self.b)
         if self.act_init_flag:
             outputs = self.act(outputs)
-        if tl.BACKEND == 'mindspore' and self.data_format == 'NDHWC':
-            outputs = tl.nchw_to_nhwc(outputs)
         return outputs

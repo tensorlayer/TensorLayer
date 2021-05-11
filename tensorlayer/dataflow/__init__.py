@@ -15,6 +15,9 @@ elif BACKEND == 'mindspore':
 elif BACKEND == 'dragon':
     pass
 
+elif BACKEND == 'paddle':
+    pass
+
 else:
     raise NotImplementedError("This backend is not supported")
 

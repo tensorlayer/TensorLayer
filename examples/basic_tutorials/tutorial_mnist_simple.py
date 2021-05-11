@@ -2,13 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import time
 import os
 os.environ['TL_BACKEND'] = 'tensorflow'
 # os.environ['TL_BACKEND'] = 'mindspore'
 
-
-import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import Module
 from tensorlayer.layers import Dense, Dropout

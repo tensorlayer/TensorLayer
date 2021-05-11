@@ -16,13 +16,13 @@ from .depthwise_conv import *
 # from .expert_conv import *
 # from .expert_deconv import *
 # from .group_conv import *
-# from .quan_conv import *
-# from .quan_conv_bn import *
+from .quan_conv import *
+from .quan_conv_bn import *
 # from .separable_conv import *
 from .simplified_conv import *
 # from .simplified_deconv import *
-# from .super_resolution import *
-# from .ternary_conv import *
+from .super_resolution import *
+from .ternary_conv import *
 
 __all__ = [
 
@@ -71,13 +71,13 @@ __all__ = [
     # 'SeparableConv2d',
 
     # subpixel
-    # 'SubpixelConv1d',
-    # 'SubpixelConv2d',
+    'SubpixelConv1d',
+    'SubpixelConv2d',
 
     # ternary
-    # 'TernaryConv2d',
+    'TernaryConv2d',
 
     #quan_conv
-    # 'QuanConv2d',
-    # 'QuanConv2dWithBN',
+    'QuanConv2d',
+    'QuanConv2dWithBN',
 ]

@@ -2,7 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from tensorlayer.backend import BACKEND
+
 if BACKEND == 'mindspore':
     from .core_mindspore import *
-elif BACKEND in ['tensorflow', 'dragon']:
-    from .core_tensorflow_dragon import *
+elif BACKEND == 'tensorflow':
+    from .core_tensorflow import *
+elif BACKEND == 'paddle':
+    from .core_paddle import *
+elif BACKEND == 'dragon':
+    from .core_dragon import *
+else:
+    raise ("Unsupported backend:", BACKEND)

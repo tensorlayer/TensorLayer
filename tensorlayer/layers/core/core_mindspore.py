@@ -54,7 +54,7 @@ class Module(Cell):
             self.act = act
 
         # Layer building state
-        # self._built = False
+        self._built = False
 
         # Layer nodes state
         self._nodes = []
@@ -67,6 +67,10 @@ class Module(Cell):
 
         # Layer training state
         self.is_train = True
+
+
+        # layer forward  state
+        self._forward_state = False
 
     def forward(self, *inputs, **kwargs):
         raise Exception("The forward method must be implemented by inherited class")

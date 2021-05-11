@@ -1212,3 +1212,28 @@ def divide(x, y):
 
 def identity(x):
     raise NotImplementedError
+
+class BatchToSpace(Cell):
+    def __init__(self, block_size, crops):
+        super(BatchToSpace, self).__init__()
+        self.batch_to_space = P.BatchToSpace(block_size=block_size, crops=crops)
+
+    def __call__(self, input_x):
+        return self.batch_to_space(input_x)
+
+class DepthToSpace(Cell):
+    def __init__(self, block_size, data_format='NHWC'):
+        super(DepthToSpace, self).__init__()
+        self.data_format = data_format
+        self.depth_to_space = P.DepthToSpace(block_size=block_size)
+
+    def __call__(self, input):
+        if self.data_format == 'NHWC':
+            input = nhwc_to_nchw(input)
+
+        output = self.depth_to_space(input)
+
+        if self.data_format == 'NHWC':
+            output = nchw_to_nhwc(output)
+
+        return output

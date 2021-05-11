@@ -23,24 +23,18 @@ class _InputLayer(Module):
 
     """
 
-    def __init__(self, shape, dtype=tl.float32, name=None):
+    def __init__(self, shape, dtype=tl.float32, name=None, init=None):
         super(_InputLayer, self).__init__(name)
 
-        # if isinstance(dtype, str):
-        #     try:
-        #         dtype = eval(dtype)
-        #     except Exception as e:
-        #         raise RuntimeError("%s is not a valid dtype for InputLayer." % (dtype))
-        # if not isinstance(dtype, tl.DType):
-        #     raise RuntimeError("%s is not a valid dtype for InputLayer." % (dtype))
-
         logging.info("Input  %s: %s" % (self.name, str(shape)))
-        self.shape = shape  # shape is needed in __repr__
+        self.shape = shape
         self.dtype = dtype
         self.shape_without_none = [_ if _ is not None else 1 for _ in shape]
-        self.outputs = tl.initializers.ones()(self.shape_without_none, dtype=self.dtype)
+        if init is None:
+            self.outputs = tl.initializers.ones()(self.shape_without_none, dtype=self.dtype)
+        else:
+            self.outputs = init(self.shape_without_none, dtype=self.dtype)
         self._built = True
-        # self._add_node(outputs, outputs)
 
     def __repr__(self):
         s = 'Input(shape=%s' % str(self.shape)
@@ -50,23 +44,12 @@ class _InputLayer(Module):
         return s
 
     def __call__(self, *args, **kwargs):
-        # return super(_InputLayer, self).__call__(inputs)
         return self.outputs
 
     def build(self, inputs_shape):
         pass
 
     def forward(self):
-        # tl.initializers.random_uniform()
-        # tl.initializers.random_normal()
-        # tl.initializers.truncated_normal()
-        # tl.initializers.constant(2.0)
-        # tl.initializers.He_Normal()
-        # tl.initializers.He_Normal()
-        # tl.initializers.zeros()
-        # tl.initializers.ones()
-
-        # outputs = self.inputs(self.shape_without_none, dtype=self.dtype)
         return self.outputs
 
 
@@ -82,7 +65,6 @@ def Input(shape, init=tl.initializers.ones(), dtype=tl.float32, name=None):
         A unique layer name.
 
     """
-    input_layer = _InputLayer(shape, dtype=dtype, name=name)
-    outputs = input_layer(init)
-    # outputs = input_layer._nodes[0].out_tensors[0]
+    input_layer = _InputLayer(shape, dtype=dtype, name=name, init=init)
+    outputs = input_layer()
     return outputs
