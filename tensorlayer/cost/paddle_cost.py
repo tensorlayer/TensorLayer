@@ -232,6 +232,7 @@ def dice_coe(output, target, loss_type='jaccard', axis=(1, 2, 3), smooth=1e-5):
 
     """
 
+    axis = list(axis)
     inse = pd.fluid.layers.reduce_sum(output * target, dim=axis)
     if loss_type == 'jaccard':
         l = pd.fluid.layers.reduce_sum(output * output, dim=axis)
@@ -271,7 +272,16 @@ def dice_hard_coe(output, target, threshold=0.5, axis=(1, 2, 3), smooth=1e-5):
 
     """
 
-    raise NotImplementedError("Not Implemented.")
+    output = pd.cast(output > threshold, dtype='float32')
+    target = pd.cast(target > threshold, dtype='float32')
+    inse = pd.fluid.layers.reduce_sum(pd.multiply(output, target), dim=list(axis))
+    l = pd.fluid.layers.reduce_sum(output, dim=list(axis))
+    r = pd.fluid.layers.reduce_sum(target, dim=list(axis))
+
+    hard_dice = (2. * inse + smooth) / (l + r + smooth)
+    ##
+    hard_dice = pd.fluid.layers.reduce_mean(hard_dice)
+    return hard_dice
 
 
 def iou_coe(output, target, threshold=0.5, axis=(1, 2, 3), smooth=1e-5):
@@ -298,7 +308,13 @@ def iou_coe(output, target, threshold=0.5, axis=(1, 2, 3), smooth=1e-5):
 
     """
 
-    raise NotImplementedError("Not Implemented.")
+    pre = pd.cast(output > threshold, dtype='float32')
+    truth = pd.cast(target > threshold, dtype='float32')
+    inse = pd.fluid.layers.reduce_sum(pd.multiply(pre, truth), dim=axis)  # AND
+    union = pd.fluid.layers.reduce_sum(pd.cast(pd.add(pre, truth) >= 1, dtype='float32'), dim=axis)  # OR
+    batch_iou = (inse + smooth) / (union + smooth)
+    iou = pd.fluid.layers.reduce_mean(batch_iou, name='iou_coe')
+    return iou
 
 
 def sequence_loss_by_example(
@@ -426,7 +442,9 @@ def cosine_similarity(v1, v2):
 
     """
 
-    raise NotImplementedError("Not Implemented.")
+    return pd.fluid.layers.reduce_sum(pd.multiply(v1, v2), 1) / \
+        (pd.sqrt(pd.fluid.layers.reduce_sum(pd.multiply(v1, v1), 1)) *
+         pd.sqrt(pd.fluid.layers.reduce_sum(pd.multiply(v2, v2), 1)))
 
 
 # Regularization Functions

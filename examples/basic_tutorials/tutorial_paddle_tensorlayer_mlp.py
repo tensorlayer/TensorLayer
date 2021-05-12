@@ -1,7 +1,9 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
 import os
 os.environ['TL_BACKEND'] = 'paddle'
+# os.environ['TL_BACKEND'] = 'tensorflow'
 
 import tensorlayer as tl
 from tensorlayer.layers import Module

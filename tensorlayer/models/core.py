@@ -369,7 +369,7 @@ class Model:
                 output = network(X_batch)
                 loss = loss_fn(output, y_batch)
                 loss_ce = loss.numpy()
-                params_grads = optimizer.gradient(loss, network.trainable_weights)
+                params_grads = optimizer.gradient(loss, train_weights)
                 optimizer.apply_gradients(params_grads)
 
                 train_loss += loss_ce

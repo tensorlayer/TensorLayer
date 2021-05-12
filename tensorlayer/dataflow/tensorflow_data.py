@@ -255,7 +255,7 @@ def Zip(datasets):
     return tf.data.Dataset.zip(datasets)
 
 
-def Dataloader(dataset, batch_size, shuffle=False, drop_last=False, prefetch=0, shuffle_buffer_size=0):
+def Dataloader(dataset, batch_size, shuffle=False, drop_last=False, prefetch=0, shuffle_buffer_size=1024):
 
     if shuffle:
         dataset = Shuffle(dataset, buffer_size=shuffle_buffer_size, reshuffle_each_iteration=True)
