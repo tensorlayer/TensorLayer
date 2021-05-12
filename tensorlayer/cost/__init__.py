@@ -10,6 +10,6 @@ elif BACKEND == 'mindspore':
 elif BACKEND == 'dragon':
     pass
 elif BACKEND == 'paddle':
-    from .mindspore_cost import *
+    from .paddle_cost import *
 else:
     raise NotImplementedError("This backend is not supported")

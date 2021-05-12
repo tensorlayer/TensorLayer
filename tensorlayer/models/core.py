@@ -21,6 +21,8 @@ if tl.BACKEND == 'mindspore':
     # from mindspore.train.parallel_utils import ParallelMode
     from mindspore.nn.wrap import DistributedGradReducer
     from mindspore.common import ParameterTuple
+if tl.BACKEND == 'paddle':
+    import paddle as pd
 
 
 class Model:
@@ -35,28 +37,7 @@ class Model:
                              network should contain the logic of loss and grads calculation, and the logic
                              of parallel if needed. Default: None.
         optimizer : Optimizer for updating the weights. Default: None.
-        metrics (Union[dict, set]): Dict or set of metrics to be evaluated by the model during
-                        training and testing. eg: {'accuracy', 'recall'}. Default: None.
-        eval_network (Cell): Network for evaluation. If not defined, `network` and `loss_fn` would be wrapped as
-                             `eval_network`. Default: None.
-        eval_indexes (list): In case of defining the `eval_network`, if `eval_indexes` is None, all outputs of
-                             `eval_network` would be passed to metrics, otherwise `eval_indexes` must contain three
-                             elements, representing the positions of loss value, predict value and label, the loss
-                             value would be passed to `Loss` metric, predict value and label would be passed to other
-                             metric. Default: None.
-        amp_level (str): Option for argument `level` in `mindspore.amp.build_train_network`, level for mixed
-            precision training. Supports [O0, O2, O3]. Default: "O0".
-
-            - O0: Do not change.
-            - O2: Cast network to float16, keep batchnorm run in float32, using dynamic loss scale.
-            - O3: Cast network to float16, with additional property 'keep_batchnorm_fp32=False'.
-
-            O2 is recommended on GPU, O3 is recommended on Ascend.
-
-        loss_scale_manager (Union[None, LossScaleManager]): If None, not scale the loss, or else
-            scale the loss by LossScaleManager. If it is set, overwrite the level setting. It's a eyword argument.
-            e.g. Use `loss_scale_manager=None` to set the value.
-        keep_batchnorm_fp32 (bool): Keep Batchnorm run in `float32`. If set, overwrite the level setting. Default: True.
+        metrics : Dict or set of metrics to be evaluated by the model during
 
     Examples:
         >>> import tensorlayer as tl
@@ -84,7 +65,7 @@ class Model:
     """
 
     def __init__(
-        self, network, loss_fn=None, optimizer=None, metrics=None, eval_network=None, eval_indexes=None, amp_level="O0",
+        self, network, loss_fn=None, optimizer=None, metrics=None,
         **kwargs
     ):
         self.network = network
@@ -106,6 +87,12 @@ class Model:
             )
         elif tl.BACKEND == 'mindspore':
             self.ms_train(
+                n_epoch=n_epoch, train_dataset=train_dataset, network=self.network, loss_fn=self.loss_fn,
+                train_weights=self.train_weights, optimizer=self.optimizer, metrics=self.metrics,
+                print_train_batch=print_train_batch, print_freq=print_freq, test_dataset=test_dataset
+            )
+        elif tl.BACKEND == 'paddle':
+            self.pd_train(
                 n_epoch=n_epoch, train_dataset=train_dataset, network=self.network, loss_fn=self.loss_fn,
                 train_weights=self.train_weights, optimizer=self.optimizer, metrics=self.metrics,
                 print_train_batch=print_train_batch, print_freq=print_freq, test_dataset=test_dataset
@@ -359,6 +346,58 @@ class Model:
                             val_acc += metrics(_logits, y_batch)
                         else:
                             val_acc += np.mean((P.Equal()(P.Argmax(axis=1)(output), y_batch).asnumpy()))
+                        n_iter += 1
+                    print("   val loss: {}".format(val_loss / n_iter))
+                    print("   val acc:  {}".format(val_acc / n_iter))
+
+
+    def pd_train(
+        self, n_epoch, train_dataset, network, loss_fn, train_weights, optimizer, metrics, print_train_batch,
+        print_freq, test_dataset
+    ):
+        for epoch in range(n_epoch):
+            start_time = time.time()
+
+            train_loss, train_acc, n_iter = 0, 0, 0
+            for X_batch, y_batch in train_dataset:
+                network.set_train()
+
+                output = network(X_batch)
+                loss = loss_fn(output, y_batch)
+                loss_ce = loss.numpy()
+                loss.backward()
+                optimizer.step()
+                optimizer.clear_grad()
+
+                train_loss += loss_ce
+                if metrics:
+                    train_acc += metrics(output, y_batch)
+                else:
+                    train_acc +=  pd.metric.accuracy(output, y_batch)
+                n_iter += 1
+
+                if print_train_batch:
+                    print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
+                    print("   train loss: {}".format(train_loss / n_iter))
+                    print("   train acc:  {}".format(train_acc.numpy() / n_iter))
+
+            if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
+                print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
+                print("   train loss: {}".format(train_loss / n_iter))
+                print("   train acc:  {}".format(train_acc.numpy() / n_iter))
+
+            if test_dataset:
+                # use training and evaluation sets to evaluate the model every print_freq epoch
+                if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
+                    network.eval()
+                    val_loss, val_acc, n_iter = 0, 0, 0
+                    for X_batch, y_batch in test_dataset:
+                        _logits = network(X_batch)  # is_train=False, disable dropout
+                        val_loss += loss_fn(_logits, y_batch, name='eval_loss')
+                        if metrics:
+                            val_acc += metrics(_logits, y_batch)
+                        else:
+                            val_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
                         n_iter += 1
                     print("   val loss: {}".format(val_loss / n_iter))
                     print("   val acc:  {}".format(val_acc / n_iter))

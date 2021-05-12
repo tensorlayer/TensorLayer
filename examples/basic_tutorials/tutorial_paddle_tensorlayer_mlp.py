@@ -3,7 +3,6 @@
 import os
 os.environ['TL_BACKEND'] = 'paddle'
 
-import paddle.nn.functional as F
 from paddle.vision.transforms import Compose, Normalize
 import paddle
 
@@ -36,22 +35,7 @@ class MLP(Module):
 
 train_loader = paddle.io.DataLoader(train_dataset, batch_size=64, shuffle=True)
 
-def train(model):
-    model.train()
-    epochs = 2
-    optim = paddle.optimizer.Adam(learning_rate=0.001, parameters=model.trainable_weights)
-    for epoch in range(epochs):
-        for batch_id, data in enumerate(train_loader()):
-            x_data = data[0]
-            y_data = data[1]
-            predicts = model(x_data)
-            loss = F.cross_entropy(predicts, y_data)
-            acc = paddle.metric.accuracy(predicts, y_data)
-            loss.backward()
-            if batch_id % 50 == 0:
-                print("epoch: {}, batch_id: {}, loss is: {}, acc is: {}".format(epoch, batch_id, loss.numpy(), acc.numpy()))
-            optim.step()
-            optim.clear_grad()
-model = MLP()
-train(model)
-
+net = MLP()
+optimizer = paddle.optimizer.Adam(learning_rate=0.001, parameters=net.trainable_weights)
+model = tl.models.Model(network=net, loss_fn=tl.cost.cross_entropy, optimizer=optimizer)
+model.train(n_epoch=20, train_dataset=train_loader, print_freq=5, print_train_batch=True)
