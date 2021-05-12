@@ -64,10 +64,7 @@ class Model:
         >>> model.train(2, dataset)
     """
 
-    def __init__(
-        self, network, loss_fn=None, optimizer=None, metrics=None,
-        **kwargs
-    ):
+    def __init__(self, network, loss_fn=None, optimizer=None, metrics=None, **kwargs):
         self.network = network
         self.loss_fn = loss_fn
         self.optimizer = optimizer
@@ -270,7 +267,9 @@ class Model:
 
                 train_loss += _loss_ce
                 if metrics:
-                    train_acc += metrics(_logits, y_batch)
+                    metrics.update(_logits, y_batch)
+                    train_acc += metrics.result()
+                    metrics.reset()
                 else:
                     train_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
                 n_iter += 1
@@ -294,7 +293,9 @@ class Model:
                         _logits = network(X_batch)  # is_train=False, disable dropout
                         val_loss += loss_fn(_logits, y_batch, name='eval_loss')
                         if metrics:
-                            val_acc += metrics(_logits, y_batch)
+                            metrics.update(_logits, y_batch)
+                            val_acc += metrics.result()
+                            metrics.reset()
                         else:
                             val_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
                         n_iter += 1
@@ -319,7 +320,9 @@ class Model:
                 loss = loss_output.asnumpy()
                 train_loss += loss
                 if metrics:
-                    train_acc += metrics(output, y_batch)
+                    metrics.update(output, y_batch)
+                    train_acc += metrics.result()
+                    metrics.reset()
                 else:
                     train_acc += np.mean((P.Equal()(P.Argmax(axis=1)(output), y_batch).asnumpy()))
                 n_iter += 1
@@ -343,13 +346,14 @@ class Model:
                         _logits = network(X_batch)
                         val_loss += loss_fn(_logits, y_batch, name='eval_loss')
                         if metrics:
-                            val_acc += metrics(_logits, y_batch)
+                            metrics.update(_logits, y_batch)
+                            val_acc += metrics.result()
+                            metrics.reset()
                         else:
-                            val_acc += np.mean((P.Equal()(P.Argmax(axis=1)(output), y_batch).asnumpy()))
+                            val_acc += np.mean((P.Equal()(P.Argmax(axis=1)(_logits), y_batch).asnumpy()))
                         n_iter += 1
                     print("   val loss: {}".format(val_loss / n_iter))
                     print("   val acc:  {}".format(val_acc / n_iter))
-
 
     def pd_train(
         self, n_epoch, train_dataset, network, loss_fn, train_weights, optimizer, metrics, print_train_batch,
@@ -365,26 +369,27 @@ class Model:
                 output = network(X_batch)
                 loss = loss_fn(output, y_batch)
                 loss_ce = loss.numpy()
-                loss.backward()
-                optimizer.step()
-                optimizer.clear_grad()
+                params_grads = optimizer.gradient(loss, network.trainable_weights)
+                optimizer.apply_gradients(params_grads)
 
                 train_loss += loss_ce
                 if metrics:
-                    train_acc += metrics(output, y_batch)
+                    metrics.update(output, y_batch)
+                    train_acc += metrics.result()
+                    metrics.reset()
                 else:
-                    train_acc +=  pd.metric.accuracy(output, y_batch)
+                    train_acc += pd.metric.accuracy(output, y_batch)
                 n_iter += 1
 
                 if print_train_batch:
                     print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
                     print("   train loss: {}".format(train_loss / n_iter))
-                    print("   train acc:  {}".format(train_acc.numpy() / n_iter))
+                    print("   train acc:  {}".format(train_acc / n_iter))
 
             if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
                 print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
                 print("   train loss: {}".format(train_loss / n_iter))
-                print("   train acc:  {}".format(train_acc.numpy() / n_iter))
+                print("   train acc:  {}".format(train_acc / n_iter))
 
             if test_dataset:
                 # use training and evaluation sets to evaluate the model every print_freq epoch
@@ -395,7 +400,9 @@ class Model:
                         _logits = network(X_batch)  # is_train=False, disable dropout
                         val_loss += loss_fn(_logits, y_batch, name='eval_loss')
                         if metrics:
-                            val_acc += metrics(_logits, y_batch)
+                            metrics.update(_logits, y_batch)
+                            val_acc += metrics.result()
+                            metrics.reset()
                         else:
                             val_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
                         n_iter += 1

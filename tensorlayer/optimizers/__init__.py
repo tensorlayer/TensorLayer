@@ -11,11 +11,11 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
 
 from .amsgrad import AMSGrad
 
-# ['Adadelta', 'Adagrad', 'Adam', 'Admax', 'Ftrl', 'Nadam', 'RMSprop', 'SGD', 'Momentum', 'Lamb', 'LARS']
+# ['Adadelta', 'Adagrad', 'Adam', 'Adamax', 'Ftrl', 'Nadam', 'RMSprop', 'SGD', 'Momentum', 'Lamb', 'LARS']
 from .load_optimizers_backend import Adadelta
 from .load_optimizers_backend import Adagrad
 from .load_optimizers_backend import Adam
-from .load_optimizers_backend import Admax
+from .load_optimizers_backend import Adamax
 from .load_optimizers_backend import Ftrl
 from .load_optimizers_backend import Nadam
 from .load_optimizers_backend import RMSprop

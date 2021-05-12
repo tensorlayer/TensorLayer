@@ -4,6 +4,7 @@
 import paddle as pd
 import paddle.nn.functional as F
 
+
 def padding_format(padding):
     """
     Checks that the padding format correspond format.
@@ -764,6 +765,7 @@ def depthwise_conv2d(input, filter, strides, padding, data_format=None, dilation
 
     pass
 
+
 class Conv1d_transpose(object):
 
     def __init__(
@@ -923,4 +925,106 @@ class BatchNorm(object):
         pass
 
     def __call__(self, *args, **kwargs):
+        raise NotImplementedError
+
+
+class GroupConv2D(object):
+
+    def __init__(self, strides, padding, data_format, dilations, out_channel, k_size, groups):
         pass
+
+    def __call__(self, input, filters):
+        raise NotImplementedError
+
+
+class SeparableConv1D(object):
+
+    def __init__(self, stride, padding, data_format, dilations, out_channel, k_size, in_channel, depth_multiplier):
+        pass
+
+    def __call__(self, inputs, depthwise_filters, pointwise_filters):
+        raise NotImplementedError
+
+
+class SeparableConv2D(object):
+
+    def __init__(self, strides, padding, data_format, dilations, out_channel, k_size, in_channel, depth_multiplier):
+        pass
+
+    def __call__(self, inputs, depthwise_filters, pointwise_filters):
+        raise NotImplementedError
+
+
+class AdaptiveMeanPool1D(object):
+
+    def __init__(self, output_size, data_format):
+        pass
+
+    def __call__(self, input):
+
+        raise NotImplementedError
+
+
+class AdaptiveMeanPool2D(object):
+
+    def __init__(self, output_size, data_format):
+        pass
+
+    def __call__(self, inputs):
+
+        raise NotImplementedError
+
+
+class AdaptiveMeanPool3D(object):
+
+    def __init__(self, output_size, data_format):
+        pass
+
+    def __call__(self, inputs):
+        raise NotImplementedError
+
+
+class AdaptiveMaxPool1D(object):
+
+    def __init__(self, output_size, data_format):
+        pass
+
+    def __call__(self, input):
+
+        raise NotImplementedError
+
+
+class AdaptiveMaxPool2D(object):
+
+    def __init__(self, output_size, data_format):
+        pass
+
+    def __call__(self, inputs):
+        raise NotImplementedError
+
+
+class AdaptiveMaxPool3D(object):
+
+    def __init__(self, output_size, data_format):
+        pass
+
+    def __call__(self, inputs):
+        raise NotImplementedError
+
+
+class BinaryConv2D(object):
+
+    def __init__(self, strides, padding, data_format, dilations, out_channel, k_size, in_channel):
+        pass
+
+    def __call__(self, inputs, filters):
+        raise NotImplementedError
+
+
+class DorefaConv2D(object):
+
+    def __init__(self, bitW, bitA, strides, padding, data_format, dilations, out_channel, k_size, in_channel):
+        pass
+
+    def __call__(self, inputs, filters):
+        raise NotImplementedError

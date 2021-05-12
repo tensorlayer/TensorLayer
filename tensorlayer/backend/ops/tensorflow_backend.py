@@ -291,6 +291,7 @@ def dtypes(dt):
 
 
 class Maximum(object):
+
     def __init__(self):
         pass
 
@@ -299,6 +300,7 @@ class Maximum(object):
 
 
 class Minimum(object):
+
     def __init__(self):
         pass
 
@@ -524,6 +526,7 @@ def reduce_min(input_tensor, axis=None):
 
 
 class Pad(object):
+
     def __init__(self, paddings, mode="REFLECT"):
         if mode not in ['CONSTANT', 'REFLECT', 'SYMMETRIC']:
             raise Exception("Unsupported mode: {}".format(mode))
@@ -533,6 +536,7 @@ class Pad(object):
     def __call__(self, x):
         outputs = tf.pad(x, self.paddings, mode=self.mode, constant_values=0)
         return outputs
+
 
 def pad(tensor, paddings, mode='CONSTANT', constant_values=0):
     """
@@ -600,6 +604,7 @@ def stack(values, axis=0):
 
 
 class Meshgrid(object):
+
     def __init__(self, indexing='xy'):
         super(Meshgrid, self).__init__()
         self.index = indexing
@@ -931,7 +936,6 @@ class Count_nonzero(object):
         return tf.math.count_nonzero(input, axis=axis, keepdims=self.keepdims, dtype=self.dtype)
 
 
-
 class Resize:
 
     def __init__(self, scale, method, antialias=False, data_format='channels_last', ksize=None):
@@ -992,19 +996,25 @@ class Sign(object):
     def __call__(self, x):
         return tf.sign(x)
 
+
 def ceil(x):
     return tf.math.ceil(x)
+
 
 def multiply(x, y):
     return tf.multiply(x, y)
 
+
 def divide(x, y):
     return tf.divide(x, y)
+
 
 def identity(x):
     return tf.identity(x)
 
+
 class BatchToSpace(object):
+
     def __init__(self, block_size, crops):
         self.bolock_size = block_size
         self.crops = crops
@@ -1012,7 +1022,9 @@ class BatchToSpace(object):
     def __call__(self, input_x):
         return tf.batch_to_space(input=input_x, block_shape=self.bolock_size, crops=self.crops)
 
+
 class DepthToSpace(object):
+
     def __init__(self, block_size, data_format='NHWC'):
         self.block_size = block_size
         self.data_format = data_format

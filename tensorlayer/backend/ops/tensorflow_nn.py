@@ -5,7 +5,7 @@ import tensorflow as tf
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import math_ops
 from tensorflow.python.training import moving_averages
-
+from math import floor, ceil
 # loss function
 sparse_softmax_cross_entropy_with_logits = tf.nn.sparse_softmax_cross_entropy_with_logits
 sigmoid_cross_entropy_with_logits = tf.nn.sigmoid_cross_entropy_with_logits
@@ -1515,5 +1515,332 @@ class BatchNorm(object):
             outputs = batch_normalization(
                 inputs, self.moving_mean, self.moving_var, self.beta, self.gamma, self.epsilon, self.data_format
             )
+
+        return outputs
+
+
+class GroupConv2D(object):
+
+    def __init__(self, strides, padding, data_format, dilations, out_channel, k_size, groups):
+        self.data_format, self.padding = preprocess_2d_format(data_format, padding)
+        self.strides = strides
+        self.dilations = dilations
+        self.groups = groups
+        if self.data_format == 'NHWC':
+            self.channels_axis = 3
+        else:
+            self.channels_axis = 1
+
+    def __call__(self, input, filters):
+
+        if self.groups == 1:
+            outputs = tf.nn.conv2d(
+                input=input,
+                filters=filters,
+                strides=self.strides,
+                padding=self.padding,
+                data_format=self.data_format,
+                dilations=self.dilations,
+            )
+        else:
+            inputgroups = tf.split(input, num_or_size_splits=self.groups, axis=self.channels_axis)
+            weightsgroups = tf.split(filters, num_or_size_splits=self.groups, axis=self.channels_axis)
+            convgroups = []
+            for i, k in zip(inputgroups, weightsgroups):
+                convgroups.append(
+                    tf.nn.conv2d(
+                        input=i,
+                        filters=k,
+                        strides=self.strides,
+                        padding=self.padding,
+                        data_format=self.data_format,
+                        dilations=self.dilations,
+                    )
+                )
+            outputs = tf.concat(axis=self.channels_axis, values=convgroups)
+
+        return outputs
+
+
+class SeparableConv1D(object):
+
+    def __init__(self, stride, padding, data_format, dilations, out_channel, k_size, in_channel, depth_multiplier):
+        self.data_format, self.padding = preprocess_1d_format(data_format, padding)
+
+        if self.data_format == 'NWC':
+            self.spatial_start_dim = 1
+            self.strides = (1, stride, stride, 1)
+            self.data_format = 'NHWC'
+        else:
+            self.spatial_start_dim = 2
+            self.strides = (1, 1, stride, stride)
+            self.data_format = 'NCHW'
+        self.dilation_rate = (1, dilations)
+
+    def __call__(self, inputs, depthwise_filters, pointwise_filters):
+        inputs = tf.expand_dims(inputs, axis=self.spatial_start_dim)
+        depthwise_filters = tf.expand_dims(depthwise_filters, 0)
+        pointwise_filters = tf.expand_dims(pointwise_filters, 0)
+
+        outputs = tf.nn.separable_conv2d(
+            inputs, depthwise_filters, pointwise_filters, strides=self.strides, padding=self.padding,
+            dilations=self.dilation_rate, data_format=self.data_format
+        )
+
+        outputs = tf.squeeze(outputs, axis=self.spatial_start_dim)
+
+        return outputs
+
+
+class SeparableConv2D(object):
+
+    def __init__(self, strides, padding, data_format, dilations, out_channel, k_size, in_channel, depth_multiplier):
+        self.data_format, self.padding = preprocess_2d_format(data_format, padding)
+        self.strides = strides
+        self.dilations = (dilations[2], dilations[2])
+
+    def __call__(self, inputs, depthwise_filters, pointwise_filters):
+
+        outputs = tf.nn.separable_conv2d(
+            inputs, depthwise_filters, pointwise_filters, strides=self.strides, padding=self.padding,
+            dilations=self.dilations, data_format=self.data_format
+        )
+
+        return outputs
+
+
+class AdaptiveMeanPool1D(object):
+
+    def __init__(self, output_size, data_format):
+        self.data_format, _ = preprocess_1d_format(data_format, None)
+        self.output_size = output_size
+
+    def __call__(self, input):
+
+        if self.data_format == 'NWC':
+            n, w, c = input.shape
+        else:
+            n, c, w = input.shape
+
+        stride = floor(w / self.output_size)
+        kernel = w - (self.output_size - 1) * stride
+        output = tf.nn.avg_pool1d(input, ksize=kernel, strides=stride, data_format=self.data_format, padding='VALID')
+
+        return output
+
+
+class AdaptiveMeanPool2D(object):
+
+    def __init__(self, output_size, data_format):
+        self.data_format, _ = preprocess_2d_format(data_format, None)
+        self.output_size = output_size
+
+    def __call__(self, inputs):
+
+        if self.data_format == 'NHWC':
+            n, h, w, c = inputs.shape
+        else:
+            n, c, h, w = inputs.shape
+
+        out_h, out_w = self.output_size
+        stride_h = floor(h / out_h)
+        kernel_h = h - (out_h - 1) * stride_h
+        stride_w = floor(w / out_w)
+        kernel_w = w - (out_w - 1) * stride_w
+
+        outputs = tf.nn.avg_pool2d(
+            inputs, ksize=(kernel_h, kernel_w), strides=(stride_h, stride_w), data_format=self.data_format,
+            padding='VALID'
+        )
+
+        return outputs
+
+
+class AdaptiveMeanPool3D(object):
+
+    def __init__(self, output_size, data_format):
+        self.data_format, _ = preprocess_3d_format(data_format, None)
+        self.output_size = output_size
+
+    def __call__(self, inputs):
+
+        if self.data_format == 'NDHWC':
+            n, d, h, w, c = inputs.shape
+        else:
+            n, c, d, h, w = inputs.shape
+
+        out_d, out_h, out_w = self.output_size
+        stride_d = floor(d / out_d)
+        kernel_d = d - (out_d - 1) * stride_d
+        stride_h = floor(h / out_h)
+        kernel_h = h - (out_h - 1) * stride_h
+        stride_w = floor(w / out_w)
+        kernel_w = w - (out_w - 1) * stride_w
+
+        outputs = tf.nn.avg_pool3d(
+            inputs, ksize=(kernel_d, kernel_h, kernel_w), strides=(stride_d, stride_h, stride_w),
+            data_format=self.data_format, padding='VALID'
+        )
+
+        return outputs
+
+
+class AdaptiveMaxPool1D(object):
+
+    def __init__(self, output_size, data_format):
+        self.data_format, _ = preprocess_1d_format(data_format, None)
+        self.output_size = output_size
+
+    def __call__(self, input):
+
+        if self.data_format == 'NWC':
+            n, w, c = input.shape
+        else:
+            n, c, w = input.shape
+
+        stride = floor(w / self.output_size)
+        kernel = w - (self.output_size - 1) * stride
+        output = tf.nn.max_pool1d(input, ksize=kernel, strides=stride, data_format=self.data_format, padding='VALID')
+
+        return output
+
+
+class AdaptiveMaxPool2D(object):
+
+    def __init__(self, output_size, data_format):
+        self.data_format, _ = preprocess_2d_format(data_format, None)
+        self.output_size = output_size
+
+    def __call__(self, inputs):
+
+        if self.data_format == 'NHWC':
+            n, h, w, c = inputs.shape
+        else:
+            n, c, h, w = inputs.shape
+
+        out_h, out_w = self.output_size
+        stride_h = floor(h / out_h)
+        kernel_h = h - (out_h - 1) * stride_h
+        stride_w = floor(w / out_w)
+        kernel_w = w - (out_w - 1) * stride_w
+
+        outputs = tf.nn.max_pool2d(
+            inputs, ksize=(kernel_h, kernel_w), strides=(stride_h, stride_w), data_format=self.data_format,
+            padding='VALID'
+        )
+
+        return outputs
+
+
+class AdaptiveMaxPool3D(object):
+
+    def __init__(self, output_size, data_format):
+        self.data_format, _ = preprocess_3d_format(data_format, None)
+        self.output_size = output_size
+
+    def __call__(self, inputs):
+
+        if self.data_format == 'NDHWC':
+            n, d, h, w, c = inputs.shape
+        else:
+            n, c, d, h, w = inputs.shape
+
+        out_d, out_h, out_w = self.output_size
+        stride_d = floor(d / out_d)
+        kernel_d = d - (out_d - 1) * stride_d
+        stride_h = floor(h / out_h)
+        kernel_h = h - (out_h - 1) * stride_h
+        stride_w = floor(w / out_w)
+        kernel_w = w - (out_w - 1) * stride_w
+
+        outputs = tf.nn.max_pool3d(
+            inputs, ksize=(kernel_d, kernel_h, kernel_w), strides=(stride_d, stride_h, stride_w),
+            data_format=self.data_format, padding='VALID'
+        )
+
+        return outputs
+
+
+class BinaryConv2D(object):
+
+    def __init__(self, strides, padding, data_format, dilations, out_channel, k_size, in_channel):
+        self.data_format, self.padding = preprocess_2d_format(data_format, padding)
+        self.strides = strides
+        self.dilations = dilations
+
+    # @tf.RegisterGradient("TL_Sign_QuantizeGrad")
+    # def _quantize_grad(op, grad):
+    #     """Clip and binarize tensor using the straight through estimator (STE) for the gradient."""
+    #     return tf.clip_by_value(grad, -1, 1)
+
+    def quantize(self, x):
+        # ref: https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L70
+        #  https://github.com/itayhubara/BinaryNet.tf/blob/master/nnUtils.py
+        with tf.compat.v1.get_default_graph().gradient_override_map({"Sign": "TL_Sign_QuantizeGrad"}):
+            return tf.sign(x)
+
+    def __call__(self, inputs, filters):
+
+        filters = self.quantize(filters)
+
+        outputs = tf.nn.conv2d(
+            input=inputs, filters=filters, strides=self.strides, padding=self.padding, data_format=self.data_format,
+            dilations=self.dilations
+        )
+
+        return outputs
+
+
+class DorefaConv2D(object):
+
+    def __init__(self, bitW, bitA, strides, padding, data_format, dilations, out_channel, k_size, in_channel):
+        self.data_format, self.padding = preprocess_2d_format(data_format, padding)
+        self.strides = strides
+        self.dilations = dilations
+        self.bitW = bitW
+        self.bitA = bitA
+
+    def _quantize_dorefa(self, x, k):
+        G = tf.compat.v1.get_default_graph()
+        n = float(2**k - 1)
+        with G.gradient_override_map({"Round": "Identity"}):
+            return tf.round(x * n) / n
+
+    def cabs(self, x):
+        return tf.minimum(1.0, tf.abs(x), name='cabs')
+
+    def quantize_active(self, x, bitA):
+        if bitA == 32:
+            return x
+        return self._quantize_dorefa(x, bitA)
+
+    def quantize_weight(self, x, bitW, force_quantization=False):
+
+        G = tf.compat.v1.get_default_graph()
+        if bitW == 32 and not force_quantization:
+            return x
+        if bitW == 1:  # BWN
+            with G.gradient_override_map({"Sign": "Identity"}):
+                E = tf.stop_gradient(tf.reduce_mean(input_tensor=tf.abs(x)))
+                return tf.sign(x / E) * E
+        x = tf.clip_by_value(
+            x * 0.5 + 0.5, 0.0, 1.0
+        )  # it seems as though most weights are within -1 to 1 region anyways
+        return 2 * self._quantize_dorefa(x, bitW) - 1
+
+    def __call__(self, inputs, filters):
+
+        inputs = self.quantize_active(self.cabs(inputs), self.bitA)
+
+        filters = self.quantize_weight(filters, self.bitW)
+
+        outputs = tf.nn.conv2d(
+            input=inputs,
+            filters=filters,
+            strides=self.strides,
+            padding=self.padding,
+            data_format=self.data_format,
+            dilations=self.dilations,
+        )
 
         return outputs

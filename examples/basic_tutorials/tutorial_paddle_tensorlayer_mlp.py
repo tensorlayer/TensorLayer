@@ -3,22 +3,19 @@
 import os
 os.environ['TL_BACKEND'] = 'paddle'
 
-from paddle.vision.transforms import Compose, Normalize
-import paddle
-
 import tensorlayer as tl
 from tensorlayer.layers import Module
 from tensorlayer.layers import Dense, Flatten
 
-transform = Compose([Normalize(mean=[127.5],
-                               std=[127.5],
-                               data_format='CHW')])
 print('download training data and load training data')
-train_dataset = paddle.vision.datasets.MNIST(mode='train', transform=transform)
-test_dataset = paddle.vision.datasets.MNIST(mode='test', transform=transform)
+
+X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
+
 print('load finished')
 
+
 class MLP(Module):
+
     def __init__(self):
         super(MLP, self).__init__()
         self.linear1 = Dense(n_units=120, in_channels=784, act=tl.ReLU)
@@ -33,9 +30,12 @@ class MLP(Module):
         x = self.linear3(x)
         return x
 
-train_loader = paddle.io.DataLoader(train_dataset, batch_size=64, shuffle=True)
 
+traindataset = tl.dataflow.FromSlices((X_train, y_train))
+train_loader = tl.dataflow.Dataloader(traindataset, batch_size=64, shuffle=True)
 net = MLP()
-optimizer = paddle.optimizer.Adam(learning_rate=0.001, parameters=net.trainable_weights)
-model = tl.models.Model(network=net, loss_fn=tl.cost.cross_entropy, optimizer=optimizer)
+
+optimizer = tl.optimizers.Adam(learning_rate=0.001)
+metric = tl.metric.Accuracy()
+model = tl.models.Model(network=net, loss_fn=tl.cost.cross_entropy, optimizer=optimizer, metrics=metric)
 model.train(n_epoch=20, train_dataset=train_loader, print_freq=5, print_train_batch=True)

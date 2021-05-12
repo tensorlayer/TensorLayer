@@ -30,6 +30,8 @@ class Layer_Pooling_Test(CustomTestCase):
         n16 = tl.layers.MaxPool1d(filter_size=3, strides=1, padding='VALID', dilation_rate=2, name='test_maxpool1d')(n1)
         n17 = tl.layers.MeanPool1d(filter_size=3, strides=1, padding='VALID', dilation_rate=2,
                                    name='test_meanpool1d')(n1)
+        n19 = tl.layers.AdaptiveMeanPool1d(output_size=44, name='test_adaptivemeanpool1d')(n1)
+        n20 = tl.layers.AdaptiveMaxPool1d(output_size=44, name='test_adaptivemaxpool1d')(n1)
 
         cls.n1_shape = n1.get_shape().as_list()
         cls.n2_shape = n2.get_shape().as_list()
@@ -38,6 +40,8 @@ class Layer_Pooling_Test(CustomTestCase):
         cls.n5_shape = n5.get_shape().as_list()
         cls.n16_shape = n16.get_shape().as_list()
         cls.n17_shape = n17.get_shape().as_list()
+        cls.n19_shape = n19.get_shape().as_list()
+        cls.n20_shape = n20.get_shape().as_list()
 
         ## 2D ========================================================================
 
@@ -51,6 +55,8 @@ class Layer_Pooling_Test(CustomTestCase):
         n10 = tl.layers.GlobalMeanPool2d(name='test_meanpool2d')(n6)
         n15 = tl.layers.PoolLayer(name='test_pool2d')(n6)
         # n18 = tl.layers.CornerPool2d('TopLeft', name='test_cornerpool2d')(n6)
+        n21 = tl.layers.AdaptiveMeanPool2d(output_size=(45, 32), name='test_adaptivemeanpool2d')(n6)
+        n22 = tl.layers.AdaptiveMaxPool2d(output_size=(45, 32), name='test_adaptivemaxpool2d')(n6)
 
         cls.n6_shape = n6.get_shape().as_list()
         cls.n7_shape = n7.get_shape().as_list()
@@ -59,7 +65,8 @@ class Layer_Pooling_Test(CustomTestCase):
         cls.n10_shape = n10.get_shape().as_list()
         cls.n15_shape = n15.get_shape().as_list()
         # cls.n18_shape = n18.get_shape().as_list()
-
+        cls.n21_shape = n21.get_shape().as_list()
+        cls.n22_shape = n22.get_shape().as_list()
 
         ## 3D ========================================================================
 
@@ -73,10 +80,17 @@ class Layer_Pooling_Test(CustomTestCase):
         n14 = tl.layers.MaxPool3d(filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME',
                                   name='test_maxpool3d')(nin_3)
 
+        n23 = tl.layers.AdaptiveMeanPool3d(output_size=(45, 32, 55), name='test_adaptivemeanpool3d')(nin_3)
+        n24 = tl.layers.AdaptiveMaxPool3d(output_size=(45, 32, 55), name='test_adaptivemaxpool3d')(nin_3)
+
         cls.n11_shape = n11.get_shape().as_list()
         cls.n12_shape = n12.get_shape().as_list()
         cls.n13_shape = n13.get_shape().as_list()
         cls.n14_shape = n14.get_shape().as_list()
+        cls.n21_shape = n21.get_shape().as_list()
+        cls.n22_shape = n22.get_shape().as_list()
+        cls.n23_shape = n23.get_shape().as_list()
+        cls.n24_shape = n24.get_shape().as_list()
 
     @classmethod
     def tearDownClass(cls):
@@ -133,6 +147,24 @@ class Layer_Pooling_Test(CustomTestCase):
 
     def test_n17_shape(self):
         self.assertEqual(self.n17_shape[1:4], [46, 32])
+
+    def test_n19_shape(self):
+        self.assertEqual(self.n19_shape[1:3], [44, 32])
+
+    def test_n20_shape(self):
+        self.assertEqual(self.n20_shape[1:3], [44, 32])
+
+    def test_n21_shape(self):
+        self.assertEqual(self.n21_shape[1:4], [45, 32, 32])
+
+    def test_n22_shape(self):
+        self.assertEqual(self.n22_shape[1:4], [45, 32, 32])
+
+    def test_n23_shape(self):
+        self.assertEqual(self.n23_shape[1:5], [45, 32, 55, 3])
+
+    def test_n24_shape(self):
+        self.assertEqual(self.n24_shape[1:5], [45, 32, 55, 3])
 
     # def test_n18_shape(self):
     #     self.assertEqual(self.n18_shape[1:], [50, 50, 32])
