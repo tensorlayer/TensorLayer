@@ -20,6 +20,7 @@ uint16 = "uint16"
 uint32 = "uint32"
 uint64 = "uint64"
 
+
 def _getter(init_fn, **kwargs):
     """Return an named eager tensor."""
     raise NotImplementedError
@@ -272,6 +273,7 @@ def dtypes(dt):
 
 
 class Maximum(object):
+
     def __init__(self):
         pass
 
@@ -280,6 +282,7 @@ class Maximum(object):
 
 
 class Minimum(object):
+
     def __init__(self):
         pass
 
@@ -313,7 +316,7 @@ class FlattenReshape(object):
         pass
 
     def __call__(self, inputs):
-        return pd.flatten(x=inputs, start_axis=1,stop_axis=-1)
+        return pd.flatten(x=inputs, start_axis=1, stop_axis=-1)
 
 
 class Reshape(object):
@@ -504,7 +507,9 @@ def reduce_min(input_tensor, axis=None):
     """
     raise NotImplementedError
 
+
 class Pad(object):
+
     def __init__(self, paddings, mode="REFLECT"):
         if mode not in ['CONSTANT', 'REFLECT', 'SYMMETRIC']:
             raise Exception("Unsupported mode: {}".format(mode))
@@ -515,6 +520,7 @@ class Pad(object):
 
     def __call__(self, x):
         raise NotImplementedError
+
 
 def pad(tensor, paddings, mode='CONSTANT', constant_values=0):
     """
@@ -577,6 +583,7 @@ def stack(values, axis=0):
 
 
 class Meshgrid(object):
+
     def __init__(self, indexing='xy'):
         super(Meshgrid, self).__init__()
         self.index = indexing
@@ -886,7 +893,6 @@ class Count_nonzero(object):
         pass
 
 
-
 class Resize:
 
     def __init__(self, scale, method, antialias=False, data_format='channels_last', ksize=None):
@@ -943,19 +949,25 @@ class Sign(object):
     def __call__(self, x):
         raise NotImplementedError
 
+
 def ceil(x):
     raise NotImplementedError
+
 
 def multiply(x, y):
     raise NotImplementedError
 
+
 def divide(x, y):
     raise NotImplementedError
+
 
 def identity(x):
     raise NotImplementedError
 
+
 class BatchToSpace(object):
+
     def __init__(self, block_size, crops):
         super(BatchToSpace, self).__init__()
         pass
@@ -965,6 +977,7 @@ class BatchToSpace(object):
 
 
 class DepthToSpace(object):
+
     def __init__(self, block_size, data_format='NHWC'):
         pass
 

@@ -6,7 +6,7 @@ from mindspore.nn import optim as optimizer
 import mindspore as ms
 from mindspore.nn import Cell
 
-__all__ = ['Adadelta', 'Adagrad', 'Adam', 'Admax', 'Ftrl', 'Nadam', 'RMSprop', 'SGD', 'Momentum', 'Lamb', 'LARS']
+__all__ = ['Adadelta', 'Adagrad', 'Adam', 'Adamax', 'Ftrl', 'Nadam', 'RMSprop', 'SGD', 'Momentum', 'Lamb', 'LARS']
 
 
 class Adadelta(Cell):
@@ -50,13 +50,13 @@ class Adam(Cell):
         optimizer_adam(grads)
 
 
-class Admax(Cell):
+class Adamax(Cell):
 
     def __init__(self):
         pass
 
     def app_gradients(self):
-        raise Exception('Admax optimizer function not implemented')
+        raise Exception('Adamax optimizer function not implemented')
 
 
 class Ftrl(Cell):

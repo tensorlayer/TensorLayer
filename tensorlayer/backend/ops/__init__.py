@@ -30,6 +30,9 @@ from .load_backend import depthwise_conv2d
 from .load_backend import Conv1d_transpose
 from .load_backend import Conv2d_transpose
 from .load_backend import Conv3d_transpose
+from .load_backend import GroupConv2D
+from .load_backend import BinaryConv2D
+from .load_backend import DorefaConv2D
 
 from .load_backend import ReLU
 from .load_backend import ReLU6
@@ -47,6 +50,14 @@ from .load_backend import AvgPool
 from .load_backend import Dropout
 from .load_backend import BatchNorm
 from .load_backend import DepthwiseConv2d
+from .load_backend import SeparableConv1D
+from .load_backend import SeparableConv2D
+from .load_backend import AdaptiveMeanPool1D
+from .load_backend import AdaptiveMeanPool2D
+from .load_backend import AdaptiveMeanPool3D
+from .load_backend import AdaptiveMaxPool1D
+from .load_backend import AdaptiveMaxPool2D
+from .load_backend import AdaptiveMaxPool3D
 
 # load ops
 from .load_backend import Variable
@@ -123,4 +134,3 @@ from .load_backend import Maximum
 from .load_backend import Meshgrid
 from .load_backend import BatchToSpace
 from .load_backend import DepthToSpace
-

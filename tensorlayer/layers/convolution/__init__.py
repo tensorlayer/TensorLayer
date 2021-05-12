@@ -9,16 +9,16 @@ layers that allow user to apply ``tf.ops.lrn`` on ``network.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`__.
 """
 
-# from .binary_conv import *
+from .binary_conv import *
 from .deformable_conv import *
 from .depthwise_conv import *
-# from .dorefa_conv import *
+from .dorefa_conv import *
 # from .expert_conv import *
 # from .expert_deconv import *
-# from .group_conv import *
+from .group_conv import *
 from .quan_conv import *
 from .quan_conv_bn import *
-# from .separable_conv import *
+from .separable_conv import *
 from .simplified_conv import *
 # from .simplified_deconv import *
 from .super_resolution import *
@@ -52,7 +52,7 @@ __all__ = [
     # 'AtrousDeConv2d',
 
     # binary
-    # 'BinaryConv2d',
+    'BinaryConv2d',
 
     # deformable
     'DeformableConv2d',
@@ -61,14 +61,14 @@ __all__ = [
     'DepthwiseConv2d',
 
     # dorefa
-    # 'DorefaConv2d',
+    'DorefaConv2d',
 
     # group
-    # 'GroupConv2d',
+    'GroupConv2d',
 
     # separable
-    # 'SeparableConv1d',
-    # 'SeparableConv2d',
+    'SeparableConv1d',
+    'SeparableConv2d',
 
     # subpixel
     'SubpixelConv1d',

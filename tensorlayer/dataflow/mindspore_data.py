@@ -21,6 +21,7 @@ __all__ = [
     'Take',
     'TextFlieDataset',
     'TFRecordDataset',
+    'Dataloader',
 ]
 
 
@@ -158,9 +159,7 @@ def Prefetch(dataset, buffer_size):
     return dataset.config.set_prefetch_size(prefetch_size)
 
 
-
 def Repeat(dataset, count=None):
-
 
     return dataset.repeat(count)
 
@@ -275,3 +274,14 @@ def Zip(datasets):
 
     '''
     return ds.zip(datasets)
+
+
+def Dataloader(dataset, batch_size, shuffle=False, drop_last=False, prefetch=0, shuffle_buffer_size=0):
+
+    if shuffle:
+        dataset = Shuffle(dataset, buffer_size=shuffle_buffer_size)
+
+    dataset = Batch(dataset, batch_size=batch_size, drop_remainder=drop_last)
+    dataset = Prefetch(dataset, buffer_size=prefetch)
+
+    return dataset

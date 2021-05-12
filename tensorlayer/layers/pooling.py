@@ -5,7 +5,6 @@ import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.layers.core import Module
 
-
 __all__ = [
     'PoolLayer',
     'MaxPool1d',
@@ -20,6 +19,12 @@ __all__ = [
     'GlobalMeanPool2d',
     'GlobalMaxPool3d',
     'GlobalMeanPool3d',
+    'AdaptiveMeanPool1d',
+    'AdaptiveMeanPool2d',
+    'AdaptiveMeanPool3d',
+    'AdaptiveMaxPool1d',
+    'AdaptiveMaxPool2d',
+    'AdaptiveMaxPool3d',
     'CornerPool2d',
 ]
 
@@ -923,9 +928,9 @@ class CornerPool2d(Module):
     """
 
     def __init__(
-            self,
-            mode='TopLeft',
-            name=None  # 'cornerpool2d'
+        self,
+        mode='TopLeft',
+        name=None  # 'cornerpool2d'
     ):
         super().__init__(name)
         self.mode = mode
@@ -958,7 +963,7 @@ class CornerPool2d(Module):
             )
             temp_bottom = tl.ops.max_pool(temp_bottom, ksize=(input_height, 1), strides=(1, 1), padding='VALID')
             temp_right = tl.ops.max_pool(temp_right, ksize=(1, input_width), strides=(1, 1), padding='VALID')
-            outputs = tl.add(temp_bottom, temp_right)#, name=self.name)
+            outputs = tl.add(temp_bottom, temp_right)  #, name=self.name)
         elif self.mode == 'BottomRight':
             temp_top = tl.pad(
                 inputs, tl.constant([[0, 0], [input_height - 1, 0], [0, 0], [0, 0]]), constant_values=batch_min
@@ -973,7 +978,343 @@ class CornerPool2d(Module):
             outputs = tl.identity(inputs)
         return outputs
 
-if __name__ == '__main__':
-    net = tl.layers.Input([None, 32, 32, 8], name='input')
-    net = CornerPool2d(mode='TopLeft',name='cornerpool2d')(net)
-    print(net)
+
+class AdaptiveMeanPool1d(Module):
+    """The :class:`AdaptiveMeanPool1d` class is a 1D Adaptive Mean Pooling layer.
+
+    Parameters
+    ------------
+    output_size : int
+        The target output size. It must be an integer.
+    data_format : str
+        One of channels_last (default, [batch,  width, channel]) or channels_first. The ordering of the dimensions in the inputs.
+    name : None or str
+        A unique layer name.
+
+    Examples
+    ---------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None, 32, 3], name='input')
+    >>> net = tl.layers.AdaptiveMeanPool1d(output_size=16)(net)
+    >>> output shape : [None, 16, 3]
+
+    """
+
+    def __init__(self, output_size, data_format='channels_last', name=None):
+        super(AdaptiveMeanPool1d, self).__init__(name)
+        self.output_size = output_size
+        self.data_format = data_format
+
+        self.build()
+        self._built = True
+
+        logging.info("AdaptiveMeanPool1d %s: output_size: %s " % (self.name, str(output_size)))
+
+    def __repr__(self):
+        s = ('{classname}(output_size={output_size}')
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape=None):
+        if self.data_format == 'channels_last':
+            self.data_format = 'NWC'
+        elif self.data_format == 'channels_first':
+            self.data_format = 'NCW'
+        else:
+            raise Exception("unsupported data format")
+
+        self.adaptivemeanpool1d = tl.ops.AdaptiveMeanPool1D(output_size=self.output_size, data_format=self.data_format)
+
+    def forward(self, inputs):
+
+        outputs = self.adaptivemeanpool1d(inputs)
+        return outputs
+
+
+class AdaptiveMeanPool2d(Module):
+    """The :class:`AdaptiveMeanPool2d` class is a 2D Adaptive Mean Pooling layer.
+
+    Parameters
+    ------------
+    output_size : int or list or  tuple
+        The target output size. It cloud be an int \[int,int]\(int, int).
+    data_format : str
+        One of channels_last (default, [batch,  height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
+    name : None or str
+        A unique layer name.
+
+    Examples
+    ---------
+    With TensorLayer
+
+    >>> net = tl.layers.Input([None,32, 32, 3], name='input')
+    >>> net = tl.layers.AdaptiveMeanPool2d(output_size=16)(net)
+    >>> output shape : [None,16, 16, 3]
+
+    """
+
+    def __init__(self, output_size, data_format='channels_last', name=None):
+        super(AdaptiveMeanPool2d, self).__init__(name)
+        self.output_size = output_size
+        self.data_format = data_format
+
+        self.build()
+        self._built = True
+
+        logging.info("AdaptiveMeanPool2d %s: output_size: %s " % (self.name, str(output_size)))
+
+    def __repr__(self):
+        s = ('{classname}(output_size={output_size}')
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape=None):
+        if self.data_format == 'channels_last':
+            self.data_format = 'NHWC'
+        elif self.data_format == 'channels_first':
+            self.data_format = 'NCHW'
+        else:
+            raise Exception("unsupported data format")
+
+        if isinstance(self.output_size, int):
+            self.output_size = (self.output_size, ) * 2
+
+        self.adaptivemeanpool2d = tl.ops.AdaptiveMeanPool2D(output_size=self.output_size, data_format=self.data_format)
+
+    def forward(self, inputs):
+
+        outputs = self.adaptivemeanpool2d(inputs)
+        return outputs
+
+
+class AdaptiveMeanPool3d(Module):
+    """The :class:`AdaptiveMeanPool3d` class is a 3D Adaptive Mean Pooling layer.
+
+        Parameters
+        ------------
+        output_size : int or list or  tuple
+            The target output size. It cloud be an int \[int,int,int]\(int, int, int).
+        data_format : str
+            One of channels_last (default, [batch,  depth, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
+        name : None or str
+            A unique layer name.
+
+        Examples
+        ---------
+        With TensorLayer
+
+        >>> net = tl.layers.Input([None,32, 32, 32, 3], name='input')
+        >>> net = tl.layers.AdaptiveMeanPool3d(output_size=16)(net)
+        >>> output shape : [None, 16, 16, 16, 3]
+
+        """
+
+    def __init__(self, output_size, data_format='channels_last', name=None):
+        super(AdaptiveMeanPool3d, self).__init__(name)
+        self.output_size = output_size
+        self.data_format = data_format
+
+        self.build()
+        self._built = True
+
+        logging.info("AdaptiveMeanPool3d %s: output_size: %s " % (self.name, str(output_size)))
+
+    def __repr__(self):
+        s = ('{classname}(output_size={output_size}')
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape=None):
+        if self.data_format == 'channels_last':
+            self.data_format = 'NDHWC'
+        elif self.data_format == 'channels_first':
+            self.data_format = 'NCDHW'
+        else:
+            raise Exception("unsupported data format")
+
+        if isinstance(self.output_size, int):
+            self.output_size = (self.output_size, ) * 3
+
+        self.adaptivemeanpool3d = tl.ops.AdaptiveMeanPool3D(output_size=self.output_size, data_format=self.data_format)
+
+    def forward(self, inputs):
+
+        outputs = self.adaptivemeanpool3d(inputs)
+        return outputs
+
+
+class AdaptiveMaxPool1d(Module):
+    """The :class:`AdaptiveMaxPool1d` class is a 1D Adaptive Max Pooling layer.
+
+        Parameters
+        ------------
+        output_size : int
+            The target output size. It must be an integer.
+        data_format : str
+            One of channels_last (default, [batch,  width, channel]) or channels_first. The ordering of the dimensions in the inputs.
+        name : None or str
+            A unique layer name.
+
+        Examples
+        ---------
+        With TensorLayer
+
+        >>> net = tl.layers.Input([None, 32, 3], name='input')
+        >>> net = tl.layers.AdaptiveMaxPool1d(output_size=16)(net)
+        >>> output shape : [None, 16, 3]
+
+        """
+
+    def __init__(self, output_size, data_format='channels_last', name=None):
+        super(AdaptiveMaxPool1d, self).__init__(name)
+        self.output_size = output_size
+        self.data_format = data_format
+
+        self.build()
+        self._built = True
+
+        logging.info("AdaptiveMaxPool1d %s: output_size: %s " % (self.name, str(output_size)))
+
+    def __repr__(self):
+        s = ('{classname}(output_size={output_size}')
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape=None):
+        if self.data_format == 'channels_last':
+            self.data_format = 'NWC'
+        elif self.data_format == 'channels_first':
+            self.data_format = 'NCW'
+        else:
+            raise Exception("unsupported data format")
+
+        self.adaptivemaxpool1d = tl.ops.AdaptiveMaxPool1D(output_size=self.output_size, data_format=self.data_format)
+
+    def forward(self, inputs):
+
+        outputs = self.adaptivemaxpool1d(inputs)
+        return outputs
+
+
+class AdaptiveMaxPool2d(Module):
+    """The :class:`AdaptiveMaxPool2d` class is a 2D Adaptive Max Pooling layer.
+
+        Parameters
+        ------------
+        output_size : int or list or  tuple
+            The target output size. It cloud be an int \[int,int]\(int, int).
+        data_format : str
+            One of channels_last (default, [batch, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
+        name : None or str
+            A unique layer name.
+
+        Examples
+        ---------
+        With TensorLayer
+
+        >>> net = tl.layers.Input([None, 32, 32, 3], name='input')
+        >>> net = tl.layers.AdaptiveMaxPool2d(output_size=16)(net)
+        >>> output shape : [None, 16, 16, 3]
+
+    """
+
+    def __init__(self, output_size, data_format='channels_last', name=None):
+        super(AdaptiveMaxPool2d, self).__init__(name)
+        self.output_size = output_size
+        self.data_format = data_format
+
+        self.build()
+        self._built = True
+
+        logging.info("AdaptiveMaxPool1d %s: output_size: %s " % (self.name, str(output_size)))
+
+    def __repr__(self):
+        s = ('{classname}(output_size={output_size}')
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape=None):
+        if self.data_format == 'channels_last':
+            self.data_format = 'NHWC'
+        elif self.data_format == 'channels_first':
+            self.data_format = 'NCHW'
+        else:
+            raise Exception("unsupported data format")
+        if isinstance(self.output_size, int):
+            self.output_size = (self.output_size, ) * 2
+
+        self.adaptivemaxpool2d = tl.ops.AdaptiveMaxPool2D(output_size=self.output_size, data_format=self.data_format)
+
+    def forward(self, inputs):
+
+        outputs = self.adaptivemaxpool2d(inputs)
+        return outputs
+
+
+class AdaptiveMaxPool3d(Module):
+    """The :class:`AdaptiveMaxPool3d` class is a 3D Adaptive Max Pooling layer.
+
+        Parameters
+        ------------
+        output_size : int or list or  tuple
+            The target output size. It cloud be an int \[int,int,int]\(int, int, int).
+        data_format : str
+            One of channels_last (default, [batch,  depth, height, width, channel]) or channels_first. The ordering of the dimensions in the inputs.
+        name : None or str
+            A unique layer name.
+
+        Examples
+        ---------
+        With TensorLayer
+
+        >>> net = tl.layers.Input([None,32, 32, 32, 3], name='input')
+        >>> net = tl.layers.AdaptiveMaxPool3d(output_size=16)(net)
+        >>> output shape : [None, 16, 16, 16, 3]
+
+        """
+
+    def __init__(self, output_size, data_format='channels_last', name=None):
+        super(AdaptiveMaxPool3d, self).__init__(name)
+        self.output_size = output_size
+        self.data_format = data_format
+
+        self.build()
+        self._built = True
+
+        logging.info("AdaptiveMaxPool3d %s: output_size: %s " % (self.name, str(output_size)))
+
+    def __repr__(self):
+        s = ('{classname}(output_size={output_size}')
+        if self.name is not None:
+            s += ', name=\'{name}\''
+        s += ')'
+        return s.format(classname=self.__class__.__name__, **self.__dict__)
+
+    def build(self, inputs_shape=None):
+        if self.data_format == 'channels_last':
+            self.data_format = 'NDHWC'
+        elif self.data_format == 'channels_first':
+            self.data_format = 'NCDHW'
+        else:
+            raise Exception("unsupported data format")
+
+        if isinstance(self.output_size, int):
+            self.output_size = (self.output_size, ) * 3
+
+        self.adaptivemaxpool3d = tl.ops.AdaptiveMaxPool3D(output_size=self.output_size, data_format=self.data_format)
+
+    def forward(self, inputs):
+
+        outputs = self.adaptivemaxpool3d(inputs)
+        return outputs

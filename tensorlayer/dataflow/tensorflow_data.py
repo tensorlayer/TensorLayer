@@ -21,6 +21,7 @@ __all__ = [
     'TextFlieDataset',
     'TFRecordDataset',
     'Zip',
+    'Dataloader',
 ]
 
 
@@ -252,3 +253,14 @@ def Zip(datasets):
 
     '''
     return tf.data.Dataset.zip(datasets)
+
+
+def Dataloader(dataset, batch_size, shuffle=False, drop_last=False, prefetch=0, shuffle_buffer_size=0):
+
+    if shuffle:
+        dataset = Shuffle(dataset, buffer_size=shuffle_buffer_size, reshuffle_each_iteration=True)
+
+    dataset = Batch(dataset, batch_size=batch_size, drop_remainder=drop_last)
+    dataset = Prefetch(dataset, buffer_size=prefetch)
+
+    return dataset

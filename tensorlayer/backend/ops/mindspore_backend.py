@@ -221,6 +221,7 @@ class Normal(Initializer):
 
 
 class RandomNormal(Cell):
+
     def __init__(self, mean=0.0, stddev=0.01, seed=None):
         super(RandomNormal, self).__init__()
         self.normal = Normal(mean=mean, stddev=stddev, seed=seed)
@@ -711,7 +712,9 @@ def reduce_min(input_tensor, axis=None):
     outputs = Rmin_obj(input_tensor, axis)
     return outputs
 
+
 class Pad(Cell):
+
     def __init__(self, paddings, mode="REFLECT"):
         super(Pad, self).__init__()
         if mode not in ["REFLECT", "SYMMETRIC"]:
@@ -721,6 +724,7 @@ class Pad(Cell):
 
     def construct(self, x):
         return self.pad(x, self.paddings)
+
 
 def pad(tensor, paddings, mode='CONSTANT', constant_values=0):
     """
@@ -745,6 +749,7 @@ def pad(tensor, paddings, mode='CONSTANT', constant_values=0):
 
 
 class Unstack(Cell):
+
     def __init__(self, axis, num=None):
         super(Unstack, self).__init__()
         if num is not None:
@@ -756,6 +761,7 @@ class Unstack(Cell):
 
 
 class Stack(Cell):
+
     def __init__(self, axis=0):
         super(Stack, self).__init__()
         self.stack = P.Pack(axis=axis)
@@ -785,6 +791,7 @@ def stack(values, axis=0):
 
 
 class Meshgrid(Cell):
+
     def __init__(self, indexing='xy'):
         super(Meshgrid, self).__init__()
         self._meshgrid = P.Meshgrid(indexing=indexing)
@@ -792,7 +799,6 @@ class Meshgrid(Cell):
     def construct(self, *args):
         inputs = tuple(*args)
         return self._meshgrid(inputs)
-
 
 
 def meshgrid(*args, **kwargs):
@@ -813,7 +819,6 @@ def meshgrid(*args, **kwargs):
 
     _meshgrid = P.Meshgrid(**kwargs)
     return _meshgrid(*args)
-
 
 
 def range(start, limit=None, delta=1, dtype=None):
@@ -883,7 +888,6 @@ class Tile(Cell):
 
     def construct(self, input, multiples):
         return self.tile(input, tuple(multiples))
-
 
 
 def tile(input, multiples):
@@ -1156,6 +1160,7 @@ def resize(inputs, output_size, method, antialias):
 
 
 class ZeroPadding1D(Cell):
+
     def __init__(self, padding):
         super(ZeroPadding1D, self).__init__()
         if np.size(padding) == 2:
@@ -1168,6 +1173,7 @@ class ZeroPadding1D(Cell):
 
 
 class ZeroPadding2D(Cell):
+
     def __init__(self, padding):
         super(ZeroPadding2D, self).__init__()
         if np.size(padding) == 4:
@@ -1180,6 +1186,7 @@ class ZeroPadding2D(Cell):
 
 
 class ZeroPadding3D(Cell):
+
     def __init__(self, padding):
         super(ZeroPadding3D, self).__init__()
         if np.size(padding) == 6:
@@ -1200,20 +1207,26 @@ class Sign(Cell):
     def construct(self, x):
         return self.sign(x)
 
+
 def ceil(x):
     _ceil = P.Ceil()
     return _ceil(x)
 
+
 def multiply(x, y):
     raise NotImplementedError
+
 
 def divide(x, y):
     raise NotImplementedError
 
+
 def identity(x):
     raise NotImplementedError
 
+
 class BatchToSpace(Cell):
+
     def __init__(self, block_size, crops):
         super(BatchToSpace, self).__init__()
         self.batch_to_space = P.BatchToSpace(block_size=block_size, crops=crops)
@@ -1221,7 +1234,9 @@ class BatchToSpace(Cell):
     def __call__(self, input_x):
         return self.batch_to_space(input_x)
 
+
 class DepthToSpace(Cell):
+
     def __init__(self, block_size, data_format='NHWC'):
         super(DepthToSpace, self).__init__()
         self.data_format = data_format

@@ -6,13 +6,13 @@ from __future__ import absolute_import, division, print_function
 from mindspore.nn.cell import Cell
 from mindspore import context
 import mindspore as ms
-from mindspore.ops import operations as P
+import mindspore.ops as P
 from mindspore.ops import functional as F
 from mindspore.communication.management import get_group_size, get_rank
 from mindspore.communication import management
 from mindspore._checkparam import check_int_positive
 from mindspore._extends import cell_attr_register
-
+from mindspore.ops._grad.grad_base import bprop_getters
 
 
 def padding_format(padding):
@@ -876,7 +876,6 @@ def pool(input, window_shape, pooling_type, strides=None, padding='VALID', data_
     pass
 
 
-
 class DepthwiseConv2d(Cell):
 
     def __init__(self, strides, padding, data_format=None, dilations=None, ksize=None, channel_multiplier=1):
@@ -1138,7 +1137,6 @@ def conv3d_transpose(
     pass
 
 
-
 class BatchNorm(Cell):
     """Batch Normalization base class."""
 
@@ -1321,3 +1319,377 @@ class BatchNorm(Cell):
         if self.data_format == 'channels_last' and self.get_dim(x) == '2d':
             y = nchw_to_nhwc(y)
         return y
+
+
+class GroupConv2D(Cell):
+
+    def __init__(self, strides, padding, data_format, dilations, out_channel, k_size, groups):
+        super(GroupConv2D, self).__init__()
+        self.data_format, self.padding = preprocess_2d_format(data_format, padding)
+
+        if self.data_format is 'NHWC':
+            self.ms_stride = strides[1]
+            self.ms_dilation = dilations[1]
+
+        elif self.data_format is 'NCHW':
+            self.ms_stride = strides[2]
+            self.ms_dilation = dilations[2]
+
+        self.conv2d = P.Conv2D(
+            out_channel=out_channel, kernel_size=k_size, pad_mode=self.padding, stride=self.ms_stride,
+            dilation=self.ms_dilation, mode=1, group=groups
+        )
+
+    def construct(self, inputs, filters):
+        if self.data_format == 'NHWC':
+            inputs = nhwc_to_nchw(inputs)
+
+        outputs = self.conv2d(inputs, filters)
+
+        if self.data_format == 'NHWC':
+            outputs = nchw_to_nhwc(outputs)
+        return outputs
+
+
+class SeparableConv1D(Cell):
+
+    def __init__(self, stride, padding, data_format, dilations, out_channel, k_size, in_channel, depth_multiplier):
+        super(SeparableConv1D, self).__init__()
+        self.data_format, self.padding = preprocess_1d_format(data_format, padding)
+        self.stride = (1, stride)
+        self.dilations = (1, dilations)
+        self.k_size = (1, k_size)
+        self.out_channel = out_channel
+        self.in_channel = in_channel
+        self.depth_multiplier = depth_multiplier
+        self.depthwise_conv = P.Conv2D(
+            out_channel=self.in_channel * self.depth_multiplier, kernel_size=self.k_size, pad_mode=self.padding,
+            stride=self.stride, dilation=self.dilations, mode=1, group=self.in_channel
+        )
+
+        self.pointwise_conv = P.Conv2D(
+            out_channel=self.out_channel, kernel_size=(1, 1), pad_mode=self.padding, stride=(1, 1), dilation=(1, 1),
+            mode=1, group=1
+        )
+
+        self.expand_dims = P.ExpandDims()
+        self.squeeze = P.Squeeze(2)
+
+    def construct(self, x, depthwise_filters, pointwise_filters):
+
+        if self.data_format == 'NWC':
+            x = nhwc_to_nchw(x)
+
+        x = self.expand_dims(x, 2)
+        depthwise_filters = self.expand_dims(depthwise_filters, 2)
+        pointwise_filters = self.expand_dims(pointwise_filters, 2)
+
+        outputs = self.depthwise_conv(x, depthwise_filters)
+        outputs = self.pointwise_conv(outputs, pointwise_filters)
+
+        outputs = self.squeeze(outputs)
+
+        if self.data_format == 'NWC':
+            outputs = nchw_to_nhwc(outputs)
+        return outputs
+
+
+class SeparableConv2D(Cell):
+
+    def __init__(self, strides, padding, data_format, dilations, out_channel, k_size, in_channel, depth_multiplier):
+        super(SeparableConv2D, self).__init__()
+        self.data_format, self.padding = preprocess_2d_format(data_format, padding)
+        self.k_size = k_size
+        self.out_channel = out_channel
+        self.in_channel = in_channel
+        self.depth_multiplier = depth_multiplier
+
+        if self.data_format is 'NHWC':
+            self.ms_stride = strides[1]
+            self.ms_dilation = dilations[1]
+            # self.transpose = P.Transpose()
+        elif self.data_format is 'NCHW':
+            self.ms_stride = strides[2]
+            self.ms_dilation = dilations[2]
+
+        self.depthwise_conv = P.Conv2D(
+            out_channel=self.in_channel * self.depth_multiplier, kernel_size=self.k_size, pad_mode=self.padding,
+            stride=self.ms_stride, dilation=self.ms_dilation, mode=1, group=self.in_channel
+        )
+
+        self.pointwise_conv = P.Conv2D(
+            out_channel=self.out_channel, kernel_size=(1, 1), pad_mode=self.padding, stride=(1, 1), dilation=(1, 1),
+            mode=1, group=1
+        )
+
+    def construct(self, x, depthwise_filters, pointwise_filters):
+        if self.data_format == 'NHWC':
+            x = nhwc_to_nchw(x)
+
+        outputs = self.depthwise_conv(x, depthwise_filters)
+        outputs = self.pointwise_conv(outputs, pointwise_filters)
+
+        if self.data_format == 'NHWC':
+            outputs = nchw_to_nhwc(outputs)
+        return outputs
+
+
+class AdaptiveMeanPool1D(Cell):
+
+    def __init__(self, output_size, data_format):
+        super(AdaptiveMeanPool1D, self).__init__()
+        self.data_format, _ = preprocess_1d_format(data_format, None)
+        self.output_size = output_size
+        self.expand_dims = P.ExpandDims()
+        self.squeeze = P.Squeeze(2)
+
+    def construct(self, inputs):
+
+        if self.data_format == 'NWC':
+            n, w, c = inputs.shape
+            inputs = nhwc_to_nchw(inputs)
+        else:
+            n, c, w = inputs.shape
+        inputs = self.expand_dims(inputs, 2)
+
+        stride = (1, w // self.output_size)
+        kernel = (1, w - (self.output_size - 1) * stride[1])
+        outputs = P.AvgPool(kernel_size=kernel, strides=stride, pad_mode='VALID')(inputs)
+        outputs = self.squeeze(outputs)
+
+        if self.data_format == 'NWC':
+            outputs = nchw_to_nhwc(outputs)
+
+        return outputs
+
+
+class AdaptiveMeanPool2D(Cell):
+
+    def __init__(self, output_size, data_format):
+        super(AdaptiveMeanPool2D, self).__init__()
+        self.data_format, _ = preprocess_2d_format(data_format, None)
+        self.output_size = output_size
+
+    def construct(self, inputs):
+
+        if self.data_format == 'NHWC':
+            n, h, w, c = inputs.shape
+            inputs = nhwc_to_nchw(inputs)
+        else:
+            n, c, h, w = inputs.shape
+
+        out_h, out_w = self.output_size
+        stride_h = h // out_h
+        kernel_h = h - (out_h - 1) * stride_h
+        stride_w = w // out_w
+        kernel_w = w - (out_w - 1) * stride_w
+        outputs = P.AvgPool(kernel_size=(kernel_h, kernel_w), strides=(stride_h, stride_w), pad_mode='VALID')(inputs)
+
+        if self.data_format == 'NHWC':
+            outputs = nchw_to_nhwc(outputs)
+
+        return outputs
+
+
+class AdaptiveMeanPool3D(Cell):
+
+    pass
+
+
+class AdaptiveMaxPool1D(Cell):
+
+    def __init__(self, output_size, data_format):
+        super(AdaptiveMaxPool1D, self).__init__()
+        self.data_format, _ = preprocess_1d_format(data_format, None)
+        self.output_size = output_size
+        self.expand_dims = P.ExpandDims()
+        self.squeeze = P.Squeeze(2)
+
+    def construct(self, inputs):
+
+        if self.data_format == 'NWC':
+            n, w, c = inputs.shape
+            inputs = nhwc_to_nchw(inputs)
+        else:
+            n, c, w = inputs.shape
+        inputs = self.expand_dims(inputs, 2)
+
+        stride = (1, w // self.output_size)
+        kernel = (1, w - (self.output_size - 1) * stride[1])
+        outputs = P.MaxPool(kernel_size=kernel, strides=stride, pad_mode='VALID')(inputs)
+        outputs = self.squeeze(outputs)
+
+        if self.data_format == 'NWC':
+            outputs = nchw_to_nhwc(outputs)
+
+        return outputs
+
+
+class AdaptiveMaxPool2D(Cell):
+
+    def __init__(self, output_size, data_format):
+        super(AdaptiveMaxPool2D, self).__init__()
+        self.data_format, _ = preprocess_2d_format(data_format, None)
+        self.output_size = output_size
+
+    def construct(self, inputs):
+
+        if self.data_format == 'NHWC':
+            n, h, w, c = inputs.shape
+            inputs = nhwc_to_nchw(inputs)
+        else:
+            n, c, h, w = inputs.shape
+
+        out_h, out_w = self.output_size
+        stride_h = h // out_h
+        kernel_h = h - (out_h - 1) * stride_h
+        stride_w = w // out_w
+        kernel_w = w - (out_w - 1) * stride_w
+        outputs = P.MaxPool(kernel_size=(kernel_h, kernel_w), strides=(stride_h, stride_w), pad_mode='VALID')(inputs)
+
+        if self.data_format == 'NHWC':
+            outputs = nchw_to_nhwc(outputs)
+
+        return outputs
+
+
+class AdaptiveMaxPool3D(Cell):
+
+    pass
+
+
+class BinaryConv2D(Cell):
+
+    def __init__(self, strides, padding, data_format, dilations, out_channel, k_size, in_channel):
+        super(BinaryConv2D, self).__init__()
+        self.data_format, self.padding = preprocess_2d_format(data_format, padding)
+        if self.data_format is 'NHWC':
+            self.ms_stride = strides[1]
+            self.ms_dilation = dilations[1]
+            # self.transpose = P.Transpose()
+        elif self.data_format is 'NCHW':
+            self.ms_stride = strides[2]
+            self.ms_dilation = dilations[2]
+
+        self.conv2d = P.Conv2D(
+            out_channel=out_channel, kernel_size=k_size, pad_mode=self.padding, stride=self.ms_stride,
+            dilation=self.ms_dilation, mode=1, group=1
+        )
+
+        @bprop_getters.register(P.Sign)
+        def get_bprop_Sign(self):
+
+            def bprop(x, out, dout):
+
+                grad = P.clip_by_value(dout, -1, 1)
+                return (grad, )
+
+            return bprop
+
+        self.sign = P.Sign()
+
+    def construct(self, inputs, filters):
+
+        if self.data_format == 'NHWC':
+            inputs = nhwc_to_nchw(inputs)
+
+        filters = self.sign(filters)
+
+        outputs = self.conv2d(inputs, filters)
+
+        if self.data_format == 'NHWC':
+            outputs = nchw_to_nhwc(outputs)
+
+        return outputs
+
+
+class DorefaConv2D(Cell):
+
+    def __init__(self, bitW, bitA, strides, padding, data_format, dilations, out_channel, k_size, in_channel):
+        super(DorefaConv2D, self).__init__()
+        self.data_format, self.padding = preprocess_2d_format(data_format, padding)
+        self.bitW = ms.Tensor(bitW)
+        self.bitA = ms.Tensor(bitA)
+        if self.data_format is 'NHWC':
+            self.ms_stride = strides[1]
+            self.ms_dilation = dilations[1]
+            # self.transpose = P.Transpose()
+        elif self.data_format is 'NCHW':
+            self.ms_stride = strides[2]
+            self.ms_dilation = dilations[2]
+
+        self.conv2d = P.Conv2D(
+            out_channel=out_channel, kernel_size=k_size, pad_mode=self.padding, stride=self.ms_stride,
+            dilation=self.ms_dilation, mode=1, group=1
+        )
+
+        @bprop_getters.register(P.Round)
+        def get_bprop_Round(self):
+
+            def bprop(x, out, dout):
+
+                return (dout, )
+
+            return bprop
+
+        @bprop_getters.register(P.Sign)
+        def get_bprop_Sign(self):
+
+            def bprop(x, out, dout):
+
+                return (dout, )
+
+            return bprop
+
+        self.mimimum = P.Minimum()
+        self.abs = P.Abs()
+        self.round = P.Round()
+        self.reducemean = P.ReduceMean()
+        self.sign = P.Sign()
+        self.pow = P.Pow()
+        self.sub = P.Sub()
+        self.oneslike = P.OnesLike()
+
+    def cabs(self, inputs):
+
+        a = P.stop_gradient(self.oneslike(inputs))
+        return self.mimimum(self.abs(inputs), a)
+
+    def _quantize_dorefa(self, x, k):
+
+        n = self.sub(self.pow(2.0, k), 1)
+        return self.round(x * n) / n
+
+    def quantize_active(self, x, bitA):
+        if bitA == 32:
+            return x
+        return self._quantize_dorefa(x, bitA)
+
+    def quantize_weight(self, x, bitW, force_quantization=False):
+
+        if bitW == 32 and not force_quantization:
+            return x
+
+        if bitW == 1:
+            E = P.stop_gradient(self.reducemean(self.abs(x)))
+            return self.sign(x / E) * E
+
+        x = P.clip_by_value(x * 0.5 + 0.5, 0.0, 1.0)
+
+        return 2 * self._quantize_dorefa(x, bitW) - 1
+
+    def construct(self, inputs, filters):
+
+        if self.data_format == 'NHWC':
+            inputs = nhwc_to_nchw(inputs)
+
+        inputs = self.quantize_active(self.cabs(inputs), self.bitA)
+
+        filters = self.quantize_weight(filters, self.bitW)
+
+        outputs = self.conv2d(inputs, filters)
+
+        if self.data_format == 'NHWC':
+            outputs = nchw_to_nhwc(outputs)
+
+        return outputs
