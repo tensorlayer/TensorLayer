@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """Deep learning and Reinforcement learning library for Researchers and Engineers."""
 
-MAJOR = 2
-MINOR = 2
+MAJOR = 3
+MINOR = 0
 PATCH = 0
 PRE_RELEASE = ''
 # Use the following formatting: (major, minor, patch, prerelease)
