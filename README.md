@@ -21,12 +21,12 @@
 <!---  [![Documentation Status](https://readthedocs.org/projects/tensorlayercn/badge/)](https://tensorlayercn.readthedocs.io/)
 <!---  [![PyUP Updates](https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg)](https://pyup.io/repos/github/tensorlayer/tensorlayer/) --->
 
-[TensorLayer](https://tensorlayer.readthedocs.io) is a novel TensorFlow-based deep learning and reinforcement learning library designed for researchers and engineers. It provides an extensive collection of customizable neural layers to build advanced AI models quickly, based on this, the community open-sourced mass [tutorials](https://github.com/tensorlayer/tensorlayer/blob/master/examples/reinforcement_learning/README.md) and [applications](https://github.com/tensorlayer). TensorLayer is awarded the 2017 Best Open Source Software by the [ACM Multimedia Society](https://twitter.com/ImperialDSI/status/923928895325442049). 
+[TensorLayer](https://tensorlayer.readthedocs.io) is a novel supports multiple backends deep learning and reinforcement learning library designed for researchers and engineers. It provides an extensive collection of customizable neural layers to build advanced AI models quickly, based on this, the community open-sourced mass [tutorials](https://github.com/tensorlayer/tensorlayer/blob/master/examples/reinforcement_learning/README.md) and [applications](https://github.com/tensorlayer). TensorLayer is awarded the 2017 Best Open Source Software by the [ACM Multimedia Society](https://twitter.com/ImperialDSI/status/923928895325442049). 
 This project can also be found at [iHub](https://code.ihub.org.cn/projects/328) and [Gitee](https://gitee.com/organizations/TensorLayer).
 
 # News
 
-🔥 **3.0.0 will supports multiple backends, such as TensorFlow, MindSpore and more, allowing users to run the code on different hardware like Nvidia-GPU and Huawei-Ascend. We need more people to join the dev team, if you are interested, please email hao.dong@pku.edu.cn**
+🔥 **3.0.0 will supports multiple backends, such as TensorFlow, MindSpore , PaddlePaddle and more, allowing users to run the code on different hardware like Nvidia-GPU and Huawei-Ascend. We need more people to join the dev team, if you are interested, please email hao.dong@pku.edu.cn**
 
 🔥 Reinforcement Learning Zoo: [Low-level APIs](https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning) for professional usage, [High-level APIs](https://github.com/tensorlayer/RLzoo) for simple usage, and a corresponding [Springer textbook](http://springer.com/gp/book/9789811540943)
 
@@ -72,7 +72,7 @@ You can find a large collection of examples that use TensorLayer in [here](examp
 
 # Getting Start
 
-TensorLayer 2.0 relies on TensorFlow, numpy, and others. To use GPUs, CUDA and cuDNN are required.
+TensorLayer 3.0 relies on TensorFlow, numpy, and others. To use GPUs, CUDA and cuDNN are required.
 
 Install TensorFlow:
 
@@ -98,6 +98,15 @@ If you want to install the additional dependencies, you can also run
 pip3 install --upgrade tensorlayer[all]              # all additional dependencies
 pip3 install --upgrade tensorlayer[extra]            # only the `extra` dependencies
 pip3 install --upgrade tensorlayer[contrib_loggers]  # only the `contrib_loggers` dependencies
+```
+If you want to use mindspore backend, you should install mindspore>=1.2.0
+```bash
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/gpu/ubuntu_x86/cuda-10.1/mindspore_gpu-1.2.1-cp37-cp37m-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+if you want to use paddlepaddle backend, you should install paddlepaddle>=2.0
+```bash
+python -m pip install paddlepaddle -i https://mirror.baidu.com/pypi/simple
 ```
 
 If you are TensorFlow 1.X users, you can use TensorLayer 1.11.0:
@@ -150,6 +159,7 @@ The following table shows the training speeds of [VGG16](http://www.robots.ox.ac
 |   Graph   |      Keras      | channel last  | 8677 |      2580         |        2576         |      101       |
 |   Eager   | TensorFlow 2.0  | channel last  | 8723 |      2052         |        2024         |      97       |
 |           | TensorLayer 2.0 | channel last  | 8723 |      2010         |        2007         |      95       |
+|           | TensorLayer 3.0 | channel last  |      |                   |                     |               |                                             
 
 # Getting Involved
 
