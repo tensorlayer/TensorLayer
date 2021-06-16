@@ -7,9 +7,7 @@ from tensorlayer.backend.ops.load_backend import BACKEND
 if BACKEND == 'tensorflow':
     from .tensorflow_initializers import *
 elif BACKEND == 'mindspore':
-    from .tensorflow_initializers import *
-elif BACKEND == 'dragon':
-    from .tensorflow_initializers import *
+    from .mindspore_initializers import *
 elif BACKEND == 'paddle':
     from .paddle_initializers import *
 else:

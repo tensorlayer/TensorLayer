@@ -9,13 +9,37 @@ import tensorflow as tf
 from tensorlayer.layers.utils import (get_variable_with_initializer)
 from tensorlayer import logging
 
-__all__ = ['Module', 'SequentialLayer', 'LayerList']
+__all__ = ['Module', 'SequentialLayer']
 
 _global_layer_name_dict = {}
 Parameter_ = tf.Variable
 
 
 class Module(object):
+    """The basic :class:`Module` class represents a single layer of a neural network.
+        It should be subclassed when implementing new types of layers.
+        Parameters
+        ----------
+        name : str or None
+            A unique layer name. If None, a unique name will be automatically assigned.
+        Methods
+        ---------
+        __init__()
+            Initializing the Layer.
+        __call__()
+            Forwarding the computation.
+        all_weights()
+            Return a list of Tensor which are all weights of this Layer.
+        trainable_weights()
+            Return a list of Tensor which are all trainable weights of this Layer.
+        nontrainable_weights()
+            Return a list of Tensor which are all nontrainable weights of this Layer.
+        build()
+            Abstract method. Build the Layer. All trainable weights should be defined in this function.
+        forward()
+            Abstract method. Forward computation and return computation results.
+
+        """
 
     def __init__(self, name=None, act=None, *args, **kwargs):
         self._params = OrderedDict()
@@ -83,7 +107,9 @@ class Module(object):
         Sets the extended representation of the Module.
 
         To print customized extended information, re-implement this method in your own Layers.
+
         """
+
         return ''
 
     def __repr__(self):
@@ -123,7 +149,6 @@ class Module(object):
                 del self.__dict__[name]
             if params and name in params:
                 raise TypeError("Expected type is Parameter, but got Module.")
-            # TODO How to prompt the user, enter the in_channels.
             # TODO Automatic shape inference when the user does not enter inchannels.
             # if value._built is False:
             #     raise AttributeError(
@@ -146,8 +171,9 @@ class Module(object):
     def build(self, inputs_shape):
         raise Exception("The build(self, inputs_shape) method must be implemented by inherited class")
 
-    def _get_weights(self, var_name, shape, init=tl.initializers.random_normal(), trainable=True):
+    def _get_weights(self, var_name, shape, init=tl.initializers.random_normal(), trainable=True, transposed=None):
         """ Get trainable variables. """
+
         weight = get_variable_with_initializer(
             scope_name=self.name, var_name=var_name, shape=shape, init=init, trainable=trainable
         )
@@ -156,10 +182,12 @@ class Module(object):
 
     def save_weights(self, file_path, format=None):
         """Input file_path, save model weights into a file of given format."""
+
         _save_weights(self, file_path, format)
 
     def load_weights(self, file_path, format=None, in_order=True, skip=False):
         """Load model weights from a given file, which should be previously saved by self.save_weights()."""
+
         _load_weights(self, file_path, format, in_order, skip)
 
     def _set_mode_for_layers(self, is_train):
@@ -171,6 +199,7 @@ class Module(object):
             Network's mode. True means training mode while False means evaluation mode.
 
         """
+
         layers = self.layers_and_names(name_prefix='')
         for layer_name, layer in layers:
             if isinstance(layer, Module):
@@ -188,6 +217,7 @@ class Module(object):
         >>> net.set_train()
 
         """
+
         if self.is_train !=True:
             self.is_train = True
             self._set_mode_for_layers(True)
@@ -200,21 +230,14 @@ class Module(object):
         --------
         >>> import tensorlayer as tl
         >>> net = tl.vgg16()
-        >>> net.eval()
+        >>> net.set_eval()
         # do evaluation
 
         """
+
         if self.is_train != False:
             self.is_train = False
             self._set_mode_for_layers(False)
-
-    def test(self):
-        """Set this network in evaluation mode."""
-        self.eval()
-
-    def infer(self):
-        """Set this network in evaluation mode."""
-        self.eval()
 
     @staticmethod
     def _compute_shape(tensors):
@@ -231,16 +254,17 @@ class Module(object):
         Inserts a parameter with given name to the layer. Please refer to the usage in
         source code of `tensorlayer.layer.Module.__setattr__`.
 
-        Args:
-            param_name (str): Name of the parameter.
-            param (Parameter): Parameter to be inserted to the layer.
-            check_name (bool): Determines whether the name input is compatible. Default: True.
+        Parameters
+        ----------
+        param_name : str
+            Name of the parameter.
+        param : Parameter
+            Parameter to be inserted to the layer.
+        check_name : bool
+            Determines whether the name input is compatible. Default: True.
 
-        Raises:
-            KeyError: If the name of parameter is null or contains dot.
-            AttributeError: If user did not call init() first.
-            TypeError: If the type of parameter is not Parameter_.
         """
+
         if not param_name:
             raise KeyError("The name of parameter should not be null.")
         if check_name and '.' in param_name:
@@ -271,6 +295,7 @@ class Module(object):
             Output tensors to this layer.
 
         """
+
         raise NotImplementedError
 
     @property
@@ -304,15 +329,10 @@ class Module(object):
     def trainable_weights(self):
         """
         Returns all trainable weights.
-
         Returns a list of all trainable parmeters.
 
-        Args:
-            recurse (bool): Whether contains the trainable weights of sublayers. Default: True.
-
-        Returns:
-            List, the list of trainable weights.
         """
+
         self.get_weights()
         layers = self.layers_and_names(name_prefix='')
         for layer_name, layer in layers:
@@ -328,15 +348,10 @@ class Module(object):
     def nontrainable_weights(self):
         """
         Returns all untrainable weights.
-
         Returns a list of all untrainable weights.
 
-        Args:
-            recurse (bool): Whether contains the untrainable weights of sublayers. Default: True.
-
-        Returns:
-            List, the list of untrainable weights.
         """
+
         layers = self.layers_and_names(name_prefix='')
         for layer_name, layer in layers:
             params = layer._params.items()
@@ -349,6 +364,12 @@ class Module(object):
 
     @property
     def all_weights(self):
+        """
+        Returns all weights.
+        Returns a list of all weights.
+
+        """
+
         layers = self.layers_and_names(name_prefix='')
         for layer_name, layer in layers:
             params = layer._params.items()
@@ -359,18 +380,22 @@ class Module(object):
     def get_weights(self, expand=True):
         """
         Returns an iterator over layer weights.
-
         Yields weights of this layer. If `expand` is True, yield parameters of this layer and all sublayers.
 
-        Args:
-            expand (bool): If True, yields parameters of this layer and all sublayers. Otherwise, yields only parameters
-                           that are direct members of this layer. Default: True.
+        Parameters
+        ----------
+        expand : bool
+            If True, yields parameters of this layer and all sublayers. Otherwise, yields only parameters
+            that are direct members of this layer. Default: True.
 
-        Examples:
-            >>> net = Net()
-            >>> for item in net.get_weights():
-            >>>     print(item)
+        Examples
+        ---------
+        >>> net = Net()
+        >>> for item in net.get_weights():
+        >>>     print(item)
+
         """
+
         for _, param in self.parameters_and_names(expand=expand):
             yield param
 
@@ -387,14 +412,15 @@ class Module(object):
         """
         Adds a child layer to the current layer.
 
-        Args:
-            child_name (str): Name of the child layer.
-            child (Module): The child layer to be inserted.
+        Parameters
+        ----------
+        child_name : str
+            Name of the child layer.
+        child : Module
+            The child layer to be inserted.
 
-        Raises:
-            KeyError: Child Module's name is incorrect or duplicated with the other child name.
-            TypeError: Child Module's type is incorrect.
         """
+
         if not child_name or '.' in child_name:
             raise KeyError("Child layer name is incorrect.")
         if hasattr(self, child_name) and child_name not in self._layers:
@@ -409,18 +435,24 @@ class Module(object):
 
         Includes the parameter's name  and itself.
 
-        Args:
-            name_prefix (str): Namespace. Default: ''.
-            expand (bool): If True, yields parameters of this layer and all sublayers. Otherwise, yields only parameters
-                           that are direct members of this layer. Default: True.
+        Parameters
+        ----------
+        name_prefix : str
+            Namespace. Default: ''.
+        expand : bool
+            If True, yields parameters of this layer and all sublayers. Otherwise, yields only parameters
+            that are direct members of this layer. Default: True.
 
-        Examples:
-            >>> n = Net()
-            >>> names = []
-            >>> for m in n.parameters_and_names():
-            >>>     if m[0]:
-            >>>         names.append(m[0])
+        Examples
+        ---------
+        >>> n = Net()
+        >>> names = []
+        >>> for m in n.parameters_and_names():
+        >>>     if m[0]:
+        >>>         names.append(m[0])
+
         """
+
         layers = []
         if expand:
             layers = self.layers_and_names(name_prefix=name_prefix)
@@ -447,17 +479,23 @@ class Module(object):
 
         Includes the layer's name and itself.
 
-        Args:
-            layers (str): layers to iterate over. Default: None.
-            name_prefix (str): Namespace. Default: ''.
+        Parameters
+        ----------
+        layers : str
+            layers to iterate over. Default: None.
+        name_prefix : str
+            Namespace. Default: ''.
 
-        Examples:
-            >>> n = Net()
-            >>> names = []
-            >>> for m in n.layers_and_names():
-            >>>     if m[0]:
-            >>>         names.append(m[0])
+        Examples
+        ---------
+        >>> n = Net()
+        >>> names = []
+        >>> for m in n.layers_and_names():
+        >>>     if m[0]:
+        >>>         names.append(m[0])
+
         """
+
         t_layers = layers if layers else set()
         if self in t_layers:
             return
@@ -475,6 +513,7 @@ class Module(object):
 
     def layers(self):
         """Returns an iterator over immediate layers."""
+
         return self.name_layers().values()
 
     def name_layers(self):
@@ -483,6 +522,7 @@ class Module(object):
 
         Include name of the layer and layer itself.
         """
+
         value_set = set()
         layers = OrderedDict()
         for name, layer in self._layers.items():
@@ -494,7 +534,7 @@ class Module(object):
     def init_build(self, *inputs, **kwargs):
         """
         (1) This method must be called when the Layer has no input in_channels.
-        (2) Automatic shape inference when the user does not enter inchannels.
+        (2) Automatic shape inference when the user does not enter in_channels.
         """
 
         self.forward(*inputs, **kwargs)
@@ -502,31 +542,35 @@ class Module(object):
 
 class SequentialLayer(Module):
     """
-    Sequential layer container.
+    The class :class:`SequentialLayer` is a linear stack of layers.
+    The :class:`SequentialLayer` can be created by passing a list of layer instances.
+    The given layer instances will be automatically connected one by one.
+    Parameters
+    ----------
+    layers: list of Layer
+        A list of layers.
+    name : str or None
+        A unique layer name. If None, a unique name will be automatically assigned.
+    Methods
+    ---------
+    __init__()
+        Initializing the LayerList.
+    weights()
+        A collection of weights of all the layer instances.
+    build()
+        Build the LayerList. The layer instances will be connected automatically one by one.
+    forward()
+        Forward the computation. The computation will go through all layer instances.
 
-    A list of Layers will be added to it in the order they are passed in the constructor.
-    Alternatively, an ordered dict of layers can also be passed in.
-
-    Args:
-        args (list, OrderedDict): List of subclass of Module.
-
-    Raises:
-        TypeError: If the type of the argument is not list or OrderedDict.
-
-    Inputs:
-        - **input** (Tensor) - Tensor with shape according to the first Module in the sequence.
-
-    Outputs:
-        Tensor, the output Tensor with shape depending on the input and defined sequence of Layers.
-
-    Examples:
-        >>> conv = tl.layers.Conv2d(3, 2, 3, pad_mode='valid')
-        >>> bn = tl.layers.BatchNorm2d(2)
-        >>> seq = tl.layers.SequentialLayer([conv, bn])
-        >>>
-        >>> x = tl.layers.Input((1, 3, 4, 4))
-        >>> seq(x)
+    Examples
+    ---------
+    >>> conv = tl.layers.Conv2d(3, 2, 3, pad_mode='valid')
+    >>> bn = tl.layers.BatchNorm2d(2)
+    >>> seq = tl.layers.SequentialLayer([conv, bn])
+    >>> x = tl.layers.Input((1, 3, 4, 4))
+    >>> seq(x)
     """
+
     def __init__(self, *args):
         super(SequentialLayer, self).__init__()
         self._built = True
@@ -602,164 +646,3 @@ class SequentialLayer(Module):
         if issubclass(layer.__class__, Module):
             return True
         raise TypeError('Module {} is not subclass of Module'.format(layer))
-
-
-class LayerList(Module):
-    """
-    The class :class:`LayerList` is a linear stack of layers.
-
-    The :class:`LayerList` can be created by passing a list of layer instances.
-    The given layer instances will be automatically connected one by one.
-
-    Parameters
-    ----------
-    layers: list of Layer
-        A list of layers.
-    name : str or None
-        A unique layer name. If None, a unique name will be automatically assigned.
-
-    Methods
-    ---------
-    __init__()
-        Initializing the LayerList.
-    weights()
-        A collection of weights of all the layer instances.
-    build()
-        Build the LayerList. The layer instances will be connected automatically one by one.
-    forward()
-        Forward the computation. The computation will go through all layer instances.
-    """
-
-    def __init__(self, layers, name=None):
-        """
-        Initializing the LayerList given a list of Layer.
-
-        :param layers: list of Layer
-        :param name: str or None
-        """
-
-        super(LayerList, self).__init__(name=name)
-        self.layers = layers
-        is_built = True
-        for layer in self.layers:
-            self._trainable_weights.extend(layer.trainable_weights)
-            self._nontrainable_weights.extend(layer.nontrainable_weights)
-            if layer._built is False:
-                is_built = False
-        #     if layer._built and layer.all_weights is not None:
-        #         # some layers in the list passed in have already been built
-        #         # e.g. using input shape to construct layers in dynamic eager
-        #         if self._all_weights is None:
-        #             self._all_weights = list()
-        #         self._all_weights.extend(layer.all_weights)
-        if is_built:
-            self._built = True
-
-        logging.info(
-            "LayerList %s including layers [%s]" % (self.name, ', '.join([layer.name for layer in self.layers]))
-        )
-
-        # check layer name uniqueness in LayerList
-        local_layer_name_set = set()
-        for layer in self.layers:
-            if layer.name not in local_layer_name_set:
-                local_layer_name_set.add(layer.name)
-            else:
-                raise ValueError(
-                    'Layer name \'%s\' has already been used by another layer. Please change the layer name.' %
-                    layer.name
-                )
-
-    def __getitem__(self, idx):
-        if isinstance(idx, slice):
-            return LayerList(list(self.layers)[idx])
-        else:
-            return self.layers[idx]
-
-    def __len__(self):
-        return len(self.layers)
-
-    def __repr__(self):
-        tmpstr = 'LayerList' + '(\n'
-        for idx, layer in enumerate(self.layers):
-            modstr = layer.__repr__()
-            modstr = _addindent(modstr, 2)
-            tmpstr = tmpstr + '  (' + str(idx) + '): ' + modstr + '\n'
-
-        tmpstr = tmpstr + ')'
-        return tmpstr
-
-    @property
-    def trainable_weights(self):
-        return self._trainable_weights
-
-    @property
-    def nontrainable_weights(self):
-        return self._nontrainable_weights
-
-    @property
-    def all_weights(self):
-        return self._trainable_weights + self._nontrainable_weights
-
-    # def build(self, inputs_shape):
-    #     """
-    #     Build the LayerList. The layer instances will be connected automatically one by one.
-    #     """
-    #     in_tensor = self._input_tensors
-    #     # in_layer = self._input_layer
-    #     for layer in self.layers:
-    #         is_build = layer._built
-    #         out_tensor = layer(in_tensor)
-    #         # nlayer = layer(in_layer)
-    #         if is_build is False and layer.all_weights is not None:
-    #             if self._all_weights is None:
-    #                 self._all_weights = list()
-    #             self._all_weights.extend(layer.all_weights)
-    #         layer._built = True
-    #         in_tensor = out_tensor
-    #         # in_layer = nlayer
-
-    def forward(self, inputs):
-        """
-        Forward the computation. The computation will go through all layer instances.
-        """
-        z = inputs
-        for layer in self.layers:
-            z = layer.forward(z)
-        return z
-
-    def _set_mode_for_layers(self, is_train):
-        """Set training/evaluation mode for all layer instances."""
-        self.is_train = is_train
-        for layer in self.layers:
-            if isinstance(layer, LayerList):
-                layer._set_mode_for_layers(is_train)
-            else:
-                layer.is_train = is_train
-
-    def get_args(self):
-        init_args = {}
-        layers = self.layer_args["layers"]
-        init_args["layers"] = [layer.config for layer in layers]
-        init_args.update({"layer_type": "layerlist"})
-        return init_args
-
-def tolist(tensors):
-    if isinstance(tensors, list) or isinstance(tensors, tuple):
-        ntensors = list()
-        for t in tensors:
-            ntensors += tolist(t)
-        return ntensors
-    else:
-        return [tensors]
-
-def _addindent(s_, numSpaces):
-    s = s_.split('\n')
-    # don't do anything for single-line stuff
-    if len(s) == 1:
-        return s_
-    first = s.pop(0)
-    s = [(numSpaces * ' ') + line for line in s]
-    s = '\n'.join(s)
-    s = first + '\n' + s
-    return s

@@ -189,7 +189,7 @@ for epoch in range(n_epoch):
     # use training and evaluation sets to evaluate the model every print_freq epoch
     if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
 
-        net.eval()
+        net.set_eval()
         val_loss, val_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in test_ds:
             _logits = net(X_batch)  # is_train=False, disable dropout
@@ -200,7 +200,7 @@ for epoch in range(n_epoch):
         print("   val acc:  {}".format(val_acc / n_iter))
 
 # use testing data to evaluate the model
-net.eval()
+net.set_eval()
 test_loss, test_acc, n_iter = 0, 0, 0
 for X_batch, y_batch in test_ds:
     _logits = net(X_batch)

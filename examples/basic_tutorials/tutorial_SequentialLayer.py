@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from tensorlayer.layers import LayerList
+from tensorlayer.layers import SequentialLayer
 from tensorlayer.layers import Dense
 import tensorlayer as tl
 import numpy as np
@@ -10,7 +10,7 @@ layer_list = []
 layer_list.append(Dense(n_units=800, act=tl.ReLU, in_channels=784, name='Dense1'))
 layer_list.append(Dense(n_units=800, act=tl.ReLU, in_channels=800, name='Dense2'))
 layer_list.append(Dense(n_units=10, act=tl.ReLU, in_channels=800, name='Dense3'))
-MLP = LayerList(layer_list)
+MLP = SequentialLayer(layer_list)
 
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 

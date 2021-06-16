@@ -49,8 +49,7 @@ class BinaryConv2d(Module):
 
     >>> net = tl.layers.Input([8, 100, 100, 32], name='input')
     >>> binaryconv2d = tl.layers.BinaryConv2d(
-    ...     n_filter=64, filter_size=(3, 3), strides=(2, 2), act=tl.relu, in_channels=32, name='binaryconv2d'
-    ... )(net)
+        ... n_filter=64, filter_size=(3, 3), strides=(2, 2), act=tl.ReLU, in_channels=32, name='binaryconv2d')(net)
     >>> print(binaryconv2d)
     >>> output shape : (8, 50, 50, 64)
 

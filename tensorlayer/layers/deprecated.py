@@ -15,7 +15,7 @@ __all__ += [
     'PTRelu6Layer',
 ]
 
-__log__ = '\n Hint: 1) downgrade TF and TL from version 2.x to 1.x. 2) check the documentation of TF and TL version 2.x'
+__log__ = '\n Hint: 1) downgrade TL from version 3.x to 2.x. 2) check the documentation of TF version 2.x and TL version 3.x'
 
 
 def PReluLayer(*args, **kwargs):
@@ -414,3 +414,10 @@ __all__ += [
 def TimeDistributedLayer(*args, **kwargs):
     # raise NonExistingLayerError("TimeDistributedLayer(x1, x2, name='a') --> TimeDistributed(name='a')(x1, x2)")
     raise NonExistingLayerError("TimeDistributedLayer is removed for TF 2.0, please use eager mode instead." + __log__)
+
+__all__ += [
+    'LayerList'
+]
+
+def LayerList(*args, **kwargs):
+    raise NonExistingLayerError("LayerList(list)(input_data) --> SequentialLayer(list)(input_data)" + __log__)

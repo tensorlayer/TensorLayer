@@ -7,8 +7,6 @@ if BACKEND == 'tensorflow':
     from .tensorflow_cost import *
 elif BACKEND == 'mindspore':
     from .mindspore_cost import *
-elif BACKEND == 'dragon':
-    pass
 elif BACKEND == 'paddle':
     from .paddle_cost import *
 else:

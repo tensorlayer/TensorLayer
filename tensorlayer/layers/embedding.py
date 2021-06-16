@@ -482,11 +482,11 @@ class AverageEmbedding(Module):
             init=self.E_init,
         )
         self.embedding_lookup = tl.EmbeddingLookup()
-        self.not_equal = tl.Not_equal()
+        self.not_equal = tl.NotEqual()
         self.cast = tl.Cast(tl.float32)
         self.expand_dims = tl.ExpandDims(axis=-1)
         self.reduce_sum = tl.ReduceSum(axis=1)
-        self.count_nonzero = tl.Count_nonzero(keepdims=True, dtype=tl.float32)
+        self.count_nonzero = tl.CountNonzero(keepdims=True, dtype=tl.float32)
 
     def forward(self, inputs):
         """
@@ -505,7 +505,7 @@ class AverageEmbedding(Module):
 
         # Count number of non-padding words in each sentence
         sentence_lengths = self.count_nonzero(masks, axis=1)
-
+        print(masks, sentence_lengths)
         sentence_embeddings = tl.ops.divide(
             sum_word_embeddings,
             sentence_lengths + 1e-8,  # Add epsilon to avoid dividing by 0
@@ -514,4 +514,3 @@ class AverageEmbedding(Module):
         outputs = sentence_embeddings
 
         return outputs
-

@@ -47,9 +47,10 @@ class SeparableConv1d(Module):
     --------
     With TensorLayer
     >>> net = tl.layers.Input([8, 50, 64], name='input')
-    >>> separableconv1d = tl.layers.SeparableConv1d(n_filter=32, filter_size=3, strides=2, padding='SAME', act=tf.nn.relu, name='separable_1d')(net)
+    >>> separableconv1d = tl.layers.SeparableConv1d(n_filter=32, filter_size=3, strides=2, padding='SAME', act=tl.ReLU, name='separable_1d')(net)
     >>> print(separableconv1d)
     >>> output shape : (8, 25, 32)
+
     """
 
     def __init__(
@@ -112,10 +113,10 @@ class SeparableConv1d(Module):
 
         if BACKEND == 'tensorflow':
             self.depthwise_filter_shape = (self.filter_size, self.in_channels, self.depth_multiplier)
-            self.pointwise_filter_shape = (1, self.depth_multiplier * self.in_channels, self.n_filter)
         elif BACKEND == 'mindspore':
             self.depthwise_filter_shape = (self.filter_size, 1, self.depth_multiplier * self.in_channels)
-            self.pointwise_filter_shape = (1, self.depth_multiplier * self.in_channels, self.n_filter)
+
+        self.pointwise_filter_shape = (1, self.depth_multiplier * self.in_channels, self.n_filter)
 
         self.depthwise_W = self._get_weights(
             'depthwise_filters', shape=self.depthwise_filter_shape, init=self.depthwise_init
@@ -191,7 +192,7 @@ class SeparableConv2d(Module):
         --------
         With TensorLayer
         >>> net = tl.layers.Input([8, 50, 50, 64], name='input')
-        >>> separableconv2d = tl.layers.SeparableConv2d(n_filter=32, filter_size=3, strides=2, depth_multiplier = 3 , padding='SAME', act=tf.nn.relu, name='separable_2d')(net)
+        >>> separableconv2d = tl.layers.SeparableConv2d(n_filter=32, filter_size=3, strides=2, depth_multiplier = 3 , padding='SAME', act=tl.ReLU, name='separable_2d')(net)
         >>> print(separableconv2d)
         >>> output shape : (8, 24, 24, 32)
         """
@@ -308,12 +309,3 @@ class SeparableConv2d(Module):
             outputs = self.act(outputs)
         return outputs
 
-
-if __name__ == '__main__':
-    net = tl.layers.Input([5, 400, 400, 3], name='input')
-    layer = SeparableConv2d(
-        in_channels=3, filter_size=(3, 3), strides=(2, 2), dilation_rate=(2, 2), act=tl.ReLU, depth_multiplier=3,
-        name='separableconv2d1'
-    )
-    print(len(layer.all_weights))
-    print(layer(net).shape)

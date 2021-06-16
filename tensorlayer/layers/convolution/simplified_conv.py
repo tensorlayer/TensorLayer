@@ -51,7 +51,7 @@ class Conv1d(Module):
     >>> net = tl.layers.Input([8, 100, 1], name='input')
     >>> conv1d = tl.layers.Conv1d(n_filter=32, filter_size=5, stride=2, b_init=None, in_channels=1, name='conv1d_1')
     >>> print(conv1d)
-    >>> tensor = tl.layers.Conv1d(n_filter=32, filter_size=5, stride=2, act=tl.ops.relu, name='conv1d_2')(net)
+    >>> tensor = tl.layers.Conv1d(n_filter=32, filter_size=5, stride=2, act=tl.ReLU, name='conv1d_2')(net)
     >>> print(tensor)
 
     """
@@ -192,7 +192,7 @@ class Conv2d(Module):
     >>> net = tl.layers.Input([8, 3, 400, 400], name='input')
     >>> conv2d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), b_init=None, in_channels=3, name='conv2d_1')
     >>> print(conv2d)
-    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tl.ops.relu, name='conv2d_2')(net)
+    >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tl.ReLU, name='conv2d_2')(net)
     >>> print(tensor)
 
     """
@@ -337,7 +337,7 @@ RuntimeError: Unable to cast from non-held to held instance (T& to Holder<T>) of
     >>> net = tl.layers.Input([8, 20, 20, 20, 3], name='input')
     >>> conv3d = tl.layers.Conv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), b_init=None, in_channels=3, name='conv3d_1')
     >>> print(conv3d)
-    >>> tensor = tl.layers.Conv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), act=tl.ops.relu, name='conv3d_2')(net)
+    >>> tensor = tl.layers.Conv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), act=tl.ReLU, name='conv3d_2')(net)
     >>> print(tensor)
 
     """
@@ -427,7 +427,7 @@ RuntimeError: Unable to cast from non-held to held instance (T& to Holder<T>) of
 
         self.conv3d = tl.ops.Conv3D(
             strides=self._strides, padding=self.padding, data_format=self.data_format, dilations=self._dilation_rate,
-            out_channel=self.n_filter, k_size=(self.filter_size[0], self.filter_size[1])
+            out_channel=self.n_filter, k_size=(self.filter_size[0], self.filter_size[1], self.filter_size[2])
         )
 
         self.act_init_flag = False
@@ -486,7 +486,7 @@ class DeConv1d(Module):
     >>> net = tl.layers.Input([8, 100, 1], name='input')
     >>> conv1d = tl.layers.DeConv1d(n_filter=32, filter_size=5, stride=2, b_init=None, in_channels=1, name='Deonv1d_1')
     >>> print(conv1d)
-    >>> tensor = tl.layers.DeConv1d(n_filter=32, filter_size=5, stride=2, act=tl.ops.relu, name='Deconv1d_2')(net)
+    >>> tensor = tl.layers.DeConv1d(n_filter=32, filter_size=5, stride=2, act=tl.ReLU, name='Deconv1d_2')(net)
     >>> print(tensor)
 
     """
@@ -634,7 +634,7 @@ class DeConv2d(Module):
     >>> net = tl.layers.Input([8, 3, 400, 400], name='input')
     >>> conv2d_transpose = tl.layers.DeConv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), b_init=None, in_channels=3, name='conv2d_transpose_1')
     >>> print(conv2d_transpose)
-    >>> tensor = tl.layers.DeConv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tl.ops.relu, name='conv2d_transpose_2')(net)
+    >>> tensor = tl.layers.DeConv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tl.ReLU, name='conv2d_transpose_2')(net)
     >>> print(tensor)
 
     """
@@ -709,7 +709,7 @@ class DeConv2d(Module):
 
         #TODO channels first filter shape [out_channel, in_channel, filter_h, filter_w]
         self.filter_shape = (self.filter_size[0], self.filter_size[1], self.n_filter, self.in_channels)
-        self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init)
+        self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init, transposed=True)
 
         self.b_init_flag = False
         if self.b_init:
@@ -781,7 +781,7 @@ class DeConv3d(Module):
     >>> net = tl.layers.Input([8, 20, 20, 20, 3], name='input')
     >>> deconv3d = tl.layers.DeConv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), b_init=None, in_channels=3, name='deconv3d_1')
     >>> print(deconv3d)
-    >>> tensor = tl.layers.DeConv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), act=tl.ops.relu, name='deconv3d_2')(net)
+    >>> tensor = tl.layers.DeConv3d(n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), act=tl.ReLU, name='deconv3d_2')(net)
     >>> print(tensor)
 
     """
@@ -858,7 +858,7 @@ class DeConv3d(Module):
             self.filter_size[0], self.filter_size[1], self.filter_size[2], self.n_filter, self.in_channels
         )
 
-        self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init)
+        self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init, transposed=True)
 
         if self.b_init:
             self.b = self._get_weights("biases", shape=(self.n_filter, ), init=self.b_init)
@@ -871,7 +871,8 @@ class DeConv3d(Module):
 
         self.conv3d_transpose = tl.ops.Conv3d_transpose(
             strides=self._strides, padding=self.padding, data_format=self.data_format, dilations=self._dilation_rate,
-            out_channel=self.n_filter, k_size=(self.filter_size[0], self.filter_size[1], self.filter_size[2])
+            out_channel=self.n_filter, k_size=(self.filter_size[0], self.filter_size[1], self.filter_size[2]),
+            in_channels=self.in_channels
         )
 
         self.act_init_flag = False

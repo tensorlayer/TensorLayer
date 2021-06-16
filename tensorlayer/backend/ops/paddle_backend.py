@@ -816,6 +816,9 @@ def split(value, num_or_size_splits, axis=0, num=None):
     """
     pass
 
+class Floor(object):
+    def __call__(self, *args, **kwargs):
+        raise NotImplementedError
 
 def floor(x):
     raise NotImplementedError
@@ -875,7 +878,7 @@ class NCELoss(object):
         pass
 
 
-class Not_equal(object):
+class NotEqual(object):
 
     def __init__(self):
         pass
@@ -884,7 +887,7 @@ class Not_equal(object):
         pass
 
 
-class Count_nonzero(object):
+class CountNonzero(object):
 
     def __init__(self, keepdims=None, dtype="int64"):
         pass
@@ -949,6 +952,10 @@ class Sign(object):
     def __call__(self, x):
         raise NotImplementedError
 
+
+class Ceil(object):
+    def __call__(self, *args, **kwargs):
+        raise NotImplementedError
 
 def ceil(x):
     raise NotImplementedError

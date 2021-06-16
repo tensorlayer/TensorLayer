@@ -7,7 +7,6 @@ import sys
 
 BACKEND = 'tensorflow'
 # BACKEND = 'mindspore'
-# BACKEND = 'dragon'
 
 # Check for backend.json files
 tl_backend_dir = os.path.expanduser('~')
@@ -57,19 +56,12 @@ elif BACKEND == 'mindspore':
     import mindspore.context as context
     import os
     os.environ['DEVICE_ID'] = '0'
-    #context.set_context(mode=context.PYNATIVE_MODE,device_target='GPU'),
-    context.set_context(mode=context.GRAPH_MODE, device_target='CPU'),
+    context.set_context(mode=context.PYNATIVE_MODE,device_target='GPU'),
+    # context.set_context(mode=context.GRAPH_MODE, device_target='CPU'),
     # enable_task_sink=True, enable_loop_sink=True)
     # context.set_context(mode=context.GRAPH_MODE, backend_policy='ms',
     #                     device_target='Ascend', enable_task_sink=True, enable_loop_sink=True)
     sys.stderr.write('Using MindSpore backend.\n')
-
-elif BACKEND == 'dragon':
-    from .dragon_backend import *
-    from .dragon_nn import *
-    import dragon as dg
-    BACKEND_VERSION = dg.__version__
-    sys.stderr.write('Using Dragon backend.\n')
 
 elif BACKEND == 'paddle':
     from .paddle_backend import *

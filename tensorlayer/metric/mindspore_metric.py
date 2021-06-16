@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import mindspore.nn as nn
-from mindspore.nn.metrics._evaluation import EvaluationBase
 from mindspore.nn.metrics.metric import Metric
 __all__ = [
     'Accuracy',

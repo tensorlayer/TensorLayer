@@ -52,7 +52,7 @@ class DorefaConv2d(Module):
 
     >>> net = tl.layers.Input([8, 12, 12, 32], name='input')
     >>> dorefaconv2d = tl.layers.DorefaConv2d(
-    ...     n_filter=32, filter_size=(5, 5), strides=(1, 1), act=tl.relu, padding='SAME', name='dorefaconv2d'
+    ...     n_filter=32, filter_size=(5, 5), strides=(1, 1), act=tl.ReLU, padding='SAME', name='dorefaconv2d'
     ... )(net)
     >>> print(dorefaconv2d)
     >>> output shape : (8, 12, 12, 32)

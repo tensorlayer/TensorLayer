@@ -55,7 +55,7 @@ class QuanConv2d(Module):
 
     >>> net = tl.layers.Input([8, 12, 12, 64], name='input')
     >>> quanconv2d = tl.layers.QuanConv2d(
-    ...     n_filter=32, filter_size=(5, 5), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='quancnn2d'
+    ...     n_filter=32, filter_size=(5, 5), strides=(1, 1), act=tl.ReLU, padding='SAME', name='quancnn2d'
     ... )(net)
     >>> print(quanconv2d)
     >>> output shape : (8, 12, 12, 32)

@@ -130,7 +130,6 @@ class MaxPool1d(Module):
         strides=2,
         padding='SAME',
         data_format='channels_last',
-        dilation_rate=1,
         name=None  # 'maxpool1d'
     ):
         super().__init__(name)
@@ -138,7 +137,6 @@ class MaxPool1d(Module):
         self.strides = self._strides = strides
         self.padding = padding
         self.data_format = data_format
-        self.dilation_rate = self._dilation_rate = dilation_rate
 
         self.build()
         self._built = True
@@ -150,8 +148,6 @@ class MaxPool1d(Module):
 
     def __repr__(self):
         s = ('{classname}(filter_size={filter_size}' ', strides={strides}, padding={padding}')
-        if self.dilation_rate != 1:
-            s += ', dilation={dilation_rate}'
         if self.name is not None:
             s += ', name=\'{name}\''
         s += ')'
@@ -167,20 +163,12 @@ class MaxPool1d(Module):
             raise Exception("unsupported data format")
         self._filter_size = [self.filter_size]
         self._strides = [self.strides]
-        self._dilation_rate = [self.dilation_rate]
+        self.max_pool = tl.ops.MaxPool1d(ksize=self._filter_size, strides=self._strides, padding=self.padding,
+                                       data_format=self.data_format)
 
     def forward(self, inputs):
-        outputs = tl.ops.pool(
-            input=inputs,
-            window_shape=self._filter_size,
-            pooling_type="MAX",
-            strides=self._strides,
-            padding=self.padding,
-            data_format=self.data_format,
-            dilations=self._dilation_rate,
-        )
+        outputs = self.max_pool(inputs)
         return outputs
-
 
 class MeanPool1d(Module):
     """Mean pooling for 1D signal.
@@ -222,7 +210,6 @@ class MeanPool1d(Module):
         self.strides = self._strides = strides
         self.padding = padding
         self.data_format = data_format
-        self.dilation_rate = self._dilation_rate = dilation_rate
 
         self.build()
         self._built = True
@@ -234,8 +221,6 @@ class MeanPool1d(Module):
 
     def __repr__(self):
         s = ('{classname}(filter_size={filter_size}' ', strides={strides}, padding={padding}')
-        if self.dilation_rate != 1:
-            s += ', dilation={dilation_rate}'
         if self.name is not None:
             s += ', name=\'{name}\''
         s += ')'
@@ -251,13 +236,13 @@ class MeanPool1d(Module):
             raise Exception("unsupported data format")
         self._filter_size = [self.filter_size]
         self._strides = [self.strides]
-        self._dilation_rate = [self.dilation_rate]
+        self.avg_pool = tl.ops.AvgPool1d(ksize=self._filter_size,
+                                         strides=self._strides,
+                                         padding=self.padding,
+                                         data_format=self.data_format)
 
     def forward(self, inputs):
-        outputs = tl.ops.pool(
-            input=inputs, window_shape=self._filter_size, pooling_type="AVG", padding=self.padding,
-            dilations=self._dilation_rate, strides=self._strides, data_format=self.data_format
-        )
+        outputs = self.avg_pool(inputs)
         return outputs
 
 

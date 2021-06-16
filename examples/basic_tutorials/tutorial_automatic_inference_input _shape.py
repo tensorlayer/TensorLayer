@@ -3,7 +3,6 @@
 
 import numpy as np
 import time
-
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import Module
@@ -17,12 +16,12 @@ class CustomModel(Module):
     def __init__(self):
         super(CustomModel, self).__init__()
         self.dropout1 = Dropout(keep=0.8)
-        self.dense1 = Dense(n_units=800, in_channels=784)
-        self.batchnorm = BatchNorm1d(act=tl.ReLU, num_features=800)
+        self.dense1 = Dense(n_units=800)
+        self.batchnorm = BatchNorm1d(act=tl.ReLU)
         self.dropout2 = Dropout(keep=0.8)
-        self.dense2 = Dense(n_units=800, act=tl.ReLU, in_channels=800)
+        self.dense2 = Dense(n_units=800, act=tl.ReLU)
         self.dropout3 = Dropout(keep=0.8)
-        self.dense3 = Dense(n_units=10, act=tl.ReLU, in_channels=800)
+        self.dense3 = Dense(n_units=10, act=tl.ReLU)
 
     def forward(self, x, foo=None):
         z = self.dropout1(x)
@@ -38,6 +37,10 @@ class CustomModel(Module):
 
 
 MLP = CustomModel()
+# Automatic inference input of shape.
+# If Layer has no input in_channels, init_build(input) must be called to initialize the weights.
+MLP.init_build(tl.layers.Input(shape=(1, 784)))
+
 n_epoch = 50
 batch_size = 500
 print_freq = 5
@@ -59,7 +62,6 @@ for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
 
     ## use training and evaluation sets to evaluate the model every print_freq epoch
     if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-        MLP.set_train()
         print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
         train_loss, train_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=False):
@@ -80,7 +82,7 @@ for epoch in range(n_epoch):  ## iterate the dataset n_epoch times
         print("   val acc:  {}".format(val_acc / n_iter))
 
 ## use testing data to evaluate the model
-MLP.eval()
+MLP.set_eval()
 test_loss, test_acc, n_iter = 0, 0, 0
 for X_batch, y_batch in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=False):
     _logits = MLP(X_batch, foo=1)

@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import numpy as np
+# The same set of code can switch the backend with one line
 import os
 os.environ['TL_BACKEND'] = 'tensorflow'
 # os.environ['TL_BACKEND'] = 'mindspore'
 
+import numpy as np
 import tensorlayer as tl
 from tensorlayer.layers import Module
 from tensorlayer.layers import Dense, Dropout

@@ -7,8 +7,6 @@ if BACKEND == 'tensorflow':
     from .tensorflow_metric import *
 elif BACKEND == 'mindspore':
     from .mindspore_metric import *
-elif BACKEND == 'dragon':
-    pass
 elif BACKEND == 'paddle':
     from .paddle_metric import *
 else:

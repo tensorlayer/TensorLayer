@@ -845,6 +845,10 @@ def split(value, num_or_size_splits, axis=0, num=None):
     return tf.split(value=value, num_or_size_splits=num_or_size_splits, axis=axis, num=num)
 
 
+class Floor(object):
+    def __call__(self, x):
+        return tf.floor(x)
+
 def floor(x):
     return tf.floor(x)
 
@@ -917,7 +921,7 @@ class NCELoss(object):
         return outputs
 
 
-class Not_equal(object):
+class NotEqual(object):
 
     def __init__(self):
         pass
@@ -926,7 +930,7 @@ class Not_equal(object):
         return tf.not_equal(x, y)
 
 
-class Count_nonzero(object):
+class CountNonzero(object):
 
     def __init__(self, keepdims=None, dtype=int64):
         self.keepdims = keepdims
@@ -995,6 +999,11 @@ class Sign(object):
 
     def __call__(self, x):
         return tf.sign(x)
+
+
+class Ceil(object):
+    def __call__(self, x):
+        return tf.math.ceil(x)
 
 
 def ceil(x):

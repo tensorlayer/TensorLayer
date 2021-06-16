@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+import os
+# os.environ['TL_BACKEND'] = 'tensorflow'
+os.environ['TL_BACKEND'] = 'mindspore'
 import time
 import numpy as np
 import multiprocessing
@@ -23,14 +25,14 @@ tl.logging.set_verbosity(tl.logging.DEBUG)
 class CNN(Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = Conv2d(64, (5, 5), (2, 2), padding='SAME', b_init=None, name='conv1', in_channels=3, act=tl.ReLU, data_format='channels_first')
-        self.bn = BatchNorm2d(num_features=64, act=tl.ReLU, data_format='channels_first')
-        self.maxpool1 = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool1', data_format='channels_first')
-        self.conv2 = Conv2d(128, (5, 5), (2, 2), padding='SAME', act=tl.ReLU, b_init=None, name='conv2', in_channels=64, data_format='channels_first')
-        self.maxpool2 = MaxPool2d((3, 3), (2, 2), padding='SAME', name='pool2', data_format='channels_first')
+        self.conv1 = Conv2d(64, (5, 5), (2, 2), b_init=None, name='conv1', in_channels=3, act=tl.ReLU)
+        self.bn = BatchNorm2d(num_features=64, act=tl.ReLU)
+        self.maxpool1 = MaxPool2d((3, 3), (2, 2), name='pool1')
+        self.conv2 = Conv2d(128, (5, 5), (2, 2), act=tl.ReLU, b_init=None, name='conv2', in_channels=64)
+        self.maxpool2 = MaxPool2d((3, 3), (2, 2), name='pool2')
 
         self.flatten = Flatten(name='flatten')
-        self.dense1 = Dense(120, act=tl.ReLU, name='dense1relu', in_channels=4608)
+        self.dense1 = Dense(120, act=tl.ReLU, name='dense1relu', in_channels=512)
         self.dense2 = Dense(84, act=tl.ReLU, name='dense2relu', in_channels=120)
         self.dense3 = Dense(10, act=None, name='output', in_channels=84)
 
@@ -127,8 +129,6 @@ for epoch in range(n_epoch):
     for X_batch, y_batch in train_ds:
         X_batch = ms.Tensor(X_batch.numpy(), dtype=ms.float32)
         y_batch = ms.Tensor(y_batch.numpy(), dtype=ms.int32)
-        X_batch = tl.nhwc_to_nchw(X_batch)
-        y_batch = tl.nhwc_to_nchw(y_batch)
         output = net(X_batch)
         loss_output = criterion(output, y_batch)
         grads = train_network(X_batch, y_batch)
@@ -142,25 +142,3 @@ for epoch in range(n_epoch):
         print("   train acc:  {}".format(train_acc / n_iter))
         print(" loss ", loss)
 
-#     start_time = time.time()
-
-#     train_loss, train_acc, n_iter = 0, 0, 0
-#     for X_batch, y_batch in train_ds:
-#         net.set_train()
-
-#         with tf.GradientTape() as tape:
-#             # compute outputs
-#             _logits = net(X_batch)
-#             # compute loss and update model
-#             _loss_ce = tl.cost.cross_entropy(_logits, y_batch, name='train_loss')
-
-#         grad = tape.gradient(_loss_ce, train_weights)
-#         optimizer.apply_gradients(zip(grad, train_weights))
-
-#         train_loss += _loss_ce
-#         train_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
-#         n_iter += 1
-
-#         print("Epoch {} of {} took {}".format(epoch + 1, n_epoch, time.time() - start_time))
-#         print("   train loss: {}".format(train_loss / n_iter))
-#         print("   train acc:  {}".format(train_acc / n_iter))

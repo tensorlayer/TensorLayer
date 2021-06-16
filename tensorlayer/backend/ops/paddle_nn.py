@@ -557,6 +557,17 @@ def moments(x, axes, shift=None, keepdims=False):
     pass
 
 
+class MaxPool1d(object):
+
+    def __init__(self, ksize, strides, padding, data_format=None):
+        self.data_format, self.padding = preprocess_1d_format(data_format=data_format, padding=padding)
+        self.ksize = ksize
+        self.strides = strides
+
+    def __call__(self, inputs):
+        raise NotImplementedError
+
+
 class MaxPool(object):
 
     def __init__(self, ksize, strides, padding, data_format=None):
@@ -592,6 +603,16 @@ def max_pool(input, ksize, strides, padding, data_format=None):
         A Tensor of format specified by data_format. The max pooled output tensor.
     """
     pass
+
+
+class AvgPool1d(object):
+    def __init__(self, ksize, strides, padding, data_format=None):
+        self.data_format, self.padding = preprocess_1d_format(data_format=data_format, padding=padding)
+        self.ksize = ksize
+        self.strides = strides
+
+    def __call__(self, inputs):
+        raise NotImplementedError
 
 
 class AvgPool(object):

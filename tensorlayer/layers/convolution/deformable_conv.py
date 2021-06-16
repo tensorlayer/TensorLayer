@@ -9,14 +9,12 @@ __all__ = [
     'DeformableConv2d',
 ]
 
-
 class DeformableConv2d(Module):
     """The :class:`DeformableConv2d` class is a 2D
     `Deformable Convolutional Networks <https://arxiv.org/abs/1703.06211>`__.
-
     Parameters
     ----------
-    offset_layer : tf.Tensor
+    offset_layer : tl.Tensor
         To predict the offset of convolution operations.
         The shape is (batchsize, input height, input width, 2*(number of element in the convolution kernel))
         e.g. if apply a 3*3 kernel, the number of the last dimension should be 18 (2*3*3)
@@ -36,11 +34,9 @@ class DeformableConv2d(Module):
         The number of in channels.
     name : str
         A unique layer name.
-
     Examples
     --------
     With TensorLayer
-
     >>> net = tl.layers.Input([5, 10, 10, 16], name='input')
     >>> offset1 = tl.layers.Conv2d(
     ...     n_filter=18, filter_size=(3, 3), strides=(1, 1), padding='SAME', name='offset1'
@@ -54,21 +50,20 @@ class DeformableConv2d(Module):
     >>> deformconv2 = tl.layers.DeformableConv2d(
     ...     offset_layer=offset2, n_filter=64, filter_size=(3, 3), name='deformable2'
     ... )(deformconv1)
-
     References
     ----------
     - The deformation operation was adapted from the implementation in `here <https://github.com/kastnerkyle/deform-conv>`__
-
     Notes
     -----
     - The padding is fixed to 'SAME'.
     - The current implementation is not optimized for memory usgae. Please use it carefully.
-
     """
 
+    # @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
         self,
         offset_layer=None,
+        # shape=(3, 3, 1, 100),
         n_filter=32,
         filter_size=(3, 3),
         act=None,
@@ -76,7 +71,7 @@ class DeformableConv2d(Module):
         W_init=tl.initializers.truncated_normal(stddev=0.02),
         b_init=tl.initializers.constant(value=0.0),
         in_channels=None,
-        name=None
+        name=None  # 'deformable_conv_2d',
     ):
         super().__init__(name, act=act)
 
@@ -88,16 +83,9 @@ class DeformableConv2d(Module):
         self.b_init = b_init
         self.in_channels = in_channels
 
-        # layer forward  state
-        self._forward_state = False
-
         self.kernel_n = filter_size[0] * filter_size[1]
         if self.offset_layer.get_shape()[-1] != 2 * self.kernel_n:
             raise AssertionError("offset.get_shape()[-1] is not equal to: %d" % 2 * self.kernel_n)
-
-        if self.in_channels is not None:
-            self.build(None)
-            self._built = True
 
         logging.info(
             "DeformableConv2d %s: n_filter: %d, filter_size: %s act: %s" % (
@@ -122,13 +110,14 @@ class DeformableConv2d(Module):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape):
-        if self.in_channels is None:
-            self.in_channels = inputs_shape[-1]
+
+        self.in_channels = inputs_shape[-1]
 
         self.input_h = int(inputs_shape[1])
         self.input_w = int(inputs_shape[2])
-        initial_offsets = tl.ops.stack(tl.ops.meshgrid(tl.ops.range(self.filter_size[0]),
-                                                       tl.ops.range(self.filter_size[1]), indexing='ij')) # initial_offsets --> (kh, kw, 2)
+        initial_offsets = tl.ops.stack(
+            tl.ops.meshgrid(tl.ops.range(self.filter_size[0]), tl.ops.range(self.filter_size[1]), indexing='ij')
+        )  # initial_offsets --> (kh, kw, 2)
         initial_offsets = tl.ops.reshape(initial_offsets, (-1, 2))  # initial_offsets --> (n, 2)
         initial_offsets = tl.ops.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, n, 2)
         initial_offsets = tl.ops.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, 1, n, 2)
@@ -168,6 +157,7 @@ class DeformableConv2d(Module):
                 self._built = True
             self._forward_state = True
 
+        # shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
         offset = self.offset_layer
         grid_offset = self.grid_offset
 
@@ -219,21 +209,17 @@ class DeformableConv2d(Module):
 
     def _tf_batch_map_coordinates(self, inputs, coords):
         """Batch version of tf_map_coordinates
-
         Only supports 2D feature maps
-
         Parameters
         ----------
-        inputs : ``tf.Tensor``
+        inputs : ``tl.Tensor``
             shape = (b*c, h, w)
-        coords : ``tf.Tensor``
+        coords : ``tl.Tensor``
             shape = (b*c, h, w, n, 2)
-
         Returns
         -------
-        ``tf.Tensor``
+        ``tl.Tensor``
             A Tensor with the shape as (b*c, h, w, n)
-
         """
         inputs_shape = inputs.get_shape()
         coords_shape = coords.get_shape()
@@ -243,8 +229,8 @@ class DeformableConv2d(Module):
         kernel_n = int(coords_shape[3])
         n_coords = input_h * input_w * kernel_n
 
-        coords_lt = tl.ops.cast(tl.ops.floor(coords), 'int32')
-        coords_rb = tl.ops.cast(tl.ops.ceil(coords), 'int32')
+        coords_lt = tl.ops.cast(tl.ops.Floor()(coords), 'int32')
+        coords_rb = tl.ops.cast(tl.ops.Ceil()(coords), 'int32')
         coords_lb = tl.ops.stack([coords_lt[:, :, :, :, 0], coords_rb[:, :, :, :, 1]], axis=-1)
         coords_rt = tl.ops.stack([coords_rb[:, :, :, :, 0], coords_lt[:, :, :, :, 1]], axis=-1)
 
@@ -265,21 +251,18 @@ class DeformableConv2d(Module):
 
     def _tf_batch_map_offsets(self, inputs, offsets, grid_offset):
         """Batch map offsets into input
-
         Parameters
         ------------
-        inputs : ``tf.Tensor``
+        inputs : ``tl.Tensor``
             shape = (b, h, w, c)
-        offsets: ``tf.Tensor``
+        offsets: ``tl.Tensor``
             shape = (b, h, w, 2*n)
-        grid_offset: `tf.Tensor``
+        grid_offset: `tl.Tensor``
             Offset grids shape = (h, w, n, 2)
-
         Returns
         -------
-        ``tf.Tensor``
+        ``tl.Tensor``
             A Tensor with the shape as (b, h, w, c)
-
         """
         inputs_shape = inputs.get_shape()
         batch_size = tl.get_tensor_shape(inputs)[0]
@@ -293,8 +276,6 @@ class DeformableConv2d(Module):
 
         # offsets (b, h, w, 2*n) --> (b, h, w, n, 2)
         offsets = tl.ops.reshape(offsets, (batch_size, input_h, input_w, kernel_n, 2))
-        # offsets (b, h, w, n, 2) --> (b*c, h, w, n, 2)
-        # offsets = tf.tile(offsets, [channel, 1, 1, 1, 1])
 
         coords = tl.ops.expand_dims(grid_offset, 0)  # grid_offset --> (1, h, w, n, 2)
         coords = tl.ops.tile(coords, [batch_size, 1, 1, 1, 1]) + offsets  # grid_offset --> (b, h, w, n, 2)
@@ -313,12 +294,4 @@ class DeformableConv2d(Module):
         mapped_vals = self._to_b_h_w_n_c(mapped_vals, [batch_size, input_h, input_w, kernel_n, channel])
 
         return mapped_vals
-
-if __name__ == '__main__':
-    net = tl.layers.Input([5, 10, 10, 16], name='input')
-    offset1 = tl.layers.Conv2d(n_filter=18, filter_size=(3, 3), strides=(1, 1), padding='SAME', name='offset1', in_channels=16)(net)
-    deformconv1 = DeformableConv2d(offset_layer=offset1, n_filter=32, filter_size=(3, 3), name='deformable1')(net)
-    offset2 = tl.layers.Conv2d(n_filter=18, filter_size=(3, 3), strides=(1, 1), padding='SAME', name='offset2', in_channels=32)(deformconv1)
-    deformconv2 = DeformableConv2d(offset_layer=offset2, n_filter=64, filter_size=(3, 3), name='deformable2')(deformconv1)
-    print(deformconv2)
 

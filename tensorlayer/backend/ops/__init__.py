@@ -33,6 +33,8 @@ from .load_backend import Conv3d_transpose
 from .load_backend import GroupConv2D
 from .load_backend import BinaryConv2D
 from .load_backend import DorefaConv2D
+from .load_backend import MaxPool1d
+from .load_backend import AvgPool1d
 
 from .load_backend import ReLU
 from .load_backend import ReLU6
@@ -58,6 +60,8 @@ from .load_backend import AdaptiveMeanPool3D
 from .load_backend import AdaptiveMaxPool1D
 from .load_backend import AdaptiveMaxPool2D
 from .load_backend import AdaptiveMaxPool3D
+from .load_backend import Floor
+from .load_backend import Ceil
 
 # load ops
 from .load_backend import Variable
@@ -112,10 +116,10 @@ from .load_backend import OneHot
 from .load_backend import L2Normalize
 from .load_backend import EmbeddingLookup
 from .load_backend import NCELoss
-from .load_backend import Not_equal
+from .load_backend import NotEqual
 from .load_backend import Cast
 from .load_backend import ExpandDims
-from .load_backend import Count_nonzero
+from .load_backend import CountNonzero
 from .load_backend import FlattenReshape
 from .load_backend import Transpose
 from .load_backend import MatMul

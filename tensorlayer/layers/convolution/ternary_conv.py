@@ -50,7 +50,7 @@ class TernaryConv2d(Module):
 
     >>> net = tl.layers.Input([8, 12, 12, 32], name='input')
     >>> ternaryconv2d = tl.layers.TernaryConv2d(
-    ...     n_filter=64, filter_size=(5, 5), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='ternaryconv2d'
+    ...     n_filter=64, filter_size=(5, 5), strides=(1, 1), act=tl.ReLU, padding='SAME', name='ternaryconv2d'
     ... )(net)
     >>> print(ternaryconv2d)
     >>> output shape : (8, 12, 12, 64)

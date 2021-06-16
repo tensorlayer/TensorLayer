@@ -3,6 +3,7 @@
 
 import copy, six
 from .common import str2act
+from .common import _save_weights, _load_weights
 from paddle.fluid import framework
 from paddle.fluid.dygraph import Layer
 from paddle.fluid.framework import in_dygraph_mode
@@ -189,7 +190,7 @@ class Module(Layer):
 
             return outputs
 
-    def _get_weights(self, var_name, shape, init=None, trainable=True):
+    def _get_weights(self, var_name, shape, init=None, trainable=True, transposed=None):
         if var_name in ["filters", "weights"]:
             w_tmp = self.create_parameter(shape=shape, attr=init, is_bias=False)
         elif var_name in ["biases"]:
@@ -232,3 +233,10 @@ class Module(Layer):
         """
 
         self.forward(*inputs, **kwargs)
+
+    def save_weights(self, file_path, format=None):
+        _save_weights(net=self, file_path=file_path, format=format)
+
+    def load_weights(self, file_path, format=None, in_order=True, skip=False):
+        """Load model weights from a given file, which should be previously saved by self.save_weights()."""
+        _load_weights(net=self, file_path=file_path, format=format, in_order=in_order, skip=skip)

@@ -4,10 +4,9 @@
 from .common import str2act, _save_weights, _load_weights
 from mindspore.nn import Cell
 import tensorlayer as tl
-from tensorlayer.layers.utils import (get_variable_with_initializer)
 from collections import OrderedDict
 
-__all__ = ['Module', 'SequentialLayer', 'LayerList']
+__all__ = ['Module', 'SequentialLayer']
 
 _global_layer_name_dict = {}  # TODO: better implementation?
 
@@ -72,6 +71,9 @@ class Module(Cell):
         # layer forward  state
         self._forward_state = False
 
+        # data_format
+        self.data_format = "NCHW"
+
     def forward(self, *inputs, **kwargs):
         raise Exception("The forward method must be implemented by inherited class")
 
@@ -81,13 +83,25 @@ class Module(Cell):
     def build(self, inputs_shape):
         raise Exception("The build(self, inputs_shape) method must be implemented by inherited class")
 
-    def _get_weights(self, var_name, shape, init=tl.initializers.random_normal(), trainable=True):
+    def _get_weights(self, var_name, shape, init=tl.initializers.random_normal(), trainable=True, transposed=False):
         """ Get trainable variables. """
-        weight = get_variable_with_initializer(
-            scope_name=self.name, var_name=var_name, shape=shape, init=init, trainable=trainable
-        )
+        var_name = self.name + "/" + var_name
+        # TODO 2D mindspore weights shape : [out_channel, in_channel, kernel_h, kernel_w]
+        # TODO 2D mindspore transposed shape [in_channel, out_channel, kernel_h, kernel_w]
+        if len(shape) == 3:
+            shape = shape[::-1]
+        if len(shape) == 4:
+            if not transposed and self.data_format == 'NHWC':
+                shape = (shape[3], shape[0], shape[1], shape[2])
+            else:
+                shape = (shape[3], shape[2], shape[0], shape[1])
+        if len(shape) == 5:
+            shape = (shape[4], shape[3], shape[0], shape[1], shape[2])
+
+        initial_value = init(shape=shape)
+        var = tl.Variable(initial_value=initial_value, name=var_name, trainable=trainable)
         self.trainable = trainable
-        return weight
+        return var
 
     def save_weights(self, file_path, format=None):
         """Input file_path, save model weights into a file of given format."""
@@ -197,32 +211,36 @@ class Module(Cell):
 
 class SequentialLayer(Module):
     """
-    Sequential layer container.
+    The class :class:`SequentialLayer` is a linear stack of layers.
+    The :class:`SequentialLayer` can be created by passing a list of layer instances.
+    The given layer instances will be automatically connected one by one.
+    Parameters
+    ----------
+    layers: list of Layer
+        A list of layers.
+    name : str or None
+        A unique layer name. If None, a unique name will be automatically assigned.
+    Methods
+    ---------
+    __init__()
+        Initializing the LayerList.
+    weights()
+        A collection of weights of all the layer instances.
+    build()
+        Build the LayerList. The layer instances will be connected automatically one by one.
+    forward()
+        Forward the computation. The computation will go through all layer instances.
 
-    A list of Layers will be added to it in the order they are passed in the constructor.
-    Alternatively, an ordered dict of layers can also be passed in.
+    Examples
+    ---------
+    >>> conv = tl.layers.Conv2d(3, 2, 3, pad_mode='valid')
+    >>> bn = tl.layers.BatchNorm2d(2)
+    >>> seq = tl.layers.SequentialLayer([conv, bn])
+    >>> x = tl.layers.Input((1, 3, 4, 4))
+    >>> seq(x)
 
-    Args:
-        args (list, OrderedDict): List of subclass of Module.
-
-    Raises:
-        TypeError: If the type of the argument is not list or OrderedDict.
-
-    Inputs:
-        - **input** (Tensor) - Tensor with shape according to the first Module in the sequence.
-
-    Outputs:
-        Tensor, the output Tensor with shape depending on the input and defined sequence of Layers.
-
-    Examples:
-        >>> conv = tl.layers.Conv2d(3, 2, 3, pad_mode='valid')
-        >>> bn = tl.layers.BatchNorm2d(2)
-        >>> relu = tl.ReLU()
-        >>> seq = tl.layers.SequentialLayer([conv, bn, relu])
-        >>>
-        >>> x = tl.layers.Input((1, 3, 4, 4))
-        >>> seq(x)
     """
+
     def __init__(self, *args):
         super(SequentialLayer, self).__init__()
         # self._built = True
@@ -302,54 +320,4 @@ class SequentialLayer(Module):
         if issubclass(layer.__class__, Module):
             return True
         raise TypeError('Module {} is not subclass of Module'.format(layer))
-
-
-class LayerList(Module):
-    """
-    The class :class:`LayerList` is a linear stack of layers.
-
-    The :class:`LayerList` can be created by passing a list of layer instances.
-    The given layer instances will be automatically connected one by one.
-
-    Parameters
-    ----------
-    layers: list of Layer
-        A list of layers.
-    name : str or None
-        A unique layer name. If None, a unique name will be automatically assigned.
-
-    Methods
-    ---------
-    __init__()
-        Initializing the LayerList.
-    weights()
-        A collection of weights of all the layer instances.
-    build()
-        Build the LayerList. The layer instances will be connected automatically one by one.
-    forward()
-        Forward the computation. The computation will go through all layer instances.
-    """
-
-    def __init__(self, layers, name=None):
-        """
-        Initializing the LayerList given a list of Layer.
-
-        :param layers: list of Layer
-        :param name: str or None
-        """
-
-        super(LayerList, self).__init__(name=name)
-        pass
-
-    def __getitem__(self, idx):
-        pass
-
-    def __len__(self):
-        return len(self.layers)
-
-    def __repr__(self):
-        pass
-
-    def forward(self, inputs):
-        pass
 

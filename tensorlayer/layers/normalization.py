@@ -171,6 +171,7 @@ class BatchNorm(Module):
             self.act_init_flag = True
 
     def forward(self, inputs):
+        self._check_input_shape(inputs)
         if self._forward_state == False:
             if self._built == False:
                 self.build(tl.get_tensor_shape(inputs))

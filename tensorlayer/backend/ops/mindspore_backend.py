@@ -11,12 +11,13 @@ from mindspore.common.initializer import (
     initializer, Constant, Normal, TruncatedNormal, Initializer, _assignment, _calculate_in_and_out, One, Zero
 )
 from mindspore.common.tensor import Tensor
-from mindspore._c_expression import Tensor as Tensor_
 from mindspore.ops import operations as P
 from mindspore.ops import functional as F
 from mindspore.ops import composite as C
 import mindspore.context as context
 from mindspore.nn import Cell
+from mindspore.ops import count_nonzero
+import mindspore.numpy as msnp
 
 import numpy as np
 from scipy.stats import truncnorm
@@ -919,7 +920,7 @@ class Cast(Cell):
         self.cast = P.Cast()
 
     def construct(self, input):
-        return self.cast(input, dtype=self.dtype)
+        return self.cast(input, self.dtype)
 
 
 def cast(x, dtype):
@@ -1046,6 +1047,9 @@ def split(value, num_or_size_splits, axis=0, num=None):
     """
     pass
 
+class Floor(Cell):
+    def __call__(self, *args, **kwargs):
+        raise NotImplementedError
 
 def floor(x):
     return NotImplementedError
@@ -1087,44 +1091,79 @@ class L2Normalize(Cell):
         super(L2Normalize, self).__init__()
         pass
 
-    def __call__(self, input, *args, **kwargs):
+    def construct(self, input, *args, **kwargs):
         pass
 
 
 class EmbeddingLookup(Cell):
 
-    def __init__(self, max_norm=None):
+    def __init__(self, max_norm=0):
+        super(EmbeddingLookup, self).__init__()
         self.max_norm = max_norm
+        self.embedding_lookup = P.EmbeddingLookup()
 
-    def __call__(self, params, ids, *args, **kwargs):
-        pass
+    def construct(self, params, ids, *args, **kwargs):
+        return self.embedding_lookup(params, ids, self.max_norm)
 
 
-class NCELoss(object):
+class NCELoss(Cell):
 
     def __init__(self, num_true=1, sampled_values=None, remove_accidental_hits=False):
         super(NCELoss, self).__init__()
-
-    def __call__(self, weights, biases, labels, inputs, num_sampled, num_classes):
         pass
 
+    def construct(self, weights, biases, labels, inputs, num_sampled, num_classes):
+        raise NotImplementedError
 
-class Not_equal(object):
+
+class NotEqual(Cell):
 
     def __init__(self):
-        pass
+        super(NotEqual, self).__init__()
+        self.not_equal = P.NotEqual()
 
-    def __call__(self, x, y):
-        pass
+    def construct(self, x, y):
+        outputs = self.not_equal(x, y)
+        return outputs
 
 
-class Count_nonzero(object):
+class CountNonzero(object):
 
     def __init__(self, keepdims=None, dtype=int64):
-        pass
+        self.keepdims = keepdims
+        self.dtype = dtype
 
-    def __call__(self, *args, **kwargs):
-        pass
+    def __call__(self, input, axis=None):
+        input = self.convert_dtype(input)
+        return count_nonzero(x=input, axis=axis, keep_dims=self.keepdims, dtype=self.dtype)
+
+    def bool_convert_to_tensor(self, x):
+        x = x.asnumpy()
+        shapes = x.shape
+        b = np.ones(shapes)
+        if len(shapes) == 1:
+            for i in range(shapes - 1):
+                if x[i] == True:
+                    b[i] = 1
+                else:
+                    b[i] = 0
+        if len(shapes) == 2:
+            for i in range(shapes[0] - 1):
+                for j in range(shapes[1] - 1):
+                    if x[i][j] == True:
+                        b[i][j] = 1
+                    else:
+                        b[i][j] = 0
+        return Tensor(b, dtype=float32)
+
+    def convert_dtype(self, input):
+        if input.shape == 1 and type(input[0]) is bool:
+            output = self.bool_convert_to_tensor(input)
+        elif input.shape == 2 and type(input[0][0]) is bool:
+            output = self.bool_convert_to_tensor(input)
+        else:
+            output = input
+        return output
 
 
 class Resize(Cell):
@@ -1207,6 +1246,13 @@ class Sign(Cell):
     def construct(self, x):
         return self.sign(x)
 
+class Ceil(Cell):
+    def __init__(self):
+        super(Ceil, self).__init__()
+        self.ceil = P.Ceil()
+
+    def construct(self, x):
+        return self.ceil(x)
 
 def ceil(x):
     _ceil = P.Ceil()
@@ -1218,7 +1264,7 @@ def multiply(x, y):
 
 
 def divide(x, y):
-    raise NotImplementedError
+    return msnp.divide(x, y)
 
 
 def identity(x):

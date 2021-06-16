@@ -37,6 +37,8 @@ if tl.BACKEND == 'mindspore':
     from mindspore.nn import Cell
     from mindspore import Tensor
     import mindspore as ms
+if tl.BACKEND == 'paddle':
+    import paddle as pd
 
 if sys.version_info[0] == 2:
     from urllib import urlretrieve
@@ -74,6 +76,7 @@ __all__ = [
     'ms_variables_to_numpy',
     'assign_tf_variable',
     'assign_ms_variable',
+    'assign_pd_variable',
     'save_weights_to_hdf5',
     'load_hdf5_to_weights_in_order',
     'load_hdf5_to_weights',
@@ -2098,6 +2101,8 @@ def save_npz_dict(save_list=None, name='model.npz'):
         save_list_var = tf_variables_to_numpy(save_list)
     elif tl.BACKEND == 'mindspore':
         save_list_var = ms_variables_to_numpy(save_list)
+    elif tl.BACKEND == 'paddle':
+        save_list_var = pd_variables_to_numpy(save_list)
     else:
         raise NotImplementedError('Not implemented')
     save_var_dict = {save_list_names[idx]: val for idx, val in enumerate(save_list_var)}
@@ -2148,6 +2153,11 @@ def load_and_assign_npz_dict(name='model.npz', network=None, skip=False):
             elif tl.BACKEND == 'mindspore':
                 assign_param = Tensor(weights[key], dtype=ms.float32)
                 assign_ms_variable(network.all_weights[net_weights_name.index(key)], assign_param)
+            elif tl.BACKEND == 'paddle':
+                assign_pd_variable(network.all_weights[net_weights_name.index(key)], weights[key])
+            else:
+                raise NotImplementedError('Not implemented')
+
     logging.info("[*] Model restored from npz_dict %s" % name)
 
 
@@ -2593,6 +2603,15 @@ def ms_variables_to_numpy(variables):
     results = [v.data.asnumpy() for v in var_list]
     return results
 
+def pd_variables_to_numpy(variables):
+    if not isinstance(variables, list):
+        var_list = [variables]
+    else:
+        var_list = variables
+
+    results = [v.numpy() for v in var_list]
+    return results
+
 
 def assign_tf_variable(variable, value):
     """Assign value to a TF variable"""
@@ -2613,6 +2632,10 @@ def assign_ms_variable(variable, value):
     # net = Assign_net(variable)
     # net(value)
     Assign()(variable, value)
+
+
+def assign_pd_variable(variable, value):
+    pd.assign(value, variable)
 
 
 def _save_weights_to_hdf5_group(f, layers):

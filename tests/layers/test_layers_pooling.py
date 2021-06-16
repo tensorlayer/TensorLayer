@@ -33,15 +33,15 @@ class Layer_Pooling_Test(CustomTestCase):
         n19 = tl.layers.AdaptiveMeanPool1d(output_size=44, name='test_adaptivemeanpool1d')(n1)
         n20 = tl.layers.AdaptiveMaxPool1d(output_size=44, name='test_adaptivemaxpool1d')(n1)
 
-        cls.n1_shape = n1.get_shape().as_list()
-        cls.n2_shape = n2.get_shape().as_list()
-        cls.n3_shape = n3.get_shape().as_list()
-        cls.n4_shape = n4.get_shape().as_list()
-        cls.n5_shape = n5.get_shape().as_list()
-        cls.n16_shape = n16.get_shape().as_list()
-        cls.n17_shape = n17.get_shape().as_list()
-        cls.n19_shape = n19.get_shape().as_list()
-        cls.n20_shape = n20.get_shape().as_list()
+        cls.n1_shape = tl.get_tensor_shape(n1)
+        cls.n2_shape = tl.get_tensor_shape(n2)
+        cls.n3_shape = tl.get_tensor_shape(n3)
+        cls.n4_shape = tl.get_tensor_shape(n4)
+        cls.n5_shape = tl.get_tensor_shape(n5)
+        cls.n16_shape = tl.get_tensor_shape(n16)
+        cls.n17_shape = tl.get_tensor_shape(n17)
+        cls.n19_shape = tl.get_tensor_shape(n19)
+        cls.n20_shape = tl.get_tensor_shape(n20)
 
         ## 2D ========================================================================
 
@@ -58,15 +58,14 @@ class Layer_Pooling_Test(CustomTestCase):
         n21 = tl.layers.AdaptiveMeanPool2d(output_size=(45, 32), name='test_adaptivemeanpool2d')(n6)
         n22 = tl.layers.AdaptiveMaxPool2d(output_size=(45, 32), name='test_adaptivemaxpool2d')(n6)
 
-        cls.n6_shape = n6.get_shape().as_list()
-        cls.n7_shape = n7.get_shape().as_list()
-        cls.n8_shape = n8.get_shape().as_list()
-        cls.n9_shape = n9.get_shape().as_list()
-        cls.n10_shape = n10.get_shape().as_list()
-        cls.n15_shape = n15.get_shape().as_list()
-        # cls.n18_shape = n18.get_shape().as_list()
-        cls.n21_shape = n21.get_shape().as_list()
-        cls.n22_shape = n22.get_shape().as_list()
+        cls.n6_shape = tl.get_tensor_shape(n6)
+        cls.n7_shape = tl.get_tensor_shape(n7)
+        cls.n8_shape = tl.get_tensor_shape(n8)
+        cls.n9_shape = tl.get_tensor_shape(n9)
+        cls.n10_shape = tl.get_tensor_shape(n10)
+        cls.n15_shape = tl.get_tensor_shape(n15)
+        cls.n21_shape = tl.get_tensor_shape(n21)
+        cls.n22_shape = tl.get_tensor_shape(n22)
 
         ## 3D ========================================================================
 

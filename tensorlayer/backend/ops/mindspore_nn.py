@@ -1,19 +1,20 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-
 from __future__ import absolute_import, division, print_function
 
-from mindspore.nn.cell import Cell
-from mindspore import context
+import itertools
 import mindspore as ms
 import mindspore.ops as P
+from mindspore import context
+from mindspore.nn.cell import Cell
+from mindspore._checkparam import Rel
 from mindspore.ops import functional as F
-from mindspore.communication.management import get_group_size, get_rank
 from mindspore.communication import management
-from mindspore._checkparam import check_int_positive
+from mindspore.ops.operations import _inner_ops as inner
 from mindspore._extends import cell_attr_register
 from mindspore.ops._grad.grad_base import bprop_getters
-
+from mindspore._checkparam import Validator as validator
+from mindspore.communication.management import get_group_size, get_rank
 
 def padding_format(padding):
     """
@@ -537,25 +538,17 @@ class Conv2D(Cell):
         if self.data_format is 'NHWC':
             self.ms_stride = strides[1]
             self.ms_dilation = dilations[1]
-            # self.transpose = P.Transpose()
         elif self.data_format is 'NCHW':
             self.ms_stride = strides[2]
             self.ms_dilation = dilations[2]
 
-        # print(out_channel, k_size, self.padding, self.ms_stride, self.ms_dilation)
         self.conv2d = P.Conv2D(
             out_channel=out_channel, kernel_size=k_size, pad_mode=self.padding, stride=self.ms_stride,
-            dilation=self.ms_dilation, mode=1, group=1
+            dilation=self.ms_dilation, mode=1, group=1, data_format=self.data_format
         )
 
     def construct(self, inputs, filters):
-        if self.data_format == 'NHWC':
-            inputs = nhwc_to_nchw(inputs)
-
         outputs = self.conv2d(inputs, filters)
-
-        if self.data_format == 'NHWC':
-            outputs = nchw_to_nhwc(outputs)
         return outputs
 
 
@@ -588,8 +581,28 @@ def conv2d(input, filters, strides, padding, data_format='NCHW', dilations=None)
 
 
 class Conv3D(Cell):
-    pass
-    # raise NotImplementedError
+    def __init__(self, strides, padding, data_format='NDHWC', dilations=None, out_channel=None, k_size=None):
+        super(Conv3D, self).__init__()
+        self.data_format, self.padding = preprocess_3d_format(data_format, padding)
+
+        if self.data_format is 'NDHWC':
+            self.ms_stride = strides[1]
+            self.ms_dilation = dilations[1]
+            raise NotImplementedError("The optional value for data format. Currently only support “NCDHW”.")
+        elif self.data_format is 'NCDHW':
+            self.ms_stride = strides[2]
+            self.ms_dilation = dilations[2]
+
+        self.conv3d = P.Conv3D(out_channel=out_channel,
+                               kernel_size=k_size,
+                               pad_mode=self.padding,
+                               stride=self.ms_stride,
+                               dilation=self.ms_dilation,
+                               data_format=data_format)
+
+    def construct(self, input, filters):
+        outputs = self.conv3d(input, filters)
+        return outputs
 
 
 def conv3d(input, filters, strides, padding, data_format='NDHWC', dilations=None, name=None):
@@ -677,23 +690,58 @@ def moments(x, axes, shift=None, keepdims=False):
     pass
 
 
+class MaxPool1d(Cell):
+
+    def __init__(self, ksize, strides, padding, data_format=None):
+        super(MaxPool1d, self).__init__()
+        self.data_format, padding = preprocess_1d_format(data_format=data_format, padding=padding)
+        self.expand = P.ExpandDims()
+        _strides = (1, strides[0])
+        _ksize = (1, ksize[0])
+        if self.data_format == 'NWC':
+            self.squeeze = P.Squeeze(1)
+            _data_format = 'NHWC'
+        if self.data_format == 'NCW':
+            self.squeeze = P.Squeeze(2)
+            _data_format = 'NCHW'
+
+        self.max_pool = P.MaxPool(
+            kernel_size=_ksize,
+            strides=_strides,
+            pad_mode=padding,
+            data_format=_data_format
+        )
+
+    def construct(self, inputs):
+        if self.data_format == 'NWC':
+            x = self.expand(inputs, 1)
+        if self.data_format == 'NCW':
+            x = self.expand(inputs, 2)
+        output = self.max_pool(x)
+        output = self.squeeze(output)
+        return output
+
+
 class MaxPool(Cell):
 
     def __init__(self, ksize, strides, padding, data_format=None):
         super(MaxPool, self).__init__()
-        self.data_format, self.padding = preprocess_2d_format(data_format=data_format, padding=padding)
-        ms_ksize = ksize[1]
-        ms_strides = strides[1]
-        self.maxpool = P.MaxPool(ksize=ms_ksize, strides=ms_strides, padding=self.padding)
+        data_format, padding = preprocess_2d_format(data_format=data_format, padding=padding)
+
+        if data_format == 'NHWC':
+            _strides = (strides[1], strides[2])
+        if data_format == 'NCHW':
+            _strides = (strides[2], strides[3])
+
+        self.maxpool = P.MaxPool(
+            kernel_size = ksize,
+            strides = _strides,
+            pad_mode = padding,
+            data_format = data_format
+        )
 
     def construct(self, inputs):
-        if self.data_format == 'NHWC':
-            inputs = nhwc_to_nchw(inputs)
-
         outputs = self.maxpool(inputs)
-
-        if self.data_format == 'NHWC':
-            outputs = nchw_to_nhwc(outputs)
         return outputs
 
 
@@ -710,7 +758,7 @@ def max_pool(input, ksize, strides, padding, data_format=None):
     ksize : int or list of ints
         An int or list of ints that has length 1, N or N+2.
         The size of the window for each dimension of the input tensor.
-    strides : int or list of ints
+    strides : list or list of ints
         An int or list of ints that has length 1, N or N+2.
         The stride of the sliding window for each dimension of the input tensor.
     padding : string
@@ -722,15 +770,59 @@ def max_pool(input, ksize, strides, padding, data_format=None):
     """
     data_format, padding = preprocess_2d_format(data_format=data_format, padding=padding)
     if data_format == 'NHWC':
-        input = nhwc_to_nchw(input)
-
-    ms_ksize = ksize[1]
-    ms_strides = strides[2]
-    outputs = P.MaxPool(ksize=ms_ksize, strides=ms_strides, padding=padding)(input)
-    # channel first to channel last
-    if data_format == 'NHWC':
-        outputs = nchw_to_nhwc(outputs)
+        _strides = (strides[1], strides[2])
+    if data_format == 'NCHW':
+        _strides = (strides[2], strides[3])
+    outputs = P.MaxPool(
+        kernel_size=ksize,
+        strides=_strides,
+        pad_mode=padding,
+        data_format=data_format
+    )(input)
     return outputs
+
+
+
+class AvgPool1d(Cell):
+
+    def __init__(self, ksize, strides, padding, data_format=None):
+        super(AvgPool1d, self).__init__()
+        self.data_format, self.padding = preprocess_1d_format(data_format=data_format, padding=padding)
+        self.kernel_size = (1, ksize[0])
+        self.stride = (1, strides[0])
+
+        if self.data_format == 'NWC':
+            _data_format = 'NHWC'
+            self.squeeze = P.Squeeze(1)
+        if self.data_format == 'NCW':
+            _data_format = 'NCHW'
+            self.squeeze = P.Squeeze(2)
+
+        self.avg_pool = P.AvgPool(kernel_size=self.kernel_size,
+                                  strides=self.stride,
+                                  pad_mode=self.padding,
+                                  data_format=_data_format)
+        self.reduce_mean = P.ReduceMean(keep_dims=True)
+        self.slice = P.Slice()
+        self.expand = P.ExpandDims()
+        self.shape = P.Shape()
+
+    def construct(self, inputs):
+        x = inputs
+        batch, channel, width = self.shape(inputs)
+        if width == self.kernel_size[1]:
+            x = self.reduce_mean(x, 2)
+        elif width - self.kernel_size[1] < self.stride[1]:
+            x = self.slice(x, (0, 0, 0), (batch, channel, self.kernel_size[1]))
+            x = self.reduce_mean(x, 2)
+        else:
+            if self.data_format == 'NCW':
+                x = self.expand(x, 2)
+            if self.data_format == 'NWC':
+                x = self.expand(x, 1)
+            x = self.avg_pool(x)
+            x = self.squeeze(x)
+        return x
 
 
 class AvgPool(Cell):
@@ -740,16 +832,10 @@ class AvgPool(Cell):
         self.data_format, self.padding = preprocess_2d_format(data_format=data_format, padding=padding)
         ms_ksize = ksize[1]
         ms_strides = strides[1]
-        self.avgpool = P.AvgPool(ksize=ms_ksize, strides=ms_strides, padding=padding)
+        self.avgpool = P.AvgPool(ksize=ms_ksize, strides=ms_strides, padding=padding, data_format=self.data_format)
 
     def construct(self, inputs):
-        if self.data_format == 'NHWC':
-            inputs = nhwc_to_nchw(inputs)
-
         outputs = self.avgpool(inputs)
-
-        if self.data_format == 'NHWC':
-            outputs = nchw_to_nhwc(outputs)
         return outputs
 
 
@@ -1056,7 +1142,7 @@ class Conv2d_transpose(Cell):
         output = self.conv2d_transpose(x, filters, (n, self.out_channel, h_out, w_out))
 
         if self.data_format == 'NHWC':
-            output = nchw_to_nhwc(x)
+            output = nchw_to_nhwc(output)
 
         return output
 
@@ -1099,7 +1185,32 @@ def conv2d_transpose(
 
 
 class Conv3d_transpose(Cell):
-    pass
+    def __init__(self, strides, padding, data_format='NDHWC', dilations=None, name=None, out_channel=None, k_size=None,
+            in_channels=None
+    ):
+        super(Conv3d_transpose, self).__init__()
+        self.data_format, self.padding = preprocess_3d_format(data_format, padding)
+        if self.data_format == 'NDHWC':
+            self.strides = (strides[1], strides[2], strides[3])
+            self.dilations = (dilations[1], dilations[2], dilations[3])
+        elif self.data_format == 'NCDHW':
+            self.strides = (strides[2], strides[3], strides[4])
+            self.dilations = (dilations[2], dilations[3], dilations[4])
+
+        self.conv3d_transpose = P.Conv3DTranspose(
+            in_channel=in_channels,
+            out_channel=out_channel,
+            kernel_size=k_size,
+            mode=1,
+            pad_mode=padding,
+            stride=self.strides,
+            dilation=self.dilations,
+            data_format=self.data_format)
+
+    def construct(self, input, filters):
+        output = self.conv3d_transpose(input, filters)
+        return output
+
 
 
 def conv3d_transpose(
@@ -1141,18 +1252,32 @@ class BatchNorm(Cell):
     """Batch Normalization base class."""
 
     @cell_attr_register
-    def __init__(
-        self, num_features, epsilon=1e-5, decay=0.9, gamma=None, beta=None, moving_mean=None, moving_var=None,
-        is_train=None, device_num_each_group=1, data_format='channels_last'
-    ):
+    def __init__(self,
+                 num_features,
+                 epsilon=1e-5,
+                 decay=0.9,
+                 gamma=None,
+                 beta = None,
+                 moving_mean = None,
+                 moving_var = None,
+                 is_train = None,
+                 device_num_each_group=1,
+                 process_groups=0,
+                 data_format='NCHW'):
         super(BatchNorm, self).__init__()
+        if data_format in ["channels_last", "NHWC", "nhwc"]:
+            data_format = "NHWC"
+        elif data_format in ["channels_first", "NCHW", "nchw"]:
+            data_format = "NCHW"
+        validator.check_value_type('num_features', num_features, [int], self.cls_name)
         if num_features < 1:
             raise ValueError("num_features must be at least 1")
 
         if decay < 0 or decay > 1:
             raise ValueError("momentum should be a number in range [0, 1], but got {}".format(decay))
-
-        self.data_format = data_format
+        self.format = validator.check_string(data_format, ['NCHW', 'NHWC'], 'format', self.cls_name)
+        if context.get_context("device_target") != "GPU" and self.format == "NHWC":
+            raise ValueError("NHWC format only support in GPU target.")
         self.use_batch_statistics = is_train
         self.num_features = num_features
         self.eps = epsilon
@@ -1160,19 +1285,47 @@ class BatchNorm(Cell):
         self.moving_variance = moving_var
         self.gamma = gamma
         self.beta = beta
-        self.group = check_int_positive(device_num_each_group)
+        self.group_device_num = validator.check_positive_int(device_num_each_group)
+        self.process_groups = process_groups
         self.is_global = False
-        if self.group != 1:
+        self.parallel_mode = context.get_auto_parallel_context("parallel_mode")
+        global SYNC_BN_GROUP_NAME
+        # for GlobalBatchNorm
+        if self.group_device_num != 1:
             self.rank_id = get_rank()
             self.rank_size = get_group_size()
             self.device_list = [i for i in range(0, self.rank_size)]
-            self.rank_list = self.list_group(self.device_list, self.group)
+            self.rank_list = self.list_group(self.device_list, self.group_device_num)
             self.rank_list_idx = len(self.rank_list)
             for i in range(self.rank_list_idx):
-                if self.rank_id in self.rank_list[i] and self.group != 1:
+                if self.rank_id in self.rank_list[i]:
                     self.is_global = True
-                    management.create_group('group' + str(i), self.rank_list[i])
-                    self.all_reduce = P.AllReduce(P.ReduceOp.SUM, 'group' + str(i)).add_prim_attr('fusion', 1)
+                    if SYNC_BN_GROUP_NAME == "":
+                        SYNC_BN_GROUP_NAME = "sync_bn_group"+ str(i)
+                        management.create_group(SYNC_BN_GROUP_NAME, self.rank_list[i])
+        # for SyncBatchNorm
+        if self.process_groups != 0:
+            self.rank_id = get_rank()
+            self.rank_size = get_group_size()
+            if self.process_groups is not None:
+                validator.check_isinstance("process_groups", self.process_groups, list)
+                self._check_rank_ids(self.process_groups, self.rank_size)
+                for i in range(len(self.process_groups)):
+                    validator.check_isinstance("process_groups[" + str(i) +"]", self.process_groups[i], list)
+                    self.group_device_num = len(self.process_groups[i])
+                    if self.rank_id in self.process_groups[i] and self.group_device_num > 1:
+                        self.is_global = True
+                        if SYNC_BN_GROUP_NAME == "":
+                            SYNC_BN_GROUP_NAME = "sync_bn_group" + str(i)
+                            management.create_group(SYNC_BN_GROUP_NAME, self.process_groups[i])
+            elif self.rank_size > 1:
+                self.is_global = True
+                self.group_device_num = self.rank_size
+                self.device_list = [i for i in range(0, self.rank_size)]
+                if SYNC_BN_GROUP_NAME == "":
+                    SYNC_BN_GROUP_NAME = "sync_bn_group0"
+                    management.create_group(SYNC_BN_GROUP_NAME, self.device_list)
+
         self.shape = P.Shape()
         self.reduce_mean = P.ReduceMean(keep_dims=True)
         self.square = P.Square()
@@ -1180,8 +1333,7 @@ class BatchNorm(Cell):
         self.cast = P.Cast()
         self.dtype = P.DType()
         self.reshape = P.Reshape()
-        self.is_ascend = context.get_context("device_target") == "Ascend"
-        self.is_gpu = context.get_context("device_target") == "GPU"
+        self._target = context.get_context("device_target")
         self.is_graph_mode = context.get_context("mode") == context.GRAPH_MODE
         self.momentum = 1.0 - decay
         if context.get_context("enable_ge"):
@@ -1189,19 +1341,20 @@ class BatchNorm(Cell):
         else:
             self.is_ge_backend = False
 
-        if self.is_graph_mode and (self.is_ge_backend or self.is_ascend):
-            self.bn_train = P.BatchNorm(is_training=True, epsilon=self.eps)
-        elif self.is_gpu:
-            self.bn_train = P.FusedBatchNormEx(mode=1, epsilon=self.eps, momentum=self.momentum)
-        else:
-            self.bn_train = P.FusedBatchNorm(mode=1, epsilon=self.eps, momentum=self.momentum)
-        self.bn_infer = P.BatchNorm(is_training=False, epsilon=self.eps)
-        self.enable_global_sync = self.is_global and (self.is_ge_backend or (self.is_graph_mode and self.is_ascend))
-        self.enable_default_train = self.is_graph_mode and not self.is_global and \
-                                    (self.is_ge_backend or self.is_ascend)
+        self.bn_train = P.BatchNorm(is_training=True,
+                                    epsilon=self.eps,
+                                    momentum=self.momentum,
+                                    data_format=self.format)
+        if self.is_global:
+            self.bn_train = inner.SyncBatchNorm(epsilon=self.eps,
+                                                momentum=self.momentum,
+                                                group=SYNC_BN_GROUP_NAME,
+                                                device_num=self.group_device_num)
 
-        data_parallel_strategy = ((1, ), (1, ))
-        data_parallel_strategy_one = ((1, ), ())
+        self.bn_infer = P.BatchNorm(is_training=False, epsilon=self.eps, data_format=self.format)
+
+        data_parallel_strategy = ((1,), (1,))
+        data_parallel_strategy_one = ((1,), ())
         self.sub_mean = P.Sub().shard(data_parallel_strategy)
         self.sub_var = P.Sub().shard(data_parallel_strategy)
         self.mul_mean = P.Mul().shard(data_parallel_strategy_one)
@@ -1209,116 +1362,54 @@ class BatchNorm(Cell):
         self.assign_sub_mean = P.AssignSub().shard(data_parallel_strategy)
         self.assign_sub_var = P.AssignSub().shard(data_parallel_strategy)
 
-    def _check_data_dim(self, x):
-        raise NotImplementedError
-
     def list_group(self, world_rank, group_size):
         if group_size > get_group_size():
-            raise ValueError(
-                "group size can not be greater than local rank size, group size is {}, "
-                "local_rank_size is {}".format(group_size, get_group_size())
-            )
+            raise ValueError("group size can not be greater than local rank size, group size is {}, "
+                             "local_rank_size is {}".format(group_size, get_group_size()))
         if len(world_rank) % group_size != 0:
             raise ValueError("please make your group size correct.")
-        world_rank_list = zip(*(iter(world_rank), ) * group_size)
+        world_rank_list = zip(*(iter(world_rank),) * group_size)
         group_list = [list(i) for i in world_rank_list]
         return group_list
 
-    def _global_sync(self, x, axes, re_shape):
-        """calculate global batch normalization output"""
-        x_mean = self.reduce_mean(x, axes)
-        x_mean_square = self.reduce_mean(self.square(x), axes)
-        global_batch_mean = self.all_reduce(x_mean) / self.group
-        global_batch_mean_square = self.all_reduce(x_mean_square) / self.group
-        global_mean = global_batch_mean
-        global_var = global_batch_mean_square - self.square(global_mean)
-        var_sqrt = self.sqrt(global_var + self.eps)
-        mean_first = (x - global_mean) / var_sqrt
-        y = mean_first * self.reshape(self.gamma, re_shape) + self.reshape(self.beta, re_shape)
-
-        mean_sub = self.sub_mean(self.reshape(self.moving_mean, re_shape), global_mean)
-        tmp_mean = self.mul_mean(mean_sub, self.cast(self.momentum, self.dtype(mean_sub)))
-        mean_sub2 = self.sub_var(self.reshape(self.moving_mean, re_shape), global_var)
-        tmp_variance = self.mul_var(mean_sub2, self.cast(self.momentum, self.dtype(mean_sub2)))
-        y = F.depend(y, self.assign_sub_mean(self.moving_mean, self.reshape(tmp_mean, self.shape(self.moving_mean))))
-        y = F.depend(
-            y, self.assign_sub_var(self.moving_variance, self.reshape(tmp_variance, self.shape(self.moving_variance)))
-        )
-        return y
-
-    def get_dim(self, input):
-        dim = len(self.shape(input))
-        if dim == 2:
-            return '1d'
-        elif dim == 4:
-            return '2d'
-        else:
-            raise ValueError("The input must has 2 dims or 4 dims.")
-
-    def _shape_check_bn(self, in_shape, in_dims):
-        dim = len(in_shape)
-        if in_dims == '1d' and dim != 2:
-            raise ValueError("The input must has 2 dims.")
-        if in_dims == '2d' and dim != 4:
-            raise ValueError("The input must has 4 dims.")
-        if in_dims == 'both' and dim != 2 and dim != 4:
-            raise ValueError("The input must has 2 dims or 4 dims.")
-
-    def _shape_infer(self, x_shape, num_feature):
-        """global batch normalization shape and axes infer"""
-        if len(x_shape) == 4:
-            axes = (0, 2, 3)
-            re_shape = (1, num_feature, 1, 1)
-        else:
-            axes = (0, )
-            re_shape = (1, num_feature)
-        return axes, re_shape
+    def _check_rank_ids(self, process_groups, rank_size):
+        seen = set()
+        for rid in itertools.chain(*process_groups):
+            validator.check_int_range(rid, 0, rank_size, Rel.INC_LEFT, "rank id in process_groups")
+            if rid in seen:
+                raise ValueError("rank id in process_groups should not be duplicated.")
+            seen.add(rid)
 
     def construct(self, inputs):
-        x = inputs
-        self._shape_check_bn(self.shape(x), self.get_dim(x))
-        if self.use_batch_statistics is None:
-            flag = self.training
-        else:
-            flag = self.use_batch_statistics
+        x_shape = F.shape(inputs)
+        if len(x_shape) == 5:
+            inputs = self.reshape(inputs, (x_shape[0], x_shape[1], x_shape[2] * x_shape[3], x_shape[4]))
+
+        flag = self.use_batch_statistics
 
         if flag:
-            if self.enable_global_sync:
-                if self.data_format == 'channels_last' and self.get_dim(x) == '2d':
-                    x = nhwc_to_nchw(x)
-                axes, re_shape = self._shape_infer(F.shape(x), self.num_features)
-                y = self._global_sync(x, axes, re_shape)
-                if self.data_format == 'channels_last' and self.get_dim(x) == '2d':
-                    y = nchw_to_nhwc(y)
-                return y
+            output = self.bn_train(inputs,
+                                 self.gamma,
+                                 self.beta,
+                                 self.moving_mean,
+                                 self.moving_variance)[0]
 
-            if self.enable_default_train:
-                if self.data_format == 'channels_last' and self.get_dim(x) == '2d':
-                    x = nhwc_to_nchw(x)
-                y, batch_mean, batch_var, _, _ = self.bn_train(x, self.gamma, self.beta, None, None)
+            if len(x_shape) == 5:
+                output = self.reshape(output, x_shape)
+            return output
 
-                mean_sub = self.sub_mean(self.moving_mean, batch_mean)
-                temp_mean = self.mul_mean(mean_sub, self.momentum)
-                mean_sub2 = self.sub_var(self.moving_variance, batch_var)
-                temp_variance = self.mul_var(mean_sub2, self.momentum)
-                y = F.depend(y, self.assign_sub_mean(self.moving_mean, temp_mean))
-                y = F.depend(y, self.assign_sub_var(self.moving_variance, temp_variance))
-                if self.data_format == 'channels_last' and self.get_dim(x) == '2d':
-                    y = nchw_to_nhwc(y)
-                return y
+        output = self.bn_infer(inputs,
+                             self.gamma,
+                             self.beta,
+                             self.moving_mean,
+                             self.moving_variance)[0]
+        if len(x_shape) == 5:
+            output = self.reshape(output, x_shape)
+        return output
 
-            if self.data_format == 'channels_last' and self.get_dim(x) == '2d':
-                x = nhwc_to_nchw(x)
-            y = self.bn_train(x, self.gamma, self.beta, self.moving_mean, self.moving_variance)[0]
-            if self.data_format == 'channels_last' and self.get_dim(x) == '2d':
-                y = nchw_to_nhwc(y)
-            return y
-        if self.data_format == 'channels_last' and self.get_dim(x) == '2d':
-            x = nhwc_to_nchw(x)
-        y = self.bn_infer(x, self.gamma, self.beta, self.moving_mean, self.moving_variance)[0]
-        if self.data_format == 'channels_last' and self.get_dim(x) == '2d':
-            y = nchw_to_nhwc(y)
-        return y
+    def extend_repr(self):
+        return 'num_features={}, eps={}, momentum={}, gamma={}, beta={}, moving_mean={}, moving_variance={}'.format(
+            self.num_features, self.eps, self.momentum, self.gamma, self.beta, self.moving_mean, self.moving_variance)
 
 
 class GroupConv2D(Cell):
@@ -1337,17 +1428,11 @@ class GroupConv2D(Cell):
 
         self.conv2d = P.Conv2D(
             out_channel=out_channel, kernel_size=k_size, pad_mode=self.padding, stride=self.ms_stride,
-            dilation=self.ms_dilation, mode=1, group=groups
+            dilation=self.ms_dilation, mode=1, group=groups, data_format=self.data_format
         )
 
     def construct(self, inputs, filters):
-        if self.data_format == 'NHWC':
-            inputs = nhwc_to_nchw(inputs)
-
         outputs = self.conv2d(inputs, filters)
-
-        if self.data_format == 'NHWC':
-            outputs = nchw_to_nhwc(outputs)
         return outputs
 
 
@@ -1407,30 +1492,23 @@ class SeparableConv2D(Cell):
         if self.data_format is 'NHWC':
             self.ms_stride = strides[1]
             self.ms_dilation = dilations[1]
-            # self.transpose = P.Transpose()
         elif self.data_format is 'NCHW':
             self.ms_stride = strides[2]
             self.ms_dilation = dilations[2]
 
         self.depthwise_conv = P.Conv2D(
             out_channel=self.in_channel * self.depth_multiplier, kernel_size=self.k_size, pad_mode=self.padding,
-            stride=self.ms_stride, dilation=self.ms_dilation, mode=1, group=self.in_channel
+            stride=self.ms_stride, dilation=self.ms_dilation, mode=1, group=self.in_channel , data_format=self.data_format
         )
 
         self.pointwise_conv = P.Conv2D(
             out_channel=self.out_channel, kernel_size=(1, 1), pad_mode=self.padding, stride=(1, 1), dilation=(1, 1),
-            mode=1, group=1
+            mode=1, group=1 , data_format=self.data_format
         )
 
     def construct(self, x, depthwise_filters, pointwise_filters):
-        if self.data_format == 'NHWC':
-            x = nhwc_to_nchw(x)
-
         outputs = self.depthwise_conv(x, depthwise_filters)
         outputs = self.pointwise_conv(outputs, pointwise_filters)
-
-        if self.data_format == 'NHWC':
-            outputs = nchw_to_nhwc(outputs)
         return outputs
 
 
@@ -1545,10 +1623,8 @@ class AdaptiveMaxPool2D(Cell):
         kernel_h = h - (out_h - 1) * stride_h
         stride_w = w // out_w
         kernel_w = w - (out_w - 1) * stride_w
-        outputs = P.MaxPool(kernel_size=(kernel_h, kernel_w), strides=(stride_h, stride_w), pad_mode='VALID')(inputs)
-
-        if self.data_format == 'NHWC':
-            outputs = nchw_to_nhwc(outputs)
+        outputs = P.MaxPool(kernel_size=(kernel_h, kernel_w), strides=(stride_h, stride_w),
+                            pad_mode='VALID', data_format=self.data_format)(inputs)
 
         return outputs
 
@@ -1566,14 +1642,13 @@ class BinaryConv2D(Cell):
         if self.data_format is 'NHWC':
             self.ms_stride = strides[1]
             self.ms_dilation = dilations[1]
-            # self.transpose = P.Transpose()
         elif self.data_format is 'NCHW':
             self.ms_stride = strides[2]
             self.ms_dilation = dilations[2]
 
         self.conv2d = P.Conv2D(
             out_channel=out_channel, kernel_size=k_size, pad_mode=self.padding, stride=self.ms_stride,
-            dilation=self.ms_dilation, mode=1, group=1
+            dilation=self.ms_dilation, mode=1, group=1, data_format=self.data_format
         )
 
         @bprop_getters.register(P.Sign)
@@ -1590,15 +1665,8 @@ class BinaryConv2D(Cell):
 
     def construct(self, inputs, filters):
 
-        if self.data_format == 'NHWC':
-            inputs = nhwc_to_nchw(inputs)
-
         filters = self.sign(filters)
-
         outputs = self.conv2d(inputs, filters)
-
-        if self.data_format == 'NHWC':
-            outputs = nchw_to_nhwc(outputs)
 
         return outputs
 

@@ -2,24 +2,17 @@
 # -*- coding: utf-8 -*-
 
 from collections.abc import Iterable
-from tensorlayer.files import utils
-from tensorlayer import logging
+from tensorlayer.layers.core.common import _save_weights, _load_weights
 import tensorlayer as tl
 from tensorlayer.layers.core import Module
 import numpy as np
-import os
 import time
 
 if tl.BACKEND == 'tensorflow':
     import tensorflow as tf
 if tl.BACKEND == 'mindspore':
-    import mindspore as ms
     from mindspore.ops import composite
     from mindspore.ops import operations as P
-    from mindspore.ops import functional as F
-    # from mindspore.parallel._utils import (_get_device_num, _get_mirror_mean, _get_parallel_mode)
-    # from mindspore.train.parallel_utils import ParallelMode
-    from mindspore.nn.wrap import DistributedGradReducer
     from mindspore.common import ParameterTuple
 if tl.BACKEND == 'paddle':
     import paddle as pd
@@ -96,13 +89,18 @@ class Model:
             )
 
     def eval(self, test_dataset):
-        self.network.eval()
+        self.network.set_eval()
         test_loss, test_acc, n_iter = 0, 0, 0
         for X_batch, y_batch in test_dataset:
             _logits = self.network(X_batch)
             test_loss += self.loss_fn(_logits, y_batch)
             if self.metrics:
-                test_acc += self.metrics(_logits, y_batch)
+                try:
+                    test_acc += self.metrics(_logits, y_batch)
+                except:
+                    self.metrics.update(_logits, y_batch)
+                    test_acc += self.metrics.result()
+                    self.metrics.reset()
             else:
                 test_acc += np.mean(np.equal(np.argmax(_logits, 1), y_batch))
             n_iter += 1
@@ -134,43 +132,20 @@ class Model:
         --------
         1) Save model weights in hdf5 format by default.
         >>> net = vgg16()
-        >>> net.save_weights('./model.h5')
+        >>> optimizer = tl.optimizers.Adam(learning_rate=0.001)
+        >>> metric = tl.metric.Accuracy()
+        >>> model = tl.models.Model(network=net, loss_fn=tl.cost.cross_entropy, optimizer=optimizer, metrics=metric)
+        >>> model.save_weights('./model.h5')
         ...
-        >>> net.load_weights('./model.h5')
+        >>> model.load_weights('./model.h5')
 
         2) Save model weights in npz/npz_dict format
-        >>> net = vgg16()
-        >>> net.save_weights('./model.npz')
-        >>> net.save_weights('./model.npz', format='npz_dict')
+        >>> model.save_weights('./model.npz')
+        >>> model.save_weights('./model.npz', format='npz_dict')
 
         """
 
-        # self.all_weights = self.network.all_weights
-        if self.all_weights is None or len(self.all_weights) == 0:
-            logging.warning("Model contains no weights or layers haven't been built, nothing will be saved")
-            return
-
-        if format is None:
-            postfix = file_path.split('.')[-1]
-            if postfix in ['h5', 'hdf5', 'npz', 'ckpt']:
-                format = postfix
-            else:
-                format = 'hdf5'
-
-        if format == 'hdf5' or format == 'h5':
-            utils.save_weights_to_hdf5(file_path, self)
-        elif format == 'npz':
-            utils.save_npz(self.all_weights, file_path)
-        elif format == 'npz_dict':
-            utils.save_npz_dict(self.all_weights, file_path)
-        elif format == 'ckpt':
-            # TODO: enable this when tf save ckpt is enabled
-            raise NotImplementedError("ckpt load/save is not supported now.")
-        else:
-            raise ValueError(
-                "Save format must be 'hdf5', 'npz', 'npz_dict' or 'ckpt'."
-                "Other format is not supported now."
-            )
+        _save_weights(net=self, file_path=file_path, format=format)
 
     def load_weights(self, file_path, format=None, in_order=True, skip=False):
         """Load model weights from a given file, which should be previously saved by self.save_weights().
@@ -201,15 +176,18 @@ class Model:
         Examples
         --------
         1) load model from a hdf5 file.
-        >>> net = tl.models.vgg16()
-        >>> net.load_weights('./model_graph.h5', in_order=False, skip=True) # load weights by name, skipping mismatch
-        >>> net.load_weights('./model_eager.h5') # load sequentially
+        >>> net = vgg16()
+        >>> optimizer = tl.optimizers.Adam(learning_rate=0.001)
+        >>> metric = tl.metric.Accuracy()
+        >>> model = tl.models.Model(network=net, loss_fn=tl.cost.cross_entropy, optimizer=optimizer, metrics=metric)
+        >>> model.load_weights('./model_graph.h5', in_order=False, skip=True) # load weights by name, skipping mismatch
+        >>> model.load_weights('./model_eager.h5') # load sequentially
 
         2) load model from a npz file
-        >>> net.load_weights('./model.npz')
+        >>> model.load_weights('./model.npz')
 
-        2) load model from a npz file, which is saved as npz_dict previously
-        >>> net.load_weights('./model.npz', format='npz_dict')
+        3) load model from a npz file, which is saved as npz_dict previously
+        >>> model.load_weights('./model.npz', format='npz_dict')
 
         Notes
         -------
@@ -219,31 +197,8 @@ class Model:
            'in_order' argument will be ignored.
 
         """
-        if not os.path.exists(file_path):
-            raise FileNotFoundError("file {} doesn't exist.".format(file_path))
 
-        if format is None:
-            format = file_path.split('.')[-1]
-
-        if format == 'hdf5' or format == 'h5':
-            if skip ==True or in_order == False:
-                # load by weights name
-                utils.load_hdf5_to_weights(file_path, self, skip)
-            else:
-                # load in order
-                utils.load_hdf5_to_weights_in_order(file_path, self)
-        elif format == 'npz':
-            utils.load_and_assign_npz(file_path, self)
-        elif format == 'npz_dict':
-            utils.load_and_assign_npz_dict(file_path, self, skip)
-        elif format == 'ckpt':
-            # TODO: enable this when tf save ckpt is enabled
-            raise NotImplementedError("ckpt load/save is not supported now.")
-        else:
-            raise ValueError(
-                "File format must be 'hdf5', 'npz', 'npz_dict' or 'ckpt'. "
-                "Other format is not supported now."
-            )
+        _load_weights(net=self, file_path=file_path, format=format, in_order=in_order, skip=skip)
 
     def tf_train(
         self, n_epoch, train_dataset, network, loss_fn, train_weights, optimizer, metrics, print_train_batch,
@@ -287,7 +242,7 @@ class Model:
             if test_dataset:
                 # use training and evaluation sets to evaluate the model every print_freq epoch
                 if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-                    network.eval()
+                    network.set_eval()
                     val_loss, val_acc, n_iter = 0, 0, 0
                     for X_batch, y_batch in test_dataset:
                         _logits = network(X_batch)  # is_train=False, disable dropout
@@ -340,7 +295,7 @@ class Model:
             if test_dataset:
                 # use training and evaluation sets to evaluate the model every print_freq epoch
                 if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-                    network.eval()
+                    network.set_eval()
                     val_loss, val_acc, n_iter = 0, 0, 0
                     for X_batch, y_batch in test_dataset:
                         _logits = network(X_batch)
@@ -394,7 +349,7 @@ class Model:
             if test_dataset:
                 # use training and evaluation sets to evaluate the model every print_freq epoch
                 if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-                    network.eval()
+                    network.set_eval()
                     val_loss, val_acc, n_iter = 0, 0, 0
                     for X_batch, y_batch in test_dataset:
                         _logits = network(X_batch)  # is_train=False, disable dropout

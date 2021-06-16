@@ -138,7 +138,7 @@ class DepthwiseConv2d(Module):
         if BACKEND == 'mindspore':
             self.filter_shape = (self.filter_size[0], self.filter_size[1], self.in_channels, 1)
 
-        self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init)
+        self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init, transposed=True)
 
         self.depthwise_conv2d = tl.ops.DepthwiseConv2d(
             strides=self._strides, padding=self.padding, data_format=self.data_format, dilations=self._dilation_rate,
