@@ -5,7 +5,6 @@ from tensorlayer.layers.core import Module
 import tensorlayer as tl
 from tensorlayer import logging
 
-
 __all__ = [
     'Conv1d',
     'Conv2d',

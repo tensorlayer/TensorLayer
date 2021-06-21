@@ -14,7 +14,7 @@ from examples.model_zoo.resnet import ResNet50
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 # get the whole model
-resnet = ResNet50(pretrained=False)
+resnet = ResNet50(pretrained=True)
 resnet.set_eval()
 
 img1 = tl.vis.read_image('data/tiger.jpeg')

@@ -140,9 +140,9 @@ class TernaryConv2d(Module):
             self.b = self._get_weights("biases", shape=(self.n_filter, ), init=self.b_init)
             self.bias_add = tl.ops.BiasAdd(data_format=self.data_format)
 
-        self.conv2d = tl.ops.Conv2D(strides=self._strides, padding=self.padding, data_format=self.data_format,
-            dilations=self._dilation_rate)
-
+        self.conv2d = tl.ops.Conv2D(
+            strides=self._strides, padding=self.padding, data_format=self.data_format, dilations=self._dilation_rate
+        )
 
     def forward(self, inputs):
         if self._forward_state == False:

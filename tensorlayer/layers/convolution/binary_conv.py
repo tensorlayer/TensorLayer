@@ -4,7 +4,6 @@
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.layers.core import Module
-from tensorlayer.backend import BACKEND
 
 __all__ = [
     'BinaryConv2d',

@@ -37,9 +37,9 @@ class UpSampling2d(Module):
     ---------
     With TensorLayer
 
-    >>> ni = tl.layers.Input([None, 50, 50, 32], name='input')
+    >>> ni = tl.layers.Input([10, 50, 50, 32], name='input')
     >>> ni = tl.layers.UpSampling2d(scale=(2, 2))(ni)
-    >>> output shape : [None, 100, 100, 32]
+    >>> output shape : [10, 100, 100, 32]
 
     """
 
@@ -85,6 +85,7 @@ class UpSampling2d(Module):
         outputs = self.resize(inputs)
         return outputs
 
+
 class DownSampling2d(Module):
     """The :class:`DownSampling2d` class is down-sampling 2D layer.
 
@@ -111,21 +112,13 @@ class DownSampling2d(Module):
     ---------
     With TensorLayer
 
-    >>> ni = tl.layers.Input([None, 50, 50, 32], name='input')
+    >>> ni = tl.layers.Input([10, 50, 50, 32], name='input')
     >>> ni = tl.layers.DownSampling2d(scale=(2, 2))(ni)
-    >>> output shape : [None, 25, 25, 32]
+    >>> output shape : [10, 25, 25, 32]
 
     """
 
-    def __init__(
-        self,
-        scale,
-        method='bilinear',
-        antialias=False,
-        data_format='channels_last',
-        name=None,
-        ksize=None
-    ):
+    def __init__(self, scale, method='bilinear', antialias=False, data_format='channels_last', name=None, ksize=None):
         super(DownSampling2d, self).__init__(name)
         self.method = method
         self.antialias = antialias
@@ -153,8 +146,7 @@ class DownSampling2d(Module):
     def build(self, inputs_shape):
         scale = [1.0 / self.scale[0], 1.0 / self.scale[1]]
         self.resize = tl.ops.Resize(
-            scale=scale, method=self.method, antialias=self.antialias, data_format=self.data_format,
-            ksize=self.ksize
+            scale=scale, method=self.method, antialias=self.antialias, data_format=self.data_format, ksize=self.ksize
         )
 
     def forward(self, inputs):

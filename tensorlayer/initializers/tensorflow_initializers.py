@@ -59,6 +59,14 @@ class Initializer(object):
 
 class Zeros(Initializer):
     """Initializer that generates tensors initialized to 0.
+
+    Examples
+    --------
+
+    >>> import tensorlayer as tl
+    >>> init = tl.initializers.zeros()
+    >>> print(init(shape=(5, 10), dtype=tl.float32))
+
     """
 
     def __call__(self, shape, dtype=tl.float32):
@@ -67,6 +75,14 @@ class Zeros(Initializer):
 
 class Ones(Initializer):
     """Initializer that generates tensors initialized to 1.
+
+    Examples
+    --------
+
+    >>> import tensorlayer as tl
+    >>> init = tl.initializers.ones()
+    >>> print(init(shape=(5, 10), dtype=tl.float32))
+
     """
 
     def __call__(self, shape, dtype=tl.float32):
@@ -80,6 +96,13 @@ class Constant(Initializer):
     ----------
     value : A python scalar or a numpy array.
         The assigned value.
+
+    Examples
+    --------
+
+    >>> import tensorlayer as tl
+    >>> init = tl.initializers.constant(value=10)
+    >>> print(init(shape=(5, 10), dtype=tl.float32))
 
     """
 
@@ -104,6 +127,13 @@ class RandomUniform(Initializer):
         Upper bound of the range of random values to generate.
     seed : A Python integer.
         Used to seed the random generator.
+
+    Examples
+    --------
+
+    >>> import tensorlayer as tl
+    >>> init = tl.initializers.random_uniform(minval=-0.05, maxval=0.05)
+    >>> print(init(shape=(5, 10), dtype=tl.float32))
 
     """
 
@@ -130,6 +160,16 @@ class RandomNormal(Initializer):
         Standard deviation of the random values to generate.
     seed : A Python integer.
         Used to seed the random generator.
+
+    minval=-0.05, maxval=0.05
+
+    Examples
+    --------
+
+    >>> import tensorlayer as tl
+    >>> init = tl.initializers.random_normal(mean=0.0, stddev=0.05)
+    >>> print(init(shape=(5, 10), dtype=tl.float32))
+
     """
 
     def __init__(self, mean=0.0, stddev=0.05, seed=None):
@@ -161,6 +201,14 @@ class TruncatedNormal(Initializer):
         Standard deviation of the andom values to generate.
     seed : A Python integer.
         Used to seed the random generator.
+
+    Examples
+    --------
+
+    >>> import tensorlayer as tl
+    >>> init = tl.initializers.truncated_normal(mean=0.0, stddev=0.05)
+    >>> print(init(shape=(5, 10), dtype=tl.float32))
+
     """
 
     def __init__(self, mean=0.0, stddev=0.05, seed=None):
@@ -182,6 +230,13 @@ class HeNormal(Initializer):
     ----------
     seed : A Python integer.
         Used to seed the random generator.
+
+    Examples
+    --------
+
+    >>> import tensorlayer as tl
+    >>> init = tl.initializers.he_normal()
+    >>> print(init(shape=(5, 10), dtype=tl.float32))
 
     """
 

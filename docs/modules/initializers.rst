@@ -16,6 +16,7 @@ e.g. ``tf.initializers.he_normal``, please refer to TensorFlow provided initiali
    RandomUniform
    RandomNormal
    TruncatedNormal
+   HeNormal
    deconv2d_bilinear_upsampling_initializer
 
 Initializer
@@ -45,6 +46,10 @@ RandomNormal
 TruncatedNormal
 ---------------------
 .. autoclass:: TruncatedNormal
+
+HeNormal
+------------
+.. autoclass:: HeNormal
 
 deconv2d_bilinear_upsampling_initializer
 ------------------------------------------

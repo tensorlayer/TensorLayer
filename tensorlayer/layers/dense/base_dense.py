@@ -34,10 +34,10 @@ class Dense(Module):
     With TensorLayer
 
     >>> net = tl.layers.Input([100, 50], name='input')
-    >>> dense = tl.layers.Dense(n_units=800, act=tl.ops.relu, in_channels=50, name='dense_1')
+    >>> dense = tl.layers.Dense(n_units=800, act=tl.ReLU, in_channels=50, name='dense_1')
     >>> print(dense)
     Dense(n_units=800, relu, in_channels='50', name='dense_1')
-    >>> tensor = tl.layers.Dense(n_units=800, act=tl.ops.relu, name='dense_2')(net)
+    >>> tensor = tl.layers.Dense(n_units=800, act=tl.ReLU, name='dense_2')(net)
     >>> print(tensor)
     tf.Tensor([...], shape=(100, 800), dtype=float32)
 
@@ -47,7 +47,6 @@ class Dense(Module):
 
     """
 
-    # @cell_attr_register
     def __init__(
         self,
         n_units,

@@ -24,13 +24,28 @@ class Model:
 
     `Model` groups layers into an object with training and inference features.
 
-    Args:
-        network : The training or testing network.
-        loss_fn : Objective function, if loss_fn is None, the
-                             network should contain the logic of loss and grads calculation, and the logic
-                             of parallel if needed. Default: None.
-        optimizer : Optimizer for updating the weights. Default: None.
-        metrics : Dict or set of metrics to be evaluated by the model during
+    Parameters
+    ----------
+    network : tensorlayer model
+        The training or testing network.
+    loss_fn : function
+        Objective function
+    optimizer : function
+        Optimizer for updating the weights
+    metrics : function
+        Dict or set of metrics to be evaluated by the model during
+
+    Methods
+    ---------
+    trin()
+        Model training.
+    eval()
+        Model prediction.
+    save_weights()
+        Input file_path, save model weights into a file of given format.
+        Use load_weights() to restore.
+    load_weights()
+        Load model weights from a given file, which should be previously saved by save_weights().
 
     Examples:
         >>> import tensorlayer as tl
@@ -50,11 +65,12 @@ class Model:
         >>>         return out
         >>>
         >>> net = Net()
-        >>> loss = tl.cost.SoftmaxCrossEntropyWithLogits(is_grad=False, sparse=True)
-        >>> optim = tl.layers.Momentum(params=net.trainable_weights, learning_rate=0.1, momentum=0.9)
+        >>> loss = tl.cost.cross_entropy
+        >>> optim = tl.optimizers.Momentum(params=net.trainable_weights, learning_rate=0.1, momentum=0.9)
         >>> model = Model(net, loss_fn=loss, optimizer=optim, metrics=None)
         >>> dataset = get_dataset()
         >>> model.train(2, dataset)
+
     """
 
     def __init__(self, network, loss_fn=None, optimizer=None, metrics=None, **kwargs):

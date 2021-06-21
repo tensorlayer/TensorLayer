@@ -72,8 +72,7 @@ class RandomUniform(UniformInitializer):
         assert minval is not None, 'low should not be None'
         assert maxval is not None, 'high should not be None'
         assert maxval >= minval, 'high should greater or equal than low'
-        super(RandomUniform, self).__init__(
-            low=minval, high=maxval, seed=seed, diag_num=0, diag_step=0, diag_val=1.0)
+        super(RandomUniform, self).__init__(low=minval, high=maxval, seed=seed, diag_num=0, diag_step=0, diag_val=1.0)
         self.minval = minval
         self.maxval = maxval
         self.seed = seed
@@ -149,8 +148,7 @@ class HeNormal(MSRAInitializer):
     """
 
     def __init__(self, seed=0):
-        super(HeNormal, self).__init__(
-            uniform=False, fan_in=None, seed=seed)
+        super(HeNormal, self).__init__(uniform=False, fan_in=None, seed=seed)
         self.seed = seed
 
     def get_config(self):

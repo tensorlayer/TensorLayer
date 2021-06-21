@@ -24,6 +24,7 @@ __all__ = [
     'maxnorm_i_regularizer',
 ]
 
+
 def cross_entropy(output, target):
     """Softmax cross-entropy operation, returns the TensorFlow expression of cross-entropy for two distributions,
     it implements softmax internally. See ``tf.ops.sparse_softmax_cross_entropy_with_logits``.
@@ -102,8 +103,8 @@ def binary_cross_entropy(output, target, epsilon=1e-8):
         depth = output.shape[-1]
         target = pd.fluid.layers.one_hot(target, depth=depth)
     out = pd.fluid.layers.reduce_sum(
-            -(target * pd.log(output + epsilon) + (1. - target) * pd.log(1. - output + epsilon))
-        )
+        -(target * pd.log(output + epsilon) + (1. - target) * pd.log(1. - output + epsilon))
+    )
     return out
 
 
@@ -191,7 +192,6 @@ def absolute_difference_error(output, target, is_mean=False, axis=-1, name="abso
         An optional name to attach to this function.
 
     """
-
 
     if is_mean:
         loss = pd.fluid.layers.reduce_mean(pd.fluid.layers.reduce_mean(pd.abs(output - target), axis))

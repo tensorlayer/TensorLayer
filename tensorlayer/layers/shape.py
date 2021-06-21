@@ -202,11 +202,6 @@ class Shuffle(Module):
         if tl.BACKEND == 'tensorflow':
             in_shape = tl.get_tensor_shape(inputs)
             h, w, in_channel = in_shape[1:]
-            # if in_channel % self.group != 0:
-            #     raise ValueError(
-            #         "The in_channel must be a multiple of the number of groups. The in_channel got %d and the number of groups is %d."
-            #         % (in_channel, self.group)
-            #     )
             reshape1 = tl.ops.Reshape([-1, h, w, in_channel // self.group, self.group])
             temp = reshape1(inputs)
             temp = self.transpose(temp)

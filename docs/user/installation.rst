@@ -15,8 +15,9 @@ Mac OX, Linux and Windows, or ask for help on `tensorlayer@gmail.com <tensorlaye
 or `FAQ <http://tensorlayer.readthedocs.io/en/latest/user/more.html>`_.
 
 
-Install TensorFlow
+Install Backend
 =========================
+TensorLayer supports multiple deep learning backends, default TensorFlow as backend also supports MindSpore and PaddlePaddle.
 
 .. code-block:: bash
 
@@ -24,8 +25,23 @@ Install TensorFlow
   pip3 install tensorflow-gpu # GPU version
   pip3 install tensorflow # CPU version
 
+
 The installation instructions of TensorFlow are written to be very detailed on `TensorFlow`_  website.
 However, there are something need to be considered. For example, `TensorFlow`_ officially supports GPU acceleration for Linux, Mac OX and Windows at present. For ARM processor architecture, you need to install TensorFlow from source.
+
+If you want to use mindspore backend, you should install mindspore==1.2.0.
+
+.. code-block:: bash
+
+  pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/gpu/ubuntu_x86/cuda-10.1/mindspore_gpu-1.2.1-cp37-cp37m-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+
+If you want to use paddlepaddle backend, you should install paddlepaddle==2.0.
+
+.. code-block:: bash
+
+   python -m pip install paddlepaddle -i https://mirror.baidu.com/pypi/simple
+
 
 Install TensorLayer
 =========================
@@ -192,15 +208,13 @@ After extracting cuDNN, you will get three folders (bin, lib, include). Then the
 
 Installing TensorLayer
 ------------------------
-For TensorLayer, please refer to the steps mentioned above.
+For TensorLayer, please refer to the steps mentioned above. TensorLayer3.0 supports multiple backends. We use TensorFlow backend by default. If you need to use other backends you can refer to the following.
 
 .. code-block:: bash
 
   pip3 install tensorflow        #CPU version
   pip3 install tensorflow-gpu    #GPU version (GPU version and CPU version just choose one)
   pip3 install tensorlayer       #Install tensorlayer
-
-
 
 Issue
 =======

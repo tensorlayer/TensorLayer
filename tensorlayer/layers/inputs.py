@@ -64,6 +64,13 @@ def Input(shape, init=tl.initializers.ones(), dtype=tl.float32, name=None):
     name : None or str
         A unique layer name.
 
+    Examples
+    ---------
+    With TensorLayer
+
+    >>> ni = tl.layers.Input([10, 50, 50, 32], name='input')
+    >>> output shape : [10, 50, 50, 32]
+
     """
     input_layer = _InputLayer(shape, dtype=dtype, name=name, init=init)
     outputs = input_layer()

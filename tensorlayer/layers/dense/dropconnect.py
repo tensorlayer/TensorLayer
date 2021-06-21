@@ -38,13 +38,13 @@ class DropconnectDense(Module):
 
     Examples
     --------
-    >>> net = tl.layers.Input([None, 784], name='input')
-    >>> net = tl.layers.DropconnectDense(keep=0.8,
-    ...         n_units=800, act=tl.ReLU, name='relu1')(net)
-    >>> net = tl.layers.DropconnectDense(keep=0.5,
-    ...         n_units=800, act=tl.ReLU, name='relu2')(net)
-    >>> net = tl.layers.DropconnectDense(keep=0.5,
-    ...         n_units=10, name='output')(net)
+    >>> net = tl.layers.Input([10, 784], name='input')
+    >>> net = tl.layers.DropconnectDense(keep=0.8, n_units=800, act=tl.ReLU, name='relu1')(net)
+    >>> output shape :(10, 800)
+    >>> net = tl.layers.DropconnectDense(keep=0.5, n_units=800, act=tl.ReLU, name='relu2')(net)
+    >>> output shape :(10, 800)
+    >>> net = tl.layers.DropconnectDense(keep=0.5, n_units=10, name='output')(net)
+    >>> output shape :(10, 10)
 
     References
     ----------

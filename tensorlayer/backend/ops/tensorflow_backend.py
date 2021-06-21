@@ -846,8 +846,10 @@ def split(value, num_or_size_splits, axis=0, num=None):
 
 
 class Floor(object):
+
     def __call__(self, x):
         return tf.floor(x)
+
 
 def floor(x):
     return tf.floor(x)
@@ -1002,6 +1004,7 @@ class Sign(object):
 
 
 class Ceil(object):
+
     def __call__(self, x):
         return tf.math.ceil(x)
 

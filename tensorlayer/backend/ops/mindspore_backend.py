@@ -1047,9 +1047,12 @@ def split(value, num_or_size_splits, axis=0, num=None):
     """
     pass
 
+
 class Floor(Cell):
+
     def __call__(self, *args, **kwargs):
         raise NotImplementedError
+
 
 def floor(x):
     return NotImplementedError
@@ -1143,14 +1146,14 @@ class CountNonzero(object):
         b = np.ones(shapes)
         if len(shapes) == 1:
             for i in range(shapes - 1):
-                if x[i] == True:
+                if x[i] ==True:
                     b[i] = 1
                 else:
                     b[i] = 0
         if len(shapes) == 2:
             for i in range(shapes[0] - 1):
                 for j in range(shapes[1] - 1):
-                    if x[i][j] == True:
+                    if x[i][j] ==True:
                         b[i][j] = 1
                     else:
                         b[i][j] = 0
@@ -1246,13 +1249,16 @@ class Sign(Cell):
     def construct(self, x):
         return self.sign(x)
 
+
 class Ceil(Cell):
+
     def __init__(self):
         super(Ceil, self).__init__()
         self.ceil = P.Ceil()
 
     def construct(self, x):
         return self.ceil(x)
+
 
 def ceil(x):
     _ceil = P.Ceil()

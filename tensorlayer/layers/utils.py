@@ -433,8 +433,10 @@ def mean_var_with_update(update_moving_mean, update_moving_variance, mean, varia
     with tf.control_dependencies([update_moving_mean, update_moving_variance]):
         return tf.identity(mean), tf.identity(variance)
 
+
 def w_fold(w, gama, var, epsilon):
     return tf.compat.v1.div(tf.multiply(gama, w), tf.sqrt(var + epsilon))
+
 
 def bias_fold(beta, gama, mean, var, epsilon):
     return tf.subtract(beta, tf.compat.v1.div(tf.multiply(gama, mean), tf.sqrt(var + epsilon)))

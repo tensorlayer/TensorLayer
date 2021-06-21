@@ -37,6 +37,7 @@ def str2act(act):
         raise Exception("Unsupported act: {}".format(act))
     return _act_dict[act]
 
+
 def _save_weights(net, file_path, format=None):
     """Input file_path, save model weights into a file of given format.
                 Use net.load_weights() to restore.
@@ -100,6 +101,7 @@ def _save_weights(net, file_path, format=None):
             "Save format must be 'hdf5', 'npz', 'npz_dict' or 'ckpt'."
             "Other format is not supported now."
         )
+
 
 def _load_weights(net, file_path, format=None, in_order=True, skip=False):
     """Load model weights from a given file, which should be previously saved by net.save_weights().

@@ -50,7 +50,7 @@ class FromGenerator(Dataset):
 
 class FromSlices(Dataset):
 
-    def __init__(self, datas, transform = None):
+    def __init__(self, datas, transform=None):
         self.datas = datas[0]
         self.labels = datas[1]
         self.transform = transform

@@ -37,6 +37,14 @@ class QuanDense(Module):
     name : None or str
         A unique layer name.
 
+    Examples
+    --------
+    >>> net = tl.layers.Input([10, 784], name='input')
+    >>> net = tl.layers.BinaryDense(n_units=800, act=tl.ReLU, name='relu1')(net)
+    >>> output shape :(10, 800)
+    >>> net = tl.layers.BinaryDense(n_units=10, name='output')(net)
+    >>> output shape :(10, 10)
+
     """
 
     def __init__(

@@ -236,7 +236,7 @@ def dice_coe(output, target, loss_type='jaccard', axis=(1, 2, 3), smooth=1e-5):
     Examples
     ---------
     >>> import tensorlayer as tl
-    >>> outputs = tl.act.pixel_wise_softmax(outputs)
+    >>> outputs = tl.ops.softmax(outputs)
     >>> dice_loss = 1 - tl.cost.dice_coe(outputs, y_)
 
     References
@@ -492,20 +492,21 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
     >>> vocab_size = 10000
     >>> embedding_size = 256
     >>> ni = tl.layers.Input([batch_size, None], dtype=tf.int64)
-    >>> net = tl.layers.Embedding(
+    >>> net_lits = []
+    >>> net_list.append(tl.layers.Embedding(
     ...         vocabulary_size = vocab_size,
     ...         embedding_size = embedding_size,
-    ...         name = 'seq_embedding')(ni)
-    >>> net = tl.layers.RNN(
+    ...         name = 'seq_embedding'))
+    >>> net_list.append(tl.layers.RNN(
     ...         cell =tf.keras.layers.LSTMCell(units=embedding_size, dropout=0.1),
     ...         return_seq_2d = True,
-    ...         name = 'dynamicrnn')(net)
-    >>> net = tl.layers.Dense(n_units=vocab_size, name="output")(net)
-    >>> model = tl.models.Model(inputs=ni, outputs=net)
+    ...         name = 'dynamicrnn'))
+    >>> net_list.append(tl.layers.Dense(n_units=vocab_size, name="output"))
+    >>> model = tl.layers.SequentialLayer(net_list)
     >>> input_seqs = np.random.randint(0, 10, size=(batch_size, 10), dtype=np.int64)
     >>> target_seqs = np.random.randint(0, 10, size=(batch_size, 10), dtype=np.int64)
     >>> input_mask = np.random.randint(0, 2, size=(batch_size, 10), dtype=np.int64)
-    >>> outputs = model(input_seqs, is_train=True)
+    >>> outputs = model(input_seqs)
     >>> loss = tl.cost.cross_entropy_seq_with_mask(outputs, target_seqs, input_mask)
 
     """

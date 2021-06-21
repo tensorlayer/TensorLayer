@@ -15,6 +15,10 @@ from tensorlayer.layers import Conv2d, MaxPool2d, BatchNorm2d, ZeroPad2d, UpSamp
 from tensorlayer.layers import Module, SequentialLayer
 from tensorlayer import logging
 
+__all__ = [
+    'YOLOv4'
+]
+
 INPUT_SIZE = 416
 weights_url = {'link': 'https://pan.baidu.com/s/1MC1dmEwpxsdgHO1MZ8fYRQ', 'password': 'idsz'}
 
@@ -327,11 +331,11 @@ def YOLOv4(NUM_CLASS, pretrained=False):
     With TensorLayer
 
     >>> # get the whole model, without pre-trained YOLOv4 parameters
-    >>> yolov4 = tl.app.YOLOv4(NUM_CLASS=80, pretrained=False)
+    >>> yolov4 = YOLOv4(NUM_CLASS=80, pretrained=False)
     >>> # get the whole model, restore pre-trained YOLOv4 parameters
-    >>> yolov4 = tl.app.YOLOv4(NUM_CLASS=80, pretrained=True)
+    >>> yolov4 = YOLOv4(NUM_CLASS=80, pretrained=True)
     >>> # use for inferencing
-    >>> output = yolov4(img, is_train=False)
+    >>> output = yolov4(img)
 
     """
 

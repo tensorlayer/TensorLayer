@@ -1,59 +1,34 @@
-API - Models
+API - Pretrained Models
 ================================
 
 TensorLayer provides many pretrained models, you can easily use the whole or a part of the pretrained models via these APIs.
 
-.. automodule:: tensorlayer.models
+.. automodule:: examples.model_zoo
 
 .. autosummary::
 
-    Model
-
-    VGG16
-    VGG19
-    SqueezeNetV1
-    MobileNetV1
+    vgg16
+    vgg19
+    YOLOv4
     ResNet50
-    Seq2seq
-    Seq2seqLuongAttention
 
-
-Base Model
------------
-
-.. autoclass:: Model
-
-VGG16
+vgg16
 ----------------------
 
-.. autofunction:: VGG16
+.. autofunction:: vgg16
 
-VGG19
+vgg19
 ----------------------
 
-.. autofunction:: VGG19
+.. autofunction:: vgg19
 
-SqueezeNetV1
-----------------
-.. autofunction:: SqueezeNetV1
-
-MobileNetV1
+YOLOv4
 ----------------
 
-.. autofunction:: MobileNetV1
+.. autofunction:: YOLOv4
 
 ResNet50
 ----------------
 
-.. autofunction:: ResNet50
+.. autofuncion:: ResNet50
 
-Seq2seq
-------------------------
-
-.. autoclass:: Seq2seq
-
-
-Seq2seq Luong Attention
-------------------------
-
-.. autoclass:: Seq2seqLuongAttention

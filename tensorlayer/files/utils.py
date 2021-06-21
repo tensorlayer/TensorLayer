@@ -2603,6 +2603,7 @@ def ms_variables_to_numpy(variables):
     results = [v.data.asnumpy() for v in var_list]
     return results
 
+
 def pd_variables_to_numpy(variables):
     if not isinstance(variables, list):
         var_list = [variables]

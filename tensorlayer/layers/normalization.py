@@ -11,7 +11,15 @@ __all__ = [
     'BatchNorm2d',
     'BatchNorm3d',
 ]
-
+# TODO Layers that needs to be updated
+# ['InstanceNorm',
+#     'InstanceNorm1d',
+#     'InstanceNorm2d',
+#     'InstanceNorm3d',
+#     'LayerNorm',
+#     'GroupNorm',
+#     'SwitchNorm',
+# ]
 
 class BatchNorm(Module):
     """
@@ -52,7 +60,7 @@ class BatchNorm(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 50, 50, 32], name='input')
+    >>> net = tl.layers.Input([10, 50, 50, 32], name='input')
     >>> net = tl.layers.BatchNorm()(net)
 
     Notes
@@ -105,7 +113,6 @@ class BatchNorm(Module):
         if self.num_features:
             self.build(None)
             self._built = True
-
 
         if self.decay < 0.0 or 1.0 < self.decay:
             raise ValueError("decay should be between 0 to 1")
@@ -181,8 +188,7 @@ class BatchNorm(Module):
         if not self.is_train:
             self.batchnorm = tl.ops.BatchNorm(
                 decay=self.decay, epsilon=self.epsilon, beta=self.beta, gamma=self.gamma, moving_mean=self.moving_mean,
-                moving_var=self.moving_var, num_features=self.num_features, data_format=self.data_format,
-                is_train=False
+                moving_var=self.moving_var, num_features=self.num_features, data_format=self.data_format, is_train=False
             )
         outputs = self.batchnorm(inputs=inputs)
         if self.act_init_flag:
@@ -200,7 +206,7 @@ class BatchNorm1d(BatchNorm):
     With TensorLayer
 
     >>> # in static model, no need to specify num_features
-    >>> net = tl.layers.Input([None, 50, 32], name='input')
+    >>> net = tl.layers.Input([10, 50, 32], name='input')
     >>> net = tl.layers.BatchNorm1d()(net)
     >>> # in dynamic model, build by specifying num_features
     >>> conv = tl.layers.Conv1d(32, 5, 1, in_channels=3)
@@ -223,7 +229,7 @@ class BatchNorm2d(BatchNorm):
     With TensorLayer
 
     >>> # in static model, no need to specify num_features
-    >>> net = tl.layers.Input([None, 50, 50, 32], name='input')
+    >>> net = tl.layers.Input([10, 50, 50, 32], name='input')
     >>> net = tl.layers.BatchNorm2d()(net)
     >>> # in dynamic model, build by specifying num_features
     >>> conv = tl.layers.Conv2d(32, (5, 5), (1, 1), in_channels=3)
@@ -246,7 +252,7 @@ class BatchNorm3d(BatchNorm):
     With TensorLayer
 
     >>> # in static model, no need to specify num_features
-    >>> net = tl.layers.Input([None, 50, 50, 50, 32], name='input')
+    >>> net = tl.layers.Input([10, 50, 50, 50, 32], name='input')
     >>> net = tl.layers.BatchNorm3d()(net)
     >>> # in dynamic model, build by specifying num_features
     >>> conv = tl.layers.Conv3d(32, (5, 5, 5), (1, 1), in_channels=3)

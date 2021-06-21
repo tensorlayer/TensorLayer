@@ -2,9 +2,7 @@ API - Activations
 =========================
 
 To make TensorLayer simple, we minimize the number of activation functions as much as
-we can. So we encourage you to use TensorFlow's function. TensorFlow provides
-``tf.nn.relu``, ``tf.nn.relu6``, ``tf.nn.elu``, ``tf.nn.softplus``,
-``tf.nn.softsign`` and so on.
+we can. So we encourage you to use Customizes activation function.
 For parametric activation, please read the layer APIs.
 
 The shortcut of ``tensorlayer.activation`` is ``tensorlayer.act``.
@@ -14,64 +12,71 @@ Your activation
 
 Customizes activation function in TensorLayer is very easy.
 The following example implements an activation that multiplies its input by 2.
-For more complex activation, TensorFlow API will be required.
+For more complex activation, TensorFlow(MindSpore/PaddlePaddle) API will be required.
 
 .. code-block:: python
 
-  def double_activation(x):
-      return x * 2
-      
-  double_activation = lambda x: x * 2
+  class DoubleActivation(object):
+    def __init__(self):
+        pass
+    def __call__(self, x):
+        return x * 2
+  double_activation = DoubleActivation()
 
-.. automodule:: tensorlayer.activation
+.. automodule:: tensorlayer.layers.activation
 
 .. autosummary::
 
-   leaky_relu
-   leaky_relu6
-   leaky_twice_relu6
-   ramp
-   swish
-   sign
-   hard_tanh
-   pixel_wise_softmax
-   mish
+   PRelu
+   PRelu6
+   PTRelu6
+   LeakyReLU
+   LeakyReLU6
+   LeakyTwiceRelu6
+   Ramp
+   Swish
+   HardTanh
+   Mish
+
+PRelu
+------
+.. autofunction:: PRelu
+
+PRelu6
+------------
+.. autofunction:: PRelu6
+
+PTRelu6
+------------
+.. autofunction:: PTRelu6
+
+LeakyReLU
+-----------------
+.. autofunction:: LeakyReLU
+
+LeakyReLU6
+------------
+.. autofunction:: LeakyReLU6
+
+LeakyTwiceRelu6
+---------------------
+.. autofunction:: LeakyTwiceRelu6
 
 Ramp
-------
-.. autofunction:: ramp
-
-Leaky ReLU
-------------
-.. autofunction:: leaky_relu
-
-Leaky ReLU6
-------------
-.. autofunction:: leaky_relu6
-
-Twice Leaky ReLU6
------------------
-.. autofunction:: leaky_twice_relu6
+---------------------
+.. autofunction:: Ramp
 
 Swish
-------------
-.. autofunction:: swish
-
-Sign
----------------------
-.. autofunction:: sign
-
-Hard Tanh
----------------------
-.. autofunction:: hard_tanh
-
-Pixel-wise softmax
 --------------------
-.. autofunction:: pixel_wise_softmax
+.. autofunction:: Swish
 
-mish
+HardTanh
+----------------
+.. autofunction:: HardTanh
+
+Mish
 ---------
-.. autofunction:: mish
+.. autofunction:: Mish
 
 Parametric activation
 ------------------------------

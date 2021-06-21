@@ -12,10 +12,9 @@ Layer list
 
 .. autosummary::
 
-   Layer
+   Module
    
-   ModelLayer
-   LayerList
+   SequentialLayer
 
    Input
 
@@ -73,14 +72,6 @@ Layer list
    BatchNorm1d
    BatchNorm2d
    BatchNorm3d
-   LocalResponseNorm
-   InstanceNorm
-   InstanceNorm1d
-   InstanceNorm2d
-   InstanceNorm3d
-   LayerNorm
-   GroupNorm
-   SwitchNorm
 
    RNN
    SimpleRNN
@@ -134,17 +125,13 @@ Layer list
 Base Layer
 -----------
 
-Base Layer
+Module
 ^^^^^^^^^^^^^^^^
-.. autoclass:: Layer
+.. autoclass:: Module
 
-Model Layer
+Sequential Layer
 ^^^^^^^^^^^^^^^^
-.. autoclass:: ModelLayer
-
-Layer List
-^^^^^^^^^^^^^^^^
-.. autoclass:: LayerList
+.. autoclass:: SequentialLayer
 
 .. -----------------------------------------------------------
 ..                        Input Layer
@@ -398,38 +385,6 @@ Batch Normalization 2D
 Batch Normalization 3D
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: BatchNorm3d
-
-Local Response Normalization
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: LocalResponseNorm
-
-Instance Normalization
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: InstanceNorm
-
-Instance Normalization 1D
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: InstanceNorm1d
-
-Instance Normalization 2D
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: InstanceNorm2d
-
-Instance Normalization 3D
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: InstanceNorm3d
-
-Layer Normalization
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: LayerNorm
-
-Group Normalization
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: GroupNorm
-
-Switch Normalization
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: SwitchNorm
 
 .. -----------------------------------------------------------
 ..                     Padding Layers

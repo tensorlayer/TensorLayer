@@ -75,7 +75,8 @@ class Module(object):
             str_act = str2act(act)
 
         if act:
-            if isinstance(act, str) and (len(act) > 5 and act[0:5] == "lrelu" or len(act) > 10 and act[0:10] == "leaky_relu"):
+            if isinstance(act, str) and (len(act) > 5 and act[0:5] == "lrelu" or
+                                         len(act) > 10 and act[0:10] == "leaky_relu"):
                 self.act = str_act
             elif isinstance(act, str):
                 self.act = str_act()
@@ -204,7 +205,6 @@ class Module(object):
         for layer_name, layer in layers:
             if isinstance(layer, Module):
                 layer.is_train = is_train
-
 
     def set_train(self):
         """Set this network in training mode. After calling this method,
@@ -591,8 +591,7 @@ class SequentialLayer(Module):
 
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return self.__class__(
-                OrderedDict(list(self._layers.items())[index]))
+            return self.__class__(OrderedDict(list(self._layers.items())[index]))
         index = self._valid_index(len(self), index)
         return list(self._layers.values())[index]
 
@@ -619,7 +618,6 @@ class SequentialLayer(Module):
     def __len__(self):
         return len(self._layers)
 
-
     def append(self, layer):
         if self._valid_module(layer):
             self._layers[str(len(self))] = layer
@@ -638,8 +636,9 @@ class SequentialLayer(Module):
         if not isinstance(index, int):
             raise TypeError("Index {} is not int type")
         if not -layer_num <= index < layer_num:
-            raise IndexError("Index should be a number in range [{}, {}), but got {}"
-                             .format(-layer_num, layer_num, index))
+            raise IndexError(
+                "Index should be a number in range [{}, {}), but got {}".format(-layer_num, layer_num, index)
+            )
         return index % layer_num
 
     def _valid_module(self, layer):

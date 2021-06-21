@@ -24,14 +24,13 @@ class Stack(Module):
 
     Examples
     ---------
-    >>> import tensorflow as tf
     >>> import tensorlayer as tl
-    >>> ni = tl.layers.Input([None, 784], name='input')
+    >>> ni = tl.layers.Input([10, 784], name='input')
     >>> net1 = tl.layers.Dense(10, name='dense1')(ni)
     >>> net2 = tl.layers.Dense(10, name='dense2')(ni)
     >>> net3 = tl.layers.Dense(10, name='dense3')(ni)
     >>> net = tl.layers.Stack(axis=1, name='stack')([net1, net2, net3])
-    (?, 3, 10)
+    (10, 3, 10)
 
     """
 
@@ -82,9 +81,9 @@ class UnStack(Module):
 
     Examples
     --------
-    >>> ni = Input([4, 10], name='input')
-    >>> nn = Dense(n_units=5)(ni)
-    >>> nn = UnStack(axis=1)(nn)  # unstack in channel axis
+    >>> ni = tl.layers.Input([4, 10], name='input')
+    >>> nn = tl.layers.Dense(n_units=5)(ni)
+    >>> nn = tl.layers.UnStack(axis=1)(nn)  # unstack in channel axis
     >>> len(nn)  # 5
     >>> nn[0].shape  # (4,)
 

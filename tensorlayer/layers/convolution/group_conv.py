@@ -13,6 +13,7 @@ __all__ = [
 
 class GroupConv2d(Module):
     """The :class:`GroupConv2d` class is 2D grouped convolution, see `here <https://blog.yani.io/filter-group-tutorial/>`__.
+
       Parameters
       --------------
       n_filter : int
@@ -39,6 +40,7 @@ class GroupConv2d(Module):
           The number of in channels.
       name : None or str
           A unique layer name.
+
       Examples
       ---------
       With TensorLayer
@@ -48,6 +50,7 @@ class GroupConv2d(Module):
       ... )(net)
       >>> print(groupconv2d)
       >>> output shape : (8, 12, 12, 64)
+
       """
 
     def __init__(

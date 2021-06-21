@@ -4,7 +4,6 @@
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.layers.core import Module
-# from tensorlayer.layers.core import LayersConfig
 
 __all__ = ['OneHot', 'Word2vecEmbedding', 'Embedding', 'AverageEmbedding']
 
@@ -25,21 +24,19 @@ class OneHot(Module):
     axis : None or int
         The axis.
     dtype : None or TensorFlow dtype
-        The data type, None means tf.float32.
+        The data type, None means tl.float32.
     name : str
         A unique layer name.
 
     Examples
     ---------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
     >>> net = tl.layers.Input([32], dtype=tl.int32)
     >>> onehot = tl.layers.OneHot(depth=8)
     >>> print(onehot)
     OneHot(depth=8, name='onehot')
     >>> tensor = tl.layers.OneHot(depth=8)(net)
     >>> print(tensor)
-    tf.Tensor([...], shape=(32, 8), dtype=float32)
+    Tensor([...], shape=(32, 8), dtype=float32)
 
     """
 
@@ -141,12 +138,11 @@ class Word2vecEmbedding(Module):
     --------
     Word2Vec With TensorLayer (Example in `examples/text_word_embedding/tutorial_word2vec_basic.py`)
 
-    >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> batch_size = 8
     >>> embedding_size = 50
-    >>> inputs = tl.layers.Input([batch_size], dtype=tf.int32)
-    >>> labels = tl.layers.Input([batch_size, 1], dtype=tf.int32)
+    >>> inputs = tl.layers.Input([batch_size], dtype=tl.int32)
+    >>> labels = tl.layers.Input([batch_size, 1], dtype=tl.int32)
     >>> emb_net = tl.layers.Word2vecEmbedding(
     >>>     vocabulary_size=10000,
     >>>     embedding_size=embedding_size,
@@ -331,15 +327,14 @@ class Embedding(Module):
 
     Examples
     --------
-    >>> import tensorflow as tf
     >>> import tensorlayer as tl
-    >>> input = tl.layers.Input([8, 100], dtype=tf.int32)
+    >>> input = tl.layers.Input([8, 100], dtype=tl.int32)
     >>> embed = tl.layers.Embedding(vocabulary_size=1000, embedding_size=50, name='embed')
     >>> print(embed)
     Embedding(vocabulary_size=1000, embedding_size=50)
     >>> tensor = embed(input)
     >>> print(tensor)
-    tf.Tensor([...], shape=(8, 100, 50), dtype=float32)
+    Tensor([...], shape=(8, 100, 50), dtype=float32)
 
     """
 
@@ -423,17 +418,16 @@ class AverageEmbedding(Module):
 
     Examples
     ---------
-    >>> import tensorflow as tf
     >>> import tensorlayer as tl
     >>> batch_size = 8
     >>> length = 5
-    >>> input = tl.layers.Input([batch_size, length], dtype=tf.int32)
+    >>> input = tl.layers.Input([batch_size, length], dtype=tl.int32)
     >>> avgembed = tl.layers.AverageEmbedding(vocabulary_size=1000, embedding_size=50, name='avg')
     >>> print(avgembed)
     AverageEmbedding(vocabulary_size=1000, embedding_size=50, pad_value=0)
     >>> tensor = avgembed(input)
     >>> print(tensor)
-    tf.Tensor([...], shape=(8, 50), dtype=float32)
+    Tensor([...], shape=(8, 50), dtype=float32)
 
     """
 

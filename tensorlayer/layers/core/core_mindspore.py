@@ -43,7 +43,8 @@ class Module(Cell):
             str_act = str2act(act)
 
         if act:
-            if isinstance(act, str) and (len(act) > 5 and act[0:5] == "lrelu" or len(act) > 10 and act[0:10] == "leaky_relu"):
+            if isinstance(act, str) and (len(act) > 5 and act[0:5] == "lrelu" or
+                                         len(act) > 10 and act[0:10] == "leaky_relu"):
                 self.act = str_act
             elif isinstance(act, str):
                 self.act = str_act()
@@ -66,7 +67,6 @@ class Module(Cell):
 
         # Layer training state
         self.is_train = True
-
 
         # layer forward  state
         self._forward_state = False
@@ -261,8 +261,7 @@ class SequentialLayer(Module):
 
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return self.__class__(
-                OrderedDict(list(self._layers.items())[index]))
+            return self.__class__(OrderedDict(list(self._layers.items())[index]))
         index = self._valid_index(len(self), index)
         return list(self._layers.values())[index]
 
@@ -312,12 +311,12 @@ class SequentialLayer(Module):
         if not isinstance(index, int):
             raise TypeError("Index {} is not int type")
         if not -layer_num <= index < layer_num:
-            raise IndexError("Index should be a number in range [{}, {}), but got {}"
-                             .format(-layer_num, layer_num, index))
+            raise IndexError(
+                "Index should be a number in range [{}, {}), but got {}".format(-layer_num, layer_num, index)
+            )
         return index % layer_num
 
     def _valid_module(self, layer):
         if issubclass(layer.__class__, Module):
             return True
         raise TypeError('Module {} is not subclass of Module'.format(layer))
-

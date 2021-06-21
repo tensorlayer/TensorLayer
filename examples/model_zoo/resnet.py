@@ -155,7 +155,8 @@ class ResNet50_model(Module):
 
 
 def ResNet50(pretrained=False, end_with='fc1000', n_classes=1000):
-    """Pre-trained MobileNetV1 model (static mode). Input shape [?, 224, 224, 3].
+    """Pre-trained ResNet50 model. Input shape [?, 224, 224, 3].
+
     To use pretrained model, input should be in BGR format and subtracted from ImageNet mean [103.939, 116.779, 123.68].
 
     Parameters
@@ -175,14 +176,14 @@ def ResNet50(pretrained=False, end_with='fc1000', n_classes=1000):
     Classify ImageNet classes, see `tutorial_models_resnet50.py`
     TODO Modify the usage example according to the model storage location
     >>> # get the whole model with pretrained weights
-    >>> resnet = tl.models.ResNet50(pretrained=True)
+    >>> resnet = ResNet50(pretrained=True)
     >>> # use for inferencing
-    >>> output = resnet(img1, is_train=False)
-    >>> prob = tf.nn.softmax(output)[0].numpy()
+    >>> output = resnet(img1)
+    >>> prob = tl.ops.softmax(output)[0].numpy()
 
     Extract the features before fc layer
-    >>> resnet = tl.models.ResNet50(pretrained=True, end_with='5c')
-    >>> output = resnet(img1, is_train=False)
+    >>> resnet = ResNet50(pretrained=True, end_with='5c')
+    >>> output = resnet(img1)
 
     Returns
     -------
@@ -212,14 +213,15 @@ def restore_params(network, path='models'):
 
     f = h5py.File(os.path.join(path, 'resnet50_weights_tf_dim_ordering_tf_kernels.h5'), 'r')
 
-    for layer in network.all_layers:
-        if len(layer.all_weights) == 0:
-            continue
-        w_names = list(f[layer.name])
-        params = [f[layer.name][n][:] for n in w_names]
-        # if 'bn' in layer.name:
-        #     params = [x.reshape(1, 1, 1, -1) for x in params]
-        assign_weights(params, layer)
-        del params
+    # TODO Update parameter loading
+    # for layer in network.all_layers:
+    #     if len(layer.all_weights) == 0:
+    #         continue
+    #     w_names = list(f[layer.name])
+    #     params = [f[layer.name][n][:] for n in w_names]
+    #     # if 'bn' in layer.name:
+    #     #     params = [x.reshape(1, 1, 1, -1) for x in params]
+    #     assign_weights(params, layer)
+    #     del params
 
     f.close()

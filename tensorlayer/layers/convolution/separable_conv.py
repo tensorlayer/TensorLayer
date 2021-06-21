@@ -15,6 +15,7 @@ __all__ = [
 class SeparableConv1d(Module):
     """The :class:`SeparableConv1d` class is a 1D depthwise separable convolutional layer.
     This layer performs a depthwise convolution that acts separately on channels, followed by a pointwise convolution that mixes channels.
+
     Parameters
     ------------
     n_filter : int
@@ -43,6 +44,7 @@ class SeparableConv1d(Module):
         The number of in channels.
     name : None or str
         A unique layer name.
+
     Examples
     --------
     With TensorLayer
@@ -160,6 +162,7 @@ class SeparableConv1d(Module):
 class SeparableConv2d(Module):
     """The :class:`SeparableConv2d` class is a 2D depthwise separable convolutional layer.
         This layer performs a depthwise convolution that acts separately on channels, followed by a pointwise convolution that mixes channels.
+
         Parameters
         ------------
         n_filter : int
@@ -188,6 +191,7 @@ class SeparableConv2d(Module):
             The number of in channels.
         name : None or str
             A unique layer name.
+
         Examples
         --------
         With TensorLayer
@@ -195,6 +199,7 @@ class SeparableConv2d(Module):
         >>> separableconv2d = tl.layers.SeparableConv2d(n_filter=32, filter_size=3, strides=2, depth_multiplier = 3 , padding='SAME', act=tl.ReLU, name='separable_2d')(net)
         >>> print(separableconv2d)
         >>> output shape : (8, 24, 24, 32)
+
         """
 
     def __init__(
@@ -308,4 +313,3 @@ class SeparableConv2d(Module):
         if self.act_init_flag:
             outputs = self.act(outputs)
         return outputs
-

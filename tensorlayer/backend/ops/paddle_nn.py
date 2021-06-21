@@ -606,6 +606,7 @@ def max_pool(input, ksize, strides, padding, data_format=None):
 
 
 class AvgPool1d(object):
+
     def __init__(self, ksize, strides, padding, data_format=None):
         self.data_format, self.padding = preprocess_1d_format(data_format=data_format, padding=padding)
         self.ksize = ksize

@@ -9,9 +9,11 @@ __all__ = [
     'DeformableConv2d',
 ]
 
+
 class DeformableConv2d(Module):
     """The :class:`DeformableConv2d` class is a 2D
     `Deformable Convolutional Networks <https://arxiv.org/abs/1703.06211>`__.
+
     Parameters
     ----------
     offset_layer : tl.Tensor
@@ -34,6 +36,7 @@ class DeformableConv2d(Module):
         The number of in channels.
     name : str
         A unique layer name.
+
     Examples
     --------
     With TensorLayer
@@ -50,6 +53,7 @@ class DeformableConv2d(Module):
     >>> deformconv2 = tl.layers.DeformableConv2d(
     ...     offset_layer=offset2, n_filter=64, filter_size=(3, 3), name='deformable2'
     ... )(deformconv1)
+
     References
     ----------
     - The deformation operation was adapted from the implementation in `here <https://github.com/kastnerkyle/deform-conv>`__
@@ -57,6 +61,7 @@ class DeformableConv2d(Module):
     -----
     - The padding is fixed to 'SAME'.
     - The current implementation is not optimized for memory usgae. Please use it carefully.
+
     """
 
     # @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -93,7 +98,6 @@ class DeformableConv2d(Module):
                                              ), self.act.__class__.__name__ if self.act is not None else 'No Activation'
             )
         )
-
 
     def __repr__(self):
         actstr = self.act.__class__.__name__ if self.act is not None else 'No Activation'
@@ -163,7 +167,9 @@ class DeformableConv2d(Module):
 
         input_deform = self._tf_batch_map_offsets(inputs, offset, grid_offset)
         outputs = self.conv3d(input=input_deform, filters=self.W)
-        outputs = tl.ops.reshape(tensor=outputs, shape=[outputs.get_shape()[0], self.input_h, self.input_w, self.n_filter])
+        outputs = tl.ops.reshape(
+            tensor=outputs, shape=[outputs.get_shape()[0], self.input_h, self.input_w, self.n_filter]
+        )
         if self.b_init:
             outputs = self.bias_add(outputs, self.b)
         if self.act:
@@ -294,4 +300,3 @@ class DeformableConv2d(Module):
         mapped_vals = self._to_b_h_w_n_c(mapped_vals, [batch_size, input_h, input_w, kernel_n, channel])
 
         return mapped_vals
-

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-
 from tensorlayer import logging
 from tensorlayer.files import utils
 from tensorlayer.layers.core import Module
@@ -54,7 +53,7 @@ class Lambda(Module):
     Please avoid using Model.save() / Model.load() to save / load models that contain such Lambda layer. Instead, you may use Model.save_weights() / Model.load_weights() to save / load model weights.
     Note: In this case, fn_weights should be a list, and then the trainable weights in this Lambda layer can be added into the weights of the whole model.
 
-    >>> a = tf.Variable(1.0)
+    >>> a = tl.ops.Variable(1.0)
     >>> def func(x):
     >>>     return x + a
     >>> x = tl.layers.Input([8, 3], name='input')
@@ -65,15 +64,15 @@ class Lambda(Module):
     This case is supported in the Model.save() / Model.load() to save / load the whole model architecture and weights(optional).
 
     >>> layers = [
-    >>>     tf.keras.layers.Dense(10, activation=tf.nn.relu),
-    >>>     tf.keras.layers.Dense(5, activation=tf.nn.sigmoid),
-    >>>     tf.keras.layers.Dense(1, activation=tf.identity)
+    >>>     tl.layers.Dense(10, act=tl.Relu),
+    >>>     tl.layers.Dense(5, act=tl.Relu),
+    >>>     tl.layers.Dense(1, activation=tf.identity)
     >>> ]
-    >>> perceptron = tf.keras.Sequential(layers)
+    >>> perceptron = tl.layers.SequentialLayer(layers)
     >>> # in order to compile keras model and get trainable_variables of the keras model
     >>> _ = perceptron(np.random.random([100, 5]).astype(np.float32))
     >>>
-    >>> class CustomizeModel(tl.models.Model):
+    >>> class CustomizeModel(tl.layers.Module):
     >>>     def __init__(self):
     >>>         super(CustomizeModel, self).__init__()
     >>>         self.dense = tl.layers.Dense(in_channels=1, n_units=5)
@@ -86,7 +85,7 @@ class Lambda(Module):
     >>>
     >>> optimizer = tl.optimizers.Adam(learning_rate=0.1)
     >>> model = CustomizeModel()
-    >>> model.train()
+    >>> model.set_train()
     >>>
     >>> for epoch in range(50):
     >>>     with tf.GradientTape() as tape:
@@ -185,7 +184,6 @@ class ElementwiseLambda(Module):
     Non-parametric and with args case
     This case is supported in the Model.save() / Model.load() to save / load the whole model architecture and weights(optional).
 
-    >>> # z = mean + noise * tf.exp(std * 0.5) + foo
     >>> def func(noise, mean, std, foo=42):
     >>>     return mean + noise * tf.exp(std * 0.5) + foo
     >>> noise = tl.layers.Input([100, 1])
@@ -197,7 +195,6 @@ class ElementwiseLambda(Module):
     Non-parametric and non-args case
     This case is supported in the Model.save() / Model.load() to save / load the whole model architecture and weights(optional).
 
-    >>> # z = mean + noise * tf.exp(std * 0.5)
     >>> noise = tl.layers.Input([100, 1])
     >>> mean = tl.layers.Input([100, 1])
     >>> std = tl.layers.Input([100, 1])
@@ -209,7 +206,6 @@ class ElementwiseLambda(Module):
     Please avoid using Model.save() / Model.load() to save / load models that contain such ElementwiseLambda layer. Instead, you may use Model.save_weights() / Model.load_weights() to save / load model weights.
     Note: In this case, fn_weights should be a list, and then the trainable weights in this ElementwiseLambda layer can be added into the weights of the whole model.
 
-    >>> # z = mean + noise * tf.exp(std * 0.5) + vara
     >>> vara = [tf.Variable(1.0)]
     >>> def func(noise, mean, std):
     >>>     return mean + noise * tf.exp(std * 0.5) + vara

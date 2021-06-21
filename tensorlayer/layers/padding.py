@@ -30,10 +30,10 @@ class PadLayer(Module):
     --------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 224, 224, 3], name='input')
+    >>> net = tl.layers.Input([10, 224, 224, 3], name='input')
     >>> padlayer = tl.layers.PadLayer([[0, 0], [3, 3], [3, 3], [0, 0]], "REFLECT", name='inpad')(net)
     >>> print(padlayer)
-    >>> output shape : (None, 230, 230, 3)
+    >>> output shape : (10, 230, 230, 3)
 
     """
 
@@ -88,10 +88,10 @@ class ZeroPad1d(Module):
     --------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 100, 1], name='input')
+    >>> net = tl.layers.Input([10, 100, 1], name='input')
     >>> pad1d = tl.layers.ZeroPad1d(padding=(3, 3))(net)
     >>> print(pad1d)
-    >>> output shape : (None, 106, 1)
+    >>> output shape : (10, 106, 1)
 
     """
 
@@ -142,10 +142,10 @@ class ZeroPad2d(Module):
     --------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 100, 100, 3], name='input')
+    >>> net = tl.layers.Input([10, 100, 100, 3], name='input')
     >>> pad2d = tl.layers.ZeroPad2d(padding=((3, 3), (4, 4)))(net)
     >>> print(pad2d)
-    >>> output shape : (None, 106, 108, 3)
+    >>> output shape : (10, 106, 108, 3)
 
     """
 
@@ -189,7 +189,8 @@ class ZeroPad3d(Module):
     padding : int, or tuple of 2 ints, or tuple of 2 tuples of 2 ints.
             - If int, the same symmetric padding is applied to width and height.
             - If tuple of 2 ints, interpreted as two different symmetric padding values for height and width as ``(symmetric_dim1_pad, symmetric_dim2_pad, symmetric_dim3_pad)``.
-            - If tuple of 2 tuples of 2 ints, interpreted as ``((left_dim1_pad, right_dim1_pad), (left_dim2_pad, right_dim2_pad), (left_dim3_pad, right_dim3_pad))``.
+            - If tuple of 2 tuples of 2 ints, interpreted as
+            ``((left_dim1_pad, right_dim1_pad), (left_dim2_pad, right_dim2_pad), (left_dim3_pad, right_dim3_pad))``.
     name : None or str
         A unique layer name.
 
@@ -197,10 +198,10 @@ class ZeroPad3d(Module):
     --------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 100, 100, 100, 3], name='input')
+    >>> net = tl.layers.Input([10, 100, 100, 100, 3], name='input')
     >>> pad3d = tl.layers.ZeroPad3d(padding=((3, 3), (4, 4), (5, 5)))(net)
     >>> print(pad3d)
-    >>> output shape : (None, 106, 108, 110, 3)
+    >>> output shape : (10, 106, 108, 110, 3)
 
     """
 

@@ -16,6 +16,7 @@ from mindspore.ops._grad.grad_base import bprop_getters
 from mindspore._checkparam import Validator as validator
 from mindspore.communication.management import get_group_size, get_rank
 
+
 def padding_format(padding):
     """
     Checks that the padding format correspond format.
@@ -581,6 +582,7 @@ def conv2d(input, filters, strides, padding, data_format='NCHW', dilations=None)
 
 
 class Conv3D(Cell):
+
     def __init__(self, strides, padding, data_format='NDHWC', dilations=None, out_channel=None, k_size=None):
         super(Conv3D, self).__init__()
         self.data_format, self.padding = preprocess_3d_format(data_format, padding)
@@ -593,12 +595,10 @@ class Conv3D(Cell):
             self.ms_stride = strides[2]
             self.ms_dilation = dilations[2]
 
-        self.conv3d = P.Conv3D(out_channel=out_channel,
-                               kernel_size=k_size,
-                               pad_mode=self.padding,
-                               stride=self.ms_stride,
-                               dilation=self.ms_dilation,
-                               data_format=data_format)
+        self.conv3d = P.Conv3D(
+            out_channel=out_channel, kernel_size=k_size, pad_mode=self.padding, stride=self.ms_stride,
+            dilation=self.ms_dilation, data_format=data_format
+        )
 
     def construct(self, input, filters):
         outputs = self.conv3d(input, filters)
@@ -705,12 +705,7 @@ class MaxPool1d(Cell):
             self.squeeze = P.Squeeze(2)
             _data_format = 'NCHW'
 
-        self.max_pool = P.MaxPool(
-            kernel_size=_ksize,
-            strides=_strides,
-            pad_mode=padding,
-            data_format=_data_format
-        )
+        self.max_pool = P.MaxPool(kernel_size=_ksize, strides=_strides, pad_mode=padding, data_format=_data_format)
 
     def construct(self, inputs):
         if self.data_format == 'NWC':
@@ -733,12 +728,7 @@ class MaxPool(Cell):
         if data_format == 'NCHW':
             _strides = (strides[2], strides[3])
 
-        self.maxpool = P.MaxPool(
-            kernel_size = ksize,
-            strides = _strides,
-            pad_mode = padding,
-            data_format = data_format
-        )
+        self.maxpool = P.MaxPool(kernel_size=ksize, strides=_strides, pad_mode=padding, data_format=data_format)
 
     def construct(self, inputs):
         outputs = self.maxpool(inputs)
@@ -773,14 +763,8 @@ def max_pool(input, ksize, strides, padding, data_format=None):
         _strides = (strides[1], strides[2])
     if data_format == 'NCHW':
         _strides = (strides[2], strides[3])
-    outputs = P.MaxPool(
-        kernel_size=ksize,
-        strides=_strides,
-        pad_mode=padding,
-        data_format=data_format
-    )(input)
+    outputs = P.MaxPool(kernel_size=ksize, strides=_strides, pad_mode=padding, data_format=data_format)(input)
     return outputs
-
 
 
 class AvgPool1d(Cell):
@@ -798,10 +782,9 @@ class AvgPool1d(Cell):
             _data_format = 'NCHW'
             self.squeeze = P.Squeeze(2)
 
-        self.avg_pool = P.AvgPool(kernel_size=self.kernel_size,
-                                  strides=self.stride,
-                                  pad_mode=self.padding,
-                                  data_format=_data_format)
+        self.avg_pool = P.AvgPool(
+            kernel_size=self.kernel_size, strides=self.stride, pad_mode=self.padding, data_format=_data_format
+        )
         self.reduce_mean = P.ReduceMean(keep_dims=True)
         self.slice = P.Slice()
         self.expand = P.ExpandDims()
@@ -1185,8 +1168,10 @@ def conv2d_transpose(
 
 
 class Conv3d_transpose(Cell):
-    def __init__(self, strides, padding, data_format='NDHWC', dilations=None, name=None, out_channel=None, k_size=None,
-            in_channels=None
+
+    def __init__(
+        self, strides, padding, data_format='NDHWC', dilations=None, name=None, out_channel=None, k_size=None,
+        in_channels=None
     ):
         super(Conv3d_transpose, self).__init__()
         self.data_format, self.padding = preprocess_3d_format(data_format, padding)
@@ -1198,19 +1183,13 @@ class Conv3d_transpose(Cell):
             self.dilations = (dilations[2], dilations[3], dilations[4])
 
         self.conv3d_transpose = P.Conv3DTranspose(
-            in_channel=in_channels,
-            out_channel=out_channel,
-            kernel_size=k_size,
-            mode=1,
-            pad_mode=padding,
-            stride=self.strides,
-            dilation=self.dilations,
-            data_format=self.data_format)
+            in_channel=in_channels, out_channel=out_channel, kernel_size=k_size, mode=1, pad_mode=padding,
+            stride=self.strides, dilation=self.dilations, data_format=self.data_format
+        )
 
     def construct(self, input, filters):
         output = self.conv3d_transpose(input, filters)
         return output
-
 
 
 def conv3d_transpose(
@@ -1252,18 +1231,10 @@ class BatchNorm(Cell):
     """Batch Normalization base class."""
 
     @cell_attr_register
-    def __init__(self,
-                 num_features,
-                 epsilon=1e-5,
-                 decay=0.9,
-                 gamma=None,
-                 beta = None,
-                 moving_mean = None,
-                 moving_var = None,
-                 is_train = None,
-                 device_num_each_group=1,
-                 process_groups=0,
-                 data_format='NCHW'):
+    def __init__(
+        self, num_features, epsilon=1e-5, decay=0.9, gamma=None, beta=None, moving_mean=None, moving_var=None,
+        is_train=None, device_num_each_group=1, process_groups=0, data_format='NCHW'
+    ):
         super(BatchNorm, self).__init__()
         if data_format in ["channels_last", "NHWC", "nhwc"]:
             data_format = "NHWC"
@@ -1301,7 +1272,7 @@ class BatchNorm(Cell):
                 if self.rank_id in self.rank_list[i]:
                     self.is_global = True
                     if SYNC_BN_GROUP_NAME == "":
-                        SYNC_BN_GROUP_NAME = "sync_bn_group"+ str(i)
+                        SYNC_BN_GROUP_NAME = "sync_bn_group" + str(i)
                         management.create_group(SYNC_BN_GROUP_NAME, self.rank_list[i])
         # for SyncBatchNorm
         if self.process_groups != 0:
@@ -1311,7 +1282,7 @@ class BatchNorm(Cell):
                 validator.check_isinstance("process_groups", self.process_groups, list)
                 self._check_rank_ids(self.process_groups, self.rank_size)
                 for i in range(len(self.process_groups)):
-                    validator.check_isinstance("process_groups[" + str(i) +"]", self.process_groups[i], list)
+                    validator.check_isinstance("process_groups[" + str(i) + "]", self.process_groups[i], list)
                     self.group_device_num = len(self.process_groups[i])
                     if self.rank_id in self.process_groups[i] and self.group_device_num > 1:
                         self.is_global = True
@@ -1341,20 +1312,16 @@ class BatchNorm(Cell):
         else:
             self.is_ge_backend = False
 
-        self.bn_train = P.BatchNorm(is_training=True,
-                                    epsilon=self.eps,
-                                    momentum=self.momentum,
-                                    data_format=self.format)
+        self.bn_train = P.BatchNorm(is_training=True, epsilon=self.eps, momentum=self.momentum, data_format=self.format)
         if self.is_global:
-            self.bn_train = inner.SyncBatchNorm(epsilon=self.eps,
-                                                momentum=self.momentum,
-                                                group=SYNC_BN_GROUP_NAME,
-                                                device_num=self.group_device_num)
+            self.bn_train = inner.SyncBatchNorm(
+                epsilon=self.eps, momentum=self.momentum, group=SYNC_BN_GROUP_NAME, device_num=self.group_device_num
+            )
 
         self.bn_infer = P.BatchNorm(is_training=False, epsilon=self.eps, data_format=self.format)
 
-        data_parallel_strategy = ((1,), (1,))
-        data_parallel_strategy_one = ((1,), ())
+        data_parallel_strategy = ((1, ), (1, ))
+        data_parallel_strategy_one = ((1, ), ())
         self.sub_mean = P.Sub().shard(data_parallel_strategy)
         self.sub_var = P.Sub().shard(data_parallel_strategy)
         self.mul_mean = P.Mul().shard(data_parallel_strategy_one)
@@ -1364,11 +1331,13 @@ class BatchNorm(Cell):
 
     def list_group(self, world_rank, group_size):
         if group_size > get_group_size():
-            raise ValueError("group size can not be greater than local rank size, group size is {}, "
-                             "local_rank_size is {}".format(group_size, get_group_size()))
+            raise ValueError(
+                "group size can not be greater than local rank size, group size is {}, "
+                "local_rank_size is {}".format(group_size, get_group_size())
+            )
         if len(world_rank) % group_size != 0:
             raise ValueError("please make your group size correct.")
-        world_rank_list = zip(*(iter(world_rank),) * group_size)
+        world_rank_list = zip(*(iter(world_rank), ) * group_size)
         group_list = [list(i) for i in world_rank_list]
         return group_list
 
@@ -1388,28 +1357,21 @@ class BatchNorm(Cell):
         flag = self.use_batch_statistics
 
         if flag:
-            output = self.bn_train(inputs,
-                                 self.gamma,
-                                 self.beta,
-                                 self.moving_mean,
-                                 self.moving_variance)[0]
+            output = self.bn_train(inputs, self.gamma, self.beta, self.moving_mean, self.moving_variance)[0]
 
             if len(x_shape) == 5:
                 output = self.reshape(output, x_shape)
             return output
 
-        output = self.bn_infer(inputs,
-                             self.gamma,
-                             self.beta,
-                             self.moving_mean,
-                             self.moving_variance)[0]
+        output = self.bn_infer(inputs, self.gamma, self.beta, self.moving_mean, self.moving_variance)[0]
         if len(x_shape) == 5:
             output = self.reshape(output, x_shape)
         return output
 
     def extend_repr(self):
         return 'num_features={}, eps={}, momentum={}, gamma={}, beta={}, moving_mean={}, moving_variance={}'.format(
-            self.num_features, self.eps, self.momentum, self.gamma, self.beta, self.moving_mean, self.moving_variance)
+            self.num_features, self.eps, self.momentum, self.gamma, self.beta, self.moving_mean, self.moving_variance
+        )
 
 
 class GroupConv2D(Cell):
@@ -1498,12 +1460,13 @@ class SeparableConv2D(Cell):
 
         self.depthwise_conv = P.Conv2D(
             out_channel=self.in_channel * self.depth_multiplier, kernel_size=self.k_size, pad_mode=self.padding,
-            stride=self.ms_stride, dilation=self.ms_dilation, mode=1, group=self.in_channel , data_format=self.data_format
+            stride=self.ms_stride, dilation=self.ms_dilation, mode=1, group=self.in_channel,
+            data_format=self.data_format
         )
 
         self.pointwise_conv = P.Conv2D(
             out_channel=self.out_channel, kernel_size=(1, 1), pad_mode=self.padding, stride=(1, 1), dilation=(1, 1),
-            mode=1, group=1 , data_format=self.data_format
+            mode=1, group=1, data_format=self.data_format
         )
 
     def construct(self, x, depthwise_filters, pointwise_filters):
@@ -1623,8 +1586,10 @@ class AdaptiveMaxPool2D(Cell):
         kernel_h = h - (out_h - 1) * stride_h
         stride_w = w // out_w
         kernel_w = w - (out_w - 1) * stride_w
-        outputs = P.MaxPool(kernel_size=(kernel_h, kernel_w), strides=(stride_h, stride_w),
-                            pad_mode='VALID', data_format=self.data_format)(inputs)
+        outputs = P.MaxPool(
+            kernel_size=(kernel_h, kernel_w), strides=(stride_h, stride_w), pad_mode='VALID',
+            data_format=self.data_format
+        )(inputs)
 
         return outputs
 

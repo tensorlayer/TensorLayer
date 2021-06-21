@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import tensorlayer as tl
-
 from tensorlayer import logging
 from tensorlayer.layers.core import Module
 
@@ -27,8 +26,8 @@ class Concat(Module):
     >>> class CustomModel(Module):
     >>>     def __init__(self):
     >>>         super(CustomModel, self).__init__(name="custom")
-    >>>         self.dense1 = tl.layers.Dense(in_channels=20, n_units=10, act=tf.nn.relu, name='relu1_1')
-    >>>         self.dense2 = tl.layers.Dense(in_channels=20, n_units=10, act=tf.nn.relu, name='relu2_1')
+    >>>         self.dense1 = tl.layers.Dense(in_channels=20, n_units=10, act=tl.ReLU, name='relu1_1')
+    >>>         self.dense2 = tl.layers.Dense(in_channels=20, n_units=10, act=tl.ReLU, name='relu2_1')
     >>>         self.concat = tl.layers.Concat(concat_dim=1, name='concat_layer')
 
     >>>     def forward(self, inputs):
@@ -70,6 +69,7 @@ class Concat(Module):
         outputs = self.concat(inputs)
         return outputs
 
+
 class Elementwise(Module):
     """A layer that combines multiple :class:`Layer` that have the same output shapes
     according to an element-wise operation.
@@ -78,7 +78,7 @@ class Elementwise(Module):
     Parameters
     ----------
     combine_fn : a TensorFlow element-wise combine function
-        e.g. AND is ``tf.minimum`` ;  OR is ``tf.maximum`` ; ADD is ``tf.add`` ; MUL is ``tf.multiply`` and so on.
+        e.g. AND is ``tl.minimum`` ;  OR is ``tl.maximum`` ; ADD is ``tl.add`` ; MUL is ``tl.multiply`` and so on.
         See `TensorFlow Math API <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html#math>`__ .
         If the combine function is more complicated, please consider to use :class:`ElementwiseLambda`.
     act : activation function
@@ -91,9 +91,9 @@ class Elementwise(Module):
     >>> class CustomModel(tl.models.Model):
     >>>     def __init__(self):
     >>>         super(CustomModel, self).__init__(name="custom")
-    >>>         self.dense1 = tl.layers.Dense(in_channels=20, n_units=10, act=tf.nn.relu, name='relu1_1')
-    >>>         self.dense2 = tl.layers.Dense(in_channels=20, n_units=10, act=tf.nn.relu, name='relu2_1')
-    >>>         self.element = tl.layers.Elementwise(combine_fn=tf.minimum, name='minimum', act=tf.identity)
+    >>>         self.dense1 = tl.layers.Dense(in_channels=20, n_units=10, act=tl.ReLU, name='relu1_1')
+    >>>         self.dense2 = tl.layers.Dense(in_channels=20, n_units=10, act=tl.ReLU, name='relu2_1')
+    >>>         self.element = tl.layers.Elementwise(combine_fn=tl.minimum, name='minimum', act=tl.identity)
 
     >>>     def forward(self, inputs):
     >>>         d1 = self.dense1(inputs)

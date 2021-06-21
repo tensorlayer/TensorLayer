@@ -25,6 +25,11 @@ class Dropout(Module):
     name : None or str
         A unique layer name.
 
+    Examples
+    --------
+    >>> net = tl.layers.Input([10, 200])
+    >>> net = tl.layers.Dropout(keep=0.2)(net)
+
     """
 
     def __init__(self, keep, seed=0, name=None):  #"dropout"):

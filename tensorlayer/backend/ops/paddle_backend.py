@@ -816,9 +816,12 @@ def split(value, num_or_size_splits, axis=0, num=None):
     """
     pass
 
+
 class Floor(object):
+
     def __call__(self, *args, **kwargs):
         raise NotImplementedError
+
 
 def floor(x):
     raise NotImplementedError
@@ -954,8 +957,10 @@ class Sign(object):
 
 
 class Ceil(object):
+
     def __call__(self, *args, **kwargs):
         raise NotImplementedError
+
 
 def ceil(x):
     raise NotImplementedError

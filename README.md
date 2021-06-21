@@ -104,7 +104,7 @@ If you want to use mindspore backend, you should install mindspore>=1.2.0
 pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/gpu/ubuntu_x86/cuda-10.1/mindspore_gpu-1.2.1-cp37-cp37m-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-if you want to use paddlepaddle backend, you should install paddlepaddle>=2.0
+If you want to use paddlepaddle backend, you should install paddlepaddle>=2.0
 ```bash
 python -m pip install paddlepaddle -i https://mirror.baidu.com/pypi/simple
 ```

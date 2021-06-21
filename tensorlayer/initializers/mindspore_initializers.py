@@ -62,6 +62,7 @@ class Initializer(object):
 class Zeros(Initializer):
     """Initializer that generates tensors initialized to 0.
     """
+
     def __init__(self):
         self.zero = initializer.Zero()
 
@@ -74,6 +75,7 @@ class Zeros(Initializer):
 class Ones(Initializer):
     """Initializer that generates tensors initialized to 1.
     """
+
     def __init__(self):
         self.one = initializer.One()
 

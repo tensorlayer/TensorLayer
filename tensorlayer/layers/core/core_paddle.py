@@ -45,7 +45,8 @@ class Module(Layer):
             str_act = str2act(act)
 
         if act:
-            if isinstance(act, str) and (len(act) > 5 and act[0:5] == "lrelu" or len(act) > 10 and act[0:10] == "leaky_relu"):
+            if isinstance(act, str) and (len(act) > 5 and act[0:5] == "lrelu" or
+                                         len(act) > 10 and act[0:10] == "leaky_relu"):
                 self.act = str_act
             elif isinstance(act, str):
                 self.act = str_act()
@@ -177,8 +178,7 @@ class Module(Layer):
                 with program_desc_tracing_guard(False):
                     self._build_once(*inputs, **kwargs)
                     if parallel_helper._is_data_parallel_mode():
-                        parallel_helper._broadcast_parameters(
-                            self._parameters.values())
+                        parallel_helper._broadcast_parameters(self._parameters.values())
                 self._paddle_built = True
 
             outputs = self.forward(*inputs, **kwargs)
@@ -200,26 +200,16 @@ class Module(Layer):
         self.trainable = trainable
         return w_tmp
 
-    def create_parameter(self,
-                         shape,
-                         attr=None,
-                         dtype=None,
-                         is_bias=False,
-                         default_initializer=None):
+    def create_parameter(self, shape, attr=None, dtype=None, is_bias=False, default_initializer=None):
         """Create parameters for this layer."""
         temp_attr = copy.deepcopy(attr)
         if isinstance(temp_attr, six.string_types) and temp_attr == "":
             temp_attr = None
-        return self._helper.create_parameter(temp_attr, shape, dtype, is_bias,
-                                             default_initializer)
+        return self._helper.create_parameter(temp_attr, shape, dtype, is_bias, default_initializer)
 
     @property
     def all_weights(self):
-        ret = [
-            param
-            for _, param in self.named_parameters(
-                include_sublayers=True)
-        ]
+        ret = [param for _, param in self.named_parameters(include_sublayers=True)]
         return ret
 
     @property

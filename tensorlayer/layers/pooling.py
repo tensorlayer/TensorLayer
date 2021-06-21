@@ -55,9 +55,9 @@ class PoolLayer(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 50, 50, 32], name='input')
+    >>> net = tl.layers.Input([10, 50, 50, 32], name='input')
     >>> net = tl.layers.PoolLayer()(net)
-    >>> output shape : [None, 25, 25, 32]
+    >>> output shape : [10, 25, 25, 32]
 
     """
 
@@ -118,9 +118,9 @@ class MaxPool1d(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 50, 32], name='input')
+    >>> net = tl.layers.Input([10, 50, 32], name='input')
     >>> net = tl.layers.MaxPool1d(filter_size=3, strides=2, padding='SAME', name='maxpool1d')(net)
-    >>> output shape : [None, 25, 32]
+    >>> output shape : [10, 25, 32]
 
     """
 
@@ -163,12 +163,14 @@ class MaxPool1d(Module):
             raise Exception("unsupported data format")
         self._filter_size = [self.filter_size]
         self._strides = [self.strides]
-        self.max_pool = tl.ops.MaxPool1d(ksize=self._filter_size, strides=self._strides, padding=self.padding,
-                                       data_format=self.data_format)
+        self.max_pool = tl.ops.MaxPool1d(
+            ksize=self._filter_size, strides=self._strides, padding=self.padding, data_format=self.data_format
+        )
 
     def forward(self, inputs):
         outputs = self.max_pool(inputs)
         return outputs
+
 
 class MeanPool1d(Module):
     """Mean pooling for 1D signal.
@@ -190,9 +192,9 @@ class MeanPool1d(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 50, 32], name='input')
+    >>> net = tl.layers.Input([10, 50, 32], name='input')
     >>> net = tl.layers.MeanPool1d(filter_size=3, strides=2, padding='SAME')(net)
-    >>> output shape : [None, 25, 32]
+    >>> output shape : [10, 25, 32]
 
     """
 
@@ -236,10 +238,9 @@ class MeanPool1d(Module):
             raise Exception("unsupported data format")
         self._filter_size = [self.filter_size]
         self._strides = [self.strides]
-        self.avg_pool = tl.ops.AvgPool1d(ksize=self._filter_size,
-                                         strides=self._strides,
-                                         padding=self.padding,
-                                         data_format=self.data_format)
+        self.avg_pool = tl.ops.AvgPool1d(
+            ksize=self._filter_size, strides=self._strides, padding=self.padding, data_format=self.data_format
+        )
 
     def forward(self, inputs):
         outputs = self.avg_pool(inputs)
@@ -266,9 +267,9 @@ class MaxPool2d(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 50, 50, 32], name='input')
+    >>> net = tl.layers.Input([10, 50, 50, 32], name='input')
     >>> net = tl.layers.MaxPool2d(filter_size=(3, 3), strides=(2, 2), padding='SAME')(net)
-    >>> output shape : [None, 25, 25, 32]
+    >>> output shape : [10, 25, 25, 32]
 
     """
 
@@ -342,9 +343,9 @@ class MeanPool2d(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 50, 50, 32], name='input')
+    >>> net = tl.layers.Input([10, 50, 50, 32], name='input')
     >>> net = tl.layers.MeanPool2d(filter_size=(3, 3), strides=(2, 2), padding='SAME')(net)
-    >>> output shape : [None, 25, 25, 32]
+    >>> output shape : [10, 25, 25, 32]
 
     """
 
@@ -422,9 +423,9 @@ class MaxPool3d(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 50, 50, 50, 32], name='input')
+    >>> net = tl.layers.Input([10, 50, 50, 50, 32], name='input')
     >>> net = tl.layers.MaxPool3d(filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME')(net)
-    >>> output shape : [None, 25, 25, 25, 32]
+    >>> output shape : [10, 25, 25, 25, 32]
 
     """
 
@@ -503,9 +504,9 @@ class MeanPool3d(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 50, 50, 50, 32], name='input')
+    >>> net = tl.layers.Input([10, 50, 50, 50, 32], name='input')
     >>> net = tl.layers.MeanPool3d(filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME')(net)
-    >>> output shape : [None, 25, 25, 25, 32]
+    >>> output shape : [10, 25, 25, 25, 32]
 
     """
 
@@ -572,9 +573,9 @@ class GlobalMaxPool1d(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 100, 30], name='input')
+    >>> net = tl.layers.Input([10, 100, 30], name='input')
     >>> net = tl.layers.GlobalMaxPool1d()(net)
-    >>> output shape : [None, 30]
+    >>> output shape : [10, 30]
 
     """
 
@@ -628,9 +629,9 @@ class GlobalMeanPool1d(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 100, 30], name='input')
+    >>> net = tl.layers.Input([10, 100, 30], name='input')
     >>> net = tl.layers.GlobalMeanPool1d()(net)
-    >>> output shape : [None, 30]
+    >>> output shape : [10, 30]
 
     """
 
@@ -683,9 +684,9 @@ class GlobalMaxPool2d(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 100, 100, 30], name='input')
+    >>> net = tl.layers.Input([10, 100, 100, 30], name='input')
     >>> net = tl.layers.GlobalMaxPool2d()(net)
-    >>> output shape : [None, 30]
+    >>> output shape : [10, 30]
 
     """
 
@@ -738,9 +739,9 @@ class GlobalMeanPool2d(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 100, 100, 30], name='input')
+    >>> net = tl.layers.Input([10, 100, 100, 30], name='input')
     >>> net = tl.layers.GlobalMeanPool2d()(net)
-    >>> output shape : [None, 30]
+    >>> output shape : [10, 30]
 
     """
 
@@ -794,9 +795,9 @@ class GlobalMaxPool3d(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 100, 100, 100, 30], name='input')
+    >>> net = tl.layers.Input([10, 100, 100, 100, 30], name='input')
     >>> net = tl.layers.GlobalMaxPool3d()(net)
-    >>> output shape : [None, 30]
+    >>> output shape : [10, 30]
 
     """
 
@@ -850,9 +851,9 @@ class GlobalMeanPool3d(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 100, 100, 100, 30], name='input')
+    >>> net = tl.layers.Input([10, 100, 100, 100, 30], name='input')
     >>> net = tl.layers.GlobalMeanPool3d()(net)
-    >>> output shape : [None, 30]
+    >>> output shape : [10, 30]
 
     """
 
@@ -906,9 +907,9 @@ class CornerPool2d(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 32, 32, 8], name='input')
+    >>> net = tl.layers.Input([10, 32, 32, 8], name='input')
     >>> net = tl.layers.CornerPool2d(mode='TopLeft',name='cornerpool2d')(net)
-    >>> output shape : [None, 32, 32, 8]
+    >>> output shape : [10, 32, 32, 8]
 
     """
 
@@ -980,9 +981,9 @@ class AdaptiveMeanPool1d(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None, 32, 3], name='input')
+    >>> net = tl.layers.Input([10, 32, 3], name='input')
     >>> net = tl.layers.AdaptiveMeanPool1d(output_size=16)(net)
-    >>> output shape : [None, 16, 3]
+    >>> output shape : [10, 16, 3]
 
     """
 
@@ -1035,9 +1036,9 @@ class AdaptiveMeanPool2d(Module):
     ---------
     With TensorLayer
 
-    >>> net = tl.layers.Input([None,32, 32, 3], name='input')
+    >>> net = tl.layers.Input([10,32, 32, 3], name='input')
     >>> net = tl.layers.AdaptiveMeanPool2d(output_size=16)(net)
-    >>> output shape : [None,16, 16, 3]
+    >>> output shape : [10,16, 16, 3]
 
     """
 
@@ -1093,9 +1094,9 @@ class AdaptiveMeanPool3d(Module):
         ---------
         With TensorLayer
 
-        >>> net = tl.layers.Input([None,32, 32, 32, 3], name='input')
+        >>> net = tl.layers.Input([10,32, 32, 32, 3], name='input')
         >>> net = tl.layers.AdaptiveMeanPool3d(output_size=16)(net)
-        >>> output shape : [None, 16, 16, 16, 3]
+        >>> output shape : [10, 16, 16, 16, 3]
 
         """
 
@@ -1151,9 +1152,9 @@ class AdaptiveMaxPool1d(Module):
         ---------
         With TensorLayer
 
-        >>> net = tl.layers.Input([None, 32, 3], name='input')
+        >>> net = tl.layers.Input([10, 32, 3], name='input')
         >>> net = tl.layers.AdaptiveMaxPool1d(output_size=16)(net)
-        >>> output shape : [None, 16, 3]
+        >>> output shape : [10, 16, 3]
 
         """
 
@@ -1206,9 +1207,9 @@ class AdaptiveMaxPool2d(Module):
         ---------
         With TensorLayer
 
-        >>> net = tl.layers.Input([None, 32, 32, 3], name='input')
+        >>> net = tl.layers.Input([10, 32, 32, 3], name='input')
         >>> net = tl.layers.AdaptiveMaxPool2d(output_size=16)(net)
-        >>> output shape : [None, 16, 16, 3]
+        >>> output shape : [10, 16, 16, 3]
 
     """
 
@@ -1263,9 +1264,9 @@ class AdaptiveMaxPool3d(Module):
         ---------
         With TensorLayer
 
-        >>> net = tl.layers.Input([None,32, 32, 32, 3], name='input')
+        >>> net = tl.layers.Input([10,32, 32, 32, 3], name='input')
         >>> net = tl.layers.AdaptiveMaxPool3d(output_size=16)(net)
-        >>> output shape : [None, 16, 16, 16, 3]
+        >>> output shape : [10, 16, 16, 16, 3]
 
         """
 

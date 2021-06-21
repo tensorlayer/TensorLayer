@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import tensorlayer as tl
-
 from tensorlayer import logging
 from tensorlayer.layers.core import Module
 
@@ -77,6 +76,7 @@ class Tile(Module):
     --------
     >>> x = tl.layers.Input([10, 3], name='in')
     >>> y = tl.layers.Tile(multiples=[2, 3])(x)
+
     """
 
     def __init__(self, multiples=None, name=None):  #'tile'):

@@ -1,2 +1,0 @@
-mindspore==1.2.0
-paddlepaddle==2.1.0

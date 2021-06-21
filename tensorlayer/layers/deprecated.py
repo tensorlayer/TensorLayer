@@ -415,9 +415,23 @@ def TimeDistributedLayer(*args, **kwargs):
     # raise NonExistingLayerError("TimeDistributedLayer(x1, x2, name='a') --> TimeDistributed(name='a')(x1, x2)")
     raise NonExistingLayerError("TimeDistributedLayer is removed for TF 2.0, please use eager mode instead." + __log__)
 
-__all__ += [
-    'LayerList'
-]
+
+__all__ += ['LayerList']
+
 
 def LayerList(*args, **kwargs):
     raise NonExistingLayerError("LayerList(list)(input_data) --> SequentialLayer(list)(input_data)" + __log__)
+
+
+__all__ += ['ModelLayer']
+
+
+def ModelLayer(*args, **kwargs):
+    raise NonExistingLayerError("ModelLayer is removed for TensorLayer 3.0.")
+
+
+__all__ += ['Seq2seqLuongAttention']
+
+
+def Seq2seqLuongAttention(*args, **kwargs):
+    raise NonExistingLayerError("Seq2seqLuongAttention is removed for TensorLayer 3.0.")

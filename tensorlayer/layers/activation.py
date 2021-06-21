@@ -7,16 +7,7 @@ from tensorlayer.initializers import truncated_normal
 from tensorlayer.layers.core import Module
 
 __all__ = [
-    'PRelu',
-    'PRelu6',
-    'PTRelu6',
-    'LeakyReLU',
-    'LeakyReLU6',
-    'LeakyTwiceRelu6',
-    'Ramp',
-    'Swish',
-    'HardTanh',
-    'Mish'
+    'PRelu', 'PRelu6', 'PTRelu6', 'LeakyReLU', 'LeakyReLU6', 'LeakyTwiceRelu6', 'Ramp', 'Swish', 'HardTanh', 'Mish'
 ]
 
 
@@ -41,7 +32,7 @@ class PRelu(Module):
     Examples
     -----------
     >>> inputs = tl.layers.Input([10, 5])
-    >>> prelulayer = tl.layers.PRelu(channel_shared=True)
+    >>> prelulayer = tl.layers.PRelu(channel_shared=True, in_channels=5)(inputs)
 
     References
     -----------
@@ -140,6 +131,11 @@ class PRelu6(Module):
         The initializer for initializing the alpha(s).
     name : None or str
         A unique layer name.
+
+    Examples
+    -----------
+    >>> inputs = tl.layers.Input([10, 5])
+    >>> prelulayer = tl.layers.PRelu6(channel_shared=True, in_channels=5)(inputs)
 
     References
     -----------
@@ -249,6 +245,11 @@ class PTRelu6(Module):
     name : None or str
         A unique layer name.
 
+    Examples
+    -----------
+    >>> inputs = tl.layers.Input([10, 5])
+    >>> prelulayer = tl.layers.PTRelu6(channel_shared=True, in_channels=5)(inputs)
+
     References
     -----------
     - `Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification <http://arxiv.org/abs/1502.01852>`__
@@ -347,6 +348,11 @@ class Ramp(Module):
         Tensor
             A ``Tensor`` in the same type as ``x``.
 
+        Examples
+        -----------
+        >>> inputs = tl.layers.Input([10, 5])
+        >>> prelulayer = tl.layers.Ramp()(inputs)
+
         """
 
     def __init__(self, v_min=0, v_max=1):
@@ -380,7 +386,6 @@ class LeakyReLU(Module):
 
     Examples
     --------
-    >>> import tensorlayer as tl
     >>> net = tl.layers.Input([10, 200])
     >>> net = tl.layers.LeakyReLU(alpha=0.5)(net)
 
@@ -429,7 +434,6 @@ class LeakyReLU6(Module):
 
         Examples
         --------
-        >>> import tensorlayer as tl
         >>> net = tl.layers.Input([10, 200])
         >>> net = tl.layers.LeakyReLU6(alpha=0.5)(net)
 
@@ -487,7 +491,6 @@ class LeakyTwiceRelu6(Module):
 
         Examples
         --------
-        >>> import tensorlayer as tl
         >>> net = tl.layers.Input([10, 200])
         >>> net = tl.layers.LeakyTwiceRelu6(alpha_low=0.5, alpha_high=0.2)(net)
 
@@ -535,6 +538,11 @@ class Swish(Module):
         name: str
             function name (optional).
 
+        Examples
+        --------
+        >>> net = tl.layers.Input([10, 200])
+        >>> net = tl.layers.Swish()(net)
+
         Returns
         -------
         Tensor
@@ -563,6 +571,11 @@ class HardTanh(Module):
         name : str
             The function name (optional).
 
+        Examples
+        --------
+        >>> net = tl.layers.Input([10, 200])
+        >>> net = tl.layers.HardTanh()(net)
+
         Returns
         -------
         Tensor
@@ -587,6 +600,11 @@ class Mish(Module):
         ----------
         x : Tensor
             input.
+
+        Examples
+        --------
+        >>> net = tl.layers.Input([10, 200])
+        >>> net = tl.layers.Mish()(net)
 
         Returns
         -------

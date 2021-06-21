@@ -1,14 +1,13 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-
-
 import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer.layers.core import Module
 from tensorflow.python.training import moving_averages
-from tensorlayer.layers.utils import (quantize_active_overflow, quantize_weight_overflow,
-                                      mean_var_with_update, w_fold, bias_fold)
+from tensorlayer.layers.utils import (
+    quantize_active_overflow, quantize_weight_overflow, mean_var_with_update, w_fold, bias_fold
+)
 
 __all__ = [
     'QuanDenseWithBN',
@@ -141,7 +140,6 @@ class QuanDenseWithBN(Module):
         self.moving_variance = self._get_weights(
             "moving_variacne", shape=para_bn_shape, init=tl.initializers.constant(1.0), trainable=False
         )
-
 
     def forward(self, inputs):
         if self._forward_state == False:
