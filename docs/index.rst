@@ -63,6 +63,7 @@ method, this part of the documentation is for you.
   modules/layers
   modules/models
   modules/nlp
+  modules/vision
   modules/initializers
   modules/rein
   modules/utils
