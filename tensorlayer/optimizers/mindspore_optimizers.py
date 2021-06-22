@@ -23,7 +23,7 @@ class Adagrad(Cell):
     def __init__(self):
         pass
 
-    def app_gradients(self):
+    def apply_gradients(self):
         raise Exception('Adagrad optimizer function not implemented')
 
 
@@ -55,7 +55,7 @@ class Adamax(Cell):
     def __init__(self):
         pass
 
-    def app_gradients(self):
+    def apply_gradients(self):
         raise Exception('Adamax optimizer function not implemented')
 
 
@@ -64,7 +64,7 @@ class Ftrl(Cell):
     def __init__(self):
         pass
 
-    def app_gradients(self):
+    def apply_gradients(self):
         raise Exception('Ftrl optimizer function not implemented')
 
 
@@ -73,7 +73,7 @@ class Nadam(Cell):
     def __init__(self):
         pass
 
-    def app_gradients(self):
+    def apply_gradients(self):
         raise Exception('Nadam optimizer function not implemented')
 
 
@@ -82,7 +82,7 @@ class RMSprop(Cell):
     def __init__(self):
         pass
 
-    def app_gradients(self):
+    def apply_gradients(self):
         raise Exception('RMSprop optimizer function not implemented')
 
 
@@ -91,7 +91,7 @@ class RMSprop(Cell):
     def __init__(self):
         pass
 
-    def app_gradients(self):
+    def apply_gradients(self):
         raise Exception('RMSprop optimizer function not implemented')
 
 
