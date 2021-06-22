@@ -6,7 +6,7 @@ from mindspore.nn import Cell
 import mindspore.ops as P
 
 __all__ = [
-    'cross_entropy',
+    'softmax_cross_entropy_with_logits',
     'sigmoid_cross_entropy',
     'binary_cross_entropy',
     'mean_squared_error',
@@ -25,7 +25,33 @@ __all__ = [
     'maxnorm_i_regularizer',
 ]
 
-cross_entropy = nn.SoftmaxCrossEntropyWithLogits(sparse=True, reduction='mean')
+def softmax_cross_entropy_with_logits(output, target):
+    """Softmax cross-entropy operation, returns the TensorFlow expression of cross-entropy for two distributions,
+    it implements softmax internally. See ``tf.ops.sparse_softmax_cross_entropy_with_logits``.
+
+    Parameters
+    ----------
+    output : Tensor
+        A batch of distribution with shape: [batch_size, num of classes].
+    target : Tensor
+        A batch of index with shape: [batch_size, ].
+    name : string
+        Name of this loss.
+
+    Examples
+    --------
+    >>> import tensorlayer as tl
+    >>> ce = tl.cost.softmax_cross_entropy_with_logits(y_logits, y_target_logits, 'my_loss')
+
+    References
+    -----------
+    - About cross-entropy: `<https://en.wikipedia.org/wiki/Cross_entropy>`__.
+    - The code is borrowed from: `<https://en.wikipedia.org/wiki/Cross_entropy>`__.
+
+    """
+
+    outputs = nn.SoftmaxCrossEntropyWithLogits(sparse=True)(output, target)
+    return outputs
 
 
 def sigmoid_cross_entropy(output, target, name=None):
@@ -41,7 +67,7 @@ def sigmoid_cross_entropy(output, target, name=None):
         Name of this loss.
 
     """
-    outputs = P.ReduceMean(cross_entropy(output, target))
+    outputs = P.ReduceMean(P.SigmoidCrossEntropyWithLogits()(output, target))
     return outputs
 
 

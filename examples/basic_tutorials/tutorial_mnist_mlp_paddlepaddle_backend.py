@@ -39,7 +39,7 @@ net = MLP()
 
 optimizer = tl.optimizers.Adam(learning_rate=0.001)
 metric = tl.metric.Accuracy()
-model = tl.models.Model(network=net, loss_fn=tl.cost.cross_entropy, optimizer=optimizer, metrics=metric)
+model = tl.models.Model(network=net, loss_fn=tl.cost.softmax_cross_entropy_with_logits, optimizer=optimizer, metrics=metric)
 model.train(n_epoch=2, train_dataset=train_loader, print_freq=5, print_train_batch=True)
 model.save_weights('./model_mlp.npz', format='npz_dict')
 model.load_weights('./model_mlp.npz', format='npz_dict')

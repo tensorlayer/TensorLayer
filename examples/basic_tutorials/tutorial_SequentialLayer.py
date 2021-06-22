@@ -37,7 +37,7 @@ train_ds = tl.dataflow.Shuffle(train_ds,shuffle_buffer_size)
 train_ds = tl.dataflow.Batch(train_ds,batch_size)
 
 
-model = tl.models.Model(network=MLP, loss_fn=tl.cost.cross_entropy, optimizer=optimizer)
+model = tl.models.Model(network=MLP, loss_fn=tl.cost.softmax_cross_entropy_with_logits, optimizer=optimizer)
 model.train(n_epoch=n_epoch, train_dataset=train_ds, print_freq=print_freq, print_train_batch=False)
 model.save_weights('./model.npz', format='npz_dict')
 model.load_weights('./model.npz', format='npz_dict')

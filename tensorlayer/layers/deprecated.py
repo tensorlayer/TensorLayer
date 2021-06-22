@@ -435,3 +435,7 @@ __all__ += ['Seq2seqLuongAttention']
 
 def Seq2seqLuongAttention(*args, **kwargs):
     raise NonExistingLayerError("Seq2seqLuongAttention is removed for TensorLayer 3.0.")
+
+__all__ += ['cross_entropy']
+def cross_entropy(*args, **kwargs):
+    raise NonExistingLayerError("cross_entropy(output, target) --> softmax_cross_entropy_with_logits(output, target)" + __log__)

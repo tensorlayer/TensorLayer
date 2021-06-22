@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 import os
-# os.environ['TL_BACKEND'] = 'tensorflow'
 os.environ['TL_BACKEND'] = 'mindspore'
+
 import time
 import numpy as np
 import multiprocessing

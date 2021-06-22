@@ -10,7 +10,7 @@ from tensorflow.python.ops import array_ops, math_ops, nn_ops, standard_ops
 from tensorlayer import logging
 
 __all__ = [
-    'cross_entropy',
+    'softmax_cross_entropy_with_logits',
     'sigmoid_cross_entropy',
     'binary_cross_entropy',
     'mean_squared_error',
@@ -30,7 +30,7 @@ __all__ = [
 ]
 
 
-def cross_entropy(output, target, name=None):
+def softmax_cross_entropy_with_logits(output, target, name=None):
     """Softmax cross-entropy operation, returns the TensorFlow expression of cross-entropy for two distributions,
     it implements softmax internally. See ``tf.ops.sparse_softmax_cross_entropy_with_logits``.
 
@@ -46,7 +46,7 @@ def cross_entropy(output, target, name=None):
     Examples
     --------
     >>> import tensorlayer as tl
-    >>> ce = tl.cost.cross_entropy(y_logits, y_target_logits, 'my_loss')
+    >>> ce = tl.cost.softmax_cross_entropy_with_logits(y_logits, y_target_logits, 'my_loss')
 
     References
     -----------

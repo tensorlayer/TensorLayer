@@ -5,7 +5,7 @@ import paddle.nn.functional as F
 import paddle as pd
 
 __all__ = [
-    'cross_entropy',
+    'softmax_cross_entropy_with_logits',
     'sigmoid_cross_entropy',
     'binary_cross_entropy',
     'mean_squared_error',
@@ -25,7 +25,7 @@ __all__ = [
 ]
 
 
-def cross_entropy(output, target):
+def softmax_cross_entropy_with_logits(output, target):
     """Softmax cross-entropy operation, returns the TensorFlow expression of cross-entropy for two distributions,
     it implements softmax internally. See ``tf.ops.sparse_softmax_cross_entropy_with_logits``.
 
@@ -41,7 +41,7 @@ def cross_entropy(output, target):
     Examples
     --------
     >>> import tensorlayer as tl
-    >>> ce = tl.cost.cross_entropy(y_logits, y_target_logits)
+    >>> ce = tl.cost.softmax_cross_entropy_with_logits(y_logits, y_target_logits)
 
     References
     -----------
