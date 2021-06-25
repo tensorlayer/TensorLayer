@@ -1,6 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 # The tensorlayer and Paddle operators can be mixed
+
 import os
 os.environ['TL_BACKEND'] = 'paddle'
 

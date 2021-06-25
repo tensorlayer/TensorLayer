@@ -1,12 +1,10 @@
-#!/usr/bin/env python3
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
-import mindspore.nn as nn
+
 import mindspore.ops.operations as P
 from mindspore.ops import composite as C
-from mindspore.common import dtype as mstype
-from mindspore import context, Tensor, ParameterTuple
-from mindspore.common.initializer import TruncatedNormal
-from mindspore.nn import SoftmaxCrossEntropyWithLogits, Momentum, WithLossCell
+from mindspore import ParameterTuple
+from mindspore.nn import Momentum, WithLossCell
 
 import numpy as np
 import tensorlayer as tl

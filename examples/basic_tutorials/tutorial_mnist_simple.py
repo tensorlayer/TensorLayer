@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 # The same set of code can switch the backend with one line
@@ -6,7 +6,7 @@ import os
 os.environ['TL_BACKEND'] = 'tensorflow'
 # os.environ['TL_BACKEND'] = 'mindspore'
 # os.environ['TL_BACKEND'] = 'paddle'
-import numpy as np
+
 import tensorlayer as tl
 from tensorlayer.layers import Module
 from tensorlayer.layers import Dense, Dropout, Flatten
@@ -68,7 +68,7 @@ print_freq = 2
 
 
 train_weights = MLP.trainable_weights
-optimizer = tl.optimizers.Momentum(0.001, 0.9)
+optimizer = tl.optimizers.Momentum(0.05, 0.9)
 metric = tl.metric.Accuracy()
 train_dataset = mnistdataset(data = X_train, label = y_train ,transform = transform)
 train_dataset = tl.dataflow.FromGenerator(train_dataset, output_types=[tl.float32, tl.int64], column_names=['data', 'label'])
