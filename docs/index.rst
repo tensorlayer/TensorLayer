@@ -57,6 +57,7 @@ method, this part of the documentation is for you.
   modules/activation
   modules/array_ops
   modules/cost
+  modules/dataflow
   modules/prepro
   modules/files
   modules/iterate
