@@ -23,7 +23,9 @@ import mindspore.ops.operations as P
 tl.logging.set_verbosity(tl.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
+
 class CNN(Module):
+
     def __init__(self):
         super(CNN, self).__init__()
         self.conv1 = Conv2d(64, (5, 5), (2, 2), b_init=None, name='conv1', in_channels=3, act=tl.ReLU)
@@ -37,7 +39,6 @@ class CNN(Module):
         self.dense2 = Dense(84, act=tl.ReLU, name='dense2relu', in_channels=120)
         self.dense3 = Dense(10, act=None, name='output', in_channels=84)
 
-
     def forward(self, x):
         z = self.conv1(x)
         z = self.bn(z)
@@ -50,14 +51,16 @@ class CNN(Module):
         z = self.dense3(z)
         return z
 
+
 # training settings
 batch_size = 128
 n_epoch = 500
 shuffle_buffer_size = 128
 
-
 # prepare cifar10 data
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
+
+
 def generator_train():
     inputs = X_train
     targets = y_train
@@ -75,6 +78,7 @@ def generator_test():
     for _input, _target in zip(inputs, targets):
         # yield _input.encode('utf-8'), _target.encode('utf-8')
         yield _input, _target
+
 
 def _map_fn_train(img, target):
     # 1. Randomly crop a [height, width] section of the image.
@@ -142,4 +146,3 @@ for epoch in range(n_epoch):
         print("   train loss: {}".format(train_loss / n_iter))
         print("   train acc:  {}".format(train_acc / n_iter))
         print(" loss ", loss)
-

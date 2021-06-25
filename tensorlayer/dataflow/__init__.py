@@ -4,7 +4,6 @@ from __future__ import absolute_import, division, print_function
 
 from tensorlayer.backend.ops.load_backend import BACKEND
 
-
 if BACKEND == 'tensorflow':
     from .tensorflow_data import *
 

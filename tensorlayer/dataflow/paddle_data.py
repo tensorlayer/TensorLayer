@@ -3,118 +3,96 @@
 
 import numpy as np
 import paddle
-from paddle.io import Dataset, BatchSampler, DataLoader, IterableDataset
+from paddle.io import Dataset as dataset
+from paddle.io import IterableDataset as iterabledataset
+from paddle.io import DataLoader
 __all__ = [
+    'Batch',
     'Concat',
     'FromGenerator',
     'FromSlices',
     'Map',
-    # 'Shuffle',
-    # 'Batch',
+    'Repeat',
+    'Shuffle',
     'Dataloader',
+    'Dataset',
+    'IterableDataset',
 ]
 
 
-def to_list(value):
-    if value is None:
-        return value
-    if isinstance(value, (list, tuple)):
-        return list(value)
-    return [value]
+class Dataset(dataset):
 
-
-class FromGenerator(Dataset):
-
-    def __init__(self, generator, transform = None):
-
-        if not callable(generator):
-            raise TypeError("'generator' must be callable")
-        self.generator = generator()
-        self.transform = transform
-        self.datas = []
-        self.labels = []
-        for data, label in self.generator:
-            self.datas.append(data)
-            self.labels.append(label)
+    def __init__(self):
+        pass
 
     def __getitem__(self, idx):
-        x = self.datas[idx]
-        if self.transform:
-            x = self.transform(x)
-        y = self.labels[idx]
-
-        return x, y
+        raise NotImplementedError("'{}' not implement in class "\
+                "{}".format('__getitem__', self.__class__.__name__))
 
     def __len__(self):
-
-        return len(self.datas)
-
-
-class FromSlices(Dataset):
-
-    def __init__(self, datas, transform = None):
-        self.datas = datas[0]
-        self.labels = datas[1]
-        self.transform = transform
-
-        if len(self.datas) != len(self.labels):
-            raise ValueError('Datas and labels not have same shape of the 1st dimension.')
-
-    def __getitem__(self, idx):
-
-        data = paddle.to_tensor(self.datas[idx], dtype='float32')
-        label = paddle.to_tensor(self.labels[idx], dtype='int64')
-        if self.transform is not None:
-            data = self.transform(data)
-        return data, label
-
-    def __len__(self):
-
-        return len(self.datas)
+        raise NotImplementedError("'{}' not implement in class "\
+                "{}".format('__len__', self.__class__.__name__))
 
 
-class Concat(IterableDataset):
+class IterableDataset(iterabledataset):
 
-    def __init__(self, datasets):
-        self.datasets = list(datasets)
-        assert len(self.datasets) > 0, "input datasets shoule not be empty"
-        for i, dataset in enumerate(self.datasets):
-            assert isinstance(dataset, IterableDataset), \
-                "Concat only support paddle.io.IterableDataset"
+    def __init__(self):
+        pass
 
     def __iter__(self):
-        for dataset in self.datasets:
-            for sample in dataset:
-                yield sample
-
-
-class Map(Dataset):
-
-    def __init__(self, dataset, transform):
-        # self.isDataset = False
-        self.transform = transform
-        self.dataset = dataset
-
+        raise NotImplementedError("'{}' not implement in class "\
+                "{}".format('__iter__', self.__class__.__name__))
 
     def __getitem__(self, idx):
-
-        x = self.dataset[idx][0]
-        # if not isinstance(x, np.ndarray):
-        #     x = np.asarray(x)
-
-        if self.transform:
-            x = self.transform(x)
-        y = self.dataset[idx][1]
-
-
-        return x, y
+        raise RuntimeError("'{}' should not be called for IterableDataset" \
+                "{}".format('__getitem__', self.__class__.__name__))
 
     def __len__(self):
+        raise RuntimeError("'{}' should not be called for IterableDataset" \
+                "{}".format('__len__', self.__class__.__name__))
 
-        return len(self.dataset)
+
+def FromGenerator(generator, output_types=None, column_names=None):
+
+    return generator
 
 
+def FromSlices(datas, column_names=None):
 
-def Dataloader(dataset, batch_size=None, shuffle=False, drop_last=False, prefetch=0, shuffle_buffer_size=0):
+    datas = list(datas)
+    return paddle.io.TensorDataset(datas)
 
-    return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, drop_last=drop_last)
+
+def Concat(datasets):
+
+    return paddle.io.ChainDataset(list(datasets))
+
+
+def Zip(datasets):
+
+    return paddle.io.ComposeDataset(list(datasets))
+
+
+def Dataloader(dataset, batch_size=None, shuffle=False, drop_last=False, shuffle_buffer_size=0):
+
+    return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, drop_last=drop_last, return_list=True)
+
+
+def Batch(dataset, batch_size, drop_last=False):
+
+    raise NotImplementedError('This function not implement in paddle backend.')
+
+
+def Shuffle(dataset, buffer_size, seed=None):
+
+    raise NotImplementedError('This function not implement in paddle backend.')
+
+
+def Repeat(dataset, count=None):
+
+    raise NotImplementedError('This function not implement in paddle backend.')
+
+
+def Map(dataset, map_func, input_columns=None):
+
+    raise NotImplementedError('This function not implement in paddle backend.')
