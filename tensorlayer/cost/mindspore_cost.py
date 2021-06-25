@@ -51,7 +51,7 @@ def softmax_cross_entropy_with_logits(output, target):
 
     """
 
-    outputs = nn.SoftmaxCrossEntropyWithLogits(sparse=True)(output, target)
+    outputs = nn.SoftmaxCrossEntropyWithLogits(sparse=True, reduction='mean')(output, target)
     return outputs
 
 
