@@ -12,7 +12,9 @@ from tensorlayer.layers import (Conv2d, Dense, Flatten, MaxPool2d, BatchNorm2d, 
 
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
 
+
 class Block(Module):
+
     def __init__(self, in_channels):
         super(Block, self).__init__()
         self.dense1 = Dense(in_channels=in_channels, n_units=256)

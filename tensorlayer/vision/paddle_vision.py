@@ -314,8 +314,8 @@ def normalize(image, mean, std, data_format):
         std = np.array(std).reshape((-1, 1, 1))
         mean = np.array(mean).reshape((-1, 1, 1))
     elif data_format == 'HWC':
-        mean = np.array(mean).reshape((1, 1, -1))
-        std = np.array(std).reshape((1, 1, -1))
+        mean = np.array(mean)
+        std = np.array(std)
 
     mean = paddle.to_tensor(mean).astype('float32')
     std = paddle.to_tensor(std).astype('float32')

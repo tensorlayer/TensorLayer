@@ -95,7 +95,7 @@ def to_tensor(image, data_format='HWC'):
     if not (_is_pil_image(image) or _is_numpy_image(image)):
         raise TypeError('image should be PIL Image or ndarray. Got {}'.format(type(image)))
 
-    image = np.asarray(image)
+    image = np.asarray(image).astype('float32')
 
     if image.ndim == 2:
         image = image[:, :, None]
@@ -104,10 +104,8 @@ def to_tensor(image, data_format='HWC'):
 
         image = np.transpose(image, (2, 0, 1))
         image = image / 255.
-        image = ms.Tensor(image, dtype=ms.float32)
     else:
         image = image / 255.
-        image = ms.Tensor(image, dtype=ms.float32)
 
     return image
 
@@ -301,12 +299,10 @@ def padtoboundingbox(image, offset_height, offset_width, target_height, target_w
 
 def normalize(image, mean, std, data_format):
 
-    if not _is_tensor_image(image):
-        if _is_pil_image(image):
-            image = np.asarray(image)
-        image = ms.Tensor(image)
+    if _is_pil_image(image):
+        image = np.asarray(image)
 
-    image = image.astype('float32', copy=False)
+    image = image.astype('float32')
 
     if data_format == 'CHW':
         num_channels = image.shape[0]
@@ -323,17 +319,13 @@ def normalize(image, mean, std, data_format):
     elif isinstance(std, (list, tuple)):
         if len(std) != num_channels:
             raise ValueError("Length of std must be 1 or equal to the number of channels({0}).".format(num_channels))
+    mean = np.array(mean, dtype=image.dtype)
+    std = np.array(std, dtype=image.dtype)
 
     if data_format == 'CHW':
-        std = np.array(std).reshape((-1, 1, 1))
-        mean = np.array(mean).reshape((-1, 1, 1))
+        image = (image - mean[None, None, :]) / std[None, None, :]
     elif data_format == 'HWC':
-        mean = np.array(mean).reshape((1, 1, -1))
-        std = np.array(std).reshape((1, 1, -1))
-
-    std = ms.Tensor(std, dtype=ms.float32)
-    mean = ms.Tensor(mean, dtype=ms.float32)
-    image = (image - mean) / std
+        image = (image - mean[None, None, :]) / std[None, None, :]
 
     return image
 
@@ -343,24 +335,17 @@ def standardize(image):
         Reference to tf.image.per_image_standardization().
         Linearly scales each image in image to have mean 0 and variance 1.
     '''
-    if not _is_tensor_image(image):
-        if _is_pil_image(image):
-            image = np.asarray(image)
-        image = ms.Tensor(image)
 
-    image = image.astype('float32', copy=False)
+    if _is_pil_image(image):
+        image = np.asarray(image)
 
-    num_pixels = ms.Tensor(image.size).astype('float32', copy=False)
-    image_mean_ops = ms.ops.ReduceMean(keep_dims=False)
-    image_mean = image_mean_ops(image)
-    image_mean = image_mean.reshape((1, 1, 1))
-    stddev = std(image)
-    stddev = stddev.reshape((1, 1, 1))
-    sqrt = P.Sqrt()
-    min_stddev = 1.0 / sqrt(num_pixels)
-    min_stddev = min_stddev.reshape((1, 1, 1))
-    std_max = P.Maximum()
-    adjusted_stddev = std_max(stddev, min_stddev)
+    image = image.astype('float32')
+
+    num_pixels = image.size
+    image_mean = np.mean(image, keep_dims=False)
+    stddev = np.std(image, keep_dims=False)
+    min_stddev = 1.0 / np.sqrt(num_pixels)
+    adjusted_stddev = np.maximum(stddev, min_stddev)
 
     return (image - image_mean) / adjusted_stddev
 
