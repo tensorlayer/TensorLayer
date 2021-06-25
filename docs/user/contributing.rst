@@ -4,8 +4,8 @@
 Contributing
 ===============
 
-TensorLayer 2.0 is a major ongoing research project in CFCS, Peking University, the first version was established at Imperial College London in 2016. The goal of the project is to develop a compositional language while complex learning systems
-can be built through composition of neural network modules.
+TensorLayer 3.0 is a major ongoing research project in Peking University and Pengcheng Laboratory, the first version was established at Imperial College London in 2016. The goal of the project is to develop a compositional languagea that is compatible with multiple deep learning frameworks,
+while complex learning systems can be built through composition of neural network modules.
 
 Numerous contributors come from various horizons such as: Imperial College London, Tsinghua University, Carnegie Mellon University, Stanford, University of Technology of Compiegne, Google, Microsoft, Bloomberg and etc.
 
@@ -27,9 +27,9 @@ The TensorLayer project was started by `Hao Dong <https://zsdonghao.github.io>`_
 
 For TensorLayer 3.x, it is now actively developing and maintaining by the following people *(in alphabetical order)*:
 
-- **Cheng Lai** (`@Laicheng0830 <https://github.com/Laicheng0830>`_) - `<https://github.com/Laicheng0830>`_
+- **Cheng Lai** (`@Laicheng0830 <https://github.com/Laicheng0830>`_) - `<https://Laicheng0830.github.io>`_
 - **Hao Dong** (`@zsdonghao <https://github.com/zsdonghao>`_) - `<https://zsdonghao.github.io>`_
-- **Jiarong Han** (`@hanjr92 <https://github.com/hanjr92>`_) - `<https://github.com/hanjr92>`_
+- **Jiarong Han** (`@hanjr92 <https://github.com/hanjr92>`_) - `<https://hanjr92.github.io>`_
 
 For TensorLayer 2.x, it is now actively developing and maintaining by the following people who has more than 50 contributions:
 
