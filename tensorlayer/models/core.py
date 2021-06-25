@@ -30,9 +30,9 @@ class Model:
         The training or testing network.
     loss_fn : function
         Objective function
-    optimizer : function
+    optimizer : class
         Optimizer for updating the weights
-    metrics : function
+    metrics : class
         Dict or set of metrics to be evaluated by the model during
 
     Methods
@@ -65,7 +65,7 @@ class Model:
         >>>         return out
         >>>
         >>> net = Net()
-        >>> loss = tl.cost.cross_entropy
+        >>> loss = tl.cost.softmax_cross_entropy_with_logits
         >>> optim = tl.optimizers.Momentum(params=net.trainable_weights, learning_rate=0.1, momentum=0.9)
         >>> model = Model(net, loss_fn=loss, optimizer=optim, metrics=None)
         >>> dataset = get_dataset()
@@ -150,7 +150,7 @@ class Model:
         >>> net = vgg16()
         >>> optimizer = tl.optimizers.Adam(learning_rate=0.001)
         >>> metric = tl.metric.Accuracy()
-        >>> model = tl.models.Model(network=net, loss_fn=tl.cost.cross_entropy, optimizer=optimizer, metrics=metric)
+        >>> model = tl.models.Model(network=net, loss_fn=tl.cost.softmax_cross_entropy_with_logits, optimizer=optimizer, metrics=metric)
         >>> model.save_weights('./model.h5')
         ...
         >>> model.load_weights('./model.h5')
@@ -195,7 +195,7 @@ class Model:
         >>> net = vgg16()
         >>> optimizer = tl.optimizers.Adam(learning_rate=0.001)
         >>> metric = tl.metric.Accuracy()
-        >>> model = tl.models.Model(network=net, loss_fn=tl.cost.cross_entropy, optimizer=optimizer, metrics=metric)
+        >>> model = tl.models.Model(network=net, loss_fn=tl.cost.softmax_cross_entropy_with_logits, optimizer=optimizer, metrics=metric)
         >>> model.load_weights('./model_graph.h5', in_order=False, skip=True) # load weights by name, skipping mismatch
         >>> model.load_weights('./model_eager.h5') # load sequentially
 

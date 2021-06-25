@@ -338,7 +338,11 @@ class Dropout(object):
         self.seed = seed
 
     def __call__(self, inputs):
-        raise NotImplementedError
+        output = F.dropout(
+            inputs,
+            p=self.keep,
+            mode='upscale_in_train')
+        return output
 
 
 class BiasAdd(object):
