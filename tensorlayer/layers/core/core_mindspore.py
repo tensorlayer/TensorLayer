@@ -6,6 +6,14 @@ from mindspore.nn import Cell
 import tensorlayer as tl
 from collections import OrderedDict
 
+from mindspore import log as logger
+import inspect
+from mindspore import context
+import numpy
+import mindspore as ms
+from mindspore.common.api import _pynative_exec
+from mindspore.common.parameter import Parameter
+
 __all__ = ['Module', 'SequentialLayer']
 
 _global_layer_name_dict = {}  # TODO: better implementation?
@@ -118,6 +126,61 @@ class Module(Cell):
         else:
             shape_mem = tl.get_tensor_shape(tensors)
         return shape_mem
+
+    def __call__(self, *inputs, **kwargs):
+        if self.__class__.construct is Cell.construct:
+            logger.warning(
+                f"The '{self.__class__}' does not override the method 'construct', "
+                f"will call the super class(Cell) 'construct'."
+            )
+        if kwargs:
+            bound_args = inspect.signature(self.construct).bind(*inputs, **kwargs)
+            inputs = bound_args.args
+            kwargs = bound_args.kwargs
+
+        if context.get_context("mode") == context.GRAPH_MODE:
+            raise NotImplemented(
+                "GRAPH MODE is not supported, please select PYNATIVE MODE."
+            )
+
+        # if context.get_context("mode") == context.GRAPH_MODE:
+        #     if kwargs:
+        #         raise ValueError("For 'graph' mode, the outermost network does not support passing "
+        #                          "variable key-value pair parameters.")
+        #     if self.enable_hook:
+        #         raise ValueError("The graph mode does not support hook function.")
+        #     out = self.compile_and_run(*inputs)
+        #     return out
+
+        self.do_parameter_broadcast()
+        for item in inputs:
+            if isinstance(item, numpy.ndarray):
+                raise TypeError("cell inputs should not be numpy array.")
+        origin_grad = []
+        if self.requires_grad is True:
+            _pynative_exec.set_grad_flag(True)
+            _pynative_exec.new_graph(self, *inputs, **kwargs)
+            for cell in self.cells():
+                origin_grad.append(cell.requires_grad)
+                cell.set_grad(True)
+        else:
+            _pynative_exec.set_grad_flag(False)
+        cast_inputs = list()
+        if hasattr(self, "_mindspore_flags"):
+            if self._mindspore_flags.get('fp16'):
+                cast_inputs = self._cast_mixed_precision_inputs(inputs, ms.float16)
+            if self._mindspore_flags.get('fp32'):
+                cast_inputs = self._cast_mixed_precision_inputs(inputs, ms.float32)
+        if not cast_inputs:
+            cast_inputs = inputs
+        output = self.run_construct(cast_inputs, kwargs)
+        if isinstance(output, Parameter):
+            output = output.data
+        if self.requires_grad is True:
+            _pynative_exec.end_graph(self, output, *inputs, **kwargs)
+            for i, cell in enumerate(self.cells()):
+                cell.set_grad(origin_grad[i])
+        return output
 
     def _add_node(self, input_tensors, output_tensors):
         """Add a LayerNode for this layer given input_tensors, output_tensors.

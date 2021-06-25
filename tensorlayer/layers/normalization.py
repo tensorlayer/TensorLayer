@@ -21,6 +21,7 @@ __all__ = [
 #     'SwitchNorm',
 # ]
 
+
 class BatchNorm(Module):
     """
     The :class:`BatchNorm` is a batch normalization layer for both fully-connected and convolution outputs.

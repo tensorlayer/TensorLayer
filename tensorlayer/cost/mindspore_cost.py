@@ -25,6 +25,7 @@ __all__ = [
     'maxnorm_i_regularizer',
 ]
 
+
 def softmax_cross_entropy_with_logits(output, target):
     """Softmax cross-entropy operation, returns the TensorFlow expression of cross-entropy for two distributions,
     it implements softmax internally. See ``tf.ops.sparse_softmax_cross_entropy_with_logits``.
