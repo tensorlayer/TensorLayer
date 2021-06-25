@@ -68,7 +68,7 @@ print_freq = 2
 
 
 train_weights = MLP.trainable_weights
-optimizer = tl.optimizers.Momentum(0.05, 0.9)
+optimizer = tl.optimizers.Momentum(0.001, 0.9)
 metric = tl.metric.Accuracy()
 train_dataset = mnistdataset(data = X_train, label = y_train ,transform = transform)
 train_dataset = tl.dataflow.FromGenerator(train_dataset, output_types=[tl.float32, tl.int64], column_names=['data', 'label'])
