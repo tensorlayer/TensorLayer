@@ -99,12 +99,12 @@ pip3 install --upgrade tensorlayer[all]              # all additional dependenci
 pip3 install --upgrade tensorlayer[extra]            # only the `extra` dependencies
 pip3 install --upgrade tensorlayer[contrib_loggers]  # only the `contrib_loggers` dependencies
 ```
-If you want to use mindspore backend, you should install mindspore>=1.2.0
+If you want to use mindspore backend, you should install mindspore>=1.2.1
 ```bash
 pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/gpu/ubuntu_x86/cuda-10.1/mindspore_gpu-1.2.1-cp37-cp37m-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-If you want to use paddlepaddle backend, you should install paddlepaddle>=2.0
+If you want to use paddlepaddle backend, you should install paddlepaddle>=2.1.1
 ```bash
 python -m pip install paddlepaddle -i https://mirror.baidu.com/pypi/simple
 ```

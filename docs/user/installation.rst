@@ -29,14 +29,14 @@ TensorLayer supports multiple deep learning backends, default TensorFlow as back
 The installation instructions of TensorFlow are written to be very detailed on `TensorFlow`_  website.
 However, there are something need to be considered. For example, `TensorFlow`_ officially supports GPU acceleration for Linux, Mac OX and Windows at present. For ARM processor architecture, you need to install TensorFlow from source.
 
-If you want to use mindspore backend, you should install mindspore==1.2.0.
+If you want to use mindspore backend, you should install mindspore==1.2.1.
 
 .. code-block:: bash
 
   pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/1.2.1/MindSpore/gpu/ubuntu_x86/cuda-10.1/mindspore_gpu-1.2.1-cp37-cp37m-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 
-If you want to use paddlepaddle backend, you should install paddlepaddle==2.0.
+If you want to use paddlepaddle backend, you should install paddlepaddle>=2.1.1
 
 .. code-block:: bash
 
