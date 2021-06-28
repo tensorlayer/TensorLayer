@@ -1,5 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+import os
+os.environ['TL_BACKEND'] = 'mindspore'
 
 import mindspore.ops.operations as P
 from mindspore.ops import composite as C

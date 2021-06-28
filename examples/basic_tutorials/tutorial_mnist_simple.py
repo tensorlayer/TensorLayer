@@ -3,30 +3,27 @@
 
 # The same set of code can switch the backend with one line
 import os
-os.environ['TL_BACKEND'] = 'tensorflow'
+# os.environ['TL_BACKEND'] = 'tensorflow'
 # os.environ['TL_BACKEND'] = 'mindspore'
-# os.environ['TL_BACKEND'] = 'paddle'
+os.environ['TL_BACKEND'] = 'paddle'
 
 import tensorlayer as tl
 from tensorlayer.layers import Module
 from tensorlayer.layers import Dense, Dropout, Flatten
 from tensorlayer.dataflow import Dataset
-from tensorlayer.vision.transforms import Normalize, Compose
 
-X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
 
-transform = Compose([Normalize(mean=[127.5/255.], std=[127.5/255.], data_format='HWC')])
+X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
+
 
 class mnistdataset(Dataset):
 
-    def __init__(self, data = X_train, label = y_train ,transform = transform):
+    def __init__(self, data = X_train, label = y_train):
         self.data = data
         self.label = label
-        self.transform = transform
 
     def __getitem__(self, index):
         data = self.data[index].astype('float32')
-        data = self.transform(data)
         label = self.label[index].astype('int64')
 
         return data, label
@@ -46,11 +43,9 @@ class CustomModel(Module):
         self.dense2 = Dense(n_units=800, act=tl.ReLU, in_channels=800)
         self.dropout3 = Dropout(keep=0.8)
         self.dense3 = Dense(n_units=10, act=tl.ReLU, in_channels=800)
-        self.flatten = Flatten()
 
     def forward(self, x, foo=None):
-        z = self.flatten(x)
-        z = self.dropout1(z)
+        z = self.dropout1(x)
         z = self.dense1(z)
         z = self.dropout2(z)
         z = self.dense2(z)
@@ -68,9 +63,9 @@ print_freq = 2
 
 
 train_weights = MLP.trainable_weights
-optimizer = tl.optimizers.Momentum(0.001, 0.9)
+optimizer = tl.optimizers.Momentum(0.05, 0.9)
 metric = tl.metric.Accuracy()
-train_dataset = mnistdataset(data = X_train, label = y_train ,transform = transform)
+train_dataset = mnistdataset(data = X_train, label = y_train)
 train_dataset = tl.dataflow.FromGenerator(train_dataset, output_types=[tl.float32, tl.int64], column_names=['data', 'label'])
 train_loader = tl.dataflow.Dataloader(train_dataset, batch_size=batch_size, shuffle=True)
 

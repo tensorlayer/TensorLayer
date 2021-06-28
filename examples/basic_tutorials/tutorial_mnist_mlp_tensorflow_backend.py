@@ -1,6 +1,8 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 # The tensorlayer and tensorflow operators can be mixed
+import os
+os.environ['TL_BACKEND'] = 'tensorflow'
 
 import numpy as np
 import time

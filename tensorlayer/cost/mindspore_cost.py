@@ -26,33 +26,7 @@ __all__ = [
 ]
 
 
-def softmax_cross_entropy_with_logits(output, target):
-    """Softmax cross-entropy operation, returns the TensorFlow expression of cross-entropy for two distributions,
-    it implements softmax internally. See ``tf.ops.sparse_softmax_cross_entropy_with_logits``.
-
-    Parameters
-    ----------
-    output : Tensor
-        A batch of distribution with shape: [batch_size, num of classes].
-    target : Tensor
-        A batch of index with shape: [batch_size, ].
-    name : string
-        Name of this loss.
-
-    Examples
-    --------
-    >>> import tensorlayer as tl
-    >>> ce = tl.cost.softmax_cross_entropy_with_logits(y_logits, y_target_logits, 'my_loss')
-
-    References
-    -----------
-    - About cross-entropy: `<https://en.wikipedia.org/wiki/Cross_entropy>`__.
-    - The code is borrowed from: `<https://en.wikipedia.org/wiki/Cross_entropy>`__.
-
-    """
-
-    outputs = nn.SoftmaxCrossEntropyWithLogits(sparse=True, reduction='mean')(output, target)
-    return outputs
+softmax_cross_entropy_with_logits = nn.SoftmaxCrossEntropyWithLogits(sparse=True, reduction='mean')
 
 
 def sigmoid_cross_entropy(output, target, name=None):

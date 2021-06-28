@@ -1,5 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+import os
+os.environ['TL_BACKEND'] = 'tensorflow'
 
 import time
 import numpy as np

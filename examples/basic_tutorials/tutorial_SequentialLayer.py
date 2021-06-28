@@ -1,5 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+import os
+os.environ['TL_BACKEND'] = 'tensorflow'
 
 from tensorlayer.layers import SequentialLayer
 from tensorlayer.layers import Dense
