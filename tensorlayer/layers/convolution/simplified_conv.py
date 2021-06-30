@@ -188,7 +188,7 @@ class Conv2d(Module):
     --------
     With TensorLayer
 
-    >>> net = tl.layers.Input([8, 3, 400, 400], name='input')
+    >>> net = tl.layers.Input([8, 400, 400, 3], name='input')
     >>> conv2d = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), b_init=None, in_channels=3, name='conv2d_1')
     >>> print(conv2d)
     >>> tensor = tl.layers.Conv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tl.ReLU, name='conv2d_2')(net)
@@ -630,7 +630,7 @@ class DeConv2d(Module):
     --------
     With TensorLayer
 
-    >>> net = tl.layers.Input([8, 3, 400, 400], name='input')
+    >>> net = tl.layers.Input([8, 400, 400, 3], name='input')
     >>> conv2d_transpose = tl.layers.DeConv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), b_init=None, in_channels=3, name='conv2d_transpose_1')
     >>> print(conv2d_transpose)
     >>> tensor = tl.layers.DeConv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tl.ReLU, name='conv2d_transpose_2')(net)

@@ -431,16 +431,22 @@ class Conv2D(object):
 
     def __init__(self, strides, padding, data_format='NHWC', dilations=None, out_channel=None, k_size=None):
         self.data_format, self.padding = preprocess_2d_format(data_format, padding)
-        self.ksize = k_size[0]
         if self.data_format is 'NHWC':
-            self.dg_stride = strides[1]
-            self.dg_dilation = dilations[1]
+            self._stride = (strides[1], strides[2])
+            self._dilation = (dilations[1], dilations[2])
         elif self.data_format is 'NCHW':
-            self.dg_stride = strides[2]
-            self.dg_dilation = dilations[2]
+            self._stride = (strides[2], strides[3])
+            self._dilation = (dilations[2], dilations[3])
+
 
     def __call__(self, inputs, filters):
-        raise NotImplementedError
+        outputs = F.conv2d(x=inputs,
+                           weight=filters,
+                           stride=self._stride,
+                           dilation=self._dilation,
+                           padding=self.padding,
+                           data_format=self.data_format)
+        return outputs
 
 
 def conv2d(input, filters, strides, padding, data_format='NCHW', dilations=None):
@@ -468,7 +474,20 @@ def conv2d(input, filters, strides, padding, data_format='NCHW', dilations=None)
     -------
         A Tensor. Has the same type as input.
     """
-    raise NotImplementedError
+    data_format, padding = preprocess_2d_format(data_format, padding)
+    if data_format is 'NHWC':
+        _stride = (strides[1], strides[2])
+        _dilation = (dilations[1], dilations[2])
+    elif data_format is 'NCHW':
+        _stride = (strides[2], strides[3])
+        _dilation = (dilations[2], dilations[3])
+    outputs = F.conv2d(x=input,
+                       weight=filters,
+                       stride=_stride,
+                       dilation=_dilation,
+                       padding=padding,
+                       data_format=data_format)
+    return outputs
 
 
 class Conv3D(object):
@@ -577,10 +596,18 @@ class MaxPool(object):
     def __init__(self, ksize, strides, padding, data_format=None):
         self.data_format, self.padding = preprocess_2d_format(data_format, padding)
         self.ksize = ksize
-        self.strides = strides
+        if self.data_format is 'NHWC':
+            self._stride = (strides[1], strides[2])
+        elif self.data_format is 'NCHW':
+            self._stride = (strides[2], strides[3])
 
     def __call__(self, inputs):
-        raise NotImplementedError
+        outputs = F.max_pool2d(x=inputs,
+                               kernel_size=self.ksize,
+                               stride=self._stride,
+                               padding=self.padding,
+                               data_format=self.data_format)
+        return outputs
 
 
 def max_pool(input, ksize, strides, padding, data_format=None):
@@ -951,7 +978,7 @@ class BatchNorm(object):
         pass
 
     def __call__(self, *args, **kwargs):
-        raise NotImplementedError
+        pd.nn.BatchNorm2D
 
 
 class GroupConv2D(object):

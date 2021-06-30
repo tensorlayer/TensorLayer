@@ -11,7 +11,7 @@ we can. So we encourage you to use TensorFlow's function, , see `TensorFlow API 
 
 .. autosummary::
 
-   cross_entropy
+   softmax_cross_entropy_with_logits
    sigmoid_cross_entropy
    binary_cross_entropy
    mean_squared_error
@@ -28,12 +28,11 @@ we can. So we encourage you to use TensorFlow's function, , see `TensorFlow API 
    maxnorm_regularizer
    maxnorm_o_regularizer
    maxnorm_i_regularizer
-   huber_loss
 
 
 Softmax cross entropy
 ----------------------
-.. autofunction:: cross_entropy
+.. autofunction:: softmax_cross_entropy_with_logits
 
 Sigmoid cross entropy
 ----------------------
@@ -94,7 +93,3 @@ Special
 .. autofunction:: lo_regularizer
 .. autofunction:: maxnorm_o_regularizer
 .. autofunction:: maxnorm_i_regularizer
-
-Huber Loss
-^^^^^^^^^^
-.. autofunction:: huber_loss

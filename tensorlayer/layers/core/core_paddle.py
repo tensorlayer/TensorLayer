@@ -191,6 +191,18 @@ class Module(Layer):
             return outputs
 
     def _get_weights(self, var_name, shape, init=None, trainable=True, transposed=None):
+        # TODO 2D mindspore weights shape : [out_channel, in_channel, kernel_h, kernel_w]
+        # TODO 2D mindspore transposed shape [in_channel, out_channel, kernel_h, kernel_w]
+        if len(shape) == 3:
+            shape = shape[::-1]
+        if len(shape) == 4:
+            if not transposed and self.data_format == 'NHWC':
+                shape = (shape[3], shape[0], shape[1], shape[2])
+            else:
+                shape = (shape[3], shape[2], shape[0], shape[1])
+        if len(shape) == 5:
+            shape = (shape[4], shape[3], shape[0], shape[1], shape[2])
+
         if var_name in ["filters", "weights"]:
             w_tmp = self.create_parameter(shape=shape, attr=init, is_bias=False)
         elif var_name in ["biases"]:

@@ -7,6 +7,7 @@ import sys
 
 BACKEND = 'tensorflow'
 # BACKEND = 'mindspore'
+# BACKEND = 'paddle'
 
 # Check for backend.json files
 tl_backend_dir = os.path.expanduser('~')

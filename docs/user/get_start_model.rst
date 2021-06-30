@@ -120,7 +120,7 @@ Switching train/test modes
   ... # testing code here
   
   # method 2: Using packaged training modules
-  model = tl.models.Model(network=MLP, loss_fn=tl.cost.cross_entropy, optimizer=optimizer)
+  model = tl.models.Model(network=MLP, loss_fn=tl.cost.softmax_cross_entropy_with_logits, optimizer=optimizer)
   model.train(n_epoch=n_epoch, train_dataset=train_ds)
 
 Reuse weights
@@ -192,13 +192,13 @@ Save weights only
   MLP.save_weights('./model_weights.npz') # by default, file will be in hdf5 format
   MLP.load_weights('./model_weights.npz')
 
-Save model architecture and weights (optional)
+Save model weights (optional)
 -----------------------------------------------
 
 .. code-block:: python
 
   # When using packaged training modules. Saving and loading the model can be done as follows
-  model = tl.models.Model(network=MLP, loss_fn=tl.cost.cross_entropy, optimizer=optimizer)
+  model = tl.models.Model(network=MLP, loss_fn=tl.cost.softmax_cross_entropy_with_logits, optimizer=optimizer)
   model.train(n_epoch=n_epoch, train_dataset=train_ds)
   model.save_weights('./model.npz', format='npz_dict')
   model.load_weights('./model.npz', format='npz_dict')

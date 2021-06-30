@@ -5,7 +5,7 @@
 #     'Initializer', 'Zeros', 'Ones', 'Constant', 'RandomUniform', 'RandomNormal', 'TruncatedNormal',
 #     'deconv2d_bilinear_upsampling_initializer', 'He_Normal'
 # ]
-
+from .load_initializers_backend import Initializer
 from .load_initializers_backend import Zeros
 from .load_initializers_backend import Ones
 from .load_initializers_backend import Constant
