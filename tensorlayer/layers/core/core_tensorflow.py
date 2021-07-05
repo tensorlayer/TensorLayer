@@ -93,9 +93,9 @@ class Module(object):
         self._nodes_fixed = False
 
         # Layer weight state
-        self._all_weights = []
-        self._trainable_weights = []
-        self._nontrainable_weights = []
+        self._all_weights = None
+        self._trainable_weights = None
+        self._nontrainable_weights = None
 
         # layer forward  state
         self._forward_state = False
@@ -333,15 +333,19 @@ class Module(object):
 
         """
 
-        self.get_weights()
-        layers = self.layers_and_names(name_prefix='')
-        for layer_name, layer in layers:
-            params = layer._params.items()
-            params_status = layer._params_status.items()
-            params_zip = zip(params, params_status)
-            for params, params_status in params_zip:
-                if params_status[1] ==True:
-                    self._trainable_weights.append(params[1])
+        if self._trainable_weights is not None and len(self._trainable_weights) > 0:
+            # self._trainable_weights already extracted, so do nothing
+            pass
+        else:
+            self._trainable_weights = []
+            layers = self.layers_and_names(name_prefix='')
+            for layer_name, layer in layers:
+                params = layer._params.items()
+                params_status = layer._params_status.items()
+                params_zip = zip(params, params_status)
+                for params, params_status in params_zip:
+                    if params_status[1] ==True:
+                        self._trainable_weights.append(params[1])
         return self._trainable_weights
 
     @property
@@ -352,14 +356,19 @@ class Module(object):
 
         """
 
-        layers = self.layers_and_names(name_prefix='')
-        for layer_name, layer in layers:
-            params = layer._params.items()
-            params_status = layer._params_status.items()
-            params_zip = zip(params, params_status)
-            for params, params_status in params_zip:
-                if params_status[1] == False:
-                    self._nontrainable_weights.append(params[1])
+        if self._nontrainable_weights is not None and len(self._nontrainable_weights) > 0:
+            # self._nontrainable_weights already extracted, so do nothing
+            pass
+        else:
+            self._nontrainable_weights = []
+            layers = self.layers_and_names(name_prefix='')
+            for layer_name, layer in layers:
+                params = layer._params.items()
+                params_status = layer._params_status.items()
+                params_zip = zip(params, params_status)
+                for params, params_status in params_zip:
+                    if params_status[1] == False:
+                        self._nontrainable_weights.append(params[1])
         return self._nontrainable_weights
 
     @property
@@ -370,11 +379,16 @@ class Module(object):
 
         """
 
-        layers = self.layers_and_names(name_prefix='')
-        for layer_name, layer in layers:
-            params = layer._params.items()
-            for par, val in params:
-                self._all_weights.append(val)
+        if self._all_weights is not None and len(self._all_weights) > 0:
+            # self._all_weights already extracted, so do nothing
+            pass
+        else:
+            self._all_weights = []
+            layers = self.layers_and_names(name_prefix='')
+            for layer_name, layer in layers:
+                params = layer._params.items()
+                for par, val in params:
+                    self._all_weights.append(val)
         return self._all_weights
 
     def get_weights(self, expand=True):
