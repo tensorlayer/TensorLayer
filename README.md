@@ -169,7 +169,7 @@ We suggest users to report bugs using Github issues. Users can also discuss how 
 
 # Citing TensorLayer
 
-If you find TensorLayer useful for your project, please cite the following paper：
+If you find TensorLayer useful for your project, please cite the following papers：
 
 ```
 @article{tensorlayer2017,
@@ -178,5 +178,14 @@ If you find TensorLayer useful for your project, please cite the following paper
     title   = {{TensorLayer: A Versatile Library for Efficient Deep Learning Development}},
     url     = {http://tensorlayer.org},
     year    = {2017}
+}
+
+@inproceedings{tensorlayer2021,
+  title={Tensorlayer 3.0: A Deep Learning Library Compatible With Multiple Backends},
+  author={Lai, Cheng and Han, Jiarong and Dong, Hao},
+  booktitle={2021 IEEE International Conference on Multimedia \& Expo Workshops (ICMEW)},
+  pages={1--3},
+  year={2021},
+  organization={IEEE}
 }
 ```
