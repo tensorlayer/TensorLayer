@@ -678,10 +678,9 @@ class LayerList(Module):
     Examples:
 
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, args):
         super(LayerList, self).__init__()
-        if len(args) == 1:
-            self.extend(args[0])
+        self.extend(args)
 
     def __getitem__(self, index):
         if isinstance(index, slice):
