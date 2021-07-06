@@ -9,7 +9,5 @@ elif BACKEND == 'tensorflow':
     from .core_tensorflow import *
 elif BACKEND == 'paddle':
     from .core_paddle import *
-elif BACKEND == 'dragon':
-    from .core_dragon import *
 else:
     raise ("Unsupported backend:", BACKEND)

@@ -416,13 +416,6 @@ def TimeDistributedLayer(*args, **kwargs):
     raise NonExistingLayerError("TimeDistributedLayer is removed for TF 2.0, please use eager mode instead." + __log__)
 
 
-__all__ += ['LayerList']
-
-
-def LayerList(*args, **kwargs):
-    raise NonExistingLayerError("LayerList(list)(input_data) --> SequentialLayer(list)(input_data)" + __log__)
-
-
 __all__ += ['ModelLayer']
 
 

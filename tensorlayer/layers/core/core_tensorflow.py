@@ -9,7 +9,7 @@ import tensorflow as tf
 from tensorlayer.layers.utils import (get_variable_with_initializer)
 from tensorlayer import logging
 
-__all__ = ['Module', 'SequentialLayer']
+__all__ = ['Module', 'SequentialLayer', 'LayerList']
 
 _global_layer_name_dict = {}
 Parameter_ = tf.Variable
@@ -606,19 +606,19 @@ class SequentialLayer(Module):
     def __getitem__(self, index):
         if isinstance(index, slice):
             return self.__class__(OrderedDict(list(self._layers.items())[index]))
-        index = self._valid_index(len(self), index)
+        index = _valid_index(len(self), index)
         return list(self._layers.values())[index]
 
     def __setitem__(self, index, layer):
-        if self._valid_module(layer):
-            index = self._valid_index(len(self), index)
+        if _valid_module(layer):
+            index = _valid_index(len(self), index)
             key = list(self._layers.keys())[index]
             self._layers[key] = layer
             self.layer_list = list(self._layers.values())
 
     def __delitem__(self, index):
         if isinstance(index, int):
-            index = self._valid_index(len(self), index)
+            index = _valid_index(len(self), index)
             key = list(self._layers.keys())[index]
             del self._layers[key]
         elif isinstance(index, slice):
@@ -633,7 +633,7 @@ class SequentialLayer(Module):
         return len(self._layers)
 
     def append(self, layer):
-        if self._valid_module(layer):
+        if _valid_module(layer):
             self._layers[str(len(self))] = layer
         self.layer_list = list(self._layers.values())
         return self
@@ -646,16 +646,133 @@ class SequentialLayer(Module):
             input_data = layer(input_data)
         return input_data
 
-    def _valid_index(self, layer_num, index):
-        if not isinstance(index, int):
-            raise TypeError("Index {} is not int type")
-        if not -layer_num <= index < layer_num:
-            raise IndexError(
-                "Index should be a number in range [{}, {}), but got {}".format(-layer_num, layer_num, index)
-            )
-        return index % layer_num
 
-    def _valid_module(self, layer):
-        if issubclass(layer.__class__, Module):
-            return True
-        raise TypeError('Module {} is not subclass of Module'.format(layer))
+class LayerList(Module):
+    """
+    Holds Modules in a list.
+
+    LayerList can be used like a regular Python list, support
+    '__getitem__', '__setitem__', '__delitem__', '__len__', '__iter__' and '__iadd__',
+    but module it contains are properly registered, and will be visible by all Modules methods.
+
+    Parameters
+    ----------
+        args : list
+            List of subclass of Module.
+    Methods
+    ---------
+    __init__()
+        Initializing the Layer.
+    insert()
+        Inserts a given layer before a given index in the list.
+    extend()
+        Appends layers from a Python iterable to the end of the list.
+    append()
+        Appends a given layer to the end of the list.
+
+    Examples
+    ---------
+    Args:
+        args (list, optional): List of subclass of Module.
+
+    Examples:
+
+    """
+    def __init__(self, *args, **kwargs):
+        super(LayerList, self).__init__()
+        if len(args) == 1:
+            self.extend(args[0])
+
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            return self.__class__(list(self._layers.values())[index])
+        if isinstance(index, int):
+            index = _valid_index(len(self), index)
+            return self._layers[str(index)]
+        raise TypeError('Index {} is not int type or slice type'.format(index))
+
+    def __setitem__(self, index, layer):
+        if not isinstance(index, int) and _valid_module(layer):
+            raise TypeError('Index {} is not int type'.format(index))
+        index = _valid_index(len(self), index)
+        self._layers[str(index)] = layer
+
+    def __delitem__(self, index):
+        if isinstance(index, int):
+            index = _valid_index(len(self), index)
+            del self._layers[str(index)]
+        elif isinstance(index, slice):
+            keys = list(self._layers.keys())[index]
+            for key in keys:
+                del self._layers[key]
+        else:
+            raise TypeError('Index {} is not int type or slice type'.format(index))
+        temp_dict = OrderedDict()
+        for idx, layer in enumerate(self._layers.values()):
+            temp_dict[str(idx)] = layer
+        self._layers = temp_dict
+
+    def __len__(self):
+        return len(self._layers)
+
+    def __iter__(self):
+        return iter(self._layers.values())
+
+    def __iadd__(self, layers):
+        self.extend(layers)
+        return self
+
+    def insert(self, index, layer):
+        """
+            Inserts a given layer before a given index in the list.
+
+        """
+
+        idx = _valid_index(len(self), index)
+        _valid_module(layer)
+        length = len(self)
+        while length > idx:
+            self._layers[str(length)] = self._layers[str(length - 1)]
+            length -= 1
+        self._layers[str(idx)] = layer
+
+    def extend(self, layers):
+        """
+            Appends layers from a Python iterable to the end of the list.
+
+        """
+
+        if not isinstance(layers, list):
+            raise TypeError('Modules {} should be list of sublayers'.format(layers))
+        for layer in layers:
+            if _valid_module(layer):
+                self._layers[str(len(self))] = layer
+        return self
+
+    def append(self, layer):
+        """
+            Appends a given layer to the end of the list.
+
+        """
+
+        if _valid_module(layer):
+            self._layers[str(len(self))] = layer
+
+    def forward(self, *inputs):
+        raise NotImplementedError
+
+
+def _valid_index(layer_num, index):
+    if not isinstance(index, int):
+        raise TypeError("Index {} is not int type")
+    if not -layer_num <= index < layer_num:
+        raise IndexError(
+            "Index should be a number in range [{}, {}), but got {}".format(-layer_num, layer_num, index)
+        )
+    return index % layer_num
+
+
+def _valid_module(layer):
+    if issubclass(layer.__class__, Module):
+        return True
+    raise TypeError('Module {} is not subclass of Module'.format(layer))

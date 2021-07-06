@@ -9,9 +9,55 @@ from paddle.fluid.initializer import MSRAInitializer
 import paddle
 
 __all__ = [
-    'Zeros', 'Ones', 'Constant', 'RandomUniform', 'RandomNormal', 'TruncatedNormal',
+    'Initializer', 'Zeros', 'Ones', 'Constant', 'RandomUniform', 'RandomNormal', 'TruncatedNormal',
     'deconv2d_bilinear_upsampling_initializer', 'HeNormal'
 ]
+
+class Initializer(object):
+    """Initializer base class: all initializers inherit from this class.
+    """
+
+    def __call__(self, shape, dtype=None):
+        """Returns a tensor object initialized as specified by the initializer.
+
+        Parameters
+        ----------
+        shape : tuple of int.
+            The shape of the tensor.
+        dtype : Optional dtype of the tensor.
+            If not provided will return tensor of `tl.float32`.
+
+        Returns
+        -------
+
+        """
+        raise NotImplementedError
+
+    def get_config(self):
+        """Returns the configuration of the initializer as a JSON-serializable dict.
+
+        Returns
+        -------
+            A JSON-serializable Python dict.
+        """
+        return {}
+
+    @classmethod
+    def from_config(cls, config):
+        """Instantiates an initializer from a configuration dictionary.
+
+        Parameters
+        ----------
+        config : A python dictionary.
+            It will typically be the output of `get_config`.
+
+        Returns
+        -------
+            An Initializer instance.
+        """
+        if 'dtype' in config:
+            config.pop('dtype')
+        return cls(**config)
 
 
 class Zeros(ConstantInitializer):
