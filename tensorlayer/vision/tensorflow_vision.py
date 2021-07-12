@@ -642,7 +642,8 @@ def normalize(image, mean, std, data_format):
         A Tensor with the same shape and dtype as image.
     -------
     '''
-    image = ops.convert_to_tensor(image, dtype=tf.float32)
+    image = ops.convert_to_tensor(image, name='image')
+    image = math_ops.cast(image, dtype=tf.float32)
     image = _AssertAtLeast3DImage(image)
 
     if data_format == 'CHW':
@@ -668,12 +669,13 @@ def normalize(image, mean, std, data_format):
         mean = np.float32(np.array(mean).reshape((1, 1, -1)))
         std = np.float32(np.array(std).reshape((1, 1, -1)))
 
-    mean = ops.convert_to_tensor(mean, dtype=image.dtype)
-    std = ops.convert_to_tensor(std, dtype=image.dtype)
+    mean = ops.convert_to_tensor(mean)
+    mean = math_ops.cast(mean, dtype=tf.float32)
+    std = ops.convert_to_tensor(std)
+    std = math_ops.cast(std, dtype=tf.float32)
     image -= mean
     image = math_ops.divide(image, std)
     return image
-
 
 def standardize(image):
     '''

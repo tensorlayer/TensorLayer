@@ -61,11 +61,11 @@ class SubpixelConv1d(Module):
 
         logging.info(
             "SubpixelConv1d  %s: scale: %d act: %s" %
-            (self.name, scale, self.act.__name__ if self.act is not None else 'No Activation')
+            (self.name, scale, self.act.__class__.__name__ if self.act is not None else 'No Activation')
         )
 
     def __repr__(self):
-        actstr = self.act.__name__ if self.act is not None else 'No Activation'
+        actstr = self.act.__class__.__name__ if self.act is not None else 'No Activation'
         s = ('{classname}(in_channels={in_channels}, out_channels={out_channels}')
         s += (', ' + actstr)
         if self.name is not None:
