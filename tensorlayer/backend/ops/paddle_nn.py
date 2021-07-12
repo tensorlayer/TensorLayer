@@ -46,10 +46,10 @@ def preprocess_1d_format(data_format, padding):
         str "NWC" or "NCW" and "SAME" or "VALID"
     """
 
-    if data_format in ["channels_last", "NWC"]:
-        data_format = "NWC"
-    elif data_format in ["channels_first", "NCW"]:
-        data_format = "NCW"
+    if data_format in ["channels_last", "NWC", "NLC"]:
+        data_format = "NLC"
+    elif data_format in ["channels_first", "NCW", "NCL"]:
+        data_format = "NCL"
     elif data_format == None:
         data_format = None
     else:
@@ -974,11 +974,54 @@ def conv3d_transpose(
 
 class BatchNorm(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, decay=0.9, epsilon=0.00001, beta=None, gamma=None, moving_mean=None, moving_var=None, num_features=None,
+        data_format='channels_last', is_train=False):
+        self.decay = decay
+        self.epsilon = epsilon
+        self.data_format = data_format
+        self.beta = beta
+        self.gamma = gamma
+        self.moving_mean = moving_mean
+        self.moving_var = moving_var
+        self.num_features = num_features
+        self.is_train = is_train
+        self.axes = None
 
-    def __call__(self, *args, **kwargs):
-        pd.nn.BatchNorm2D
+
+    def __call__(self, inputs):
+        data_format = self.channel_format(inputs)
+        outputs = pd.nn.functional.batch_norm(
+            inputs,
+            self.moving_mean,
+            self.moving_var,
+            weight=self.gamma,
+            bias=self.beta,
+            training=self.is_train,
+            momentum=self.decay,
+            epsilon=self.epsilon,
+            data_format=data_format
+            )
+        return outputs
+
+    def channel_format(self, inputs):
+        """ return "NC", "NCL", "NCHW", "NCDHW", "NLC", "NHWC" or "NDHWC". """
+        len_in_shape = len(inputs.shape)
+        if len_in_shape == 2:
+            return 'NC'
+        if self.data_format == 'channels_last':
+            if len_in_shape == 3:
+                return 'NLC'
+            if len_in_shape == 4:
+                return 'NHWC'
+            if len_in_shape == 5:
+                return 'NDHWC'
+        if self.data_format == 'channels_first':
+            if len_in_shape == 3:
+                return 'NCL'
+            if len_in_shape == 4:
+                return 'NCHW'
+            if len_in_shape == 5:
+                return 'NCDHW'
 
 
 class GroupConv2D(object):

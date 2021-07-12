@@ -9,6 +9,7 @@ from paddle.fluid.dygraph import Layer
 from paddle.fluid.framework import in_dygraph_mode
 from paddle.fluid.dygraph.base import program_desc_tracing_guard, param_guard
 from paddle.fluid.dygraph import parallel_helper
+import paddle as pd
 
 _global_layer_name_dict = {}
 
@@ -196,25 +197,34 @@ class Module(Layer):
         if len(shape) == 3:
             shape = shape[::-1]
         if len(shape) == 4:
-            if not transposed and self.data_format == 'NHWC':
+            if transposed:
                 shape = (shape[3], shape[0], shape[1], shape[2])
             else:
                 shape = (shape[3], shape[2], shape[0], shape[1])
         if len(shape) == 5:
             shape = (shape[4], shape[3], shape[0], shape[1], shape[2])
 
-        if var_name in ["filters", "weights"]:
-            w_tmp = self.create_parameter(shape=shape, attr=init, is_bias=False)
-        elif var_name in ["biases"]:
-            w_tmp = self.create_parameter(shape=shape, attr=init, is_bias=True)
-        else:
-            w_tmp = self.create_parameter(shape=shape, attr=init)
+        # if var_name in ["filters", "weights"]:
+        #     var_name = self.name + "/" + var_name
+        #     w_tmp = self.create_parameter(shape=shape, attr=init, is_bias=False, trainable=trainable, var_name=var_name)
+        # elif var_name in ["biases"]:
+        #     var_name = self.name + "/" + var_name
+        #     w_tmp = self.create_parameter(shape=shape, attr=init, is_bias=True, trainable=trainable, var_name=var_name)
+        # else:
+        var_name = self.name + "/" + var_name
+        w_tmp = self.create_parameter(shape=shape, attr=init, var_name=var_name, trainable=trainable)
         self.trainable = trainable
+
         return w_tmp
 
-    def create_parameter(self, shape, attr=None, dtype=None, is_bias=False, default_initializer=None):
+    def create_parameter(self, shape, attr=None, dtype=None, is_bias=False, default_initializer=None, trainable=True, var_name=None):
         """Create parameters for this layer."""
-        temp_attr = copy.deepcopy(attr)
+        init_attr = pd.ParamAttr(
+            name=var_name,
+            initializer=attr,
+            trainable=trainable,
+            do_model_average=True)
+        temp_attr = copy.deepcopy(init_attr)
         if isinstance(temp_attr, six.string_types) and temp_attr == "":
             temp_attr = None
         return self._helper.create_parameter(temp_attr, shape, dtype, is_bias, default_initializer)

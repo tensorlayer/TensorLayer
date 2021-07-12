@@ -9,7 +9,7 @@ os.environ['TL_BACKEND'] = 'paddle'
 
 import tensorlayer as tl
 from tensorlayer.layers import Module
-from tensorlayer.layers import Dense, Dropout, Flatten
+from tensorlayer.layers import Dense, Dropout
 from tensorlayer.dataflow import Dataset
 
 
@@ -65,11 +65,12 @@ print_freq = 2
 train_weights = MLP.trainable_weights
 optimizer = tl.optimizers.Momentum(0.05, 0.9)
 metric = tl.metric.Accuracy()
+loss_fn = tl.cost.softmax_cross_entropy_with_logits
 train_dataset = mnistdataset(data = X_train, label = y_train)
 train_dataset = tl.dataflow.FromGenerator(train_dataset, output_types=[tl.float32, tl.int64], column_names=['data', 'label'])
 train_loader = tl.dataflow.Dataloader(train_dataset, batch_size=batch_size, shuffle=True)
 
-model = tl.models.Model(network=MLP, loss_fn=tl.cost.softmax_cross_entropy_with_logits, optimizer=optimizer, metrics=metric)
+model = tl.models.Model(network=MLP, loss_fn=loss_fn, optimizer=optimizer, metrics=metric)
 model.train(n_epoch=n_epoch, train_dataset=train_loader, print_freq=print_freq, print_train_batch=False)
 model.save_weights('./model.npz', format='npz_dict')
 model.load_weights('./model.npz', format='npz_dict')
