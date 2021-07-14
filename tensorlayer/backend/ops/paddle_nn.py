@@ -128,7 +128,15 @@ def nchw_to_nhwc(x):
         channels last tensor data
     """
 
-    pass
+    if len(x.shape) == 3:
+        x = pd.transpose(x, (0, 2, 1))
+    elif len(x.shape) == 4:
+        x = pd.transpose(x, (0, 2, 3, 1))
+    elif len(x.shape) == 5:
+        x = pd.transpose(x, (0, 2, 3, 4, 1))
+    else:
+        raise Exception("Unsupported dimensions")
+    return x
 
 
 def nhwc_to_nchw(x):
@@ -145,7 +153,15 @@ def nhwc_to_nchw(x):
         channels first tensor data
     """
 
-    pass
+    if len(x.shape) == 3:
+        x = pd.transpose(x, (0, 2, 1))
+    elif len(x.shape) == 4:
+        x = pd.transpose(x, (0, 3, 1, 2))
+    elif len(x.shape) == 5:
+        x = pd.transpose(x, (0, 4, 1, 2, 3))
+    else:
+        raise Exception("Unsupported dimensions")
+    return x
 
 
 class ReLU(object):
@@ -360,12 +376,22 @@ class BiasAdd(object):
     -------
         A Tensor with the same type as value.
     """
-
-    def __init__(self, data_format='NHWC'):
-        self.data_format = data_format
+    def __init__(self, data_format='channels_first'):
+        super(BiasAdd, self).__init__()
+        if data_format in ['channels_first', 'NCW', 'NCHW', 'NCDHW']:
+            self.data_format = 'channels_first'
+        elif data_format in ['channels_last', 'NWC', 'NHWC', 'NDHWC']:
+            self.data_format = 'channels_last'
+        else:
+            raise ("Unsupported data format: " + str(data_format))
 
     def __call__(self, x, bias):
-        return pd.add(x, bias)
+        if self.data_format == 'channels_first':
+            x = nchw_to_nhwc(x)
+        outputs = pd.add(x, bias)
+        if self.data_format == 'channels_first':
+            outputs = nhwc_to_nchw(outputs)
+        return outputs
 
 
 def bias_add(x, bias):
@@ -387,12 +413,27 @@ def bias_add(x, bias):
     -------
         A Tensor with the same type as value.
     """
-    raise NotImplementedError
+
+    #TODO the bias_add only supports channels_last
+    outputs = pd.add(x, bias)
+    return outputs
 
 
 class Conv1D(object):
-    pass
-    # raise NotImplementedError
+    def __init__(self, stride, padding, data_format='NWC', dilations=None, out_channel=None, k_size=None):
+        super(Conv1D, self).__init__()
+        self.data_format, self.padding = preprocess_1d_format(padding=padding, data_format=data_format)
+        self.stride = stride
+        self.dilations = dilations
+
+    def __call__(self, input, filters):
+        output = F.conv1d(x=input,
+                          weight=filters,
+                          stride=self.stride,
+                          dilation=self.dilations,
+                          data_format=self.data_format,
+                          padding=self.padding)
+        return output
 
 
 def conv1d(input, filters, stride, padding, data_format='NWC', dilations=None, name=None):
@@ -424,7 +465,14 @@ def conv1d(input, filters, stride, padding, data_format='NWC', dilations=None, n
         A Tensor. Has the same type as input.
     """
 
-    pass
+    outputs = F.conv1d(x=input,
+                       weight=filters,
+                       stride=stride,
+                       padding=padding,
+                       data_format=data_format,
+                       dilation=dilations,
+                       name=name)
+    return outputs
 
 
 class Conv2D(object):
@@ -491,8 +539,23 @@ def conv2d(input, filters, strides, padding, data_format='NCHW', dilations=None)
 
 
 class Conv3D(object):
-    pass
-    # raise NotImplementedError
+    def __init__(self, strides, padding, data_format='NDHWC', dilations=None, out_channel=None, k_size=None):
+        self.data_format, self.padding = preprocess_3d_format(data_format, padding)
+        if data_format is 'NDHWC':
+            self._strides = (strides[1], strides[2], strides[3])
+            self._dilations = (dilations[1], dilations[2], dilations[3])
+        elif data_format is 'NCDHW':
+            self._strides = (strides[2], strides[3], strides[4])
+            self._dilations = (dilations[2], dilations[3], dilations[4])
+
+    def __call__(self, input, filters):
+        outputs = F.conv3d(x=input,
+                           weight=filters,
+                           stride=self._strides,
+                           dilation=self._dilations,
+                           data_format=self.data_format,
+                           padding=self.padding)
+        return outputs
 
 
 def conv3d(input, filters, strides, padding, data_format='NDHWC', dilations=None, name=None):
@@ -507,7 +570,7 @@ def conv3d(input, filters, strides, padding, data_format='NDHWC', dilations=None
     filters : tensor
         Must have the same type as input. Shape [filter_depth, filter_height, filter_width, in_channels, out_channels].
         in_channels must match between input and filters.
-    strides : list of ints
+    strides : tuple of ints
         A list of ints that has length >= 5. 1-D tensor of length 5.
         The stride of the sliding window for each dimension of input.
         Must have strides[0] = strides[4] = 1.
@@ -517,7 +580,7 @@ def conv3d(input, filters, strides, padding, data_format='NDHWC', dilations=None
         An optional string from: "NDHWC", "NCDHW". Defaults to "NDHWC". The data format of the input and output data.
         With the default format "NDHWC", the data is stored in the order of: [batch, in_depth, in_height, in_width, in_channels].
         Alternatively, the format could be "NCDHW", the data storage order is: [batch, in_channels, in_depth, in_height, in_width].
-    dilations : list of ints
+    dilations : touple of ints
         Defaults to [1, 1, 1, 1, 1]. 1-D tensor of length 5. The dilation factor for each dimension of input.
         If set to k > 1, there will be k-1 skipped cells between each filter element on that dimension.
         The dimension order is determined by the value of data_format, see above for details.
@@ -529,8 +592,21 @@ def conv3d(input, filters, strides, padding, data_format='NDHWC', dilations=None
     -------
         A Tensor. Has the same type as input.
     """
-
-    raise NotImplementedError
+    data_format, padding = preprocess_3d_format(data_format, padding)
+    if data_format is 'NDHWC':
+        _strides = (strides[1], strides[2], strides[3])
+        _dilations = (dilations[1], dilations[2], dilations[3])
+    elif data_format is 'NCDHW':
+        _strides = (strides[2], strides[3], strides[4])
+        _dilations = (dilations[2], dilations[3], dilations[4])
+    outputs = F.conv3d(x=input,
+                       weight=filters,
+                       stride=_strides,
+                       dilation=_dilations,
+                       data_format=data_format,
+                       padding=padding,
+                       name=name)
+    return outputs
 
 
 def lrn(inputs, depth_radius, bias, alpha, beta):

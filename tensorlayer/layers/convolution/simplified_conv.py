@@ -415,9 +415,6 @@ RuntimeError: Unable to cast from non-held to held instance (T& to Holder<T>) of
 
         self.W = self._get_weights("filters", shape=self.filter_shape, init=self.W_init)
 
-        if self.b_init:
-            self.b = self._get_weights("biases", shape=(self.n_filter, ), init=self.b_init)
-
         self.b_init_flag = False
         if self.b_init:
             self.b = self._get_weights("biases", shape=(self.n_filter, ), init=self.b_init)
