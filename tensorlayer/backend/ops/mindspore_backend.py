@@ -612,7 +612,7 @@ class ReduceSum(Cell):
     def __init__(self, axis):
         super(ReduceSum, self).__init__()
         self.axis = axis
-        self.reduce_sum = P.ReduceSum(keep_dims=True)
+        self.reduce_sum = P.ReduceSum(keep_dims=False)
 
     def construct(self, input):
         return self.reduce_sum(input, self.axis)

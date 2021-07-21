@@ -795,6 +795,23 @@ def avg_pool(input, ksize, strides, padding):
     return outputs
 
 
+class MaxPool3d(object):
+    def __init__(self, ksize, strides, padding, data_format=None):
+        self.data_format, self.padding = preprocess_3d_format(data_format, padding)
+        self.ksize = ksize
+        self.strides = strides
+
+    def __call__(self, inputs):
+        outputs = tf.nn.max_pool3d(
+            input=inputs,
+            ksize=self.ksize,
+            strides=self.strides,
+            padding=self.padding,
+            data_format=self.data_format,
+        )
+        return outputs
+
+
 def max_pool3d(input, ksize, strides, padding, data_format=None):
     """
     Performs the max pooling on the input.
@@ -832,6 +849,23 @@ def max_pool3d(input, ksize, strides, padding, data_format=None):
         data_format=data_format,
     )
     return outputs
+
+
+class AvgPool3d(object):
+    def __init__(self, ksize, strides, padding, data_format=None):
+        self.data_format, self.padding = preprocess_3d_format(data_format, padding)
+        self.ksize = ksize
+        self.strides = strides
+
+    def __call__(self, inputs):
+        outputs = tf.nn.avg_pool3d(
+            input=inputs,
+            ksize=self.ksize,
+            strides=self.strides,
+            padding=self.padding,
+            data_format=self.data_format,
+        )
+        return outputs
 
 
 def avg_pool3d(input, ksize, strides, padding, data_format=None):

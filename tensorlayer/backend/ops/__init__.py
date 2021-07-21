@@ -33,8 +33,6 @@ from .load_backend import Conv3d_transpose
 from .load_backend import GroupConv2D
 from .load_backend import BinaryConv2D
 from .load_backend import DorefaConv2D
-from .load_backend import MaxPool1d
-from .load_backend import AvgPool1d
 
 from .load_backend import ReLU
 from .load_backend import ReLU6
@@ -47,8 +45,12 @@ from .load_backend import Conv1D
 from .load_backend import Conv2D
 from .load_backend import Conv3D
 from .load_backend import BiasAdd
+from .load_backend import MaxPool1d
 from .load_backend import MaxPool
+from .load_backend import MaxPool3d
+from .load_backend import AvgPool1d
 from .load_backend import AvgPool
+from .load_backend import AvgPool3d
 from .load_backend import Dropout
 from .load_backend import BatchNorm
 from .load_backend import DepthwiseConv2d

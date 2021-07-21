@@ -852,6 +852,25 @@ def avg_pool(input, ksize, strides, padding):
     return outputs(input)
 
 
+class MaxPool3d(Cell):
+    def __init__(self, ksize, strides, padding, data_format=None):
+        super(MaxPool3d, self).__init__()
+        self.data_format, self.padding = preprocess_3d_format(data_format, padding)
+        if data_format == 'NDHWC':
+            _strides = (strides[1], strides[2], strides[3])
+        if data_format == 'NCDHW':
+            _strides = (strides[2], strides[3], strides[4])
+        self.max_pool3d = P.MaxPool3D(
+            kernel_size=ksize,
+            strides=_strides,
+            padding=padding,
+            data_format=self.data_format)
+
+    def __call__(self, inputs):
+        outputs = self.max_pool3d(inputs)
+        return outputs
+
+
 def max_pool3d(input, ksize, strides, padding, data_format=None, name=None):
     """
     Performs the max pooling on the input.
@@ -880,6 +899,20 @@ def max_pool3d(input, ksize, strides, padding, data_format=None, name=None):
         A Tensor of format specified by data_format. The max pooled output tensor.
     """
     pass
+
+
+class AvgPool3d(Cell):
+    def __init__(self, ksize, strides, padding, data_format=None):
+        super(AvgPool3d, self).__init__()
+        self.data_format, self.padding = preprocess_3d_format(data_format, padding)
+        if data_format == 'NDHWC':
+            _strides = (strides[1], strides[2], strides[3])
+        if data_format == 'NCDHW':
+            _strides = (strides[2], strides[3], strides[4])
+        raise NotImplementedError
+
+    def __call__(self, inputs):
+        pass
 
 
 def avg_pool3d(input, ksize, strides, padding, data_format=None, name=None):

@@ -467,15 +467,13 @@ class MaxPool3d(Module):
             self._strides = [1, 1, self.strides[0], self.strides[1], self.strides[2]]
         else:
             raise Exception("unsupported data format")
+        self.max_pool3d = tl.ops.MaxPool3d(ksize=self.filter_size,
+                                           strides=self._strides,
+                                           padding=self.padding,
+                                           data_format=self.data_format)
 
     def forward(self, inputs):
-        outputs = tl.ops.max_pool3d(
-            input=inputs,
-            ksize=self.filter_size,
-            strides=self._strides,
-            padding=self.padding,
-            data_format=self.data_format,
-        )
+        outputs = self.max_pool3d(inputs)
         return outputs
 
 
@@ -547,15 +545,14 @@ class MeanPool3d(Module):
             self.data_format = 'NCDHW'
         else:
             raise Exception("unsupported data format")
+        self.avg_pool3d = tl.ops.AvgPool3d(ksize=self.filter_size,
+                                           strides=self._strides,
+                                           padding=self.padding,
+                                           data_format=self.data_format
+                                           )
 
     def forward(self, inputs):
-        outputs = tl.ops.avg_pool3d(
-            input=inputs,
-            ksize=self.filter_size,
-            strides=self._strides,
-            padding=self.padding,
-            data_format=self.data_format,
-        )
+        outputs = self.avg_pool3d(inputs)
         return outputs
 
 
@@ -878,17 +875,17 @@ class GlobalMeanPool3d(Module):
         return s.format(classname=self.__class__.__name__, **self.__dict__)
 
     def build(self, inputs_shape=None):
-        pass
-
-    def forward(self, inputs):
         if self.data_format == 'channels_last':
-            outputs = tl.reduce_mean(input_tensor=inputs, axis=[1, 2, 3])
+            self.reduce_mean = tl.ReduceMean(axis=[1, 2, 3])
         elif self.data_format == 'channels_first':
-            outputs = tl.reduce_mean(input_tensor=inputs, axis=[2, 3, 4])
+            self.reduce_mean = tl.ReduceMean(axis=[2, 3, 4])
         else:
             raise ValueError(
                 "`data_format` should have one of the following values: [`channels_last`, `channels_first`]"
             )
+
+    def forward(self, inputs):
+        outputs = self.reduce_mean(inputs)
         return outputs
 
 

@@ -418,15 +418,10 @@ class ReduceSum(object):
 class ReduceMean(object):
 
     def __init__(self, axis):
-        if axis == [1, 2]:
-            self.data_format = 'NHWC'
-        elif axis == [2, 3]:
-            self.data_format = 'NCHW'
-        else:
-            raise ("`data_format` should have one of the following values: [`channels_last`, `channels_first`]")
+        self.axis = axis
 
     def __call__(self, inputs):
-        raise NotImplementedError
+        return pd.mean(inputs, axis=self.axis)
 
 
 def reduce_mean(input_tensor, axis=None):
@@ -454,15 +449,10 @@ def reduce_mean(input_tensor, axis=None):
 class ReduceMax(object):
 
     def __init__(self, axis):
-        if axis == [1, 2]:
-            self.data_format = 'NHWC'
-        elif axis == [2, 3]:
-            self.data_format = 'NCHW'
-        else:
-            raise ("`data_format` should have one of the following values: [`channels_last`, `channels_first`]")
+        self.axis = axis
 
     def __call__(self, inputs):
-        raise NotImplementedError
+        return pd.max(inputs, axis=self.axis)
 
 
 def reduce_max(input_tensor, axis=None):
