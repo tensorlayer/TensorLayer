@@ -22,11 +22,11 @@
 <!---  [![PyUP Updates](https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg)](https://pyup.io/repos/github/tensorlayer/tensorlayer/) --->
 
 [TensorLayer](https://tensorlayer.readthedocs.io) is a novel TensorFlow-based deep learning and reinforcement learning library designed for researchers and engineers. It provides an extensive collection of customizable neural layers to build advanced AI models quickly, based on this, the community open-sourced mass [tutorials](https://github.com/tensorlayer/tensorlayer/blob/master/examples/reinforcement_learning/README.md) and [applications](https://github.com/tensorlayer). TensorLayer is awarded the 2017 Best Open Source Software by the [ACM Multimedia Society](https://twitter.com/ImperialDSI/status/923928895325442049). 
-This project can also be found at [iHub](https://code.ihub.org.cn/projects/328) and [Gitee](https://gitee.com/organizations/TensorLayer).
+This project can also be found at [iHub](https://code.ihub.org.cn/projects/328) and [Gitee](https://gitee.com/organizations/TensorLayer). The latest version of TensorLayer will be updated in [OpenI](https://git.openi.org.cn/TensorLayer/tensorlayer3.0).
 
 # News
 
-🔥 **3.0.0 will supports multiple backends, such as TensorFlow, MindSpore, PaddlePaddle and more, allowing users to run the code on different hardware like Nvidia-GPU and Huawei-Ascend. We need more people to join the dev team, if you are interested, please email hao.dong@pku.edu.cn**
+🔥 **3.0.0 has been pre-released, it supports TensorFlow，MindSpore and PaddlePaddle backends, allowing users to run the code on different hardware like Nvidia-GPU and Huawei-Ascend. It will support TensorFlow, MindSpore, PaddlePaddle, and PyTorch backends in the future. The latest version of TensorLayer will be updated in [OpenI](https://git.openi.org.cn/TensorLayer/tensorlayer3.0). Feel free to use it and make suggestions. We need more people to join the dev team, if you are interested, please email hao.dong@pku.edu.cn**
 
 🔥 Reinforcement Learning Zoo: [Low-level APIs](https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning) for professional usage, [High-level APIs](https://github.com/tensorlayer/RLzoo) for simple usage, and a corresponding [Springer textbook](http://springer.com/gp/book/9789811540943)
 
