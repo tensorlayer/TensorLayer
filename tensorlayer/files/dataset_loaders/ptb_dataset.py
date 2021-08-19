@@ -47,7 +47,7 @@ def load_ptb_dataset(path='data'):
     path = os.path.join(path, 'ptb')
     logging.info("Load or Download Penn TreeBank (PTB) dataset > {}".format(path))
 
-    #Maybe dowload and uncompress tar, or load exsisting files
+    # Maybe download and uncompress tar, or load existing files
     filename = 'simple-examples.tgz'
     url = 'http://www.fit.vutbr.cz/~imikolov/rnnlm/'
     maybe_download_and_extract(filename, path, url, extract=True)

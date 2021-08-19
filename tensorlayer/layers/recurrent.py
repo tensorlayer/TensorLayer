@@ -813,7 +813,7 @@ class BasicConvLSTMCell(ConvRNNCell):
         The bias added to forget gates (see above).
     input_size : int
         Deprecated and unused.
-    state_is_tuple : boolen
+    state_is_tuple : boolean
         If True, accepted and returned states are 2-tuples of the `c_state` and `m_state`.
         If False, they are concatenated along the column axis. The latter behavior will soon be deprecated.
     act : activation function

@@ -41,9 +41,9 @@ class Model(object):
     __init__(self, inputs=None, outputs=None, name=None)
         Initializing the Model.
     inputs()
-        Get input tensors to this network (only avaiable for static model).
+        Get input tensors to this network (only available for static model).
     outputs()
-        Get output tensors to this network (only avaiable for static model).
+        Get output tensors to this network (only available for static model).
     __call__(inputs, is_train=None, **kwargs)
         Forward input tensors through this network.
     all_layers()
