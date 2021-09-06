@@ -56,6 +56,7 @@ conda create --name tl python=3.6
 conda activate tl
 pip install tensorflow-gpu==2.0.0-rc1  # without GPU, use: pip install tensorflow
 pip install tensorlayer
+pip install tensorflow-probability==0.9
 pip install gym[all] # this might not install mujoco, but others will be fine.
 
 python tutorial_DDPG.py --train  # as a DDPG example
