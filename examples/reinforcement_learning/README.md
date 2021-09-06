@@ -50,6 +50,18 @@ A corresponding [Springer textbook](https://deepreinforcementlearningbook.org) i
 
 `pip install --upgrade tf-nightly-2.0-preview tfp-nightly`
 
+## Quick Start:
+```
+conda create --name tl python=3.6.4  
+conda activate tl
+pip install tensorflow-gpu==2.0.0-rc1 # if no GPU, use pip install tensorflow==2.0.0
+pip install tensorlayer
+pip install gym
+pip install gym[all] # this might not install mujoco, but others will be fine.
+
+python tutorial_DDPG.py --train
+```
+
 ## Status: Beta
 
 We are currently open to any suggestions or pull requests from you to make the reinforcement learning tutorial with TensorLayer2.0 a better code repository for both new learners and senior researchers. Some of the algorithms mentioned in the this markdown may be not yet available, since we are still trying to implement more RL algorithms and optimize their performances. However, those algorithms listed above will come out in a few weeks, and the repository will keep updating more advanced RL algorithms in the future.
