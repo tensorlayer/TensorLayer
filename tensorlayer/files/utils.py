@@ -2713,7 +2713,7 @@ def load_hdf5_to_weights_in_order(filepath, network):
     """
     f = h5py.File(filepath, 'r')
     try:
-        layer_names = [n.decode('utf8') for n in f.attrs["layer_names"]]
+        layer_names = [n if isinstance(n, str) else n.decode('utf8') for n in f.attrs["layer_names"]]
     except Exception:
         raise NameError(
             "The loaded hdf5 file needs to have 'layer_names' as attributes. "
