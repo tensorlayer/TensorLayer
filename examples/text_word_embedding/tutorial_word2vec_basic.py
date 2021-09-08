@@ -225,6 +225,7 @@ def main_word2vec_basic():
     average_loss = 0
     step = 0
     print_freq = 2000
+    valid_embed = tf.nn.embedding_lookup(normalized_embeddings, valid_dataset)
     while step < num_steps:
         start_time = time.time()
         batch_inputs, batch_labels, data_index = tl.nlp.generate_skip_gram_batch(
@@ -255,7 +256,6 @@ def main_word2vec_basic():
 
             # Compute the cosine similarity between minibatch examples and all embeddings.
             # For simple visualization of validation set.
-            valid_embed = tf.nn.embedding_lookup(normalized_embeddings, valid_dataset)
             sim = tf.matmul(valid_embed, normalized_embeddings, transpose_b=True)
             sim = sim.numpy()
             # multiply all valid word vector with all word vector.

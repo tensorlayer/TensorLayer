@@ -160,21 +160,21 @@ def accuracy(_logits, y_batch):
 train_ds = tf.data.Dataset.from_generator(
     generator_train, output_types=(tf.float32, tf.int32)
 )  # , output_shapes=((24, 24, 3), (1)))
-train_ds = train_ds.map(_map_fn_train, num_parallel_calls=multiprocessing.cpu_count())
 # train_ds = train_ds.repeat(n_epoch)
 train_ds = train_ds.shuffle(shuffle_buffer_size)
 train_ds = train_ds.prefetch(buffer_size=4096)
 train_ds = train_ds.batch(batch_size)
+train_ds = train_ds.map(_map_fn_train, num_parallel_calls=multiprocessing.cpu_count())
 # value = train_ds.make_one_shot_iterator().get_next()
 
 test_ds = tf.data.Dataset.from_generator(
     generator_test, output_types=(tf.float32, tf.int32)
 )  # , output_shapes=((24, 24, 3), (1)))
 # test_ds = test_ds.shuffle(shuffle_buffer_size)
-test_ds = test_ds.map(_map_fn_test, num_parallel_calls=multiprocessing.cpu_count())
 # test_ds = test_ds.repeat(n_epoch)
 test_ds = test_ds.prefetch(buffer_size=4096)
 test_ds = test_ds.batch(batch_size)
+test_ds = test_ds.map(_map_fn_test, num_parallel_calls=multiprocessing.cpu_count())
 # value_test = test_ds.make_one_shot_iterator().get_next()
 
 for epoch in range(n_epoch):

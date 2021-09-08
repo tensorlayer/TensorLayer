@@ -63,13 +63,11 @@ writer.close()
 def read_and_decode(filename):
     batchsize = 4
     raw_dataset = tf.data.TFRecordDataset([filename]).shuffle(1000).batch(batchsize)
+    features = {}
     for serialized_example in raw_dataset:
-        features = tf.io.parse_example(
-            serialized_example, features={
-                'label': tf.io.FixedLenFeature([], tf.int64),
-                'img_raw': tf.io.FixedLenFeature([], tf.string),
-            }
-        )
+        features['label'] = tf.io.FixedLenFeature([], tf.int64)
+        features['img_raw'] = tf.io.FixedLenFeature([], tf.string)
+        features = tf.io.parse_example(serialized_example, features)
         # You can do more image distortion here for training data
         img_batch = tf.io.decode_raw(features['img_raw'], tf.uint8)
         img_batch = tf.reshape(img_batch, [-1, 32, 32, 3])
