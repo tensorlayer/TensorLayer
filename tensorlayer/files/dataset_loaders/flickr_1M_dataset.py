@@ -32,7 +32,7 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     n_threads : int
         The number of thread to read image.
     printable : boolean
-        Whether to print infomation when reading images, default is ``False``.
+        Whether to print information when reading images, default is ``False``.
 
     Examples
     ----------

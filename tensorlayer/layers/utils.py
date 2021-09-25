@@ -112,7 +112,7 @@ def get_layers_with_name(net, name="", verbose=False):
     >>> layers = tl.layers.get_layers_with_name(net, "CNN", True)
 
     """
-    logging.info("  [*] geting layers with %s" % name)
+    logging.info("  [*] getting layers with %s" % name)
 
     layers = []
     i = 0
@@ -157,7 +157,7 @@ def get_variables_with_name(name=None, train_only=True, verbose=False):
     name : str
         Get the variables that contain this name.
     train_only : boolean
-        If Ture, only get the trainable variables.
+        If True, only get the trainable variables.
     verbose : boolean
         If True, print the information of all variables.
 
@@ -175,7 +175,7 @@ def get_variables_with_name(name=None, train_only=True, verbose=False):
     if name is None:
         raise Exception("please input a name")
 
-    logging.info("  [*] geting variables with %s" % name)
+    logging.info("  [*] getting variables with %s" % name)
 
     # tvar = tf.trainable_variables() if train_only else tf.all_variables()
     if train_only:

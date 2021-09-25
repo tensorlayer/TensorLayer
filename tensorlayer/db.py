@@ -118,7 +118,7 @@ class TensorHub(object):
         model_name : str
             The name/key of model.
         kwargs : other events
-            Other events, such as name, accuracy, loss, step number and etc (optinal).
+            Other events, such as name, accuracy, loss, step number and etc (optional).
 
         Examples
         ---------
@@ -178,7 +178,7 @@ class TensorHub(object):
         model_name : str or None
             The name/key of model.
         kwargs : other events
-            Other events, such as name, accuracy, loss, step number and etc (optinal).
+            Other events, such as name, accuracy, loss, step number and etc (optional).
 
         Examples
         ---------
@@ -265,7 +265,7 @@ class TensorHub(object):
         dataset_name : str
             The name of dataset.
         kwargs : other events
-            Other events, such as description, author and etc (optinal).
+            Other events, such as description, author and etc (optional).
 
         Examples
         ----------
@@ -309,7 +309,7 @@ class TensorHub(object):
         sort : List of tuple
             PyMongo sort comment, search "PyMongo find one sorting" and `collection level operations <http://api.mongodb.com/python/current/api/pymongo/collection.html>`__ for more details.
         kwargs : other events
-            Other events, such as description, author and etc (optinal).
+            Other events, such as description, author and etc (optional).
 
         Examples
         ---------

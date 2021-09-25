@@ -572,7 +572,7 @@ def affine_transform_cv2(x, transform_matrix, flags=None, border_mode='constant'
     elif border_mode is 'replicate':
         border_mode = cv2.BORDER_REPLICATE
     else:
-        raise Exception("unsupport border_mode, check cv.BORDER_ for more details.")
+        raise Exception("unsupported border_mode, check cv.BORDER_ for more details.")
     return cv2.warpAffine(x, transform_matrix[0:2,:], \
             (cols,rows), flags=flags, borderMode=border_mode)
 
@@ -2613,7 +2613,7 @@ def parse_darknet_ann_str_to_list(annotations):
     Parameters
     -----------
     annotations : str
-        The annotations in darkent format "class, x, y, w, h ...." seperated by "\\n".
+        The annotations in darkent format "class, x, y, w, h ...." separated by "\\n".
 
     Returns
     -------
@@ -3762,7 +3762,7 @@ def keypoint_resize_random_crop(image, annos, mask=None, size=(368, 368)):
             new_keypoints = []
             for keypoints in people:
 
-                # case orginal points are not usable
+                # case original points are not usable
                 if keypoints[1] >= crop_range_y and keypoints[1] <= crop_range_y + _target_height - 1:
                     pts = (int(keypoints[0]), int(keypoints[1] - crop_range_y))
                 else:
@@ -3783,7 +3783,7 @@ def keypoint_resize_random_crop(image, annos, mask=None, size=(368, 368)):
             new_keypoints = []
             for keypoints in people:
 
-                # case orginal points are not usable
+                # case original points are not usable
                 if keypoints[0] >= crop_range_x and keypoints[0] <= crop_range_x + _target_width - 1:
                     pts = (int(keypoints[0] - crop_range_x), int(keypoints[1]))
                 else:

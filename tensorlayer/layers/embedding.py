@@ -28,9 +28,9 @@ class OneHot(Layer):
     depth : None or int
         If the input indices is rank N, the output will have rank N+1. The new axis is created at dimension `axis` (default: the new axis is appended at the end).
     on_value : None or number
-        The value to represnt `ON`. If None, it will default to the value 1.
+        The value to represent `ON`. If None, it will default to the value 1.
     off_value : None or number
-        The value to represnt `OFF`. If None, it will default to the value 0.
+        The value to represent `OFF`. If None, it will default to the value 0.
     axis : None or int
         The axis.
     dtype : None or TensorFlow dtype

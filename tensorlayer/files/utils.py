@@ -297,7 +297,7 @@ def static_graph2net(model_config):
 
 
 def load_hdf5_graph(filepath='model.hdf5', load_weights=False):
-    """Restore TL model archtecture from a a pickle file. Support loading model weights.
+    """Restore TL model architecture from a a pickle file. Support loading model weights.
 
     Parameters
     -----------
@@ -353,7 +353,7 @@ def load_hdf5_graph(filepath='model.hdf5', load_weights=False):
 
 
 # def load_pkl_graph(name='model.pkl'):
-#     """Restore TL model archtecture from a a pickle file. No parameters be restored.
+#     """Restore TL model architecture from a a pickle file. No parameters be restored.
 #
 #     Parameters
 #     -----------
@@ -778,7 +778,7 @@ def load_ptb_dataset(path='data'):
     path = os.path.join(path, 'ptb')
     logging.info("Load or Download Penn TreeBank (PTB) dataset > {}".format(path))
 
-    # Maybe dowload and uncompress tar, or load exsisting files
+    # Maybe download and uncompress tar, or load existing files
     filename = 'simple-examples.tgz'
     url = 'http://www.fit.vutbr.cz/~imikolov/rnnlm/'
     maybe_download_and_extract(filename, path, url, extract=True)
@@ -1063,7 +1063,7 @@ def load_flickr25k_dataset(tag='sky', path="data", n_threads=50, printable=False
     n_threads : int
         The number of thread to read image.
     printable : boolean
-        Whether to print infomation when reading images, default is ``False``.
+        Whether to print information when reading images, default is ``False``.
 
     Examples
     -----------
@@ -1135,7 +1135,7 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     n_threads : int
         The number of thread to read image.
     printable : boolean
-        Whether to print infomation when reading images, default is ``False``.
+        Whether to print information when reading images, default is ``False``.
 
     Examples
     ----------
@@ -2104,7 +2104,7 @@ def load_and_assign_npz_dict(name='model.npz', network=None, skip=False):
                 logging.warning("Weights named '%s' not found in network. Skip it." % key)
             else:
                 raise RuntimeError(
-                    "Weights named '%s' not found in network. Hint: set argument skip=Ture "
+                    "Weights named '%s' not found in network. Hint: set argument skip=True "
                     "if you want to skip redundant or mismatch weights." % key
                 )
         else:
@@ -2332,7 +2332,7 @@ def load_file_list(path=None, regx='\.jpg', printable=True, keep_prefix=False):
     regx : str
         The regx of file name.
     printable : boolean
-        Whether to print the files infomation.
+        Whether to print the files information.
     keep_prefix : boolean
         Whether to keep path in the file name.
 
@@ -2404,7 +2404,7 @@ def exists_or_mkdir(path, verbose=True):
 
 
 def maybe_download_and_extract(filename, working_directory, url_source, extract=False, expected_bytes=None):
-    """Checks if file exists in working_directory otherwise tries to dowload the file,
+    """Checks if file exists in working_directory otherwise tries to download the file,
     and optionally also tries to extract the file if format is ".zip" or ".tar"
 
     Parameters
@@ -2412,11 +2412,11 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
     filename : str
         The name of the (to be) dowloaded file.
     working_directory : str
-        A folder path to search for the file in and dowload the file to
+        A folder path to search for the file in and download the file to
     url : str
         The URL to download the file from
     extract : boolean
-        If True, tries to uncompress the dowloaded file is ".tar.gz/.tar.bz2" or ".zip" file, default is False.
+        If True, tries to uncompress the downloaded file is ".tar.gz/.tar.bz2" or ".zip" file, default is False.
     expected_bytes : int or None
         If set tries to verify that the downloaded file is of the specified size, otherwise raises an Exception, defaults is None which corresponds to no check being performed.
 
