@@ -140,8 +140,8 @@ make html
 # An example of a static model
 # A static model has inputs and outputs with fixed shape.
 inputs = tl.layers.Input([32, 784])
-dense1 = tl.layers.Dense(n_units=800, act=tf.nn.relu, in_channels=784, name='dense1')(inputs)
-dense2 = tl.layers.Dense(n_units=10,  act=tf.nn.relu, in_channels=800, name='dense2')(dense1)
+dense1 = tl.layers.Dense(n_units=800, act='relu', in_channels=784, name='dense1')(inputs)
+dense2 = tl.layers.Dense(n_units=10,  act='relu', in_channels=800, name='dense2')(dense1)
 model = tl.models.Model(inputs=inputs, outputs=dense2)
 
 # An example of a dynamic model
@@ -149,8 +149,8 @@ model = tl.models.Model(inputs=inputs, outputs=dense2)
 class CustomizeModel(tl.models.Model):
     def __init__(self):
         super(CustomizeModel, self).__init__()
-        self.dense1 = tl.layers.Dense(n_units=800, act=tf.nn.relu, in_channels=784, name='dense1')
-        self.dense2 = tl.layers.Dense(n_units=10,  act=tf.nn.relu, in_channels=800, name='dense2')
+        self.dense1 = tl.layers.Dense(n_units=800, act='relu', in_channels=784, name='dense1')
+        self.dense2 = tl.layers.Dense(n_units=10,  act='relu', in_channels=800, name='dense2')
 
     # a dynamic model allows more flexibility by customising forwarding.
     def forward(self, x, bar=None):

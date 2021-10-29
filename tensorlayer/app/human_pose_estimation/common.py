@@ -251,7 +251,6 @@ class DataReader(object):
 
         if which == 'scale':
             data = data.reshape((-1, 17, 3)).copy()
-            # denormalize (x,y,z) coordiantes for results
             for idx, item in enumerate(self.gt_testset):
                 camera_name = item['camera_param']['name']
                 if camera_name == '54138969' or camera_name == '60457274':
@@ -275,7 +274,6 @@ class DataReader(object):
 
         if which == 'scale':
             data = data.reshape((-1, 17, 2)).copy()
-            # denormalize (x,y,z) coordiantes for results
             for idx, item in enumerate(self.gt_testset):
                 camera_name = item['camera_param']['name']
                 if camera_name == '54138969' or camera_name == '60457274':

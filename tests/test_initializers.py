@@ -5,7 +5,6 @@ import os
 import unittest
 
 import numpy as np
-import tensorflow as tf
 
 import tensorlayer as tl
 from tests.utils import CustomTestCase

@@ -18,6 +18,8 @@ include:
   - requirements_dev.txt
   - requirements_tf_cpu.txt
   - requirements_tf_gpu.txt
+  - requirements_doc.txt
+  - requirements_test.txt
 
   # Configuration Files
   - .travis.yml

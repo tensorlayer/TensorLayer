@@ -1,7 +1,7 @@
 # https://docs.readthedocs.io/en/latest/yaml-config.html
 
 build:
-  image: latest  # For python 3.6
+  image: latest
 
 formats:
     - epub
