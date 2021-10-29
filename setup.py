@@ -111,14 +111,6 @@ setup(
     # The licence under which the project is released
     license=__license__,
     classifiers=[
-        # How mature is this project? Common values are
-        #  1 - Planning
-        #  2 - Pre-Alpha
-        #  3 - Alpha
-        #  4 - Beta
-        #  5 - Production/Stable
-        #  6 - Mature
-        #  7 - Inactive
         'Development Status :: 5 - Production/Stable',
 
         # Indicate who your project is intended for

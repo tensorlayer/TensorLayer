@@ -5,8 +5,6 @@ import os
 import unittest
 
 import nltk
-import tensorflow as tf
-from tensorflow.python.platform import gfile
 
 import tensorlayer as tl
 from tests.utils import CustomTestCase

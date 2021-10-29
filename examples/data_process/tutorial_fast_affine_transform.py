@@ -98,8 +98,8 @@ def example3():
     dataset = tf.data.Dataset.from_generator(generator, output_types=(tf.string, tf.int64))
     dataset = dataset.shuffle(buffer_size=4096)  # shuffle before loading images
     dataset = dataset.repeat(n_epoch)
-    dataset = dataset.map(_map_fn, num_parallel_calls=multiprocessing.cpu_count())
     dataset = dataset.batch(batch_size)  # TODO: consider using tf.contrib.map_and_batch
+    dataset = dataset.map(_map_fn, num_parallel_calls=multiprocessing.cpu_count())
     dataset = dataset.prefetch(1)  # prefetch 1 batch
 
     n_step = 0

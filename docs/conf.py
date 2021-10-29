@@ -34,12 +34,6 @@ from package_info import __version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 
-# extensions = [
-#    'sphinx.ext.coverage',
-#    'sphinx.ext.githubpages',
-#    'numpydoc',
-# ]
-
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',

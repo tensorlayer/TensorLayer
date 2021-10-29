@@ -57,11 +57,6 @@ requirements:
     # Requirements for running unittests
     - requirements/requirements_test.txt
 
-# add a label to pull requests, default is not set
-# requires private repo permissions, even on public repos
-# default: empty
-#label_prs: update
-
 # configure the branch prefix the bot is using
 # default: pyup-
 branch_prefix: pyup-

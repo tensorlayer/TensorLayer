@@ -23,7 +23,7 @@ URL=https://download.open-mpi.org/release/open-mpi/v${MPI_MAJOR}.${MPI_MINOR}/${
 tar -xf ${FILENAME}
 cd ${FOLDER}
 
-# will take about 8 min or longer depends on your machine
+# will take about 8 min or longer depends on your machine.
 ./configure --prefix=$HOME/local/openmpi
 make -j ${NPROC} all
 make install

@@ -16,4 +16,3 @@ It is 72px tall and can have a maximum width of 600px.
 ## Publication homepage images
 
 Under Homepage and settings >  Layout, you can select a header size, upload a logo and add a background image (large header size only).
-

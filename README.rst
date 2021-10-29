@@ -107,7 +107,7 @@ Cite
 ====
 
 If you find this project useful, we would be grateful if you cite the
-TensorLayer paper：
+TensorLayer papers.
 
 ::
 
@@ -118,6 +118,14 @@ TensorLayer paper：
         url     = {http://tensorlayer.org},
         year    = {2017}
     }
+
+    @inproceedings{tensorlayer2021,
+      title={Tensorlayer 3.0: A Deep Learning Library Compatible With Multiple Backends},
+      author={Lai, Cheng and Han, Jiarong and Dong, Hao},
+      booktitle={2021 IEEE International Conference on Multimedia \& Expo Workshops (ICMEW)},
+      pages={1--3},
+      year={2021},
+      organization={IEEE}
 
 License
 =======
