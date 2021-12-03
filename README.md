@@ -28,7 +28,7 @@ This project can also be found at [OpenI](https://git.openi.org.cn/TensorLayer/t
 
 🔥 **The latest version of TensorLayer will be updated in [OpenI](https://git.openi.org.cn/TensorLayer/tensorlayer3.0). Feel free to use it and make suggestions. We need more people to join the dev team, if you are interested, please email hao.dong@pku.edu.cn**
 
-🔥 3.0.0 has been pre-released, the current version supports TensorFlow, MindSpore and PaddlePaddle (partial) as the backends, allowing users to run the code on different hardware like Nvidia-GPU and Huawei-Ascend. In the future, it will support TensorFlow, MindSpore, PaddlePaddle, PyTorch and other backends.
+🔥 [TensorLayerX](https://github.com/tensorlayer/TensorLayerX) has been pre-released, the current version supports TensorFlow, MindSpore and PaddlePaddle (partial) as the backends, allowing users to run the code on different hardware like Nvidia-GPU and Huawei-Ascend. In the future, it will support TensorFlow, MindSpore, PaddlePaddle, PyTorch and other backends.
 
 🔥 Reinforcement Learning Zoo: [Low-level APIs](https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning) for professional usage, [High-level APIs](https://github.com/tensorlayer/RLzoo) for simple usage, and a corresponding [Springer textbook](http://springer.com/gp/book/9789811540943)
 
