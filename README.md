@@ -28,7 +28,7 @@ This project can also be found at [OpenI](https://git.openi.org.cn/TensorLayer/t
 
 🔥 [TensorLayerX](https://github.com/tensorlayer/tensorlayerx) is a Unified Deep Learning and Reinforcement Learning Framework for All Hardwares, Backends and OS. The current version supports TensorFlow, Pytorch, MindSpore, PaddlePaddle, OneFlow and Jittor as the backends, allowing users to run the code on different hardware like Nvidia-GPU and Huawei-Ascend.
 
-🔥 **TensorLayer in [OpenI](https://git.openi.org.cn/TensorLayer/tensorlayer3.0)**
+🔥 TensorLayer is now in [OpenI](https://git.openi.org.cn/TensorLayer/tensorlayer3.0)
 
 🔥 Reinforcement Learning Zoo: [Low-level APIs](https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning) for professional usage, [High-level APIs](https://github.com/tensorlayer/RLzoo) for simple usage, and a corresponding [Springer textbook](http://springer.com/gp/book/9789811540943)
 
