@@ -21,18 +21,17 @@
 <!---  [![Documentation Status](https://readthedocs.org/projects/tensorlayercn/badge/)](https://tensorlayercn.readthedocs.io/)
 <!---  [![PyUP Updates](https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg)](https://pyup.io/repos/github/tensorlayer/tensorlayer/) --->
 
+# Please click [TensorLayerX](https://github.com/tensorlayer/tensorlayerx) 🔥🔥🔥
+
 [TensorLayer](https://tensorlayer.readthedocs.io) is a novel TensorFlow-based deep learning and reinforcement learning library designed for researchers and engineers. It provides an extensive collection of customizable neural layers to build advanced AI models quickly, based on this, the community open-sourced mass [tutorials](https://github.com/tensorlayer/tensorlayer/blob/master/examples/reinforcement_learning/README.md) and [applications](https://github.com/tensorlayer). TensorLayer is awarded the 2017 Best Open Source Software by the [ACM Multimedia Society](https://twitter.com/ImperialDSI/status/923928895325442049). 
 This project can also be found at [OpenI](https://git.openi.org.cn/TensorLayer/tensorlayer3.0) and [Gitee](https://gitee.com/organizations/TensorLayer).
 
 # News
 
-🔥 [TensorLayerX](https://github.com/tensorlayer/tensorlayerx) is a Unified Deep Learning and Reinforcement Learning Framework for All Hardwares, Backends and OS. The current version supports TensorFlow, Pytorch, MindSpore, PaddlePaddle, OneFlow and Jittor as the backends, allowing users to run the code on different hardware like Nvidia-GPU and Huawei-Ascend.
-
-🔥 TensorLayer is now in [OpenI](https://git.openi.org.cn/TensorLayer/tensorlayer3.0)
-
-🔥 Reinforcement Learning Zoo: [Low-level APIs](https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning) for professional usage, [High-level APIs](https://github.com/tensorlayer/RLzoo) for simple usage, and a corresponding [Springer textbook](http://springer.com/gp/book/9789811540943)
-
-🔥 [Sipeed Maxi-EMC](https://github.com/sipeed/Maix-EMC): Run TensorLayer models on the **low-cost AI chip** (e.g., K210) (Alpha Version)
+- 🔥 [TensorLayerX](https://github.com/tensorlayer/tensorlayerx) is a Unified Deep Learning and Reinforcement Learning Framework for All Hardwares, Backends and OS. The current version supports TensorFlow, Pytorch, MindSpore, PaddlePaddle, OneFlow and Jittor as the backends, allowing users to run the code on different hardware like Nvidia-GPU and Huawei-Ascend.
+- TensorLayer is now in [OpenI](https://git.openi.org.cn/TensorLayer/tensorlayer3.0)
+- Reinforcement Learning Zoo: [Low-level APIs](https://github.com/tensorlayer/tensorlayer/tree/master/examples/reinforcement_learning) for professional usage, [High-level APIs](https://github.com/tensorlayer/RLzoo) for simple usage, and a corresponding [Springer textbook](http://springer.com/gp/book/9789811540943)
+- [Sipeed Maxi-EMC](https://github.com/sipeed/Maix-EMC): Run TensorLayer models on the **low-cost AI chip** (e.g., K210) (Alpha Version)
 
 <!-- 🔥 [NNoM](https://github.com/majianjia/nnom): Run TensorLayer quantized models on the **MCU** (e.g., STM32) (Coming Soon) -->
 
