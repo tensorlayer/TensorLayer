@@ -10,7 +10,7 @@ import os
 import pickle
 import re
 import shutil
-# import ast
+import ast
 import sys
 import tarfile
 import time
@@ -231,25 +231,25 @@ def eval_layer(layer_kwargs):
     layer_type = args.pop('layer_type')
     if layer_type == "normal":
         generate_func(args)
-        return eval('tl.layers.' + layer_class)(**args)
+        return ast.literal_eval('tl.layers.' + layer_class)(**args)
     elif layer_type == "layerlist":
         ret_layer = []
         layers = args["layers"]
         for layer_graph in layers:
             ret_layer.append(eval_layer(layer_graph))
         args['layers'] = ret_layer
-        return eval('tl.layers.' + layer_class)(**args)
+        return ast.literal_eval('tl.layers.' + layer_class)(**args)
     elif layer_type == "modellayer":
         M = static_graph2net(args['model'])
         args['model'] = M
-        return eval('tl.layers.' + layer_class)(**args)
+        return ast.literal_eval('tl.layers.' + layer_class)(**args)
     elif layer_type == "keraslayer":
         M = load_keras_model(args['fn'])
         input_shape = args.pop('keras_input_shape')
         _ = M(np.random.random(input_shape).astype(np.float32))
         args['fn'] = M
         args['fn_weights'] = M.trainable_variables
-        return eval('tl.layers.' + layer_class)(**args)
+        return ast.literal_eval('tl.layers.' + layer_class)(**args)
     else:
         raise RuntimeError("Unknown layer type.")
 
