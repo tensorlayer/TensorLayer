@@ -20,7 +20,7 @@ For more complex activation, TensorFlow API will be required.
 
   def double_activation(x):
       return x * 2
-      
+
   double_activation = lambda x: x * 2
 
 .. automodule:: tensorlayer.activation

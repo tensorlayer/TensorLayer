@@ -96,8 +96,8 @@ coverage html
 ```
 
 ## Documentation
-Even though you follow [numpydoc](https://numpydoc.readthedocs.io/en/latest/) document style when writing your code, 
-this does not ensure those lines appear on TensorLayer online documentation. 
+Even though you follow [numpydoc](https://numpydoc.readthedocs.io/en/latest/) document style when writing your code,
+this does not ensure those lines appear on TensorLayer online documentation.
 You need further modify corresponding RST files in `docs/modules`.
 
 For example, to add your implemented new pooling layer into documentation, modify `docs/modules/layer.rst`. First, insert layer name under Layer list
@@ -129,9 +129,9 @@ Finally, test with local documentation:
 cd ./docs
 
 make clean
-make html  
+make html
 # then view generated local documentation by ./html/index.html
-``` 
+```
 
 ## General intro to TensorLayer2
 * TensorLayer2 is built on [TensorFlow2](https://www.tensorflow.org/alpha), so TensorLayer2 is purely eager, no sessions, no globals.
