@@ -811,7 +811,7 @@ class Model(object):
         )
 
     @staticmethod
-    def load(filepath, load_weights=True):
+    def load(filepath, load_weights=True, trusted=False):
         """
         Load model from a given file, which should be previously saved by Model.save().
         This function load can load both the architecture of neural networks and weights (optional, and needs to be saved in Model.save()).
@@ -832,7 +832,7 @@ class Model(object):
         >>> new_net = Model.load('./model.h5', load_weights=True)
         """
         # TODO: support loading LambdaLayer that includes parametric self defined function with outside variables
-        M = utils.load_hdf5_graph(filepath=filepath, load_weights=load_weights)
+        M = utils.load_hdf5_graph(filepath=filepath, load_weights=load_weights, trusted=trusted)
         return M
 
     def save_weights(self, filepath, format=None):
