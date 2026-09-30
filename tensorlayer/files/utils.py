@@ -17,6 +17,7 @@ import time
 import zipfile
 
 import cloudpickle
+import ast
 import h5py
 import numpy as np
 import scipy.io as sio
@@ -206,9 +207,11 @@ def save_hdf5_graph(network, filepath='model.hdf5', save_weights=False, customiz
     logging.info("[*] Saved TL model into {}, saving weights={}".format(filepath, save_weights))
 
 
-def generate_func(args):
+def generate_func(args, trusted=False):
     for key in args:
         if isinstance(args[key], tuple) and args[key][0] == 'is_Func':
+            if not trusted:
+                raise ValueError("Untrusted model file contains executable functions. Use trusted=True to allow.")
             fn = str2func(args[key][1])
             args[key] = fn
         # if key in ['act']:
@@ -225,36 +228,36 @@ def generate_func(args):
         #     args[key] = fn
 
 
-def eval_layer(layer_kwargs):
+def eval_layer(layer_kwargs, trusted=False):
     layer_class = layer_kwargs.pop('class')
     args = layer_kwargs['args']
     layer_type = args.pop('layer_type')
     if layer_type == "normal":
-        generate_func(args)
-        return eval('tl.layers.' + layer_class)(**args)
+        generate_func(args, trusted=trusted)
+        return getattr(tl.layers, layer_class)(**args)
     elif layer_type == "layerlist":
         ret_layer = []
         layers = args["layers"]
         for layer_graph in layers:
-            ret_layer.append(eval_layer(layer_graph))
+            ret_layer.append(eval_layer(layer_graph, trusted=trusted))
         args['layers'] = ret_layer
-        return eval('tl.layers.' + layer_class)(**args)
+        return getattr(tl.layers, layer_class)(**args)
     elif layer_type == "modellayer":
-        M = static_graph2net(args['model'])
+        M = static_graph2net(args['model'], trusted=trusted)
         args['model'] = M
-        return eval('tl.layers.' + layer_class)(**args)
+        return getattr(tl.layers, layer_class)(**args)
     elif layer_type == "keraslayer":
         M = load_keras_model(args['fn'])
         input_shape = args.pop('keras_input_shape')
         _ = M(np.random.random(input_shape).astype(np.float32))
         args['fn'] = M
         args['fn_weights'] = M.trainable_variables
-        return eval('tl.layers.' + layer_class)(**args)
+        return getattr(tl.layers, layer_class)(**args)
     else:
         raise RuntimeError("Unknown layer type.")
 
 
-def static_graph2net(model_config):
+def static_graph2net(model_config, trusted=False):
     layer_dict = {}
     model_name = model_config["name"]
     inputs_tensors = model_config["inputs"]
@@ -263,7 +266,7 @@ def static_graph2net(model_config):
     for idx, layer_kwargs in enumerate(all_args):
         layer_class = layer_kwargs["class"]  # class of current layer
         prev_layers = layer_kwargs.pop("prev_layer")  # name of previous layers
-        net = eval_layer(layer_kwargs)
+        net = eval_layer(layer_kwargs, trusted=trusted)
         if layer_class in tl.layers.inputs.__all__:
             net = net._nodes[0].out_tensors[0]
         if prev_layers is not None:
@@ -296,7 +299,7 @@ def static_graph2net(model_config):
     return M
 
 
-def load_hdf5_graph(filepath='model.hdf5', load_weights=False):
+def load_hdf5_graph(filepath='model.hdf5', load_weights=False, trusted=False):
     """Restore TL model archtecture from a a pickle file. Support loading model weights.
 
     Parameters
@@ -319,7 +322,7 @@ def load_hdf5_graph(filepath='model.hdf5', load_weights=False):
     f = h5py.File(filepath, 'r')
 
     model_config_str = f.attrs["model_config"].decode('utf8')
-    model_config = eval(model_config_str)
+    model_config = ast.literal_eval(model_config_str)
 
     # version_info_str = f.attrs["version_info"].decode('utf8')
     # version_info = eval(version_info_str)
@@ -339,7 +342,7 @@ def load_hdf5_graph(filepath='model.hdf5', load_weights=False):
             )
         )
 
-    M = static_graph2net(model_config)
+    M = static_graph2net(model_config, trusted=trusted)
     if load_weights:
         if not ('layer_names' in f.attrs.keys()):
             raise RuntimeError("Saved model does not contain weights.")
